@@ -1,9 +1,0 @@
-// GET /api/articles/:id —— 全文({ok, item});POST 一律 no-op(云端只读)
-const { articles } = require('../_data');
-
-module.exports = function handler(req, res) {
-  if (req.method === 'POST') return res.json({ ok: true });
-  const it = articles().find((a) => String(a.id) === String(req.query.id));
-  if (!it) return res.status(404).json({ ok: false, error: 'not found' });
-  res.json({ ok: true, item: it });
-};
