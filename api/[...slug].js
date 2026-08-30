@@ -4,7 +4,12 @@ const { route } = require('./_handlers');
 
 module.exports = async function handler(req, res) {
   try {
-    const slug = req.query.slug || [];
+    // catch-all 参数兼容:Build Output API 下键名是字面量 "...slug"(值为斜杠连接字符串),
+    // 本地/其他形态可能是 slug 数组 —— 两种都兼容
+    const raw = req.query['...slug'] ?? req.query.slug;
+    const slug = Array.isArray(raw)
+      ? raw
+      : String(raw || '').split(/[/,]/).filter(Boolean);
     // 图片代理单独处理(二进制响应)
     if (slug[0] === 'img') {
       const u = req.query.u;

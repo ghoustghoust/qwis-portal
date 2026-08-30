@@ -5,7 +5,7 @@
   "description": "全网情报 · 只读门户（纯静态 SPA，Vercel 托管）",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node copy-routes.js",
     "preview": "vite preview"
   },
   "dependencies": {
