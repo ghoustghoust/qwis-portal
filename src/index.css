@@ -20,23 +20,22 @@
   --shadow: 0 1px 3px rgba(70, 55, 30, 0.08);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #17191d;
-    --surface: #20232a;
-    --surface-2: #282c35;
-    --text: #e8e6e1;
-    --muted: #97907f;
-    --border: #343943;
-    --accent: #b07d4f;
-    --accent-text: #fff7ec;
-    --accent-soft: #36302a;
-    --purple: #9d86e8;
-    --green: #5aa77a;
-    --red: #d06a5e;
-    --amber: #d9a13b;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  }
+/* 深色变量由 .dark 类控制（默认跟随系统，手动切换后 localStorage 记忆，见 index.html 内联脚本） */
+html.dark {
+  --bg: #17191d;
+  --surface: #20232a;
+  --surface-2: #282c35;
+  --text: #e8e6e1;
+  --muted: #97907f;
+  --border: #343943;
+  --accent: #b07d4f;
+  --accent-text: #fff7ec;
+  --accent-soft: #36302a;
+  --purple: #9d86e8;
+  --green: #5aa77a;
+  --red: #d06a5e;
+  --amber: #d9a13b;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 html,

@@ -103,3 +103,43 @@ export function ExternalIcon(props) {
     </Svg>
   );
 }
+
+// 主题：太阳（浅色）
+export function SunIcon(props) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19" />
+    </Svg>
+  );
+}
+
+// 主题：月亮（深色）
+export function MoonIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M20 13.5A8 8 0 0 1 10.5 4a8 8 0 1 0 9.5 9.5z" />
+    </Svg>
+  );
+}
+
+// 合并同事件（两条支流汇入一条）
+export function MergeIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M5.5 4c0 5.5 4.2 6.7 6.5 8.5 2.3-1.8 6.5-3 6.5-8.5" />
+      <path d="M12 12.5V20" />
+      <path d="m9 17.5 3 3 3-3" />
+    </Svg>
+  );
+}
+
+// 搜索
+export function SearchIcon(props) {
+  return (
+    <Svg {...props}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m20 20-4.2-4.2" />
+    </Svg>
+  );
+}

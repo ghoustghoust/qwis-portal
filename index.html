@@ -7,6 +7,14 @@
     <meta name="theme-color" content="#17191d" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="全网情报 · 只读门户：今日日报 / 热点榜 / 阅读器" />
     <title>全网情报</title>
+    <script>
+      // 主题初始化：localStorage(portal-theme) 优先，缺省跟随系统；首屏前设置避免闪烁
+      try {
+        var t = localStorage.getItem('portal-theme');
+        var dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
