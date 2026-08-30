@@ -43,7 +43,7 @@ function ReadingView({ it, onBack }) {
   }, [it.id]);
 
   return (
-    <div className="px-4 pt-3">
+    <div className="px-4 pt-3 md:max-w-[720px] md:mx-auto">
       <div className="flex items-center gap-2">
         <button
           className="inline-flex items-center gap-1 text-[13px] t-accent font-medium py-1.5 -ml-1"

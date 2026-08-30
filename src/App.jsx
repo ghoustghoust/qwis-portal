@@ -54,51 +54,75 @@ export default function App() {
   }, [tab]);
 
   return (
-    <div className="min-h-full t-bg t-text flex flex-col">
-      {/* 顶栏：雷达 logo + 名称 + 更新时间 */}
-      <header className="flex-none sticky top-0 z-20 t-surface border-b t-border">
-        <div className="max-w-[720px] mx-auto flex items-center gap-2.5 px-4 h-12">
-          <span className="logo-radar t-accent flex items-center" title="全网情报系统">
-            <RadarLogo size={22} />
-          </span>
-          <span className="text-[15px] font-bold tracking-wide">全网情报</span>
-          <span className="flex-1" />
-          {data?.meta?.exportedAt && (
-            <span className="text-[11px] t-muted tabular-nums">
-              {relativeTime(data.meta.exportedAt)}更新
+    <div className="min-h-full t-bg t-text">
+      {/* 桌面端（≥768px）左侧固定导航栏：雷达 logo + 纵向图标导航（IconRail 风格） */}
+      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 z-30 w-16 flex-col items-center border-r t-border t-surface py-4 gap-2">
+        <span className="logo-radar t-accent flex items-center justify-center w-10 h-10 mb-2" title="全网情报系统">
+          <RadarLogo size={26} />
+        </span>
+        {TABS.map((t) => {
+          const active = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              title={t.label}
+              className={`w-10 h-10 rounded-lg inline-flex items-center justify-center transition-colors ${
+                active ? 't-accent-soft t-accent' : 't-muted hover:t-accent hover:t-accent-soft'
+              }`}
+            >
+              <t.Icon size={20} />
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="md:pl-16 flex flex-col min-h-full">
+        {/* 顶栏：名称 + 更新时间（logo 桌面端在左侧导航，移动端在顶栏） */}
+        <header className="flex-none sticky top-0 z-20 t-surface border-b t-border">
+          <div className="max-w-[960px] mx-auto flex items-center gap-2.5 px-4 h-12">
+            <span className="logo-radar t-accent flex items-center md:hidden" title="全网情报系统">
+              <RadarLogo size={22} />
             </span>
-          )}
-        </div>
-      </header>
+            <span className="text-[15px] font-bold tracking-wide">全网情报</span>
+            <span className="flex-1" />
+            {data?.meta?.exportedAt && (
+              <span className="text-[11px] t-muted tabular-nums">
+                {relativeTime(data.meta.exportedAt)}更新
+              </span>
+            )}
+          </div>
+        </header>
 
-      {/* 内容区（底部留出 Tab 栏高度） */}
-      <main className="flex-1">
-        <div className="max-w-[720px] mx-auto pb-24">
-          {error && (
-            <div className="card mx-4 mt-4 px-4 py-16 text-center text-[13px] t-muted">
-              {error}
-              <div className="mt-2 text-[11px]">数据文件缺失或未导出，请稍后刷新重试</div>
-            </div>
-          )}
-          {!data && !error && (
-            <div className="py-20 text-center text-[13px] t-muted">加载中…</div>
-          )}
-          {data && tab === 'daily' && <DailyTab daily={data.daily} />}
-          {data && tab === 'events' && <EventsTab events={data.events} />}
-          {data && tab === 'reader' && <ReaderTab articles={data.articles} />}
+        {/* 内容区（移动端底部留出 Tab 栏高度；桌面端居中限宽 960px） */}
+        <main className="flex-1">
+          <div className="max-w-[720px] md:max-w-[960px] mx-auto pb-24 md:pb-10">
+            {error && (
+              <div className="card mx-4 mt-4 px-4 py-16 text-center text-[13px] t-muted">
+                {error}
+                <div className="mt-2 text-[11px]">数据文件缺失或未导出，请稍后刷新重试</div>
+              </div>
+            )}
+            {!data && !error && (
+              <div className="py-20 text-center text-[13px] t-muted">加载中…</div>
+            )}
+            {data && tab === 'daily' && <DailyTab daily={data.daily} />}
+            {data && tab === 'events' && <EventsTab events={data.events} />}
+            {data && tab === 'reader' && <ReaderTab articles={data.articles} />}
 
-          {data?.meta && (
-            <footer className="mt-8 px-4 text-center text-[11px] t-muted leading-relaxed">
-              {data.meta.sources} 个信源 · 累计 {data.meta.articles} 条情报
-              <br />
-              全网情报系统 · 只读门户
-            </footer>
-          )}
-        </div>
-      </main>
+            {data?.meta && (
+              <footer className="mt-8 px-4 text-center text-[11px] t-muted leading-relaxed">
+                {data.meta.sources} 个信源 · 累计 {data.meta.articles} 条情报
+                <br />
+                全网情报系统 · 只读门户
+              </footer>
+            )}
+          </div>
+        </main>
+      </div>
 
-      {/* 底部 Tab 栏（移动端友好） */}
-      <nav className="tabbar fixed bottom-0 inset-x-0 z-20 t-surface border-t t-border">
+      {/* 底部 Tab 栏（仅 <768px 移动端） */}
+      <nav className="tabbar fixed bottom-0 inset-x-0 z-20 t-surface border-t t-border md:hidden">
         <div className="max-w-[720px] mx-auto flex">
           {TABS.map((t) => {
             const active = tab === t.id;
