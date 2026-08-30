@@ -305,6 +305,15 @@ const noop = { body: { ok: true } };
 
 function route(method, slug, query) {
   const [a, b, c] = slug;
+  // 云端采集器(十一期 M2):密钥校验后跑一批到期源写 Turso(GET/POST 均可,GitHub Actions 定时触发)
+  if (a === 'collect' && !b) {
+    if (!process.env.COLLECT_KEY || query.key !== process.env.COLLECT_KEY) {
+      return { code: 401, body: { ok: false, error: 'unauthorized' } };
+    }
+    return require('./_collect').collect()
+      .then((body) => ({ body }))
+      .catch((e) => ({ code: 500, body: { ok: false, error: e.message } }));
+  }
   if (a === 'meta' && !b) return meta();
   if (a === 'daily' && !b) return daily();
   if (a === 'daily' && b === 'regenerate') return dailyRegenerate();

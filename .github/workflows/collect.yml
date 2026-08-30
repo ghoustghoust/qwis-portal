@@ -1,0 +1,19 @@
+# 云端采集器定时触发(十一期 M2):每 15 分钟打一次 portal 的 /api/collect
+# COLLECT_KEY 在 GitHub 仓库 Settings → Secrets and variables → Actions 配置
+name: collect
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger cloud collector
+        run: |
+          curl -fsS -X POST "https://qwis-portal.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+            -H "Content-Type: application/json" \
+            --max-time 90

@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
       res.setHeader('Cache-Control', 'public, max-age=86400');
       return res.send(Buffer.from(await r.arrayBuffer()));
     }
-    const result = route(req.method || 'GET', slug, req.query);
+    const result = await route(req.method || 'GET', slug, req.query);
     if (!result) return res.status(404).json({ ok: false, error: 'not found' });
     res.status(result.code || 200).json(result.body);
   } catch (e) {
