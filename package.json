@@ -5,13 +5,14 @@
   "description": "全网情报 · 只读门户（纯静态 SPA，Vercel 托管）",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node copy-routes.js",
+    "build": "vite build && vite build --config vite.admin.config.js && node copy-routes.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",
     "@mozilla/readability": "^0.6.0",
     "jsdom": "^29.1.1",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rss-parser": "^3.13.0"

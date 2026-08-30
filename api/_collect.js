@@ -380,6 +380,12 @@ async function markError(source, errMsg) {
     `UPDATE sources SET status='error', extra=?, enabled=? WHERE id=?`,
     JSON.stringify(extra), autoPaused ? 0 : 1, source.id
   );
+  // 报警:连续失败 ≥2 提醒,≥3 熔断通知(异步告警失败不影响采集主流程)
+  if (failCount >= 2) {
+    try {
+      await require('./_alerts').sourceError(source, failCount, errMsg);
+    } catch { /* 告警失败忽略 */ }
+  }
   return { failCount, autoPaused };
 }
 

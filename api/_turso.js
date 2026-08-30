@@ -26,7 +26,7 @@ async function dbGet(sql, ...args) {
 
 async function dbRun(sql, ...args) {
   const r = await getClient().execute({ sql, args });
-  return { changes: r.rowsAffected };
+  return { changes: r.rowsAffected, lastInsertRowid: r.lastInsertRowid != null ? Number(r.lastInsertRowid) : undefined };
 }
 
 // settings(key-value JSON)

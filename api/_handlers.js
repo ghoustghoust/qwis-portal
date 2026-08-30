@@ -1,14 +1,16 @@
 // 全部 API 处理器(_ 前缀不计为 Serverless Function)
 // 由 api/[...slug].js 单一入口路由分发;契约对齐主系统 server/routes/*
-const data = require('./_data');
+// 十一期 M3:读取路径优先 Turso(_cloud.js),无数据/出错回退 public/data 静态快照;响应结构不变
+// 十一期 M4:/api/admin/* 管理后台(口令 cookie 鉴权) + 日报/事件榜云端化
+const cloud = require('./_cloud');
 
 const PAGE = 30;
-const { titleTokens, jaccard, sortKey } = data;
+const { titleTokens, jaccard, sortKey } = cloud;
 
 // ---------- 工具 ----------
-function sourceIndex() {
+function sourceIndex(srcs) {
   const byName = new Map();
-  for (const s of data.sources()) if (s.name && !byName.has(s.name)) byName.set(s.name, s);
+  for (const s of srcs) if (s.name && !byName.has(s.name)) byName.set(s.name, s);
   return byName;
 }
 
@@ -49,33 +51,57 @@ function cursorStart(sorted, cursor, desc) {
 }
 
 // ---------- /api/meta ----------
-function meta() {
-  return { body: { ok: true, ...data.meta() } };
+async function meta() {
+  return { body: { ok: true, ...(await cloud.meta()) } };
 }
 
 // ---------- /api/daily ----------
-function daily() {
-  return { body: { ok: true, report: data.daily() } };
+async function daily() {
+  if (cloud.IS_CLOUD) {
+    try {
+      const { report, fresh } = await require('./_daily').getOrGenerate();
+      return { body: { ok: true, report, fresh } };
+    } catch (e) {
+      // 生成失败回退最近一次报告
+      const latest = await require('./_daily').getLatest().catch(() => null);
+      if (latest) return { body: { ok: true, report: latest, stale: true, error: e.message } };
+      return { code: 500, body: { ok: false, error: e.message } };
+    }
+  }
+  return { body: { ok: true, report: require('./_data').daily() } };
 }
-function dailyRegenerate() {
-  return { code: 400, body: { ok: false, error: '云端为只读快照,请在主系统重新生成日报' } };
+async function dailyRegenerate(method) {
+  if (!cloud.IS_CLOUD) {
+    return { code: 400, body: { ok: false, error: '云端为只读快照,请在主系统重新生成日报' } };
+  }
+  if (method !== 'POST') return { code: 405, body: { ok: false, error: 'method not allowed' } };
+  try {
+    const report = await require('./_daily').generate();
+    return { body: { ok: true, report } };
+  } catch (e) {
+    return { code: 500, body: { ok: false, error: e.message } };
+  }
 }
 
 // ---------- /api/articles ----------
-function articles(query) {
+async function articles(query) {
   const tab = query.tab || 'all';
   if (tab === 'later' || tab === 'history' || tab === 'read') {
     return { body: { ok: true, items: [], nextCursor: null, span: { min: null, max: null } } };
   }
-  const byName = sourceIndex();
-  let list = data.articles();
+  const srcs = await cloud.sources();
+  const byName = sourceIndex(srcs);
+  let list = await cloud.articles();
   if (query.source_id) {
     const sid = Number(query.source_id);
-    list = list.filter((r) => byName.get(r.source_name)?.id === sid);
+    list = list.filter((r) => (r.source_id != null ? Number(r.source_id) === sid : byName.get(r.source_name)?.id === sid));
   }
   if (query.group_id) {
     const gid = Number(query.group_id);
-    list = list.filter((r) => byName.get(r.source_name)?.group_id === gid);
+    list = list.filter((r) => {
+      const s = r.source_id != null ? srcs.find((x) => Number(x.id) === Number(r.source_id)) : byName.get(r.source_name);
+      return s && Number(s.group_id) === gid;
+    });
   }
   if (query.domain) list = list.filter((r) => r.domain === query.domain);
   if (query.q) {
@@ -154,23 +180,23 @@ function articles(query) {
   };
 }
 
-function articleDetail(id) {
-  const it = data.articles().find((a) => String(a.id) === String(id));
+async function articleDetail(id) {
+  const it = (await cloud.articles()).find((a) => String(a.id) === String(id));
   if (!it) return { code: 404, body: { ok: false, error: 'not found' } };
   return { body: { ok: true, item: it } };
 }
 
 // ---------- /api/sources ----------
-function sourcesList(query) {
-  let items = data.sources();
+async function sourcesList(query) {
+  let items = await cloud.sources();
   if (query.type) items = items.filter((s) => s.type === query.type);
   return { body: { ok: true, items } };
 }
 
 // ---------- /api/groups ----------
-function groupsList(query) {
-  const srcs = data.sources();
-  let items = data.groups().map((g) => ({
+async function groupsList(query) {
+  const srcs = await cloud.sources();
+  let items = (await cloud.groups()).map((g) => ({
     ...g,
     sourceCount: srcs.filter((s) => s.group_id === g.id).length,
   }));
@@ -179,12 +205,12 @@ function groupsList(query) {
 }
 
 // ---------- /api/videos ----------
-function videosList(query) {
+async function videosList(query) {
   const tab = query.tab || 'all';
   if (tab === 'favorite' || tab === 'history') {
     return { body: { ok: true, items: [], nextCursor: null, span: { min: null, max: null } } };
   }
-  let list = data.videos().slice();
+  let list = (await cloud.videos()).slice();
   if (query.source_id) list = list.filter((v) => Number(v.source_id) === Number(query.source_id));
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.from || '')) {
     list = list.filter((v) => sortKey(v) >= `${query.from}T00:00:00.000Z`);
@@ -212,14 +238,14 @@ function videosList(query) {
   };
 }
 
-function videoDetail(id) {
-  const it = data.videos().find((v) => String(v.id) === String(id));
+async function videoDetail(id) {
+  const it = (await cloud.videos()).find((v) => String(v.id) === String(id));
   if (!it) return { code: 404, body: { ok: false, error: 'not found' } };
   return { body: { ok: true, item: it } };
 }
 
-function videoPlay(id) {
-  const v = data.videos().find((x) => String(x.id) === String(id));
+async function videoPlay(id) {
+  const v = (await cloud.videos()).find((x) => String(x.id) === String(id));
   if (!v) return { code: 404, body: { ok: false, error: 'not found' } };
   // 云端无法解析直链,回退官方 embed / 原平台外链
   if (v.platform === 'bilibili') {
@@ -232,8 +258,8 @@ function videoPlay(id) {
 }
 
 // ---------- /api/hot ----------
-function hot(query) {
-  let list = data.aihot().slice();
+async function hot(query) {
+  let list = (await cloud.aihot()).slice();
   const { category, q, source } = query;
   if (query.tab === 'featured' && category) list = list.filter((r) => (r.category || '') === category);
   if (query.tab !== 'featured') {
@@ -260,9 +286,9 @@ function hotCategories() {
   return { body: { ok: true, categories: ['模型', '产品', '行业', '论文', '教程', '观点'], map: {} } };
 }
 
-function hotSources() {
+async function hotSources() {
   const counts = new Map();
-  for (const r of data.aihot()) {
+  for (const r of await cloud.aihot()) {
     const name = r.source_name || '';
     if (!name) continue;
     counts.set(name, (counts.get(name) || 0) + 1);
@@ -275,22 +301,33 @@ function hotSources() {
   };
 }
 
-function hotEvents(query) {
+// ---------- 事件榜(M3:Turso 实时聚合;失败/无数据回退静态快照) ----------
+async function eventsData() {
+  if (cloud.IS_CLOUD) {
+    try {
+      const list = await require('./_events').getEvents('all');
+      if (list.length) return list;
+    } catch { /* 回退快照 */ }
+  }
+  return require('./_data').events();
+}
+
+async function hotEvents(query) {
   const domain = query.domain;
-  let list = data.events();
+  let list = await eventsData();
   if (domain && domain !== 'all') list = list.filter((e) => e.domain === domain);
   return {
     body: {
       ok: true,
       events: list.map((e, i) => ({ rank: i + 1, ...e, items: undefined })),
-      domains: [...new Set(data.events().map((e) => e.domain))],
+      domains: [...new Set(list.map((e) => e.domain))],
     },
   };
 }
 
-function hotEventDetail(rank, query) {
+async function hotEventDetail(rank, query) {
   const domain = query.domain;
-  let list = data.events();
+  let list = await eventsData();
   if (domain && domain !== 'all') list = list.filter((e) => e.domain === domain);
   const idx = Number(rank) - 1;
   if (!Number.isInteger(idx) || idx < 0 || !list[idx]) {
@@ -299,24 +336,79 @@ function hotEventDetail(rank, query) {
   return { body: { ok: true, event: { rank: idx + 1, ...list[idx] } } };
 }
 
+// ---------- /api/admin/*(M4:全部需管理口令 cookie;login/session 除外) ----------
+async function admin(method, parts, query, ctx) {
+  const a = require('./_admin');
+  const [b, c, d] = parts; // /api/admin/{b}/{c}/{d}
+  if (b === 'login' && method === 'POST') return a.login(ctx.body);
+  if (b === 'logout' && method === 'POST') return a.logout();
+  if (b === 'session' && method === 'GET') return a.session(ctx);
+  if (!(await a.isAuthed(ctx))) {
+    return { code: 401, body: { ok: false, error: '未登录或会话已过期' } };
+  }
+  if (b === 'sources' && !c) {
+    if (method === 'GET') return a.listSources();
+    if (method === 'POST') return a.addSource(ctx.body);
+  }
+  if (b === 'sources' && c && !d) {
+    if (method === 'DELETE') return a.deleteSource(c);
+  }
+  if (b === 'sources' && c && d === 'toggle' && (method === 'PUT' || method === 'POST')) {
+    return a.toggleSource(c);
+  }
+  if (b === 'refresh-all' && method === 'POST') {
+    try {
+      const body = await require('./_collect').collect();
+      return { body };
+    } catch (e) {
+      return { code: 500, body: { ok: false, error: e.message } };
+    }
+  }
+  if (b === 'alerts' && !c) {
+    const alerts = require('./_alerts');
+    if (method === 'GET') return { body: { ok: true, config: await alerts.getConfig() } };
+    if (method === 'PUT' || method === 'POST') {
+      const cfg = ctx.body || {};
+      await alerts.saveConfig({
+        channels: Array.isArray(cfg.channels) ? cfg.channels : [],
+        events: cfg.events && typeof cfg.events === 'object' ? cfg.events : {},
+        cooldownMin: Number(cfg.cooldownMin) || 120,
+        recentLog: Array.isArray(cfg.recentLog) ? cfg.recentLog : [],
+      });
+      return { body: { ok: true } };
+    }
+  }
+  if (b === 'alerts' && c === 'test' && method === 'POST') {
+    const alerts = require('./_alerts');
+    const r = await alerts.dispatch('source_error', { title: '🔔 测试报警', text: '全网情报云端报警链路自检,收到即配置成功。' });
+    return { body: { ok: true, ...r } };
+  }
+  if (b === 'weread' && c === 'qrcode' && method === 'GET') return a.wereadQrcode();
+  if (b === 'weread' && c === 'status' && method === 'GET') return a.wereadStatus(query);
+  return null;
+}
+
 // ---------- 分发表:[方法, 段序列] → handler ----------
 // slug 为 /api/ 之后的段数组,如 ['articles','123','later']
 const noop = { body: { ok: true } };
 
-function route(method, slug, query) {
+async function route(method, slug, query, ctx = {}) {
   const [a, b, c] = slug;
   // 云端采集器(十一期 M2):密钥校验后跑一批到期源写 Turso(GET/POST 均可,GitHub Actions 定时触发)
   if (a === 'collect' && !b) {
     if (!process.env.COLLECT_KEY || query.key !== process.env.COLLECT_KEY) {
       return { code: 401, body: { ok: false, error: 'unauthorized' } };
     }
-    return require('./_collect').collect()
-      .then((body) => ({ body }))
-      .catch((e) => ({ code: 500, body: { ok: false, error: e.message } }));
+    try {
+      return { body: await require('./_collect').collect() };
+    } catch (e) {
+      return { code: 500, body: { ok: false, error: e.message } };
+    }
   }
+  if (a === 'admin') return admin(method, slug.slice(1), query, ctx);
   if (a === 'meta' && !b) return meta();
   if (a === 'daily' && !b) return daily();
-  if (a === 'daily' && b === 'regenerate') return dailyRegenerate();
+  if (a === 'daily' && b === 'regenerate') return dailyRegenerate(method);
   if (a === 'articles' && !b) return articles(query);
   if (a === 'articles' && b === 'read-all') return { body: { ok: true, updated: 0 } };
   if (a === 'articles' && b && !c) return method === 'GET' ? articleDetail(b) : noop;

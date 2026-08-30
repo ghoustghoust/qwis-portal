@@ -20,8 +20,10 @@ module.exports = async function handler(req, res) {
       res.setHeader('Cache-Control', 'public, max-age=86400');
       return res.send(Buffer.from(await r.arrayBuffer()));
     }
-    const result = await route(req.method || 'GET', slug, req.query);
+    const ctx = { headers: req.headers || {}, body: req.body || {} };
+    const result = await route(req.method || 'GET', slug, req.query, ctx);
     if (!result) return res.status(404).json({ ok: false, error: 'not found' });
+    if (result.cookies) res.setHeader('Set-Cookie', result.cookies);
     res.status(result.code || 200).json(result.body);
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });
