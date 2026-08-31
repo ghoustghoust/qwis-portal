@@ -492,6 +492,9 @@ async function route(method, slug, query, ctx = {}) {
   if (a === 'articles' && b && c === 'later') {
     return method === 'POST' ? articleToggleLater(b) : { body: { ok: true, later: 1 } };
   }
+  if (a === 'articles' && b && c === 'read') {
+    return method === 'POST' ? articleMarkRead(b) : noop;
+  }
   if (a === 'sources' && !b) return method === 'GET' ? sourcesList(query) : noop;
   if (a === 'sources' && b === 'refresh-all') return { body: { ok: true, total: 0, succeeded: 0, failed: 0, results: [] } };
   if (a === 'sources' && b) return noop; // :id/refresh、:id/toggle 等写操作
