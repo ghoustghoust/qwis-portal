@@ -284,8 +284,105 @@ async function wereadStatus(query) {
   return { body: { ok: true, status: 'error', error: '登录成功但 Cookie 验证失败,请重新扫码' } };
 }
 
+// ---------- OPML 导入(P2,移植主系统 wechat 适配器的 parseOpml/syncOpml;云端统一存 type='rss') ----------
+function decodeEntities(s) {
+  return String(s || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+function attrOf(tag, name) {
+  const m = tag.match(new RegExp(`${name}\\s*=\\s*"([^"]*)"`, 'i'))
+    || tag.match(new RegExp(`${name}\\s*=\\s*'([^']*)'`, 'i'));
+  return m ? m[1] : null;
+}
+function parseOpml(xml) {
+  const outlines = [];
+  const re = /<outline\b[^>]*\/?>/gi;
+  let m;
+  while ((m = re.exec(xml))) {
+    const tag = m[0];
+    const xmlUrl = attrOf(tag, 'xmlUrl');
+    if (!xmlUrl) continue;
+    const name = attrOf(tag, 'title') || attrOf(tag, 'text') || attrOf(tag, 'name') || '';
+    outlines.push({ name: decodeEntities(name).trim(), url: decodeEntities(xmlUrl).trim() });
+  }
+  return outlines;
+}
+
+// body: {url: OPML 地址} 或 {xml: 直接粘贴的 OPML 内容}
+async function importOpml(body) {
+  let xml = String((body && body.xml) || '');
+  const url = String((body && body.url) || '').trim();
+  if (!xml && url) {
+    if (!/^https?:\/\//i.test(url)) return { code: 400, body: { ok: false, error: 'OPML 地址非法' } };
+    const res = await fetchWithTimeout(url, { timeout: 20000 });
+    if (!res.ok) return { code: 502, body: { ok: false, error: `拉取 OPML 失败 HTTP ${res.status}` } };
+    xml = await res.text();
+  }
+  if (!xml) return { code: 400, body: { ok: false, error: '请提供 OPML 地址或内容' } };
+  const outlines = parseOpml(xml);
+  if (!outlines.length) return { code: 400, body: { ok: false, error: 'OPML 中没有解析到任何 RSS 订阅' } };
+
+  let added = 0, restored = 0, updated = 0;
+  for (const o of outlines) {
+    const exist = await dbGet("SELECT id, name, enabled FROM sources WHERE url = ?", o.url);
+    if (!exist) {
+      await dbRun(
+        "INSERT INTO sources(type, name, url, enabled, status, extra, created_at) VALUES('rss', ?, ?, 1, 'ok', '{}', ?)",
+        o.name || o.url, o.url, nowIso()
+      );
+      added++;
+    } else if (!exist.enabled) {
+      await dbRun("UPDATE sources SET enabled=1, status='ok' WHERE id=?", exist.id);
+      restored++;
+    } else if (o.name && exist.name !== o.name) {
+      await dbRun('UPDATE sources SET name=? WHERE id=?', o.name, exist.id);
+      updated++;
+    }
+  }
+  await setSetting('opml.lastSyncAt', nowIso());
+  await setSetting('opml.lastResult', { added, restored, updated, total: outlines.length });
+  return { body: { ok: true, added, restored, updated, total: outlines.length } };
+}
+
+// ---------- 日报/AI 设置 ----------
+async function getDailySettings() {
+  const d = await getSetting('daily', {});
+  return {
+    body: {
+      ok: true,
+      settings: {
+        windowHours: Number(d.windowHours) || 48,
+        aiEnabled: !!d.aiEnabled,
+        apiKey: d.apiKey || '',
+        apiBase: d.apiBase || '',
+        model: d.model || '',
+        hasKey: !!d.apiKey,
+      },
+    },
+  };
+}
+async function saveDailySettings(body) {
+  const prev = await getSetting('daily', {});
+  const b = body || {};
+  const next = { ...prev };
+  if (b.windowHours !== undefined) next.windowHours = Number(b.windowHours) || 48;
+  if (b.aiEnabled !== undefined) next.aiEnabled = !!b.aiEnabled;
+  if (b.apiKey !== undefined) next.apiKey = String(b.apiKey).trim();
+  if (b.apiBase !== undefined) next.apiBase = String(b.apiBase).trim();
+  if (b.model !== undefined) next.model = String(b.model).trim();
+  await setSetting('daily', next);
+  return { body: { ok: true } };
+}
+
 module.exports = {
   login, logout, session, isAuthed,
   listSources, addSource, toggleSource, deleteSource,
   wereadQrcode, wereadStatus,
+  importOpml, parseOpml,
+  getDailySettings, saveDailySettings,
 };

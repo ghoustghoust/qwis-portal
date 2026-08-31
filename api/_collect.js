@@ -356,6 +356,21 @@ async function saveArticles(sourceId, articles) {
   return added;
 }
 
+async function saveVideos(sourceId, videos) {
+  let added = 0;
+  for (const v of videos) {
+    const r = await dbRun(
+      `INSERT OR IGNORE INTO videos(source_id, platform, title, url, vid, cover, duration, author, intro, published_at, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      sourceId, v.platform || '', v.title || '', v.url, v.vid || null,
+      v.cover || null, v.duration || null, v.author || '', v.intro || '',
+      v.published_at || null, nowIso()
+    );
+    added += r.changes;
+  }
+  return added;
+}
+
 async function markOk(source) {
   const extra = parseExtra(source);
   delete extra.lastError;
@@ -392,6 +407,8 @@ async function markError(source, errMsg) {
 // ---------- 主流程 ----------
 function dispatch(source) {
   const url = String(source.url || '');
+  if (source.type === 'bilibili') return require('./_bilibili').fetchBilibili(source);
+  if (source.type === 'douyin') return { articles: [], videos: [] }; // 抖音保留本地采集(需无头浏览器+登录态)
   if (url.startsWith('hotlist://')) return fetchHotlist(source);
   if (/^https?:\/\//i.test(url) && url.includes('/feed/') && source.type === 'wemp') return fetchWemp(source);
   if (/^https?:\/\//i.test(url)) return fetchRss(source);
@@ -421,12 +438,21 @@ async function collect() {
       continue;
     }
     try {
-      const { articles } = await dispatch(source);
-      const added = await saveArticles(source.id, articles || []);
+      const { articles, videos } = await dispatch(source);
+      const added = (await saveArticles(source.id, articles || [])) + (await saveVideos(source.id, videos || []));
       await markOk(source);
       results.push({ name: source.name, ok: true, added });
     } catch (e) {
       const { autoPaused } = await markError(source, e.message);
+      // weread cookie 失效特征(401 / -2012 登录超时 / -2010 用户不存在)→ 全局报警(冷却 2h)
+      if (source.type === 'wemp' && /401|-2012|-2010|cookie/i.test(String(e.message))) {
+        try {
+          await require('./_alerts').dispatch('wemp_cookie_expired', {
+            title: '🔑 微信读书 Cookie 失效',
+            text: `公众号「${source.name}」采集返回登录失效(${String(e.message).slice(0, 80)}),请到管理后台「微信读书授权」重新扫码。`,
+          });
+        } catch { /* 告警失败忽略 */ }
+      }
       results.push({ name: source.name, ok: false, added: 0, error: e.message, autoPaused });
     }
     await sleep(SOURCE_GAP_MS);

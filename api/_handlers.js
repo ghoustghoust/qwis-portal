@@ -86,12 +86,13 @@ async function dailyRegenerate(method) {
 // ---------- /api/articles ----------
 async function articles(query) {
   const tab = query.tab || 'all';
-  if (tab === 'later' || tab === 'history' || tab === 'read') {
-    return { body: { ok: true, items: [], nextCursor: null, span: { min: null, max: null } } };
-  }
+  let list = await cloud.articles();
+  // 阅读状态筛选(云端行带 read_at/later;快照行无此字段,tab 过滤自然为空)
+  if (tab === 'later') list = list.filter((r) => !!r.later);
+  else if (tab === 'history' || tab === 'read') list = list.filter((r) => !!r.read_at);
+  else if (tab === 'unread') list = list.filter((r) => !r.read_at);
   const srcs = await cloud.sources();
   const byName = sourceIndex(srcs);
-  let list = await cloud.articles();
   if (query.source_id) {
     const sid = Number(query.source_id);
     list = list.filter((r) => (r.source_id != null ? Number(r.source_id) === sid : byName.get(r.source_name)?.id === sid));
@@ -183,7 +184,72 @@ async function articles(query) {
 async function articleDetail(id) {
   const it = (await cloud.articles()).find((a) => String(a.id) === String(id));
   if (!it) return { code: 404, body: { ok: false, error: 'not found' } };
+  // 与主系统一致:打开详情顺手置 read_at(入历史存档)
+  if (cloud.IS_CLOUD && !it.read_at) {
+    const turso = require('./_turso');
+    await turso.dbRun('UPDATE articles SET read_at=? WHERE id=? AND read_at IS NULL', turso.nowIso(), Number(id)).catch(() => {});
+    it.read_at = turso.nowIso();
+    cloud.invalidate('articles');
+  }
   return { body: { ok: true, item: it } };
+}
+
+// ---------- 已读/稍后读云端持久化(P0,读者端公开,与主系统语义一致) ----------
+// POST /api/articles/:id/read
+async function articleMarkRead(id) {
+  if (!cloud.IS_CLOUD) return { body: { ok: true, read: 1 } };
+  const turso = require('./_turso');
+  const r = await turso.dbRun('UPDATE articles SET read_at=COALESCE(read_at, ?) WHERE id=?', turso.nowIso(), Number(id));
+  if (!r.changes) return { code: 404, body: { ok: false, error: 'not found' } };
+  cloud.invalidate('articles');
+  return { body: { ok: true, read: 1 } };
+}
+
+// POST /api/articles/:id/later —— 切换稍后阅读(收藏)
+async function articleToggleLater(id) {
+  if (!cloud.IS_CLOUD) return { body: { ok: true, later: 1 } };
+  const turso = require('./_turso');
+  const row = await turso.dbGet('SELECT id, later FROM articles WHERE id=?', Number(id));
+  if (!row) return { code: 404, body: { ok: false, error: 'not found' } };
+  const later = row.later ? 0 : 1;
+  await turso.dbRun('UPDATE articles SET later=? WHERE id=?', later, row.id);
+  cloud.invalidate('articles');
+  return { body: { ok: true, later } };
+}
+
+// POST /api/articles/read-all —— 按当前过滤条件批量已读(参考主系统 buildWhere)
+async function articlesReadAll(body) {
+  if (!cloud.IS_CLOUD) return { body: { ok: true, updated: 0 } };
+  const turso = require('./_turso');
+  const q = body || {};
+  const conds = [];
+  const args = [];
+  const tab = q.tab || 'all';
+  if (tab === 'later') conds.push('a.later=1');
+  else if (tab === 'history' || tab === 'read') conds.push('a.read_at IS NOT NULL');
+  if (q.source_id) { conds.push('a.source_id=?'); args.push(Number(q.source_id)); }
+  if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
+  if (q.q) {
+    conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');
+    args.push(`%${q.q}%`, `%${q.q}%`);
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) {
+    conds.push('COALESCE(a.published_at, a.created_at) >= ?');
+    args.push(`${q.from}T00:00:00.000Z`);
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) {
+    conds.push('COALESCE(a.published_at, a.created_at) <= ?');
+    args.push(`${q.to}T23:59:59.999Z`);
+  }
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  const r = await turso.dbRun(
+    `UPDATE articles SET read_at=? WHERE read_at IS NULL AND id IN (
+       SELECT a.id FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where}
+     )`,
+    turso.nowIso(), ...args
+  );
+  cloud.invalidate('articles');
+  return { body: { ok: true, updated: r.changes } };
 }
 
 // ---------- /api/sources ----------
@@ -385,6 +451,11 @@ async function admin(method, parts, query, ctx) {
   }
   if (b === 'weread' && c === 'qrcode' && method === 'GET') return a.wereadQrcode();
   if (b === 'weread' && c === 'status' && method === 'GET') return a.wereadStatus(query);
+  if (b === 'opml' && method === 'POST') return a.importOpml(ctx.body);
+  if (b === 'daily-settings' && !c) {
+    if (method === 'GET') return a.getDailySettings();
+    if (method === 'PUT' || method === 'POST') return a.saveDailySettings(ctx.body);
+  }
   return null;
 }
 
@@ -410,9 +481,17 @@ async function route(method, slug, query, ctx = {}) {
   if (a === 'daily' && !b) return daily();
   if (a === 'daily' && b === 'regenerate') return dailyRegenerate(method);
   if (a === 'articles' && !b) return articles(query);
-  if (a === 'articles' && b === 'read-all') return { body: { ok: true, updated: 0 } };
-  if (a === 'articles' && b && !c) return method === 'GET' ? articleDetail(b) : noop;
-  if (a === 'articles' && b && c === 'later') return { body: { ok: true, later: 1 } };
+  if (a === 'articles' && b === 'read-all') {
+    return method === 'POST' ? articlesReadAll(ctx.body || query) : noop;
+  }
+  if (a === 'articles' && b && !c) {
+    if (method === 'GET') return articleDetail(b);
+    if (method === 'POST') return articleMarkRead(b); // 标记已读
+    return noop;
+  }
+  if (a === 'articles' && b && c === 'later') {
+    return method === 'POST' ? articleToggleLater(b) : { body: { ok: true, later: 1 } };
+  }
   if (a === 'sources' && !b) return method === 'GET' ? sourcesList(query) : noop;
   if (a === 'sources' && b === 'refresh-all') return { body: { ok: true, total: 0, succeeded: 0, failed: 0, results: [] } };
   if (a === 'sources' && b) return noop; // :id/refresh、:id/toggle 等写操作

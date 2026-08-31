@@ -164,6 +164,7 @@ function SourcesTab({ toast }) {
           <button className="btn" type="submit">添加</button>
         </form>
       </div>
+      <OpmlCard toast={toast} onDone={load} />
       <div className="card" style={{ overflowX: 'auto' }}>
         <table className="adm-table">
           <thead>
@@ -386,6 +387,104 @@ function WereadTab({ toast }) {
   );
 }
 
+// ---------- OPML 导入 ----------
+function OpmlCard({ toast, onDone }) {
+  const [url, setUrl] = useState('');
+  const [xml, setXml] = useState('');
+  const [busy, setBusy] = useState(false);
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      const r = await api('admin/opml', { method: 'POST', body: { url: url || undefined, xml: xml || undefined } });
+      toast(`OPML 导入完成:新增 ${r.added}、恢复 ${r.restored}、重命名 ${r.updated}(共 ${r.total})`);
+      setUrl('');
+      setXml('');
+      onDone && onDone();
+    } catch (e2) { toast(e2.message); }
+    setBusy(false);
+  }
+  return (
+    <div className="card">
+      <h3>OPML 批量导入</h3>
+      <form onSubmit={submit} className="form-row">
+        <div className="field" style={{ flex: 2, minWidth: 240 }}>
+          <label>OPML 地址</label>
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…/subscriptions.opml" />
+        </div>
+        <div className="field" style={{ flex: 3, minWidth: 260 }}>
+          <label>或直接粘贴 OPML 内容</label>
+          <textarea rows={2} value={xml} onChange={(e) => setXml(e.target.value)} placeholder="<opml>…</opml>" />
+        </div>
+        <button className="btn" type="submit" disabled={busy || (!url && !xml)}>导入</button>
+      </form>
+    </div>
+  );
+}
+
+// ---------- 日报设置 ----------
+function DailyTab({ toast }) {
+  const [s, setS] = useState(null);
+  useEffect(() => {
+    api('admin/daily-settings').then((r) => setS(r.settings)).catch((e) => toast(e.message));
+  }, []);
+  if (!s) return <div className="card muted">加载中…</div>;
+  const set = (patch) => setS({ ...s, ...patch });
+  async function save() {
+    try {
+      await api('admin/daily-settings', { method: 'PUT', body: s });
+      toast('日报设置已保存');
+    } catch (e) { toast(e.message); }
+  }
+  async function regen() {
+    try {
+      toast('正在重新生成日报(AI 模式约需 10~30 秒)…');
+      const r = await api('daily/regenerate', { method: 'POST' });
+      toast(`日报已生成:${r.report.stats.candidates} 候选,${r.report.stats.sortMode} 排序`);
+    } catch (e) { toast(e.message); }
+  }
+  return (
+    <>
+      <div className="card">
+        <h3>日报生成</h3>
+        <div className="form-row">
+          <div className="field" style={{ width: 120 }}>
+            <label>统计窗口(小时)</label>
+            <input value={s.windowHours} onChange={(e) => set({ windowHours: e.target.value })} />
+          </div>
+          <label className="small" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <input type="checkbox" checked={s.aiEnabled} onChange={(e) => set({ aiEnabled: e.target.checked })} />
+            启用 AI 摘要(DeepSeek)
+          </label>
+        </div>
+        <p className="muted small">未启用或无 Key 时保持关键词规则排序;云端 AI 模式限标注排名前 10 的条目(60s 函数预算)。</p>
+      </div>
+      <div className="card">
+        <h3>DeepSeek 配置</h3>
+        <div className="form-row">
+          <div className="field" style={{ flex: 2, minWidth: 240 }}>
+            <label>API Key{s.hasKey ? '(已配置)' : ''}</label>
+            <input type="password" value={s.apiKey} onChange={(e) => set({ apiKey: e.target.value })} placeholder="sk-…" />
+          </div>
+          <div className="field" style={{ flex: 2, minWidth: 200 }}>
+            <label>API Base(可空)</label>
+            <input value={s.apiBase} onChange={(e) => set({ apiBase: e.target.value })} placeholder="https://api.deepseek.com/chat/completions" />
+          </div>
+          <div className="field" style={{ flex: 1, minWidth: 140 }}>
+            <label>模型(可空)</label>
+            <input value={s.model} onChange={(e) => set({ model: e.target.value })} placeholder="deepseek-v4-flash" />
+          </div>
+        </div>
+        <div className="form-row" style={{ marginTop: 12 }}>
+          <button className="btn" onClick={save}>保存</button>
+          <button className="btn-ghost" onClick={regen}>立即重新生成日报</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+
 // ---------- 主壳 ----------
 export default function App() {
   const [session, setSession] = useState(null);
@@ -413,6 +512,7 @@ export default function App() {
     { id: 'sources', label: '订阅源管理' },
     { id: 'alerts', label: '报警管理' },
     { id: 'weread', label: '微信读书授权' },
+    { id: 'daily', label: '日报设置' },
   ];
   return (
     <div className="adm-shell">
@@ -438,6 +538,7 @@ export default function App() {
       {tab === 'sources' && <SourcesTab toast={toast} />}
       {tab === 'alerts' && <AlertsTab toast={toast} />}
       {tab === 'weread' && <WereadTab toast={toast} />}
+      {tab === 'daily' && <DailyTab toast={toast} />}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </div>
   );

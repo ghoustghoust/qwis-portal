@@ -24,7 +24,7 @@ async function cloud(name, loader) {
 async function articles() {
   const rows = await cloud('articles', () => turso.dbAll(
     `SELECT a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary, a.content_html,
-            a.published_at, a.created_at,
+            a.published_at, a.read_at, a.later, a.created_at,
             s.name AS source_name, s.type AS source_type, g.name AS domain
      FROM articles a
      LEFT JOIN sources s ON s.id = a.source_id
@@ -32,6 +32,12 @@ async function articles() {
      ORDER BY a.published_at DESC LIMIT 3000`
   ));
   return rows || data.articles();
+}
+
+// 写操作(read_at/later/read-all)后调用,避免同一 lambda 实例继续返回旧缓存
+function invalidate(name) {
+  if (name) cache.delete(name);
+  else cache.clear();
 }
 
 async function sources() {
@@ -96,7 +102,7 @@ async function meta() {
 
 module.exports = {
   IS_CLOUD,
-  articles, sources, groups, videos, aihot, meta,
+  articles, sources, groups, videos, aihot, meta, invalidate,
   titleTokens: data.titleTokens,
   jaccard: data.jaccard,
   sortKey: data.sortKey,
