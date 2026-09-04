@@ -1,6 +1,6 @@
 // 日报引擎云端版(十一期 M3):移植主系统 server/services/ai/daily.js 的关键词模式
 // (栏目分类 focus 全收→关键词命中→fallback 兜底、F5 去重+同源限流、出库安检、破茧栏)
-// AI 摘要跳过;读写 Turso daily_reports 表
+// 排序恒为关键词模式(AI 摘要已下线);读写 Turso daily_reports 表
 const turso = require('./_turso');
 const { titleTokens, jaccard } = require('./_data');
 const events = require('./_events');
@@ -156,54 +156,12 @@ function dedupAndCap(items) {
   return out;
 }
 
-// DeepSeek 逐条摘要 + 重要度(1-10);serverless 60s 预算:最多 10 条、并发 5、单条 20s
-const AI_CAP = 10;
-const AI_CONCURRENCY = 5;
-
-async function aiAnnotate(item) {
-  const { chat } = require('./_deepseek');
-  const raw = await chat(
-    [
-      { role: 'system', content: '你是情报分析助手。阅读内容后输出 JSON:{"summary":"3~5句中文摘要","score":1到10的整数重要度}。只输出 JSON。' },
-      { role: 'user', content: `标题:${item.title}\n\n内容:${item.text.slice(0, 6000)}` },
-    ],
-    { responseFormat: 'json_object', timeout: 20000 }
-  );
-  let summary = '';
-  let score;
-  try {
-    const j = JSON.parse(raw);
-    summary = String(j.summary || '').trim();
-    const n = Number(j.score);
-    if (Number.isFinite(n)) score = Math.max(1, Math.min(10, Math.round(n)));
-  } catch {
-    const m = raw.match(/"summary"\s*:\s*"([\s\S]*?)"\s*,\s*"score"\s*:\s*(\d+)/);
-    if (m) {
-      summary = m[1].trim();
-      score = Math.max(1, Math.min(10, Number(m[2])));
-    } else {
-      summary = raw.trim().slice(0, 500);
-    }
-  }
-  return { summary, score };
-}
-
 async function generate(windowHours) {
+  await turso.ensureSchema(); // 建表自愈:不依赖 seed-turso 顺序
   const win = Number(windowHours) || 48;
   const columns = await getColumns();
   const candidates = await collectCandidates(win);
   const buckets = classify(candidates, columns);
-
-  // AI 模式:配置了 daily.apiKey 且 aiEnabled 时对排名靠前的条目生成摘要+重要度
-  let useAi = false;
-  let aiError = null;
-  try {
-    const { aiConfig } = require('./_deepseek');
-    const cfg = await aiConfig();
-    useAi = cfg.aiEnabled && !!cfg.apiKey;
-  } catch { /* 配置读取失败按关键词模式 */ }
-  let aiBudget = AI_CAP;
-  const aiQueue = []; // 收集待标注条目,分块并发
 
   const sections = [];
   let droppedBad = 0;
@@ -222,12 +180,7 @@ async function generate(windowHours) {
         url: item.url,
         published_at: item.published_at,
         related: item.related || [],
-        _item: item, // AI 标注用,出库前删除
       };
-      if (useAi && aiBudget > 0) {
-        aiBudget--;
-        aiQueue.push(out);
-      }
       outItems.push(out);
     }
     const hitsOf = new Map(list.map((i) => [`${i.kind}:${i.ref_id}`, i._hits || 0]));
@@ -239,36 +192,14 @@ async function generate(windowHours) {
     sections.push(sec);
   }
 
-  // AI 标注:分块并发,单条失败降级为空摘要(不影响整份日报)
-  if (aiQueue.length) {
-    for (let i = 0; i < aiQueue.length; i += AI_CONCURRENCY) {
-      await Promise.all(aiQueue.slice(i, i + AI_CONCURRENCY).map(async (out) => {
-        try {
-          const r = await aiAnnotate(out._item);
-          out.summary = r.summary;
-          if (r.score !== undefined) out.score = r.score;
-        } catch (err) {
-          if (!aiError) aiError = err.message;
-        }
-      }));
-    }
-    // AI 模式:各栏目按重要度降序(无分排后按时间)
-    for (const sec of sections) {
-      if (sec.column === '重点更新') continue; // focus 栏固定时间倒序
-      sec.items.sort((a, b) => (b.score || 0) - (a.score || 0) || (b.published_at || '').localeCompare(a.published_at || ''));
-    }
-  }
-  for (const sec of sections) for (const it of sec.items) delete it._item;
-
   const stats = {
     candidates: candidates.length,
     articles: candidates.filter((i) => i.kind === 'article').length,
     videos: candidates.filter((i) => i.kind === 'video').length,
     windowHours: win,
-    sortMode: useAi ? 'ai' : 'keyword',
+    sortMode: 'keyword',
   };
   if (droppedBad) stats.droppedBadItems = droppedBad;
-  if (aiError) stats.aiError = aiError;
 
   // 破茧栏:与常读领域交集最小的跨域热点事件 Top5
   try {

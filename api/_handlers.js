@@ -446,8 +446,20 @@ async function admin(method, parts, query, ctx) {
   }
   if (b === 'alerts' && c === 'test' && method === 'POST') {
     const alerts = require('./_alerts');
-    const r = await alerts.dispatch('source_error', { title: '🔔 测试报警', text: '全网情报云端报警链路自检,收到即配置成功。' });
+    const r = await alerts.dispatch('source_error', { title: '🔔 测试报警', text: '全网情报云端报警链路自检，收到即配置成功。' });
     return { body: { ok: true, ...r } };
+  }
+  // clear-cooldowns: POST 手动清空所有冷却记录
+  if (b === 'alerts' && c === 'clear-cooldowns' && (method === 'POST' || method === 'DELETE')) {
+    const alerts = require('./_alerts');
+    await alerts.clearCooldowns();
+    return { body: { ok: true } };
+  }
+  // log: GET 获取最近日志；DELETE 清空日志
+  if (b === 'alerts' && c === 'log') {
+    const alerts = require('./_alerts');
+    if (method === 'GET') return { body: { ok: true, log: (await alerts.getConfig()).recentLog } };
+    if (method === 'DELETE') { await alerts.clearLog(); return { body: { ok: true } }; }
   }
   if (b === 'weread' && c === 'qrcode' && method === 'GET') return a.wereadQrcode();
   if (b === 'weread' && c === 'status' && method === 'GET') return a.wereadStatus(query);
@@ -466,11 +478,18 @@ const noop = { body: { ok: true } };
 async function route(method, slug, query, ctx = {}) {
   const [a, b, c] = slug;
   // 云端采集器(十一期 M2):密钥校验后跑一批到期源写 Turso(GET/POST 均可,GitHub Actions 定时触发)
+  // mode 参数:默认采集一批到期源;backfill 补抓薄内容;cleanup 删除 7 天前数据(1.2/1.3)
   if (a === 'collect' && !b) {
     if (!process.env.COLLECT_KEY || query.key !== process.env.COLLECT_KEY) {
       return { code: 401, body: { ok: false, error: 'unauthorized' } };
     }
     try {
+      if (query.mode === 'backfill') {
+        return { body: await require('./_backfill').backfill() };
+      }
+      if (query.mode === 'cleanup') {
+        return { body: await require('./_collect').cleanupOld(query.days || 7) };
+      }
       return { body: await require('./_collect').collect() };
     } catch (e) {
       return { code: 500, body: { ok: false, error: e.message } };
@@ -479,9 +498,18 @@ async function route(method, slug, query, ctx = {}) {
   if (a === 'admin') return admin(method, slug.slice(1), query, ctx);
   if (a === 'meta' && !b) return meta();
   if (a === 'daily' && !b) return daily();
-  if (a === 'daily' && b === 'regenerate') return dailyRegenerate(method);
+  // 危险写接口收鉴权(2026-09-04 冻结期安全项):regenerate 触发全量生成写库,read-all 空 body 可标全库已读
+  if (a === 'daily' && b === 'regenerate') {
+    if (method === 'POST' && !(await require('./_admin').isAuthed(ctx))) {
+      return { code: 401, body: { ok: false, error: '需要管理员口令' } };
+    }
+    return dailyRegenerate(method);
+  }
   if (a === 'articles' && !b) return articles(query);
   if (a === 'articles' && b === 'read-all') {
+    if (method === 'POST' && !(await require('./_admin').isAuthed(ctx))) {
+      return { code: 401, body: { ok: false, error: '需要管理员口令' } };
+    }
     return method === 'POST' ? articlesReadAll(ctx.body || query) : noop;
   }
   if (a === 'articles' && b && !c) {

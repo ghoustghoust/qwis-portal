@@ -5,13 +5,13 @@
 //   - newsnow 热榜适配(extra.info 热度、hover 摘要、GBK 乱码丢弃)
 //   - 微信读书通道(wemp):/api/mp/cover 取最新一篇,reviewId → mp.weixin.qq.com 原文页抓正文
 //   - INSERT OR IGNORE by url;next_fetch_at/intervalMin;连续 3 次失败 enabled=0
-// 约束:Vercel Hobby 函数 60s 超时 —— 单批最多 8 源、每源正文补抓限 3 篇、源间隔 1s
+// 约束:Vercel Hobby 函数 60s 超时 —— 单批最多 12 源、正文补抓预算驱动、源间隔 1s
 const Parser = require('rss-parser');
-const { dbAll, dbGet, dbRun, getSetting, nowIso } = require('./_turso');
+const { dbAll, dbGet, dbRun, getSetting, nowIso, ensureSchema } = require('./_turso');
 
-const BATCH_MAX = 8;
+const BATCH_MAX = 12;
 const SOURCE_GAP_MS = 1000;
-const FULLTEXT_PER_SOURCE = 3;
+const FULLTEXT_BUDGET_MS = 20000; // 单源正文补抓兑底预算(与全局 TIME_BUDGET_MS 共享时被覆盖)
 const TIME_BUDGET_MS = 50000; // 50s 后不再开新源,留 10s 余量返回
 const NEWSNOW_DEFAULT_BASE = 'https://newsnow.busiyi.world';
 
@@ -177,12 +177,21 @@ async function fetchFulltext(url) {
   return { content: cleanContent(content), cover: (og && og.content) || null };
 }
 
-// 薄内容条目(<1000 字符或污染)补抓原文页,每源每轮限 FULLTEXT_PER_SOURCE 篇
-async function enrichFulltext(articles) {
+// 薄内容条目(<1000 字符或污染)补抓原文页;预算驱动循环(替代固定篇数上限)
+// 候选按 published_at 倒序(最新优先,修复登录墙条目永远占前 3 名);失败条目本轮跳过(内存集合)
+// 聚合源(extra.aggregator)与 YouTube 源跳过——聚合条目由 enrich 管线补抓,视频页抓正文无意义
+async function enrichFulltext(articles, source, { startedAt, budgetMs = FULLTEXT_BUDGET_MS } = {}) {
+  const extra = source ? parseExtra(source) : {};
+  if (extra.aggregator || /youtube\.com/i.test(String((source && source.url) || ''))) return 0;
+  const deadline = (startedAt || Date.now()) + budgetMs;
+  const failed = new Set();
   const need = articles
     .filter((a) => (a.content_html || '').length < 1000 || isJunkContent(a.content_html))
-    .slice(0, FULLTEXT_PER_SOURCE);
+    .sort((a, b) => String(b.published_at || '').localeCompare(String(a.published_at || '')));
+  let filled = 0;
   for (const a of need) {
+    if (failed.has(a.url)) continue;
+    if (Date.now() > deadline) break;
     try {
       const full = await fetchFulltext(a.url);
       if (full) {
@@ -194,9 +203,11 @@ async function enrichFulltext(articles) {
           }
         }
         if (!a.cover && full.cover) a.cover = full.cover;
+        filled++;
       }
-    } catch { /* 单条失败保留摘要 */ }
+    } catch { failed.add(a.url); /* 失败本轮跳过,下一轮再试 */ }
   }
+  return filled;
 }
 
 // ---------- RSS/Atom 通道 ----------
@@ -206,7 +217,13 @@ function textOf(v) {
   return v.name || v._ || '';
 }
 
-function mapFeedItem(item) {
+// description 里「🔗 <a href>阅读原文</a>」→ 第三方原文链接(七期 F1 original_url)
+function extractOriginalUrl(rawHtml) {
+  const m = String(rawHtml || '').match(/🔗[\s\S]{0,300}?<a[^>]+href="([^"]+)"/);
+  return m ? m[1].replace(/&amp;/g, '&') : null;
+}
+
+function mapFeedItem(item, source) {
   const rawContent = item['content:encoded'] || item.content || '';
   let contentHtml = rawContent.replace(/<(p|div|span)[^>]*>\s*Loading…?\s*<\/\1>/gi, '');
   contentHtml = cleanContent(contentHtml);
@@ -220,19 +237,59 @@ function mapFeedItem(item) {
     summary,
     content_html: contentHtml || `<p>${summary}</p>`,
     published_at: item.isoDate || (item.pubDate ? new Date(item.pubDate).toISOString() : null),
+    // 六期 F6:feed <category>(AIHOT 分类映射依据);AIHOT 源无 <category> 时回退源 extra.domain
+    category: Array.isArray(item.categories) && item.categories.length
+      ? String(item.categories[0]).trim()
+      : (source ? parseExtra(source).domain || null : null),
+    // 七期 F1:🔗 原文链接(AIHOT 聚合条目指向第三方原站)
+    original_url: extractOriginalUrl(rawContent),
   };
 }
 
-async function fetchRss(source) {
+// 判断解析出的 feed 是否为 YouTube 频道 feed(移植本地 rss 适配器)
+function isYoutubeFeed(feed, sourceUrl) {
+  if (/^https?:\/\/(www\.|m\.)?youtube\.com\//i.test(String(sourceUrl || '').trim())) return true;
+  const link = String((feed && feed.link) || '');
+  return /youtube\.com/.test(link) || (feed.items || []).some((it) => String(it.id || '').startsWith('yt:video:'));
+}
+
+// YouTube feed 条目 → videos 记录(platform='youtube')
+function mapYoutubeItem(item, channelName) {
+  const m = String(item.id || '').match(/yt:video:([\w-]+)/);
+  const vid = m ? m[1] : (String(item.link || '').match(/[?&]v=([\w-]+)/) || [])[1];
+  if (!vid) return null;
+  return {
+    platform: 'youtube',
+    title: (item.title || '').trim(),
+    url: `https://www.youtube.com/watch?v=${vid}`,
+    vid,
+    cover: `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
+    duration: null,
+    author: textOf(item.author) || (channelName || '').trim(),
+    intro: String(item.contentSnippet || item.content || '').slice(0, 500),
+    published_at: item.isoDate || (item.pubDate ? new Date(item.pubDate).toISOString() : null),
+  };
+}
+
+async function fetchRss(source, ctx) {
   const xml = await fetchText(source.url);
   const feed = await parser.parseString(xml);
-  const articles = (feed.items || []).map(mapFeedItem).filter((a) => a.url && a.title);
-  await enrichFulltext(articles);
+  // YouTube 频道 feed → videos 表(platform='youtube'),不再当文章存
+  if (isYoutubeFeed(feed, source.url)) {
+    const videos = (feed.items || [])
+      .map((it) => mapYoutubeItem(it, source.name))
+      .filter((v) => v && v.title);
+    return { videos };
+  }
+  const articles = (feed.items || [])
+    .map((it) => mapFeedItem(it, source))
+    .filter((a) => a.url && a.title);
+  await enrichFulltext(articles, source, ctx);
   return { articles: articles.filter((a) => !isJunkContent(a.content_html)) };
 }
 
 // ---------- newsnow 热榜通道 ----------
-async function fetchHotlist(source) {
+async function fetchHotlist(source, ctx) {
   const id = String(source.url || '').replace(/^hotlist:\/\//, '');
   if (!id) throw new Error('热榜源缺少 newsnow id');
   let extra = {};
@@ -257,7 +314,7 @@ async function fetchHotlist(source) {
         published_at: updated,
       };
     });
-  await enrichFulltext(articles);
+  await enrichFulltext(articles, source, ctx);
   return { articles };
 }
 
@@ -346,11 +403,16 @@ async function saveArticles(sourceId, articles) {
   let added = 0;
   for (const a of articles) {
     const r = await dbRun(
-      `INSERT OR IGNORE INTO articles(source_id, title, url, author, cover, summary, content_html, published_at, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT OR IGNORE INTO articles(source_id, title, url, author, cover, summary, content_html, published_at, created_at, category, original_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       sourceId, a.title || '', a.url, a.author || '', a.cover || null,
-      a.summary || '', a.content_html || '', a.published_at || null, nowIso()
+      a.summary || '', a.content_html || '', a.published_at || null, nowIso(),
+      a.category || null, a.original_url || null
     );
+    // 已存在条目冲突时回填 original_url(七期 F1/F2)
+    if (!r.changes && a.original_url) {
+      await dbRun('UPDATE articles SET original_url = COALESCE(?, original_url) WHERE url = ?', a.original_url, a.url);
+    }
     added += r.changes;
   }
   return added;
@@ -405,13 +467,13 @@ async function markError(source, errMsg) {
 }
 
 // ---------- 主流程 ----------
-function dispatch(source) {
+function dispatch(source, ctx) {
   const url = String(source.url || '');
   if (source.type === 'bilibili') return require('./_bilibili').fetchBilibili(source);
   if (source.type === 'douyin') return { articles: [], videos: [] }; // 抖音保留本地采集(需无头浏览器+登录态)
-  if (url.startsWith('hotlist://')) return fetchHotlist(source);
+  if (url.startsWith('hotlist://')) return fetchHotlist(source, ctx);
   if (/^https?:\/\//i.test(url) && url.includes('/feed/') && source.type === 'wemp') return fetchWemp(source);
-  if (/^https?:\/\//i.test(url)) return fetchRss(source);
+  if (/^https?:\/\//i.test(url)) return fetchRss(source, ctx);
   throw new Error(`不支持的源: ${url.slice(0, 60)}`);
 }
 
@@ -419,16 +481,16 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function collect() {
   const startedAt = Date.now();
+  await ensureSchema(); // 建表自愈:不依赖 seed-turso 顺序
   const now = nowIso();
   const all = await dbAll(
     `SELECT id, type, name, url, extra FROM sources
      WHERE enabled=1 AND (next_fetch_at IS NULL OR next_fetch_at='' OR next_fetch_at<=?)`,
     now
   );
-  // 按 intervalMin 升序,单批最多 BATCH_MAX 个
+  // 按到期时间升序(最早到期优先,避免 hotlist 30min 挤占 rss/wemp 60min 名额),单批最多 BATCH_MAX 个
   const due = all
-    .map((s) => ({ ...s, _interval: intervalMinFor(s) }))
-    .sort((a, b) => a._interval - b._interval)
+    .sort((a, b) => String(a.next_fetch_at || '').localeCompare(String(b.next_fetch_at || '')))
     .slice(0, BATCH_MAX);
 
   const results = [];
@@ -438,7 +500,7 @@ async function collect() {
       continue;
     }
     try {
-      const { articles, videos } = await dispatch(source);
+      const { articles, videos } = await dispatch(source, { startedAt, budgetMs: TIME_BUDGET_MS });
       const added = (await saveArticles(source.id, articles || [])) + (await saveVideos(source.id, videos || []));
       await markOk(source);
       results.push({ name: source.name, ok: true, added });
@@ -460,4 +522,14 @@ async function collect() {
   return { ok: true, processed: results.filter((r) => !r.skipped).length, results };
 }
 
-module.exports = { collect };
+// ---------- 数据生命周期(1.3):删除超过 days 天的旧数据 ----------
+// 与本地 datamgr.cleanup(days) 语义对齐:按 COALESCE(published_at,created_at) 截断
+// 注:Turso 单条执行非原子,批量事务优化留待第三期 dbBatch
+async function cleanupOld(days) {
+  const cutoff = new Date(Date.now() - Number(days || 7) * 86400e3).toISOString();
+  const a = await dbRun('DELETE FROM articles WHERE COALESCE(published_at, created_at) < ?', cutoff);
+  const v = await dbRun('DELETE FROM videos WHERE COALESCE(published_at, created_at) < ?', cutoff);
+  return { articles: a.changes, videos: v.changes };
+}
+
+module.exports = { collect, cleanupOld, _internals: { isJunkContent, summarize, fetchFulltext } };

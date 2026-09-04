@@ -324,7 +324,7 @@ function AlertsTab({ toast }) {
   );
 }
 
-// ---------- 微信读书扫码 ----------
+// ---------- 微信读书扫码授权 ----------
 function WereadTab({ toast }) {
   const [qr, setQr] = useState(null); // {qr, uid, session}
   const [status, setStatus] = useState('');
@@ -438,7 +438,7 @@ function DailyTab({ toast }) {
   }
   async function regen() {
     try {
-      toast('正在重新生成日报(AI 模式约需 10~30 秒)…');
+      toast('正在重新生成日报…');
       const r = await api('daily/regenerate', { method: 'POST' });
       toast(`日报已生成:${r.report.stats.candidates} 候选,${r.report.stats.sortMode} 排序`);
     } catch (e) { toast(e.message); }
@@ -452,29 +452,8 @@ function DailyTab({ toast }) {
             <label>统计窗口(小时)</label>
             <input value={s.windowHours} onChange={(e) => set({ windowHours: e.target.value })} />
           </div>
-          <label className="small" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input type="checkbox" checked={s.aiEnabled} onChange={(e) => set({ aiEnabled: e.target.checked })} />
-            启用 AI 摘要(DeepSeek)
-          </label>
         </div>
-        <p className="muted small">未启用或无 Key 时保持关键词规则排序;云端 AI 模式限标注排名前 10 的条目(60s 函数预算)。</p>
-      </div>
-      <div className="card">
-        <h3>DeepSeek 配置</h3>
-        <div className="form-row">
-          <div className="field" style={{ flex: 2, minWidth: 240 }}>
-            <label>API Key{s.hasKey ? '(已配置)' : ''}</label>
-            <input type="password" value={s.apiKey} onChange={(e) => set({ apiKey: e.target.value })} placeholder="sk-…" />
-          </div>
-          <div className="field" style={{ flex: 2, minWidth: 200 }}>
-            <label>API Base(可空)</label>
-            <input value={s.apiBase} onChange={(e) => set({ apiBase: e.target.value })} placeholder="https://api.deepseek.com/chat/completions" />
-          </div>
-          <div className="field" style={{ flex: 1, minWidth: 140 }}>
-            <label>模型(可空)</label>
-            <input value={s.model} onChange={(e) => set({ model: e.target.value })} placeholder="deepseek-v4-flash" />
-          </div>
-        </div>
+        <p className="muted small">排序为关键词规则模式(AI 摘要已下线)。</p>
         <div className="form-row" style={{ marginTop: 12 }}>
           <button className="btn" onClick={save}>保存</button>
           <button className="btn-ghost" onClick={regen}>立即重新生成日报</button>

@@ -11,14 +11,23 @@ module.exports = async function handler(req, res) {
       ? raw
       : String(raw || '').split(/[/,]/).filter(Boolean);
     // 图片代理单独处理(二进制响应)
+    // SSRF 防护走 _safeimg(与主系统 util/safeimg 同语义):DNS 解析校验 + 重定向逐跳校验 + 流式大小上限
     if (slug[0] === 'img') {
-      const u = req.query.u;
+      const u = String(req.query.u || '');
       if (!u || !/^https?:\/\//i.test(u)) return res.status(400).json({ ok: false, error: 'bad url' });
-      const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-      if (!r.ok) return res.status(502).json({ ok: false, error: `upstream ${r.status}` });
-      res.setHeader('Content-Type', r.headers.get('content-type') || 'image/jpeg');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      return res.send(Buffer.from(await r.arrayBuffer()));
+      try {
+        const { contentType, body } = await require('./_safeimg').fetchImageSafe(u, {
+          'User-Agent': 'Mozilla/5.0',
+          Accept: 'image/avif,image/webp,image/*,*/*;q=0.8',
+          Referer: '',
+        });
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.send(body);
+      } catch (e) {
+        const clientErr = /forbidden host|bad url|DNS 解析失败/.test(e.message);
+        return res.status(clientErr ? 403 : 502).json({ ok: false, error: e.message });
+      }
     }
     const ctx = { headers: req.headers || {}, body: req.body || {} };
     const result = await route(req.method || 'GET', slug, req.query, ctx);

@@ -35,6 +35,18 @@ async function saveConfig(cfg) {
   await setSetting('alerts', cfg);
 }
 
+// 手动清空所有冷却记录（与本地版 server/services/alerts.js 对齐）
+async function clearCooldowns() {
+  await setSetting('alerts.cooldowns', {});
+}
+
+// 清空报警历史日志
+async function clearLog() {
+  const a = await getSetting('alerts', {});
+  a.recentLog = [];
+  await setSetting('alerts', a);
+}
+
 async function fetchJson(url, opts = {}) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 10000);
@@ -180,4 +192,4 @@ function sourceError(source, failCount, errMsg) {
   return Promise.resolve({ sent: 0, skipped: 'below-threshold' });
 }
 
-module.exports = { getConfig, saveConfig, dispatch, sourceError, SENDERS, DEFAULT_EVENTS, EVENT_TITLE };
+module.exports = { getConfig, saveConfig, dispatch, sourceError, SENDERS, DEFAULT_EVENTS, EVENT_TITLE, clearCooldowns, clearLog };

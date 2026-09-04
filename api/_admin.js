@@ -349,7 +349,7 @@ async function importOpml(body) {
   return { body: { ok: true, added, restored, updated, total: outlines.length } };
 }
 
-// ---------- 日报/AI 设置 ----------
+// ---------- 日报设置 ----------
 async function getDailySettings() {
   const d = await getSetting('daily', {});
   return {
@@ -357,11 +357,6 @@ async function getDailySettings() {
       ok: true,
       settings: {
         windowHours: Number(d.windowHours) || 48,
-        aiEnabled: !!d.aiEnabled,
-        apiKey: d.apiKey || '',
-        apiBase: d.apiBase || '',
-        model: d.model || '',
-        hasKey: !!d.apiKey,
       },
     },
   };
@@ -371,10 +366,6 @@ async function saveDailySettings(body) {
   const b = body || {};
   const next = { ...prev };
   if (b.windowHours !== undefined) next.windowHours = Number(b.windowHours) || 48;
-  if (b.aiEnabled !== undefined) next.aiEnabled = !!b.aiEnabled;
-  if (b.apiKey !== undefined) next.apiKey = String(b.apiKey).trim();
-  if (b.apiBase !== undefined) next.apiBase = String(b.apiBase).trim();
-  if (b.model !== undefined) next.model = String(b.model).trim();
   await setSetting('daily', next);
   return { body: { ok: true } };
 }

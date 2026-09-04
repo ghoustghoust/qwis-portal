@@ -1,10 +1,15 @@
-# 云端采集器定时触发(十一期 M2):每 15 分钟打一次 portal 的 /api/collect
+# 云端采集器定时触发(十一期 M2):按 cron 错峰调用 portal 的 /api/collect
+#   - 整点     :主采集(每小时一批到期源)
+#   - 第 30 分 :backfill(补抓已入库的薄内容条目,与主采集错峰)
+#   - 每日 3 点:cleanup(删除 7 天前旧数据,数据生命周期)
 # COLLECT_KEY 在 GitHub 仓库 Settings → Secrets and variables → Actions 配置
 name: collect
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '0 * * * *'
+    - cron: '30 * * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,6 +19,9 @@ jobs:
     steps:
       - name: Trigger cloud collector
         run: |
-          curl -fsS -X POST "https://qwis-portal.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+          MODE=""
+          if [ "${{ github.event.schedule }}" = "30 * * * *" ]; then MODE="&mode=backfill"; fi
+          if [ "${{ github.event.schedule }}" = "0 3 * * *" ]; then MODE="&mode=cleanup&days=7"; fi
+          curl -fsS -X POST "https://qwis-portal.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}${MODE}" \
             -H "Content-Type: application/json" \
             --max-time 90
