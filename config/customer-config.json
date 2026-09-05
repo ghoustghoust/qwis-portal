@@ -1,0 +1,32 @@
+{
+  "_comment": "全网情报系统客户化配置（spec F50）。setup:customer 读取本文件生成 .env 并初始化本地数据。_ 前缀字段为注释，读取时忽略。",
+  "opmlUrl": "",
+  "_comment_opmlUrl": "公众号 OPML 订阅地址（如「今天看啥」提供的 OPML 链接），留空则一期可在设置页再填",
+  "cloudBaseUrl": "https://api.qianmeng.news",
+  "_comment_cloudBaseUrl": "云端队列 API 域名（宝塔 PHP 站点根地址，不带结尾斜杠）",
+  "apiToken": "",
+  "_comment_apiToken": "云端队列 Token，留空则由 setup:customer 自动生成 48 位随机长 Token",
+  "deepseekKey": "",
+  "_comment_deepseekKey": "DeepSeek API Key，可留空；留空则 AI 功能整体关闭（N7 降级）",
+  "bilibiliCookie": "",
+  "_comment_bilibiliCookie": "B站 Cookie（可留空）；有 Cookie 时视频详情页可解析直链内嵌播放",
+  "douyinLoginMode": "qrcode",
+  "_comment_douyinLoginMode": "抖音登录方式：qrcode（扫码）/ cookie",
+  "intervals": {
+    "_comment": "各源刷新间隔：opml/rss 单位小时，bilibili/douyin/queue 单位分钟",
+    "opml": 12,
+    "rss": 8,
+    "bilibili": 60,
+    "douyin": 360,
+    "queue": 10
+  },
+  "generateClients": true,
+  "_comment_generateClients": "是否生成提交客户端配置（安卓 HTTP Shortcuts JSON / Windows 提交工具）",
+  "proxy": "http://127.0.0.1:7890",
+  "_comment_proxy": "本机翻墙代理地址（如 Clash 默认 http://127.0.0.1:7890）；留空则直连。YouTube/X 等海外源需要代理才能抓取，国内服务（云端队列/DeepSeek）会自动绕过代理",
+  "aihot": {
+    "actor": "a3a001f8-e397-4995-acb0-569186f210b5",
+    "enrichGapMs": 2000
+  },
+  "_comment_aihot": "AIHOT 热点榜：actor 为本机匿名标识（AIHOT 官网 RSS 订阅页生成，非账号密钥）；enrichGapMs 为详情页补抓间隔（毫秒，≥2000 礼貌限速）"
+}

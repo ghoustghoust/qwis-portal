@@ -1,0 +1,155 @@
+{
+ "source": [
+  {
+   "id": 30,
+   "name": "量子位",
+   "type": "wemp",
+   "enabled": 1,
+   "fail_count": 0,
+   "status": "ok",
+   "last_fetched_at": "2026-09-02T01:13:46.293Z",
+   "next_fetch_at": "2026-09-02T01:43:46.293Z",
+   "extra": "{\"intervalMin\":30}",
+   "url": "http://127.0.0.1:8001/feed/MP_WXS_3236757533.atom?limit=20"
+  },
+  {
+   "id": 72,
+   "name": "量子位博客",
+   "type": "rss",
+   "enabled": 1,
+   "fail_count": 0,
+   "status": "ok",
+   "last_fetched_at": "2026-09-01T17:55:24.760Z",
+   "next_fetch_at": "2026-09-02T01:55:24.760Z",
+   "extra": "{}",
+   "url": "https://www.qbitai.com/feed"
+  }
+ ],
+ "latest10": [
+  {
+   "id": 116695,
+   "title": "“没有Token的CS学生，应立即退学”",
+   "published_at": "2026-09-01T09:23:02.000Z",
+   "created_at": "2026-09-01T17:24:23.767Z",
+   "clen": 103296,
+   "slen": 20,
+   "url": "https://mp.weixin.qq.com/s/BP-gU8ZSErE-0Ws8FaEwbg"
+  },
+  {
+   "id": 98997,
+   "title": "3秒出片比播放还快，MiniMax打开了AI视频的实时商业化路径",
+   "published_at": "2026-09-01T01:23:04.000Z",
+   "created_at": "2026-09-01T01:36:24.259Z",
+   "clen": 39,
+   "slen": 32,
+   "url": "https://mp.weixin.qq.com/s/1SawWs-tcqNQqWAfZK7zvQ"
+  },
+  {
+   "id": 64170,
+   "title": "A社化身A割！Claude官宣永久提额25%，结果到手反而少17%",
+   "published_at": "2026-08-30T04:07:54.000Z",
+   "created_at": "2026-08-30T04:46:31.522Z",
+   "clen": 58836,
+   "slen": 33,
+   "url": "https://mp.weixin.qq.com/s/IuyCwE231PT-zYN-tNUH6A"
+  },
+  {
+   "id": 60095,
+   "title": "去年归国的徐梦迪，成了清华姚班班主任",
+   "published_at": "2026-08-29T06:07:04.000Z",
+   "created_at": "2026-08-30T02:33:56.675Z",
+   "clen": 25,
+   "slen": 18,
+   "url": "https://mp.weixin.qq.com/s/-9yZxkiV3sY0hCkYREGvPw"
+  },
+  {
+   "id": 60096,
+   "title": "刚刚，港股AGI第一股杀疯了！Agent业务半年进账近5亿，Token收入Q2暴涨500%",
+   "published_at": "2026-08-28T10:07:09.000Z",
+   "created_at": "2026-08-30T02:33:56.679Z",
+   "clen": 52,
+   "slen": 45,
+   "url": "https://mp.weixin.qq.com/s/oNL6OKFJ1Mlqaym_BxQohw"
+  },
+  {
+   "id": 13465,
+   "title": "我的自媒体搭子太能卷，一顿饭功夫17份成品",
+   "published_at": "2026-08-28T04:01:24.000Z",
+   "created_at": "2026-08-28T07:08:11.327Z",
+   "clen": 75899,
+   "slen": 43,
+   "url": "https://mp.weixin.qq.com/s/X3M6LMHe03YSH4kmYbr1XA"
+  }
+ ],
+ "created_today": {
+  "n": 0,
+  "first_at": null,
+  "last_at": null
+ },
+ "created_by_day": [
+  {
+   "d": "2026-09-01",
+   "n": 2
+  },
+  {
+   "d": "2026-08-30",
+   "n": 3
+  },
+  {
+   "d": "2026-08-28",
+   "n": 1
+  }
+ ],
+ "today_all": [
+  {
+   "name": "微博热搜",
+   "type": "hotlist",
+   "n": 60
+  },
+  {
+   "name": "金十数据",
+   "type": "hotlist",
+   "n": 52
+  },
+  {
+   "name": "头条热榜",
+   "type": "hotlist",
+   "n": 28
+  },
+  {
+   "name": "IT之家",
+   "type": "hotlist",
+   "n": 26
+  },
+  {
+   "name": "知乎热榜",
+   "type": "hotlist",
+   "n": 19
+  },
+  {
+   "name": "百度热搜",
+   "type": "hotlist",
+   "n": 19
+  },
+  {
+   "name": "抖音热点",
+   "type": "hotlist",
+   "n": 10
+  },
+  {
+   "name": "联合早报",
+   "type": "hotlist",
+   "n": 9
+  },
+  {
+   "name": "凤凰热榜",
+   "type": "hotlist",
+   "n": 7
+  },
+  {
+   "name": "Hacker News",
+   "type": "hotlist",
+   "n": 6
+  }
+ ]
+}

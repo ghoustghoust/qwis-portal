@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "compatibilityVersion": 84,
+  "categories": [
+    {
+      "id": "7a1c0e2d-4f5b-4c8a-9e01-0b3d5f7a9c11",
+      "name": "情报提交",
+      "layoutType": "linear_list",
+      "shortcuts": [
+        {
+          "id": "b1dc7f2a-3e44-4a1b-8c5d-2f6e8a0b9d21",
+          "name": "提交 B站链接",
+          "description": "从分享菜单接收 B站链接，确认后提交到云端 bilibili 队列",
+          "iconName": "bitsies_play",
+          "method": "POST",
+          "url": "{{base_url}}/bilibili-video-queue.php",
+          "requestBodyType": "custom_text",
+          "contentType": "application/json",
+          "bodyContent": "{\"token\":\"{{queue_token}}\",\"url\":\"{{shared_link}}\",\"name\":\"\",\"type\":\"bilibili\"}",
+          "launcherShortcut": true,
+          "confirmation": null,
+          "codeOnPrepare": "const raw = getVariable('shared_link').trim();\nconst m = raw.match(/https?:\\/\\/[^\\s\"'<>]+/);\nconst url = m ? m[0] : raw;\nif (!/bilibili\\.com|b23\\.tv/i.test(url)) {\n  showToast('未识别到 B站链接，请从 B站 App 分享视频或主页');\n  abort();\n}\nsetVariable('shared_link', url);\nconst r = showDialog('识别到：B站\\n类型：bilibili\\n链接：' + url + '\\n\\n确认加入订阅队列？', '提交订阅', {buttons: ['确认', '取消']});\nif (r.result !== 'button1') {\n  abort();\n}",
+          "codeOnSuccess": "showToast('已加入订阅队列，本机将自动拉取解析');",
+          "codeOnFailure": "showDialog('提交失败，请检查网络或 Token 配置');",
+          "timeout": 20000,
+          "waitForInternet": true
+        },
+        {
+          "id": "c2ae803b-4f55-4b2c-9d6e-307f9b1c0e32",
+          "name": "提交抖音链接",
+          "description": "从分享菜单接收抖音链接，确认后提交到云端 douyin 队列",
+          "iconName": "bitsies_play",
+          "method": "POST",
+          "url": "{{base_url}}/douyin-video-queue.php",
+          "requestBodyType": "custom_text",
+          "contentType": "application/json",
+          "bodyContent": "{\"token\":\"{{queue_token}}\",\"url\":\"{{shared_link}}\",\"name\":\"\",\"type\":\"douyin\"}",
+          "launcherShortcut": true,
+          "confirmation": null,
+          "codeOnPrepare": "const raw = getVariable('shared_link').trim();\nconst m = raw.match(/https?:\\/\\/[^\\s\"'<>]+/);\nconst url = m ? m[0] : raw;\nif (!/douyin\\.com|iesdouyin/i.test(url)) {\n  showToast('未识别到抖音链接，请从抖音 App 分享视频或主页');\n  abort();\n}\nsetVariable('shared_link', url);\nconst r = showDialog('识别到：抖音\\n类型：douyin\\n链接：' + url + '\\n\\n确认加入订阅队列？', '提交订阅', {buttons: ['确认', '取消']});\nif (r.result !== 'button1') {\n  abort();\n}",
+          "codeOnSuccess": "showToast('已加入订阅队列，本机将自动拉取解析');",
+          "codeOnFailure": "showDialog('提交失败，请检查网络或 Token 配置');",
+          "timeout": 20000,
+          "waitForInternet": true
+        },
+        {
+          "id": "d3bf904c-5066-4c3d-8e7f-40800c2d1f43",
+          "name": "提交公众号链接",
+          "description": "从分享菜单接收公众号文章链接，确认后提交到云端 wechat 队列",
+          "iconName": "bitsies_send",
+          "method": "POST",
+          "url": "{{base_url}}/wechat-rss-queue.php",
+          "requestBodyType": "custom_text",
+          "contentType": "application/json",
+          "bodyContent": "{\"token\":\"{{queue_token}}\",\"url\":\"{{shared_link}}\",\"name\":\"\",\"type\":\"wechat\"}",
+          "launcherShortcut": true,
+          "confirmation": null,
+          "codeOnPrepare": "const raw = getVariable('shared_link').trim();\nconst m = raw.match(/https?:\\/\\/[^\\s\"'<>]+/);\nconst url = m ? m[0] : raw;\nif (!/mp\\.weixin\\.qq\\.com/i.test(url)) {\n  showToast('未识别到公众号链接，请分享 mp.weixin.qq.com 文章链接');\n  abort();\n}\nsetVariable('shared_link', url);\nconst r = showDialog('识别到：公众号\\n类型：wechat\\n链接：' + url + '\\n\\n确认加入订阅队列？', '提交订阅', {buttons: ['确认', '取消']});\nif (r.result !== 'button1') {\n  abort();\n}",
+          "codeOnSuccess": "showToast('已加入订阅队列，本机将自动拉取解析');",
+          "codeOnFailure": "showDialog('提交失败，请检查网络或 Token 配置');",
+          "timeout": 20000,
+          "waitForInternet": true
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "id": "aa000001-0000-4000-8000-000000000001",
+      "key": "base_url",
+      "type": "static",
+      "value": "__CLOUD_BASE_URL__",
+      "title": "云端队列域名",
+      "rememberValue": false
+    },
+    {
+      "id": "aa000002-0000-4000-8000-000000000002",
+      "key": "queue_token",
+      "type": "static",
+      "value": "__API_TOKEN__",
+      "title": "云端队列 Token",
+      "rememberValue": false,
+      "isSecret": true,
+      "isExcludeValueFromExport": true
+    },
+    {
+      "id": "aa000003-0000-4000-8000-000000000003",
+      "key": "shared_link",
+      "type": "static",
+      "value": "",
+      "title": "分享进来的链接",
+      "rememberValue": false,
+      "isShareText": true
+    }
+  ]
+}

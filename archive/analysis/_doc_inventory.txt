@@ -1,0 +1,36 @@
+﻿=== 根目录修复类 md ===
+
+Name                             Length LastWriteTime    
+----                             ------ -------------    
+ARCHITECTURE_AUDIT_REPORT.md      23234 2026/9/1 16:23:39
+紧急修复报告.md                          5159 2026/9/1 16:34:43
+SOURCE_ERROR_AUDIT_REPORT.md      29359 2026/9/1 18:32:11
+SOURCE_ERROR_DIAGNOSIS_REPORT.md  25750 2026/9/1 18:38:31
+REFRESH_MECHANISM_AUDIT.md        23371 2026/9/2 9:31:27 
+FINAL_FIX_REPORT.md               24387 2026/9/2 10:00:11
+
+
+=== docs/ 修复类 md ===
+
+Name                              Length LastWriteTime     
+----                              ------ -------------     
+ANDROID_SUBMIT_GUIDE.md             4518 2026/8/15 12:31:57
+X_SETUP_GUIDE.md                    2913 2026/8/15 17:39:18
+AC12-acceptance-template.md         3034 2026/8/20 15:37:02
+微信公众号接入与热榜方案.md                     9952 2026/8/27 16:27:47
+微信方案备选对比.md                         6881 2026/8/27 16:47:04
+wemp-ai-handoff.md                 11947 2026/8/28 10:54:20
+wemp-runbook.md                     8975 2026/8/28 12:29:38
+phase9-runbook.md                   3500 2026/8/29 0:00:54 
+DEPLOYMENT.md                      14549 2026/9/1 9:37:07  
+OBSERVATION-GUIDE.md                7698 2026/9/1 15:58:12 
+WEMP-INTEGRATION-SOLUTION.md        6648 2026/9/1 16:09:51 
+EMERGENCY_RECOVERY_GUIDE.md        19228 2026/9/1 18:51:33 
+FINAL_DIAGNOSIS_AND_FIX_REPORT.md  17859 2026/9/2 0:43:14  
+源错误熔断与批量操作修复完整指南.md                11983 2026/9/2 1:20:09  
+源错误熔断修复 - 完整补丁与验证指南.md             13277 2026/9/2 1:26:18  
+批量恢复熔断源 - 一键故障恢复方案.md              11546 2026/9/2 1:39:32  
+源列表管理增强 - 功能实施指南.md                10168 2026/9/2 1:50:33  
+源列表管理增强 - 实施总结报告.md                11960 2026/9/2 1:54:03  
+
+

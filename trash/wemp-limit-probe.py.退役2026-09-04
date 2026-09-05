@@ -1,0 +1,59 @@
+import json, re, time, socket, requests
+
+# 读取 we-mp-rss Redis 里的公众平台凭据
+s = socket.create_connection(("127.0.0.1", 6379), timeout=5)
+
+def cmd(*args):
+    m = f"*{len(args)}\r\n".encode()
+    for a in args:
+        m += f"${len(a.encode())}\r\n{a}\r\n".encode()
+    s.sendall(m)
+    time.sleep(0.25)
+    return s.recv(1048576)
+
+td = json.loads(cmd("GET", "werss:token:data").split(b"\r\n", 1)[1].rstrip(b"\r\n"))
+token = str(td["token"])
+px = {"http": None, "https": None}
+h = {"Cookie": td["cookie"], "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+
+# 对每个订阅源调用 appmsgpublish，解析 publish_page → publish_list
+feeds = [
+    ("MP_WXS_3236757533", "量子位", "MzIzNjc1NzUzMw=="),
+    ("MP_WXS_3254735000", "程序员鱼皮", "MzI1NDczNTAwMA=="),
+    ("MP_WXS_3518034885", "小林coding", "MzUxODAzNDg4NQ=="),
+    ("MP_WXS_3223096120", "数字生命卡兹克", "MzIyMzA5NjEyMA=="),
+    ("MP_WXS_3585152880", "苍何", "MzU4NTE1Mjg4MA=="),
+]
+
+ok_feeds = 0
+for fid, name, fk in feeds:
+    url = (
+        "https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&sub_action=list_ex&begin=0&count=5"
+        "&fakeid=" + requests.utils.quote(fk) +
+        "&type=101_1&query=&token=" + token + "&lang=zh_CN&f=json&ajax=1"
+    )
+    try:
+        r = requests.get(url, headers=h, proxies=px, timeout=30)
+        j = r.json()
+        ret = j.get("base_resp", {}).get("ret")
+        print(f"{name}: ret={ret}", end=" ")
+        if ret == 0:
+            pp = j.get("publish_page", "")
+            pdata = json.loads(pp) if isinstance(pp, str) and pp else {}
+            raw = pdata.get("publish_list", "[]")
+            lst = json.loads(raw) if isinstance(raw, str) else (raw or [])
+            print(f"-> {len(lst)} 篇")
+            ok_feeds += 1
+            for it in lst[:3]:
+                info = it.get("publish_info", {})
+                if isinstance(info, str):
+                    info = json.loads(info)
+                t = time.strftime("%m-%d", time.localtime(int(info.get("create_time", 0) or 0)))
+                print(f"     [{t}] {info.get('title','')[:40]}")
+        else:
+            print("(" + j.get("base_resp", {}).get("err_msg", "") + ")")
+    except Exception as e:
+        print(f"{name}: EXC {type(e).__name__} {str(e)[:60]}")
+    time.sleep(8)
+
+print(f"\n可用源: {ok_feeds}/5")

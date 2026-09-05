@@ -1,0 +1,38 @@
+﻿===== 9/1 17:00 以来修改的源码（步骤4审查范围）=====
+
+Rel                                          LastWriteTime    
+---                                          -------------    
+web\src\components\AlertsTab.jsx             2026/9/1 17:03:20
+server\services\collectors\store.js          2026/9/1 18:40:00
+server\services\alerts.js                    2026/9/1 18:40:19
+server\services\collectors\bilibili\index.js 2026/9/2 0:32:06 
+server\routes\health.js                      2026/9/2 0:33:26 
+tools\ops-toolkit.js                         2026/9/2 0:39:29 
+server\util\log.js                           2026/9/2 0:40:05 
+tools\_scan-log-imports.js                   2026/9/2 0:40:31 
+server\routes\restore-all.js                 2026/9/2 1:36:51 
+server\index.js                              2026/9/2 1:37:05 
+web\src\components\WempTab.jsx               2026/9/2 1:39:06 
+web\src\pages\AdminPage.jsx                  2026/9/2 1:44:25 
+web\src\components\WechatTab.jsx             2026/9/2 1:48:14 
+web\src\components\BilibiliTab.jsx           2026/9/2 1:48:57 
+web\src\components\DouyinTab.jsx             2026/9/2 1:49:40 
+server\routes\sources.js                     2026/9/2 9:37:43 
+server\services\collectors\rss\index.js      2026/9/2 9:39:32 
+web\src\components\ArticleList.jsx           2026/9/2 9:45:06 
+server\services\wempSupervisor.js            2026/9/2 9:50:00 
+web\src\components\SourceTable.jsx           2026/9/2 9:50:59 
+server\services\scheduler\index.js           2026/9/2 9:56:23 
+server\routes\daily.js                       2026/9/2 9:56:45 
+
+
+
+===== FINAL_FIX_REPORT 声称的证据文件是否还在 =====
+tools\.verify-p0.json 存在
+tools\.verify-p02.json 存在
+tools\.verify-p11.json 存在
+tools\.reschedule-out.json 存在
+tools\.probe-a.json 存在
+tools\.probe-b.json 存在
+tools\.verify-p0.cjs 已删除(报告称跑完删除)
+tools\.emoji-probe.py 已删除(报告称跑完删除)

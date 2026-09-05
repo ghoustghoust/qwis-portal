@@ -1,0 +1,96 @@
+# 微信方案集成验证报告（HTML）
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>we-mp-rss 集成验证报告</title>
+<style>
+:root { --ink:#1a1a1a; --paper:#fcfcfa; --line:#e4e2dd; --dim:#6b6862; --accent:#0f6b5c; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"Source Han Serif SC","Songti SC",SimSun,serif; background:var(--paper); color:var(--ink); line-height:1.75; padding:48px 24px; }
+.wrap { max-width:860px; margin:0 auto; }
+header { border-bottom:3px double var(--ink); padding-bottom:20px; margin-bottom:32px; }
+h1 { font-size:26px; font-weight:700; letter-spacing:.06em; }
+.meta { font-family:ui-monospace,Consolas,monospace; font-size:12px; color:var(--dim); margin-top:8px; }
+h2 { font-family:"Segoe UI",system-ui,sans-serif; font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:40px 0 14px; border-left:4px solid var(--accent); padding-left:10px; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; margin:12px 0 20px; }
+th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { font-family:"Segoe UI",system-ui,sans-serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); border-bottom:2px solid var(--ink); }
+.pass { color:var(--accent); font-weight:600; }
+.warn { color:#a05a00; font-weight:600; }
+.dim { color:var(--dim); font-size:12.5px; }
+pre { background:#f4f3ef; border:1px solid var(--line); padding:12px 16px; font-size:12.5px; overflow-x:auto; font-family:ui-monospace,Consolas,monospace; margin:10px 0 18px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:16px 0; }
+.kpi { border:1px solid var(--line); padding:14px 16px; background:#fff; }
+.kpi .n { font-size:22px; font-weight:700; font-family:"Segoe UI",sans-serif; }
+.kpi .l { font-size:11px; letter-spacing:.08em; color:var(--dim); font-family:"Segoe UI",sans-serif; text-transform:uppercase; }
+footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--dim); }
+</style>
+</head>
+<body><div class="wrap">
+
+<header>
+<h1>we-mp-rss × 全网情报系统 · 集成验证报告</h1>
+<div class="meta">2026-08-27 · Windows / Python 3.13.12 (uv venv) / Node v24.14.1 · 端口：we-mp-rss=8001，情报系统=3000</div>
+</header>
+
+<h2>结果总览</h2>
+<div class="grid">
+<div class="kpi"><div class="n">7/7</div><div class="l">验收标准通过</div></div>
+<div class="kpi"><div class="n">8001</div><div class="l">we-mp-rss 运行中</div></div>
+<div class="kpi"><div class="n">3000</div><div class="l">情报系统集成调用</div></div>
+<div class="kpi"><div class="n">141</div><div class="l">上游 API 端点</div></div>
+</div>
+
+<h2>验收明细（Goal Brief 契约逐条核验）</h2>
+<table>
+<tr><th>验收项</th><th>证据</th><th>状态</th></tr>
+<tr><td>独立 venv 安装无报错</td><td>uv 管理 CPython 3.13.12 → <span class="dim">D:\tools\we-mp-rss\.venv</span>；requirements 79 包全量命中（pip freeze 比对 MISSING 为空）；核心包 import 通过</td><td class="pass">PASS</td></tr>
+<tr><td>初始化成功、配置与库文件生成</td><td><span class="dim">config.yaml + data/db.db</span> 生成；日志 <i>All Tables Created Successfully / 初始化用户成功: admin</i>；12 张表</td><td class="pass">PASS</td></tr>
+<tr><td>Web 界面可访问</td><td>GET :8001/ → 200，title「WeRss微信公众号订阅助手」；/api/openapi.json paths=141</td><td class="pass">PASS</td></tr>
+<tr><td>添加订阅→数据落库</td><td>已实测通过：POST /api/v1/wx/mps 添加「中国新闻社」→ feeds 表记录 MP_WXS_2394260794(status=1) + articles 表 1 条(has_content=1)；/feed/MP_WXS_2394260794.atom 输出含完整 entry（跨重启保留）。自动增量抓取仍待微信读书扫码启用</td><td class="pass">PASS</td></tr>
+<tr><td>情报系统启动并真实调用</td><td>:3000/api/wemp/status → remote.reachable=true / totalFeeds 实时读取；weread-qrcode 经桥接返回 ok=true + 二进制 PNG(1015B)</td><td class="pass">PASS</td></tr>
+<tr><td>重启持久化</td><td>两次重启（kill −9 级 + 优雅）：停前快照（12 tables / admin）= 停后查询完全一致</td><td class="pass">PASS</td></tr>
+<tr><td>可复现运行手册</td><td>手册所有命令均为本轮实际执行记录，非转写文档</td><td class="pass">PASS</td></tr>
+</table>
+
+<h2>发现与修复的三个关键问题</h2>
+<table>
+<tr><th>#</th><th>现象</th><th>根因</th><th>修复</th></tr>
+<tr><td>1</td><td>公众平台二维码加载超时</td><td><span class="dim">driver/wx.py</span> PlaywrightController() 未传 proxy_url（wxarticle.py 传了，登录路径漏了）+ 本地 Chrome headless 触发微信反爬</td><td>补丁：登录浏览器继承代理配置（project 内已知问题，BROWSER_TYPE=webkit 是官方注释推荐的绕过方式）</td></tr>
+<tr><td>2</td><td>情报系统 Node 启动即崩</td><td>better-sqlite3 编译目标 ABI 137（Node 24），系统默认 node v22 是 ABI 127</td><td>统一用 <span class="dim">C:\Program Files\nodejs\node.exe (v24.14.1)</span> 启动</td></tr>
+<tr><td>3</td><td>git clone 无代理失败</td><td>github.com 直连超时（本机网络环境）</td><td>git -c http.proxy 走 127.0.0.1:7890</td></tr>
+</table>
+
+<h2>数据链路（为什么「零改动」也能接入 RSS 源）</h2>
+<pre>
+[你的微信] --扫码--> [微信读书通道 weread_mp]
+        ↓ ensure_mp_on_shelf 自动把公众号加入书架
+        ↓ /api/mp/cover 只抓最新一篇（增量模式）
+[data/db.db] -- articles / feeds
+        ↓ GET /feed/{id}.atom?limit=20   ← 无鉴权 · is_update=True 触发增量采集
+[情报系统 sources(type=wemp)] --> rssAdapter --> articles 表 --> AI 日报
+</pre>
+
+<h2>本次产出的集成文件（情报系统侧）</h2>
+<table>
+<tr><th>文件</th><th>职责</th></tr>
+<tr><td><span class="dim">server/routes/wemp.js</span></td><td>/api/wemp/*：weread-qrcode（扫码代理）/ status（服务健康+源计数）/ sync（订阅清单→本地 wemp 源同步）</td></tr>
+<tr><td><span class="dim">tools/wemp-smoke.js</span></td><td>冒烟测试：探测→登录→列订阅→逐源验证 atom 输出</td></tr>
+<tr><td><span class="dim">server/index.js</span> (+1 行)</td><td>挂载 /api/wemp 路由</td></tr>
+<tr><td><span class="dim">.env</span> (+3 行)</td><td>WEMP_BASE_URL / WEMP_USERNAME / WEMP_PASSWORD</td></tr>
+<tr><td><span class="dim">server/services/ai/daily.js</span> (+1 处)</td><td>ARTICLE_SOURCE_TYPES 增加 'wemp' → 订阅文章进入 AI 日报候选池</td></tr>
+</table>
+
+<h2>源码级架构事实（决定后续维护姿势）</h2>
+<pre>
+通道工厂 Model() · gather.model 配置项：
+  free_publish | playwright | app | web | api | auto | weread | weread_mp
+                                ↑当前        ↑当前（书架自动关注 + cover 增量）
+feed id 规范：MP_WXS_&lt;base64(mp_id)&gt;
+fetcher 兼容 /rss/{id}/api·fresh、/feed/{id}.{ext} 三种 ext（xml/rss/atom）
+鉴权：/feed 输出无鉴权；管理 API 需 Bearer 或 AK-SK（ak/create 可以为桥接器做专用密钥）
+</pre>
+
+<footer>本报告由自动化部署流程实测产出 · 扫码完成后 sync→抓取→日报 的端到端链路将完整点亮</footer>
+</div></body></html>

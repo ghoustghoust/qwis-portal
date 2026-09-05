@@ -1,0 +1,5 @@
+﻿AUTH_PROBE_DONE API_TOKEN_set=true sources=200 daily=200 settings=200 columns=401 status=200
+--- /api/daily HTTP ---
+daily status=200 len=53849
+--- stderr log tail ---
+[2026-09-02T04:21:42.131Z] [WARN] [Auth] 缂哄皯 Token: GET /columns***

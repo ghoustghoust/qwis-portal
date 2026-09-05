@@ -1,0 +1,43 @@
+{
+  "cleanedAt": "2026-09-03",
+  "basis": "ARCHITECTURE_AUDIT_REPORT.md §5.1 L409-430 + §6.2 P0",
+  "reversible": true,
+  "rollback": "将本目录文件 rename 回 data/ 即可",
+  "items": [
+    {
+      "file": "data/intel.db",
+      "action": "moved-to-trash",
+      "bytes": 0,
+      "tier": "🟡中危 P0",
+      "rule": "L420/L496 空库 0 引用则删除"
+    },
+    {
+      "file": "data/.ah.xml",
+      "action": "moved-to-trash",
+      "bytes": 53740,
+      "tier": "🟡中危",
+      "rule": "L422-430 无引用则废弃归档"
+    },
+    {
+      "file": "data/.all.xml",
+      "action": "moved-to-trash",
+      "bytes": 51490,
+      "tier": "🟡中危",
+      "rule": "L422-430 无引用则废弃归档"
+    },
+    {
+      "file": "data/.daily.xml",
+      "action": "moved-to-trash",
+      "bytes": 20511,
+      "tier": "🟡中危",
+      "rule": "L422-430 无引用则废弃归档"
+    },
+    {
+      "file": "data/.full.xml",
+      "action": "moved-to-trash",
+      "bytes": 62569,
+      "tier": "🟡中危",
+      "rule": "L422-430 无引用则废弃归档"
+    }
+  ]
+}

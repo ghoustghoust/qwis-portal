@@ -1,0 +1,1 @@
+﻿AUTH_PROBE_DONE API_TOKEN_set=true sources=200 daily=200 settings=200 columns=401 status=200

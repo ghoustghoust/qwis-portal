@@ -1,0 +1,8 @@
+﻿===== PID 存活检查 =====
+PID 4636 已终止
+PID 28704 已终止
+===== Get-NetTCPConnection 3000 =====
+3000 无监听
+===== HTTP 探测 =====
+HTTP探测失败: 无法连接到远程服务器
+===== 剩余 node server/index.js 进程 =====

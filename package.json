@@ -1,0 +1,40 @@
+{
+  "name": "quanwang-intel-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "全网情报系统（私人 AI 情报阅读器）",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "dev:web": "vite --config web/vite.config.js",
+    "build": "vite build --config web/vite.config.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "setup:customer": "node tools/setup-customer.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop qwis-server",
+    "pm2:restart": "pm2 restart qwis-server",
+    "pm2:logs": "pm2 logs qwis-server --lines 100"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.17.4",
+    "@mozilla/readability": "^0.6.0",
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2",
+    "jsdom": "^29.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.52.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rss-parser": "^3.13.0",
+    "undici": "^8.10.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.19"
+  }
+}

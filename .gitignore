@@ -1,0 +1,27 @@
+node_modules/
+data/
+.env
+web/dist/
+portal/dist/
+portal/dist-admin/
+*.log
+
+# 敏感凭据
+cloud/token.json
+tools/.auth-probe.*
+tools/.leak-probe.*
+
+# PHP 便携测试运行时
+tools/.php-runtime/
+
+# AI 工具内部状态
+.qoder/
+.autoclaw/
+.opencode/
+
+# 归档子项目的 node_modules
+archive/_eval/wechat-rss-plus/node_modules/
+archive/_eval/wechat-rss-plus/.vscode/
+
+# 门户独立 git 仓库内部
+portal/.vercel/

@@ -1,0 +1,431 @@
+[
+  {
+    "name": "极客公园",
+    "entries": 14,
+    "updated": "Thu, 03 Sep 2026 11:16:36 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 4,
+    "feedEntriesSample": [
+      {
+        "title": "极客公园",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "马斯克：火箭再炸一次，SpaceX 就没了；小米「阔折叠」全球首秀；豆包工作支持多 Agent 和屏幕操作 | 极客早知道",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "苹果新 CEO 首次「发声」；网传抖音发生「推荐算法错乱」；Claude Fable 5.1 正式上线 | 极客早知道",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "梅卡曼德上市，具身智能又跑出一家百亿公司",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "硬件加强版「WorkBuddy」，拿下数亿融资，瞄向你的终极上下文",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 10,
+    "fullCount": 9,
+    "summaryCount": 1,
+    "avgLength": 42429.1,
+    "latestPublished": "2026-09-03T01:24:51.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/p_h1TFc1Ktoy_kGYG3Naeg...",
+        "delayMin": 83,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/CqYFvhOHaqj5sE11kVNlOQ...",
+        "delayMin": 59,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/SXqa5S1D2e8K4f3nkk6Tig...",
+        "delayMin": 32,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/poGtO-VejceBhYv_Z6VxIA...",
+        "delayMin": 512,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/ybfzJlfFEUadK8zHaHg0ng...",
+        "delayMin": 25,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/-9LxPoXDrU0VOe0NLv2zKg...",
+        "delayMin": 402,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/zIVCe6AiBS39jgaXeiHJQA...",
+        "delayMin": 120,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/ASml5cxdzVMOBDySO_RrXg...",
+        "delayMin": 299,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/USslnLC21_8Jdul3pLoxDw...",
+        "delayMin": 463,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/7eKfJ-OlLpZeRzwNLNlHSw...",
+        "delayMin": 220,
+        "type": "full"
+      }
+    ],
+    "sourceId": 133,
+    "syncStatus": {
+      "feedEntries": 14,
+      "dbArticles": 10,
+      "diff": 4,
+      "fulltextRate": "90%",
+      "maxDelayMin": 512
+    }
+  },
+  {
+    "name": "晚点 LatePost",
+    "entries": 8,
+    "updated": "Thu, 03 Sep 2026 11:16:37 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 2,
+    "feedEntriesSample": [
+      {
+        "title": "晚点LatePost",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "晚点LatePost",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "嘉立创：用 2100 万张零散的 PCB 板，拼成一门价值千亿的生意",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "智元的 18 枚金牌，和工厂里的另一场考试",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 6,
+    "fullCount": 4,
+    "summaryCount": 2,
+    "avgLength": 23663.833333333332,
+    "latestPublished": "2026-09-03T01:23:07.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/XPqVGXtuO6MROJr0EsiIeA...",
+        "delayMin": 84,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/rJG7Iz3-wqSas6xGvq3IRw...",
+        "delayMin": 513,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/EANN8gVcsrRm4opUU3X58Q...",
+        "delayMin": 27,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/rW3iKiXAPF2YmczfAga3IA...",
+        "delayMin": 101,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/qoYX0fhV2lIqoch7ksXeTw...",
+        "delayMin": 71,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/N3ypEO2TRZwsH-o_xEVPdA...",
+        "delayMin": 12,
+        "type": "full"
+      }
+    ],
+    "sourceId": 132,
+    "syncStatus": {
+      "feedEntries": 8,
+      "dbArticles": 6,
+      "diff": 2,
+      "fulltextRate": "67%",
+      "maxDelayMin": 513
+    }
+  },
+  {
+    "name": "机器之心",
+    "entries": 8,
+    "updated": "Thu, 03 Sep 2026 11:16:37 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 5,
+    "feedEntriesSample": [
+      {
+        "title": "机器之心",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 6,
+    "fullCount": 2,
+    "summaryCount": 4,
+    "avgLength": 12458.333333333334,
+    "latestPublished": "2026-09-02T05:24:13.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/UZ2uTAeKEm42OzINndT8Hw...",
+        "delayMin": 13,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/1V-xRM4fwXbfhDnp_zFBXw...",
+        "delayMin": 513,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/dggfJTc8Dm5D-EixgHkhjA...",
+        "delayMin": 344,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/psmnrvxzrP03w7o8UFnDEg...",
+        "delayMin": 387,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/CH5o8ER5iluS5RY5or664w...",
+        "delayMin": 221,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/56M-iQbqUYs2owgdXX4r4g...",
+        "delayMin": 880,
+        "type": "summary"
+      }
+    ],
+    "sourceId": 131,
+    "syncStatus": {
+      "feedEntries": 8,
+      "dbArticles": 6,
+      "diff": 2,
+      "fulltextRate": "33%",
+      "maxDelayMin": 880
+    }
+  },
+  {
+    "name": "新智元",
+    "entries": 8,
+    "updated": "Thu, 03 Sep 2026 11:16:37 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 5,
+    "feedEntriesSample": [
+      {
+        "title": "新智元",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 6,
+    "fullCount": 3,
+    "summaryCount": 3,
+    "avgLength": 39951.5,
+    "latestPublished": "2026-09-02T09:24:24.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/_ugPl2G0nCnwURdxryv0Hw...",
+        "delayMin": 22,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/d6XurhlrmQHN6I5qNla2Pg...",
+        "delayMin": 513,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/5afDTC0ZHTuAnDoegxUvHA...",
+        "delayMin": 27,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/2VB8pB5yBwn7gJGIeW7d3Q...",
+        "delayMin": 312,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/h77la5tspxS7XmeElGjC_w...",
+        "delayMin": 461,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/TyEfcBLeo145vl1JEAvRkA...",
+        "delayMin": 880,
+        "type": "full"
+      }
+    ],
+    "sourceId": 130,
+    "syncStatus": {
+      "feedEntries": 8,
+      "dbArticles": 6,
+      "diff": 2,
+      "fulltextRate": "50%",
+      "maxDelayMin": 880
+    }
+  },
+  {
+    "name": "夕小瑶科技说",
+    "entries": 7,
+    "updated": "Thu, 03 Sep 2026 11:16:37 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 3,
+    "feedEntriesSample": [
+      {
+        "title": "夕小瑶科技说",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "夕小瑶科技说",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 5,
+    "fullCount": 3,
+    "summaryCount": 2,
+    "avgLength": 20363.8,
+    "latestPublished": "2026-09-03T01:23:11.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/RO5w5ahSfTDxvyr1iCEd7g...",
+        "delayMin": 84,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/xvfk9naY2bpb8lCs4XBHsA...",
+        "delayMin": 31,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/_7kf62j8gOudX1owDdHpIA...",
+        "delayMin": 2,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/FVa2vvSCazIkpdeEJ1YhmQ...",
+        "delayMin": 343,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/X9tvJbmz_6KCvWQGJ5a0jA...",
+        "delayMin": 10,
+        "type": "full"
+      }
+    ],
+    "sourceId": 129,
+    "syncStatus": {
+      "feedEntries": 7,
+      "dbArticles": 5,
+      "diff": 2,
+      "fulltextRate": "60%",
+      "maxDelayMin": 343
+    }
+  },
+  {
+    "name": "特工宇宙",
+    "entries": 8,
+    "updated": "Thu, 03 Sep 2026 11:16:37 +0800",
+    "latestPubDate": null,
+    "emptyEncodedCount": 1,
+    "feedEntriesSample": [
+      {
+        "title": "特工宇宙",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "特工宇宙",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "如果你的大学不提供 Token，应该立即退学",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "实测豆包工作后，发现 Work Agent 大战的胜负手变了",
+        "hasContent": false,
+        "contentLen": 1
+      },
+      {
+        "title": "MiniMax H3 的 24h AI 直播火了，但我们搓出了更炸裂的东西！",
+        "hasContent": false,
+        "contentLen": 1
+      }
+    ],
+    "total": 6,
+    "fullCount": 5,
+    "summaryCount": 1,
+    "avgLength": 55444.833333333336,
+    "latestPublished": "2026-09-02T03:24:58.000Z",
+    "delays": [
+      {
+        "url": "https://mp.weixin.qq.com/s/Ek7SNmj_0GPOrWX6rPMQtA...",
+        "delayMin": 2,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/IwltI0iGdcg3Hyi99pE2wA...",
+        "delayMin": 33,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/KIvKyFabFCDdRu52jH0zWg...",
+        "delayMin": 26,
+        "type": "summary"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/xrK2brBjjJiaFPS8bA-juw...",
+        "delayMin": 23,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/mksLz4AyQwAKM3WKV0aEYQ...",
+        "delayMin": 191,
+        "type": "full"
+      },
+      {
+        "url": "https://mp.weixin.qq.com/s/u5_MZ8pg21PG6lhOKUVQcg...",
+        "delayMin": 10,
+        "type": "full"
+      }
+    ],
+    "sourceId": 128,
+    "syncStatus": {
+      "feedEntries": 8,
+      "dbArticles": 6,
+      "diff": 2,
+      "fulltextRate": "83%",
+      "maxDelayMin": 191
+    }
+  }
+]

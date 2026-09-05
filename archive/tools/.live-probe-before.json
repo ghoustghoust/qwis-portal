@@ -1,0 +1,60 @@
+{
+  "probeAt": "2026-09-02T04:02:39.168Z",
+  "error": null,
+  "total": 119,
+  "noLastFetch": 0,
+  "stale8hAfter": 0,
+  "byType": {
+    "rss": {
+      "n": 22,
+      "expIntervalSet": {
+        "480": 22
+      },
+      "stale": 0
+    },
+    "bilibili": {
+      "n": 1,
+      "expIntervalSet": {
+        "60": 1
+      },
+      "stale": 0
+    },
+    "douyin": {
+      "n": 1,
+      "expIntervalSet": {
+        "360": 1
+      },
+      "stale": 0
+    },
+    "youtube": {
+      "n": 1,
+      "expIntervalSet": {
+        "480": 1
+      },
+      "stale": 0
+    },
+    "wemp": {
+      "n": 65,
+      "expIntervalSet": {
+        "30": 65
+      },
+      "stale": 0
+    },
+    "hotlist": {
+      "n": 29,
+      "expIntervalSet": {
+        "30": 28,
+        "360": 1
+      },
+      "stale": 0
+    }
+  },
+  "staleSamples": [],
+  "futureDist": {
+    "overdue": 13,
+    "within1h": 84,
+    "within8h": 22,
+    "beyond8h": 0,
+    "null": 0
+  }
+}

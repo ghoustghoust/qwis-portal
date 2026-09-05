@@ -1,0 +1,8 @@
+﻿===== 关键进程命令行身份 =====
+PID 28704 : node  server/index.js
+PID 11404 : "C:\Program Files\nodejs\\node.exe"  "C:\Program Files\nodejs\\node_modules\npm\bin\npx-cli.js" -y chrome-devtools-mcp@1.2.0
+PID 23944 : "node"   "C:\Users\17619\AppData\Local\npm-cache\_npx\0aedce19bdc09f4b\node_modules\.bin\\..\chrome-devtools-mcp\build\src\bin\chrome-devtools-mcp.js" 
+PID 42084 : "C:\Program Files\nodejs\node.exe" C:\Users\17619\AppData\Local\npm-cache\_npx\0aedce19bdc09f4b\node_modules\chrome-devtools-mcp\build\src\telemetry\watchdog\main.js --parent-pid=23944 --app-version=1.2.0 --os-type=1
+PID 4636 : "C:\Program Files\nodejs\\node.exe"  "C:\Program Files\nodejs\\node_modules\npm\bin\npm-cli.js" start
+===== 当前会话是否管理员 =====
+IsAdmin=False

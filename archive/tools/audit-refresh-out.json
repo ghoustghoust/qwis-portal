@@ -1,0 +1,516 @@
+{
+  "active_by_type": [
+    {
+      "type": "wemp",
+      "c": 65
+    },
+    {
+      "type": "rss",
+      "c": 22
+    }
+  ],
+  "hotlist_count": 28,
+  "disabled_by_type": [
+    {
+      "type": "bilibili",
+      "c": 1
+    },
+    {
+      "type": "douyin",
+      "c": 1
+    },
+    {
+      "type": "hotlist",
+      "c": 1
+    },
+    {
+      "type": "youtube",
+      "c": 1
+    }
+  ],
+  "qbitai": [
+    {
+      "id": 30,
+      "name": "量子位",
+      "type": "wemp",
+      "enabled": 1,
+      "fail_count": 0,
+      "status": "ok",
+      "last_fetched_at": "2026-09-02T00:42:46.291Z",
+      "next_fetch_at": "2026-09-02T01:12:46.291Z",
+      "extra": "{\"intervalMin\":30}",
+      "url": "http://127.0.0.1:8001/feed/MP_WXS_3236757533.atom?limit=20"
+    },
+    {
+      "id": 72,
+      "name": "量子位博客",
+      "type": "rss",
+      "enabled": 1,
+      "fail_count": 0,
+      "status": "ok",
+      "last_fetched_at": "2026-09-01T17:55:24.760Z",
+      "next_fetch_at": "2026-09-02T01:55:24.760Z",
+      "extra": "{}",
+      "url": "https://www.qbitai.com/feed"
+    }
+  ],
+  "settings_intervals": {
+    "value": "{\"opml\":12,\"rss\":8,\"bilibili\":60,\"douyin\":360,\"queue\":10}"
+  },
+  "settings_queue": {
+    "value": "{\"baseUrl\":\"https://api.qianmeng.news\",\"token\":\"e71db125171257745e4e7abd2ab169f7b7070be45fc32b1e\",\"intervalMin\":10,\"enabled\":true}"
+  },
+  "qbitai_recent_articles": [
+    {
+      "id": 116695,
+      "title": "“没有Token的CS学生，应立即退学”",
+      "published_at": "2026-09-01T09:23:02.000Z",
+      "created_at": "2026-09-01T17:24:23.767Z",
+      "clen": 103296,
+      "slen": 20,
+      "url": "https://mp.weixin.qq.com/s/BP-gU8ZSErE-0Ws8FaEwbg"
+    },
+    {
+      "id": 98997,
+      "title": "3秒出片比播放还快，MiniMax打开了AI视频的实时商业化路径",
+      "published_at": "2026-09-01T01:23:04.000Z",
+      "created_at": "2026-09-01T01:36:24.259Z",
+      "clen": 39,
+      "slen": 32,
+      "url": "https://mp.weixin.qq.com/s/1SawWs-tcqNQqWAfZK7zvQ"
+    },
+    {
+      "id": 64170,
+      "title": "A社化身A割！Claude官宣永久提额25%，结果到手反而少17%",
+      "published_at": "2026-08-30T04:07:54.000Z",
+      "created_at": "2026-08-30T04:46:31.522Z",
+      "clen": 58836,
+      "slen": 33,
+      "url": "https://mp.weixin.qq.com/s/IuyCwE231PT-zYN-tNUH6A"
+    },
+    {
+      "id": 60095,
+      "title": "去年归国的徐梦迪，成了清华姚班班主任",
+      "published_at": "2026-08-29T06:07:04.000Z",
+      "created_at": "2026-08-30T02:33:56.675Z",
+      "clen": 25,
+      "slen": 18,
+      "url": "https://mp.weixin.qq.com/s/-9yZxkiV3sY0hCkYREGvPw"
+    },
+    {
+      "id": 60096,
+      "title": "刚刚，港股AGI第一股杀疯了！Agent业务半年进账近5亿，Token收入Q2暴涨500%",
+      "published_at": "2026-08-28T10:07:09.000Z",
+      "created_at": "2026-08-30T02:33:56.679Z",
+      "clen": 52,
+      "slen": 45,
+      "url": "https://mp.weixin.qq.com/s/oNL6OKFJ1Mlqaym_BxQohw"
+    },
+    {
+      "id": 13465,
+      "title": "我的自媒体搭子太能卷，一顿饭功夫17份成品",
+      "published_at": "2026-08-28T04:01:24.000Z",
+      "created_at": "2026-08-28T07:08:11.327Z",
+      "clen": 75899,
+      "slen": 43,
+      "url": "https://mp.weixin.qq.com/s/X3M6LMHe03YSH4kmYbr1XA"
+    }
+  ],
+  "qbitai_article_count": 6,
+  "wemp_extra_sample": [
+    {
+      "id": 29,
+      "name": "苍何",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-02T00:42:46.255Z",
+      "next_fetch_at": "2026-09-02T01:12:46.255Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 30,
+      "name": "量子位",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-02T00:42:46.291Z",
+      "next_fetch_at": "2026-09-02T01:12:46.291Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 31,
+      "name": "程序员鱼皮",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:54:46.839Z",
+      "next_fetch_at": "2026-09-02T01:54:46.839Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 32,
+      "name": "数字生命卡兹克",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:54:46.927Z",
+      "next_fetch_at": "2026-09-02T01:54:46.927Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 33,
+      "name": "小林coding",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:54:47.039Z",
+      "next_fetch_at": "2026-09-02T01:54:47.039Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 74,
+      "name": "日食记",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:30.426Z",
+      "next_fetch_at": "2026-09-02T01:55:30.426Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 75,
+      "name": "冷兔",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:30.524Z",
+      "next_fetch_at": "2026-09-02T01:55:30.524Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 76,
+      "name": "博物",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:32.476Z",
+      "next_fetch_at": "2026-09-02T01:55:32.476Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 77,
+      "name": "老爸评测",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:32.511Z",
+      "next_fetch_at": "2026-09-02T01:55:32.511Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 78,
+      "name": "丁香医生",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:34.267Z",
+      "next_fetch_at": "2026-09-02T01:55:34.267Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 79,
+      "name": "远方青木",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:34.415Z",
+      "next_fetch_at": "2026-09-02T01:55:34.415Z",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 80,
+      "name": "九边",
+      "enabled": 1,
+      "fail_count": 0,
+      "last_fetched_at": "2026-09-01T17:55:34.684Z",
+      "next_fetch_at": "2026-09-02T01:55:34.684Z",
+      "extra": "{\"intervalMin\":30}"
+    }
+  ],
+  "rss_summary_check": [
+    {
+      "name": "AIHOT 热榜",
+      "c": 181,
+      "short_cnt": 172,
+      "avg_clen": 521.1657458563536
+    },
+    {
+      "name": "Hacker News 首页",
+      "c": 50,
+      "short_cnt": 25,
+      "avg_clen": 6778.16
+    },
+    {
+      "name": "Wired",
+      "c": 45,
+      "short_cnt": 22,
+      "avg_clen": 15961.355555555556
+    },
+    {
+      "name": "TechCrunch",
+      "c": 30,
+      "short_cnt": 10,
+      "avg_clen": 4429.233333333334
+    },
+    {
+      "name": "机核",
+      "c": 28,
+      "short_cnt": 7,
+      "avg_clen": 4237.214285714285
+    },
+    {
+      "name": "Ars Technica",
+      "c": 22,
+      "short_cnt": 0,
+      "avg_clen": 1715.0454545454545
+    },
+    {
+      "name": "The Verge",
+      "c": 19,
+      "short_cnt": 0,
+      "avg_clen": 2087.684210526316
+    },
+    {
+      "name": "AIHOT 精选全文",
+      "c": 18,
+      "short_cnt": 10,
+      "avg_clen": 2886.1111111111113
+    },
+    {
+      "name": "量子位博客",
+      "c": 17,
+      "short_cnt": 0,
+      "avg_clen": 7579.35294117647
+    },
+    {
+      "name": "FT中文网",
+      "c": 5,
+      "short_cnt": 5,
+      "avg_clen": 61.4
+    },
+    {
+      "name": "MIT Technology Review",
+      "c": 4,
+      "short_cnt": 0,
+      "avg_clen": 14668.25
+    },
+    {
+      "name": "AIHOT 日报",
+      "c": 4,
+      "short_cnt": 0,
+      "avg_clen": 6660.5
+    },
+    {
+      "name": "OpenAI",
+      "c": 3,
+      "short_cnt": 0,
+      "avg_clen": 22409.666666666668
+    },
+    {
+      "name": "Anthropic",
+      "c": 2,
+      "short_cnt": 0,
+      "avg_clen": 19719
+    },
+    {
+      "name": "Hugging Face",
+      "c": 2,
+      "short_cnt": 0,
+      "avg_clen": 20346.5
+    }
+  ],
+  "no_etag_enabled": [
+    {
+      "id": 1,
+      "name": "阮一峰的网络日志",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 16,
+      "name": "OpenAI",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 17,
+      "name": "Google DeepMind",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 18,
+      "name": "Google AI 博客",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 19,
+      "name": "Hugging Face",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 20,
+      "name": "Qwen",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 21,
+      "name": "Anthropic",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 22,
+      "name": "Meta AI",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 23,
+      "name": "Mistral AI",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 24,
+      "name": "xAI",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 25,
+      "name": "AIHOT 热榜",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 26,
+      "name": "AIHOT 精选全文",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 27,
+      "name": "AIHOT 日报",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 65,
+      "name": "The Verge",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 66,
+      "name": "Ars Technica",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 67,
+      "name": "TechCrunch",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 68,
+      "name": "MIT Technology Review",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 69,
+      "name": "Wired",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 70,
+      "name": "Hacker News 首页",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 71,
+      "name": "机核",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 72,
+      "name": "量子位博客",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 73,
+      "name": "FT中文网",
+      "type": "rss",
+      "extra": "{}"
+    },
+    {
+      "id": 29,
+      "name": "苍何",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 30,
+      "name": "量子位",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 31,
+      "name": "程序员鱼皮",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 32,
+      "name": "数字生命卡兹克",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 33,
+      "name": "小林coding",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 74,
+      "name": "日食记",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 75,
+      "name": "冷兔",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    },
+    {
+      "id": 76,
+      "name": "博物",
+      "type": "wemp",
+      "extra": "{\"intervalMin\":30}"
+    }
+  ],
+  "pending_stats": [
+    {
+      "type": "bilibili",
+      "status": "resolved",
+      "c": 1
+    },
+    {
+      "type": "wechat",
+      "status": "pending",
+      "c": 1
+    }
+  ]
+}
