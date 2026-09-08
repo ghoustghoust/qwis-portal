@@ -6,7 +6,9 @@
   "rewrites": [
     { "source": "/api/collect", "destination": "/api/collect" },
     { "source": "/api/daily-generate", "destination": "/api/daily-generate" },
-    { "source": "/api/(.*)", "destination": "/api/[...slug]" }
+    { "source": "/api/(.*)", "destination": "/api/[...slug]" },
+    { "source": "/admin/(.*)", "destination": "/admin.html" },
+    { "source": "/((?!api/|data/).*)", "destination": "/index.html" }
   ],
   "crons": [
     {
