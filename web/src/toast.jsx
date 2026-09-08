@@ -13,7 +13,7 @@ export function Toaster() {
     pushFn = (msg) => {
       const id = `${Date.now()}-${Math.random()}`;
       setItems((s) => [...s, { id, msg }]);
-      setTimeout(() => setItems((s) => s.filter((i) => i.id !== id)), 2200);
+      setTimeout(() => setItems((s) => s.filter((i) => i.id !== id)), 1500);
     };
     return () => {
       pushFn = null;

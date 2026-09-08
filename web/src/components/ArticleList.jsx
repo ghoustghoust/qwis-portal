@@ -102,19 +102,20 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter.tab, filter.sourceId, filter.groupId, filter.from, filter.to, filter.sort, filter.lang, filter.scoreMin, filter.keyword, q, dedup, reloadKey]);
 
-  // P1-2：轮询静默刷新第一页（SSE 实时推送为主，轮询为降级兜底）
-  // SSE 连接正常时降频到 5min；SSE 断线时保持 60s 轮询确保数据最终一致
-  // 仅在页面可见、未选中文章、列表接近顶部时替换刷新，避免打断阅读/深分页状态
+  // 轮询已移除：SSE 实时推送为主，用户点击提示条后手动刷新
+  // 仅在页面从隐藏恢复可见时静默同步一次（不打断当前浏览位置）
   useEffect(() => {
-    const intervalMs = 5 * 60 * 1000; // 5 分钟兜底轮询
-    const t = setInterval(() => {
-      if (document.hidden) return;
+    const onVisible = () => {
+      // 页面从后台恢复时，如果列表接近顶部且未选中文章，静默同步
       if (selectedId) return;
       const el = boxRef.current;
       if (el && el.scrollTop > 200) return;
       fetchPage(null, true);
-    }, intervalMs);
-    return () => clearInterval(t);
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) onVisible();
+    });
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, [fetchPage, selectedId]);
 
   // 滚动到底部加载下一页

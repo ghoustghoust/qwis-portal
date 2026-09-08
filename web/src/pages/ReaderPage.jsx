@@ -40,19 +40,16 @@ export default function ReaderPage() {
   const [sidebarKey, setSidebarKey] = useState(0);
   const [listKey, setListKey] = useState(0);
 
-  // SSE 实时推送：新文章到达时 Toast 通知 + 自动刷新列表
+  // SSE 实时推送：静默累积新文章计数，不打断用户浏览/阅读
+  // 仅通过角标 + Toast 轻提示，用户点击提示条后才刷新列表
   useEffect(() => {
     if (lastEvent?.type === 'new_articles' && newCount > 0) {
+      // 仅 Toast 轻提示，不自动刷新列表
       const source = lastEvent.sourceName || '';
       const count = lastEvent.count || 1;
-      toast(`${source ? source + ' ' : ''}新增 ${count} 篇文章`);
-      // 如果未选中文章（正在浏览列表），自动刷新
-      if (!selectedArticleId && mode === 'article') {
-        setListKey((k) => k + 1);
-        consumeNewCount();
-      }
+      toast(`${source ? source + ' ' : ''}新增 ${count} 篇`);
     }
-  }, [lastEvent, newCount, selectedArticleId, mode, consumeNewCount]);
+  }, [lastEvent, newCount]);
 
   // 2.1 增强：views 从全局 store 读取，不再独立请求 /api/settings
   const views = Array.isArray(settings?.views) ? settings.views : [];
@@ -128,7 +125,7 @@ export default function ReaderPage() {
             reloadKey={listKey}
             views={views}
             onViewsChange={() => refreshStore('settings')}
-            newCount={selectedArticleId ? newCount : 0}
+            newCount={newCount}
             lastEvent={lastEvent}
             onBannerRefresh={() => { setListKey((k) => k + 1); consumeNewCount(); }}
           />
