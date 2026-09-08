@@ -255,7 +255,7 @@ const EVENTS_WINDOW_H = 72;
 const EVENTS_HALF_LIFE_H = 24;
 const EVENTS_SIM_THRESHOLD = 0.4;
 let _eventsCache = { at: 0, events: null };
-const EVENTS_CACHE_MS = 5 * 60e3;
+const EVENTS_CACHE_MS = 10 * 60e3; // 10 分钟缓存
 
 function titleTokens(title) {
   const set = new Set();
@@ -301,7 +301,8 @@ async function handleHotEvents(req) {
        JOIN sources s ON s.id = a.source_id AND s.enabled = 1
        LEFT JOIN groups g ON g.id = s.group_id
        WHERE a.published_at >= ?
-       ORDER BY a.published_at DESC`,
+       ORDER BY a.published_at DESC
+       LIMIT 500`,
       [cutoff]
     );
     const items = rows.filter(r => (r.title || '').trim().length >= 6);
