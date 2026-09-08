@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GET /api/hot 响应结构",
+  "description": "热榜接口——本地 Express 与 Vercel Portal 两侧均须遵循此契约",
+  "type": "object",
+  "required": ["ok", "items"],
+  "properties": {
+    "ok": { "type": "boolean", "const": true },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "source_name", "url"],
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "source_name": { "type": "string" },
+          "source_type": { "type": "string" },
+          "url": { "type": "string" },
+          "cover": { "type": ["string", "null"] },
+          "heat": { "type": "number" },
+          "published_at": { "type": "string" },
+          "category": { "type": "string" }
+        }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "updatedAt": { "type": "string" }
+  }
+}

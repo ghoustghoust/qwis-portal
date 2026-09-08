@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GET /api/articles 响应结构",
+  "description": "文章列表接口——本地 Express 与 Vercel Portal 两侧均须遵循此契约",
+  "type": "object",
+  "required": ["ok", "items"],
+  "properties": {
+    "ok": { "type": "boolean", "const": true },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "source_id", "source_name", "url", "published_at"],
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "source_id": { "type": "integer" },
+          "source_name": { "type": "string" },
+          "url": { "type": "string" },
+          "published_at": { "type": "string", "format": "date-time" },
+          "cover": { "type": ["string", "null"] },
+          "summary": { "type": "string" },
+          "read_at": { "type": ["string", "null"] },
+          "later": { "type": "integer", "minimum": 0 },
+          "score": { "type": ["number", "null"] },
+          "tags": { "type": "string" },
+          "related": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": { "type": "string" },
+                "ref_id": { "type": "integer" },
+                "source_name": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": { "type": ["string", "null"] },
+    "span": {
+      "type": "object",
+      "properties": {
+        "min": { "type": ["string", "null"] },
+        "max": { "type": ["string", "null"] }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "total": { "type": "integer" },
+        "unread": { "type": "integer" }
+      }
+    },
+    "totalClusters": { "type": "integer" },
+    "deduped": { "type": "boolean" }
+  }
+}

@@ -47,16 +47,20 @@ async function syncOpml(opmlUrl) {
   const insertStmt = db.prepare(
     "INSERT INTO sources(type, name, url, enabled, status, created_at) VALUES('wechat', ?, ?, 1, 'ok', ?)"
   );
-  const enableStmt = db.prepare("UPDATE sources SET enabled=1, status='ok' WHERE id=?");
   const renameStmt = db.prepare('UPDATE sources SET name=? WHERE id=?');
+  // 2026-09-05 修复（P1-2）：恢复源必须走统一解冻语义（清 fail_count + 清 extra 错误标记），
+  // 否则被熔断（fail_count≥3）的源经 OPML 同步"恢复"后，下一次失败会立即再次熔断
+  const { unfreezeSource } = require('../store');
 
   for (const o of outlines) {
     const exist = findStmt.get(o.url);
     if (!exist) {
-      insertStmt.run(o.name || o.url, o.url, nowIso());
+      const r = insertStmt.run(o.name || o.url, o.url, nowIso());
+      // 新源自动分类（失败不阻断）
+      try { require('../../services/classify').autoClassifySourceId(r.lastInsertRowid); } catch { /* 降级 */ }
       added++;
     } else if (!exist.enabled) {
-      enableStmt.run(exist.id); // 之前停用/删除过的源重新出现 → 恢复
+      unfreezeSource(exist.id); // 之前停用/删除过的源重新出现 → 统一解冻语义恢复
       restored++;
     } else if (o.name && exist.name !== o.name) {
       renameStmt.run(o.name, exist.id);

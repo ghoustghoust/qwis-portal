@@ -1,6 +1,6 @@
 // PM2 进程守护配置（宝塔/服务器部署用）
 // 用法: pm2 start ecosystem.config.js && pm2 save && pm2 startup
-// 文档: docs/DEPLOYMENT.md「Linux 服务器部署」章节
+// 文档: docs/RUNBOOK.md（唯一现行运维手册）
 const path = require('path');
 
 // 项目根目录（ecosystem.config.js 所在目录）
@@ -18,6 +18,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+        TZ: 'Asia/Shanghai', // 2026-09-05b：云端服务器时区不一时，保证 node-cron「每天 08:00」等定时不漂移
       },
       // ── 崩溃自动重启 ──
       autorestart: true,

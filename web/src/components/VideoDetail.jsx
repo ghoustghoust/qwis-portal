@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import { formatDateTime, imgUrl } from '../util';
+import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修
 
 // 视频详情页（F9）：HTML5 播放器（默认 direct 直链，可切官方 embed）+ 收藏/原平台打开
 export default function VideoDetail({ videoId, onBack, onChanged }) {
@@ -63,8 +64,8 @@ export default function VideoDetail({ videoId, onBack, onChanged }) {
   return (
     <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
       <div className="px-5 h-12 flex items-center flex-none border-b t-border t-surface">
-        <button className="btn-ghost !py-1 !px-2 text-xs" onClick={onBack}>
-          ✕ 返回视频列表
+        <button className="btn-ghost !py-1 !px-2.5 text-xs inline-flex items-center gap-1" onClick={onBack}>
+          ← 返回视频列表
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -116,17 +117,13 @@ export default function VideoDetail({ videoId, onBack, onChanged }) {
           {loading && <div className="py-10 text-center text-sm t-muted">加载中…</div>}
           {video && (
             <>
-              <h1 className="mt-4 text-xl font-bold leading-snug t-text">{video.title}</h1>
-              <div className="mt-2 flex items-center gap-2 text-xs t-muted">
-                {video.avatar || video.source_avatar ? (
-                  <img referrerPolicy="no-referrer"
-                    src={video.avatar || video.source_avatar}
-                    alt=""
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
-                ) : null}
-                <span className="t-text">{video.author || video.source_name || ''}</span>
-                <span>· {formatDateTime(video.published_at)}</span>
+              {/* 2026-09-05 视觉精修：标题 + meta 行（UP 主 · 发布时间），用 .meta token 统一字号/间距 */}
+              <h1 className="mt-5 text-xl font-bold leading-snug t-text">{video.title}</h1>
+              <div className="meta mt-2">
+                <SourceAvatar name={video.author || video.source_name} avatar={video.avatar || video.source_avatar} size={20} />
+                <span className="t-text truncate">{video.author || video.source_name || ''}</span>
+                <span className="sep">·</span>
+                <span className="flex-none">{formatDateTime(video.published_at)}</span>
               </div>
               {video.intro && (
                 <p className="mt-4 text-[13px] leading-relaxed t-muted whitespace-pre-wrap">

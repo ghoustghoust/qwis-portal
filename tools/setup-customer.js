@@ -133,7 +133,7 @@ function main() {
     console.log('2. npm run build（构建前端）');
     console.log('3. npm run pm2:start（PM2 守护启动）');
     console.log('4. pm2 save && pm2 startup（开机自启）');
-    console.log('5. 配置 Nginx 反向代理 → 127.0.0.1:3000（详见 docs/DEPLOYMENT.md「Linux 服务器部署」章节）');
+    console.log('5. 配置 Nginx 反向代理 → 127.0.0.1:3000（详见 docs/RUNBOOK.md）');
   } else {
     console.log('1. npm install（首次）');
     console.log('2. npm run build（构建前端）');

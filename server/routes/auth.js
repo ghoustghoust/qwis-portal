@@ -14,7 +14,7 @@ router.post('/login', (req, res) => {
   }
   
   try {
-    const result = login(username, password);
+    const result = login(username, password, req.ip);
     if (result.ok) {
       log.info(`[Auth] 登录成功：user=${username}`);
       res.json(result);
@@ -26,6 +26,11 @@ router.post('/login', (req, res) => {
     log.error('[Auth] 登录异常:', err.message);
     res.status(500).json({ ok: false, error: '服务器内部错误' });
   }
+});
+
+// GET /api/auth/me —— 校验当前 Bearer token 是否有效（前端登录态探测；受鉴权中间件保护）
+router.get('/me', (req, res) => {
+  res.json({ ok: true, user: 'admin' });
 });
 
 // GET /api/auth/douyin/status —— 抖音登录态查询（F37，前端 DouyinTab 契约）

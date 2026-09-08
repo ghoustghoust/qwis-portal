@@ -2,40 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { IconRail } from '../main.jsx';
 import { api, qs } from '../api';
 import { toast } from '../toast';
+import { parseTags, sourceLabel } from '../util.js';
+import Stars from '../components/ui/Stars.jsx';
+import TagPills from '../components/ui/TagPills.jsx';
 import HotDetail from '../components/HotDetail.jsx';
 import HotEvents from '../components/HotEvents.jsx';
 
 // 热点榜页（七期 T9/F3）：精选/全部动态统一为日期分组时间轴（对齐 AIHOT 官网结构）
 // 分组头「M月D日 星期X · N 条」可折叠（默认最新日展开）；左列 HH:mm + 竖线时间轴
-// 卡片富字段：信源标签/评分徽章/推荐理由（精选卡）/#标签/精选徽章/♡收藏（=articles.later）
-// 接口未就绪或字段缺失时优雅降级（N3：无评分不显示徽章）
+// 卡片富字段：信源标签/星级评分/推荐理由（精选卡）/#标签/精选徽章/♡收藏（=articles.later）
+// 接口未就绪或字段缺失时优雅降级（N3：无评分不显示星级）
+// 2026-09-05 视觉精修：Tab/分类收敛为 pill 样式；卡片统一 card-lift；parseTags/sourceLabel 改共享引用
 
 const DEFAULT_CATEGORIES = ['模型', '产品', '行业', '论文', '教程', '观点'];
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
-
-// author 字段形如「noreply@aihot.virxact.com (The Decoder：AI News（RSS）)」，取最外层括号内上游信源名
-function sourceLabel(item) {
-  const a = item.author || '';
-  const m = a.match(/\((.+)\)/) || a.match(/（(.+)）/);
-  if (m) return m[1].trim();
-  if (a && !a.includes('@')) return a;
-  return item.source_name || item.feedName || a || '';
-}
-
-// 标签字段兼容：JSON 数组字符串 / 数组 / 逗号分隔
-export function parseTags(tags) {
-  if (!tags) return [];
-  if (Array.isArray(tags)) return tags.filter(Boolean);
-  if (typeof tags === 'string') {
-    try {
-      const arr = JSON.parse(tags);
-      if (Array.isArray(arr)) return arr.filter(Boolean);
-    } catch {
-      return tags.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
-    }
-  }
-  return [];
-}
 
 // 本地日期分组键 + 展示文案
 function dateKey(iso) {
@@ -53,16 +33,6 @@ function hhmm(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '--:--';
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
-
-// 评分徽章（N3：无评分不渲染）
-function ScoreBadge({ score }) {
-  if (typeof score !== 'number' || Number.isNaN(score)) return null;
-  return (
-    <span className="flex-none inline-flex items-center gap-1 text-[11px] t-accent tabular-nums" title="AIHOT 编辑部评分">
-      ● AI 评分 {score}/100
-    </span>
-  );
 }
 
 // 收藏♡：与阅读器「稍后阅读」同一字段（POST /api/articles/:id/later）
@@ -85,7 +55,7 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
   const showReason = !!it.reason && (tab === 'featured' || !!it.featured);
   return (
     <article
-      className="card p-4 cursor-pointer transition-transform hover:-translate-y-0.5"
+      className="card card-lift p-4 cursor-pointer"
       onClick={() => onOpen(it)}
     >
       <div className="flex items-center gap-2 text-[11px]">
@@ -99,7 +69,8 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
           </span>
         )}
         <span className="flex-1" />
-        <ScoreBadge score={it.score} />
+        {/* 2026-09-05 视觉精修：评分徽章 → 共享 Stars（0-100 → 5 星） */}
+        <Stars score={it.score} size={12} className="flex-none" />
         <HeartButton
           active={!!it.later}
           onToggle={(e) => {
@@ -118,15 +89,8 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
           {it.reason}
         </p>
       )}
-      {tags.length > 0 && (
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          {tags.map((t) => (
-            <span key={t} className="text-[11px] t-muted">
-              #{t}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* 2026-09-05 视觉精修：#标签纯文本 → 共享 TagPills 胶囊 */}
+      <TagPills tags={tags} max={4} className="mt-2.5" />
     </article>
   );
 }
@@ -148,12 +112,13 @@ function DateGroup({ label, count, collapsed, onToggle, children }) {
 }
 
 // 单个时间轴条目：左列 HH:mm + 圆点，竖线贯穿
+// 2026-09-05 视觉精修：圆点/时间文本与卡片首行（meta）中心对齐（≈23px）
 function TimelineRow({ time, children }) {
   return (
     <div className="relative flex gap-4 pb-4 last:pb-5">
-      <div className="w-11 flex-none text-right text-[11px] leading-5 t-muted tabular-nums pt-3.5">{time}</div>
+      <div className="w-11 flex-none text-right text-[11px] leading-5 t-muted tabular-nums pt-4">{time}</div>
       <span
-        className="absolute left-[52px] top-[19px] w-[9px] h-[9px] rounded-full flex-none"
+        className="absolute left-[52px] top-[18.5px] w-[9px] h-[9px] rounded-full flex-none"
         style={{ background: 'var(--accent)', boxShadow: '0 0 0 2px var(--bg)' }}
       />
       <div className="flex-1 min-w-0">{children}</div>
@@ -313,10 +278,10 @@ export default function HotPage() {
     <div className="flex h-screen t-bg t-text overflow-hidden">
       <IconRail />
       <div className="flex-1 flex flex-col min-w-0">
-        {/* 页头：标题 + Tab */}
-        <header className="flex-none border-b t-border t-surface px-6 pt-4">
+        {/* 页头：标题 + Tab（2026-09-05 视觉精修：Tab 收敛为 pill 样式） */}
+        <header className="flex-none border-b t-border t-surface px-6 pt-4 pb-3">
           <h1 className="serif text-lg font-bold t-text">🔥 热点榜</h1>
-          <div className="mt-3 flex items-center gap-1">
+          <div className="mt-3 flex items-center gap-1.5">
             {[
               { id: 'featured', label: '精选' },
               { id: 'all', label: '全部动态' },
@@ -325,11 +290,7 @@ export default function HotPage() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`px-4 py-2 text-[13px] rounded-t-lg border-b-2 -mb-px ${
-                  tab === t.id
-                    ? 't-accent font-medium border-[var(--accent)]'
-                    : 't-muted border-transparent hover:t-text'
-                }`}
+                className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === t.id ? 'on' : ''}`}
               >
                 {t.label}
               </button>
@@ -338,7 +299,7 @@ export default function HotPage() {
             {tab === 'all' && (
               <>
                 <select
-                  className="input !w-44 mb-2"
+                  className="input !w-44"
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
                   title="按来源筛选"
@@ -352,7 +313,7 @@ export default function HotPage() {
                   ))}
                 </select>
                 <input
-                  className="input !w-56 mb-2"
+                  className="input !w-56"
                   placeholder="搜索标题、摘要…"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
@@ -362,19 +323,14 @@ export default function HotPage() {
           </div>
         </header>
 
-        {/* 精选：分类胶囊 */}
+        {/* 精选：分类胶囊（2026-09-05 视觉精修：统一 .pill/.pill.on） */}
         {tab === 'featured' && (
-          <div className="flex-none t-surface border-b t-border px-6 py-2.5 flex flex-wrap gap-2">
+          <div className="flex-none t-surface border-b t-border px-6 py-2.5 flex flex-wrap gap-1.5">
             {['', ...categories].map((c) => (
               <button
                 key={c || 'all'}
                 onClick={() => setCategory(c)}
-                className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-                  category === c
-                    ? 't-accent-bg border-transparent font-medium'
-                    : 't-border t-muted hover:t-text'
-                }`}
-                style={category === c ? { color: 'var(--accent-text)' } : undefined}
+                className={`pill cursor-pointer ${category === c ? 'on' : ''}`}
               >
                 {c || '全部'}
               </button>

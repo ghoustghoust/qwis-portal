@@ -35,10 +35,12 @@ const app = express();
 app.use(express.json({ limit: '5mb' }));
 
 // API 路由
+// 注意：Express 按挂载顺序匹配——/api/sources/restore-all 必须先于 /api/sources，
+// 否则若 sources.js 将来新增匹配该路径的路由会被静默截胡（2026-09-05b A7 修复）
 const routes = {
   '/api/settings': './routes/settings',
+  '/api/sources/restore-all': './routes/restore-all', // ✅ P3: 批量恢复熔断源专用接口（须先于 /api/sources）
   '/api/sources': './routes/sources',
-  '/api/sources/restore-all': './routes/restore-all', // ✅ P3: 批量恢复熔断源专用接口
   '/api/groups': './routes/groups',
   '/api/articles': './routes/articles',
   '/api/videos': './routes/videos',
@@ -54,7 +56,18 @@ const routes = {
   '/api/auth': './routes/auth',
   '/api/alerts': './routes/alerts',
   '/api/health': './routes/health',
+  '/api/reading': './routes/reading',
+  '/api/audit': './routes/audit',
 };
+
+// P0 鉴权（2026-09-05 修复）：必须在路由挂载之前注册——Express 按注册序执行，
+// 历史上挂在路由之后导致全部 /api/* 零鉴权（详见 docs/1.CODE_REVIEW_2026-09-05.md P0-1）。
+// 策略：读者只读 GET 公开；写操作与管理/敏感接口要求 Bearer JWT（/api/auth/login 获取）。
+app.use('/api', authMiddleware);
+
+// 源库接口先于 sources 挂载（决策 10：/batch /autoclassify 不被 sources 路由截胡）
+const sourcelibRouter = require('./routes/sourcelib');
+app.use('/api/sources', sourcelibRouter);
 
 for (const [mount, file] of Object.entries(routes)) {
   const full = path.join(__dirname, 'routes', path.basename(file) + '.js');
@@ -65,14 +78,6 @@ for (const [mount, file] of Object.entries(routes)) {
   }
 }
 
-// P0: API 鉴权中间件（当前采用「统一放行」策略）。
-// ⚠️ 注册顺序说明：本中间件在上方路由挂载循环（L60-67）之后注册，Express 按注册序执行，
-//   已挂载的 /api/* 路由会先响应、不经过本中间件（历史上导致「鉴权形同虚设」：实测无 token 访问 /api/sources、/api/daily 返回 200）。
-//   现统一放行：.env 不设 API_TOKEN → middleware/auth.js 的 REQUIRE_TOKEN=false，本机/可信局域网下行为一致
-//   （所有 /api 放行，未挂载路径落到下方 404，不再有 /api/columns 的困惑 401）。
-//   如需真正启用鉴权：须把本行移到路由挂载循环之前，并配套前端登录 + Bearer 注入（属新功能，需评估前端无 token 导致的白屏风险）。
-app.use('/api', authMiddleware);
-
 // API 404
 app.use('/api', (req, res) => res.status(404).json({ ok: false, error: 'not found' }));
 
@@ -82,7 +87,7 @@ app.use(express.static(distDir));
 
 // 三页面 SPA 路由（F52）+ 六期 /hot/ 热点榜（F6）+ 九期管理后台独立入口（admin.html）
 // 读者前端（reader/daily/hot）→ index.html；管理后台（/admin/，/wechat/ 兼容）→ admin.html
-for (const page of ['/reader/', '/daily/', '/hot/']) {
+for (const page of ['/reader/', '/daily/', '/hot/', '/reading/']) {
   app.get(page, (req, res) => res.sendFile(path.join(distDir, 'index.html')));
 }
 for (const page of ['/admin/', '/wechat/']) {

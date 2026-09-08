@@ -148,30 +148,25 @@ export default function HotEvents() {
 
   return (
     <div>
-      {/* 领域筛选行 */}
-      <div className="flex flex-wrap gap-2">
+      {/* 领域筛选行（2026-09-05 视觉精修：统一 .pill/.pill.on） */}
+      <div className="flex flex-wrap gap-1.5">
         {['all', ...domains].map((dm) => (
           <button
             key={dm}
             onClick={() => setDomain(dm)}
-            className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-              domain === dm
-                ? 't-accent-bg border-transparent font-medium'
-                : 't-border t-muted hover:t-text'
-            }`}
-            style={domain === dm ? { color: 'var(--accent-text)' } : undefined}
+            className={`pill cursor-pointer ${domain === dm ? 'on' : ''}`}
           >
             {dm === 'all' ? '全部' : dm}
           </button>
         ))}
       </div>
 
-      {/* 事件列表 */}
+      {/* 事件列表（2026-09-05 视觉精修：统一 card card-lift 语言，热度数字用 stat-num 缩小版） */}
       <div className="mt-4 space-y-2.5">
         {events.map((ev) => (
           <button
             key={ev.rank}
-            className="card w-full text-left px-4 py-3 flex items-center gap-3 transition-transform hover:-translate-y-0.5"
+            className="card card-lift w-full text-left px-4 py-3 flex items-center gap-3"
             onClick={() => openDetail(ev)}
           >
             <span className="flex-none w-7 text-right text-[15px] font-bold tabular-nums t-accent">
@@ -193,7 +188,7 @@ export default function HotEvents() {
               </div>
             </div>
             <span
-              className="flex-none text-[13px] font-bold tabular-nums t-accent inline-flex items-center gap-1"
+              className="stat-num flex-none !text-[15px] t-accent inline-flex items-center gap-1"
               title="热度值"
             >
               <FlameIcon size={14} /> {ev.heat}

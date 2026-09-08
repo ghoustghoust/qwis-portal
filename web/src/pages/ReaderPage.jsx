@@ -1,25 +1,44 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { api } from '../api';
+import { useStore } from '../store';
 import { IconRail } from '../main.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import ArticleList from '../components/ArticleList.jsx';
 import ArticleView from '../components/ArticleView.jsx';
+import OverviewRail from '../components/OverviewRail.jsx'; // 2026-09-05 视觉精修：未选中文章时的右侧统计轨
 import VideoGrid from '../components/VideoGrid.jsx';
 import VideoDetail from '../components/VideoDetail.jsx';
 
-const EMPTY_FILTER = { tab: 'all', sourceId: null, groupId: null, from: null, to: null };
+const SORT_KEY = 'qwis.sort'; // 排序选择记忆
+
+function readSort() {
+  try { return localStorage.getItem(SORT_KEY) || 'new'; } catch { return 'new'; }
+}
+
+const EMPTY_FILTER = {
+  tab: 'all', sourceId: null, groupId: null, from: null, to: null,
+  sort: 'new', lang: 'all', scoreMin: 0, timePreset: 'all', keyword: '',
+};
 
 // 阅读器页（/reader/）：三栏布局 + 文章/视频双 Tab 共用 Sidebar（T16）
 // T12/F4：文章与视频的筛选（含日期 from/to）各自独立记住
 export default function ReaderPage() {
+  const { settings, refresh: refreshStore } = useStore();
   const [mode, setMode] = useState('article'); // article | video
-  const [filters, setFilters] = useState({ article: { ...EMPTY_FILTER }, video: { ...EMPTY_FILTER } });
+  const [filters, setFilters] = useState({
+    article: { ...EMPTY_FILTER, sort: readSort() },
+    video: { ...EMPTY_FILTER },
+  });
   const [q, setQ] = useState('');
   const [selectedArticleId, setSelectedArticleId] = useState(null);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [articleItems, setArticleItems] = useState([]);
-  const [listCounts, setListCounts] = useState(null); // 列表接口若返回 counts 则采用
-  const [sidebarKey, setSidebarKey] = useState(0); // 侧栏（订阅源/计数）刷新
-  const [listKey, setListKey] = useState(0); // 列表刷新（全部已读等）
+  const [listCounts, setListCounts] = useState(null);
+  const [sidebarKey, setSidebarKey] = useState(0);
+  const [listKey, setListKey] = useState(0);
+
+  // 2.1 增强：views 从全局 store 读取，不再独立请求 /api/settings
+  const views = Array.isArray(settings?.views) ? settings.views : [];
 
   const filter = filters[mode];
 
@@ -33,12 +52,15 @@ export default function ReaderPage() {
     setListCounts(null);
   };
 
-  // Sidebar 换源/分组/Tab：保留当前模式的日期范围
-  const onFilterChange = (f) => {
+  // 排序记忆
+  const onFilterChange = useCallback((f) => {
+    if (f.sort) {
+      try { localStorage.setItem(SORT_KEY, f.sort); } catch {}
+    }
     setFilters((prev) => ({ ...prev, [mode]: { ...prev[mode], ...f } }));
     setSelectedArticleId(null);
     setSelectedVideoId(null);
-  };
+  }, [mode]);
 
   // DateFilter 改日期范围
   const onDateChange = useCallback(
@@ -71,6 +93,8 @@ export default function ReaderPage() {
         onFilterChange={onFilterChange}
         counts={listCounts}
         reloadKey={sidebarKey}
+        views={views}
+        onViewsChange={() => refreshStore('settings')}
       />
       {mode === 'article' ? (
         <>
@@ -79,12 +103,16 @@ export default function ReaderPage() {
             q={q}
             onSearch={setQ}
             onDateChange={onDateChange}
+            onFilterChange={onFilterChange}
             selectedId={selectedArticleId}
             onSelect={setSelectedArticleId}
             onMeta={onMeta}
             onItems={setArticleItems}
             reloadKey={listKey}
+            views={views}
+            onViewsChange={() => refreshStore('settings')}
           />
+          {/* 2026-09-05：正文区与右侧本周概览解耦——ArticleView 自渲空态，OverviewRail 常驻右栏 */}
           <ArticleView
             articleId={selectedArticleId}
             items={articleItems}
@@ -93,6 +121,7 @@ export default function ReaderPage() {
             onClose={() => setSelectedArticleId(null)}
             onChanged={onArticleChanged}
           />
+          <OverviewRail />
         </>
       ) : selectedVideoId ? (
         <VideoDetail

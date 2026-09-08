@@ -38,9 +38,48 @@ router.get('/', (req, res) => {
     items: pausedRows,
   };
 
+  // 2026-09-05 视觉精修:阅读器右侧统计轨(OverviewRail)数据——本周概览 + 近7天入早报 Top5
+  // 统计口径与阅读器一致：排除热榜/聚合源噪音(否则「近7天更新」被热榜刷成上万条,毫无意义)
+  const NOISE = "(s.type='hotlist' OR COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)=1)";
+  const now = Date.now();
+  const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
+  const weekAgo = new Date(now - 7 * 86400e3).toISOString();
+  const overview = {
+    enabledSources: count(`SELECT COUNT(*) c FROM sources s WHERE s.enabled=1 AND NOT ${NOISE}`),
+    unreadArticles: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND NOT ${NOISE}`),
+    todayNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, dayStart.toISOString()),
+    weekNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, weekAgo),
+    dailyItemCount: 0,
+    dailyTopSources: [], // [{name, count}]
+  };
+  try {
+    const latest = db.prepare('SELECT sections FROM daily_reports ORDER BY generated_at DESC LIMIT 1').get();
+    if (latest) {
+      // 热榜/聚合源的名字不进来源榜(「AIHOT 热榜 7 次」这类是聚合器不是真实来源)
+      const noiseNames = new Set(
+        db.prepare(`SELECT name FROM sources s WHERE ${NOISE}`).all().map((r) => r.name)
+      );
+      const sections = JSON.parse(latest.sections || '[]');
+      const tally = new Map();
+      for (const sec of sections) {
+        for (const it of sec.items || []) {
+          overview.dailyItemCount += 1;
+          const name = it.source_name || '';
+          if (!name || /^\d+ 源$/.test(name) || noiseNames.has(name)) continue; // 破茧栏合成条目与聚合源不计
+          tally.set(name, (tally.get(name) || 0) + 1);
+        }
+      }
+      overview.dailyTopSources = [...tally.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name, cnt]) => ({ name, count: cnt }));
+    }
+  } catch { /* 日报缺失/损坏时 overview 降级为计数 0 */ }
+
   res.json({
     ok: true,
     pausedSources,
+    overview,
     wechat: {
       opmlStatus: getSetting('wechat.opmlStatus', '空闲'),
       opmlLastSync: lastSyncAt,

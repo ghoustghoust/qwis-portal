@@ -333,7 +333,7 @@ curl.exe "https://api.example.com/wechat-rss-queue.php?token=<TOKEN>&action=clea
 
 `npm run setup:customer` 会生成 `data/http-shortcuts.json`（已填入域名与 Token）。安装与使用步骤见：
 
-**[docs/ANDROID_SUBMIT_GUIDE.md](./ANDROID_SUBMIT_GUIDE.md)**
+**[docs/ANDROID_SUBMIT_GUIDE.md](../../docs/ANDROID_SUBMIT_GUIDE.md)**
 
 链路：安卓分享菜单 → HTTP Shortcuts → 确认弹窗 → POST 云端队列 → 本地 10 分钟内自动拉取入库。
 

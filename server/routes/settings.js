@@ -36,6 +36,7 @@ router.get('/', (req, res) => {
     daily: getSetting('daily', { windowHours: 48, time: '08:00' }),
     data: getSetting('data', { retentionDays: 7 }),  // 数据保留天数配置
     hot: { enabled: getSetting('hot', {}).enabled !== false },
+    views: getSetting('reader.views', []), // 十一期：阅读器保存视图（公开读）
     bilibili: { cookieConfigured: cookieConfigured('bilibili') },
     douyin: { cookieConfigured: cookieConfigured('douyin') },
     wechat: {
@@ -77,7 +78,32 @@ router.put('/', (req, res) => {
   if (body.queue) mergeSetting('queue', body.queue, ['token']);
   if (dailyPatch) mergeSetting('daily', dailyPatch);
   if (body.hot) mergeSetting('hot', body.hot); // F8：热榜启用开关
-  if (body.data) mergeSetting('data', body.data, []);  // 数据管理配置（含 retentionDays）
+  if (body.data) {
+    // 3.4 校验保留天数范围（1-90 天）
+    if (body.data.retentionDays !== undefined) {
+      const n = Number(body.data.retentionDays);
+      if (!Number.isInteger(n) || n < 1 || n > 90) {
+        return res.status(400).json({ ok: false, error: 'retentionDays 必须是 1-90 的整数' });
+      }
+    }
+    mergeSetting('data', body.data, []);  // 数据管理配置（含 retentionDays）
+  }
+  // 十一期：视图存储（整体替换，校验：数组、≤20、每项 name 非空≤20字、filter 为对象）
+  if (body.views !== undefined) {
+    const views = body.views;
+    if (!Array.isArray(views) || views.length > 20) {
+      return res.status(400).json({ ok: false, error: 'views 必须为数组且不超过 20 个' });
+    }
+    for (const v of views) {
+      if (!v || typeof v.name !== 'string' || !v.name.trim() || v.name.length > 20) {
+        return res.status(400).json({ ok: false, error: '视图名称须为非空且不超过 20 字' });
+      }
+      if (!v.filter || typeof v.filter !== 'object') {
+        return res.status(400).json({ ok: false, error: '视图 filter 须为对象' });
+      }
+    }
+    setSetting('reader.views', views);
+  }
   if (body.bilibili && body.bilibili.cookie) {
     // Cookie 存 credentials 表（不落 settings）
     db.prepare(

@@ -6,7 +6,7 @@ import { useSettings, useStatus } from '../useSettings';
 import { copyText } from '../util';
 import IntervalEditor from './IntervalEditor.jsx';
 import StatusCard from './StatusCard.jsx';
-import SourceTable from './SourceTable.jsx';
+import SourceTable, { StatusBadge } from './SourceTable.jsx';
 import QueuePanel from './QueuePanel.jsx';
 
 // 公众号 RSS Tab（F21~F27）
@@ -166,10 +166,11 @@ export default function WechatTab() {
   };
 
   // type 徽章：rss / x / youtube（YouTube 存为 rss 类型，按 URL 区分）
+  // 2026-09-05 视觉精修：去掉硬编码品牌色，统一 .pill
   const extBadge = (r) => {
-    if (r.type === 'x') return { text: 'X', bg: '#000', fg: '#fff' };
-    if (/youtube\.com|youtu\.be/i.test(r.url || '')) return { text: 'YouTube', bg: '#f03', fg: '#fff' };
-    return { text: 'RSS', bg: '#f26522', fg: '#fff' };
+    if (r.type === 'x') return 'X';
+    if (/youtube\.com|youtu\.be/i.test(r.url || '')) return 'YouTube';
+    return 'RSS';
   };
 
   const run = async (key, fn, okMsg) => {
@@ -368,51 +369,17 @@ export default function WechatTab() {
         <SourceTable
           empty="暂无公众号订阅，请先同步 OPML"
           columns={[
-            {
-              key: 'avatar',
-              title: '头像',
-              render: (r) =>
-                r.avatar ? (
-                  <img referrerPolicy="no-referrer" src={r.avatar} alt="" className="w-6 h-6 rounded-full object-cover" loading="lazy" />
-                ) : (
-                  <span className="w-6 h-6 rounded-full inline-flex items-center justify-center text-xs" style={{ background: 'var(--green)', color: '#fff' }}>
-                    微
-                  </span>
-                ),
-            },
             { 
               key: 'name', 
               title: '公众号昵称',
               render: (r) => (
-                <div className="min-w-0">
-                  <span className="font-medium t-text truncate max-w-[200px]" title={r.name}>{r.name}</span>
-                  {(r.extra && r.fail_count >= 3 && r.enabled === 0) && (
-                    <span className="ml-2 badge-red badge" title="已熔断（连续失败≥3 次）">
-                      ⚡ 熔断
-                    </span>
-                  )}
-                </div>
+                <span className="font-medium t-text truncate max-w-[220px] block" title={r.name}>{r.name}</span>
               )
             },
             {
               key: 'status',
               title: '状态',
-              render: (r) => (
-                <div className="flex items-center gap-2">
-                  {r.enabled === 0 ? (
-                    <span className="badge-green badge-off" style={{ color: 'var(--muted)', borderColor: 'var(--muted)' }}>
-                      已停用
-                    </span>
-                  ) : (
-                    <span className="badge-green badge-on">订阅中</span>
-                  )}
-                  {r.status === 'error' && (
-                    <span className="badge-red badge" title="刷新异常">
-                      异常
-                    </span>
-                  )}
-                </div>
-              )
+              render: (r) => <StatusBadge source={r} />
             },
             { 
               key: 'created_at', 
@@ -485,52 +452,16 @@ export default function WechatTab() {
           empty="暂无扩展源，先添加一个 RSS / YouTube / X 订阅"
           columns={[
             {
-              key: 'avatar',
-              title: '',
-              render: (s) => (
-                s.avatar ? (
-                  <img referrerPolicy="no-referrer" src={s.avatar} alt="" className="w-9 h-9 rounded-full object-cover flex-none" loading="lazy" />
-                ) : (
-                  <span className="w-9 h-9 rounded-full t-surface2 flex-none flex items-center justify-center text-xs t-muted">
-                    {(s.name || s.url || '?').slice(0, 1)}
-                  </span>
-                )
-              ),
-            },
-            {
               key: 'name',
               title: '名称 / URL',
               render: (s) => {
-                const b = extBadge(s);
                 return (
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[13px] font-medium t-text truncate max-w-[200px]" title={s.name || s.url}>
                         {s.name || s.url}
                       </span>
-                      <span
-                        className="text-[10px] px-1.5 py-0.5 rounded flex-none"
-                        style={{ background: b.bg, color: b.fg }}
-                      >
-                        {b.text}
-                      </span>
-                      {s.status === 'error' && (
-                        <span 
-                          className="badge-green" 
-                          style={{ color: 'var(--red)', borderColor: 'var(--red)' }}
-                          title={s.lastError || '刷新异常'}
-                        >
-                          刷新异常
-                        </span>
-                      )}
-                      {s.fail_count >= 3 && s.enabled === 0 && (
-                        <span 
-                          className="badge-red badge" 
-                          title="已熔断（连续失败≥3 次）"
-                        >
-                          熔断
-                        </span>
-                      )}
+                      <span className="pill flex-none">{extBadge(s)}</span>
                     </div>
                     <div className="mt-1 text-[11px] t-muted break-all">
                       {s.url}
@@ -544,9 +475,7 @@ export default function WechatTab() {
               title: '状态',
               render: (s) => (
                 <div className="flex items-center gap-2">
-                  <span className={`badge-green ${s.enabled !== 0 ? 'badge-on' : 'badge-off'}`}>
-                    {s.enabled !== 0 ? '已启用' : '已停用'}
-                  </span>
+                  <StatusBadge source={s} />
                   {s.last_fetched_at && (
                     <span className="text-xs t-muted" title={`上次刷新：${formatDateTime(s.last_fetched_at)}`}>
                       {formatDateTime(s.last_fetched_at)}

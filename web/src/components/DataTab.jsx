@@ -132,13 +132,8 @@ export default function DataTab() {
     setImportingFile(file.name);
     try {
       // 第一步：上传快照文件（application/octet-stream 原始字节流）
-      const res = await fetch(`/api/data/upload?name=${encodeURIComponent(file.name)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/octet-stream' },
-        body: file,
-      });
-      const up = await res.json().catch(() => null);
-      if (!res.ok || !up || up.ok === false) throw new Error((up && up.error) || `上传失败 HTTP ${res.status}`);
+      // A1 修复：走 api.upload（自动注入 Bearer + 401 广播），裸 fetch 在鉴权链下必 401
+      await api.upload(`/api/data/upload?name=${encodeURIComponent(file.name)}`, file);
 
       // 第二步：二次确认后执行整库恢复
       if (!window.confirm(`快照「${file.name}」已上传。\n\n确定用它覆盖当前整库数据？\n（订阅源/文章/视频/设置全部回滚到快照时点，操作不可撤销）`)) {
@@ -293,9 +288,13 @@ export default function DataTab() {
           <input
             type="number"
             min="1"
+            max="90"
             className="input !w-24"
             value={days}
-            onChange={(e) => setDays(e.target.value)}
+            onChange={(e) => {
+              const v = Math.max(1, Math.min(90, Number(e.target.value) || 1));
+              setDays(v);
+            }}
           />
           <span className="t-muted">天</span>
           <button className="btn-ghost" disabled={!ready || !!busy || !days} onClick={doPreview}>
@@ -334,6 +333,25 @@ export default function DataTab() {
             刷新
           </button>
         </div>
+        {/* 5.3 数据库体积趋势（基于快照历史） */}
+        {snaps.length >= 2 && (
+          <div className="mt-3 card t-surface2 px-4 py-3">
+            <div className="text-xs t-muted mb-2">快照体积趋势（最近 {Math.min(snaps.length, 10)} 个快照）</div>
+            <div className="flex items-end gap-1 h-16">
+              {snaps.slice(0, 10).reverse().map((s, i, arr) => {
+                const sz = s.sizeBytes ?? s.size ?? s.bytes ?? 0;
+                const maxSz = Math.max(...arr.map(x => x.sizeBytes ?? x.size ?? x.bytes ?? 0), 1);
+                const pct = Math.max((sz / maxSz) * 100, 4);
+                return (
+                  <div key={snapName(s)} className="flex-1 flex flex-col items-center gap-0.5" title={`${snapName(s)}: ${fmtSize(sz)}`}>
+                    <div className="w-full rounded-t bg-[var(--accent)] opacity-70" style={{ height: `${pct}%` }} />
+                    <span className="text-[9px] t-muted truncate w-full text-center">{fmtSize(sz)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {tables && (
           <div className="mt-3 card overflow-hidden">
             <table className="w-full text-[13px]">

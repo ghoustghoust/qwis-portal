@@ -119,22 +119,85 @@ db.exec('CREATE INDEX IF NOT EXISTS idx_videos_published ON videos(published_at)
 try { db.exec('ALTER TABLE articles ADD COLUMN category TEXT'); } catch { /* 列已存在 */ }
 // 增量列迁移（T48）：sources.fail_count 记录连续抓取失败次数（连失 3 次自动暂停）
 try { db.exec('ALTER TABLE sources ADD COLUMN fail_count INTEGER DEFAULT 0'); } catch { /* 列已存在 */ }
-// T47：大列表常用过滤/排序补索引（千级数据量实测见 docs/DEPLOYMENT.md 性能节）
+// 2026-09-05：articles.word_count 正文纯文本字数（写入时剥 HTML 计算；替代 LENGTH(content_html) 的虚高估算）
+try { db.exec('ALTER TABLE articles ADD COLUMN word_count INTEGER'); } catch { /* 列已存在 */ }
+// T47：大列表常用过滤/排序补索引（千级数据量实测见 docs/RUNBOOK.md）
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_articles_read_at ON articles(read_at);
 CREATE INDEX IF NOT EXISTS idx_videos_source ON videos(source_id);
 `);
 
+// 重构 Phase 5：任务队列表（SQLite-backed，替代 setInterval + 串行 await）
+db.exec(`
+CREATE TABLE IF NOT EXISTS job_queue (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  type TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  priority INTEGER DEFAULT 0,
+  retries INTEGER DEFAULT 3,
+  attempts INTEGER DEFAULT 0,
+  source_id INTEGER,
+  error TEXT,
+  created_at TEXT,
+  started_at TEXT,
+  completed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_jq_status_priority ON job_queue(status, priority DESC);
+CREATE INDEX IF NOT EXISTS idx_jq_source_status ON job_queue(source_id, status);
+
+-- 3.1 操作审计日志
+CREATE TABLE IF NOT EXISTS audit_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  at TEXT NOT NULL,
+  user TEXT DEFAULT 'admin',
+  action TEXT NOT NULL,
+  target TEXT,
+  detail TEXT,
+  ip TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_audit_at ON audit_log(at DESC);
+`);
+
+// 5.2 SQLite 查询缓存层：进程内 LRU 缓存（TTL 30s），写操作自动失效
+const _queryCache = new Map();
+const QCACHE_TTL = 30000;
+const QCACHE_MAX = 100;
+
+function cachedQuery(cacheKey, ttlMs, fetcher) {
+  const now = Date.now();
+  const entry = _queryCache.get(cacheKey);
+  if (entry && now - entry.ts < (ttlMs || QCACHE_TTL)) return entry.val;
+  const val = fetcher();
+  // LRU 淘汰：超上限时删除最旧条目
+  if (_queryCache.size >= QCACHE_MAX) {
+    const oldest = _queryCache.keys().next().value;
+    _queryCache.delete(oldest);
+  }
+  _queryCache.set(cacheKey, { val, ts: now });
+  return val;
+}
+
+function invalidateQueryCache(prefix) {
+  if (!prefix) { _queryCache.clear(); return; }
+  for (const k of _queryCache.keys()) {
+    if (k.startsWith(prefix)) _queryCache.delete(k);
+  }
+}
+
 function getSetting(key, def = null) {
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
-  if (!row) return def;
-  try { return JSON.parse(row.value); } catch { return def; }
+  return cachedQuery(`setting:${key}`, QCACHE_TTL, () => {
+    const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
+    if (!row) return def;
+    try { return JSON.parse(row.value); } catch { return def; }
+  });
 }
 
 function setSetting(key, val) {
   db.prepare(
     'INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value'
   ).run(key, JSON.stringify(val));
+  invalidateQueryCache(`setting:${key}`);
 }
 
-module.exports = { db, getSetting, setSetting, DATA_DIR };
+module.exports = { db, getSetting, setSetting, DATA_DIR, cachedQuery, invalidateQueryCache };

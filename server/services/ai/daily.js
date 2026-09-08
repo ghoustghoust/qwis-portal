@@ -82,6 +82,8 @@ function collectCandidates(windowHours, cfg) {
       kind: 'article', ref_id: r.id, source_id: r.source_id, title: r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
       focus: !!r.source_focus, aggregator: !!r.source_aggregator,
+      // 2026-09-05 视觉精修：透传 AI 评分/标签，供日报条目卡展示（纯增量字段）
+      score: r.score ?? null, tags: r.tags || '',
       text: `${r.title || ''} ${htmlToText(r.summary)} ${htmlToText(r.content_html).slice(0, 2000)}`,
     });
   }
@@ -101,6 +103,8 @@ function collectCandidates(windowHours, cfg) {
       kind: 'video', ref_id: r.id, source_id: r.source_id, title: r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
       focus: !!r.source_focus, aggregator: !!r.source_aggregator,
+      // 2026-09-05 视觉精修：视频表暂无评分/标签列，字段占位对齐文章条目
+      score: r.score ?? null, tags: r.tags || '',
       text: `${r.title || ''} ${htmlToText(r.intro)}`,
     });
   }
@@ -108,12 +112,22 @@ function collectCandidates(windowHours, cfg) {
 }
 
 // 关键词命中数（大小写不敏感子串匹配）
+// 3.3 增强：支持 AND 组合 —— keywords 内每项可以是字符串（OR）或字符串数组（AND，全部命中才算 1 hit）
 function keywordHits(item, keywords) {
   const hay = item.text.toLowerCase();
   let hits = 0;
   for (const kw of keywords || []) {
-    const k = String(kw).trim().toLowerCase();
-    if (k && hay.includes(k)) hits++;
+    if (Array.isArray(kw)) {
+      // AND 组合：数组内所有关键词都必须命中
+      const allMatch = kw.every((k) => {
+        const k2 = String(k).trim().toLowerCase();
+        return k2 && hay.includes(k2);
+      });
+      if (allMatch) hits++;
+    } else {
+      const k = String(kw).trim().toLowerCase();
+      if (k && hay.includes(k)) hits++;
+    }
   }
   return hits;
 }
@@ -146,35 +160,8 @@ function classify(items, columns) {
   return buckets;
 }
 
-// 标题归一化（F5 去重用）：小写 → 去开头数字日期前缀 → 去标点符号
-function normalizeTitle(title) {
-  return String(title || '')
-    .toLowerCase()
-    .replace(/^(\d{4}[-/年])?\d{1,2}[-/月]\d{1,2}[日号]?[\s:：,，.、-]*/, '')
-    .replace(/[\p{P}\p{S}]+/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-// token 集合：拉丁/数字整词 + CJK 二元组（单字段取单字）
-function titleTokens(title) {
-  const t = normalizeTitle(title);
-  const tokens = new Set();
-  for (const m of t.matchAll(/[a-z0-9]+/g)) tokens.add(m[0]);
-  for (const m of t.matchAll(/[一-鿿]+/g)) {
-    const s = m[0];
-    if (s.length === 1) tokens.add(s);
-    else for (let i = 0; i < s.length - 1; i++) tokens.add(s.slice(i, i + 2));
-  }
-  return tokens;
-}
-
-function jaccard(a, b) {
-  if (!a.size || !b.size) return 0;
-  let inter = 0;
-  for (const t of a) if (b.has(t)) inter++;
-  return inter / (a.size + b.size - inter);
-}
+// 标题分词 + 相似度：提取到独立纯函数模块（重构 Phase 1），消除 events.js → daily.js 反向依赖
+const { normalizeTitle, titleTokens, jaccard } = require('./_tokens');
 
 // F5 去重 + 限流（对单栏候选列表）：
 //  1) 标题 token Jaccard ≥0.5 判同主题合并：主条目非 aggregator（一手源）优先，同级取发布时间早者；
@@ -264,6 +251,10 @@ async function generate(windowHours) {
         source_name: item.source_name,
         url: item.url,
         published_at: item.published_at,
+        hits: item._hits || 0, // 2026-09-05b：透出关键词命中数，供前端排序/角标
+        // 2026-09-05 视觉精修：候选带 AI 评分/标签时才透传（缺字段不补 null，保持旧数据结构不变）
+        ...(item.score != null ? { score: item.score } : {}),
+        ...(item.tags ? { tags: item.tags } : {}),
         related: item.related || [], // F5：同主题合并的其他信源
       });
     }
@@ -278,7 +269,7 @@ async function generate(windowHours) {
           (hitsOf.get(`${b.kind}:${b.ref_id}`) || 0) - (hitsOf.get(`${a.kind}:${a.ref_id}`) || 0) || byTime(a, b)
       );
     }
-    const sec = { column: col.name, items: outItems };
+    const sec = { column: col.name, col_id: col.id, items: outItems }; // 2026-09-05b：col_id 供前端折叠态/关键词映射（栏目名可重复，id 稳定）
     if (col.desc) sec.desc = col.desc;
     sections.push(sec);
   }
@@ -296,12 +287,18 @@ async function generate(windowHours) {
   // 数据来自事件聚合引擎(热榜+公众号+RSS 全域);无事件时跳过该栏
   try {
     const events = require('../events');
-    // FAMILIAR = 用户订阅圈的分组名（含 2026-09-04 迁移新增的「公众号/播客/YouTube」），圈外事件进破茧栏
-    const FAMILIAR = ['AI', '科技', '科技热榜', '国际科技', 'AI 模型', 'AI 产品', '技巧观点', '行业动态', '公众号', '播客', 'YouTube'];
+    // FAMILIAR = 用户订阅圈的分组名，从 settings 可配（自动分类落组时自动并入新组名）
+    let FAMILIAR;
+    try {
+      const raw = getSetting('daily.cocoonFamiliar');
+      FAMILIAR = raw ? JSON.parse(raw) : null;
+    } catch { /* ignore */ }
+    if (!Array.isArray(FAMILIAR)) FAMILIAR = require('../classify').DEFAULT_FAMILIAR;
     const outside = events.getEvents('all').filter((e) => !FAMILIAR.includes(e.domain)).slice(0, 5);
     if (outside.length) {
       sections.push({
         column: '茧房外 · 你圈子之外的热点',
+        col_id: 'cocoon',
         desc: '跨平台事件聚合：与你常读领域交集最小的当日热点，主动打破信息茧房',
         items: outside.map((e) => ({
           kind: 'event',

@@ -104,7 +104,7 @@ module.exports = {
     // 每轮限 10 条防请求风暴;知乎/微博等登录墙站点会自然失败并保留摘要兜底
     const thin = items.filter((a) => (a.content_html || '').length < 1000).slice(0, 10);
     if (thin.length) {
-      const { fetchFulltext } = require('../rss')._internals;
+      const { fetchFulltext } = require('../rss');
       for (const a of thin) {
         try {
           const full = await fetchFulltext(a.url);

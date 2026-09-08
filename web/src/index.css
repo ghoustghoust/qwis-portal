@@ -256,3 +256,131 @@ body {
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ===== 2026-09-05b 日报改版 ===== */
+/* 栏目关键词高亮（标题内 <mark>） */
+mark.hl {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+/* 栏头 1px 发线（替代原 2px 粗分割线，降低视觉噪音） */
+.hairline { border-color: var(--border); }
+
+/* 大栏目区块跳过屏外渲染（长日报性能） */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
+
+/* ===== 2026-09-05 视觉精修：统一排版 token（全部 var() 驱动，三套主题自适应） ===== */
+
+/* 标签/分类小胶囊（TagPills、分类筛选） */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 9999px;
+  padding: 0.14rem 0.6rem;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  background: transparent;
+  white-space: nowrap;
+}
+.pill.on {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 500;
+}
+
+/* 元信息行（来源 · 时间 · 字数） */
+.meta {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.meta .sep { opacity: 0.5; }
+
+/* 卡片 hover 浮起（列表卡/统计卡/视频卡统一） */
+.card-lift {
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+.card-lift:hover {
+  box-shadow: 0 4px 14px rgba(70, 55, 30, 0.10);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+html[data-theme='dark'] .card-lift:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); }
+html[data-theme='blue-white'] .card-lift:hover { box-shadow: 0 4px 14px rgba(30, 60, 120, 0.12); }
+
+/* 统计大数字（StatCard / OverviewRail / 日报头部） */
+.stat-num {
+  font-size: 1.7rem;
+  line-height: 1.15;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+/* 未读左竖条（替代蓝点，降噪） */
+.unread-bar {
+  position: relative;
+}
+.unread-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2.5px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* 星级评分配色 */
+.stars { color: var(--accent); display: inline-flex; align-items: center; gap: 1px; }
+.stars .star-off { color: var(--border); }
+.stars-num { font-size: 0.7rem; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+/* 状态徽章三态收敛（管理台/侧栏统一） */
+.badge-red {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.7rem;
+  color: var(--red);
+  border: 1px solid var(--red);
+  background: transparent;
+}
+.badge-gray {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  background: transparent;
+}
+
+/* 源头像兜底圆块（SourceAvatar） */
+.avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  flex: none;
+  user-select: none;
+}

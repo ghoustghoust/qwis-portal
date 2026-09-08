@@ -70,3 +70,46 @@ export async function copyText(text) {
   }
   toast('已添加到剪贴板');
 }
+
+// ===== 2026-09-05 视觉精修：共享展示 helper =====
+
+// 解析 tags 字段（JSON 数组 / 逗号串 / 数组 三态兼容），热点榜/阅读器/日报共用
+export function parseTags(tags) {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags.filter(Boolean);
+  if (typeof tags === 'string') {
+    const s = tags.trim();
+    if (!s) return [];
+    try {
+      const arr = JSON.parse(s);
+      if (Array.isArray(arr)) return arr.filter(Boolean);
+    } catch { /* 非 JSON，按逗号串处理 */ }
+    return s.split(/[,，]/).map((x) => x.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+// 字数展示：1234 → "1234 字"；>=10000 → "1.2 万字"
+export function formatWords(n) {
+  const v = Number(n);
+  if (!v || Number.isNaN(v) || v <= 0) return '';
+  if (v >= 10000) return `${(v / 10000).toFixed(1)} 万字`;
+  return `${v} 字`;
+}
+
+// 阅读时长：按 400 字/分钟估算，返回 "约 N 分钟"；<1 分钟返回 "约 1 分钟"
+export function readingMinutes(contentLen) {
+  const v = Number(contentLen);
+  if (!v || Number.isNaN(v) || v <= 0) return '';
+  return `约 ${Math.max(1, Math.round(v / 400))} 分钟`;
+}
+
+// 信源展示名（2026-09-05 视觉精修：HotPage/HotDetail 共用，消除重复定义）
+// author 字段形如「noreply@aihot.virxact.com (The Decoder：AI News（RSS）)」，取最外层括号内上游信源名
+export function sourceLabel(item) {
+  const a = item?.author || '';
+  const m = a.match(/\((.+)\)/) || a.match(/（(.+)）/);
+  if (m) return m[1].trim();
+  if (a && !a.includes('@')) return a;
+  return item?.source_name || item?.feedName || a || '';
+}

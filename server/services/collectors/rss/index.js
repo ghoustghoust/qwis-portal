@@ -26,7 +26,9 @@ function firstImg(html) {
     if (/facebook\.com\/tr|doubleclick|analytics|pixel/i.test(src)) continue;
     if (/display\s*:\s*none/i.test(tag)) continue;
     if (/width=["']?1["'\s]/i.test(tag) && /height=["']?1["'\s]/i.test(tag)) continue;
-    return src;
+    // 2026-09-05 修复：正则取的是原始 HTML 属性值，URL 里的 & 是 &amp; 实体，
+    // 不解码会让 wechat2rss img-proxy 收到错误参数（amp;u），封面全挂
+    return src.replace(/&amp;/g, '&');
   }
   return null;
 }
@@ -399,5 +401,10 @@ module.exports = {
     return { articles: readable, videos: [], etag, lastModified };
   },
   // 测试用内部函数
-  _internals: { fetchHtmlSmart, decodeHtmlBuffer, extractArticleContent, cleanContent, isJunkContent, isYoutubeUrl, youtubeChannelId, youtubeFeedUrl, isYoutubeFeed, mapYoutubeItem, parseFeed, parseFeedConditional, extractOriginalUrl, fetchFulltext },
+  _internals: { fetchHtmlSmart, decodeHtmlBuffer, extractArticleContent, cleanContent, isJunkContent, isYoutubeUrl, youtubeChannelId, youtubeFeedUrl, isYoutubeFeed, mapYoutubeItem, parseFeed, parseFeedConditional, extractOriginalUrl, fetchFulltext, firstImg },
 };
+
+// 重构 Phase 4：将 fetchFulltext / cleanContent 提升为正式导出（替代 _internals 泄漏）
+// 调用方应通过 registry.getAdapter('rss').fetchFulltext(url) 或直接 require 访问
+module.exports.fetchFulltext = fetchFulltext;
+module.exports.cleanContent = cleanContent;

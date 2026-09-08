@@ -1,6 +1,7 @@
-// 分组 API（T12）：CRUD + POST /api/groups/move（拖拽落点）
+// 分组 API（T12）：CRUD + POST /api/groups/move（拖拽落点 + kind 校验 + 手动锁定）
 const express = require('express');
 const { db } = require('../db');
+const { kindOfType } = require('../services/classify');
 
 const router = express.Router();
 
@@ -45,17 +46,27 @@ router.delete('/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-// POST /api/groups/move {source_id, group_id|null} —— 拖拽落点
+// POST /api/groups/move {source_id, group_id|null} —— 拖拽落点 + kind 校验 + 手动锁定
 router.post('/move', (req, res) => {
   const { source_id, group_id } = req.body || {};
   if (!source_id) return res.status(400).json({ ok: false, error: '缺少 source_id' });
-  const s = db.prepare('SELECT id FROM sources WHERE id=?').get(source_id);
+  const s = db.prepare('SELECT * FROM sources WHERE id=?').get(source_id);
   if (!s) return res.status(404).json({ ok: false, error: 'not found' });
   if (group_id !== null && group_id !== undefined) {
-    const g = db.prepare('SELECT id FROM groups WHERE id=?').get(group_id);
+    const g = db.prepare('SELECT * FROM groups WHERE id=?').get(group_id);
     if (!g) return res.status(404).json({ ok: false, error: '分组不存在' });
+    // kind 校验：源 contentKind 与目标组 kind 必须一致
+    const sourceKind = kindOfType(s.type);
+    if (sourceKind !== g.kind) {
+      return res.status(400).json({ ok: false, error: '文件夹类型不匹配' });
+    }
   }
   db.prepare('UPDATE sources SET group_id=? WHERE id=?').run(group_id ?? null, source_id);
+  // 手动改归 → 写 categoryLocked（合并写，不覆盖 extra 其它键）
+  let extra = {};
+  try { extra = JSON.parse(s.extra || '{}'); } catch { /* ignore */ }
+  extra.categoryLocked = 1;
+  db.prepare('UPDATE sources SET extra=? WHERE id=?').run(JSON.stringify(extra), source_id);
   res.json({ ok: true });
 });
 

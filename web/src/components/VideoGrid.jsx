@@ -2,13 +2,15 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { api, qs } from '../api';
 import { formatDuration, relativeTime, imgUrl } from '../util';
 import DateFilter from './DateFilter.jsx';
+import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修：UP 主头像统一走共享组件
 
 // 视频网格（F8）：多列卡片，封面+时长角标、两行标题、UP主头像+名称+N天前
 // N5/T47：游标分页（每页 30）+ 手写窗口化渲染（虚拟滚动）——1000+ 条时 DOM 节点数恒定，滚动不卡顿
 // 方案：按容器宽度估算列数与行高，只渲染可视窗口 ±overscan 的行，上下用撑高占位，不引第三方依赖
 
-const GAP = 20;        // gap-5
-const PAD = 20;        // p-5
+// 2026-09-05 视觉精修：网格间距统一 gap-3 p-3（常量与类名需同步）
+const GAP = 12;        // gap-3
+const PAD = 12;        // p-3
 const MIN_COL_W = 220; // gridTemplateColumns: repeat(auto-fill, minmax(220px, 1fr))
 const OVERSCAN = 3;    // 上下各多渲染 3 行
 
@@ -21,8 +23,8 @@ function useGridMetrics(boxRef) {
       const contentW = Math.max(0, el.clientWidth - PAD * 2);
       const cols = Math.max(1, Math.floor((contentW + GAP) / (MIN_COL_W + GAP)));
       const colW = (contentW - (cols - 1) * GAP) / cols;
-      // 行高 = 封面(16:9) + 标题区(mt-2 + 两行 13px) + 元信息行 + 行间距
-      const rowH = Math.ceil(colW * 9 / 16) + 8 + 36 + 6 + 18 + GAP;
+      // 行高 = 封面(16:9) + 卡内边距(p-2.5) + 标题区(两行 13px) + 元信息行 + 行间距
+      const rowH = Math.ceil(colW * 9 / 16) + 20 + 36 + 6 + 18 + GAP;
       setMetrics((m) => (m.cols === cols && m.rowH === rowH ? m : { cols, rowH }));
     };
     update();
@@ -128,15 +130,16 @@ export default function VideoGrid({ filter, onDateChange, onSelect, onMeta, relo
         <div className="flex-1" />
         <DateFilter value={{ from: filter.from, to: filter.to }} onChange={onDateChange} />
       </div>
-      <div ref={boxRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-5">
+      <div ref={boxRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-3">
         <div
-          className="grid gap-5"
+          className="grid gap-3"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}
         >
           {topPad > 0 && <div style={{ gridColumn: '1 / -1', height: topPad }} aria-hidden="true" />}
           {slice.map((v) => (
-            <div key={v.id} className="cursor-pointer group" onClick={() => onSelect(v.id)}>
-              <div className="relative rounded-xl overflow-hidden border t-border t-surface2">
+            // 2026-09-05 视觉精修：视频卡统一 card card-lift，封面圆角由卡片 overflow-hidden 收敛（12px）
+            <div key={v.id} className="cursor-pointer group card card-lift overflow-hidden" onClick={() => onSelect(v.id)}>
+              <div className="relative t-surface2">
                 {v.cover ? (
                   <img referrerPolicy="no-referrer"
                     src={imgUrl(v.cover)}
@@ -155,27 +158,20 @@ export default function VideoGrid({ filter, onDateChange, onSelect, onMeta, relo
                   </span>
                 )}
               </div>
-              <div className="mt-2 text-[13px] leading-snug line-clamp-2 t-text group-hover:t-accent">
-                {v.title}
-              </div>
-              <div className="mt-1.5 flex items-center gap-1.5 text-xs t-muted">
-                {v.avatar || v.source_avatar ? (
-                  <img referrerPolicy="no-referrer"
-                    src={v.avatar || v.source_avatar}
-                    alt=""
-                    loading="lazy"
-                    className="w-4 h-4 rounded-full object-cover flex-none"
-                  />
-                ) : (
-                  <span className="w-4 h-4 rounded-full t-surface2 flex-none" />
-                )}
-                <span className="truncate">{v.author || v.source_name || ''}</span>
-                <span className="flex-none">· {relativeTime(v.published_at)}</span>
-                {filter.tab !== 'favorite' && v.favorite ? (
-                  <span className="flex-none" style={{ color: 'var(--purple)' }} title="已收藏">
-                    ★
-                  </span>
-                ) : null}
+              <div className="p-2.5">
+                <div className="text-[13px] leading-snug line-clamp-2 t-text group-hover:t-accent">
+                  {v.title}
+                </div>
+                <div className="mt-1.5 flex items-center gap-1.5 text-xs t-muted">
+                  <SourceAvatar name={v.author || v.source_name} avatar={v.avatar || v.source_avatar} size={16} />
+                  <span className="truncate">{v.author || v.source_name || ''}</span>
+                  <span className="flex-none">· {relativeTime(v.published_at)}</span>
+                  {filter.tab !== 'favorite' && v.favorite ? (
+                    <span className="flex-none" style={{ color: 'var(--purple)' }} title="已收藏">
+                      ★
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </div>
           ))}

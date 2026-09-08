@@ -140,12 +140,7 @@ export default function DailySettingsTab() {
                 <span className="text-[13px] t-text truncate">{s.name || s.url}</span>
               </label>
               {focused && (
-                <span
-                  className="flex-none text-[11px] px-2 py-0.5 rounded-full"
-                  style={{ color: 'var(--red)', border: '1px solid var(--red)' }}
-                >
-                  已重点关照
-                </span>
+                <span className="badge-red flex-none">已重点关照</span>
               )}
               <button
                 className={`switch ${focused ? 'on' : ''}`}

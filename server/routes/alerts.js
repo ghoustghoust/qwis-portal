@@ -7,16 +7,18 @@
 // DELETE /api/alerts/log          —— 清空报警日志
 const express = require('express');
 const alerts = require('../services/alerts');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
 router.get('/config', (req, res) => {
-  res.json({ ok: true, ...alerts.getConfig(), eventMeta: alerts.EVENT_TITLE });
+  // P0 安全修复（2026-09-05）：渠道密钥（webhook url/secret/sendkey/deviceKey/token）脱敏回传
+  res.json({ ok: true, ...alerts.getPublicConfig(), eventMeta: alerts.EVENT_TITLE });
 });
 
 router.put('/config', (req, res) => {
   try {
-    const { channels, events, cooldownMin } = req.body || {};
+    const { channels, events, cooldownMin, slowThresholdMs, silence } = req.body || {};
     const cfg = alerts.getConfig();
     if (channels !== undefined) {
       if (!Array.isArray(channels)) throw new Error('channels 必须是数组');
@@ -25,7 +27,7 @@ router.put('/config', (req, res) => {
         if (!c.name) throw new Error('渠道缺少名称');
         if (!c.id) c.id = `${c.type}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       }
-      cfg.channels = channels;
+      cfg.channels = alerts.mergeChannelSecrets(cfg.channels, channels); // 掩码/空值的敏感字段保留旧值
     }
     if (events !== undefined) cfg.events = { ...cfg.events, ...events };
     if (cooldownMin !== undefined) {
@@ -33,7 +35,22 @@ router.put('/config', (req, res) => {
       if (!Number.isFinite(n) || n < 5) throw new Error('冷却时长最小 5 分钟');
       cfg.cooldownMin = n;
     }
+    // 3.2 精细化配置
+    if (slowThresholdMs !== undefined) {
+      const n = Number(slowThresholdMs);
+      if (!Number.isFinite(n) || n < 1000) throw new Error('slowThresholdMs 最小 1000 毫秒');
+      cfg.slowThresholdMs = n;
+    }
+    if (silence !== undefined) {
+      if (!Array.isArray(silence)) throw new Error('silence 必须是数组');
+      cfg.silence = silence.map((r) => ({
+        sourceId: r.sourceId ? Number(r.sourceId) : undefined,
+        type: r.type || undefined,
+        event: r.event || undefined,
+      })).filter((r) => r.sourceId || r.type);
+    }
     alerts.saveConfig(cfg);
+    audit.record('alerts.config', { detail: { changed: { channels: channels !== undefined, events: events !== undefined, cooldownMin: cooldownMin !== undefined, slowThresholdMs: slowThresholdMs !== undefined, silence: silence !== undefined } }, ip: req.ip });
     res.json({ ok: true });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
@@ -68,6 +85,7 @@ router.get('/log', (req, res) => {
 router.post('/clear-cooldowns', (req, res) => {
   try {
     alerts.clearCooldowns();
+    audit.record('alerts.clear-cooldowns', { ip: req.ip });
     res.json({ ok: true });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
@@ -79,6 +97,7 @@ router.delete('/log', (req, res) => {
   const a = require('../db').getSetting('alerts', {});
   a.recentLog = [];
   require('../db').setSetting('alerts', a);
+  audit.record('alerts.clear-log', { ip: req.ip });
   res.json({ ok: true });
 });
 

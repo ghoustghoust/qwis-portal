@@ -3,10 +3,12 @@
 const { getSetting, setSetting } = require('../db');
 const { fetchJson } = require('../util/http');
 const log = require('../util/log');
+const audit = require('../services/audit');
 
 const DEFAULT_EVENTS = {
   source_error: true,          // 源抓取失败(连续失败≥2 次才报)
   source_paused: true,         // 源熔断自动暂停
+  source_slow: true,           // 3.2 抓取耗时超阈值（ms）
   daily_failed: true,          // 日报生成失败
   collect_stalled: true,       // 采集停滞(1 小时内 0 成功刷新)
   // wemp_down / wemp_cookie_expired 已随 we-mp-rss 退役移除(2026-09-04)
@@ -19,11 +21,53 @@ function getConfig() {
     events: { ...DEFAULT_EVENTS, ...(a.events || {}) },
     cooldownMin: Number(a.cooldownMin) || 120,
     recentLog: Array.isArray(a.recentLog) ? a.recentLog : [],
+    // 3.2 报警精细化：抓取耗时阈值（毫秒）+ 按源静默列表
+    slowThresholdMs: Number(a.slowThresholdMs) || 30000,
+    silence: Array.isArray(a.silence) ? a.silence : [], // [{sourceId?, type?, event}]
   };
 }
 
 function saveConfig(cfg) {
   setSetting('alerts', cfg);
+}
+
+// ---- 渠道凭据脱敏（2026-09-05 P0 修复：GET /api/alerts/config 曾明文回传全部渠道密钥）----
+// 敏感字段：webhook URL（内含 access_token/key）、加签 secret、SendKey、Bark deviceKey、TG bot token
+// 非敏感字段（server/chatId）保留原值
+const SENSITIVE_KEYS = ['url', 'secret', 'sendkey', 'deviceKey', 'token'];
+const SECRET_MASK = '********';
+
+// GET 出参：敏感字段非空则替换为掩码
+function maskChannels(channels) {
+  return (Array.isArray(channels) ? channels : []).map((c) => {
+    const cfg = { ...(c.config || {}) };
+    for (const k of SENSITIVE_KEYS) {
+      if (cfg[k]) cfg[k] = SECRET_MASK;
+    }
+    return { ...c, config: cfg };
+  });
+}
+
+function getPublicConfig() {
+  const cfg = getConfig();
+  return { ...cfg, channels: maskChannels(cfg.channels) };
+}
+
+// PUT 入参合并：与既有渠道同 id 时，敏感字段为掩码/空值 → 保留旧值（防前端整体回写 channels 时把密钥刷成掩码）
+function mergeChannelSecrets(oldChannels, newChannels) {
+  const oldById = new Map((Array.isArray(oldChannels) ? oldChannels : []).map((c) => [c.id, c]));
+  return (Array.isArray(newChannels) ? newChannels : []).map((c) => {
+    const old = oldById.get(c.id);
+    if (!old) return c; // 新渠道：原样使用（前端新增时填的是真实密钥）
+    const cfg = { ...(c.config || {}) };
+    for (const k of SENSITIVE_KEYS) {
+      if (cfg[k] === undefined || cfg[k] === '' || cfg[k] === SECRET_MASK) {
+        if (old.config && old.config[k] !== undefined) cfg[k] = old.config[k];
+        else delete cfg[k];
+      }
+    }
+    return { ...c, config: cfg };
+  });
 }
 
 // ---- 各渠道发送器 ----
@@ -202,12 +246,27 @@ function autoCleanupOldLogs(maxDays = 7) {
 }
 
 /**
- * dispatch(event, {sourceId?, title, text}) —— 按开关+冷却分发到所有启用渠道
- * 返回 {sent: n, skipped: 'cooldown'|'disabled'|'no-channels', results: [...]}
+ * dispatch(event, {sourceId?, sourceType?, title, text}) —— 按开关+冷却+静默规则分发到所有启用渠道
+ * 返回 {sent: n, skipped: 'cooldown'|'disabled'|'silenced'|'no-channels', results: [...]}
  */
-async function dispatch(event, { sourceId, title, text }) {
+async function dispatch(event, { sourceId, sourceType, title, text }) {
   const cfg = getConfig();
   if (cfg.events[event] === false) return { sent: 0, skipped: 'disabled' };
+
+  // 3.2 按源/类型静默：匹配 sourceId 或 type 的特定事件不发送
+  if (sourceId && Array.isArray(cfg.silence) && cfg.silence.length) {
+    const silenced = cfg.silence.some((rule) => {
+      if (rule.event && rule.event !== event) return false;
+      if (rule.sourceId && Number(rule.sourceId) === Number(sourceId)) return true;
+      if (rule.type && rule.type === sourceType) return true;
+      return false;
+    });
+    if (silenced) {
+      log.info(`[报警] ${event} 命中静默规则,跳过: sourceId=${sourceId}`);
+      return { sent: 0, skipped: 'silenced' };
+    }
+  }
+
   const channels = cfg.channels.filter((c) => c.enabled !== false);
   if (!channels.length) return { sent: 0, skipped: 'no-channels' };
   const coolKey = `${event}:${sourceId || 'global'}`;
@@ -232,6 +291,8 @@ async function dispatch(event, { sourceId, title, text }) {
   const entry = { at: new Date().toISOString(), event, title, results };
   appendLog(entry);
   const sent = results.filter((r) => r.ok).length;
+  // 3.2 报警发送结果写入审计日志
+  audit.record('alerts.dispatch', { detail: { event, title: (title || '').slice(0, 80), sent, total: channels.length, failed: results.length - sent } });
   log.info(`[报警] ${event}: 「${title}」→ ${sent}/${channels.length} 渠道成功`);
   return { sent, results };
 }
@@ -240,6 +301,7 @@ async function dispatch(event, { sourceId, title, text }) {
 const EVENT_TITLE = {
   source_error: '⚠️ 源抓取失败',
   source_paused: '🛑 源已熔断暂停',
+  source_slow: '🐢 源抓取耗时过长',
   daily_failed: '📅 日报生成失败',
   collect_stalled: '⏸ 采集停滞',
 };
@@ -276,4 +338,16 @@ function collectStalled(detail) {
   });
 }
 
-module.exports = { getConfig, saveConfig, dispatch, sourceError, dailyFailed, collectStalled, EVENT_TITLE, DEFAULT_EVENTS, SENDERS, clearCooldowns, autoCleanupOldCooldowns, autoCleanupOldLogs };
+// 3.2 抓取耗时超阈值报警
+function sourceSlow(source, elapsedMs) {
+  const cfg = getConfig();
+  if (elapsedMs < cfg.slowThresholdMs) return Promise.resolve({ sent: 0, skipped: 'below-threshold' });
+  return dispatch('source_slow', {
+    sourceId: source.id,
+    sourceType: source.type,
+    title: EVENT_TITLE.source_slow,
+    text: `源「${source.name}」抓取耗时 ${(elapsedMs / 1000).toFixed(1)}s，超过阈值 ${(cfg.slowThresholdMs / 1000).toFixed(0)}s。`,
+  });
+}
+
+module.exports = { getConfig, getPublicConfig, saveConfig, mergeChannelSecrets, SECRET_MASK, SENSITIVE_KEYS, dispatch, sourceError, sourceSlow, dailyFailed, collectStalled, EVENT_TITLE, DEFAULT_EVENTS, SENDERS, clearCooldowns, autoCleanupOldCooldowns, autoCleanupOldLogs };

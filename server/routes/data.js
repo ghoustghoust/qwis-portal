@@ -7,12 +7,14 @@
 // GET  /api/data/stats                    —— 库体积 + 各表条数
 const express = require('express');
 const datamgr = require('../services/datamgr');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
 router.post('/snapshot', async (req, res) => {
   try {
     const r = await datamgr.snapshot();
+    audit.record('data.snapshot', { target: r.file, ip: req.ip });
     res.json({ ok: true, ...r });
   } catch (err) {
     res.json({ ok: false, error: err.message });
@@ -24,6 +26,7 @@ router.post('/restore', (req, res) => {
   if (!file) return res.status(400).json({ ok: false, error: '缺少 file' });
   try {
     const r = datamgr.restore(file);
+    audit.record('data.restore', { target: file, ip: req.ip });
     res.json({ ok: true, ...r });
   } catch (err) {
     res.json({ ok: false, error: err.message });
@@ -60,7 +63,9 @@ router.post('/cleanup', (req, res) => {
   const body = req.body || {};
   if (body.confirm !== true) return res.status(400).json({ ok: false, error: '需 confirm:true 确认执行' });
   try {
-    res.json({ ok: true, ...datamgr.cleanup(body.days) });
+    const r = datamgr.cleanup(body.days);
+    audit.record('data.cleanup', { detail: { days: body.days, ...r }, ip: req.ip });
+    res.json({ ok: true, ...r });
   } catch (err) {
     res.json({ ok: false, error: err.message });
   }

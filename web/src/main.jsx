@@ -4,33 +4,29 @@ import './index.css';
 import { ThemeProvider, ThemeButton } from './theme.jsx';
 import { Toaster } from './toast.jsx';
 import { api } from './api.js';
+import { StoreProvider, useSettings } from './store.jsx';
 import ReaderPage from './pages/ReaderPage.jsx';
 import DailyPage from './pages/DailyPage.jsx';
 import HotPage from './pages/HotPage.jsx';
-import { RssIcon, CalendarIcon, FlameIcon, RadarLogo } from './components/icons.jsx';
+import MyReadingPage from './pages/MyReadingPage.jsx';
+import { RssIcon, CalendarIcon, FlameIcon, BookIcon, RadarLogo } from './components/icons.jsx';
+import LoginGate from './components/LoginGate.jsx';
 
 // 左侧窄导航栏：页面入口（后端把各路由都指向本 SPA，按 pathname 分发）
 // 管理后台是独立入口（admin.html → src/admin.jsx），不在本 bundle 内；
 // /admin/ 与 /wechat/ 由后端指向 admin.html，整页跳转
 // T15/F8：热点榜入口仅在 settings hot.enabled !== false 时显示
+// 2.1 增强：IconRail 改为从 store 读取 settings，不再独立请求
 export function IconRail() {
   const path = window.location.pathname;
-  const [hotEnabled, setHotEnabled] = useState(true);
-
-  useEffect(() => {
-    api
-      .get('/api/settings')
-      .then((d) => {
-        const s = d?.settings || d || {};
-        setHotEnabled(s.hot?.enabled !== false);
-      })
-      .catch(() => setHotEnabled(true)); // 设置读取失败默认显示
-  }, []);
+  const settings = useSettings();
+  const hotEnabled = settings.hot?.enabled !== false;
 
   const items = [
-    { href: '/reader/', Icon: RssIcon, label: '阅读器', active: !path.startsWith('/daily') && !path.startsWith('/hot') },
+    { href: '/reader/', Icon: RssIcon, label: '阅读器', active: !path.startsWith('/daily') && !path.startsWith('/hot') && !path.startsWith('/reading') },
     { href: '/daily/', Icon: CalendarIcon, label: '每日情报', active: path.startsWith('/daily') },
     ...(hotEnabled ? [{ href: '/hot/', Icon: FlameIcon, label: '热点榜', active: path.startsWith('/hot') }] : []),
+    { href: '/reading/', Icon: BookIcon, label: '我的阅读', active: path.startsWith('/reading') },
   ];
   return (
     <nav className="flex flex-col items-center w-12 flex-none border-r t-border t-surface py-3 gap-1.5">
@@ -65,12 +61,16 @@ function App() {
   let page;
   if (path.startsWith('/daily')) page = <DailyPage />;
   else if (path.startsWith('/hot')) page = <HotPage />;
+  else if (path.startsWith('/reading')) page = <MyReadingPage />;
   else page = <ReaderPage />;
   return (
-    <ThemeProvider>
-      {page}
-      <Toaster />
-    </ThemeProvider>
+    <StoreProvider>
+      <ThemeProvider>
+        {page}
+        <Toaster />
+        <LoginGate />
+      </ThemeProvider>
+    </StoreProvider>
   );
 }
 

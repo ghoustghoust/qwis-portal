@@ -2,6 +2,9 @@
 // 本地模式: better-sqlite3(同步包装成异步接口)
 // 云端模式: @libsql/client(Turso),由 TURSO_DATABASE_URL 环境变量切换
 // 用法: const { dbAll, dbGet, dbRun, dbExec, getSetting, setSetting, nowIso } = require('./db');
+// ⚠️ 冻结态（2026-09-05b A8 标注）：本文件主进程从不加载，仅 tools/seed-turso.js 引用；
+//    其 SCHEMA 与本地 server/db.js 已漂移（credentials 列名 cookie≠data、缺 pending_items/job_queue 等）。
+//    portal 运行时实际使用 portal/api/_turso.js 副本。未来若重启 Turso 迁移，必须先重对齐 schema，勿直接复用。
 const path = require('path');
 const fs = require('fs');
 

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes } from '../util';
+import { safeHtml } from '../sanitize';
 
 // 快速学习弹窗（F17/F20）：类型标签 + 标题 + 来源时间 + 收藏/复制链接/打开原文 + 内容简介 + 正文
+// 2026-09-05 视觉精修：meta 行补字数/阅读时长，统一 .meta token
 export default function QuickStudyModal({ item, onClose }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,8 @@ export default function QuickStudyModal({ item, onClose }) {
 
   const contentHtml = detail?.content_html;
   const intro = detail?.intro || detail?.summary || item.summary;
+  // 2026-09-05 视觉精修：meta 行字数（优先纯文本字数列，缺失回退正文/简介长度）
+  const contentLen = detail?.word_count ?? (contentHtml || intro || '').length;
 
   return (
     <div
@@ -79,11 +83,20 @@ export default function QuickStudyModal({ item, onClose }) {
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <span className="badge-green">{isVideo ? '视频' : '公众号文章'}</span>
-              <h1 className="mt-2 text-xl font-bold leading-snug t-text">{item.title}</h1>
-              <div className="mt-2 text-xs t-muted">
-                {item.source_name || ''}
-                {item.source_name ? ' · ' : ''}
-                {formatDateTime(item.published_at)}
+              <h1 className="serif mt-2 text-xl font-bold leading-snug t-text">{item.title}</h1>
+              {/* 2026-09-05 视觉精修：meta 行 = 来源 · 时间 · 字数 · 阅读时长 */}
+              <div className="meta mt-2 flex-wrap">
+                <span className="truncate">{item.source_name || '未知来源'}</span>
+                <span className="sep">·</span>
+                <span className="tabular-nums">{formatDateTime(item.published_at)}</span>
+                {formatWords(contentLen) && (
+                  <>
+                    <span className="sep">·</span>
+                    <span className="tabular-nums">
+                      {formatWords(contentLen)}（{readingMinutes(contentLen)}）
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex-none flex items-center gap-2">
@@ -136,7 +149,7 @@ export default function QuickStudyModal({ item, onClose }) {
             {!loading && !isVideo && (
               <div
                 className="article-content"
-                dangerouslySetInnerHTML={{ __html: contentHtml || intro || '' }}
+                dangerouslySetInnerHTML={{ __html: safeHtml(contentHtml || intro || '') }}
               />
             )}
           </div>

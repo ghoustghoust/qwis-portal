@@ -3,7 +3,7 @@
 // 热度 = Σ 条目权重(1 + score/100万 归一) × 24h 半衰时间衰减 × 信源多样性加成(每多一信源 ×1.5)
 // 缓存 5 分钟；聚合数百条 <200ms；纯内存，不锁库
 const { db } = require('../db');
-const { titleTokens, jaccard } = require('./ai/daily');
+const { titleTokens, jaccard } = require('./ai/_tokens');
 
 const CACHE_MS = 5 * 60e3;
 const WINDOW_H = 72;
@@ -63,8 +63,10 @@ function aggregate() {
   for (const c of clusters) {
     if (c.items.length < 2) continue; // 单源单篇不成事件
     const times = c.items.map((i) => Date.parse(i.published_at || 0)).filter(Boolean);
-    const firstAt = Math.min(...times);
-    const latestAt = Math.max(...times);
+    // 2026-09-05 修复（P1-4）：簇内条目 published_at 全部不可解析时 times 为空，
+    // Math.min(...[]) = Infinity → new Date(Infinity).toISOString() 抛 RangeError 导致整接口 500
+    const firstAt = times.length ? Math.min(...times) : nowMs;
+    const latestAt = times.length ? Math.max(...times) : nowMs;
     // 领域归属：簇内条目的 domain/category 多数派
     const domainCount = new Map();
     for (const i of c.items) {

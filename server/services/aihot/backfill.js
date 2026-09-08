@@ -75,6 +75,7 @@ async function run(progress, urls, sourceId) {
       progress.lastError = `${url}: ${err.message}`;
       log.warn(`[aihot] backfill 失败 ${url}: ${err.message}`);
     }
+    progress.since = new Date().toISOString(); // A6：进度落盘兼作心跳，防长跑任务被误判为陈旧锁
     setSetting(KEY, { ...progress });
     await new Promise((r) => setTimeout(r, GAP_MS)); // 串行限速 ≥2s/条
   }
@@ -86,9 +87,20 @@ async function run(progress, urls, sourceId) {
 
 // start({ urls, limit, wait })：默认抓 sitemap 全量；测试可注入 urls/limit 小规模跑
 // running 中重复调用拒绝；返回立即（wait=true 时等全部跑完，供验证脚本用）
+// 2026-09-05b A6 修复：running 带 since 时间戳，进程崩溃后标志无人复位会永久卡死；
+// since 超过 30min 视为陈旧锁，自动复位并记 warn（正常一轮每 2s 落一次进度，30min 无落盘即异常）
+const STALE_MS = 30 * 60e3;
 async function start({ urls, limit, wait = false } = {}) {
   const cur = status();
-  if (cur.running) return { ok: false, error: 'backfill running', progress: cur };
+  if (cur.running) {
+    const since = Date.parse(cur.since || '') || 0;
+    if (since && Date.now() - since > STALE_MS) {
+      log.warn(`[aihot] backfill 检测到陈旧 running 锁（since=${cur.since}，进程可能已崩溃），自动复位`);
+      setSetting(KEY, { ...cur, running: false, lastError: 'stale running lock auto-reset' });
+    } else {
+      return { ok: false, error: 'backfill running', progress: cur };
+    }
+  }
   const sourceId = aggregatorSourceId();
   if (!sourceId) return { ok: false, error: '未找到聚合源（extra.aggregator=1）' };
 
@@ -98,7 +110,7 @@ async function start({ urls, limit, wait = false } = {}) {
   const existing = new Set(db.prepare('SELECT url FROM articles').all().map((r) => r.url));
   const todo = list.filter((u) => !existing.has(u));
 
-  const progress = { ...DEFAULT_PROGRESS, running: true, total: todo.length, done: 0, failed: 0 };
+  const progress = { ...DEFAULT_PROGRESS, running: true, since: new Date().toISOString(), total: todo.length, done: 0, failed: 0 };
   setSetting(KEY, progress);
   log.info(`[aihot] backfill 启动 total=${progress.total}（sitemap ${list.length}，已有 ${list.length - todo.length}）`);
 

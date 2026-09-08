@@ -122,7 +122,7 @@ async function originalHtml(articleId) {
   const m = String(row.content_html || '').match(/🔗[\s\S]{0,300}?<a[^>]+href="([^"]+)"/);
   if (!m) throw new Error('未找到原文链接');
   const sourceUrl = m[1].replace(/&amp;/g, '&');
-  const full = await require('./collectors/rss')._internals.fetchFulltext(sourceUrl);
+  const full = await require('./collectors/rss').fetchFulltext(sourceUrl);
   if (!full || !full.content) throw new Error('原文提取失败');
   originalCache.set(id, { html: full.content, sourceUrl, at: Date.now() });
   if (originalCache.size > CACHE_MAX) {

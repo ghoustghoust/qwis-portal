@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes } from '../util';
+import { safeHtml } from '../sanitize';
+import { RadarLogo } from './icons.jsx';
 
 // 文章阅读栏（F5~F7）：完整渲染 content_html + 顶部工具条
 export default function ArticleView({ articleId, items, filter, onSelect, onClose, onChanged }) {
@@ -95,15 +97,19 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
     }
   };
 
+  // 2026-09-05 视觉精修：空态由 OverviewRail 取代，本组件仅在选中文章时渲染
+  // 2026-09-05：未选中文章时渲染空态引导（原 return null；右侧本周概览已常驻，空态回到正文区）
   if (!articleId) {
     return (
-      <section className="flex-1 flex items-center justify-center t-muted text-sm t-bg">
-        从左侧列表选择一篇文章开始阅读
+      <section className="flex-1 min-w-0 h-full t-bg flex flex-col items-center justify-center gap-3 select-none">
+        <span className="t-accent opacity-40"><RadarLogo size={44} /></span>
+        <div className="text-sm t-muted">从左侧选择文章，或点文件夹读聚合流</div>
       </section>
     );
   }
 
   const laterActive = !!(article && article.later);
+  const contentLen = article?.word_count ?? (article?.content_html || '').length; // 2026-09-05：优先用纯文本字数列，缺失时回退正文长度
 
   return (
     <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
@@ -175,15 +181,25 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         {loading && <div className="py-16 text-center text-sm t-muted">加载中…</div>}
         {!loading && article && (
           <article className="max-w-[720px] mx-auto px-6 py-8">
-            <div className="text-xs t-muted">{article.source_name || article.author || ''}</div>
-            <h1 className="mt-1 text-2xl font-bold leading-snug t-text">{article.title}</h1>
-            <div className="mt-2 text-xs t-muted">
-              发布于 {formatDateTime(article.published_at)}
+            <h1 className="text-2xl font-bold leading-snug t-text">{article.title}</h1>
+            {/* 2026-09-05 视觉精修：正文头部 meta 行（源 · 发布时间 · 字数/阅读时长） */}
+            <div className="meta mt-2">
+              <span className="truncate">{article.source_name || article.author || ''}</span>
+              <span className="sep">·</span>
+              <span className="flex-none">{formatDateTime(article.published_at)}</span>
+              {contentLen > 0 && (
+                <>
+                  <span className="sep">·</span>
+                  <span className="flex-none">{formatWords(contentLen)}</span>
+                  <span className="sep">·</span>
+                  <span className="flex-none">{readingMinutes(contentLen)}</span>
+                </>
+              )}
             </div>
             <div
               ref={contentRef}
               className="article-content mt-6"
-              dangerouslySetInnerHTML={{ __html: article.content_html || article.summary || '' }}
+              dangerouslySetInnerHTML={{ __html: safeHtml(article.content_html || article.summary || '') }}
             />
           </article>
         )}

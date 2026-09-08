@@ -7,12 +7,20 @@ const SENSITIVE = /([?&](?:token|key|apikey|api_key|secret|password|pwd|auth|coo
 
 function mask(text) {
   return String(text).replace(SENSITIVE, (match, p1, p2, p3) => {
-    // 优先使用第一个非空的捕获组（URL 参数 / JSON 键值 / 对象字面量）
-    const prefix = p1 || p2 || p3 || '';
-    // 保留前缀部分（如 ?token= 或 "key": "），将值替换为 ***
-    const valueStart = match.indexOf(prefix) + prefix.length;
-    const value = match.slice(valueStart);
-    return match.slice(0, valueStart) + '***';
+    // 2026-09-05b 修复：旧实现对 p2/p3（行内键值/JSON 形式）把整个捕获组当前缀，
+    // 导致 valueStart=match 长度、敏感值原样保留仅尾部追加 ***（打码失效）
+    if (p1) return p1 + '***'; // URL 参数形式：?token= → ?token=***
+    if (p2) {
+      // 行内键值：token=abc123 / cookie: xxx → 只保留「键+分隔符」
+      const m = p2.match(/^([a-zA-Z_]+["'\s:=])/);
+      return (m ? m[1] : '') + '***';
+    }
+    if (p3) {
+      // JSON 形式："token":"abc123" → "token":"***"
+      const m = p3.match(/^(.*?["']\s*:\s*["'])/);
+      return (m ? m[1] : '') + '***' + (p3.endsWith('"') || p3.endsWith("'") ? p3.slice(-1) : '');
+    }
+    return '***';
   });
 }
 

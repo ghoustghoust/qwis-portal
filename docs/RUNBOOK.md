@@ -1,7 +1,7 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
 > 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南，已与当前代码核对一致）。
-> 架构与凭据位置看根目录 `ARCHITECTURE.md`；修复历史看 `A_CLASS_FIX_REPORT.md`；历史文档在 `archive/`。
+> 架构与凭据位置看根目录 `ARCHITECTURE.md`；修复历史看 `archive/docs-deprecated/A_CLASS_FIX_REPORT.md`；历史文档在 `archive/`。
 
 ## 1. 系统形态
 
@@ -33,7 +33,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 
 ## 4. 云端队列（PHP，可选）
 
-`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端。安卓端配置见 `ANDROID_SUBMIT_GUIDE.md`。
+`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端。安卓端配置见 `docs/ANDROID_SUBMIT_GUIDE.md`。
 
 ## 5. 熔断与恢复
 
@@ -45,7 +45,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ## 6. 健康自检与报警
 
 ```powershell
-npm test                      # 回归测试（107 项，2026-09-04）
+npm test                      # 回归测试（189 项，2026-09-06）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
 node tools/audit-cloud.js     # 云端 19 项自检
 node tools/ops-toolkit.js check    # 健康总览

@@ -163,6 +163,7 @@ async function enrichArticle(articleId) {
   if (!row) throw new Error('文章不存在');
   const html = await fetchText(row.url);
   const d = parseDetail(html);
+  const { textLen } = require('../collectors/repo');
   db.prepare(`
     UPDATE articles SET
       score = COALESCE(?, score),
@@ -173,12 +174,13 @@ async function enrichArticle(articleId) {
       original_url = COALESCE(?, original_url),
       published_at = COALESCE(published_at, ?),
       content_html = CASE WHEN LENGTH(COALESCE(?,'')) > LENGTH(COALESCE(content_html,'')) THEN ? ELSE content_html END,
+      word_count = CASE WHEN LENGTH(COALESCE(?,'')) > LENGTH(COALESCE(content_html,'')) THEN ? ELSE word_count END,
       category = COALESCE(category, ?)
     WHERE id = ?
   `).run(
     d.score, d.reason, d.tags.length ? JSON.stringify(d.tags) : null,
     d.featured ? 1 : 0, d.originalHtml, d.originalUrl, d.publishedAt,
-    d.zhHtml, d.zhHtml, categoryFromTags(d.tags), id
+    d.zhHtml, d.zhHtml, d.zhHtml, textLen(d.zhHtml), categoryFromTags(d.tags), id
   );
   return d;
 }

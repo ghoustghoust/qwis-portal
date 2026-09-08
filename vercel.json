@@ -1,9 +1,39 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "web/dist",
+  "framework": "vite",
   "rewrites": [
+    { "source": "/api/collect", "destination": "/api/collect" },
+    { "source": "/api/daily-generate", "destination": "/api/daily-generate" },
+    { "source": "/api/(.*)", "destination": "/api/[...slug]" }
+  ],
+  "crons": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/[...slug]?slug=:path*"
+      "path": "/api/collect?key=${COLLECT_KEY}&mode=cleanup",
+      "schedule": "0 20 * * *"
     }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/data/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ],
+  "functions": {
+    "api/collect.js": { "maxDuration": 60 },
+    "api/daily-generate.js": { "maxDuration": 60 },
+    "api/[...slug].js": { "maxDuration": 30 }
+  }
 }

@@ -185,12 +185,7 @@ export default function HotSettings() {
               {Object.entries(catMap).map(([cat, sources]) => (
                 <tr key={cat} className="border-t t-border">
                   <td className="px-4 py-2 t-text">
-                    <span
-                      className="badge-green"
-                      style={{ color: 'var(--accent)', borderColor: 'var(--accent)' }}
-                    >
-                      {cat}
-                    </span>
+                    <span className="pill on">{cat}</span>
                   </td>
                   <td className="px-4 py-2 t-muted">
                     {Array.isArray(sources) ? sources.join('、') : String(sources)}

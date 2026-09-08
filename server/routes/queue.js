@@ -1,7 +1,8 @@
-// 队列 API（T35，F24/F31/F41/F44）：手动同步 + 待处理区查询
+// 队列 API（T35，F24/F31/F41/F44）：手动同步 + 待处理区查询 + 1.2 任务队列可观测
 const express = require('express');
 const { db } = require('../db');
 const poller = require('../services/queue/poller');
+const { taskQueue } = require('../services/queue/taskQueue');
 
 const router = express.Router();
 
@@ -51,6 +52,40 @@ router.get('/pending', (req, res) => {
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const items = db.prepare(`SELECT * FROM pending_items ${where} ORDER BY id DESC`).all(...args);
   res.json({ ok: true, items });
+});
+
+// ---- 1.2 任务队列可观测性 ----
+
+// GET /api/queue/stats —— 总体 + 按 type 分组的队列状态统计
+router.get('/stats', (req, res) => {
+  const overall = taskQueue.getStats();
+  const byType = taskQueue.getStatsByType();
+  res.json({ ok: true, overall, byType });
+});
+
+// GET /api/queue/failed?limit=10 —— 最近失败任务摘要
+router.get('/failed', (req, res) => {
+  const limit = Math.min(Number(req.query.limit) || 10, 50);
+  const items = taskQueue.getRecentFailed(limit);
+  res.json({ ok: true, items });
+});
+
+// GET /api/queue/dead?limit=20 —— 超过重试上限的死任务
+router.get('/dead', (req, res) => {
+  const limit = Math.min(Number(req.query.limit) || 20, 100);
+  const items = taskQueue.getDeadJobs(limit);
+  res.json({ ok: true, items });
+});
+
+// POST /api/queue/:id/retry —— 手动重试单个 failed/dead 任务
+router.post('/:id/retry', (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id) || id <= 0) {
+    return res.status(400).json({ ok: false, error: '无效的任务 ID' });
+  }
+  const result = taskQueue.retryOne(id);
+  if (result.error) return res.status(400).json({ ok: false, error: result.error });
+  res.json({ ok: true, id: result.id, type: result.type, message: '已重置为 pending，等待下次消费' });
 });
 
 module.exports = router;

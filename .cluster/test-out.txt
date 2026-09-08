@@ -1,0 +1,249 @@
+✔ fixture: 评分/推荐理由/标签/精选/双语全文/发布时间/原文链接全部解析 (9.4929ms)
+✔ 小样例: 评分 aria-label / 推荐理由 / m-detail-tag 标签 (5.059ms)
+✔ RSC: zhHtml/originalHtml 经 $xx 引用还原，T 长度按 UTF-8 字节截取（块后无换行） (0.9234ms)
+✔ RSC: aiSelected=true 时 featured 兜底为 true (1.4665ms)
+✔ 标签兜底: #词 形式可用，#10151c 这类 6 位 hex 颜色码被排除 (0.8733ms)
+✔ 降级: 无锚点页面各字段为 null/[]，不抛错 (0.2906ms)
+✔ 降级: 空输入/非字符串不抛错 (0.357ms)
+[2026-09-06T09:36:21.174Z] [INFO] [报警] source_paused: 「测试标题」→ 2/2 渠道成功
+✔ 分发:钉钉 text 格式 + 自定义 webhook 通用格式 (151.1444ms)
+[2026-09-06T09:36:21.189Z] [INFO] [报警] source_paused: 「A」→ 2/2 渠道成功
+[2026-09-06T09:36:21.189Z] [INFO] [报警] source_paused 冷却中,跳过: A2
+[2026-09-06T09:36:21.199Z] [INFO] [报警] source_paused: 「B」→ 2/2 渠道成功
+✔ 冷却:同源同事件 2 小时内不重复发送 (22.4987ms)
+[2026-09-06T09:36:22.782Z] [WARN] [报警] 代理通道失败(fetch failed),直连重试: http://127.0.0.1:1/dead
+[2026-09-06T09:36:24.308Z] [WARN] [报警] 渠道「钉钉测试」发送失败: fetch failed
+[2026-09-06T09:36:24.317Z] [INFO] [报警] source_error: 「容错测试」→ 1/2 渠道成功
+✔ 容错:渠道失败不影响其他渠道,且触发日志留痕 (3117.847ms)
+[2026-09-06T09:36:24.323Z] [INFO] [报警] source_error: 「⚠️ 源抓取失败」→ 2/2 渠道成功
+[2026-09-06T09:36:24.356Z] [INFO] [报警] source_paused: 「🛑 源已熔断暂停」→ 2/2 渠道成功
+[2026-09-06T09:36:24.357Z] [INFO] [报警] source_paused 冷却中,跳过: 🛑 源已熔断暂停
+✔ sourceError 阈值:连失 2 次报 source_error,3 次升级为 source_paused,重复暂停不再报 (39.0527ms)
+✔ 事件开关:关闭后不发送 (0.5816ms)
+✔ 加签:钉钉 sign 进 URL,飞书 sign 进 body (14.2143ms)
+✔ 关键词命中:「腾讯技术工程」→ 编程技术 (2.0297ms)
+✔ 关键词命中:「AI前线」→ 人工智能 (0.3495ms)
+✔ 关键词命中:「金融宏观」→ 金融经济 (0.3241ms)
+✔ 英文别名归一: Programming & Technology → 编程技术 (0.295ms)
+✔ 英文别名归一: Artificial Intelligence → 人工智能 (0.2247ms)
+✔ 英文别名归一: Business & Technology → 商业科技 (1.7479ms)
+✔ 无命中返回 null (0.3096ms)
+✔ OPML 映射优先: 若 opmlMap 命中则走 opml 路径 (0.2495ms)
+✔ kindOfType: bilibili → video (0.2397ms)
+✔ normalizeName: 大小写+trim 归一 (0.5721ms)
+✔ buildOpmlCategoryMap: 能解析 OPML 层级 (3.5962ms)
+✔ 目录优先级:「技术」命中 programming（排在 business 之前） (0.2314ms)
+[2026-09-06T09:36:21.113Z] [INFO] 日报已生成 #1：候选 6（文章 5/视频 1），窗口 48h，关键词规则排序
+[2026-09-06T09:36:21.118Z] [INFO] 日报已生成 #2：候选 6（文章 5/视频 1），窗口 48h，关键词规则排序
+[2026-09-06T09:36:21.121Z] [INFO] 日报已生成 #3：候选 6（文章 5/视频 1），窗口 48h，关键词规则排序
+✔ classify: focus 源内容全部进「重点更新」，即使命中关键词也不进关键词栏目 (1.8903ms)
+✔ classify: 命中多个栏目时只进配置顺序最先命中的栏目 (0.4108ms)
+✔ classify: 未命中任何关键词进 fallback「其它重要」 (0.2398ms)
+✔ classify: 无 fallback 栏目时未命中内容不收录 (0.2744ms)
+✔ keywordHits: 大小写不敏感、计数命中关键词个数 (1.3935ms)
+✔ generate: 分栏正确（focus 全收时间倒序/关键词命中/fallback 兜底/空栏保留/stats 正确），无 AI 降级 (41.5492ms)
+✔ generate: aiEnabled=true 但无 Key 时仍整体降级（N7），日报正常产出 (2.2677ms)
+✔ generate: 空栏保留——全部内容都命中时其它栏目仍在 sections 中且 items 为空 (2.527ms)
+[2026-09-06T09:36:21.144Z] [INFO] 日报已生成 #2：候选 7（文章 7/视频 0），窗口 48h，关键词规则排序
+✔ dedupAndCap: 不同源同主题合并为一条，官博（非 aggregator）为主条目，AIHOT 进 related (5.0371ms)
+✔ dedupAndCap: 同优先级（都非 aggregator）时取发布时间早者为主条目 (0.4737ms)
+✔ dedupAndCap: 标题无关的条目不合并 (21.8538ms)
+✔ dedupAndCap: 同一来源同栏超过 3 条时只保留前 3（命中数优先，其次时间） (2.7309ms)
+✔ dedupAndCap: 合并后再限流——同源 4 条其中 2 条先合并，剩余 3 条全保留 (0.8385ms)
+✔ needsGeneration: 生成时间已过且今日无日报 → true；有日报 → false；时间未到 → false (5.6541ms)
+✔ generate: 同主题跨源合并且 related 落库；同源同栏限流 3 条 (14.1395ms)
+✔ cleanup: preview 与 cleanup 计数一致，只动内容四表，源/设置不动 (10.2267ms)
+✔ snapshot/restore: 快照→删数据→恢复→数据完整回来（八表同事务清插） (35.7195ms)
+✔ restore: 非法文件名/不存在的快照报错 (1.3357ms)
+✔ stats: 返回体积与八表条数 (1.0044ms)
+✔ cleanup: 非法天数报错 (0.3277ms)
+✔ 同事件跨源聚类 + 热度 > 单篇 + 排序正确 (75.9967ms)
+✔ 单源多篇同主题也聚类(信源数=1 加成不生效) (1.943ms)
+✔ newsnow 抓取:映射标题/链接/概述/热度,过滤缺链接条目 (1231.9138ms)
+✔ 60s 抓取:news 数组映射为稳定 url 条目 (6.9006ms)
+✔ resolve 契约:newsnow id 与 60s (0.2534ms)
+✔ registry 已登记 hotlist 适配器 (250.905ms)
+[2026-09-06T09:36:21.827Z] [INFO] 抖音串行队列：开始主页访问（首次）
+[2026-09-06T09:36:21.829Z] [INFO] 抖音串行队列：距上次主页访问不足 0.05s，等待 0.0s
+✔ B站 match: space.bilibili.com 主页链接 (2.5979ms)
+✔ B站 match: BV 号视频链接与裸 BV 号 (0.5026ms)
+✔ B站 match: 纯数字 uid (0.323ms)
+✔ B站 match: 错误输入返回 false；resolve 抛出 spec 原文提示 (1.1235ms)
+✔ 抖音 match: douyin.com/user/ 主页链接 (0.3971ms)
+✔ 抖音 match: v.douyin.com 分享短链 (0.4555ms)
+✔ 抖音 match: sec_uid 直填 (0.2664ms)
+✔ 抖音 match: 错误输入返回 false；resolve 抛出 spec 原文提示 (0.504ms)
+✔ registry.detectByUrl: 各平台链接命中对应适配器，未知链接兜底 rss (0.5824ms)
+[2026-09-06T09:36:21.891Z] [INFO] 抖音串行队列：开始主页访问（距上次 0.1s）
+[2026-09-06T09:36:21.891Z] [INFO] 抖音串行队列：距上次主页访问不足 0.05s，等待 0.1s
+[2026-09-06T09:36:21.955Z] [INFO] 抖音串行队列：开始主页访问（距上次 0.1s）
+[2026-09-06T09:36:21.956Z] [INFO] 抖音串行队列：距上次主页访问不足 0.05s，等待 0.0s
+✔ 抖音串行队列：任务严格串行执行且相邻访问间隔 >= 配置间隔 (129.1928ms)
+[2026-09-06T09:36:22.019Z] [INFO] 抖音串行队列：开始主页访问（距上次 0.1s）
+[2026-09-06T09:36:22.019Z] [INFO] 抖音串行队列：距上次主页访问不足 0.05s，等待 0.1s
+[2026-09-06T09:36:22.080Z] [INFO] 抖音串行队列：开始主页访问（距上次 0.1s）
+✔ 抖音串行队列：单个任务失败不阻塞后续任务 (123.9594ms)
+✔ Token 鉴权：无 Token / 错误 Token 一律 403 bad token（N3） (248.1067ms)
+✔ push → pull(count 正确) → clear → 再 pull(count=0) 全流程（三端点） (108.506ms)
+✔ type 校验：端点拒绝不属于本平台的链接（400） (22.4361ms)
+✔ Token 放 POST body 同样通过鉴权 (14.3789ms)
+[2026-09-06T09:36:22.187Z] [INFO] 队列[wechat]同步完成：导入 2 个，更新 0 个，清空云端 2 个
+[2026-09-06T09:36:22.206Z] [INFO] 队列[wechat]同步完成：导入 0 个，更新 1 个，清空云端 1 个
+✔ 本地 poller.syncQueue(wechat)：云端两条 → 导入 pending_items → 云端清空 (549.9537ms)
+✔ poller：未配置地址/Token 时 syncQueue 抛出明确错误 (1.1597ms)
+✔ 测试隔离确认：DB 位于临时目录而非 data/ (0.2151ms)
+[2026-09-06T09:36:21.256Z] [INFO] [Auth] 已生成随机 AUTH_SECRET ***
+[2026-09-06T09:36:21.264Z] [WARN] [Auth] 未配置 ADMIN_PASSWORD，当前使用默认口令 admin/admin123——上线前务必在 .env 中修改！
+✔ P0-1a: 读者只读 GET 公开（articles/videos/hot/daily/sources/groups/status/img/settings） (1.9964ms)
+✔ P0-1b: 写操作无 token 一律 401 (0.552ms)
+✔ P0-1c: 敏感读接口（alerts/data/backup/queue/health/douyin status）需登录 (0.2797ms)
+✔ P0-1d: /auth/login 公开；有效 token 放行；无效 token 401 (5.8149ms)
+✔ P0-1e: 鉴权中间件注册顺序守卫（index.js 中必须先于路由挂载循环） (0.6454ms)
+✔ P0-2a: getPublicConfig 敏感字段全部掩码，非敏感字段保留 (0.9699ms)
+✔ P0-2b: mergeChannelSecrets 掩码/空值保留旧密钥，新值允许覆盖，新渠道原样通过 (0.4828ms)
+✔ P1-1: fulltext.js 用 json_extract(extra) 排除 aggregator，而非恒真的 type 比较 (0.6402ms)
+✔ P1-2: wechat syncOpml 恢复源走 unfreezeSource（清 fail_count） (0.5607ms)
+✔ P1-4: events 聚合遇到不可解析 published_at 不崩溃 (26.1596ms)
+[2026-09-06T09:36:21.251Z] [INFO] [全文补抓] 定时任务已注册：每 6 小时一次（02/08/14/20 点，保留原凌晨 2 点低峰槽）
+[2026-09-06T09:36:21.262Z] [INFO] [全文补抓] 定时任务已注册：每 6 小时一次（02/08/14/20 点，保留原凌晨 2 点低峰槽）
+[2026-09-06T09:36:21.262Z] [INFO] [全文补抓] 定时任务已注册：每 6 小时一次（02/08/14/20 点，保留原凌晨 2 点低峰槽）
+[2026-09-06T09:36:22.048Z] [WARN] [aihot] backfill 检测到陈旧 running 锁（since=2026-09-06T09:05:22.047Z，进程可能已崩溃），自动复位
+[2026-09-06T09:36:22.048Z] [INFO] [aihot] backfill 启动 total=0（sitemap 0，已有 0）
+[2026-09-06T09:36:22.048Z] [INFO] [aihot] backfill 完成 done=0 failed=0 total=0
+[2026-09-06T09:36:22.056Z] [INFO] 日报已生成 #1：候选 2（文章 2/视频 0），窗口 48h，关键词规则排序
+✔ A2: scheduleFulltextRecovery 重复调用不累积 cron，stop 后无活动任务 (48.7573ms)
+✔ A3: withInterval 白名单重建 extra，未脱敏 lastError/未知敏感键不外泄 (777.473ms)
+✔ A6: backfill 的 running 锁超过 30min 视为陈旧自动复位，新鲜锁仍拒绝并发 (7.4659ms)
+✔ B1: generate 输出 col_id 与 hits，且栏目/排序/安检逻辑不变 (7.2843ms)
+✔ A5: saveArticles 保存 score，冲突时刷新热度，空值不清空 (686.8973ms)
+[2026-09-06T09:36:21.895Z] [INFO] [aihot] pending_items 新增 1 条待补抓记录
+[2026-09-06T09:36:21.915Z] [INFO] [报警] 已清空所有冷却记录
+✔ A1: 聚合源刷新后 pending_items 入队成功（真实列、不崩进程） (14.1888ms)
+✔ A1(静态): fetcher.js 的 pending_items 插入只使用真实列且 setImmediate 有防护（重构 Phase 2 从 store.js 提取） (0.8128ms)
+✔ A2: enrichMissing 用 articles.id 补抓、用 pending_id 删记录 (0.5331ms)
+✔ A3: 调度器数据清理引用 ../datamgr 并支持 retentionDays 覆盖（重构 Phase 3 已移至 jobs/maintenance.js） (1.2912ms)
+✔ A4: 全文补抓不再引用 updated_at 列、log.debug 与编号参数 (0.5553ms)
+✔ A6: DataTab 无未定义 React 引用，字段契约与后端一致 (0.6616ms)
+✔ A6: datamgr.saveUpload 校验文件名白名单、SQLite 文件头与同名拒绝 (4.8686ms)
+✔ A7: 抖音登录契约端点存在，getLoginStatus 可读 (1.1876ms)
+✔ A8: AlertsTab 删除走真实接口（带 at 指纹防 TOCTOU），后端有单条删除路由 (1.1416ms)
+✔ A8(附带): clearCooldowns 清的是真正生效的 alerts.cooldowns 键 (3.1851ms)
+✔ A9: portal src-admin 无重复声明，WereadTab 正名，无误放组件 (0.8059ms)
+✔ A10: backfill 已改为 _backfill.js（不再是独立 serverless 函数） (0.5902ms)
+✔ A11: 批量解冻脚本只清错误字段，不抹 extra (0.4972ms)
+✔ A12: smoke-test 先设 APP_DATA_DIR 副本再加载 db (0.4701ms)
+✔ R2-1: aihot-parse 等测试文件必须先隔离再加载 server 模块 (5.534ms)
+✔ R2-2: 抖音 startLogin 有并发占位（loginInFlight），不会拉起多个浏览器 (0.5634ms)
+✔ R2-3: smoke-test 引导失败也清理临时副本（mkdtemp 在 existsSync 之后，catch 兜底 rmSync） (0.5609ms)
+✔ R2-4: enrichMissing 入口预清理悬挂 pending（替代不可达的死分支） (0.4933ms)
+✔ R2-5: saveUpload 拒绝同名覆盖 (0.3587ms)
+✔ R2-6: 调度器 retentionDays 有下限保护（防误配清库）（重构 Phase 3 已移至 jobs/maintenance.js） (0.3955ms)
+[2026-09-06T09:36:25.428Z] [WARN] [aihot] enrich 失败 pending=1 article=4: fetch failed
+[2026-09-06T09:36:27.435Z] [INFO] [aihot] enrichMissing 补抓 done=0 failed=1 total=1
+✔ B18: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限），双端同语义 (10.8777ms)
+✔ B18(动态): isPrivateIp 覆盖全部绕过变体 (63.9682ms)
+✔ B15: 云端 read-all 与 daily/regenerate 需管理员口令 (0.8517ms)
+✔ C21: WempTab 已随 we-mp-rss 退役移除，AdminPage 无残留引用 (0.9367ms)
+✔ C22: unfreezeSource 统一语义——清计数/启用/清错误字段，保留 intervalMin/etag (636.345ms)
+✔ C22(静态): 四个解冻入口全部收敛到 store.unfreezeSource (1.3924ms)
+✔ C24: validateDailyPatch 校验 time/windowHours，两入口共用 (145.6081ms)
+✔ C25: opml /refresh 失败走 markSourceError（计 fail_count/熔断/报警） (0.398ms)
+✔ C27: SourceTable 无消费方的批量选择已整体移除，伪防抖已删 (0.8924ms)
+✔ C28: 文章/视频列表接口返回 counts（侧栏导航计数） (0.9644ms)
+✔ 文档: ARCHITECTURE.md 记录宝塔全量部署决策与 portal 冻结态 (0.4441ms)
+✔ R3-1: 批量刷新路径静默逐源报警 + 结尾汇总一条 (0.6566ms)
+✔ R3-2: restore-all 不虚报 restored（unfreezeSource 返回 false 时跳过） (0.3046ms)
+[2026-09-06T09:36:21.290Z] [INFO] 任务队列: 崩溃恢复 3 个中断任务
+✔ P6-1: 进程中断后 running 任务恢复为 pending (7.6256ms)
+[2026-09-06T09:36:21.327Z] [ERROR] 任务队列[p6_retry_limit]执行失败: always fails
+[2026-09-06T09:36:21.329Z] [WARN] 任务队列: 未知类型 completely_unknown_type，标记失败
+✔ P6-2: 同源任务并发去重——同 source_id 只执行一个 (26.3779ms)
+✔ P6-3: 超过重试上限的任务不再被 retryFailed 重置 (4.6105ms)
+✔ P6-4: 未知任务类型标记 failed 而非崩溃 (2.0022ms)
+✔ P6-5: 重构后文档体系完整 (5.2029ms)
+✔ P6-6: 根目录无散落文档（PROJECT_STATUS/A_CLASS_FIX_REPORT 已迁移） (0.3802ms)
+✔ P6-7: 重构后核心模块文件存在且非空 (4.2719ms)
+✔ P6-8: events.js 已解耦——不直接 require daily.js (0.5224ms)
+✔ P6-9: 活跃文件无指向已移动文件的裸引用 (93.8737ms)
+[2026-09-06T09:36:22.605Z] [INFO] 日报已生成 #1：候选 2（文章 2/视频 0），窗口 24h，关键词规则排序
+✔ 编码:meta charset=gbk 的页面按 GBK 解码(联合早报乱码根因) (2.3284ms)
+✔ 编码:header charset 优先于 meta (0.565ms)
+✔ 编码:UTF-8 页面不受影响 (0.344ms)
+✔ 微信文章页:#js_content 直接抽取(Readability 不适用) (1192.4988ms)
+✔ 图片:懒加载 data-src 转 src + mmbiz 加 no-referrer (0.8302ms)
+✔ 风控页过滤:「参数错误」错误页判定为垃圾内容 (0.3409ms)
+✔ 日报安检:乱码标题条目被剔除并计数 (13.4519ms)
+✔ 日报安检:热榜 hover 摘要乱码时热榜适配器丢弃摘要 (0.172ms)
+[2026-09-06T09:36:21.598Z] [INFO] [Auth] 已生成随机 AUTH_SECRET ***
+[2026-09-06T09:36:21.602Z] [WARN] [Auth] 未配置 ADMIN_PASSWORD，当前使用默认口令 admin/admin123——上线前务必在 .env 中修改！
+✔ autoClassifySourceId: 名称含「技术」的源自动归入编程技术 (4.8087ms)
+✔ autoClassifySourceId: 无命中源保持未分组 (0.7283ms)
+✔ 鉴权: batch/autoclassify/move 无 token 一律 401 (52.3489ms)
+✔ 鉴权: GET /api/sources/library 公开只读 (5.2604ms)
+✔ move(真实路由): 跨类型拒绝 400,video 源 → article 组 (7.5962ms)
+✔ move(真实路由): 同类型成功且写 categoryLocked (5.8834ms)
+✔ batch enable(真实路由): 解冻语义 + 6h 错峰 (6.9329ms)
+✔ batch focus(真实路由): 增量更新不清他人(AC12) (6.7489ms)
+✔ batch(真实路由): 空 ids / 非法 action 返回 400 (7.8706ms)
+✔ autoclassify dryRun(真实路由): 不落库,且变更清单不含无建议条目(P2-1 回归锁) (4.7706ms)
+✔ autoclassify apply(真实路由): 跳过 locked 源 (3.6681ms)
+✔ mergeCocoonFamiliar: 新组名并入 settings (0.4242ms)
+✔ getOrCreateGroupId: 同名同 kind 复用不重复建组 (0.426ms)
+✔ getOrCreateGroupId: 同名不同 kind 分别建组 (0.5038ms)
+✔ UI-D1: GET /api/articles 列表条目带 tags/score/reason/content_len (107.0624ms)
+✔ UI-D2: GET /api/status 带 overview(统计轨契约) (17.8888ms)
+✔ UI-D3: overview.dailyTopSources 统计最新日报条目来源 Top5 (19.6705ms)
+[2026-09-06T09:36:21.671Z] [INFO] [Auth] 已生成随机 AUTH_SECRET ***
+[2026-09-06T09:36:21.675Z] [WARN] [Auth] 未配置 ADMIN_PASSWORD，当前使用默认口令 admin/admin123——上线前务必在 .env 中修改！
+✔ sort=smart: focus 源文章排在同时间窗非 focus 源之前 (92.1913ms)
+✔ sort=smart: 3天前的 focus 源排在刚发布的非 focus 之前 (9.6779ms)
+✔ score_min=80: 隐藏无评分与低分条目 (6.8045ms)
+✔ score_min=90: 只保留 ≥90 分 (4.8411ms)
+✔ lang=zh: 中文标题可见、英文标题不可见 (6.6801ms)
+✔ lang=en: 英文标题可见、中文标题不可见 (4.5601ms)
+✔ dedup=1 & lang=zh: dedup 优先，lang 忽略 (6.3511ms)
+✔ views GET: 公开可读，初始为空数组 (4.2521ms)
+✔ views PUT: 无 token 401 (20.4383ms)
+✔ views PUT: 合法写入 (436.7088ms)
+✔ views PUT: 非数组 400 (3.6822ms)
+✔ views PUT: 超 20 个 400 (3.0487ms)
+✔ views PUT: 空名 400 (9.4007ms)
+✔ views PUT: 名称超 20 字 400 (1.9848ms)
+✔ 缺省新参数: 响应契约与现状一致（字段/分页） (1.8418ms)
+✔ sort=smart + group_id + q 组合查询 (1.8464ms)
+✔ BUG-1: YouTube 分支 notModified 判空（P0 回归守卫） (2.3834ms)
+✔ BUG-2: 读者侧栏只拉启用源 (1.9533ms)
+✔ BUG-3: 播客导入不做同名去重（与公众号同品牌不同媒介） (0.6855ms)
+✔ 退役守卫: wemp 管线无活跃引用 (2.0673ms)
+✔ 退役守卫: .env 无 WEMP_* 残留 (0.6149ms)
+✔ disabled 源不进调度 tick（SQL 级守卫） (0.5324ms)
+✔ 迁移幂等守卫: import 脚本 URL 去重先于一切 (0.5012ms)
+✔ Atom <content:encoded> 全文被解析且长度完整 (139.6371ms)
+[2026-09-06T09:36:21.566Z] [ERROR] 任务队列[test_retry]执行失败: 模拟失败
+[2026-09-06T09:36:21.567Z] [INFO] 任务队列: 重置 1 个失败任务为 pending
+✔ TQ-1: 入队 + 基本消费 (7.4801ms)
+✔ TQ-2: 优先级排序（高优先级先执行） (3.6938ms)
+✔ TQ-3: 失败重试（retryFailed 重置 failed → pending） (3.212ms)
+[2026-09-06T09:36:21.600Z] [INFO] 任务队列: 崩溃恢复 1 个中断任务
+[2026-09-06T09:36:21.602Z] [WARN] 任务队列: 未知类型 unknown_type_xyz，标记失败
+[2026-09-06T09:36:21.604Z] [ERROR] 任务队列[test_stats]执行失败: fail
+[2026-09-06T09:36:21.606Z] [INFO] 任务队列消费已启动: 并发=2，间隔=50ms
+✔ TQ-4: 同源去重（同 source_id 同时只允许 1 个 running） (31.1667ms)
+✔ TQ-5: 崩溃恢复（running → pending） (1.6743ms)
+✔ TQ-6: 未知处理器类型标记失败 (1.5316ms)
+✔ TQ-7: getStats 统计正确 (2.3965ms)
+✔ TQ-8: startProcessing / stopProcessing 生命周期 (317.7018ms)
+[2026-09-06T09:36:21.990Z] [ERROR] 任务队列[test_backoff]执行失败: 模拟失败
+[2026-09-06T09:36:21.992Z] [INFO] 任务队列: 清理历史任务 2 条（completed>24h / failed>7d）
+✔ TQ-9: 并发限制（不超过 concurrency） (63.7372ms)
+✔ TQ-10: 入队去重（同 type+source_id 的 pending/running 不重复入队） (1.5518ms)
+✔ TQ-11: 重试退避（retryDelayMs 未到不重置） (1.3804ms)
+✔ TQ-12: purgeDone 清理历史任务（completed>24h / failed>7d，running/pending 不动） (2.4016ms)
+ℹ tests 187
+ℹ suites 0
+ℹ pass 187
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6554.3583

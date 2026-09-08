@@ -478,7 +478,7 @@ export default function AlertsTab() {
                   >
                     {testingId === c.id && <Spinner size={11} />} 测试
                   </button>
-                  <button className="text-red-500 hover:underline" onClick={() => removeChannel(c)}>
+                  <button className="hover:underline" style={{ color: 'var(--red)' }} onClick={() => removeChannel(c)}>
                     删除
                   </button>
                 </div>
@@ -545,10 +545,10 @@ export default function AlertsTab() {
               <RefreshIcon size={13} /> {loading ? '刷新中…' : '刷新'}
             </button>
             <span className="text-xs t-muted whitespace-nowrap">•</span>
-            <button className="text-xs text-orange-600 hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">
+            <button className="text-xs t-muted hover:t-text hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">
               清空冷却
             </button>
-            <button className="text-xs text-red-600 hover:underline font-medium" onClick={() => clearLog()} title="清除所有历史报警记录">
+            <button className="text-xs hover:underline font-medium" style={{ color: 'var(--red)' }} onClick={() => clearLog()} title="清除所有历史报警记录">
               清空全部日志
             </button>
           </div>
@@ -581,10 +581,7 @@ export default function AlertsTab() {
                     {(r.results || []).map((rr, j) => (
                       <span
                         key={j}
-                        className="badge-green inline-flex items-center gap-1"
-                        style={rr.ok
-                          ? { color: 'var(--green)', borderColor: 'var(--green)' }
-                          : { color: 'var(--red)', borderColor: 'var(--red)' }}
+                        className={`${rr.ok ? 'badge-green' : 'badge-red'} inline-flex items-center gap-1`}
                         title={rr.ok ? rr.channel : `${rr.channel}：${rr.error || '发送失败'}`}
                       >
                         {rr.ok ? '\u2713' : '\u2717'} {rr.channel}

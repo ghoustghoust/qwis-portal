@@ -1,29 +1,32 @@
 @echo off
-chcp 65001 >nul
+chcp 936 >nul
 cd /d "%~dp0"
-title å…¨ç½‘æƒ…æŠ¥ç³»ç»Ÿ - é‡å¯åŽç«¯
+title È«ÍøÇé±¨ÏµÍ³ - ÖØÆôºó¶Ë
 
-echo æ­£åœ¨æ£€æŸ¥ 3000 ç«¯å£å ç”¨...
+:: ---------- ÇåÀíÈ«²¿ server/index.js ÊµÀý(º¬²»Õ¼¶Ë¿ÚµÄ½©Ê¬) ----------
+:: ÀúÊ·½ÌÑµ:Ö»É± 3000 ¶Ë¿ÚÕ¼ÓÃÕß»áÂ©µôÆô¶¯Ê§°ÜµÄ½©Ê¬ÊµÀý(Õ¼×Å DB ÅÜµ÷¶Èµ«²»¼àÌý¶Ë¿Ú),
+:: µ¼ÖÂ¾É´úÂëÓÀÔ¶É±²»µô¡¢ÐÂÐÞ¸´ÎÞ·¨ÉúÐ§¡£¸ÄÎª°´ÃüÁîÐÐÆ¥Åä node server/index.js È«Á¿ÇåÀí¡£
+echo ÕýÔÚÇåÀíËùÓÐ server/index.js ½ø³Ì(º¬½©Ê¬ÊµÀý)...
+powershell -NoProfile -Command "$found=$false; Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match 'server[\\/]index\.js' } | ForEach-Object { $found=$true; Write-Output ('  ½áÊø PID ' + $_.ProcessId); & taskkill /PID $_.ProcessId /T /F | Out-Null }; if (-not $found) { Write-Output '  Ã»ÓÐ·¢ÏÖÔËÐÐÖÐµÄÊµÀý' }"
+
+:: ---------- ¶µµ×:È·ÈÏ 3000 ¶Ë¿ÚÒÑÊÍ·Å ----------
 set "PID3000="
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000 " ^| findstr "LISTENING"') do set "PID3000=%%a"
-
 if defined PID3000 (
-    echo å‘çŽ°æ—§è¿›ç¨‹ PID %PID3000%ï¼Œæ­£åœ¨ç»“æŸè¿›ç¨‹æ ‘...
+    echo ¶Ë¿ÚÈÔ±» PID %PID3000% Õ¼ÓÃ,³¢ÊÔ½áÊø½ø³ÌÊ÷...
     taskkill /PID %PID3000% /T /F >nul 2>&1
     if errorlevel 1 (
         echo.
-        echo [é”™è¯¯] æ— æ³•ç»“æŸ PID %PID3000%ï¼Œé€šå¸¸æ˜¯æƒé™ä¸è¶³ã€‚
-        echo        è¯·å³é”®æœ¬è„šæœ¬é€‰æ‹©â€œä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œâ€åŽé‡è¯•ã€‚
+        echo [´íÎó] ÎÞ·¨½áÊø PID %PID3000%,Í¨³£ÊÇÈ¨ÏÞ²»×ã¡£
+        echo        ÇëÓÒ¼ü±¾½Å±¾Ñ¡Ôñ¡¸ÒÔ¹ÜÀíÔ±Éí·ÝÔËÐÐ¡¹ºóÖØÊÔ¡£
         pause
         exit /b 1
     )
-    echo æ—§è¿›ç¨‹å·²ç»“æŸï¼Œç­‰å¾…ç«¯å£é‡Šæ”¾...
-    timeout /t 2 /nobreak >nul
-) else (
-    echo 3000 ç«¯å£ç©ºé—²ï¼Œæ— éœ€æ¸…ç†ï¼Œç›´æŽ¥å¯åŠ¨ã€‚
 )
+echo µÈ´ý¶Ë¿ÚÊÍ·Å...
+timeout /t 2 /nobreak >nul
 
 echo.
-echo æ­£åœ¨é‡æ–°å¯åŠ¨åŽç«¯æœåŠ¡ï¼ˆserver/index.jsï¼‰...
-echo æç¤ºï¼šæœ¬çª—å£å°†æ˜¾ç¤ºæœåŠ¡æ—¥å¿—ï¼Œå…³é—­çª—å£å³åœæ­¢æœåŠ¡ã€‚
+echo ÕýÔÚÖØÐÂÆô¶¯ºó¶Ë·þÎñ(server/index.js)...
+echo ÌáÊ¾:±¾´°¿Ú½«ÏÔÊ¾·þÎñÈÕÖ¾,¹Ø±Õ´°¿Ú¼´Í£Ö¹·þÎñ¡£
 npm start

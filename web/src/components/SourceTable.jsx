@@ -1,8 +1,21 @@
 // 通用订阅表格（F27）：columns = [{key, title, render?}]
 // 增强版：支持分页、搜索、状态过滤
 // （批量选择功能 2026-09-04 移除：选中后无任何批量操作消费方，属死功能）
+// 2026-09-05 视觉精修：表头 text-xs t-muted + hairline；名称列前置 SourceAvatar(24)；导出状态徽章三态
 import { useState, useMemo, useEffect } from 'react';
 import { formatDateTime } from '../util';
+import SourceAvatar from './ui/SourceAvatar.jsx';
+
+// 状态徽章三态（管理台统一）：正常=badge-green、熔断中=badge-red（带 fail_count）、已停用/已退役=badge-gray
+export function StatusBadge({ source: s }) {
+  if (s.type === 'wemp') return <span className="badge-gray">已退役</span>;
+  if (!s.enabled && (s.fail_count || 0) >= 3) {
+    return <span className="badge-red" title="已熔断（连续失败≥3 次）">熔断中({s.fail_count})</span>;
+  }
+  if (!s.enabled) return <span className="badge-gray">已停用</span>;
+  if (s.status === 'error') return <span className="badge-red" title={s.lastError || '刷新异常'}>异常</span>;
+  return <span className="badge-green">正常</span>;
+}
 
 export default function SourceTable({ 
   columns, 
@@ -73,7 +86,7 @@ export default function SourceTable({
     <div className="card overflow-hidden">
       {/* 工具栏 */}
       {enableFilter && (
-        <div className="px-4 py-3 border-b t-border bg-[var(--surface)] flex items-center gap-3 flex-wrap">
+        <div className="px-4 py-3 border-b hairline t-surface flex items-center gap-3 flex-wrap">
           {/* 搜索框 */}
           <input
             type="text"
@@ -100,7 +113,7 @@ export default function SourceTable({
       {/* 表格 */}
       <table className="w-full text-[13px]">
         <thead>
-          <tr className="t-surface2 text-left">
+          <tr className="border-b hairline text-left">
             {columns.map((c) => (
               <th key={c.key} className="px-4 py-2.5 font-medium t-muted text-xs">
                 {c.title}
@@ -118,9 +131,16 @@ export default function SourceTable({
                 <td 
                   key={c.key} 
                   className="px-4 py-2.5 t-text align-middle"
-                  title={r[c.key]}
+                  title={c.key === 'name' ? undefined : r[c.key]}
                 >
-                  {c.render ? c.render(r) : r[c.key] ?? '—'}
+                  {c.key === 'name' ? (
+                    <div className="flex items-center gap-2 min-w-0">
+                      <SourceAvatar name={r.name} avatar={r.avatar} size={24} />
+                      <div className="min-w-0 flex-1">{c.render ? c.render(r) : r[c.key] ?? '—'}</div>
+                    </div>
+                  ) : (
+                    c.render ? c.render(r) : r[c.key] ?? '—'
+                  )}
                 </td>
               ))}
             </tr>

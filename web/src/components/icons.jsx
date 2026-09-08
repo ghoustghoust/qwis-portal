@@ -272,3 +272,71 @@ export function MergeIcon(props) {
     </svg>
   );
 }
+
+// 文件夹
+export function FolderIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M3 7.5V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9.5a2 2 0 0 0-2-2h-7.5L9 4.5H5a2 2 0 0 0-2 2z" />
+    </Svg>
+  );
+}
+
+// 搜索
+export function SearchIcon(props) {
+  return (
+    <Svg {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m16.5 16.5 4 4" />
+    </Svg>
+  );
+}
+
+// 筛选
+export function FilterIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M3 5h18l-7 9v5l-4 2v-7z" />
+    </Svg>
+  );
+}
+
+// 自动分类（闪光星）
+export function SparklesIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M12 3v4M12 17v4M5 12H1M23 12h-4" />
+      <path d="m6.3 6.3 2.1 2.1M15.6 15.6l2.1 2.1M6.3 17.7l2.1-2.1M15.6 8.4l2.1-2.1" />
+      <circle cx="12" cy="12" r="3" />
+    </Svg>
+  );
+}
+
+// 锁定
+export function LockIcon(props) {
+  return (
+    <Svg {...props}>
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </Svg>
+  );
+}
+
+// 源库（书架）
+export function LibraryIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M4 4h4v16H4zM10 4h4v16h-4zM16 6l4 1-3 15-4-1z" />
+    </Svg>
+  );
+}
+
+// 我的阅读（打开的书）
+export function BookIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M4 4.5C6 3.5 8.5 3 12 4c3.5-1 6-.5 8 .5v14c-2-1-4.5-1.5-8-.5-3.5-1-6-.5-8 .5z" />
+      <path d="M12 4v14.5" />
+    </Svg>
+  );
+}

@@ -1,22 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, relativeTime } from '../util';
-import { parseTags } from '../pages/HotPage.jsx';
+import { copyText, formatDateTime, relativeTime, parseTags, sourceLabel } from '../util';
+import Stars from './ui/Stars.jsx';
+import TagPills from './ui/TagPills.jsx';
+import { safeHtml } from '../sanitize';
 
 // 热点榜详情弹窗（七期 T10/F4）：对齐 AIHOT 详情页结构
 // 返回/精选徽章/AI 评分/♡收藏/打开原文/标题/信源+时间/「AI 导读」/「推荐理由」/标签
 // 正文区「中文|原文」切换：original_html 优先直渲；无则 /api/hot/original 兜底抓取；再失败「阅读原文 ↗」
 // 收藏与阅读器「稍后阅读」同一字段（articles.later）
-
-// author 字段形如「noreply@aihot.virxact.com (The Decoder：AI News（RSS）)」，取最外层括号内上游信源名
-function sourceLabel(item) {
-  const a = item.author || '';
-  const m = a.match(/\((.+)\)/) || a.match(/（(.+)）/);
-  if (m) return m[1].trim();
-  if (a && !a.includes('@')) return a;
-  return item.source_name || item.feedName || a || '';
-}
+// 2026-09-05 视觉精修：parseTags/sourceLabel 改共享引用；评分 → Stars；推荐理由 → accent-soft 浅底块；语言切换 → pill
 
 // 小节标题（AI 导读 / 推荐理由 / 标签）
 function Section({ title, children }) {
@@ -130,11 +124,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
                 ✦ 精选
               </span>
             )}
-            {score !== null && (
-              <span className="inline-flex items-center gap-1 text-[11px] t-accent tabular-nums" title="AIHOT 编辑部评分">
-                ● AI 评分 {score}/100
-              </span>
-            )}
+            {score !== null && <Stars score={score} size={13} className="flex-none" />}
             <button
               className="icon-btn text-[15px]"
               title={laterActive ? '取消稍后阅读' : '加入稍后阅读（阅读器可见）'}
@@ -174,18 +164,15 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
           )}
           {reason && (
             <Section title="推荐理由">
-              <p className="text-[13px] leading-relaxed t-muted">{reason}</p>
+              {/* 2026-09-05 视觉精修：推荐理由收敛为 accent-soft 浅底圆角块 */}
+              <p className="rounded-xl t-accent-soft px-4 py-3 text-[13px] leading-relaxed t-text">
+                {reason}
+              </p>
             </Section>
           )}
           {tags.length > 0 && (
             <Section title="标签">
-              <div className="flex flex-wrap gap-1.5">
-                {tags.map((t) => (
-                  <span key={t} className="badge-green" style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}>
-                    #{t}
-                  </span>
-                ))}
-              </div>
+              <TagPills tags={tags} max={8} />
             </Section>
           )}
 
@@ -196,10 +183,8 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
                 正文 · {lang === 'zh' ? 'AI 翻译' : '原文'}
               </span>
               <span className="flex-1" />
-              <div
-                className="flex rounded-full border t-border overflow-hidden text-[12px]"
-                role="tablist"
-              >
+              {/* 2026-09-05 视觉精修：中文/原文切换收敛为 .pill/.pill.on */}
+              <div className="flex items-center gap-1.5" role="tablist">
                 {[
                   { id: 'zh', label: '中文' },
                   { id: 'orig', label: '原文' },
@@ -209,10 +194,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
                     role="tab"
                     aria-selected={lang === t.id}
                     onClick={() => switchLang(t.id)}
-                    className={`px-4 py-1 transition-colors ${
-                      lang === t.id ? 't-accent-bg font-medium' : 't-muted hover:t-text'
-                    }`}
-                    style={lang === t.id ? { color: 'var(--accent-text)' } : undefined}
+                    className={`pill !text-[12px] !px-3.5 !py-1 cursor-pointer ${lang === t.id ? 'on' : ''}`}
                   >
                     {t.label}
                   </button>
@@ -222,7 +204,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
 
             {lang === 'zh' &&
               (zhHtml ? (
-                <div ref={contentRef} className="article-content" dangerouslySetInnerHTML={{ __html: zhHtml }} />
+                <div ref={contentRef} className="article-content" dangerouslySetInnerHTML={{ __html: safeHtml(zhHtml) }} />
               ) : (
                 <div>
                   {summary && <p className="text-[14px] leading-relaxed t-text whitespace-pre-line">{summary}</p>}
@@ -234,7 +216,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
               <div className="py-10 text-center text-xs t-muted">正在抓取原文…</div>
             )}
             {lang === 'orig' && origState === 'ok' && (
-              <div ref={contentRef} className="article-content" dangerouslySetInnerHTML={{ __html: orig.html }} />
+              <div ref={contentRef} className="article-content" dangerouslySetInnerHTML={{ __html: safeHtml(orig.html) }} />
             )}
             {lang === 'orig' && origState === 'fail' && (
               <div className="py-10 text-center">

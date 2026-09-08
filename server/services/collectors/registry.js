@@ -1,17 +1,18 @@
-// 适配器登记中心（F49）
+// 适配器登记中心（F49，重构 Phase 4 增强契约校验）
 // 适配器契约：
 //   module.exports = {
 //     type: 'bilibili',
 //     match(url) {},            // 识别用户粘贴的链接 → false | {uid?, bvid?, ...}
-//     async resolve(input) {},  // 解析出订阅源字段 {name, url, uid, avatar, extra?}
+//     resolve(input) {},  // 解析出订阅源字段 {name, url, uid, avatar, extra?}
 //     async fetch(source, ctx) {}, // 拉取内容 → {articles: [...], videos: [...]}
 //     defaultIntervalMin: 60,
 //   }
 const adapters = new Map(); // type -> adapter
 const order = [];           // 登记顺序 = detectByUrl 遍历顺序
+const { validateAdapter } = require('./_base');
 
 function register(adapter) {
-  if (!adapter || !adapter.type) throw new Error('适配器必须有 type 字段');
+  validateAdapter(adapter); // 强制契约校验：type + fetch + match 必须存在
   adapters.set(adapter.type, adapter);
   order.push(adapter.type);
   return adapter;

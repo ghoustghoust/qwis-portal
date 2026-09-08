@@ -90,10 +90,12 @@ async function resolvePending(type) {
       const dup = db.prepare('SELECT id FROM sources WHERE type=? AND (uid=? OR url=?)')
         .get(type, info.uid || '', info.url || item.url);
       if (!dup) {
-        db.prepare(
+        const r = db.prepare(
           'INSERT INTO sources(type, name, url, avatar, uid, extra, enabled, status, created_at) VALUES(?,?,?,?,?,?,1,?,?)'
         ).run(type, item.name || info.name || item.url, info.url || item.url, info.avatar || null,
           info.uid || null, JSON.stringify(info.extra || {}), 'ok', nowIso());
+        // 新源自动分类（失败不阻断）
+        try { require('../classify').autoClassifySourceId(r.lastInsertRowid); } catch { /* 降级 */ }
       }
       db.prepare("UPDATE pending_items SET status='resolved', error=NULL WHERE id=?").run(item.id);
       log.info(`队列[${type}]已解析为正式订阅: ${item.name || info.name || item.url}`);

@@ -37,7 +37,7 @@ RSSHub 跑起来后，在系统里配置模板（二选一）：
 node -e "const {setSetting}=require('D:/全网情报系统/server/db.js'); setSetting('x.rsshubTemplate','http://localhost:1200/twitter/user/{name}'); console.log('OK')"
 ```
 
-**方式 B（配置文件固化）：** 部署文档见 `docs/DEPLOYMENT.md`。
+**方式 B（配置文件固化）：** 运维与部署见 `docs/RUNBOOK.md`。
 
 配置后，在「扩展源」直接粘贴 `https://x.com/OpenAI` 或用户名 `OpenAI` 即可订阅。
 

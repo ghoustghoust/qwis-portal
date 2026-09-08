@@ -5,20 +5,31 @@ const { nowIso } = require('../util/time');
 const log = require('../util/log'); // ✅ P0 修复：引入脱敏工具
 const registry = require('../services/collectors/registry');
 const { fetchSource, markSourceError, intervalMinFor, unfreezeSource } = require('../services/collectors/store');
+const { VIDEO_TYPES, autoClassifySourceId } = require('../services/classify');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
-const VIDEO_TYPES = ['bilibili', 'douyin', 'youtube'];
-
 // 解析 extra，把源级间隔 intervalMin 提到顶层（无覆盖则不输出该字段）
+// 2026-09-05b A3 修复：本接口公开免鉴权，原样透传 extra 原串会泄露未脱敏 lastError/平台参数；
+// 改为白名单重建（前端消费点已核实：SourceTable 用 lastError/lastErrorAt，Sidebar 用 marksFeatured）
+const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified'];
+// 公开接口的 lastError：敏感键值打码 + URL 整段抹除（错误信息里的内网地址/带参 URL 不外泄）
+function sanitizeError(v) {
+  return log.mask(String(v)).replace(/https?:\/\/[^\s"']+/g, '[url]');
+}
 function withInterval(r) {
-  let extra = {};
-  try { extra = JSON.parse(r.extra || '{}'); } catch { /* 非法 JSON 视为无 */ }
+  let raw = {};
+  try { raw = JSON.parse(r.extra || '{}'); } catch { /* 非法 JSON 视为无 */ }
+  const extra = {};
+  for (const k of EXTRA_PUBLIC_KEYS) {
+    if (raw[k] !== undefined) extra[k] = k === 'lastError' ? sanitizeError(raw[k]) : raw[k];
+  }
+  const out = { ...r, extra: JSON.stringify(extra) };
   const n = Number(extra.intervalMin);
-  const out = { ...r };
   if (Number.isFinite(n) && n > 0) out.intervalMin = n;
-  // 九期：透出最近错误 (健康度展示)
-  if (extra.lastError) out.lastError = log.mask(extra.lastError); // ✅ 脱敏
+  // 九期：透出最近错误 (健康度展示)——与 extra 内同一份脱敏值
+  if (extra.lastError) out.lastError = extra.lastError;
   if (extra.lastErrorAt) out.lastErrorAt = extra.lastErrorAt;
   return out;
 }
@@ -31,11 +42,20 @@ router.get('/', (req, res) => {
   if (req.query.enabled !== undefined) { conds.push('enabled=?'); args.push(Number(req.query.enabled)); }
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const rows = db.prepare(`SELECT * FROM sources ${where} ORDER BY id`).all(...args);
-  const unreadStmt = db.prepare('SELECT COUNT(*) c FROM articles WHERE source_id=? AND read_at IS NULL');
-  const videoStmt = db.prepare('SELECT COUNT(*) c FROM videos WHERE source_id=?');
+  // 1.1 性能优化：批量聚合未读计数，消除 N+1 查询（原逐源查询在源数量增长后线性退化）
+  const articleUnreadRows = db.prepare(
+    'SELECT source_id, COUNT(*) as c FROM articles WHERE read_at IS NULL GROUP BY source_id'
+  ).all();
+  const videoCountRows = db.prepare(
+    'SELECT source_id, COUNT(*) as c FROM videos GROUP BY source_id'
+  ).all();
+  const articleUnreadMap = new Map(articleUnreadRows.map((r) => [r.source_id, r.c]));
+  const videoCountMap = new Map(videoCountRows.map((r) => [r.source_id, r.c]));
   const items = rows.map((r) => ({
     ...withInterval(r),
-    unread: VIDEO_TYPES.includes(r.type) ? videoStmt.get(r.id).c : unreadStmt.get(r.id).c,
+    unread: VIDEO_TYPES.includes(r.type)
+      ? (videoCountMap.get(r.id) || 0)
+      : (articleUnreadMap.get(r.id) || 0),
   }));
   res.json({ ok: true, items });
 });
@@ -61,6 +81,7 @@ router.put('/:id/interval', (req, res) => {
   const next = new Date(Date.now() + intervalMinFor(updated) * 60000).toISOString();
   db.prepare('UPDATE sources SET next_fetch_at=? WHERE id=?').run(next, s.id);
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }
+  audit.record('source.interval', { target: s.name, detail: { intervalMin: extra.intervalMin ?? null }, ip: req.ip });
   res.json({ ok: true, intervalMin: extra.intervalMin ?? null, nextFetchAt: next });
 });
 
@@ -85,7 +106,11 @@ router.post('/', async (req, res) => {
     ).run(info.type || adapter.type, name || info.name || input, info.url || input, info.avatar || null,
       info.uid || null, JSON.stringify(info.extra || {}), 'ok', nowIso());
     const item = db.prepare('SELECT * FROM sources WHERE id=?').get(r.lastInsertRowid);
-    res.json({ ok: true, item });
+    // 新源自动分类（失败不阻断建源主流程）
+    try { autoClassifySourceId(r.lastInsertRowid); } catch { /* 降级为未分组 */ }
+    const finalItem = db.prepare('SELECT * FROM sources WHERE id=?').get(r.lastInsertRowid);
+    audit.record('source.create', { target: finalItem.name, detail: { id: finalItem.id, type: finalItem.type, url: finalItem.url }, ip: req.ip });
+    res.json({ ok: true, item: finalItem });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message });
   }
@@ -98,6 +123,7 @@ router.put('/:id/toggle', (req, res) => {
   const enabled = s.enabled ? 0 : 1;
   if (enabled) unfreezeSource(s.id);
   else db.prepare('UPDATE sources SET enabled=0 WHERE id=?').run(s.id);
+  audit.record('source.toggle', { target: s.name, detail: { enabled: !!enabled }, ip: req.ip });
   res.json({ ok: true, enabled });
 });
 
@@ -107,6 +133,7 @@ router.post('/:id/refresh', async (req, res) => {
   if (!s) return res.status(404).json({ ok: false, error: 'not found' });
   try {
     const r = await fetchSource(s);
+    audit.record('source.refresh', { target: s.name, detail: { id: s.id }, ip: req.ip });
     res.json({ ok: true, ...r });
   } catch (err) {
     const { failCount, autoPaused } = markSourceError(s, err.message);
@@ -162,6 +189,7 @@ router.post('/refresh-all', async (req, res) => {
     }).catch(() => {});
   }
   res.json({ ok: true, total: results.length, succeeded: okCount, failed: results.length - okCount, results });
+  audit.record('source.refresh-all', { detail: { total: results.length, succeeded: okCount, failed: results.length - okCount, filterType }, ip: req.ip });
 });
 
 // DELETE /api/sources/:id —— 连同其文章/视频一起删除
@@ -171,7 +199,9 @@ router.delete('/:id', (req, res) => {
   db.prepare('DELETE FROM articles WHERE source_id=?').run(s.id);
   db.prepare('DELETE FROM videos WHERE source_id=?').run(s.id);
   db.prepare('DELETE FROM sources WHERE id=?').run(s.id);
+  audit.record('source.delete', { target: s.name, detail: { id: s.id, type: s.type }, ip: req.ip });
   res.json({ ok: true });
 });
 
 module.exports = router;
+module.exports._withInterval = withInterval; // 单测口（A3 回归：extra 白名单脱敏）

@@ -63,8 +63,8 @@ test('A1: 聚合源刷新后 pending_items 入队成功（真实列、不崩进�
   assert.equal(row.status, 'pending');
 });
 
-test('A1(静态): store.js 的 pending_items 插入只使用真实列且 setImmediate 有防护', () => {
-  const src = read('server/services/collectors/store.js');
+test('A1(静态): fetcher.js 的 pending_items 插入只使用真实列且 setImmediate 有防护（重构 Phase 2 从 store.js 提取）', () => {
+  const src = read('server/services/collectors/fetcher.js');
   assert.ok(!/INTO pending_items\(\s*source_id/.test(src), 'pending_items 无 source_id 列');
   assert.match(src, /INSERT INTO pending_items\(type, url, name, status, imported_at\)/);
   // setImmediate 块内必须同时有 try 和 catch（只验存在性,不绑死注释/格式）
@@ -85,10 +85,10 @@ test('A2: enrichMissing 用 articles.id 补抓、用 pending_id 删记录', () =
 });
 
 // ---------- A3：调度器清理路径 ----------
-test('A3: 调度器数据清理引用 ../datamgr 并支持 retentionDays 覆盖', () => {
-  const src = read('server/services/scheduler/index.js');
+test('A3: 调度器数据清理引用 ../datamgr 并支持 retentionDays 覆盖（重构 Phase 3 已移至 jobs/maintenance.js）', () => {
+  const src = read('server/services/scheduler/jobs/maintenance.js');
   assert.ok(!src.includes("require('../services/datamgr')"), '错误路径解析为 services/services/datamgr');
-  assert.match(src, /require\('\.\.\/datamgr'\)\.cleanup\(/);
+  assert.match(src, /require\('\.\.\/\.\.\/datamgr'\)\.cleanup\(/);
   assert.match(src, /retentionDays/, '保留天数应读 settings.data.retentionDays');
   // 路径真实可解析
   require('../server/services/datamgr');
@@ -228,7 +228,7 @@ test('R2-5: saveUpload 拒绝同名覆盖', () => {
   assert.match(src, /fs\.existsSync\(dest\)\) throw new Error/, '同名上传必须拒绝，防静默损毁已有快照');
 });
 
-test('R2-6: 调度器 retentionDays 有下限保护（防误配清库）', () => {
-  const src = read('server/services/scheduler/index.js');
+test('R2-6: 调度器 retentionDays 有下限保护（防误配清库）（重构 Phase 3 已移至 jobs/maintenance.js）', () => {
+  const src = read('server/services/scheduler/jobs/maintenance.js');
   assert.match(src, /retentionDays[\s\S]{0,120}rd >= 1/, '保留天数必须 >=1，防 0.x 天几乎清库');
 });

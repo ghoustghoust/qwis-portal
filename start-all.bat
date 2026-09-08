@@ -12,6 +12,7 @@ echo.
 netstat -ano | findstr ":3000 " | findstr "LISTENING" >nul
 if %errorlevel%==0 (
     echo [跳过] 情报系统已在运行 ^(3000 端口被占用^)
+    echo [提示] 若刚修改过代码需要生效，请先运行 restart-server.bat 再启动
 ) else (
     echo [启动] 全网情报系统...
     start "情报系统 :3000" cmd /k "cd /d D:\全网情报系统 && npm start"

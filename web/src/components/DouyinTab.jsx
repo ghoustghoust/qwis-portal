@@ -7,7 +7,7 @@ import IntervalEditor from './IntervalEditor.jsx';
 import StatusCard from './StatusCard.jsx';
 import PendingList from './PendingList.jsx';
 import QueuePanel from './QueuePanel.jsx';
-import SourceTable from './SourceTable.jsx';
+import SourceTable, { StatusBadge } from './SourceTable.jsx';
 
 // 抖音 Tab（F36~F42），结构同构 BilibiliTab（T20）
 // 登录契约：GET /api/auth/douyin/status → {ok:true, loggedIn:bool, updatedAt?}
@@ -408,19 +408,6 @@ export default function DouyinTab() {
           empty="暂无订阅，先添加一个抖音作者"
           columns={[
             {
-              key: 'avatar',
-              title: '头像',
-              render: (s) => (
-                s.avatar ? (
-                  <img referrerPolicy="no-referrer" src={s.avatar} alt="" className="w-9 h-9 rounded-full object-cover flex-none" loading="lazy" />
-                ) : (
-                  <span className="w-9 h-9 rounded-full t-surface2 flex-none flex items-center justify-center text-xs t-muted">
-                    {(displayName(s) || '抖').slice(0, 1)}
-                  </span>
-                )
-              ),
-            },
-            {
               key: 'name',
               title: '作者 / URL',
               render: (s) => (
@@ -429,26 +416,7 @@ export default function DouyinTab() {
                     <span className="text-[13px] font-medium t-text truncate max-w-[200px]" title={displayName(s)}>
                       {displayName(s)}
                     </span>
-                    <span
-                      className="text-[10px] px-1.5 py-0.5 rounded flex-none"
-                      style={{ background: '#161823', color: '#fff' }}
-                    >
-                      抖音
-                    </span>
-                    {s.status === 'ok' && <span className="badge-green badge-on">正常</span>}
-                    {s.status === 'error' && (
-                      <span className="badge-red badge" title="刷新异常">
-                        异常
-                      </span>
-                    )}
-                    {s.fail_count >= 3 && s.enabled === 0 && (
-                      <span 
-                        className="badge-red badge" 
-                        title="已熔断（连续失败≥3 次）"
-                      >
-                        熔断
-                      </span>
-                    )}
+                    <span className="pill flex-none">抖音</span>
                   </div>
                   <div className="mt-1 text-[11px] t-muted break-all">
                     条数 {s.video_count ?? s.videoCount ?? s.unread ?? '—'} · 上次 {formatDateTime(s.last_fetched_at)} · 下次 {formatDateTime(s.next_fetch_at)}
@@ -459,18 +427,7 @@ export default function DouyinTab() {
             {
               key: 'status',
               title: '状态',
-              render: (s) => (
-                <div className="flex items-center gap-2">
-                  <span className={`badge-green ${s.enabled !== 0 ? 'badge-on' : 'badge-off'}`}>
-                    {s.enabled !== 0 ? '已启用' : '已停用'}
-                  </span>
-                  {s.status === 'error' && (
-                    <span className="badge-red badge" title={s.lastError || '刷新异常'}>
-                      异常
-                    </span>
-                  )}
-                </div>
-              )
+              render: (s) => <StatusBadge source={s} />
             },
             {
               key: 'interval',

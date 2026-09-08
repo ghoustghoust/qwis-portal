@@ -112,4 +112,42 @@ router.post('/unfreeze/:id', (req, res) => {
   }
 });
 
+// GET /api/health/source-stats — 5.4 各源最近 7 天抓取成功率
+router.get('/source-stats', (req, res) => {
+  try {
+    const days = Number(req.query.days) || 7;
+    const cutoff = new Date(Date.now() - days * 86400e3).toISOString();
+    // 从 job_queue 统计各源的成功/失败次数
+    const rows = db.prepare(`
+      SELECT source_id,
+        COUNT(*) as total,
+        SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) as success,
+        SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed
+      FROM job_queue
+      WHERE created_at >= ? AND source_id IS NOT NULL
+      GROUP BY source_id
+      ORDER BY failed DESC, total DESC
+    `).all(cutoff);
+    // 补充源名称
+    const sourceMap = new Map(
+      db.prepare('SELECT id, name, type FROM sources').all().map((s) => [s.id, s])
+    );
+    const items = rows.map((r) => {
+      const src = sourceMap.get(r.source_id) || {};
+      return {
+        source_id: r.source_id,
+        name: src.name || `#${r.source_id}`,
+        type: src.type || 'unknown',
+        total: r.total,
+        success: r.success,
+        failed: r.failed,
+        rate: r.total > 0 ? Math.round((r.success / r.total) * 100) : 100,
+      };
+    });
+    res.json({ ok: true, items, days });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 module.exports = router;

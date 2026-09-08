@@ -1,0 +1,59 @@
+# Vercel 部署忽略文件
+# 只保留 api/, lib/, web/dist, public/data/, vercel.json
+
+# 大目录
+data/
+archive/
+trash/
+node_modules/
+
+# 子项目（各自独立部署）
+portal/
+
+# 服务端（已由 api/ 替代）
+server/
+
+# 开发/测试
+tests/
+docs/
+scripts/
+.cluster/
+.autoclaw/
+.opencode/
+.qoder/
+.workbuddy/
+build_logs/
+memory/
+
+# 工具脚本（不需要部署）
+tools/
+*.bat
+*.py
+
+# 本地配置
+.env
+.env.example
+ecosystem.config.js
+restart-server.bat
+start-all.bat
+sync-portal.bat
+smoke-test.js
+monitor-local.js
+dev_render.py
+
+# 本地数据库
+*.db
+*.db-shm
+*.db-wal
+
+# 其他
+opml/
+.gitignore
+README.md
+AGENTS.md
+ARCHITECTURE.md
+HEARTBEAT.md
+IDENTITY.md
+SOUL.md
+TOOLS.md
+USER.md

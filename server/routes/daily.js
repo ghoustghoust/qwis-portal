@@ -7,6 +7,7 @@ const express = require('express');
 const { db, getSetting, setSetting } = require('../db');
 const daily = require('../services/ai/daily');
 const log = require('../util/log');
+const audit = require('../services/audit');
 
 const router = express.Router();
 const settingsRouter = express.Router();
@@ -30,6 +31,7 @@ router.post('/regenerate', async (req, res) => {
       log.warn(`[日报预抓取] 部分源失败：${preErr.message}`);
     }
     const report = await daily.generate(req.body && req.body.windowHours);
+    audit.record('daily.generate', { detail: { windowHours: req.body && req.body.windowHours }, ip: req.ip });
     res.json({ ok: true, report });
   } catch (err) {
     res.json({ ok: false, error: err.message });
@@ -66,6 +68,7 @@ settingsRouter.get('/', (req, res) => {
 });
 
 // 校验/规整栏目数组：名称必填；无 id 自动生成；special 仅认 focus/fallback
+// 3.3 增强：keywords 支持 AND 组合 —— 每项可以是字符串（OR）或字符串数组（AND）
 function sanitizeColumns(cols) {
   if (!Array.isArray(cols) || !cols.length) throw new Error('columns 必须是非空数组');
   return cols.map((c, i) => {
@@ -78,7 +81,13 @@ function sanitizeColumns(cols) {
       out.special = c.special;
     } else {
       if (c.desc !== undefined) out.desc = String(c.desc);
-      out.keywords = Array.isArray(c.keywords) ? c.keywords.map((k) => String(k).trim()).filter(Boolean) : [];
+      out.keywords = Array.isArray(c.keywords)
+        ? c.keywords.map((k) => {
+            // AND 组合：数组内每项都是字符串
+            if (Array.isArray(k)) return k.map((s) => String(s).trim()).filter(Boolean);
+            return String(k).trim();
+          }).filter((k) => (Array.isArray(k) ? k.length > 0 : k))
+        : [];
     }
     return out;
   });
@@ -138,6 +147,7 @@ settingsRouter.put('/', (req, res) => {
 
   // 生成时间/窗口等变更后重排调度（重建日报 cron）
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }
+  audit.record('daily.settings', { detail: { keys: Object.keys(body).filter(k => ['windowHours','time','articleSourceIds','videoSourceIds','columns','focusSourceIds'].includes(k)) }, ip: req.ip });
   res.json({ ok: true });
 });
 

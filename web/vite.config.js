@@ -11,10 +11,17 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 600, // 5.1 监控包体积，超 600KB 发出警告
     rollupOptions: {
       input: {
         main: r('index.html'),
         admin: r('admin.html'),
+      },
+      output: {
+        // 5.1 分离 vendor（react/react-dom）与业务代码，提升缓存命中率
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+        },
       },
     },
   },
