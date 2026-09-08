@@ -327,7 +327,7 @@ async function handleHotEvents(req) {
     const events = [];
     for (const c of clusters) {
       if (c.items.length < 2) continue;
-      const times = c.items.map(i => Date.parse(i.published_at || 0)).filter(Boolean);
+      const times = c.items.map(i => Date.parse(String(i.published_at || ''))).filter(t => Number.isFinite(t) && t > 0);
       const firstAt = times.length ? Math.min(...times) : nowMs;
       const latestAt = times.length ? Math.max(...times) : nowMs;
       // 领域归属
@@ -340,12 +340,14 @@ async function handleHotEvents(req) {
       // 热度计算
       let heat = 0;
       for (const i of c.items) {
-        const t = Date.parse(i.published_at || 0) || nowMs;
+        const t = Date.parse(String(i.published_at || '')) || nowMs;
         const decay = Math.pow(0.5, Math.max(0, nowMs - t) / 3600e3 / EVENTS_HALF_LIFE_H);
-        const w = 1 + Math.min(1, (i.score || 0) / 1e6);
+        const scoreVal = Number(i.score);
+        const w = 1 + Math.min(1, (Number.isFinite(scoreVal) ? scoreVal : 0) / 1e6);
         heat += w * decay;
       }
       heat *= Math.pow(1.5, c.sourceIds.size - 1);
+      heat = Number.isFinite(heat) ? Math.round(heat * 10) / 10 : 0;
       // 状态
       const ageH = (nowMs - firstAt) / 3600e3;
       const freshH = (nowMs - latestAt) / 3600e3;
