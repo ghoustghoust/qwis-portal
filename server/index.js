@@ -58,7 +58,12 @@ const routes = {
   '/api/health': './routes/health',
   '/api/reading': './routes/reading',
   '/api/audit': './routes/audit',
+  '/api/ai': './routes/ai',
 };
+
+// SSE 实时推送（须在鉴权中间件之前注册——SSE 是只读长连接，无需 Bearer）
+const { sseHandler } = require('./routes/events-sse');
+app.get('/api/events', sseHandler);
 
 // P0 鉴权（2026-09-05 修复）：必须在路由挂载之前注册——Express 按注册序执行，
 // 历史上挂在路由之后导致全部 /api/* 零鉴权（详见 docs/1.CODE_REVIEW_2026-09-05.md P0-1）。
@@ -81,9 +86,18 @@ for (const [mount, file] of Object.entries(routes)) {
 // API 404
 app.use('/api', (req, res) => res.status(404).json({ ok: false, error: 'not found' }));
 
-// 静态托管前端产物
+// 静态托管前端产物（带缓存策略：JS/CSS/图片 1 天强缓存，HTML 不缓存）
 const distDir = path.join(__dirname, '..', 'web', 'dist');
-app.use(express.static(distDir));
+app.use(express.static(distDir, {
+  maxAge: '1d',
+  etag: true,
+  setHeaders: (res, filePath) => {
+    // HTML 文件不缓存（SPA 入口需始终获取最新版本）
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  },
+}));
 
 // 三页面 SPA 路由（F52）+ 六期 /hot/ 热点榜（F6）+ 九期管理后台独立入口（admin.html）
 // 读者前端（reader/daily/hot）→ index.html；管理后台（/admin/，/wechat/ 兼容）→ admin.html

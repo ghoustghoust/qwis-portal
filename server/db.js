@@ -120,7 +120,10 @@ try { db.exec('ALTER TABLE articles ADD COLUMN category TEXT'); } catch { /* 列
 // 增量列迁移（T48）：sources.fail_count 记录连续抓取失败次数（连失 3 次自动暂停）
 try { db.exec('ALTER TABLE sources ADD COLUMN fail_count INTEGER DEFAULT 0'); } catch { /* 列已存在 */ }
 // 2026-09-05：articles.word_count 正文纯文本字数（写入时剥 HTML 计算；替代 LENGTH(content_html) 的虚高估算）
-try { db.exec('ALTER TABLE articles ADD COLUMN word_count INTEGER'); } catch { /* 列已存在 */ }
+try { db.exec('ALTER TABLE articles ADD COLUMN word_count INTEGER'); } catch { /* 已存在 */ }
+// AI 翻译列：translated_title（翻译标题）、translated_content（翻译正文 HTML）
+try { db.exec('ALTER TABLE articles ADD COLUMN translated_title TEXT'); } catch { /* 已存在 */ }
+try { db.exec('ALTER TABLE articles ADD COLUMN translated_content TEXT'); } catch { /* 已存在 */ }
 // T47：大列表常用过滤/排序补索引（千级数据量实测见 docs/RUNBOOK.md）
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_articles_read_at ON articles(read_at);

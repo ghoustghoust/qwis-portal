@@ -25,3 +25,20 @@ archive/_eval/wechat-rss-plus/.vscode/
 
 # 门户独立 git 仓库内部
 portal/.vercel/
+
+# 数据库文件（运行时生成）
+db
+db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# 验证截图
+verify-*.png
+turso-page.png
+
+# Vercel 本地缓存
+.vercel/
+
+# 构建产物内部
+archive/_eval/wechat-rss-plus/

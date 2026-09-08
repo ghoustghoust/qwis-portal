@@ -8,6 +8,7 @@ const log = require('../../util/log');
 const registry = require('./registry');
 const { saveArticles, saveVideos } = require('./repo');
 const { withSourceLock, intervalMinFor } = require('./_shared');
+const { emitNewArticles, emitTranslation } = require('../realtime/event-bus');
 
 // ─── 抓取单源（带并发防护） ──────────────────────────────────────────────────
 // P2 并发防护：同一 source.id 同时只允许一次抓取在飞
@@ -27,6 +28,16 @@ async function fetchSourceInner(source) {
   const result = await adapter.fetch(source, {});
   const addedArticles = saveArticles(source.id, result.articles || [], { marksFeatured: !!extra.marksFeatured });
   const addedVideos = saveVideos(source.id, result.videos || []);
+  // SSE 实时推送：新文章入库时通知前端
+  if (addedArticles > 0) {
+    const latest = (result.articles || [])[0];
+    emitNewArticles({
+      sourceId: source.id,
+      sourceName: source.name,
+      count: addedArticles,
+      latestTitle: latest?.title || '',
+    });
+  }
   // ETag/Last-Modified 写回 extra，供下次条件请求；同时清除上次错误标记
   if (result.etag || result.lastModified) {
     if (result.etag) extra.etag = result.etag;
@@ -68,6 +79,49 @@ async function fetchSourceInner(source) {
       }
     });
   }
+
+  // 自动翻译：抓取到新文章后，异步检测并翻译英文内容（不阻塞主流程）
+  if (addedArticles > 0) {
+    setImmediate(() => {
+      try {
+        const translateSkill = require('../ai/translate-skill');
+        if (!translateSkill.isEnabled()) return;
+        // 取本轮新插入的英文文章（created_at 在最近 2 分钟内 + 未翻译 + 内容为英文）
+        const recentEnglish = db.prepare(`
+          SELECT id, title, content_html FROM articles
+          WHERE source_id = ? AND translated_title IS NULL AND translated_content IS NULL
+          AND content_html IS NOT NULL AND content_html != ''
+          AND created_at >= ?
+          ORDER BY created_at DESC
+          LIMIT 10
+        `).all(source.id, new Date(Date.now() - 120000).toISOString());
+        // 过滤出英文文章
+        const englishArticles = recentEnglish.filter(a => translateSkill.isEnglish(a.title + ' ' + a.content_html));
+        if (englishArticles.length === 0) return;
+        log.info(`[翻译Skill] 检测到 ${englishArticles.length} 篇新英文文章，开始自动翻译...`);
+        translateSkill.translateBatch(englishArticles, {
+          onProgress: ({ done, total }) => {
+            if (done % 3 === 0 || done === total) log.info(`[翻译Skill] 进度 ${done}/${total}`);
+          },
+        }).then(results => {
+          let saved = 0;
+          for (const [articleId, translated] of results) {
+            if (translateSkill.saveTranslation(articleId, translated)) {
+              saved++;
+              emitTranslation({ articleId, translatedTitle: translated?.title || '' });
+            }
+          }
+          if (saved > 0) log.info(`[翻译Skill] 已保存 ${saved} 篇翻译结果`);
+        }).catch(err => {
+          log.warn(`[翻译Skill] 自动翻译异常: ${err.message}`);
+        });
+      } catch (err) {
+        // translate-skill 模块加载失败不影响主流程
+        log.warn(`[翻译Skill] 自动翻译启动失败: ${err.message}`);
+      }
+    });
+  }
+
   return { articles: addedArticles, videos: addedVideos, notModified: !!result.notModified };
 }
 

@@ -1,12 +1,12 @@
 // 设置 API（T15）：分区读写；PUT 敏感字段留空不覆盖；GET 脱敏只返回是否已配置（N2）
-// AI 摘要已下线：不再提供 ai 配置区与 /api/settings/ai 委托
+// AI 能力已恢复（Agnes AI 平台）：提供 ai 配置区
 const express = require('express');
 const { db, getSetting, setSetting } = require('../db');
 const { nowIso } = require('../util/time');
 
 const router = express.Router();
 
-const DEFAULT_INTERVALS = { opml: 12, rss: 8, bilibili: 60, douyin: 360, queue: 10 };
+const DEFAULT_INTERVALS = { opml: 12, rss: 0.5, bilibili: 60, douyin: 360, queue: 10 };
 
 function cookieConfigured(platform) {
   const row = db.prepare('SELECT cookie FROM credentials WHERE platform=?').get(platform);
@@ -42,6 +42,12 @@ router.get('/', (req, res) => {
     wechat: {
       lastSyncAt: getSetting('wechat.lastSyncAt', null),
       lastResult: getSetting('wechat.lastResult', null),
+    },
+    ai: {
+      enabled: getSetting('ai', {}).enabled || false,
+      apiKeyConfigured: !!(process.env.AGNES_API_KEY || getSetting('ai', {}).apiKey),
+      model: process.env.AGNES_MODEL || getSetting('ai', {}).model || 'agnes-2.5-flash',
+      envSource: process.env.AGNES_API_KEY ? 'env' : 'settings',
     },
   });
 });
@@ -109,6 +115,16 @@ router.put('/', (req, res) => {
     db.prepare(
       'INSERT INTO credentials(platform, cookie, updated_at) VALUES(?,?,?) ON CONFLICT(platform) DO UPDATE SET cookie=excluded.cookie, updated_at=excluded.updated_at'
     ).run('bilibili', String(body.bilibili.cookie), nowIso());
+  }
+  // AI 能力配置（enabled/apiKey/model/apiBase）
+  if (body.ai) {
+    const curAi = getSetting('ai', {}) || {};
+    const nextAi = { ...curAi };
+    if (body.ai.enabled !== undefined) nextAi.enabled = !!body.ai.enabled;
+    if (body.ai.model !== undefined) nextAi.model = String(body.ai.model).trim();
+    if (body.ai.apiBase !== undefined) nextAi.apiBase = String(body.ai.apiBase).trim();
+    if (body.ai.apiKey && body.ai.apiKey.trim()) nextAi.apiKey = body.ai.apiKey.trim(); // 留空不覆盖
+    setSetting('ai', nextAi);
   }
   // 间隔变更后重排调度
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }

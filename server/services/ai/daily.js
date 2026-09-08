@@ -1,7 +1,7 @@
 // 日报引擎（T26，F13~F19）
-// 流程：按统计窗口取候选 → 栏目规则（focus 全收 → 关键词命中 → fallback 兜底）→
+// 流程：按统计窗口取候选 → [AI 增强：摘要+重要度] → 栏目规则 →
 //       F5 去重+同源限流 → 写 daily_reports
-// 排序恒为关键词模式（AI 摘要已下线）
+// 排序模式：AI 启用时按重要度；否则按关键词命中数
 const { db, getSetting } = require('../../db');
 const { nowIso } = require('../../util/time');
 const log = require('../../util/log');
@@ -79,12 +79,14 @@ function collectCandidates(windowHours, cfg) {
   }
   for (const r of db.prepare(aSql).all(...aArgs)) {
     items.push({
-      kind: 'article', ref_id: r.id, source_id: r.source_id, title: r.title || '', cover: r.cover || '',
+      kind: 'article', ref_id: r.id, source_id: r.source_id,
+      title: r.translated_title || r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
       focus: !!r.source_focus, aggregator: !!r.source_aggregator,
       // 2026-09-05 视觉精修：透传 AI 评分/标签，供日报条目卡展示（纯增量字段）
       score: r.score ?? null, tags: r.tags || '',
-      text: `${r.title || ''} ${htmlToText(r.summary)} ${htmlToText(r.content_html).slice(0, 2000)}`,
+      // 翻译内容优先用于关键词匹配和摘要
+      text: `${r.translated_title || r.title || ''} ${htmlToText(r.summary)} ${htmlToText(r.translated_content || r.content_html).slice(0, 2000)}`,
     });
   }
 
@@ -232,6 +234,25 @@ async function generate(windowHours) {
   const win = Number(windowHours) || cfg.windowHours;
   const columns = getColumns();
   const candidates = collectCandidates(win, cfg);
+
+  // AI 增强：为候选条目生成摘要+重要度（串行，限流保护）
+  let aiResults = null;
+  let aiEnabled = false;
+  try {
+    const dailyAi = require('./daily-ai');
+    aiEnabled = dailyAi.isEnabled();
+    if (aiEnabled && candidates.length > 0) {
+      log.info(`[日报] AI 增强已启用，开始分析 ${candidates.length} 条候选...`);
+      aiResults = await dailyAi.analyzeBatch(candidates, {
+        onProgress: ({ done, total }) => {
+          if (done % 5 === 0 || done === total) log.info(`[日报AI] 进度 ${done}/${total}`);
+        },
+      });
+    }
+  } catch (err) {
+    log.warn(`[日报] AI 增强加载失败，降级为关键词模式: ${err.message}`);
+  }
+
   const buckets = classify(candidates, columns);
 
   const sections = [];
@@ -242,27 +263,34 @@ async function generate(windowHours) {
     for (const item of list) {
       // 出库安检:乱码标题/错误页整条剔除;乱码摘要清空(宁缺毋滥)
       if (hasMojibake(item.title) || isErrorPageItem(item)) { droppedBad++; continue; }
+      // AI 分析结果查找
+      const aiKey = `${item.kind}:${item.ref_id}`;
+      const aiData = aiResults ? aiResults.get(aiKey) : null;
       outItems.push({
         kind: item.kind,
         ref_id: item.ref_id,
         title: item.title,
-        summary: '',
+        summary: aiData ? aiData.summary : '',
         cover: item.cover,
         source_name: item.source_name,
         url: item.url,
         published_at: item.published_at,
-        hits: item._hits || 0, // 2026-09-05b：透出关键词命中数，供前端排序/角标
-        // 2026-09-05 视觉精修：候选带 AI 评分/标签时才透传（缺字段不补 null，保持旧数据结构不变）
+        hits: item._hits || 0,
+        // AI 增强字段：重要度评分 + AI 标签
+        ...(aiData ? { importance: aiData.importance, aiTags: aiData.tags } : {}),
         ...(item.score != null ? { score: item.score } : {}),
         ...(item.tags ? { tags: item.tags } : {}),
-        related: item.related || [], // F5：同主题合并的其他信源
+        related: item.related || [],
       });
     }
-    // 排序：focus 栏固定时间倒序；其余栏目按关键词命中数→时间
+    // 排序：focus 栏固定时间倒序；AI 模式按重要度降序；否则按关键词命中数→时间
     const hitsOf = new Map(list.map((i) => [`${i.kind}:${i.ref_id}`, i._hits || 0]));
     const byTime = (a, b) => (b.published_at || '').localeCompare(a.published_at || '');
     if (col.special === 'focus') {
       outItems.sort(byTime);
+    } else if (aiEnabled && aiResults) {
+      // AI 模式：按重要度降序 → 时间降序
+      outItems.sort((a, b) => (b.importance || 0) - (a.importance || 0) || byTime(a, b));
     } else {
       outItems.sort(
         (a, b) =>
@@ -279,8 +307,9 @@ async function generate(windowHours) {
     articles: candidates.filter((i) => i.kind === 'article').length,
     videos: candidates.filter((i) => i.kind === 'video').length,
     windowHours: win,
-    sortMode: 'keyword',
+    sortMode: (aiEnabled && aiResults) ? 'ai' : 'keyword',
   };
+  if (aiEnabled && aiResults) stats.aiAnalyzed = aiResults.size;
   if (droppedBad) stats.droppedBadItems = droppedBad; // 出库安检剔除数(乱码/风控页)
 
   // 九期 M5:破茧栏——与常读领域(科技/AI 圈)交集最小的跨域热点事件 Top5
@@ -323,7 +352,7 @@ async function generate(windowHours) {
     .run(generatedAt, win, JSON.stringify(stats), JSON.stringify(sections));
   log.info(
     `日报已生成 #${r.lastInsertRowid}：候选 ${stats.candidates}（文章 ${stats.articles}/视频 ${stats.videos}），` +
-      `窗口 ${win}h，关键词规则排序`
+      `窗口 ${win}h，${stats.sortMode === 'ai' ? `AI 智能排序（分析 ${stats.aiAnalyzed} 条）` : '关键词规则排序'}`
   );
   return { id: r.lastInsertRowid, generated_at: generatedAt, window_hours: win, stats, sections };
 }

@@ -1,7 +1,8 @@
 // 日报 API（T27，F13~F19）
 // 挂载 /api/daily：GET /（最新一份，无则 report:null）、POST /regenerate
 // 子路由器 settingsRouter 由 routes/settings.js 委托挂载到 /api/settings/daily：
-//   GET/PUT 窗口 / 生成时间 / 来源勾选 / focus / columns 栏目管理（AI 摘要已下线）
+//   GET/PUT 窗口 / 生成时间 / 来源勾选 / focus / columns 栏目管理
+// AI 能力已恢复（Agnes AI 平台）：日报支持 AI 智能摘要+重要度排序
 // 写入与 routes/settings.js 共用同一批 settings 键（'daily'、'daily.columns'）
 const express = require('express');
 const { db, getSetting, setSetting } = require('../db');
@@ -143,7 +144,7 @@ settingsRouter.put('/', (req, res) => {
     return res.json({ ok: false, error: err.message });
   }
 
-  // AI 配置已随 AI 摘要下线移除（settings['ai'] 键不再读写）
+  // AI 配置已迁移至 /api/settings 的 ai 区（统一入口）
 
   // 生成时间/窗口等变更后重排调度（重建日报 cron）
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }

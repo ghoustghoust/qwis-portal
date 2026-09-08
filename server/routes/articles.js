@@ -8,7 +8,8 @@ const PAGE_SIZE = 30;
 
 const LIST_FIELDS = `a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary,
   a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
-  s.focus AS source_focus, a.score, a.tags, a.reason, a.word_count`;
+  s.focus AS source_focus, a.score, a.tags, a.reason, a.word_count,
+  a.translated_title, a.translated_content`;
 
 // 2026-09-05 阅读器降噪：热榜(type=hotlist)与聚合源(extra.aggregator，如 AIHOT)的条目不进阅读器文章流——
 // 它们的归宿是热点榜页（/hot/），混进阅读器会产生数万条永远读不完的未读。显式 source_id 或 include_hot=1 时豁免。

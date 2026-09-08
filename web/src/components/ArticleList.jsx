@@ -8,6 +8,7 @@ import { MergeIcon, ChevronDownIcon } from './icons.jsx';
 import TagPills from './ui/TagPills.jsx';
 import Stars from './ui/Stars.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
+import NewArticlesBanner from './NewArticlesBanner.jsx';
 
 const DEDUP_KEY = 'qwis.dedup'; // 「合并同事件」开关记忆（缺省 '1' 开启）
 
@@ -23,7 +24,7 @@ function readDedup() {
 // T12/F4（六期）：头部挂 DateFilter（from/to），请求带日期范围，头部第二行显示 span 跨度
 // 九期：「合并同事件」开关（dedup=1，簇序号游标）；relatedCount>0 显示「N 源」徽章，点击展开其他信源
 // 十一期：接收 views/onViewsChange props，透传给 FilterPanel
-export default function ArticleList({ filter, q, onSearch, onDateChange, onFilterChange, selectedId, onSelect, onMeta, onItems, reloadKey, views, onViewsChange }) {
+export default function ArticleList({ filter, q, onSearch, onDateChange, onFilterChange, selectedId, onSelect, onMeta, onItems, reloadKey, views, onViewsChange, newCount, lastEvent, onBannerRefresh }) {
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -101,16 +102,18 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter.tab, filter.sourceId, filter.groupId, filter.from, filter.to, filter.sort, filter.lang, filter.scoreMin, filter.keyword, q, dedup, reloadKey]);
 
-  // P1-2：60s 轮询静默刷新第一页（修复“必须手动刷新网页才能看到新文”）
+  // P1-2：轮询静默刷新第一页（SSE 实时推送为主，轮询为降级兜底）
+  // SSE 连接正常时降频到 5min；SSE 断线时保持 60s 轮询确保数据最终一致
   // 仅在页面可见、未选中文章、列表接近顶部时替换刷新，避免打断阅读/深分页状态
   useEffect(() => {
+    const intervalMs = 5 * 60 * 1000; // 5 分钟兜底轮询
     const t = setInterval(() => {
       if (document.hidden) return;
       if (selectedId) return;
       const el = boxRef.current;
       if (el && el.scrollTop > 200) return;
       fetchPage(null, true);
-    }, 60000);
+    }, intervalMs);
     return () => clearInterval(t);
   }, [fetchPage, selectedId]);
 
@@ -185,6 +188,8 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
       </div>
       {/* 2026-09-05 视觉精修：行 → 卡片（meta 行 / 标题 / 摘要 / 标签+评分底行，右侧 88px 缩略图） */}
       <div ref={boxRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-2 space-y-2">
+        {/* SSE 实时推送：新文章提示条 */}
+        <NewArticlesBanner newCount={newCount} lastEvent={lastEvent} onRefresh={onBannerRefresh} />
         {items.map((a) => {
           const unread = !a.read_at && filter.tab !== 'history';
           const active = a.id === selectedId;
@@ -213,7 +218,10 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
                       unread ? 'font-semibold' : ''
                     }`}
                   >
-                    {a.title}
+                    {a.translated_title || a.title}
+                    {a.translated_title && (
+                      <span className="block text-[11px] t-muted line-clamp-1 font-normal mt-0.5">{a.title}</span>
+                    )}
                     {dedup && a.relatedCount > 0 && (
                       <button
                         className="pill on ml-1.5 align-middle cursor-pointer"

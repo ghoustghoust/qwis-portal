@@ -47,12 +47,12 @@ function intervalMinFor(source, registry) {
   };
   if (type === 'bilibili') return Number(intervals.bilibili) || adapterDefault('bilibili') || 60;
   if (type === 'douyin') return Number(intervals.douyin) || adapterDefault('douyin') || 360;
-  // wechat / rss / x / youtube 有意共用 RSS 文章刷新间隔（小时）——保留既有共享语义
+  // wechat / rss / x / youtube 共用 RSS 文章刷新间隔（默认 30 分钟，可被 settings.intervals.rss 覆盖，单位小时）
   if (type === 'rss' || type === 'wechat' || type === 'x' || type === 'youtube') {
-    return (Number(intervals.rss) || 8) * 60;
+    return (Number(intervals.rss) || 0.5) * 60;
   }
   // 其余类型（hotlist / 未知）用各自适配器默认间隔，无则回退 RSS 间隔
-  return adapterDefault(type) || (Number(intervals.rss) || 8) * 60;
+  return adapterDefault(type) || (Number(intervals.rss) || 0.5) * 60;
 }
 
 module.exports = { inFlight, withSourceLock, intervalMinFor };

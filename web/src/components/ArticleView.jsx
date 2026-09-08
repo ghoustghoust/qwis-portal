@@ -110,6 +110,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
 
   const laterActive = !!(article && article.later);
   const contentLen = article?.word_count ?? (article?.content_html || '').length; // 2026-09-05：优先用纯文本字数列，缺失时回退正文长度
+  const hasTranslation = !!(article?.translated_title || article?.translated_content);
 
   return (
     <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
@@ -152,6 +153,11 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
           )}
         </div>
         <div className="flex-1" />
+        {hasTranslation && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded t-accent-soft t-accent font-medium flex-none" title="当前显示翻译内容">
+            译文
+          </span>
+        )}
         <button className="btn-ghost !py-1 !px-2 text-xs" title="全部标为已读" onClick={readAll}>
           ✓ 全部已读
         </button>
@@ -181,7 +187,13 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         {loading && <div className="py-16 text-center text-sm t-muted">加载中…</div>}
         {!loading && article && (
           <article className="max-w-[720px] mx-auto px-6 py-8">
-            <h1 className="text-2xl font-bold leading-snug t-text">{article.title}</h1>
+            <h1 className="text-2xl font-bold leading-snug t-text">
+              {article.translated_title || article.title}
+            </h1>
+            {/* 翻译模式下显示原文标题（辅助对照） */}
+            {hasTranslation && article.translated_title && article.title !== article.translated_title && (
+              <div className="mt-1.5 text-sm t-muted leading-relaxed italic">{article.title}</div>
+            )}
             {/* 2026-09-05 视觉精修：正文头部 meta 行（源 · 发布时间 · 字数/阅读时长） */}
             <div className="meta mt-2">
               <span className="truncate">{article.source_name || article.author || ''}</span>
@@ -199,8 +211,22 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
             <div
               ref={contentRef}
               className="article-content mt-6"
-              dangerouslySetInnerHTML={{ __html: safeHtml(article.content_html || article.summary || '') }}
+              dangerouslySetInnerHTML={{ __html: safeHtml(article.translated_content || article.content_html || article.summary || '') }}
             />
+            {/* 翻译模式下提供原文链接切换 */}
+            {hasTranslation && article.translated_content && article.content_html && (
+              <div className="mt-8 pt-4 border-t t-border">
+                <details className="text-xs t-muted">
+                  <summary className="cursor-pointer hover:t-text transition-colors">
+                    查看原文
+                  </summary>
+                  <div
+                    className="article-content mt-3 opacity-70"
+                    dangerouslySetInnerHTML={{ __html: safeHtml(article.content_html || '') }}
+                  />
+                </details>
+              </div>
+            )}
           </article>
         )}
         {!loading && !article && (
