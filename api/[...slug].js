@@ -39,6 +39,14 @@ function nowIso() { return new Date().toISOString(); }
 function jsonOk(data) { return { ok: true, ...data }; }
 function jsonErr(msg) { return { ok: false, error: msg }; }
 
+// 热度值格式化：1370000 → "137万"，1.2亿 → "1.2亿"
+function formatHeat(n) {
+  if (n == null || !Number.isFinite(n)) return '-';
+  if (n >= 1e8) return `${Math.round(n / 1e8 * 10) / 10}亿`;
+  if (n >= 1e4) return `${Math.round(n / 1e4 * 10) / 10}万`;
+  return String(Math.round(n));
+}
+
 // 查询辅助
 async function qAll(sql, args = []) {
   const r = await getDb().execute({ sql, args });
@@ -77,6 +85,7 @@ const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings',
   '/api/reading', '/api/img',
+  '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
 ]);
 
 function verifyAuth(req) {
@@ -94,6 +103,7 @@ function requireAuth(req) {
   if (req.method === 'GET') {
     if (PUBLIC_GET_PATHS.has(path)) return null;
     if (/^\/api\/articles\/\d+$/.test(path)) return null;
+    if (/^\/api\/hot\/events\/\d+$/.test(path)) return null;
   }
   const user = verifyAuth(req);
   if (!user) return { status: 401, body: jsonErr('Unauthorized') };
@@ -207,7 +217,200 @@ async function handleHot(req) {
      WHERE s.type='hotlist' AND a.published_at >= datetime('now', '-3 days')
      ORDER BY a.score DESC NULLS LAST, a.published_at DESC LIMIT 200`
   );
-  return jsonOk({ items: rows });
+  // 格式化热度值
+  const items = rows.map(r => ({ ...r, scoreFormatted: formatHeat(r.score) }));
+  return jsonOk({ items });
+}
+
+// GET /api/hot/categories — 分类清单
+async function handleHotCategories(req) {
+  const CATEGORIES = ['模型', '产品', '行业', '论文', '教程', '观点'];
+  // 先尝试从 settings 读自定义分类
+  const custom = await getSetting('hot.categories', null);
+  if (custom && typeof custom === 'object' && !Array.isArray(custom)) {
+    return jsonOk({ categories: Object.keys(custom) });
+  }
+  return jsonOk({ categories: CATEGORIES });
+}
+
+// GET /api/hot/sources — 聚合源计数
+async function handleHotSources(req) {
+  const rows = await qAll(
+    `SELECT a.author, COUNT(*) AS count
+     FROM articles a JOIN sources s ON s.id=a.source_id
+     WHERE json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1
+     GROUP BY a.author ORDER BY count DESC`
+  );
+  const sources = rows.map(r => {
+    const s = String(r.author || '').trim();
+    const m = s.match(/\(([^()]*)\)\s*$/);
+    const feedName = m ? m[1].trim() : s;
+    return { author: r.author, feedName, count: r.count };
+  });
+  return jsonOk({ sources });
+}
+
+// ─── 事件聚合引擎（从 server/services/events.js 移植） ───
+const EVENTS_WINDOW_H = 72;
+const EVENTS_HALF_LIFE_H = 24;
+const EVENTS_SIM_THRESHOLD = 0.4;
+let _eventsCache = { at: 0, events: null };
+const EVENTS_CACHE_MS = 5 * 60e3;
+
+function titleTokens(title) {
+  const set = new Set();
+  const t = String(title || '').toLowerCase();
+  // 中文：逐字 unigram + bigram
+  const cjk = t.match(/[\u4e00-\u9fff]+/g) || [];
+  for (const seg of cjk) {
+    for (const ch of seg) { if (ch.trim()) set.add(ch); }
+    for (let i = 0; i < seg.length - 1; i++) set.add(seg.slice(i, i + 2));
+  }
+  // 英文：按空格分词
+  const eng = t.match(/[a-z0-9]+/g) || [];
+  for (const w of eng) { if (w.length >= 2) set.add(w); }
+  return set;
+}
+
+function jaccard(a, b) {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const t of a) { if (b.has(t)) inter++; }
+  const union = a.size + b.size - inter;
+  return union > 0 ? inter / union : 0;
+}
+
+function aggregateEvents() {
+  const nowMs = Date.now();
+  const cutoff = new Date(nowMs - EVENTS_WINDOW_H * 3600e3).toISOString();
+  // 这里用同步风格但实际是 async（在 handleHotEvents 中调用）
+  return { cutoff, nowMs };
+}
+
+// GET /api/hot/events — 跨源事件聚合
+async function handleHotEvents(req) {
+  const domain = req.query.domain || 'all';
+  // 缓存
+  if (!_eventsCache.events || Date.now() - _eventsCache.at > EVENTS_CACHE_MS) {
+    const nowMs = Date.now();
+    const cutoff = new Date(nowMs - EVENTS_WINDOW_H * 3600e3).toISOString();
+    const rows = await qAll(
+      `SELECT a.id, a.title, a.url, a.summary, a.cover, a.published_at, a.score,
+              a.category, a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
+       FROM articles a
+       JOIN sources s ON s.id = a.source_id AND s.enabled = 1
+       LEFT JOIN groups g ON g.id = s.group_id
+       WHERE a.published_at >= ?
+       ORDER BY a.published_at DESC`,
+      [cutoff]
+    );
+    const items = rows.filter(r => (r.title || '').trim().length >= 6);
+
+    // Jaccard 聚类
+    const clusters = [];
+    for (const item of items) {
+      const tokens = titleTokens(item.title);
+      if (!tokens.size) continue;
+      let hit = null;
+      for (const c of clusters) {
+        if (jaccard(tokens, c.tokens) >= EVENTS_SIM_THRESHOLD) { hit = c; break; }
+      }
+      if (!hit) {
+        clusters.push({ tokens, items: [item], sourceIds: new Set([item.source_id]) });
+      } else {
+        hit.items.push(item);
+        hit.sourceIds.add(item.source_id);
+        for (const t of tokens) hit.tokens.add(t);
+      }
+    }
+
+    const events = [];
+    for (const c of clusters) {
+      if (c.items.length < 2) continue;
+      const times = c.items.map(i => Date.parse(i.published_at || 0)).filter(Boolean);
+      const firstAt = times.length ? Math.min(...times) : nowMs;
+      const latestAt = times.length ? Math.max(...times) : nowMs;
+      // 领域归属
+      const domainCount = new Map();
+      for (const i of c.items) {
+        const d = i.domain || i.category || '其它';
+        domainCount.set(d, (domainCount.get(d) || 0) + 1);
+      }
+      const evDomain = [...domainCount.entries()].sort((a, b) => b[1] - a[1])[0][0];
+      // 热度计算
+      let heat = 0;
+      for (const i of c.items) {
+        const t = Date.parse(i.published_at || 0) || nowMs;
+        const decay = Math.pow(0.5, Math.max(0, nowMs - t) / 3600e3 / EVENTS_HALF_LIFE_H);
+        const w = 1 + Math.min(1, (i.score || 0) / 1e6);
+        heat += w * decay;
+      }
+      heat *= Math.pow(1.5, c.sourceIds.size - 1);
+      // 状态
+      const ageH = (nowMs - firstAt) / 3600e3;
+      const freshH = (nowMs - latestAt) / 3600e3;
+      let status = '收尾';
+      if (ageH < 6) status = '新';
+      else if (c.sourceIds.size >= 5 && freshH < 3) status = '爆';
+      else if (ageH > 12 && freshH < 12) status = '发酵中';
+
+      const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
+      events.push({
+        title: rep.title,
+        domain: evDomain,
+        heat: Math.round(heat * 10) / 10,
+        heatFormatted: formatHeat(Math.round(heat * 10) / 10),
+        sourceCount: c.sourceIds.size,
+        reportCount: c.items.length,
+        firstAt: new Date(firstAt).toISOString(),
+        latestAt: new Date(latestAt).toISOString(),
+        status,
+        items: c.items
+          .sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))
+          .map(i => ({
+            id: i.id, title: i.title, url: i.url,
+            summary: (i.summary || '').slice(0, 200),
+            cover: i.cover, published_at: i.published_at,
+            score: i.score, scoreFormatted: formatHeat(i.score),
+            source_name: i.source_name, source_type: i.source_type,
+          })),
+      });
+    }
+    events.sort((a, b) => b.heat - a.heat);
+    // 添加 rank
+    events.forEach((ev, idx) => { ev.rank = idx + 1; });
+    _eventsCache = { at: Date.now(), events };
+  }
+
+  let result = _eventsCache.events;
+  if (domain && domain !== 'all') {
+    result = result.filter(e => e.domain === domain);
+    // 重新编号
+    result = result.map((e, idx) => ({ ...e, rank: idx + 1 }));
+  }
+
+  // 领域清单（从全量事件提取）
+  const domains = [...new Set(_eventsCache.events.map(e => e.domain))].filter(Boolean).sort();
+  return jsonOk({ events: result, domains });
+}
+
+// GET /api/hot/events/:rank — 事件详情
+async function handleHotEventDetail(req, rank) {
+  const domain = req.query.domain || 'all';
+  // 确保缓存已填充
+  if (!_eventsCache.events || Date.now() - _eventsCache.at > EVENTS_CACHE_MS) {
+    // 触发聚合
+    const fakeReq = { query: { domain: 'all' } };
+    await handleHotEvents(fakeReq);
+  }
+  let events = _eventsCache.events || [];
+  if (domain && domain !== 'all') {
+    events = events.filter(e => e.domain === domain);
+    events = events.map((e, idx) => ({ ...e, rank: idx + 1 }));
+  }
+  const ev = events.find(e => e.rank === rank);
+  if (!ev) return { status: 404, body: jsonErr('Event not found') };
+  return jsonOk({ event: ev });
 }
 
 // GET /api/daily
@@ -406,6 +609,12 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/videos') return handleVideos(req);
     if (path === '/api/hot') return handleHot(req);
+    if (path === '/api/hot/events') return handleHotEvents(req);
+    if (path === '/api/hot/categories') return handleHotCategories(req);
+    if (path === '/api/hot/sources') return handleHotSources(req);
+    // GET /api/hot/events/:rank
+    const hotEventRankMatch = path.match(/^\/api\/hot\/events\/(\d+)$/);
+    if (hotEventRankMatch) return handleHotEventDetail(req, Number(hotEventRankMatch[1]));
     if (path === '/api/daily') return handleDaily(req);
     if (path === '/api/groups') return handleGroups(req);
     if (path === '/api/sources') return handleSources(req);

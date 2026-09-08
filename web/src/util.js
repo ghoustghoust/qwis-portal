@@ -104,6 +104,15 @@ export function readingMinutes(contentLen) {
   return `约 ${Math.max(1, Math.round(v / 400))} 分钟`;
 }
 
+// 热度值格式化：1370000 → "137万"，1.2亿 → "1.2亿"
+export function formatHeat(n) {
+  if (n == null || !Number.isFinite(Number(n))) return '-';
+  const v = Number(n);
+  if (v >= 1e8) return `${Math.round(v / 1e8 * 10) / 10}亿`;
+  if (v >= 1e4) return `${Math.round(v / 1e4 * 10) / 10}万`;
+  return String(Math.round(v));
+}
+
 // 信源展示名（2026-09-05 视觉精修：HotPage/HotDetail 共用，消除重复定义）
 // author 字段形如「noreply@aihot.virxact.com (The Decoder：AI News（RSS）)」，取最外层括号内上游信源名
 export function sourceLabel(item) {

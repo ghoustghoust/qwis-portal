@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, qs } from '../api';
 import { toast } from '../toast';
-import { formatDateTime } from '../util';
+import { formatDateTime, formatHeat } from '../util';
 import { FlameIcon } from './icons.jsx';
 
 // 跨域事件热点榜（九期 M4）：GET /api/hot/events?domain= 列表 + GET /api/hot/events/:rank 详情
@@ -46,7 +46,7 @@ function EventDetail({ ev, onBack }) {
           <StatusBadge status={ev.status} />
           <span className="flex-1" />
           <span className="t-accent font-bold tabular-nums text-[13px] inline-flex items-center gap-1">
-            <FlameIcon size={14} /> {ev.heat}
+            <FlameIcon size={14} /> {formatHeat(ev.heat)}
           </span>
         </div>
         <h2 className="mt-2 text-lg font-bold leading-snug t-text">{ev.title}</h2>
@@ -76,7 +76,7 @@ function EventDetail({ ev, onBack }) {
               <div className="flex items-center gap-2 text-[11px] t-muted tabular-nums">
                 <span>{formatDateTime(it.published_at)}</span>
                 <span className="uppercase tracking-wide truncate">{it.source_name || '未知信源'}</span>
-                {it.score != null && <span className="t-accent">· {it.score}</span>}
+                {it.score != null && <span className="t-accent">· {formatHeat(it.score)}</span>}
               </div>
               <a
                 className="mt-0.5 block text-[14px] font-medium leading-snug t-text hover:underline"
@@ -191,7 +191,7 @@ export default function HotEvents() {
               className="stat-num flex-none !text-[15px] t-accent inline-flex items-center gap-1"
               title="热度值"
             >
-              <FlameIcon size={14} /> {ev.heat}
+              <FlameIcon size={14} /> {formatHeat(ev.heat)}
             </span>
           </button>
         ))}

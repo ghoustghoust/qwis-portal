@@ -2,8 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { IconRail } from '../main.jsx';
 import { api, qs } from '../api';
 import { toast } from '../toast';
-import { parseTags, sourceLabel } from '../util.js';
-import Stars from '../components/ui/Stars.jsx';
+import { parseTags, sourceLabel, formatHeat } from '../util.js';
 import TagPills from '../components/ui/TagPills.jsx';
 import HotDetail from '../components/HotDetail.jsx';
 import HotEvents from '../components/HotEvents.jsx';
@@ -69,8 +68,12 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
           </span>
         )}
         <span className="flex-1" />
-        {/* 2026-09-05 视觉精修：评分徽章 → 共享 Stars（0-100 → 5 星） */}
-        <Stars score={it.score} size={12} className="flex-none" />
+        {/* 热度值格式化显示（原始 score 为平台热度如 4510000 → "451万"） */}
+        {it.score != null && it.score > 0 && (
+          <span className="t-accent font-medium tabular-nums text-[11px]" title={`热度 ${it.score}`}>
+            🔥 {formatHeat(it.score)}
+          </span>
+        )}
         <HeartButton
           active={!!it.later}
           onToggle={(e) => {
