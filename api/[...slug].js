@@ -90,8 +90,11 @@ function verifyAuth(req) {
 
 function requireAuth(req) {
   const path = req.url.split('?')[0];
-  // 公开 GET 请求不需要鉴权
-  if (req.method === 'GET' && PUBLIC_GET_PATHS.has(path)) return null;
+  // 公开 GET 请求不需要鉴权（含 /api/articles/:id）
+  if (req.method === 'GET') {
+    if (PUBLIC_GET_PATHS.has(path)) return null;
+    if (/^\/api\/articles\/\d+$/.test(path)) return null;
+  }
   const user = verifyAuth(req);
   if (!user) return { status: 401, body: jsonErr('Unauthorized') };
   return null;
@@ -159,15 +162,24 @@ async function handleArticles(req) {
     nextCursor = `${sortVal}|${last.id}`;
   }
 
-  // 计数
-  const noiseFilter = "NOT EXISTS (SELECT 1 FROM sources s2 WHERE s2.id=articles.source_id AND (s2.type='hotlist' OR COALESCE(json_extract(COALESCE(s2.extra,'{}'),'$.aggregator'),0)=1))";
-  const laterCount = (await qOne(`SELECT COUNT(*) c FROM articles WHERE later=1 AND ${noiseFilter}`)).c;
-  const historyCount = (await qOne(`SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL AND ${noiseFilter}`)).c;
+  // 计数（轻量级：只查 later/history 总数，不做 NOT EXISTS 子查询）
+  const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
+  const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
 
-  // 时间跨度
-  const span = await qOne(`SELECT MIN(COALESCE(a.published_at,a.created_at)) min, MAX(COALESCE(a.published_at,a.created_at)) max FROM articles a JOIN sources s ON s.id=a.source_id ${where}`, args);
+  return jsonOk({ items: rows, nextCursor, counts: { later: laterCount, history: historyCount } });
+}
 
-  return jsonOk({ items: rows, nextCursor, counts: { later: laterCount, history: historyCount }, span });
+// GET /api/articles/:id — 单篇文章详情（含 content_html）
+async function handleArticleById(req, id) {
+  const row = await qOne(
+    `SELECT a.*, s.name AS source_name, s.focus AS source_focus, s.avatar AS source_avatar
+     FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.id=?`,
+    [id]
+  );
+  if (!row) return { status: 404, body: jsonErr('Article not found') };
+  // 顺手标记已读
+  await qRun('UPDATE articles SET read_at=COALESCE(read_at, ?) WHERE id=? AND read_at IS NULL', [nowIso(), id]);
+  return jsonOk({ item: row });
 }
 
 // GET /api/videos
@@ -233,8 +245,12 @@ async function handleSources(req) {
   return jsonOk({ sources: rows });
 }
 
-// GET /api/status
+// GET /api/status（带 30s 进程内缓存）
+const _statusCache = { val: null, ts: 0 };
+const STATUS_CACHE_TTL = 30000;
 async function handleStatus(req) {
+  if (_statusCache.val && Date.now() - _statusCache.ts < STATUS_CACHE_TTL) return _statusCache.val;
+
   const intervals = { opml: 12, rss: 8, bilibili: 60, ...(await getSetting('intervals', {})) };
 
   const rssLast = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type IN ('wechat','rss','x')")).t;
@@ -254,10 +270,13 @@ async function handleStatus(req) {
 
   const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
 
-  return jsonOk({
+  const result = jsonOk({
     intervals, lastSync: { rss: rssLast, bilibili: biliLast },
     overview, pausedSources: { count: pausedCount },
   });
+  _statusCache.val = result;
+  _statusCache.ts = Date.now();
+  return result;
 }
 
 // GET /api/settings
@@ -381,6 +400,9 @@ async function dispatch(req) {
 
   // GET 路由
   if (method === 'GET') {
+    // GET /api/articles/:id 必须在 /api/articles 之前匹配
+    const articleIdMatch = path.match(/^\/api\/articles\/(\d+)$/);
+    if (articleIdMatch) return handleArticleById(req, Number(articleIdMatch[1]));
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/videos') return handleVideos(req);
     if (path === '/api/hot') return handleHot(req);
