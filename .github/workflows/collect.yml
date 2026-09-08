@@ -1,6 +1,7 @@
 # 全网情报系统 Vercel 部署 —— 定时采集与工作流
 # 整点采集 / 日报生成 / 静态快照 / 数据清理
-# COLLECT_KEY 在 GitHub 仓库 Settings → Secrets → Actions 配置
+# COLLECT_KEY 在 GitHub 仓库 Settings → Secrets and variables → Actions 配置
+# 生产地址：https://qwis-intel.vercel.app
 name: collect
 
 on:
@@ -24,7 +25,7 @@ jobs:
     steps:
       - name: Trigger hourly collection
         run: |
-          curl -fsS -X POST "${{ secrets.VERCEL_URL }}/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
             -H "Content-Type: application/json" \
             --max-time 90
 
@@ -36,7 +37,7 @@ jobs:
     steps:
       - name: Trigger daily report generation
         run: |
-          curl -fsS -X POST "${{ secrets.VERCEL_URL }}/api/daily-generate?key=${{ secrets.COLLECT_KEY }}&windowHours=48" \
+          curl -fsS -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=${{ secrets.COLLECT_KEY }}&windowHours=48" \
             -H "Content-Type: application/json" \
             --max-time 120
 
@@ -79,6 +80,6 @@ jobs:
     steps:
       - name: Trigger data cleanup (delete old hotlist articles > 7 days)
         run: |
-          curl -fsS -X POST "${{ secrets.VERCEL_URL }}/api/collect?key=${{ secrets.COLLECT_KEY }}&mode=cleanup&days=7" \
+          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}&mode=cleanup&days=7" \
             -H "Content-Type: application/json" \
             --max-time 60
