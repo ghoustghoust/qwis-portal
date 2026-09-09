@@ -1,7 +1,7 @@
 # 全网情报系统 · 模块功能状态
 
 > 逐模块列出本地 Express 与 Vercel 的实际功能状态与限制。
-> 最后更新：2026-09-09
+> 最后更新：2026-09-09（第四次深度扫描后）
 
 ---
 
@@ -23,8 +23,8 @@
 | **热点榜** | ✅ | ✅ | Vercel 仅最近 3 天 200 条 |
 | **事件聚合** | ✅ | ✅ | 72h 窗口 Jaccard 聚类 |
 | **日报查看** | ✅ | ✅ | Vercel getOrGenerate 自动生成 |
-| **日报生成** | ✅ | ⚠️ | Vercel 仅 GH Actions 触发 |
-| **我的阅读** | ✅ | ❌ | Vercel 只返回 counts，无 items |
+| **日报生成** | ✅ | ⚠️ | Vercel GH Actions + getOrGenerate 双触发（已验证），但手动 regenerate 路由缺失 |
+| **我的阅读** | ✅ | ❌ | Vercel 只返回 counts，无 items；查询参数全部被忽略 |
 | **阅读批量操作** | ✅ | ❌ | Vercel 无 /api/reading/batch |
 | **阅读导出** | ✅ | ❌ | Vercel 无 /api/reading/export |
 | **源库管理** | ✅ | ❌ | Vercel 无 /api/sources/library |
@@ -45,7 +45,7 @@
 | **AI 设置** | ✅ | ✅ | Agencs AI 配置 + 功能开关，管理后台「AI 能力」Tab |
 | **AI 翻译** | 🔲 | 🔲 | 待实现 |
 | **AI 摘要** | 🔲 | 🔲 | 待实现 |
-| **管理后台** | ✅ | ✅ | Vercel 有 httpOnly cookie 鉴权 |
+| **管理后台** | ✅ | ⚠️ | Vercel 有 httpOnly cookie 鉴权，但 401 前端 needLogin 检查不匹配（P1-12） |
 | **静态快照** | ✅ | ✅ | 兜底 public/data/*.json |
 | **鉴权 JWT** | ✅ | ✅ | 读者 GET 公开，写操作需 Bearer |
 

@@ -91,7 +91,7 @@ function handleResponse(res) {
     } catch (e) {
       /* 非 JSON 响应 */
     }
-    if (res.status === 401 && data && data.needLogin) {
+    if (res.status === 401) {
       setToken(''); // 过期/无效 token 清掉，避免带着死 token 反复 401
       try {
         window.dispatchEvent(new CustomEvent('qwis:unauthorized'));

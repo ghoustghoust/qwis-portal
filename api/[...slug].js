@@ -208,18 +208,76 @@ async function handleVideos(req) {
   return jsonOk({ items: rows });
 }
 
-// GET /api/hot
+// GET /api/hot — 支持 tab/category/q/source 筛选 + 游标分页
 async function handleHot(req) {
-  // 返回热榜源的最新条目
+  const q = req.query;
+  const tab = q.tab || 'all';
+  const category = q.category || '';
+  const searchQ = (q.q || '').trim();
+  const source = q.source || '';
+  const PAGE_SIZE = 200;
+
+  const conds = [];
+  const args = [];
+
+  if (tab === 'featured') {
+    // 精选：高分热榜条目（score > 10000 或标记 focus）
+    conds.push("s.type='hotlist'");
+    conds.push('(a.score > 10000 OR COALESCE(s.focus,0)=1)');
+    if (category) {
+      conds.push('a.category=?');
+      args.push(category);
+    }
+  } else {
+    // 全部动态：所有热榜源条目
+    conds.push("s.type='hotlist'");
+  }
+
+  // 全部动态 Tab 筛选
+  if (searchQ) {
+    conds.push('(a.title LIKE ? OR a.summary LIKE ?)');
+    args.push(`%${searchQ}%`, `%${searchQ}%`);
+  }
+  if (source) {
+    conds.push('s.name=?');
+    args.push(source);
+  }
+
+  // 时间窗口：近 3 天
+  conds.push("a.published_at >= datetime('now', '-3 days')");
+
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+
+  // 游标分页
+  let cursorCond = '';
+  const cursorArgs = [];
+  if (q.cursor) {
+    const [cursorVal, cursorId] = q.cursor.split('|');
+    if (cursorVal && cursorId) {
+      cursorCond = ' AND (a.published_at < ? OR (a.published_at = ? AND a.id < ?))';
+      cursorArgs.push(cursorVal, cursorVal, Number(cursorId));
+    }
+  }
+
   const rows = await qAll(
-    `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.published_at, a.category, s.name AS source_name
+    `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE s.type='hotlist' AND a.published_at >= datetime('now', '-3 days')
-     ORDER BY a.score DESC NULLS LAST, a.published_at DESC LIMIT 200`
+     ${where}${cursorCond}
+     ORDER BY a.score DESC NULLS LAST, a.published_at DESC LIMIT ?`,
+    [...args, ...cursorArgs, PAGE_SIZE + 1]
   );
+
+  let nextCursor = null;
+  if (rows.length > PAGE_SIZE) {
+    rows.pop();
+    const last = rows[rows.length - 1];
+    const sortVal = new Date(last.published_at || last.created_at).getTime() / 1000;
+    nextCursor = `${sortVal}|${last.id}`;
+  }
+
   // 格式化热度值
   const items = rows.map(r => ({ ...r, scoreFormatted: formatHeat(r.score) }));
-  return jsonOk({ items });
+  return jsonOk({ items, nextCursor });
 }
 
 // GET /api/hot/categories — 分类清单
@@ -625,12 +683,147 @@ async function handleSettings(req) {
   });
 }
 
-// GET /api/reading
+// GET /api/reading — 聚合列表（tab / type / q / cursor 分页）
 async function handleReading(req) {
-  const noise = "NOT EXISTS (SELECT 1 FROM sources s2 WHERE s2.id=articles.source_id AND (s2.type='hotlist' OR COALESCE(json_extract(COALESCE(s2.extra,'{}'),'$.aggregator'),0)=1))";
-  const readCount = (await qOne(`SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL AND ${noise}`)).c;
-  const laterCount = (await qOne(`SELECT COUNT(*) c FROM articles WHERE later=1 AND ${noise}`)).c;
-  return jsonOk({ counts: { read: readCount, later: laterCount, all: readCount + laterCount } });
+  const q = req.query;
+  const tab = q.tab || 'all';
+  const type = q.type || 'all';
+  const searchQ = (q.q || '').trim();
+  const PAGE_SIZE = 30;
+
+  // 文章侧条件
+  const aConds = [];
+  const aArgs = [];
+  if (tab === 'all') aConds.push('(a.read_at IS NOT NULL OR a.later = 1)');
+  else if (tab === 'favorited') aConds.push('a.later = 1');
+  else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
+  if (type === 'article') aConds.push("s.type IN ('wechat','rss','x')");
+  else if (type === 'podcast') aConds.push("s.type = 'douyin'");
+  if (searchQ) {
+    aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
+    aArgs.push(`%${searchQ}%`, `%${searchQ}%`);
+  }
+
+  // 视频侧条件
+  const vConds = [];
+  const vArgs = [];
+  if (tab === 'all') vConds.push('v.favorite = 1');
+  else if (tab === 'favorited') vConds.push('v.favorite = 1');
+  if (type === 'article' || type === 'podcast') vConds.push('0');
+  if (searchQ && type !== 'article' && type !== 'podcast') {
+    vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
+    vArgs.push(`%${searchQ}%`, `%${searchQ}%`);
+  }
+
+  const aWhere = aConds.length ? `WHERE ${aConds.join(' AND ')}` : 'WHERE 0';
+  const vWhere = vConds.length ? `WHERE ${vConds.join(' AND ')}` : 'WHERE 0';
+
+  // 计数（受 type/q 影响）
+  const counts = { all: 0, favorited: 0, read: 0 };
+  const qLike = searchQ ? `%${searchQ}%` : null;
+
+  // 文章侧计数
+  const aTypeCond = type === 'article' ? "AND s.type IN ('wechat','rss','x')"
+    : type === 'podcast' ? "AND s.type = 'douyin'"
+    : type === 'video' ? 'AND 0'
+    : '';
+  const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
+  if (aTypeCond !== 'AND 0') {
+    const countArgs = qLike ? [qLike, qLike] : [];
+    const row = await qOne(`
+      SELECT
+        SUM(CASE WHEN a.read_at IS NOT NULL OR a.later = 1 THEN 1 ELSE 0 END) AS total,
+        SUM(CASE WHEN a.later = 1 THEN 1 ELSE 0 END) AS fav,
+        SUM(CASE WHEN a.read_at IS NOT NULL THEN 1 ELSE 0 END) AS rd
+      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+      WHERE 1=1 ${aTypeCond} ${aQCond}
+    `, countArgs);
+    counts.all += (row?.total || 0);
+    counts.favorited += (row?.fav || 0);
+    counts.read += (row?.rd || 0);
+  }
+
+  // 视频侧计数
+  if (type === 'all' || type === 'video') {
+    const vQCond = qLike ? ' AND (v.title LIKE ? OR s.name LIKE ?)' : '';
+    const vCountArgs = qLike ? [qLike, qLike] : [];
+    const vRow = await qOne(`
+      SELECT COUNT(*) AS c FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+      WHERE v.favorite = 1 ${vQCond}
+    `, vCountArgs);
+    const c = vRow?.c || 0;
+    counts.all += c;
+    counts.favorited += c;
+  }
+
+  // 游标分页
+  let cursorCond = '';
+  const cursorArgs = [];
+  if (q.cursor) {
+    cursorCond = ' AND sort_key < ?';
+    cursorArgs.push(String(q.cursor));
+  }
+
+  const rows = await qAll(`
+    SELECT * FROM (
+      SELECT
+        a.id, 'article' AS item_type, a.title, a.url, a.cover, a.summary,
+        COALESCE(a.published_at, a.created_at) AS date,
+        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
+        a.read_at, a.later, 0 AS favorite, a.tags,
+        COALESCE(a.published_at, a.created_at) AS sort_key
+      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+      ${aWhere}
+      UNION ALL
+      SELECT
+        v.id, 'video' AS item_type, v.title, v.url, v.cover, v.intro AS summary,
+        v.published_at AS date,
+        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
+        NULL AS read_at, 0 AS later, v.favorite, NULL AS tags,
+        v.published_at AS sort_key
+      FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+      ${vWhere}
+    ) combined
+    WHERE 1=1 ${cursorCond}
+    ORDER BY sort_key DESC, id DESC
+    LIMIT ?
+  `, [...aArgs, ...vArgs, ...cursorArgs, PAGE_SIZE + 1]);
+
+  let nextCursor = null;
+  let items = rows;
+  if (rows.length > PAGE_SIZE) {
+    items = rows.slice(0, PAGE_SIZE);
+    const last = items[items.length - 1];
+    if (last && last.sort_key) nextCursor = last.sort_key;
+  }
+
+  return jsonOk({ items, nextCursor, counts });
+}
+
+// POST /api/articles/read-all — 按当前过滤条件全部标为已读
+async function handleArticlesReadAll(req) {
+  const body = req.body || {};
+  const conds = [];
+  const args = [];
+
+  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  conds.push(NOISE);
+
+  if (body.tab === 'later') { conds.push('a.later=1'); }
+  else if (body.tab === 'history') { conds.push('a.read_at IS NOT NULL'); }
+  if (body.source_id) { conds.push('a.source_id=?'); args.push(Number(body.source_id)); }
+  if (body.group_id) { conds.push('s.group_id=?'); args.push(Number(body.group_id)); }
+
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  const now = nowIso();
+
+  const r = await qRun(
+    `UPDATE articles SET read_at=? WHERE read_at IS NULL AND id IN (
+      SELECT a.id FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where}
+    )`,
+    [now, ...args]
+  );
+  return jsonOk({ ok: true, updated: r.changes || 0 });
 }
 
 // POST /api/auth/login
@@ -804,6 +997,9 @@ async function dispatch(req) {
 
   // POST /api/auth/login
   if (path === '/api/auth/login' && method === 'POST') return handleLogin(req);
+
+  // POST /api/articles/read-all（必须在 /:id 之前匹配）
+  if (path === '/api/articles/read-all' && method === 'POST') return handleArticlesReadAll(req);
 
   // POST /api/articles/:id/read
   const readMatch = path.match(/^\/api\/articles\/(\d+)\/read$/);
