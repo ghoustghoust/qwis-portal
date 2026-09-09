@@ -13,10 +13,10 @@
 | P0-2 | **日报生成三重路径冲突**：①`collect.yml` UTC 1:00 调 `/api/daily-generate`；②`[...slug].js` `handleDaily` getOrGenerate；③`collect.yml` UTC 1:30 快照。三者可能重复生成或互相覆盖 | 日报数据不一致或重复写入 | `collect.yml` + `api/[...slug].js` + `api/daily-generate.js` | 🟡 需统一 |
 | P0-3 | **热点榜"精选"与"全部动态"内容完全一致**：`handleHot` 不处理 `tab`/`category`/`q`/`source` 参数，前端传参被忽略 | 两个 Tab 返回相同数据，筛选完全无效 | `api/[...slug].js` L211-223 | ✅ **已修复**（支持 tab/category/q/source 筛选 + 游标分页） |
 | P0-4 | **翻译按钮未恢复**：`ArticleView.jsx` 无翻译触发按钮，仅有翻译后的被动显示逻辑（`hasTranslation` 徽章） | 用户无法主动触发翻译，只能阅读已被 Agencs 翻译的文章 | `web/src/components/ArticleView.jsx` | 🔴 待修复 |
-| P0-5 | **页面切换加载缓慢**：每个页面（reader/hot/reading）切换时都显示"加载中…"，无数据缓存/预加载机制 | 用户体验差，每次切换等待 2-5 秒 | 前端路由 + 各页面组件 | 🟡 需优化 |
+| P0-5 | **页面切换加载缓慢**：每个页面切换时都显示“加载中…”，无数据缓存/预加载机制 | 用户体验差，每次切换等待 2-5 秒 | 前端路由 + 各页面组件 | ✅ **已修复**（客户端路由 pushState + hover 预取，JS 上下文跨页存活，api 缓存生效） |
 | P0-6 | ~~**Vercel 部署代码过期**~~ | 已重新部署，`/api/meta` 返回 200，`/api/daily` 自动生成成功 | 部署完成 | ✅ **已修复** |
 | P0-7 | **"全部标为已读"按钮 Vercel 端不可用**：前端调用 `POST /api/articles/read-all`，但 Vercel dispatch 表无此路由 | 点击后返回 404/401，功能完全不可用。本地 Express 有完整实现 | `web/src/components/ArticleView.jsx` L88 + `api/[...slug].js` dispatch | ✅ **已修复**（新增 handleArticlesReadAll + dispatch 路由） |
-| P0-8 | **阅读沉淀页批量操作+导出 Vercel 端不可用**：`POST /api/reading/batch` 和 `POST /api/reading/export` 在 dispatch 表中均无路由 | 批量取消稍后读/取消收藏/移除已读 + Markdown 导出完全不可用 | `web/src/pages/MyReadingPage.jsx` L159,L177 + `api/[...slug].js` dispatch | 🔴 待修复 |
+| P0-8 | **阅读沉淀页批量操作+导出 Vercel 端不可用**：`POST /api/reading/batch` 和 `POST /api/reading/export` 在 dispatch 表中均无路由 | 批量取消稍后读/取消收藏/移除已读 + Markdown 导出完全不可用 | `web/src/pages/MyReadingPage.jsx` L159,L177 + `api/[...slug].js` dispatch | ✅ **已修复**（新增 handleReadingBatch + handleReadingExport + dispatch 路由） |
 
 ## P1 — 功能不完整
 
@@ -155,15 +155,15 @@ collect.yml cron: 整点采集 + 夜间密集 + 日报 + 快照 + cleanup
 | 日报查看 | ✅ | ✅ | 一致 |
 | 日报自动生成 | ✅ | ✅ 已验证 | 一致 |
 | 热榜 | ✅ | ✅ | 一致 |
-| 热榜筛选 | ✅ | ❌ 参数忽略 | **缺陷** |
+| 热榜筛选 | ✅ | ✅ 已修复 | 一致 |
 | 事件聚合 | ✅ | ✅ | 一致 |
 | 报警引擎 | ✅ | ⚠️ 鉴权拦截 | 待验证 |
 | SSE 推送 | ✅ | ❌ | 缺失 |
 | OPML 导入导出 | ✅ | ❌ | 缺失 |
 | 数据备份 | ✅ | ⚠️ 鉴权拦截 | 待验证 |
-| 阅读沉淀 | ✅ 完整 | ❌ 仅计数 | **缺陷** |
-| 批量操作 | ✅ | ❌ | 缺失 |
-| Markdown 导出 | ✅ | ❌ | 缺失 |
+| 阅读沉淀 | ✅ 完整 | ✅ 已修复 | 一致 |
+| 批量操作 | ✅ | ✅ 已修复 | 一致 |
+| Markdown 导出 | ✅ | ✅ 已修复 | 一致 |
 | AI 设置 | ✅ | ✅ | 一致 |
 | Meta 信息 | ✅ | ✅ 已修复 | 一致 |
 | 健康检查 | ✅ | ⚠️ 鉴权拦截 | 待验证 |
@@ -185,6 +185,7 @@ collect.yml cron: 整点采集 + 夜间密集 + 日报 + 快照 + cleanup
 | 2026-09-09 | **部署后全量测试** | 21 项测试：PASS=11, WARN=5, FAIL=5。P0-1/P0-3 仍未修复 |
 | 2026-09-09 | **第四次深度扫描** | 前端全量写操作路由交叉验证，新发现 P0-7（read-all 缺失）、P0-8（batch/export 缺失）、P1-11（daily/regenerate 缺失）、P1-12（401 needLogin 不匹配）、P1-13（later 响应不一致）、P2-8（缺失路由汇总） |
 | 2026-09-09 | **P0-1/P0-3/P0-7/P1-12 修复** | P0-1 重写 handleReading（UNION ALL + 分页）；P0-3 handleHot 支持 tab/category/q/source 筛选；P0-7 新增 read-all 路由；P1-12 修复 401 处理（移除 needLogin 检查）。详见 `docs/specs/P1-12-401-handling-fix.md` |
+| 2026-09-09 | **P0-5/P0-8 修复** | P0-5 客户端路由改造（pushState 替代整页跳转 + hover 预取 api 缓存）；P0-8 新增 reading/batch（批量操作）+ reading/export（Markdown 导出）路由 |
 
 ---
 

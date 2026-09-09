@@ -12,6 +12,8 @@
 //   GET  /api/status            状态汇总
 //   GET  /api/settings          公开设置
 //   GET  /api/reading           阅读统计
+//   POST /api/reading/batch     批量操作（取消稍后读/取消收藏/清除已读）
+//   POST /api/reading/export    导出阅读条目为 Markdown
 //   POST /api/auth/login        登录获取 JWT
 //   POST /api/articles/:id/read 标记已读
 //   POST /api/articles/:id/later 稍后读
@@ -826,6 +828,98 @@ async function handleArticlesReadAll(req) {
   return jsonOk({ ok: true, updated: r.changes || 0 });
 }
 
+// POST /api/reading/batch — 批量操作（取消稍后读/取消收藏/清除已读标记）
+// body: { action: 'unlater'|'unfavorite'|'clear_read', items: [{type,id}, ...] }
+async function handleReadingBatch(req) {
+  const { action, items } = req.body || {};
+  if (!action || !Array.isArray(items) || !items.length) {
+    return { status: 400, body: jsonErr('缺少 action 或 items') };
+  }
+  const validActions = ['unlater', 'unfavorite', 'clear_read'];
+  if (!validActions.includes(action)) {
+    return { status: 400, body: jsonErr(`无效操作: ${action}`) };
+  }
+
+  const articleIds = items.filter((i) => i.type === 'article').map((i) => Number(i.id)).filter(Boolean);
+  const videoIds = items.filter((i) => i.type === 'video').map((i) => Number(i.id)).filter(Boolean);
+  let updated = 0;
+
+  if (action === 'unlater' && articleIds.length) {
+    const ph = articleIds.map(() => '?').join(',');
+    const r = await qRun(`UPDATE articles SET later = 0 WHERE id IN (${ph})`, articleIds);
+    updated += r.changes || 0;
+  } else if (action === 'unfavorite' && videoIds.length) {
+    const ph = videoIds.map(() => '?').join(',');
+    const r = await qRun(`UPDATE videos SET favorite = 0 WHERE id IN (${ph})`, videoIds);
+    updated += r.changes || 0;
+  } else if (action === 'clear_read' && articleIds.length) {
+    const ph = articleIds.map(() => '?').join(',');
+    const r = await qRun(`UPDATE articles SET read_at = NULL WHERE id IN (${ph}) AND read_at IS NOT NULL`, articleIds);
+    updated += r.changes || 0;
+  }
+
+  return jsonOk({ ok: true, updated });
+}
+
+// POST /api/reading/export — 导出选中条目为 Markdown
+// body: { items: [{type,id}, ...] }
+async function handleReadingExport(req) {
+  const { items } = req.body || {};
+  if (!Array.isArray(items) || !items.length) {
+    return { status: 400, body: jsonErr('缺少 items') };
+  }
+
+  const articleIds = items.filter((i) => i.type === 'article').map((i) => Number(i.id)).filter(Boolean);
+  const videoIds = items.filter((i) => i.type === 'video').map((i) => Number(i.id)).filter(Boolean);
+
+  const rows = [];
+  if (articleIds.length) {
+    const ph = articleIds.map(() => '?').join(',');
+    const arts = await qAll(`
+      SELECT a.id, 'article' AS item_type, a.title, a.url, a.summary,
+             COALESCE(a.published_at, a.created_at) AS date,
+             s.name AS source_name, s.type AS source_type
+      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+      WHERE a.id IN (${ph})
+    `, articleIds);
+    rows.push(...arts);
+  }
+  if (videoIds.length) {
+    const ph = videoIds.map(() => '?').join(',');
+    const vids = await qAll(`
+      SELECT v.id, 'video' AS item_type, v.title, v.url, v.intro AS summary,
+             v.published_at AS date,
+             s.name AS source_name, s.type AS source_type
+      FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+      WHERE v.id IN (${ph})
+    `, videoIds);
+    rows.push(...vids);
+  }
+
+  // 按日期降序排列
+  rows.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  const typeLabel = (t) => {
+    if (t === 'video') return '视频';
+    if (t === 'podcast') return '播客';
+    return '文章';
+  };
+  const lines = ['# 我的阅读导出', '', `> 导出时间：${nowIso()}`, ''];
+  for (const r of rows) {
+    const date = r.date ? r.date.slice(0, 10) : '未知日期';
+    lines.push(`## ${r.title || '无标题'}`);
+    lines.push('');
+    lines.push(`- **类型**：${typeLabel(r.item_type)}`);
+    lines.push(`- **来源**：${r.source_name || '未知'}`);
+    lines.push(`- **日期**：${date}`);
+    lines.push(`- **链接**：${r.url || ''}`);
+    if (r.summary) lines.push(`- **摘要**：${String(r.summary).slice(0, 200)}`);
+    lines.push('');
+  }
+
+  return jsonOk({ ok: true, markdown: lines.join('\n'), count: rows.length });
+}
+
 // POST /api/auth/login
 async function handleLogin(req) {
   const body = req.body || {};
@@ -1000,6 +1094,10 @@ async function dispatch(req) {
 
   // POST /api/articles/read-all（必须在 /:id 之前匹配）
   if (path === '/api/articles/read-all' && method === 'POST') return handleArticlesReadAll(req);
+
+  // POST /api/reading/batch + /api/reading/export（P0-8 修复）
+  if (path === '/api/reading/batch' && method === 'POST') return handleReadingBatch(req);
+  if (path === '/api/reading/export' && method === 'POST') return handleReadingExport(req);
 
   // POST /api/articles/:id/read
   const readMatch = path.match(/^\/api\/articles\/(\d+)\/read$/);
