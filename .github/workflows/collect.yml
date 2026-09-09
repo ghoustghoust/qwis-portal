@@ -25,11 +25,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Trigger hourly collection
+      - name: Trigger hourly collection (with retry)
         run: |
-          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
-            -H "Content-Type: application/json" \
-            --max-time 90
+          for i in 1 2 3; do
+            echo "Attempt $i..."
+            HTTP_CODE=$(curl -sS -o /tmp/collect-response.json -w '%{http_code}' -X POST \
+              "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+              -H "Content-Type: application/json" \
+              --max-time 30)
+            echo "HTTP status: $HTTP_CODE"
+            cat /tmp/collect-response.json 2>/dev/null || true
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Collection succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed (HTTP $HTTP_CODE), waiting 15s before retry..."
+            sleep 15
+          done
+          echo "All 3 attempts failed"
+          exit 1
 
   # ─── 夜间密集采集（23:00-06:00 北京时间，覆盖前一天全部资讯） ───
   collect-nightly:
@@ -37,11 +51,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Trigger nightly dense collection
+      - name: Trigger nightly dense collection (with retry)
         run: |
-          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
-            -H "Content-Type: application/json" \
-            --max-time 90
+          for i in 1 2 3; do
+            echo "Attempt $i..."
+            HTTP_CODE=$(curl -sS -o /tmp/collect-response.json -w '%{http_code}' -X POST \
+              "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+              -H "Content-Type: application/json" \
+              --max-time 30)
+            echo "HTTP status: $HTTP_CODE"
+            cat /tmp/collect-response.json 2>/dev/null || true
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Collection succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed (HTTP $HTTP_CODE), waiting 15s before retry..."
+            sleep 15
+          done
+          echo "All 3 attempts failed"
+          exit 1
 
   # ─── 日报生成（北京时间 9:00） ───
   daily-report:
