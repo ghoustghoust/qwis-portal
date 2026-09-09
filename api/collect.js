@@ -355,11 +355,11 @@ async function runCollect(mode = 'collect') {
   const now = nowIso();
   const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, videos: 0 };
 
-  // 查询到期源
+  // 查询到期源（排除 wemp：依赖本地微信 RSS 代理，serverless 无法访问 127.0.0.1）
   let sources;
   if (mode === 'collect' || mode === '' || mode === 'debug') {
     const result = await db.execute({
-      sql: `SELECT * FROM sources WHERE enabled=1 AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
+      sql: `SELECT * FROM sources WHERE enabled=1 AND type != 'wemp' AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
       args: [now, MAX_SOURCES],
     });
     sources = Array.from(result.rows);
