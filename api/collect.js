@@ -12,9 +12,9 @@ const Parser = require('rss-parser');
 
 // ─── 配置 ───
 // [2026-09-10 修复] Vercel Hobby 10s 硬限制：冷启动 3-5s + 连接 Turso 2-3s = 仅剩 2-5s 给实际采集
-// MAX_SOURCES=1 + FETCH_TIMEOUT=2000 → 最坏 5-7s → 安全在 10s 内完成
-// 638 源 × 8h 间隔 / 每小时 1 源 ≈ 26 天轮完；但热榜 30min 间隔会优先被拾取
-const MAX_SOURCES = 1;           // 单次执行最多处理 1 个源（Hobby 10s 硬限制）
+// MAX_SOURCES=2 + FETCH_TIMEOUT=2000 → 最坏 5-7s → 安全在 10s 内完成
+// 已排除 bilibili/douyin（serverless 无法采集），每次执行采 2 个真实 RSS/热榜源
+const MAX_SOURCES = 2;           // 单次执行最多处理 2 个源（Hobby 10s 硬限制）
 const FETCH_TIMEOUT = 2000;      // 单源抓取超时 ms（配合 10s 总限制）
 const UA = 'qwis-collector/1.0';
 
@@ -358,11 +358,14 @@ async function runCollect(mode = 'collect') {
   const now = nowIso();
   const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, videos: 0 };
 
-  // 查询到期源（排除 wemp：依赖本地微信 RSS 代理，serverless 无法访问 127.0.0.1）
+  // [2026-09-10 修复] 排除 wemp/bilibili/douyin：这些类型依赖本地环境（微信 Cookie/wbi 签名/Playwright）
+  // serverless 适配器对 bilibili 直接 return skipped=true → MAX_SOURCES=1 时永远 0 采集
+  // 排除后确保每次执行都采到真实 RSS/热榜源
+  const UNSUPPORTED_TYPES = "type NOT IN ('wemp', 'bilibili', 'douyin')";
   let sources;
   if (mode === 'collect' || mode === '' || mode === 'debug') {
     const result = await db.execute({
-      sql: `SELECT * FROM sources WHERE enabled=1 AND type != 'wemp' AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
+      sql: `SELECT * FROM sources WHERE enabled=1 AND ${UNSUPPORTED_TYPES} AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
       args: [now, MAX_SOURCES],
     });
     sources = Array.from(result.rows);
