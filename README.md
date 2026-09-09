@@ -174,8 +174,8 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 | **前端** | React 18 / Vite 5 / Tailwind CSS 3 |
 | **采集** | rss-parser / Playwright (抖音) / undici (HTTP) |
 | **调度** | node-cron / 自定义 due 驱动 tick 调度器 |
-| **云端** | Vercel Serverless / Turso (libSQL) / PHP 队列 |
-| **部署** | PM2 (fork 模式单实例) / Nginx 反代 |
+| **云端** | Vercel Serverless (主部署) / Turso (libSQL) / PHP 队列 |
+| **部署** | Vercel (生产) / PM2 (本地开发/灾备) |
 
 ---
 
@@ -200,10 +200,11 @@ qwis-portal/
 │   │   └── main.jsx      # 入口（IconRail 导航 + pathname 路由）
 │   ├── index.html        # 读者入口
 │   └── admin.html        # 管理后台入口（独立 bundle）
-── portal/               # Vercel 项目（冻结态，独立 git 仓库）
-│   ├── api/              # Serverless Functions
-│   ├── src-admin/        # 云端管理后台
-│   └── public/data/      # 静态快照兜底
+├── api/                  # Vercel 正式生产代码
+│   ├── [...slug].js      # 主 API（catch-all 路由）
+│   ├── collect.js        # 采集函数
+│   └── daily-generate.js # 日报生成
+├── portal/               # 原 Vercel 项目（已合并到根项目）
 ├── cloud/                # PHP 队列（Token 鉴权 + flock 原子操作）
 ├── config/               # customer-config.json（客户化配置）
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
@@ -350,9 +351,12 @@ qwis-portal/
 
 | 文档 | 说明 |
 |------|------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 架构移交文档（系统全景、数据通路、已知坑、协作规则） |
-| [docs/RUNBOOK.md](docs/RUNBOOK.md) | 运维手册（唯一现行） |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | 项目状态说明（功能清单、部署方式、目录结构） |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 架构文档（系统全景、数据通路、已知坑、协作规则） |
+| [docs/DEV_GUIDE.md](docs/DEV_GUIDE.md) | 开发者上手指南 |
+| [docs/DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) | 开发规范与验收标准 |
+| [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
+| [docs/RUNBOOK.md](docs/RUNBOOK.md) | 运维手册 |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | 项目状态说明 |
 | [docs/INDEX.md](docs/INDEX.md) | 文档索引 |
 | [docs/ANDROID_SUBMIT_GUIDE.md](docs/ANDROID_SUBMIT_GUIDE.md) | 安卓端提交客户端指南 |
 | [docs/X_SETUP_GUIDE.md](docs/X_SETUP_GUIDE.md) | X/Twitter RSSHub 设置指南 |
@@ -365,7 +369,7 @@ qwis-portal/
 - **敏感文件已排除**：`cloud/token.json`、`.env`、`data/` 均在 `.gitignore` 中
 - **bat 文件必须 GBK 编码**：用 `tools/gen_bat.py` 生成，不要手改
 - **better-sqlite3 单进程锁**：不可 cluster 多实例，PM2 配置 `instances: 1`
-- **Vercel portal 已冻结**：迁移完成前只修安全项，功能语义不再逐条对齐本地
+- **Vercel 为主部署**：`api/` 目录为正式生产代码，本地 Express 为开发/灾备
 
 ---
 

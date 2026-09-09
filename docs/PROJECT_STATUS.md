@@ -33,7 +33,7 @@
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**核心决策**：目标云端形态为 **宝塔/自有服务器全量部署**（Express + SQLite + 抖音 Playwright 全部上服务器），Vercel portal 已进入冻结态，迁移完成后将整体退役。
+**核心决策**（2026-09-09 更新）：**Vercel 为主部署**（`api/` 正式生产代码 + Turso 云数据库 + GH Actions 定时采集），本地 Express 为开发/灾备用途，逐步退役。
 
 ### 技术栈
 
@@ -156,13 +156,14 @@ pm2 startup  # 开机自启
 # 6. Nginx 反代 http://127.0.0.1:3000，client_max_body_size 10m
 ```
 
-### 3.3 云端 Vercel Portal（冻结态）
+### 3.3 Vercel 主部署（正式开发中）
 
-- 单一 catch-all Serverless Function：`portal/api/[...slug].js`
-- 读 Turso 数据库优先，静态 JSON 快照兜底（`portal/public/data/`）
-- 图片代理走 `_safeimg.js`（SSRF 防护 + 7 天缓存）
+- 主 API：`api/[...slug].js`（catch-all Serverless Function）
+- 采集函数：`api/collect.js`（GH Actions 整点调用）
+- 日报生成：`api/daily-generate.js`（GH Actions 每日 9:00 调用）
+- 读 Turso 数据库优先，静态 JSON 快照兆底（`public/data/`）
 - 管理后台有 httpOnly cookie 口令鉴权
-- **冻结决策**：迁移完成前只修安全项，功能语义不再逐条对齐本地
+- **当前状态**：正式开发中，功能持续完善
 
 ### 3.4 云端 PHP 队列（可选）
 

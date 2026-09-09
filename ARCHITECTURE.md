@@ -1,37 +1,40 @@
-# 全网情报系统 · 架构移交文档
+# 全网情报系统 · 架构文档
 
 > 所有 Agent 的共用上下文。改架构/流程/凭据位置时必须同步更新本文档。
-> 最后更新:2026-09-05(晚间:P0 鉴权链路启用 + 报警凭据脱敏 + XSS 加固 + P1 逻辑修复,详见 docs/1.CODE_REVIEW_2026-09-05.md;同日 2026-09-05b 轮:fulltext cron 重复注册/portal 同步阻塞/extra 泄露/DataTab 上传 401 等 8 项修复 + 日报页混合式改版,回归 tests/regression-20260905b.test.js;深夜十期:源库管理+自动分类上线,详见 §8.3)
+> 最后更新:2026-09-09(文档全面清洗 + Vercel 解冻进入正式开发 + 部署方向调整为 Vercel 为主部署)
 
-## 0. 部署方向决策(2026-09-04,用户拍板,勿再遗忘)
+## 0. 部署方向决策(2026-09-09 更新)
 
-- **目标云端形态:宝塔/自有服务器全量部署**——Express+SQLite 主系统 + 抖音 Playwright 全部上服务器(PM2,ecosystem.config.js 即为此准备),本地机即生产机。公众号走 wechat2rss 托管 RSS(无自建引擎)。Vercel portal 已进入冻结态。原因:Vercel 不适合承载重前端,serverless 副本维护成本高。
-- **Vercel portal(qwis-portal)进入冻结态**:迁移完成前只修安全项(图片代理白名单、危险写接口鉴权),功能语义不再逐条对齐本地;已知漂移清单见 archive/docs-deprecated/A_CLASS_FIX_REPORT.md 之后的审计归档,不再投入修复。
-- 迁移完成后:portal 仓库归档,GH Actions 采集与快照同步下线,Turso 退役,对外读者端由宝塔上的主系统直接服务。
+- **主部署:Vercel Serverless**——`api/` 目录为正式生产代码,GH Actions 定时采集,Turso 云数据库。对外地址 `https://qwis-intel.vercel.app`。
+- **本地 Express + SQLite**:开发/灾备用途,逐步退役。完整功能(含抖音 Playwright)仅在本地可用。
+- **portal 已合并**:原 `portal/` 目录(独立 git 仓库 qwis-portal)的功能已合并到根项目 `api/` 目录。portal 冻结态解除,进入正式开发。
+- **AI 功能重新上线**:接入 Agencs AI(当前免费),支持翻译/摘要/分类/分析,管理后台新增「AI 设置」Tab 统一配置。
 
 ## 1. 系统全景
 
 ```
-                        ┌─────────────────────────────┐
-                        │ GitHub Actions(整点采集/:30  │
-                        │  backfill/每日3点 cleanup)   │
-                        └─────────────┬───────────────┘
+                        ┌─────────────────────────────────┐
+                        │ GitHub Actions                   │
+                        │ 整点采集 / 夜间密集采集           │
+                        │ 日报生成(9:00) / 快照 / 清理      │
+                        └─────────────┬───────────────────┘
                                       │ POST /api/collect?key=
+                                      │ POST /api/daily-generate?key=
                                       ▼
-┌──────────────────┐        ┌──────────────────────────┐
-│  本地机(灾备/存档)  │        │  云端(Vercel + Turso,冻结态)│
-│                  │        │                          │
-│  情报系统 :3000   │ 快照同步 │  qwis-portal.vercel.app   │
-│  ├ Express+SQLite│ ──────▶ │  ├ serverless API(Turso) │
-│  ├ 阅读器/日报/热榜 │ (每2h)  │  ├ 读者前端(完整三页面)    │
-│  ├ /admin/ 管理台 │        │  ├ /admin/ 云端管理(有口令) │
-│  └ 采集调度器      │        │  └ 采集函数(GH Actions 驱动)│
-└──────────────────┘        │  Turso(twis, 东京)        │
-   公众号 = wechat2rss       └──────────────────────────┘
-   RSS 源(无自建引擎)
+┌──────────────────┐        ┌──────────────────────────────┐
+│  本地机(开发/灾备)  │        │  Vercel 主部署(正式开发中)      │
+│                  │        │                              │
+│  情报系统 :3000   │ 快照同步 │  qwis-intel.vercel.app        │
+│  ├ Express+SQLite│ ──────▶ │  ├ api/[...slug].js (主 API) │
+│  ├ 阅读器/日报/热榜 │        │  ├ api/collect.js (采集函数)  │
+│  ├ /admin/ 管理台 │        │  ├ api/daily-generate.js     │
+│  ├ 采集调度器      │        │  ├ 读者前端(完整页面)          │
+│  └ 抖音 Playwright│        │  ├ /admin/ 管理后台           │
+└──────────────────┘        │  └ Turso (东京)              │
+   公众号 = wechat2rss       └──────────────────────────────┘
 ```
 
-**两套部署「共享语义但不共享代码」**(portal 前端 = 主前端构建;云端 API 是 server/ 的移植副本,读 Turso;本地 API 读 SQLite)。本地是"全功能 + 灾备存档";云端为过渡形态,语义已漂移(热点榜数据源、日报候选类型、熔断计数位置等均不一致),冻结期间**不要**再以"同构同码"假设双端行为一致。
+**Vercel 为主部署,本地为开发/灾备**。`api/` 目录是正式生产代码,GH Actions 驱动定时采集和日报生成。本地 Express 保留完整功能(含抖音 Playwright),用于开发和全功能灾备。双端共享语义但独立实现,改一边要检查另一边。
 
 ## 2. 仓库与目录
 
@@ -40,13 +43,13 @@
 | `D:\全网情报系统\` | 主仓库(本地 git,非远端托管) |
 | `server/` | Express 后端:routes/(API)、services/(collectors 采集器、ai/daily 日报、events 事件聚合、alerts 报警、scheduler 调度、queue 任务队列)、db.js(本地 better-sqlite3)、cloud/db.js(双模式异步层) |
 | `web/` | 主前端(Vite+React+Tailwind),多入口:index.html(读者)+ admin.html(管理后台,独立 bundle) |
-| `portal/` | Vercel 项目(独立 git 仓库 ghoustghoust/qwis-portal,**冻结态**):api/(serverless catch-all [...slug].js)、public/data/(静态快照兜底)、构建自主前端 ../web |
+| `api/` | **Vercel 正式生产代码**:catch-all [...slug].js(主 API)、collect.js(采集函数)、daily-generate.js(日报生成) |
 | `tools/` | 运维脚本(2026-09-04 清洁后):export-portal.js、sync-portal.js、import-bestblogs-opml.js、ops-toolkit.js、audit-cloud.js、seed-hotlist.js、seed-turso.js、setup-customer.js、gen_bat.py;一次性脚本已归档 `archive/tools/` |
 | `archive/` | 全部历史资产:reports/(修复报告)、specs/(一~八期)、docs-deprecated/、analysis/、_eval/(参考工程)、tools/(一次性脚本)、测试/ |
 | `opml/` | bestblogs 源清单(wechat2rss 375 公众号 / youtube 124 / podcast 60),2026-09-04 已导入 |
 | ~~`D:\tools\we-mp-rss\`~~ | **已退役(2026-09-04)**:公众号改走 wechat2rss 托管 RSS,不再自建引擎;代码移 trash/,旧 wemp 源 enabled=0 保留历史文章 |
 
-> ⚠️ 根目录的 `api/`、`src-admin/`、`admin.html`、`vercel.json`、`vite.config.js`、`vite.admin.config.js`、`copy-routes.js` 是 portal 构件的历史副本（误拷贝，根 vite.config.js 的 `root:'../web'` 在根目录根本无法解析），**全部不要使用/修改**，待清理。主前端构建只走 `web/vite.config.js`。
+> ℹ️ `api/` 和 `vercel.json` 是 Vercel 主部署的正式代码。`src-admin/`、`admin.html`、`vite.config.js`、`vite.admin.config.js`、`copy-routes.js` 是原 portal 构件的历史副本，**不要使用/修改**，待清理。主前端构建走 `web/vite.config.js`。
 
 ## 3. 关键架构决策(为什么这么设计)
 

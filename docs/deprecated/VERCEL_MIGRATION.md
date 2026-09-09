@@ -1,3 +1,5 @@
+> [已归档] 2026-09-09 — 原迁移指南方向（本地→Vercel 过渡）已被「Vercel 为主部署」决策取代
+
 # 全网情报系统 Vercel 迁移指南
 
 > 本文档记录从 Express+SQLite 本地架构迁移到 Vercel Serverless 架构的全部变更和操作步骤。

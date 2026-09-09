@@ -9,7 +9,7 @@
 - 页面：`/reader/` 阅读器、`/daily/` 日报、`/hot/` 热点榜、`/admin/` 管理台（独立 bundle）
 - 源类型：rss（含 wechat2rss 公众号、播客）、youtube（走官方 feed，需代理）、bilibili、douyin（Playwright，仅本地）、x（RSSHub）、hotlist（newsnow）、wechat（OPML）
 - 数据：`data/app.db` + `data/backups/`；配置：`.env` + settings 表 + `config/customer-config.json`
-- 云端：Vercel portal（冻结态，将迁移宝塔）；PHP 队列云（cloud/*.php，接收手机/桌面提交链接）
+- 云端：Vercel 主部署（`api/` 正式生产代码，GH Actions 定时采集）；PHP 队列（cloud/*.php，接收手机/桌面提交链接）
 
 ## 2. 日常启停（Windows 本机）
 
@@ -79,9 +79,28 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 - **端口被占**：`.env` 改 `PORT`
 - **图片不显示**：微信图片走 `/api/img` 代理（SSRF 防护+7 天缓存）；wechat2rss 图片由对方 img-proxy 代理（单点依赖，已知情接受）
 
-## 10. 热点榜/日报机制速查
+## 10. Vercel 主部署运维
+
+```powershell
+# GH Actions 定时任务（自动执行，无需手动干预）
+# 整点采集（每小时 :00）
+# 日报生成（北京时间 9:00）
+# 静态快照（北京时间 9:30）
+# 数据清理（北京时间 4:00）
+
+# 手动触发采集
+curl -X POST "https://qwis-intel.vercel.app/api/collect?key=$COLLECT_KEY"
+
+# 手动触发日报生成
+curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY&windowHours=48"
+
+# 查看 Vercel 部署日志
+# Vercel Dashboard → Project → Deployments → Functions → Logs
+```
+
+## 11. 热点榜/日报机制速查
 
 - 热点榜数据源：AIHOT 聚合源文章（extra.aggregator=1），分类映射六胶囊（模型/产品/行业/论文/教程/观点）
 - 事件榜：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度=Σ权重×24h 半衰×1.5^(信源数-1)，缓存 5min
-- 日报：每天 08:00（可在日报设置改）生成，生成前先补抓到期源；破茧栏=与用户常读分组交集最小的 Top5 事件
+- 日报：夜间 23:00-06:00 密集采集，每天 09:00 生成（AI 分析 + 规则分类 + 去重安检）
 - 全文补抓：每 6h（02/08/14/20 点）补抓 <1000 字符的薄内容，限速 2s/条

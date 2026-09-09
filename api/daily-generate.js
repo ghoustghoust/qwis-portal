@@ -90,17 +90,28 @@ function jaccard(a, b) {
 // ─── 日报生成核心 ───
 async function generateDaily(windowHours) {
   const cfg = await getSetting('daily', {});
-  const hours = windowHours || Number(cfg.windowHours) || 48;
-  const cutoff = new Date(Date.now() - hours * 3600e3).toISOString();
+
+  // 采集窗口：前一天 00:00 ~ 今天 06:00（北京时间）
+  // 覆盖前一天全部资讯 + 凌晨补充
+  const now = new Date();
+  const bjOffset = 8 * 3600e3; // 北京时间偏移
+  const bjNow = new Date(now.getTime() + bjOffset);
+  const todayStart = new Date(bjNow);
+  todayStart.setUTCHours(0, 0, 0, 0);
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600e3);
+  const todaySixAM = new Date(todayStart.getTime() + 6 * 3600e3);
+  // 转回 UTC
+  const cutoff = new Date(yesterdayStart.getTime() - bjOffset).toISOString();
+  const cutoffEnd = new Date(todaySixAM.getTime() - bjOffset).toISOString();
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
   // 取候选文章
   let sql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
-             WHERE a.published_at >= ? AND s.enabled = 1
+             WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
-  const args = [cutoff, ...ARTICLE_SOURCE_TYPES];
+  const args = [cutoff, cutoffEnd, ...ARTICLE_SOURCE_TYPES];
   if (selectedIds && selectedIds.length) {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
     args.push(...selectedIds);
@@ -172,10 +183,13 @@ async function generateDaily(windowHours) {
     totalItems: sections.reduce((n, s) => n + s.items.length, 0),
   };
 
+  // 计算窗口小时数（供记录）
+  const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);
+
   // 写入 daily_reports
   const result = await qRun(
     'INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
-    [nowIso(), hours, JSON.stringify(stats), JSON.stringify(sections)]
+    [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]
   );
 
   return { id: result.lastInsertRowid, generated_at: nowIso(), stats, sections };

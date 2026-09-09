@@ -1,3 +1,5 @@
+> [已归档] 2026-09-09 — 空模板，从未填写，与项目无关
+
 # IDENTITY.md - Who Am I?
 
 _Fill this in during your first conversation. Make it yours._

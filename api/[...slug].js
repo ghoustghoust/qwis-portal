@@ -84,7 +84,7 @@ async function setSetting(key, val) {
 const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings',
-  '/api/reading', '/api/img',
+  '/api/reading', '/api/img', '/api/meta',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
 ]);
 
@@ -416,17 +416,143 @@ async function handleHotEventDetail(req, rank) {
   return jsonOk({ event: ev });
 }
 
-// GET /api/daily
+// ─── 日报生成核心（供 handleDaily getOrGenerate 复用） ───
+const DAILY_COLUMNS = [
+  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
+  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
+  { id: 'fallback', name: '其它重要', special: 'fallback' },
+];
+const DAILY_SOURCE_TYPES = ['wechat', 'rss', 'x'];
+
+function dailyTitleTokens(title) {
+  return String(title || '').replace(/[^\w\u4e00-\u9fff]/g, ' ').split(/\s+/).filter(t => t.length >= 2);
+}
+function dailyJaccard(a, b) {
+  const sa = new Set(a), sb = new Set(b);
+  if (!sa.size || !sb.size) return 0;
+  let inter = 0;
+  for (const t of sa) if (sb.has(t)) inter++;
+  return inter / (sa.size + sb.size - inter);
+}
+function dailyDedup(items) {
+  const result = [];
+  for (const item of items) {
+    const tokens = dailyTitleTokens(item.title);
+    let isDup = false;
+    for (const e of result) { if (dailyJaccard(tokens, dailyTitleTokens(e.title)) > 0.5) { isDup = true; break; } }
+    if (!isDup) result.push(item);
+  }
+  return result;
+}
+function dailyFormatItem(a) {
+  return { id: a.id, title: a.title, url: a.url, source: a.source_name, published_at: a.published_at, score: a.score, summary: (a.summary || '').slice(0, 200), cover: a.cover };
+}
+
+async function generateDailyInline() {
+  const now = new Date();
+  const bjOffset = 8 * 3600e3;
+  const bjNow = new Date(now.getTime() + bjOffset);
+  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600e3);
+  const todaySixAM = new Date(todayStart.getTime() + 6 * 3600e3);
+  const cutoff = new Date(yesterdayStart.getTime() - bjOffset).toISOString();
+  const cutoffEnd = new Date(todaySixAM.getTime() - bjOffset).toISOString();
+
+  const columns = await getSetting('daily.columns', null) || DAILY_COLUMNS;
+  const cfg = await getSetting('daily', {});
+  const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
+
+  let sql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus
+             FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+             WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
+               AND s.type IN (${DAILY_SOURCE_TYPES.map(() => '?').join(',')})`;
+  const args = [cutoff, cutoffEnd, ...DAILY_SOURCE_TYPES];
+  if (selectedIds && selectedIds.length) {
+    sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
+    args.push(...selectedIds);
+  }
+  sql += " AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+
+  const candidates = await qAll(sql, args);
+  // 简单安检
+  const valid = candidates.filter(a => {
+    const t = String(a.title || '');
+    return t.length >= 6 && !/参数错误|环境异常|访问过于频繁/.test(t);
+  });
+
+  const sections = [];
+  const used = new Set();
+  for (const col of columns) {
+    const items = [];
+    if (col.special === 'focus') {
+      for (const a of valid) { if (!used.has(a.id) && a.source_focus) { items.push(dailyFormatItem(a)); used.add(a.id); } }
+    } else if (col.special === 'fallback') {
+      const remaining = valid.filter(a => !used.has(a.id)).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 10);
+      for (const a of remaining) { items.push(dailyFormatItem(a)); used.add(a.id); }
+    } else if (col.keywords && col.keywords.length) {
+      for (const a of valid) {
+        if (used.has(a.id)) continue;
+        if (col.keywords.some(kw => `${a.title} ${a.summary || ''}`.includes(kw))) { items.push(dailyFormatItem(a)); used.add(a.id); }
+      }
+    }
+    const deduped = dailyDedup(items);
+    if (deduped.length) sections.push({ column: col.name, desc: col.desc || '', items: deduped.slice(0, 15) });
+  }
+
+  const stats = { candidates: valid.length, articles: valid.length, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
+  const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);
+  await qRun('INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
+    [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]);
+  return { generated_at: nowIso(), stats, sections };
+}
+
+// GET /api/daily（含 getOrGenerate：当日无日报且已过 9:00 北京时间则自动生成）
 async function handleDaily(req) {
   const row = await qOne('SELECT * FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
+
+  // 检查是否需要自动生成
+  if (row) {
+    const genDate = new Date(row.generated_at);
+    const now = new Date();
+    // 同一天（UTC）则直接返回
+    if (genDate.toDateString() === now.toDateString()) {
+      let sections = [];
+      try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
+      let stats = {};
+      try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
+      return jsonOk({
+        report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats },
+        stale: false,
+      });
+    }
+  }
+
+  // 判断是否已过生成时间（北京时间 9:00）
+  const now = new Date();
+  const bjNow = new Date(now.getTime() + 8 * 3600e3);
+  const hour = bjNow.getUTCHours();
+  if (hour >= 1) { // UTC 1:00 = 北京 9:00
+    try {
+      const report = await generateDailyInline();
+      return jsonOk({ report: { generated_at: report.generated_at, sections: report.sections, stats: report.stats }, stale: false, autoGenerated: true });
+    } catch (err) {
+      console.error('[daily] auto-generate failed:', err.message);
+    }
+  }
+
+  // 无日报且未到生成时间
   if (!row) return jsonOk({ report: null, stale: false });
+
+  // 返回旧日报但标记过期
   let sections = [];
   try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
   let stats = {};
   try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
   return jsonOk({
     report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats },
-    stale: false,
+    stale: true,
   });
 }
 
@@ -566,6 +692,93 @@ async function handleSourceToggle(req, id) {
   return jsonOk({ enabled: newEnabled });
 }
 
+// ─── GET /api/meta — 系统元数据（公开） ───
+async function handleMeta(req) {
+  const articles = (await qOne('SELECT COUNT(*) c FROM articles')).c;
+  const videos = (await qOne('SELECT COUNT(*) c FROM videos')).c;
+  const sources = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=1')).c;
+  const lastArticle = await qOne('SELECT MAX(created_at) t FROM articles');
+  return jsonOk({ articles, videos, sources, lastUpdated: lastArticle.t });
+}
+
+// ─── AI 设置路由（Vercel 端） ───
+const AI_DEFAULT_BASE = 'https://apihub.agnes-ai.com/v1';
+const AI_DEFAULT_MODEL = 'agnes-2.5-flash';
+
+async function handleAiConfig(req) {
+  if (req.method === 'GET') {
+    const cfg = await getSetting('ai', {});
+    const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
+    return jsonOk({
+      apiKeyConfigured: !!apiKey,
+      apiBase: cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE,
+      model: cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL,
+      features: await getSetting('ai.features', { translate: true, summary: true, classify: false, analyze: false }),
+    });
+  }
+  if (req.method === 'PUT') {
+    const body = req.body || {};
+    const cur = await getSetting('ai', {});
+    const next = { ...cur };
+    if (body.model !== undefined) next.model = String(body.model).trim();
+    if (body.apiBase !== undefined) next.apiBase = String(body.apiBase).trim();
+    if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
+    if (body.features && typeof body.features === 'object') {
+      await setSetting('ai.features', body.features);
+    }
+    await setSetting('ai', next);
+    return jsonOk({ ok: true });
+  }
+  return { status: 405, body: jsonErr('Method Not Allowed') };
+}
+
+// POST /api/ai/ping — 连通性测试
+async function handleAiPing(req) {
+  const cfg = await getSetting('ai', {});
+  const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
+  const apiBase = cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE;
+  const model = cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL;
+  if (!apiKey) return jsonOk({ ok: false, error: '未配置 API Key' });
+  try {
+    const resp = await fetch(`${apiBase.replace(/\/+$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model, messages: [{ role: 'user', content: '请回复"连通成功"四个字。' }], max_tokens: 20 }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!resp.ok) return jsonOk({ ok: false, error: `HTTP ${resp.status}` });
+    const data = await resp.json();
+    return jsonOk({ ok: true, model, reply: data?.choices?.[0]?.message?.content || '' });
+  } catch (err) {
+    return jsonOk({ ok: false, error: err.message });
+  }
+}
+
+// POST /api/ai/chat — 通用 AI 对话（调试用）
+async function handleAiChat(req) {
+  const body = req.body || {};
+  const { messages, model, temperature } = body;
+  if (!Array.isArray(messages) || !messages.length) return jsonOk({ ok: false, error: 'messages 必须是非空数组' });
+  const cfg = await getSetting('ai', {});
+  const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
+  const apiBase = cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE;
+  const useModel = model || cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL;
+  if (!apiKey) return jsonOk({ ok: false, error: '未配置 API Key' });
+  try {
+    const resp = await fetch(`${apiBase.replace(/\/+$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: useModel, messages, temperature: temperature || 0.7 }),
+      signal: AbortSignal.timeout(120000),
+    });
+    if (!resp.ok) return jsonOk({ ok: false, error: `HTTP ${resp.status}` });
+    const data = await resp.json();
+    return jsonOk({ ok: true, reply: data?.choices?.[0]?.message?.content || '' });
+  } catch (err) {
+    return jsonOk({ ok: false, error: err.message });
+  }
+}
+
 // ─── 图片代理 GET /api/img ───
 async function handleImg(req) {
   const url = req.query.url;
@@ -604,6 +817,11 @@ async function dispatch(req) {
   const toggleMatch = path.match(/^\/api\/sources\/(\d+)\/toggle$/);
   if (toggleMatch && method === 'POST') return handleSourceToggle(req, Number(toggleMatch[1]));
 
+  // ─── AI 路由（需鉴权） ───
+  if (path === '/api/ai/config') return handleAiConfig(req);
+  if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
+  if (path === '/api/ai/chat' && method === 'POST') return handleAiChat(req);
+
   // GET 路由
   if (method === 'GET') {
     // GET /api/articles/:id 必须在 /api/articles 之前匹配
@@ -624,6 +842,7 @@ async function dispatch(req) {
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/settings') return handleSettings(req);
     if (path === '/api/reading') return handleReading(req);
+    if (path === '/api/meta') return handleMeta(req);
     if (path === '/api/img') return handleImg(req);
   }
 

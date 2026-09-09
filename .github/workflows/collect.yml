@@ -1,23 +1,25 @@
 # 全网情报系统 Vercel 部署 —— 定时采集与工作流
-# 整点采集 / 日报生成 / 静态快照 / 数据清理
+# 日间整点采集 / 夜间密集采集 / 日报生成(9:00) / 静态快照(9:30) / 数据清理
 # COLLECT_KEY 在 GitHub 仓库 Settings → Secrets and variables → Actions 配置
 # 生产地址：https://qwis-intel.vercel.app
 name: collect
 
 on:
   schedule:
-    # 整点主采集（UTC，对应北京时间 +8）
+    # 日间整点采集（UTC，每小时 :00）
     - cron: '0 * * * *'
-    # 日报生成（UTC 0:00 = 北京 8:00）
-    - cron: '0 0 * * *'
-    # 静态快照生成（UTC 1:00 = 北京 9:00，日报生成后 1 小时）
+    # 夜间密集采集（UTC 15:30/17:30/19:30/21:30/22:30 = 北京 23:30/01:30/03:30/05:30/06:30）
+    - cron: '30 15,17,19,21,22 * * *'
+    # 日报生成（UTC 1:00 = 北京 9:00）
     - cron: '0 1 * * *'
+    # 静态快照生成（UTC 1:30 = 北京 9:30，日报生成后 30 分钟）
+    - cron: '30 1 * * *'
     # 数据清理（UTC 20:00 = 北京 4:00 低峰期）
     - cron: '0 20 * * *'
   workflow_dispatch:
 
 jobs:
-  # ─── 整点采集 ───
+  # ─── 日间整点采集 ───
   collect-hourly:
     if: github.event.schedule == '0 * * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -29,21 +31,33 @@ jobs:
             -H "Content-Type: application/json" \
             --max-time 90
 
-  # ─── 日报生成 ───
+  # ─── 夜间密集采集（23:00-06:00 北京时间，覆盖前一天全部资讯） ───
+  collect-nightly:
+    if: github.event.schedule == '30 15,17,19,21,22 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger nightly dense collection
+        run: |
+          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
+            -H "Content-Type: application/json" \
+            --max-time 90
+
+  # ─── 日报生成（北京时间 9:00） ───
   daily-report:
-    if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '0 1 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - name: Trigger daily report generation
         run: |
-          curl -fsS -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=${{ secrets.COLLECT_KEY }}&windowHours=48" \
+          curl -fsS -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=${{ secrets.COLLECT_KEY }}" \
             -H "Content-Type: application/json" \
-            --max-time 120
+            --max-time 180
 
-  # ─── 静态快照生成 ───
+  # ─── 静态快照生成（北京时间 9:30） ───
   snapshot:
-    if: github.event.schedule == '0 1 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '30 1 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -72,7 +86,7 @@ jobs:
           git diff --cached --quiet || git commit -m "chore: update data snapshots $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
 
-  # ─── 数据清理 ───
+  # ─── 数据清理（北京时间 4:00） ───
   cleanup:
     if: github.event.schedule == '0 20 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest

@@ -18,11 +18,17 @@ router.get('/ping', async (req, res) => {
   const result = await llm.ping();
   res.json({ ok: result.ok, ...result });
 });
+// POST /api/ai/ping（Vercel 兼容）
+router.post('/ping', async (req, res) => {
+  const result = await llm.ping();
+  res.json({ ok: result.ok, ...result });
+});
 
 // ── 配置读取（Key 脱敏）────────────────────────────────────
 router.get('/config', (req, res) => {
   const cfg = llm.getConfig();
   const runtimeCfg = getSetting('ai', {}) || {};
+  const features = getSetting('ai.features', { translate: true, summary: true, classify: false, analyze: false });
   res.json({
     ok: true,
     apiKeyConfigured: !!cfg.apiKey,
@@ -30,6 +36,7 @@ router.get('/config', (req, res) => {
     model: cfg.model,
     envSource: process.env.AGNES_API_KEY ? 'env' : 'settings',
     runtime: runtimeCfg,
+    features,
   });
 });
 
@@ -43,6 +50,10 @@ router.put('/config', (req, res) => {
   // apiKey 留空不覆盖（敏感字段惯例）
   if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
   setSetting('ai', next);
+  // 功能开关单独存储
+  if (body.features && typeof body.features === 'object') {
+    setSetting('ai.features', body.features);
+  }
   log.info('[AI] 配置已更新');
   res.json({ ok: true });
 });
