@@ -114,6 +114,13 @@ const DICT = {
   'reading.today':         { zh: '今天',               en: 'Today' },
   'reading.yesterday':     { zh: '昨天',               en: 'Yesterday' },
   'reading.unknownDate':   { zh: '未知日期',           en: 'Unknown Date' },
+  'reading.dateFormat':    { zh: '${m}月${d}日 星期${wd}', en: '${wd}, ${m}/${d}' },
+
+  // 通用日期/计数
+  'common.unknownDate':    { zh: '未知日期',           en: 'Unknown Date' },
+  'common.dateFormat':     { zh: '${m}月${d}日 星期${wd}', en: '${wd}, ${m}/${d}' },
+  'common.itemCount':      { zh: '${n} 条',            en: '${n} items' },
+  'common.weekdays':       { zh: ['日','一','二','三','四','五','六'], en: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] },
 
   // 登录弹窗（LoginModal）
   'login.title':           { zh: '登录全网情报系统',   en: 'Sign In' },

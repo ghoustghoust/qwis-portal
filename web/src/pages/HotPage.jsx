@@ -23,11 +23,13 @@ function dateKey(iso) {
   if (Number.isNaN(d.getTime())) return 'unknown';
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-function dateLabel(key) {
-  if (key === 'unknown') return '未知日期';
+function dateLabel(key, t) {
+  if (key === 'unknown') return t('common.unknownDate');
   const [y, m, d] = key.split('-').map(Number);
   const dt = new Date(y, m - 1, d);
-  return `${m}月${d}日 星期${WEEKDAYS[dt.getDay()]}`;
+  const weekdays = t('common.weekdays');
+  const wd = Array.isArray(weekdays) ? weekdays[dt.getDay()] : WEEKDAYS[dt.getDay()];
+  return t('common.dateFormat').replace('${m}', m).replace('${d}', d).replace('${wd}', wd);
 }
 function hhmm(iso) {
   const d = new Date(iso);
@@ -101,12 +103,12 @@ function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
 }
 
 // 日期分组：分组头（可折叠）+ 竖线时间轴列表
-function DateGroup({ label, count, collapsed, onToggle, children }) {
+function DateGroup({ label, count, collapsed, onToggle, children, t }) {
   return (
     <section className="mb-6">
       <button className="flex items-center gap-2 select-none group" onClick={onToggle}>
         <span className="text-[15px] font-bold t-text">{label}</span>
-        <span className="text-[11px] t-muted">· {count} 条</span>
+        <span className="text-[11px] t-muted">· {t('common.itemCount').replace('${n}', count)}</span>
         <span className="text-[10px] t-muted transition-transform" style={{ transform: collapsed ? 'rotate(-90deg)' : 'none' }}>
           ▼
         </span>
@@ -354,10 +356,11 @@ export default function HotPage() {
                 {groups.map((g, gi) => (
               <DateGroup
                 key={g.key}
-                label={dateLabel(g.key)}
+                label={dateLabel(g.key, t)}
                 count={g.list.length}
                 collapsed={isCollapsed(g.key, gi)}
                 onToggle={() => toggleGroup(g.key, gi)}
+                t={t}
               >
                 <div className="relative">
                   {/* 竖线时间轴 */}

@@ -31,7 +31,7 @@ function dateKey(iso) {
 }
 
 function dateLabel(key, t) {
-  if (key === 'unknown') return t('reading.unknownDate');
+  if (key === 'unknown') return t('common.unknownDate');
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
@@ -41,7 +41,9 @@ function dateLabel(key, t) {
   if (key === yesterdayKey) return t('reading.yesterday');
   const [y, m, d] = key.split('-').map(Number);
   const dt = new Date(y, m - 1, d);
-  return `${m}月${d}日 星期${WEEKDAYS[dt.getDay()]}`;
+  const weekdays = t('common.weekdays');
+  const wd = Array.isArray(weekdays) ? weekdays[dt.getDay()] : WEEKDAYS[dt.getDay()];
+  return t('common.dateFormat').replace('${m}', m).replace('${d}', d).replace('${wd}', wd);
 }
 
 // ---- 组件 ----
@@ -155,8 +157,8 @@ export default function MyReadingPage() {
     setBatchBusy(true);
     try {
       const payload = Array.from(selected).map((k) => {
-        const [t, id] = k.split(':');
-        return { type: t, id: Number(id) };
+        const [typ, id] = k.split(':');
+        return { type: typ, id: Number(id) };
       });
       const d = await api.post('/api/reading/batch', { action, items: payload });
       toast(`${t('reading.processed')} ${d?.updated ?? 0} ${t('reading.items')}`);
@@ -172,7 +174,7 @@ export default function MyReadingPage() {
   // 导出 Markdown
   const doExport = async () => {
     const target = selected.size > 0
-      ? Array.from(selected).map((k) => { const [t, id] = k.split(':'); return { type: t, id: Number(id) }; })
+      ? Array.from(selected).map((k) => { const [typ, id] = k.split(':'); return { type: typ, id: Number(id) }; })
       : items.map((it) => ({ type: it.item_type, id: it.id }));
     if (!target.length) { toast(t('reading.noExport')); return; }
     try {
@@ -181,7 +183,7 @@ export default function MyReadingPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `我的阅读_${new Date().toISOString().slice(0, 10)}.md`;
+      a.download = `${t('reading.title')}_${new Date().toISOString().slice(0, 10)}.md`;
       a.click();
       URL.revokeObjectURL(url);
       toast(`${t('reading.exported')} ${d.count} ${t('reading.items')}`);
@@ -241,14 +243,14 @@ export default function MyReadingPage() {
 
           {/* 2026-09-05 视觉精修：计数 Tab + 类型 Tab 收敛为 pill 组 */}
           <div className="mt-3 pb-3 flex items-center gap-2 flex-wrap">
-            {tabItems.map((t) => (
+            {tabItems.map((item) => (
               <button
-                key={t.id}
-                onClick={() => { setTab(t.id); if (selectMode) exitSelect(); }}
-                className={`pill !px-3 !py-1 !text-xs ${tab === t.id ? 'on' : ''}`}
+                key={item.id}
+                onClick={() => { setTab(item.id); if (selectMode) exitSelect(); }}
+                className={`pill !px-3 !py-1 !text-xs ${tab === item.id ? 'on' : ''}`}
               >
-                {t.label}
-                <span className="opacity-60 tabular-nums">{t.count}</span>
+                {item.label}
+                <span className="opacity-60 tabular-nums">{item.count}</span>
               </button>
             ))}
             <span className="w-px h-4 t-surface2 flex-none mx-1" />
@@ -258,13 +260,13 @@ export default function MyReadingPage() {
               { id: 'article', label: t('reading.article') },
               { id: 'podcast', label: t('reading.podcast') },
               { id: 'video', label: t('reading.video') },
-            ].map((t) => (
+            ].map((item) => (
               <button
-                key={t.id}
-                onClick={() => setType(t.id)}
-                className={`pill !px-3 !py-1 !text-xs ${type === t.id ? 'on' : ''}`}
+                key={item.id}
+                onClick={() => setType(item.id)}
+                className={`pill !px-3 !py-1 !text-xs ${type === item.id ? 'on' : ''}`}
               >
-                {t.label}
+                {item.label}
               </button>
             ))}
             <div className="flex-1" />
