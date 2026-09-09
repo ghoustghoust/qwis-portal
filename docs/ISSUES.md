@@ -1,7 +1,7 @@
 # 全网情报系统 · 已知问题清单
 
-> 活文档，随修复进展更新。最后更新：2026-09-09（RSS 采集超时修复 + 第五次验证）
-> 来源：2026-09-09 重新部署 + 23 项自动化测试 + 四轮代码审查 + 用户批注验证 + 前端全量路由交叉验证 + RSS 采集超时根因分析
+> 活文档，随修复进展更新。最后更新：2026-09-10（P0-9 二次修复：MAX_SOURCES 3→1 + GH Actions 重试机制）
+> 来源：2026-09-10 全链路诊断（Vercel 部署 + Turso + GitHub Actions + 源码逻辑）
 
 ---
 
@@ -17,7 +17,7 @@
 | P0-6 | ~~**Vercel 部署代码过期**~~ | 已重新部署，`/api/meta` 返回 200，`/api/daily` 自动生成成功 | 部署完成 | ✅ **已修复** |
 | P0-7 | **"全部标为已读"按钮 Vercel 端不可用**：前端调用 `POST /api/articles/read-all`，但 Vercel dispatch 表无此路由 | 点击后返回 404/401，功能完全不可用。本地 Express 有完整实现 | `web/src/components/ArticleView.jsx` L88 + `api/[...slug].js` dispatch | ✅ **已修复**（新增 handleArticlesReadAll + dispatch 路由） |
 | P0-8 | **阅读沉淀页批量操作+导出 Vercel 端不可用**：`POST /api/reading/batch` 和 `POST /api/reading/export` 在 dispatch 表中均无路由 | 批量取消稍后读/取消收藏/移除已读 + Markdown 导出完全不可用 | `web/src/pages/MyReadingPage.jsx` L159,L177 + `api/[...slug].js` dispatch | ✅ **已修复**（新增 handleReadingBatch + handleReadingExport + dispatch 路由） |
-| P0-9 | **RSS 采集 Vercel 端超时停止**：`api/collect.js` 的 `MAX_SOURCES=30` + `FETCH_TIMEOUT=8000` 导致单次采集耗时 56-69s，远超 Vercel Hobby 计划 10s 函数超时限制（`maxDuration:60` 仅 Pro 生效）。GitHub Actions 从 commit `2091269` 起全部失败（exit code 22），Turso 数据库从 9/9 11:17 后无新采集 | 前端最新文章停留在 9/9 00:00，23h 无更新 | `api/collect.js` L14-15 | ✅ **已修复**（MAX_SOURCES 30→3, FETCH_TIMEOUT 8000→3000，总耗时 ~9s 适配 Hobby 10s 限制） |
+| P0-9 | **RSS 采集 Vercel 端反复超时**：①初版 MAX_SOURCES=30+FETCH_TIMEOUT=8000→56-69s→全失败；②二版 MAX_SOURCES=3+FETCH_TIMEOUT=3000→8-11s→逼近 10s 硬限→频繁 504→GH Actions exit code 22 连续 10 次失败 | 前端数据停滞，采集链路中断 | `api/collect.js` + `.github/workflows/collect.yml` | ✅ **已修复**（三版：MAX_SOURCES 3→1, FETCH_TIMEOUT 3000→2000→响应 987ms；GH Actions 添加 3 次重试+HTTP 状态码日志） |
 
 ## P1 — 功能不完整
 
