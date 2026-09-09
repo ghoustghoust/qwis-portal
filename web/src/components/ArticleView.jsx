@@ -4,13 +4,16 @@ import { toast } from '../toast';
 import { copyText, formatDateTime, formatWords, readingMinutes } from '../util';
 import { safeHtml } from '../sanitize';
 import { RadarLogo } from './icons.jsx';
+import { useI18n } from '../i18n.jsx';
 
 // 文章阅读栏（F5~F7）：完整渲染 content_html + 顶部工具条
 export default function ArticleView({ articleId, items, filter, onSelect, onClose, onChanged }) {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [showTranslated, setShowTranslated] = useState(true); // P0-4：翻译/原文切换
   const contentRef = useRef(null);
+  const { t } = useI18n();
 
   // 正文内图片/视频处理：图片加载失败隐藏破图；视频补 controls 并在失效时替换为「打开原文」提示
   useEffect(() => {
@@ -30,7 +33,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         tip.target = '_blank';
         tip.rel = 'noopener';
         tip.className = 'text-xs t-muted';
-        tip.textContent = '▶ 内嵌视频已失效（源站签名过期），点击打开原文观看 ↗';
+        tip.textContent = t('article.videoExpired');
         tip.style.cssText = 'display:inline-block;padding:8px 12px;border:1px solid var(--border);border-radius:8px;';
         v.replaceWith(tip);
       };
@@ -76,7 +79,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
       const data = await api.post(`/api/articles/${articleId}/later`);
       const later = data?.later ?? data?.article?.later ?? (article?.later ? 0 : 1);
       setArticle((a) => (a ? { ...a, later } : a));
-      toast(later ? '已加入稍后阅读' : '已取消稍后阅读');
+      toast(later ? t('article.addedLater') : t('article.removedLater'));
       onChanged?.();
     } catch (e) {
       toast(e.message);
@@ -90,7 +93,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         source_id: filter?.sourceId || undefined,
         group_id: filter?.groupId || undefined,
       });
-      toast('已全部标为已读');
+      toast(t('article.allMarkedRead'));
       onChanged?.(true); // 全部已读需同时刷新列表
     } catch (e) {
       toast(e.message);
@@ -103,7 +106,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
     return (
       <section className="flex-1 min-w-0 h-full t-bg flex flex-col items-center justify-center gap-3 select-none">
         <span className="t-accent opacity-40"><RadarLogo size={44} /></span>
-        <div className="text-sm t-muted">从左侧选择文章，或点文件夹读聚合流</div>
+        <div className="text-sm t-muted">{t('article.selectHint')}</div>
       </section>
     );
   }
@@ -118,7 +121,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
       <div className="flex items-center gap-1 px-4 h-12 flex-none border-b t-border t-surface">
         <button
           className="icon-btn"
-          title={laterActive ? '取消稍后阅读' : '稍后阅读'}
+          title={laterActive ? t('article.cancelLater') : t('article.readLater')}
           onClick={toggleLater}
           style={laterActive ? { color: 'var(--purple)' } : undefined}
         >
@@ -126,13 +129,13 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         </button>
         <button
           className="icon-btn"
-          title="打开原文"
+          title={t('article.openOriginal')}
           onClick={() => article?.url && window.open(article.url, '_blank', 'noopener')}
         >
           ↗
         </button>
         <div className="relative">
-          <button className="icon-btn" title="更多" onClick={() => setMoreOpen((v) => !v)}>
+          <button className="icon-btn" title={t('article.more')} onClick={() => setMoreOpen((v) => !v)}>
             ⋯
           </button>
           {moreOpen && (
@@ -141,29 +144,33 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
                 className="w-full text-left px-3 py-1.5 text-xs rounded-md hover:bg-[var(--surface-2)] t-text"
                 onClick={() => article?.url && copyText(article.url)}
               >
-                复制链接
+                {t('article.copyLink')}
               </button>
               <button
                 className="w-full text-left px-3 py-1.5 text-xs rounded-md hover:bg-[var(--surface-2)] t-text"
                 onClick={() => article?.title && copyText(article.title)}
               >
-                复制标题
+                {t('article.copyTitle')}
               </button>
             </div>
           )}
         </div>
         <div className="flex-1" />
         {hasTranslation && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded t-accent-soft t-accent font-medium flex-none" title="当前显示翻译内容">
-            译文
-          </span>
+          <button
+            className="text-[10px] px-1.5 py-0.5 rounded t-accent-soft t-accent font-medium flex-none hover:opacity-80 transition-opacity"
+            title={showTranslated ? t('article.showOriginal') : t('article.showTranslation')}
+            onClick={() => setShowTranslated((v) => !v)}
+          >
+            {showTranslated ? t('article.translated') : (t('article.showOriginal'))}
+          </button>
         )}
-        <button className="btn-ghost !py-1 !px-2 text-xs" title="全部标为已读" onClick={readAll}>
-          ✓ 全部已读
+        <button className="btn-ghost !py-1 !px-2 text-xs" title={t('article.readAllTitle')} onClick={readAll}>
+          ✓ {t('article.readAll')}
         </button>
         <button
           className="icon-btn"
-          title="上一篇"
+          title={t('article.prev')}
           disabled={!prevId}
           onClick={() => prevId && onSelect(prevId)}
         >
@@ -171,27 +178,27 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         </button>
         <button
           className="icon-btn"
-          title="下一篇"
+          title={t('article.next')}
           disabled={!nextId}
           onClick={() => nextId && onSelect(nextId)}
         >
           ↓
         </button>
-        <button className="icon-btn" title="关闭" onClick={onClose}>
+        <button className="icon-btn" title={t('article.close')} onClick={onClose}>
           ✕
         </button>
       </div>
 
       {/* 正文 */}
       <div className="flex-1 overflow-y-auto">
-        {loading && <div className="py-16 text-center text-sm t-muted">加载中…</div>}
+        {loading && <div className="py-16 text-center text-sm t-muted">{t('article.loading')}</div>}
         {!loading && article && (
           <article className="max-w-[720px] mx-auto px-6 py-8">
             <h1 className="text-2xl font-bold leading-snug t-text">
-              {article.translated_title || article.title}
+              {showTranslated ? (article.translated_title || article.title) : article.title}
             </h1>
-            {/* 翻译模式下显示原文标题（辅助对照） */}
-            {hasTranslation && article.translated_title && article.title !== article.translated_title && (
+            {/* P0-4：翻译模式下显示对照标题 */}
+            {hasTranslation && showTranslated && article.translated_title && article.title !== article.translated_title && (
               <div className="mt-1.5 text-sm t-muted leading-relaxed italic">{article.title}</div>
             )}
             {/* 2026-09-05 视觉精修：正文头部 meta 行（源 · 发布时间 · 字数/阅读时长） */}
@@ -211,26 +218,27 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
             <div
               ref={contentRef}
               className="article-content mt-6"
-              dangerouslySetInnerHTML={{ __html: safeHtml(article.translated_content || article.content_html || article.summary || '') }}
+              dangerouslySetInnerHTML={{ __html: safeHtml(
+                showTranslated
+                  ? (article.translated_content || article.content_html || article.summary || '')
+                  : (article.content_html || article.summary || '')
+              ) }}
             />
-            {/* 翻译模式下提供原文链接切换 */}
+            {/* P0-4：翻译/原文切换——快速切换按钮 */}
             {hasTranslation && article.translated_content && article.content_html && (
               <div className="mt-8 pt-4 border-t t-border">
-                <details className="text-xs t-muted">
-                  <summary className="cursor-pointer hover:t-text transition-colors">
-                    查看原文
-                  </summary>
-                  <div
-                    className="article-content mt-3 opacity-70"
-                    dangerouslySetInnerHTML={{ __html: safeHtml(article.content_html || '') }}
-                  />
-                </details>
+                <button
+                  className="text-xs t-accent hover:underline transition-colors"
+                  onClick={() => setShowTranslated((v) => !v)}
+                >
+                  {showTranslated ? t('article.viewOriginal') : t('article.showTranslation')}
+                </button>
               </div>
             )}
           </article>
         )}
         {!loading && !article && (
-          <div className="py-16 text-center text-sm t-muted">文章加载失败</div>
+          <div className="py-16 text-center text-sm t-muted">{t('article.loadFailed')}</div>
         )}
       </div>
     </section>

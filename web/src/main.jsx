@@ -11,6 +11,7 @@ import HotPage from './pages/HotPage.jsx';
 import MyReadingPage from './pages/MyReadingPage.jsx';
 import { RssIcon, CalendarIcon, FlameIcon, BookIcon, RadarLogo } from './components/icons.jsx';
 import LoginGate from './components/LoginGate.jsx';
+import { LanguageProvider, useI18n } from './i18n.jsx';
 
 // P0-5 修复：客户端路由上下文
 // 之前用 <a href> 整页跳转，每次销毁 JS 上下文，api 5s 缓存完全失效。
@@ -33,13 +34,14 @@ const PAGE_PREFETCH = {
 export function IconRail() {
   const { path, navigate } = useNav();
   const settings = useSettings();
+  const { t, toggleLang, lang } = useI18n();
   const hotEnabled = settings.hot?.enabled !== false;
 
   const items = [
-    { href: '/reader/', Icon: RssIcon, label: '阅读器', active: !path.startsWith('/daily') && !path.startsWith('/hot') && !path.startsWith('/reading') },
-    { href: '/daily/', Icon: CalendarIcon, label: '每日情报', active: path.startsWith('/daily') },
-    ...(hotEnabled ? [{ href: '/hot/', Icon: FlameIcon, label: '热点榜', active: path.startsWith('/hot') }] : []),
-    { href: '/reading/', Icon: BookIcon, label: '我的阅读', active: path.startsWith('/reading') },
+    { href: '/reader/', Icon: RssIcon, label: t('nav.reader'), active: !path.startsWith('/daily') && !path.startsWith('/hot') && !path.startsWith('/reading') },
+    { href: '/daily/', Icon: CalendarIcon, label: t('nav.daily'), active: path.startsWith('/daily') },
+    ...(hotEnabled ? [{ href: '/hot/', Icon: FlameIcon, label: t('nav.hot'), active: path.startsWith('/hot') }] : []),
+    { href: '/reading/', Icon: BookIcon, label: t('nav.reading'), active: path.startsWith('/reading') },
   ];
 
   // P0-5：hover 预取——mouseenter 时预热目标页面的 api 缓存
@@ -71,6 +73,14 @@ export function IconRail() {
         </a>
       ))}
       <div className="mt-auto flex flex-col items-center gap-1.5">
+        {/* i18n：中英文切换 */}
+        <button
+          className="icon-btn text-[10px] font-bold w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:t-accent-soft hover:t-accent t-muted"
+          title={lang === 'zh' ? 'Switch to English' : '切换为中文'}
+          onClick={toggleLang}
+        >
+          {t('nav.lang')}
+        </button>
         {/* 管理后台为独立应用,阅读器不再提供入口;直接访问 /admin/ 即可 */}
         <ThemeButton />
       </div>
@@ -104,13 +114,15 @@ function App() {
 
   return (
     <NavCtx.Provider value={{ path, navigate }}>
-      <StoreProvider>
-        <ThemeProvider>
-          {page}
-          <Toaster />
-          <LoginGate />
-        </ThemeProvider>
-      </StoreProvider>
+      <LanguageProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            {page}
+            <Toaster />
+            <LoginGate />
+          </ThemeProvider>
+        </StoreProvider>
+      </LanguageProvider>
     </NavCtx.Provider>
   );
 }

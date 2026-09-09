@@ -6,6 +6,7 @@ import { SearchIcon, BookIcon } from '../components/icons.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { imgUrl } from '../util.js';
+import { useI18n } from '../i18n.jsx';
 
 // 我的阅读（沉淀聚合页）：已读文章 + 稍后读 + 收藏视频 的并集
 // F1 日期分组聚合  F2 分段 Tab（全部/已收藏/已读）  F3 类型筛选
@@ -15,10 +16,10 @@ const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 const PAGE_SIZE = 30;
 
 // 类型徽章标签
-function typeLabel(itemType, sourceType) {
-  if (itemType === 'video') return '视频';
-  if (sourceType === 'douyin') return '播客';
-  return '文章';
+function typeLabel(itemType, sourceType, t) {
+  if (itemType === 'video') return t('reading.video');
+  if (sourceType === 'douyin') return t('reading.podcast');
+  return t('reading.article');
 }
 
 // 本地日期分组键
@@ -29,15 +30,15 @@ function dateKey(iso) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function dateLabel(key) {
-  if (key === 'unknown') return '未知日期';
+function dateLabel(key, t) {
+  if (key === 'unknown') return t('reading.unknownDate');
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   const todayKey = dateKey(today.toISOString());
   const yesterdayKey = dateKey(yesterday.toISOString());
-  if (key === todayKey) return '今天';
-  if (key === yesterdayKey) return '昨天';
+  if (key === todayKey) return t('reading.today');
+  if (key === yesterdayKey) return t('reading.yesterday');
   const [y, m, d] = key.split('-').map(Number);
   const dt = new Date(y, m - 1, d);
   return `${m}月${d}日 星期${WEEKDAYS[dt.getDay()]}`;
@@ -46,6 +47,7 @@ function dateLabel(key) {
 // ---- 组件 ----
 
 export default function MyReadingPage() {
+  const { t } = useI18n();
   const [tab, setTab] = useState('all');       // all | favorited | read
   const [type, setType] = useState('all');      // all | article | podcast | video
   const [q, setQ] = useState('');
@@ -89,7 +91,7 @@ export default function MyReadingPage() {
       setDone(!d?.nextCursor);
     } catch (e) {
       if (reset) setItems([]);
-      toast(e.message || '加载失败');
+      toast(e.message || t('reading.loadFailed'));
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -148,8 +150,8 @@ export default function MyReadingPage() {
   // 批量操作
   const doBatch = async (action) => {
     if (!selected.size || batchBusy) return;
-    const actionLabels = { unlater: '取消稍后读', unfavorite: '取消收藏', clear_read: '移除已读记录' };
-    if (!confirm(`确认对 ${selected.size} 条内容执行「${actionLabels[action]}」？`)) return;
+    const actionLabels = { unlater: t('reading.unlater'), unfavorite: t('reading.unfavorite'), clear_read: t('reading.clearRead') };
+    if (!confirm(`${t('reading.confirmBatch')} ${selected.size} ${t('reading.batchSuffix')}「${actionLabels[action]}」？`)) return;
     setBatchBusy(true);
     try {
       const payload = Array.from(selected).map((k) => {
@@ -157,11 +159,11 @@ export default function MyReadingPage() {
         return { type: t, id: Number(id) };
       });
       const d = await api.post('/api/reading/batch', { action, items: payload });
-      toast(`已处理 ${d?.updated ?? 0} 条`);
+      toast(`${t('reading.processed')} ${d?.updated ?? 0} ${t('reading.items')}`);
       exitSelect();
       fetchPage(null, true);
     } catch (e) {
-      toast(e.message || '操作失败');
+      toast(e.message || t('reading.opFailed'));
     } finally {
       setBatchBusy(false);
     }
@@ -172,7 +174,7 @@ export default function MyReadingPage() {
     const target = selected.size > 0
       ? Array.from(selected).map((k) => { const [t, id] = k.split(':'); return { type: t, id: Number(id) }; })
       : items.map((it) => ({ type: it.item_type, id: it.id }));
-    if (!target.length) { toast('没有可导出的内容'); return; }
+    if (!target.length) { toast(t('reading.noExport')); return; }
     try {
       const d = await api.post('/api/reading/export', { items: target });
       const blob = new Blob([d.markdown], { type: 'text/markdown;charset=utf-8' });
@@ -182,9 +184,9 @@ export default function MyReadingPage() {
       a.download = `我的阅读_${new Date().toISOString().slice(0, 10)}.md`;
       a.click();
       URL.revokeObjectURL(url);
-      toast(`已导出 ${d.count} 条`);
+      toast(`${t('reading.exported')} ${d.count} ${t('reading.items')}`);
     } catch (e) {
-      toast(e.message || '导出失败');
+      toast(e.message || t('reading.exportFailed'));
     }
   };
 
@@ -192,19 +194,19 @@ export default function MyReadingPage() {
   const batchActions = useMemo(() => {
     const actions = [];
     if (tab === 'all' || tab === 'favorited') {
-      actions.push({ id: 'unlater', label: '取消稍后读' });
-      actions.push({ id: 'unfavorite', label: '取消收藏' });
+      actions.push({ id: 'unlater', label: t('reading.unlater') });
+      actions.push({ id: 'unfavorite', label: t('reading.unfavorite') });
     }
     if (tab === 'all' || tab === 'read') {
-      actions.push({ id: 'clear_read', label: '移除已读记录' });
+      actions.push({ id: 'clear_read', label: t('reading.clearRead') });
     }
     return actions;
   }, [tab]);
 
   const tabItems = [
-    { id: 'all', label: '全部', count: counts.all },
-    { id: 'favorited', label: '已收藏', count: counts.favorited },
-    { id: 'read', label: '已读', count: counts.read },
+    { id: 'all', label: t('reading.all'), count: counts.all },
+    { id: 'favorited', label: t('reading.favorited'), count: counts.favorited },
+    { id: 'read', label: t('reading.read'), count: counts.read },
   ];
 
   return (
@@ -215,23 +217,23 @@ export default function MyReadingPage() {
         <header className="flex-none border-b t-border t-surface px-6 pt-4">
           <div className="flex items-center gap-2.5">
             <BookIcon size={20} />
-            <h1 className="serif text-lg font-bold t-text">我的阅读</h1>
+            <h1 className="serif text-lg font-bold t-text">{t('reading.title')}</h1>
             <div className="flex-1" />
             {selectMode ? (
               <div className="flex items-center gap-2">
                 <button className="btn-ghost text-xs" onClick={selectAll}>
-                  {selected.size === items.length ? '取消全选' : '全选'}
+                  {selected.size === items.length ? t('reading.deselectAll') : t('reading.selectAll')}
                 </button>
-                <span className="text-xs t-muted">{selected.size} 条已选</span>
-                <button className="btn-ghost text-xs" onClick={exitSelect}>取消</button>
+                <span className="text-xs t-muted">{selected.size} {t('reading.selected')}</span>
+                <button className="btn-ghost text-xs" onClick={exitSelect}>{t('reading.cancel')}</button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <button className="btn-ghost text-xs" onClick={() => setSelectMode(true)} disabled={!items.length}>
-                  批量管理
+                  {t('reading.batchManage')}
                 </button>
                 <button className="btn-ghost text-xs" onClick={doExport}>
-                  导出
+                  {t('reading.export')}
                 </button>
               </div>
             )}
@@ -252,10 +254,10 @@ export default function MyReadingPage() {
             <span className="w-px h-4 t-surface2 flex-none mx-1" />
             {/* 类型筛选 */}
             {[
-              { id: 'all', label: '全部' },
-              { id: 'article', label: '文章' },
-              { id: 'podcast', label: '播客' },
-              { id: 'video', label: '视频' },
+              { id: 'all', label: t('reading.all') },
+              { id: 'article', label: t('reading.article') },
+              { id: 'podcast', label: t('reading.podcast') },
+              { id: 'video', label: t('reading.video') },
             ].map((t) => (
               <button
                 key={t.id}
@@ -270,7 +272,7 @@ export default function MyReadingPage() {
             <div className="relative">
               <input
                 className="input !w-44 !py-1 !pl-7 text-xs"
-                placeholder="搜索标题/来源…"
+                placeholder={t('reading.search')}
                 value={qInput}
                 onChange={(e) => setQInput(e.target.value)}
               />
@@ -286,8 +288,8 @@ export default function MyReadingPage() {
               <div key={g.key} className="mb-6">
                 {/* 2026-09-05 视觉精修：日期分组标题 = text-xs t-muted + hairline */}
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-medium t-text">{dateLabel(g.key)}</span>
-                  <span className="text-xs t-muted tabular-nums">{g.list.length} 条</span>
+                  <span className="text-xs font-medium t-text">{dateLabel(g.key, t)}</span>
+                  <span className="text-xs t-muted tabular-nums">{g.list.length} {t('reading.items')}</span>
                   <div className="flex-1 border-t hairline" />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -298,22 +300,23 @@ export default function MyReadingPage() {
                       selectMode={selectMode}
                       checked={selected.has(itemKey(it))}
                       onToggle={() => toggleSelect(it)}
+                      t={t}
                     />
                   ))}
                 </div>
               </div>
             ))}
 
-            {loading && <div className="py-6 text-center text-xs t-muted">加载中…</div>}
+            {loading && <div className="py-6 text-center text-xs t-muted">{t('reading.loading')}</div>}
             {!loading && items.length === 0 && (
               <div className="card px-4 py-16 text-center text-[13px] t-muted">
-                {tab === 'favorited' ? '暂无收藏内容' : tab === 'read' ? '暂无已读记录' : '暂无阅读沉淀'}
+                {tab === 'favorited' ? t('reading.noFavorite') : tab === 'read' ? t('reading.noRead') : t('reading.noData')}
               </div>
             )}
             {!done && !loading && items.length > 0 && (
               <div className="text-center">
                 <button className="btn-ghost mt-1" onClick={() => fetchPage(cursor, false)}>
-                  加载更多
+                  {t('reading.loadMore')}
                 </button>
               </div>
             )}
@@ -325,7 +328,7 @@ export default function MyReadingPage() {
         {selectMode && selected.size > 0 && (
           <div className="flex-none border-t t-border t-surface px-6 py-3">
             <div className="max-w-[860px] mx-auto flex items-center gap-2">
-              <span className="text-xs t-muted mr-2">{selected.size} 条已选</span>
+              <span className="text-xs t-muted mr-2">{selected.size} {t('reading.selected')}</span>
               {batchActions.map((a) => (
                 <button
                   key={a.id}
@@ -338,7 +341,7 @@ export default function MyReadingPage() {
               ))}
               <div className="flex-1" />
               <button className="btn-ghost text-xs" disabled={batchBusy} onClick={doExport}>
-                导出选中
+                {t('reading.exportSelected')}
               </button>
             </div>
           </div>
@@ -350,8 +353,8 @@ export default function MyReadingPage() {
 
 // ---- 单条内容行 ----
 // 2026-09-05 视觉精修：统一 card card-lift p-3；复选框 + 80px 缩略图 + 标题 + meta + 摘要 2 行 + TagPills
-function ReadingRow({ it, selectMode, checked, onToggle }) {
-  const label = typeLabel(it.item_type, it.source_type);
+function ReadingRow({ it, selectMode, checked, onToggle, t }) {
+  const label = typeLabel(it.item_type, it.source_type, t);
   const date = it.date ? it.date.slice(0, 10) : '';
   const isVideo = it.item_type === 'video';
 
@@ -391,16 +394,16 @@ function ReadingRow({ it, selectMode, checked, onToggle }) {
           className="text-[14px] font-medium t-text leading-snug line-clamp-2 hover:t-accent"
           onClick={(e) => { if (selectMode) { e.preventDefault(); onToggle(); } }}
         >
-          {it.title || '无标题'}
+          {it.title || t('reading.noTitle')}
         </a>
         <div className="meta mt-1">
           <span className="pill">{label}</span>
-          {it.later === 1 && !isVideo && <span className="t-purple">♡ 稍后读</span>}
-          {it.favorite === 1 && isVideo && <span className="t-purple">♡ 收藏</span>}
-          {it.read_at && !isVideo && <span>已读</span>}
+          {it.later === 1 && !isVideo && <span className="t-purple">{t('reading.laterBadge')}</span>}
+          {it.favorite === 1 && isVideo && <span className="t-purple">{t('reading.favBadge')}</span>}
+          {it.read_at && !isVideo && <span>{t('reading.readBadge')}</span>}
         </div>
         <div className="meta mt-1">
-          <span className="truncate">{it.source_name || '未知来源'}</span>
+          <span className="truncate">{it.source_name || t('reading.unknownSource')}</span>
           {date && (
             <>
               <span className="sep">·</span>

@@ -6,6 +6,7 @@ import { parseTags, sourceLabel, formatHeat } from '../util.js';
 import TagPills from '../components/ui/TagPills.jsx';
 import HotDetail from '../components/HotDetail.jsx';
 import HotEvents from '../components/HotEvents.jsx';
+import { useI18n } from '../i18n.jsx';
 
 // 热点榜页（七期 T9/F3）：精选/全部动态统一为日期分组时间轴（对齐 AIHOT 官网结构）
 // 分组头「M月D日 星期X · N 条」可折叠（默认最新日展开）；左列 HH:mm + 竖线时间轴
@@ -35,11 +36,11 @@ function hhmm(iso) {
 }
 
 // 收藏♡：与阅读器「稍后阅读」同一字段（POST /api/articles/:id/later）
-function HeartButton({ active, onToggle }) {
+function HeartButton({ active, onToggle, t }) {
   return (
     <button
       className="icon-btn flex-none !w-7 !h-7 text-[15px]"
-      title={active ? '取消稍后阅读' : '加入稍后阅读（阅读器可见）'}
+      title={active ? t('hot.cancelLater') : t('hot.addLater')}
       style={active ? { color: 'var(--purple)' } : undefined}
       onClick={onToggle}
     >
@@ -49,7 +50,7 @@ function HeartButton({ active, onToggle }) {
 }
 
 // 时间轴卡片（两个 Tab 共用）
-function TimelineCard({ it, tab, onOpen, onToggleLater }) {
+function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
   const tags = parseTags(it.tags);
   const showReason = !!it.reason && (tab === 'featured' || !!it.featured);
   return (
@@ -64,18 +65,19 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
             className="badge-green flex-none"
             style={{ color: 'var(--accent)', borderColor: 'var(--accent)' }}
           >
-            ✦ 精选
+            {t('hot.featuredBadge')}
           </span>
         )}
         <span className="flex-1" />
         {/* 热度值格式化显示（原始 score 为平台热度如 4510000 → "451万"） */}
         {it.score != null && it.score > 0 && (
-          <span className="t-accent font-medium tabular-nums text-[11px]" title={`热度 ${it.score}`}>
+          <span className="t-accent font-medium tabular-nums text-[11px]" title={`${t('hot.heat')} ${it.score}`}>
             🔥 {formatHeat(it.score)}
           </span>
         )}
         <HeartButton
           active={!!it.later}
+          t={t}
           onToggle={(e) => {
             e.stopPropagation();
             onToggleLater(it);
@@ -88,7 +90,7 @@ function TimelineCard({ it, tab, onOpen, onToggleLater }) {
       )}
       {showReason && (
         <p className="mt-2.5 pt-2.5 border-t border-dashed t-border text-[12px] leading-relaxed t-muted">
-          <span className="t-accent font-medium">推荐理由：</span>
+          <span className="t-accent font-medium">{t('hot.reason')}</span>
           {it.reason}
         </p>
       )}
@@ -130,6 +132,7 @@ function TimelineRow({ time, children }) {
 }
 
 export default function HotPage() {
+  const { t } = useI18n();
   const [tab, setTab] = useState('featured'); // featured | all | events
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [category, setCategory] = useState(''); // '' = 全部
@@ -241,9 +244,9 @@ export default function HotPage() {
       const later = d?.later ?? (it.later ? 0 : 1);
       setItems((prev) => prev.map((x) => (x.id === it.id ? { ...x, later } : x)));
       setDetail((prev) => (prev && prev.id === it.id ? { ...prev, later } : prev));
-      toast(later ? '已加入稍后阅读' : '已取消稍后阅读');
+      toast(later ? t('hot.addedLater') : t('hot.removedLater'));
     } catch (e) {
-      toast(e.message || '操作失败');
+      toast(e.message || t('hot.opFailed'));
     }
   };
 
@@ -270,12 +273,12 @@ export default function HotPage() {
     setCollapsedMap((m) => ({ ...m, [key]: !(m[key] ?? idx > 0) }));
 
   const emptyText = failed
-    ? '热点榜服务尚未就绪（后端接口施工中），请稍后再试'
+    ? t('hot.notReady')
     : tab === 'all' && (qDebounced || source)
-      ? '没有匹配的动态'
+      ? t('hot.noMatch')
       : tab === 'featured' && category
-        ? '该分类近期待抓取内容为空'
-        : '暂无热点内容，等待 AIHOT 抓取';
+        ? t('hot.categoryEmpty')
+        : t('hot.empty');
 
   return (
     <div className="flex h-screen t-bg t-text overflow-hidden">
@@ -283,19 +286,19 @@ export default function HotPage() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* 页头：标题 + Tab（2026-09-05 视觉精修：Tab 收敛为 pill 样式） */}
         <header className="flex-none border-b t-border t-surface px-6 pt-4 pb-3">
-          <h1 className="serif text-lg font-bold t-text">🔥 热点榜</h1>
+          <h1 className="serif text-lg font-bold t-text">{t('hot.title')}</h1>
           <div className="mt-3 flex items-center gap-1.5">
             {[
-              { id: 'featured', label: '精选' },
-              { id: 'all', label: '全部动态' },
-              { id: 'events', label: '热点榜' },
-            ].map((t) => (
+              { id: 'featured', label: t('hot.featured') },
+              { id: 'all', label: t('hot.all') },
+              { id: 'events', label: t('hot.events') },
+            ].map((item) => (
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === t.id ? 'on' : ''}`}
+                key={item.id}
+                onClick={() => setTab(item.id)}
+                className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === item.id ? 'on' : ''}`}
               >
-                {t.label}
+                {item.label}
               </button>
             ))}
             <div className="flex-1" />
@@ -305,9 +308,9 @@ export default function HotPage() {
                   className="input !w-44"
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
-                  title="按来源筛选"
+                  title={t('hot.sourceFilter')}
                 >
-                  <option value="">来源：全部</option>
+                  <option value="">{t('hot.sourceAll')}</option>
                   {sources.map((s) => (
                     <option key={s.name} value={s.name}>
                       {s.name}
@@ -317,7 +320,7 @@ export default function HotPage() {
                 </select>
                 <input
                   className="input !w-56"
-                  placeholder="搜索标题、摘要…"
+                  placeholder={t('hot.searchPlaceholder')}
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                 />
@@ -335,7 +338,7 @@ export default function HotPage() {
                 onClick={() => setCategory(c)}
                 className={`pill cursor-pointer ${category === c ? 'on' : ''}`}
               >
-                {c || '全部'}
+                {c || t('sidebar.all')}
               </button>
             ))}
           </div>
@@ -367,6 +370,7 @@ export default function HotPage() {
                       <TimelineCard
                         it={it}
                         tab={tab}
+                        t={t}
                         onOpen={setDetail}
                         onToggleLater={toggleLater}
                       />
@@ -376,14 +380,14 @@ export default function HotPage() {
               </DateGroup>
             ))}
 
-            {loading && <div className="py-6 text-center text-xs t-muted">加载中…</div>}
+            {loading && <div className="py-6 text-center text-xs t-muted">{t('hot.loading')}</div>}
             {!loading && items.length === 0 && (
               <div className="card px-4 py-16 text-center text-[13px] t-muted">{emptyText}</div>
             )}
             {!done && !loading && items.length > 0 && (
               <div className="text-center">
                 <button className="btn-ghost mt-1" onClick={() => fetchPage(cursor, false)}>
-                  加载更多
+                  {t('hot.loadMore')}
                 </button>
               </div>
             )}

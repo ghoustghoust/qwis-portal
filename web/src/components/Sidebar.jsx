@@ -5,6 +5,7 @@ import {
   DocIcon, HeartIcon, ClockIcon, PlayIcon, StarIcon,
 } from './icons.jsx';
 import SidebarGroups from './SidebarGroups.jsx';
+import { useI18n } from '../i18n.jsx';
 
 const VIDEO_TYPES = ['bilibili', 'douyin', 'youtube'];
 
@@ -15,6 +16,7 @@ function sourceKind(source) {
 // 2.3 侧栏瘦身：分组/拖拽/源渲染 提取至 SidebarGroups.jsx
 // Sidebar 只保留：数据加载 + 双 Tab 切换 + 视图导航 + 组合 SidebarGroups
 export default function Sidebar({ mode, onModeChange, filter, onFilterChange, counts, reloadKey, views, onViewsChange }) {
+  const { t } = useI18n();
   const kind = mode === 'video' ? 'video' : 'article';
   const [groups, setGroups] = useState([]);
   const [sources, setSources] = useState([]);
@@ -71,14 +73,14 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
 
   const navItems = kind === 'article'
     ? [
-        { tab: 'all', Icon: DocIcon, label: '全部' },
-        { tab: 'later', Icon: HeartIcon, label: '稍后阅读' },
-        { tab: 'history', Icon: ClockIcon, label: '历史存档' },
+        { tab: 'all', Icon: DocIcon, label: t('sidebar.all') },
+        { tab: 'later', Icon: HeartIcon, label: t('sidebar.later') },
+        { tab: 'history', Icon: ClockIcon, label: t('sidebar.history') },
       ]
     : [
-        { tab: 'all', Icon: PlayIcon, label: '全部视频' },
-        { tab: 'favorite', Icon: StarIcon, label: '收藏' },
-        { tab: 'history', Icon: ClockIcon, label: '历史存档' },
+        { tab: 'all', Icon: PlayIcon, label: t('sidebar.allVideo') },
+        { tab: 'favorite', Icon: StarIcon, label: t('sidebar.favorite') },
+        { tab: 'history', Icon: ClockIcon, label: t('sidebar.history') },
       ];
 
   return (
@@ -87,14 +89,14 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
       <div className="p-3 pb-2">
         <div className="flex rounded-lg t-surface2 p-0.5 text-[13px]">
           {[
-            { id: 'article', label: '文章' },
-            { id: 'video', label: '视频' },
-          ].map((t) => (
-            <button key={t.id} onClick={() => onModeChange(t.id)}
+            { id: 'article', label: t('sidebar.article') },
+            { id: 'video', label: t('sidebar.video') },
+          ].map((item) => (
+            <button key={item.id} onClick={() => onModeChange(item.id)}
               className={`flex-1 rounded-md py-1 transition-colors ${
-                mode === t.id ? 't-surface t-text font-medium shadow-sm' : 't-muted'
+                mode === item.id ? 't-surface t-text font-medium shadow-sm' : 't-muted'
               }`}>
-              {t.label}
+              {item.label}
             </button>
           ))}
         </div>
@@ -126,7 +128,7 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
         {/* 我的视图 */}
         {kind === 'article' && views && views.length > 0 && (
           <div className="mt-4">
-            <div className="px-2 mb-1 text-[11px] t-muted tracking-wide">我的视图</div>
+            <div className="px-2 mb-1 text-[11px] t-muted tracking-wide">{t('sidebar.myViews')}</div>
             <div className="space-y-0.5">
               {views.map((v) => (
                 <div key={v.id} className="group flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer text-[13px] t-muted hover:bg-[var(--surface-2)]">
@@ -136,7 +138,7 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
                     {v.name}
                   </button>
                   <button className="icon-btn !w-5 !h-5 opacity-0 group-hover:opacity-100"
-                    title="删除视图" onClick={() => deleteView(v.id)}>
+                    title={t('sidebar.deleteView')} onClick={() => deleteView(v.id)}>
                     <span className="text-[10px]">×</span>
                   </button>
                 </div>
