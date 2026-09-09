@@ -357,7 +357,7 @@ async function runCollect(mode = 'collect') {
 
   // 查询到期源
   let sources;
-  if (mode === 'collect' || mode === '') {
+  if (mode === 'collect' || mode === '' || mode === 'debug') {
     const result = await db.execute({
       sql: `SELECT * FROM sources WHERE enabled=1 AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
       args: [now, MAX_SOURCES],
