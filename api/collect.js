@@ -381,6 +381,13 @@ async function runCollect(mode = 'collect') {
 
   stats.total = sources.length;
 
+  // debug 模式：只返回源类型分布，不实际采集
+  if (mode === 'debug') {
+    const typeCount = {};
+    sources.forEach(s => { typeCount[s.type] = (typeCount[s.type] || 0) + 1; });
+    return { mode: 'debug', stats, sourceTypes: typeCount, sampleNextFetch: sources.slice(0, 3).map(s => ({ id: s.id, type: s.type, name: s.name, next: s.next_fetch_at })) };
+  }
+
   // 逐源采集（串行，避免并发被封控）
   for (const source of sources) {
     const adapter = getAdapter(source.type);
