@@ -243,6 +243,7 @@ function getAdapter(type) {
   switch (type) {
     case 'rss':
     case 'wechat':
+    case 'wemp':       // 微信公众号 RSS（与 rss 共用适配器）
     case 'x':
     case 'youtube':
       return { fetch: fetchRss };
@@ -250,6 +251,9 @@ function getAdapter(type) {
       return { fetch: fetchHotlist };
     case 'bilibili':
       return { fetch: fetchBilibili };
+    case 'douyin':
+      // 抖音暂不支持 serverless 采集（需要签名），走 RSS 路径如果有 RSS 链接
+      return { fetch: fetchRss };
     default:
       return null;
   }

@@ -459,7 +459,7 @@ async function handleStatus(req) {
 
   const intervals = { opml: 12, rss: 8, bilibili: 60, ...(await getSetting('intervals', {})) };
 
-  const rssLast = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type IN ('wechat','rss','x')")).t;
+  const rssLast = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type IN ('wechat','rss','wemp','x','youtube')")).t;
   const biliLast = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type='bilibili'")).t;
 
   const NOISE = "(s.type='hotlist' OR COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)=1)";
