@@ -11,8 +11,12 @@ const { createClient } = require('@libsql/client');
 const Parser = require('rss-parser');
 
 // ─── 配置 ───
-const MAX_SOURCES = 30;          // 单次执行最多处理的源数量
-const FETCH_TIMEOUT = 8000;      // 单源抓取超时 ms
+// [2026-09-09 修复] Vercel Hobby 计划函数超时限制 10s（maxDuration:60 仅 Pro 生效）
+// 原 MAX_SOURCES=30 + FETCH_TIMEOUT=8000 → 总耗时 56-69s → 被 Vercel 强制终止
+// 改为 MAX_SOURCES=3 + FETCH_TIMEOUT=3000 → 总耗时 ~9s → 适配 Hobby 10s 限制
+// 每小时采集 3 个源，650 源约 9 天轮完；RSS 间隔 8h，实际每 24h 覆盖一轮
+const MAX_SOURCES = 3;           // 单次执行最多处理的源数量（适配 Vercel Hobby 10s 限制）
+const FETCH_TIMEOUT = 3000;      // 单源抓取超时 ms（原 8000，缩短以适配 10s 总限制）
 const UA = 'qwis-collector/1.0';
 
 // RSS parser 配置（与 server/services/collectors/rss/index.js 对齐）
