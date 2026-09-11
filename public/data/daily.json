@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 55,
-    "generated_at": "2026-09-11T10:01:32.735Z",
+    "id": 56,
+    "generated_at": "2026-09-11T10:16:03.946Z",
     "window_hours": 30,
     "sections": [
       {
@@ -17,6 +17,16 @@
             "score": null,
             "summary": "内容来源：2026年8月8日-10日，笔记侠在杭州举办的【AI十倍增长营】02期课程中，森创启睿CEO/企业AI转型实战总架构师渊虹分享的精华内容整理。",
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0f8d8fee&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8b91BQ8yFl3Hxybic5P9vO7qPfg5g1CVwKIvcTnOQ3Bn02LhbQWuDBCdLMgW9aIVaUTdDXPDaW0Vta55KIoicxGTMCFZqOaZoJl2lyYvOoalA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 228492,
+            "title": "企培这份“肥差”，我终于找到省力的搭子了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkwMzE4NjU5NA==&mid=2247520560&idx=1&sn=64d899761d9cbc6d7c08cd6ceae0e31a",
+            "source": "袋鼠帝AI客栈",
+            "published_at": "2026-09-10T10:55:00.000Z",
+            "score": null,
+            "summary": "但是很多时候企业的需求是不一样的，而且AI一直在飞速发展。以及AI领域东西太多了，我感觉之前培训过的课件、资料，不太好复用，或者只能在一小段时间里面复用。经常都是需要做新的课件。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=507b6001&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FPF8icWqEe2PSx8dDBrIMziajY4iaYqRGe9icKjjfk2ia4ibg9jViaIcz59mFTEdlB9ibcZVmA0Mdk7D521wBDZlO361gic790Nw0kI2d7fBQkkmViaYaQ%2F0%3Fwx_fmt%3Djpeg"
           },
           {
             "id": 206397,
@@ -297,8 +307,8 @@
       "candidates": 500,
       "articles": 500,
       "sections": 3,
-      "totalItems": 27
+      "totalItems": 28
     }
   },
-  "generated_at": "2026-09-11T10:15:56.038Z"
+  "generated_at": "2026-09-11T10:31:10.060Z"
 }
