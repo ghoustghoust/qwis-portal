@@ -11,7 +11,7 @@
 |------|------|
 | `ARCHITECTURE.md` | **架构移交文档**（必读）：Vercel 读层 + GH Actions runner 直采架构、数据通路、凭据位置、已知坑、协作规则 |
 | `README.md` | 项目 README：快速上手、目录结构、文档导航 |
-| `AGENTS.md` | Agent 通用工程规约：会话启动流程、代码规范、工具使用约束 |
+| `AGENTS.md` | **项目专用 Agent 强制约束**（2026-09-11 重写）：三端心智模型、7 条不可协商规则（必推云端/必实测/必同步文档/否定决策落档/SSOT/凭据三处同步/不动刀） |
 
 ## 变更记录（docs/changes/）
 
@@ -31,6 +31,9 @@
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威）：本地 Express vs 云端（Vercel qwis-intel）功能覆盖矩阵、迁移路径、待开发目标；其它文档不再维护矩阵一律指向本文 |
+| `docs/ROADMAP-2026-09.md` | **需求与愿景母文档**（已确认）：2026-09-11 用户想法归纳 + 4 项已拍板决策（前台公开/自然日日报窗口/AI 六维度/破茧双管） |
+| `docs/HANDOFF_PROMPT.md` | **新窗口接手提示词**：复制即用的开场 prompt + 阅读顺序 + 进度快照 |
+| `docs/specs/12-roadmap-2026/spec.md` | **总体开发 spec**：P0~Pn 阻塞级排序 + mew-spec 拆分清单（13-settings-write 起） |
 | `docs/RUNBOOK.md` | 运维手册：启动/重启/备份/恢复/Vercel 运维/排障 |
 | `docs/REFACTOR_GUIDE.md` | [历史文档] Phase 1-5 重构迁移记录 |
 | `docs/ANDROID_SUBMIT_GUIDE.md` | 安卓端提交协议：HTTP Shortcuts 配置规范 |
