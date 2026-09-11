@@ -610,7 +610,10 @@ async function llmChat(messages, { temperature, timeoutMs = 120000 } = {}) {
       body: JSON.stringify({ model, messages, ...(temperature !== undefined ? { temperature } : {}) }),
       signal: ctrl.signal,
     });
-    if (!resp.ok) throw new Error(`Agnes AI HTTP ${resp.status}`);
+    if (!resp.ok) {
+      const bodyText = await resp.text().catch(() => '');
+      throw new Error(`Agnes AI HTTP ${resp.status}: ${bodyText.slice(0, 200)}`);
+    }
     const data = await resp.json();
     const content = data?.choices?.[0]?.message?.content;
     if (!content) throw new Error('Agnes AI 返回空内容');
