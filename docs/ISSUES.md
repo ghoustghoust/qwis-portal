@@ -25,19 +25,19 @@
 
 | # | 问题 | 影响 | 位置 | 状态 |
 |---|------|------|------|------|
-| P1-1 | **管理台源库路由鉴权行为不明**：`/api/sources/library` 返回 401（鉴权中间件拦截），但 dispatch 表中无对应 handler | 需确认是否有实际处理逻辑 | `api/[...slug].js` dispatch | 🟡 需验证 |
-| P1-2 | **报警引擎 Vercel 端鉴权行为不明**：`/api/alerts` 返回 401（鉴权中间件拦截），dispatch 表中无对应 handler | 需确认是否有实际处理逻辑 | `api/[...slug].js` dispatch | 🟡 需验证 |
+| P1-1 | **管理台源库路由鉴权行为不明**：`/api/sources/library` 返回 401（鉴权中间件拦截），但 dispatch 表中无对应 handler | 需确认是否有实际处理逻辑 | `api/[...slug].js` dispatch | ✅ **已修复**（2026-09-11：新增 handleSourcesLibrary()，含 itemCount/contentKind/extra 白名单脱敏） |
+| P1-2 | **报警引擎 Vercel 端鉴权行为不明**：`/api/alerts` 返回 401（鉴权中间件拦截），dispatch 表中无对应 handler | 需确认是否有实际处理逻辑 | `api/[...slug].js` dispatch | ✅ **已修复**（2026-09-11：新增 handleAlertsConfig() + handleAlertsLog()，渠道密钥脱敏） |
 | P1-3 | **B站采集严重过期**：serverless `fetchBilibili` 跳过 wbi 签名，仅 RSS 兜底；无 RSS 的源永远不更新 | 视频数据可能 9+ 天未更新 | `api/collect.js` L231-239 | 🟡 待排查 |
 | P1-4 | **57 个源处于 error 状态**：连续 3 次失败自动暂停，但无自动恢复机制 | 采集覆盖不完整 | Turso sources 表 | ✅ **已处理**（2026-09-11：其中 19 热榜 + 29 YouTube 为误熔断，已复活；YouTube 阈值放宽至 10） |
-| P1-5 | **lastSync.rss 返回 null 字符串**：SQL `MAX(last_fetched_at)` 在无数据时返回 null | 前端状态页显示异常 | `api/[...slug].js` L588 | 🟡 待修复 |
+| P1-5 | **lastSync.rss 返回 null 字符串**：SQL `MAX(last_fetched_at)` 在无数据时返回 null | 前端状态页显示异常 | `api/[...slug].js` L648-652 | ✅ **已修复**（2026-09-11：显式检查 `'null'`/`undefined` 归一化为 JS null） |
 | P1-6 | **热点榜分类筛选无效**：分类 pills 传递 `category` 参数但 `handleHot` 不处理 | 点击分类按钮无效果 | `api/[...slug].js` L211-223 | ✅ 同 P0-3 已修复 |
-| P1-7 | **热点详情"推荐理由"显示 null**：`item.reason` 字段在数据库中为 null 时直接渲染 | 显示 "null" 文本 | `web/src/components/HotDetail.jsx` L34, L165-171 | 🟡 待修复 |
+| P1-7 | **热点详情"推荐理由"显示 null**：`item.reason` 字段在数据库中为 null 时直接渲染 | 显示 "null" 文本 | `web/src/components/HotDetail.jsx` L34 | ✅ **已修复**（2026-09-11：防御字符串 "null"/"undefined"） |
 | P1-8 | **公众号源在 Vercel 端完全不采集**：`collect.js` 排除 `wemp` 类型 | 公众号内容只来自本地采集 | `api/collect.js` L362 | ✅ **已修复**（2026-09-11：公众号 = wechat2rss 托管 RSS，type='rss'，runner 直采正常覆盖；wemp 已退役无影响） |
 | P1-9 | **"实时流"Tab 缺失**：用户期望有基于自有 RSS 源的实时信息流，与热点榜事件流区分 | 热点榜只有事件聚合，缺少原始 RSS 实时流 | 前端 + 后端均无实现 | 🟡 待设计 |
-| P1-10 | **管理台登录凭据不匹配**：`admin/admin123` 登录返回 401，Vercel 环境变量 `ADMIN_PASSWORD` 可能非默认值 | 管理台完全无法访问 | Vercel env `ADMIN_PASSWORD` | 🔴 需确认环境变量 |
-| P1-11 | **日报手动重新生成 Vercel 端不可用**：前端 `DailyPage.jsx` 调用 `POST /api/daily/regenerate`，dispatch 表无此路由 | 管理后台无法手动触发日报重新生成 | `web/src/pages/DailyPage.jsx` L54 + `api/[...slug].js` dispatch | 🔴 待修复 |
+| P1-10 | **管理台登录凭据不匹配**：`admin/admin123` 登录返回 401，Vercel 环境变量 `ADMIN_PASSWORD` 可能非默认值 | 管理台完全无法访问 | Vercel env `ADMIN_USER`/`ADMIN_PASSWORD` | ✅ **已修复**（2026-09-11：Vercel CLI 同步本地 .env 凭据到 production） |
+| P1-11 | **日报手动重新生成 Vercel 端不可用**：前端 `DailyPage.jsx` 调用 `POST /api/daily/regenerate`，dispatch 表无此路由 | 管理后台无法手动触发日报重新生成 | `web/src/pages/DailyPage.jsx` L54 + `api/[...slug].js` dispatch | ✅ **已修复**（2026-09-11：新增 handleDailyRegenerate()，删除今日日报后重新生成） |
 | P1-12 | **前端 401 处理缺陷**：`handleResponse` 检查 `data.needLogin` 字段来决定是否弹出登录框，但后端 401 响应格式为 `{ ok: false, error: '...' }`，从不包含 `needLogin` | 用户 token 过期后登录弹窗不会自动弹出，用户只能看到空白页面 | `web/src/api.js` L94 vs `api/[...slug].js` L109 | ✅ **已修复**（移除 needLogin 检查，直接判断 res.status === 401） |
-| P1-13 | **`handleArticleLater` Vercel 端响应不一致**：Vercel 返回 `{ ok: true }` 不含 `later` 字段，本地 Express 返回 `{ ok: true, later: 0|1 }` | 前端需自行反推状态（L77 fallback），可能导致 UI 状态不同步 | `api/[...slug].js` L668-672 vs `server/routes/articles.js` L226-232 | 🟡 待修复 |
+| P1-13 | **`handleArticleLater` Vercel 端响应不一致**：Vercel 返回 `{ ok: true }` 不含 `later` 字段，本地 Express 返回 `{ ok: true, later: 0|1 }` | 前端需自行反推状态（L77 fallback），可能导致 UI 状态不同步 | `api/[...slug].js` L958-963 | ✅ **已修复**（2026-09-11：返回 later 字段，与本地 Express 一致） |
 | P1-14 | **YouTube 对数据中心 IP 反爬返回假 404/500**：频道 ID 正确、源是活的，但 GH runner / 代理出口 IP 被标记后间歇性失败 | YouTube 源间歇性采不到（每轮成功率 ~20-80% 掷骰） | 外部依赖 | 🟡 **已缓解**（2026-09-11 熔断阈值 3→10 + 复活 29 误杀源；彻底解需住宅代理 RSSHub） |
 
 ## P2 — 逻辑冲突/双端漂移
