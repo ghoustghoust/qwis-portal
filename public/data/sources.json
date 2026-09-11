@@ -142,7 +142,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 512,
@@ -166,7 +166,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 390,
@@ -718,7 +718,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 556,
@@ -1366,7 +1366,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 604,
@@ -1462,7 +1462,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 614,
@@ -1654,7 +1654,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 533,
@@ -1810,7 +1810,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 259,
@@ -2001,8 +2001,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 593,
@@ -2086,7 +2086,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 67,
@@ -2145,8 +2145,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 628,
@@ -2242,7 +2242,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 1
+      "fail_count": 2
     },
     {
       "id": 630,
@@ -2277,8 +2277,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 503,
@@ -8041,5 +8041,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T02:44:33.555Z"
+  "generated_at": "2026-09-11T05:18:08.725Z"
 }
