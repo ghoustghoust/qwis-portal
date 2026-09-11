@@ -10,12 +10,14 @@
 const path = require('path');
 const fs = require('fs');
 
-// 手动加载 .env
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
-for (const line of envTxt.split(/\r?\n/)) {
-  const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
-  if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
-}
+// 手动加载 .env（runner/CI 环境无此文件，env 由 workflow 注入，缺文件直接跳过）
+try {
+  const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
+  for (const line of envTxt.split(/\r?\n/)) {
+    const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+  }
+} catch { /* 无 .env，依赖外部环境变量 */ }
 
 const OUT_DIR = path.join(__dirname, '..', 'public', 'data');
 const VERCEL_DIR = path.join(__dirname, '..', 'static-data');

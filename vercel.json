@@ -10,12 +10,6 @@
     { "source": "/admin/(.*)", "destination": "/admin.html" },
     { "source": "/((?!api/|data/).*)", "destination": "/index.html" }
   ],
-  "crons": [
-    {
-      "path": "/api/collect?key=${COLLECT_KEY}&mode=cleanup",
-      "schedule": "0 20 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/data/(.*)",

@@ -1,93 +1,84 @@
-# 全网情报系统 Vercel 部署 —— 定时采集与工作流
-# 日间整点采集 / 夜间密集采集 / 日报生成(9:00) / 静态快照(9:30) / 数据清理
-# COLLECT_KEY 在 GitHub 仓库 Settings → Secrets and variables → Actions 配置
-# 生产地址：https://qwis-intel.vercel.app
+# 全网情报系统 —— 云端定时管线（方案A，2026-09-11 重构）
+#
+# 核心变化：采集/日报/清理全部在 GH Actions runner 内直接执行 tools/collect-turso.js，
+# 直写 Turso，不再经过 Vercel serverless 函数（Hobby 10s 限制 → 单次只能采 2 源的死局）。
+# runner 在海外，YouTube/X/RSSHub/wechat2rss 全部直连，无需代理。
+#
+# Secrets 要求（Settings → Secrets and variables → Actions）：
+#   TURSO_DATABASE_URL / TURSO_AUTH_TOKEN  Turso 连接
+#   COLLECT_KEY                            仅保留给 Vercel 备份端点（手动触发用）
+#
+# Vercel 端 api/collect.js / api/daily-generate.js 保留为手动备份，不再是主链路。
 name: collect
+
+# snapshot job 需要 push 快照 commit
+permissions:
+  contents: write
 
 on:
   schedule:
-    # 日间整点采集（UTC，每小时 :00）
-    - cron: '0 * * * *'
-    # 夜间密集采集（UTC 15:30/17:30/19:30/21:30/22:30 = 北京 23:30/01:30/03:30/05:30/06:30）
-    - cron: '30 15,17,19,21,22 * * *'
-    # 日报生成（UTC 1:00 = 北京 9:00）
-    - cron: '0 1 * * *'
-    # 静态快照生成（UTC 1:30 = 北京 9:30，日报生成后 30 分钟）
-    - cron: '30 1 * * *'
-    # 数据清理（UTC 20:00 = 北京 4:00 低峰期）
-    - cron: '0 20 * * *'
+    # 全量采集：每 30 分钟（错峰 :07/:37，避开整点拥挤）
+    - cron: '7,37 * * * *'
+    # 日报生成（UTC 1:03 = 北京 09:03）
+    - cron: '3 1 * * *'
+    # 静态快照（UTC 1:33 = 北京 09:33，日报后 30 分钟）
+    - cron: '33 1 * * *'
+    # 数据清理（UTC 20:13 = 北京 04:13 低峰期）
+    - cron: '13 20 * * *'
   workflow_dispatch:
 
 jobs:
-  # ─── 日间整点采集 ───
-  collect-hourly:
-    if: github.event.schedule == '0 * * * *' || github.event_name == 'workflow_dispatch'
+  # ─── 全量采集（每 30 分钟） ───
+  collect:
+    if: github.event.schedule == '7,37 * * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 25
     steps:
-      - name: Trigger hourly collection (with retry)
-        run: |
-          for i in 1 2 3; do
-            echo "Attempt $i..."
-            HTTP_CODE=$(curl -sS -o /tmp/collect-response.json -w '%{http_code}' -X POST \
-              "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
-              -H "Content-Type: application/json" \
-              --max-time 30)
-            echo "HTTP status: $HTTP_CODE"
-            cat /tmp/collect-response.json 2>/dev/null || true
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "Collection succeeded on attempt $i"
-              exit 0
-            fi
-            echo "Attempt $i failed (HTTP $HTTP_CODE), waiting 15s before retry..."
-            sleep 15
-          done
-          echo "All 3 attempts failed"
-          exit 1
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  # ─── 夜间密集采集（23:00-06:00 北京时间，覆盖前一天全部资讯） ───
-  collect-nightly:
-    if: github.event.schedule == '30 15,17,19,21,22 * * *'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: Trigger nightly dense collection (with retry)
-        run: |
-          for i in 1 2 3; do
-            echo "Attempt $i..."
-            HTTP_CODE=$(curl -sS -o /tmp/collect-response.json -w '%{http_code}' -X POST \
-              "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}" \
-              -H "Content-Type: application/json" \
-              --max-time 30)
-            echo "HTTP status: $HTTP_CODE"
-            cat /tmp/collect-response.json 2>/dev/null || true
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "Collection succeeded on attempt $i"
-              exit 0
-            fi
-            echo "Attempt $i failed (HTTP $HTTP_CODE), waiting 15s before retry..."
-            sleep 15
-          done
-          echo "All 3 attempts failed"
-          exit 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-  # ─── 日报生成（北京时间 9:00） ───
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Collect due sources → Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: node tools/collect-turso.js collect
+
+  # ─── 日报生成（北京时间 09:03） ───
   daily-report:
-    if: github.event.schedule == '0 1 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '3 1 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 10
     steps:
-      - name: Trigger daily report generation
-        run: |
-          curl -fsS -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=${{ secrets.COLLECT_KEY }}" \
-            -H "Content-Type: application/json" \
-            --max-time 180
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  # ─── 静态快照生成（北京时间 9:30） ───
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Generate daily report → Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: node tools/collect-turso.js daily
+
+  # ─── 静态快照生成（北京时间 09:33） ───
   snapshot:
-    if: github.event.schedule == '30 1 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '33 1 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -110,18 +101,29 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/
+          git add public/data/ static-data/
           git diff --cached --quiet || git commit -m "chore: update data snapshots $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
 
-  # ─── 数据清理（北京时间 4:00） ───
+  # ─── 数据清理（北京时间 04:13） ───
   cleanup:
-    if: github.event.schedule == '0 20 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '13 20 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
-      - name: Trigger data cleanup (delete old hotlist articles > 7 days)
-        run: |
-          curl -fsS -X POST "https://qwis-intel.vercel.app/api/collect?key=${{ secrets.COLLECT_KEY }}&mode=cleanup&days=7" \
-            -H "Content-Type: application/json" \
-            --max-time 60
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Cleanup old hotlist articles (> 7 days)
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: node tools/collect-turso.js cleanup

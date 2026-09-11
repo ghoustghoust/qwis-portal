@@ -16,7 +16,8 @@ const Parser = require('rss-parser');
 // 已排除 bilibili/douyin（serverless 无法采集），每次执行采 2 个真实 RSS/热榜源
 const MAX_SOURCES = 2;           // 单次执行最多处理 2 个源（Hobby 10s 硬限制）
 const FETCH_TIMEOUT = 2000;      // 单源抓取超时 ms（配合 10s 总限制）
-const UA = 'qwis-collector/1.0';
+// [2026-09-11] 必须浏览器 UA：newsnow 热榜 API 对自定义 UA 直接 403（此前云端热榜全灭的主因之一）
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
 // RSS parser 配置（与 server/services/collectors/rss/index.js 对齐）
 const rssParser = new Parser({

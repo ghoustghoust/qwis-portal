@@ -1,14 +1,14 @@
 # 全网情报系统 · 架构文档
 
 > 所有 Agent 的共用上下文。改架构/流程/凭据位置时必须同步更新本文档。
-> 最后更新:2026-09-09(文档全面清洗 + Vercel 解冻进入正式开发 + 部署方向调整为 Vercel 为主部署)
+> 最后更新:2026-09-11(方案A:云端采集移入 GH Actions runner 直写 Turso,Vercel 纯读层)
 
-## 0. 部署方向决策(2026-09-09 更新)
+## 0. 部署方向决策(2026-09-11 方案A)
 
-- **主部署:Vercel Serverless**——`api/` 目录为正式生产代码,GH Actions 定时采集,Turso 云数据库。对外地址 `https://qwis-intel.vercel.app`。
-- **本地 Express + SQLite**:开发/灾备用途,逐步退役。完整功能(含抖音 Playwright)仅在本地可用。
-- **portal 已合并**:原 `portal/` 目录(独立 git 仓库 qwis-portal)的功能已合并到根项目 `api/` 目录。portal 冻结态解除,进入正式开发。
-- **AI 功能重新上线**:接入 Agencs AI(当前免费),支持翻译/摘要/分类/分析,管理后台新增「AI 设置」Tab 统一配置。
+- **主部署:Vercel Serverless(读层 + 管理台)**——`api/` 目录为读 API,对外地址 `https://qwis-intel.vercel.app`。
+- **采集主链路:GitHub Actions runner 直写 Turso**——`.github/workflows/collect.yml` 每 30min 跑 `tools/collect-turso.js`(collect/daily/cleanup 三模式),不经 Vercel 函数(根治 Hobby 10s→单次 2 源死局)。runner 海外网络,YouTube/X/RSSHub 直连。
+- **Vercel 端 api/collect.js、api/daily-generate.js 保留为手动备份**(`POST ?key=COLLECT_KEY`),不再是定时链路。
+- **本地 Express + SQLite**:开发/灾备用途。完整功能(含抖音 Playwright)仅在本地可用。
 
 ## 1. 系统全景
 
@@ -132,6 +132,10 @@ server/services/
 16. **cron 任务必须模块级句柄管理**:reschedule() 会重复调 scheduleXxx(),不停旧就叠加(2026-09-05b 前 fulltext cron 每改一次设置多挂一个,已修:fulltext.js stopFulltextRecovery + scheduler stop() 清理)。同理长任务禁同步执行:门户同步曾 execSync 阻塞主进程数分钟,已改 spawn detached 子进程 + in-flight 守卫(jobs/portal.js)。
 17. **focus 有两种写法,选错会互踩**:日报设置页 `focusSourceIds` 是全量替换(不在名单的源 focus 清零);源库 batch focus/unfocus 是逐 id 增量。**新代码一律用增量**,全量替换只保留在日报设置页那一个入口。手动改归锁定统一走 `extra.categoryLocked`(写入点只有 `POST /api/groups/move` 与 batch move),判断用 `json_extract(COALESCE(extra,'{}'),'$.categoryLocked')` 或 JSON.parse 后读键,别新加列。
 18. **回归测试必须驱动真实路由**:在测试体内手写与实现相同的 SQL 再断言自己,实现改了测试照样绿(2026-09-05 验收发现 3 例空转)。路由行为测试一律起 express 实例打真实 HTTP(tests/regression-sourcelib.test.js 是样板:app.listen(0)+generateToken+fetch)。
+19. **newsnow 热榜 API 必须浏览器 UA**(2026-09-11):自定义 UA(qwis-collector/1.0)直接 403,曾致 29 个热榜源云端全灭、19 个被熔断停用。采集链路(api/collect.js、tools/collect-turso.js)UA 统一为 Chrome。
+20. **GH Actions Secrets 与 Vercel env 是两套独立存储**(2026-09-11):COLLECT_KEY 只改一边 → 全部定时任务 403 静默失败 2 天才发现。改密钥必须三处同步(本地 .env / Vercel env / GH Secrets),且要有失败告警。
+21. **vercel.json 不做 ${VAR} 插值,且 Vercel Cron 用 GET**:crons 块里写 `?key=${COLLECT_KEY}` 传的是字面量;collect.js 只收 POST → 该 cron 从未生效(已移除,定时管线全归 GH Actions)。
+22. **外部 undici 包的 ProxyAgent 不能喂给 Node 内置 fetch**(符号不兼容,一律 "fetch failed"):走代理必须配套用 undici 包自带的 fetch(tools/collect-turso.js 参考实现)。进程退出用 exitCode 自然退出,process.exit 会触发 libuv UV_HANDLE_CLOSING 断言(exit 127)。
 
 ## 6. 凭据与配置位置
 

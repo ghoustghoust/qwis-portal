@@ -42,3 +42,6 @@ turso-page.png
 
 # 构建产物内部
 archive/_eval/wechat-rss-plus/
+
+# 含敏感凭据的交接文档，勿提交（GitHub 会扫描吊销 PAT）
+docs/HANDOVER.md
