@@ -564,6 +564,131 @@ async function runDaily() {
   return stats;
 }
 
+// ─── 模式：translate（AI 翻译，移植自 server/services/ai/translate-skill.js） ───
+// 语义对齐本地：同一默认 Prompt、同一 isEnglish 判定、同一写入列（translated_title/translated_content）
+const TRANSLATE_DEFAULT_PROMPT = `你是一位资深科技翻译专家，擅长将英文新闻资讯、技术论文和工程类文章翻译为高质量中文。
+
+翻译要求：
+1. 【准确性】忠实原文，不遗漏关键信息，不添加原文没有的内容
+2. 【流畅性】符合中文表达习惯，避免翻译腔（如"被...所"、"对于...来说"过多使用）
+3. 【专业性】技术术语首次出现时采用「中文（英文原文）」格式，如"大语言模型（LLM）"
+4. 【结构保持】保留原文的段落结构、列表、标题层级
+5. 【数字与单位】保留原始数字，单位按中文习惯转换（如 "10 million" → "1000 万"）
+6. 【专有名词】公司名/产品名/人名保留英文或通用译名，不强行音译
+7. 【语境适配】新闻体用简洁明快的语言，论文体用严谨正式的措辞
+
+请翻译以下内容，只输出翻译结果，不要添加任何解释或注释。`;
+
+function isEnglish(text) {
+  if (!text) return false;
+  const s = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, '');
+  if (s.length < 20) return false;
+  let cjk = 0, latin = 0;
+  for (const ch of s) {
+    const cp = ch.codePointAt(0);
+    if (cp >= 0x4e00 && cp <= 0x9fff) cjk++;
+    else if ((cp >= 0x41 && cp <= 0x5a) || (cp >= 0x61 && cp <= 0x7a)) latin++;
+  }
+  const total = cjk + latin || 1;
+  return (latin / total) > 0.5 && (cjk / total) < 0.2;
+}
+
+async function llmChat(messages, { temperature, timeoutMs = 120000 } = {}) {
+  const aiCfg = await getSetting('ai', {});
+  const apiKey = process.env.AGNES_API_KEY || aiCfg.apiKey || '';
+  if (!apiKey) throw new Error('未配置 AGNES_API_KEY（GH Secret 或 Turso settings.ai.apiKey）');
+  const apiBase = (process.env.AGNES_API_BASE || aiCfg.apiBase || 'https://apihub.agnes-ai.com/v1').replace(/\/+$/, '');
+  const model = process.env.AGNES_MODEL || aiCfg.model || 'agnes-2.5-flash';
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const doFetch = proxyFetch || fetch;
+    const resp = await doFetch(`${apiBase}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ model, messages, ...(temperature !== undefined ? { temperature } : {}) }),
+      signal: ctrl.signal,
+    });
+    if (!resp.ok) throw new Error(`Agnes AI HTTP ${resp.status}`);
+    const data = await resp.json();
+    const content = data?.choices?.[0]?.message?.content;
+    if (!content) throw new Error('Agnes AI 返回空内容');
+    return content.trim();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function translateOne(article, prompt) {
+  const title = String(article.title || '').trim();
+  const plainText = String(article.content_html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, '\n')
+    .replace(/&[a-zA-Z#0-9]+;/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, 6000);
+  if (!plainText && !title) return null;
+
+  const input = title ? `Title: ${title}\n\nArticle:\n${plainText}` : plainText;
+  const reply = await llmChat([
+    { role: 'system', content: prompt },
+    { role: 'user', content: input },
+  ], { temperature: 0.3 });
+
+  let translatedTitle = '';
+  let translatedContent = reply;
+  if (title && reply.includes('\n')) {
+    const firstLine = reply.split('\n')[0].trim();
+    if (firstLine.length < 100 && firstLine.length > 2) {
+      translatedTitle = firstLine;
+      translatedContent = reply.slice(firstLine.length).replace(/^\n+/, '');
+    }
+  }
+  return { title: translatedTitle, content: translatedContent };
+}
+
+async function runTranslate() {
+  const cfg = await getSetting('translate', {});
+  if (cfg.enabled === false) { log('翻译功能已停用（settings translate.enabled=false），跳过'); return { skipped: true }; }
+  const prompt = (await getSetting('translate.prompt', '')) || TRANSLATE_DEFAULT_PROMPT;
+  const limit = Number(process.env.TRANSLATE_LIMIT) || 10;
+
+  // 两步走：先拉轻量标题过滤英文（content_html 全量拉太贵），再按 id 取正文
+  const titleRows = await qAll(
+    `SELECT id, title FROM articles
+     WHERE translated_title IS NULL AND translated_content IS NULL
+       AND content_html IS NOT NULL AND content_html != ''
+     ORDER BY created_at DESC LIMIT 5000`
+  );
+  const candidates = titleRows.filter(a => isEnglish(a.title)).slice(0, limit);
+  log(`英文候选 ${candidates.length} 篇（扫描最近 ${titleRows.length} 条标题，本轮上限 ${limit}）`);
+
+  const stats = { total: candidates.length, success: 0, failed: 0 };
+  for (const c of candidates) {
+    try {
+      const full = await qAll('SELECT id, title, content_html FROM articles WHERE id=?', [c.id]);
+      if (!full[0]) { stats.failed++; continue; }
+      const r = await translateOne(full[0], prompt);
+      if (r) {
+        await qRun('UPDATE articles SET translated_title=?, translated_content=? WHERE id=?',
+          [r.title || null, r.content || null, c.id]);
+        stats.success++;
+        log(`  ✓ #${c.id} ${String(c.title).slice(0, 40)}`);
+      } else { stats.failed++; }
+    } catch (err) {
+      stats.failed++;
+      log(`  ✗ #${c.id} ${err.message}`);
+    }
+    await new Promise(r => setTimeout(r, 800)); // 限流保护
+  }
+  log(`翻译完成: 成功 ${stats.success} / 失败 ${stats.failed}`);
+  await writeHeartbeat('translate', stats);
+  return stats;
+}
+
 // ─── 主流程 ───
 (async () => {
   log(`=== collect-turso 模式=${MODE} ===`);
@@ -571,6 +696,7 @@ async function runDaily() {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
+    else if (MODE === 'translate') await runTranslate();
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {
     console.error(`Fatal: ${err.message}`);

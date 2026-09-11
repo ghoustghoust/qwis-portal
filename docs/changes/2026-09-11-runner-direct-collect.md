@@ -95,4 +95,22 @@ Vercel 网页（https://qwis-intel.vercel.app）内容不自动更新：本地�
 
 # 本地手动直采（用本地 .env 的 TURSO_*/HTTPS_PROXY）
 node tools/collect-turso.js collect
+node tools/collect-turso.js translate   # 手动翻译一批英文文章
 ```
+
+---
+
+## 8. 当日追加（2026-09-11 下午）
+
+| 追加项 | 内容 |
+|--------|------|
+| P1-10 登录修复 | 真根因 = `requireAuth` 未豁免 POST /api/auth/login（中间件死锁，与密码值无关）；已修 + Vercel env 凭据同步为本地 .env 值 |
+| /api/* 504 | articles 表补 `idx_articles_created` + `idx_articles_pubco` 表达式索引（43s→0.1s） |
+| P1-15 Git 集成 | Vercel 项目此前 `link: null` 从未自动部署；已安装 GitHub App + API 连接，push 即部署 |
+| AI 翻译上云 | `tools/collect-turso.js translate` 模式（移植 translate-skill.js 语义），每轮采集后自动翻译英文文章；Turso 补 `translated_title`/`translated_content` 列；GH Secret 新增 `AGNES_API_KEY` |
+
+### 8.1 GitHub App 授权步骤（备查）
+
+1. 打开 https://github.com/apps/vercel → Install/Configure → 选 ghoustghoust → 授权 qwis-portal 仓库
+2. API 连接（已执行）：`POST /v9/projects/{id}/link?teamId=...` body `{type:'github', repo:'ghoustghoust/qwis-portal', repoId:1350719205}`
+3. 验证：push 任意 commit → Vercel Deployments 出现对应 SHA 的新部署

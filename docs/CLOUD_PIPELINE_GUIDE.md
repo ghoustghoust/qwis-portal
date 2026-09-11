@@ -25,10 +25,11 @@
 ┌─────────────────────────────────────────────────────────────┐
 │ GitHub Actions（.github/workflows/collect.yml）              │
 │                                                             │
-│  每 30min :07/:37 ──► node tools/collect-turso.js collect   │
-│  每天 09:03        ──► node tools/collect-turso.js daily    │
-│  每天 09:33        ──► node tools/generate-snapshots.js     │
-│  每天 04:13        ──► node tools/collect-turso.js cleanup  │
+│  每 30min :07/:37 ──► collect-turso.js collect（采集）       │
+│                    └─► collect-turso.js translate（AI 翻译） │
+│  每天 09:03        ──► collect-turso.js daily（日报）        │
+│  每天 09:33        ──► generate-snapshots.js（快照）         │
+│  每天 04:13        ──► collect-turso.js cleanup（清理）      │
 │                          （时间均为北京时间）                  │
 └──────────────────────────┬──────────────────────────────────┘
                            │ @libsql/client 直写（不经任何 Vercel 函数）
@@ -38,7 +39,7 @@
                   └────────┬────────┘
                            │ 读（无缓存，写入即所见）
                            ▼
-              qwis-intel.vercel.app（Vercel 读层）
+              qwis-intel.vercel.app（Vercel 读层，push 自动部署）
               api/[...slug].js → 前端页面
 ```
 
@@ -123,17 +124,28 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
   └─ GH Actions 绿但数据旧 → 查心跳 settings cloud.collect 的 stats 字段
 ```
 
-## 6. 当前能力边界（别再做"为什么不行"的无功排查）
+## 6. 云端独立性矩阵（2026-09-11 实测审计：本地关机后哪些还活着）
 
-| 能力 | 状态 | 原因 |
-|------|------|------|
-| 热榜 30min 准实时 | ✅ | runner 直采 |
-| 公众号/RSS 每天 3 轮 | ✅ | 到期驱动 |
-| YouTube/X | ⚠️ 间歇 | Google 反爬数据中心 IP，掷骰成功；阈值已放宽 |
-| B站 | ❌ 云端不采 | wbi 签名未移植（纯 crypto，可移植 runner） |
-| 抖音 | ❌ 云端不采 | 需 Playwright 登录态，仅本地 |
-| 页面内自动刷新 | ❌ | 前端无轮询/SSE（数据层是实时的，重新打开/切页即最新） |
-| 采集停滞报警 | ❌ | 报警引擎只在本地；心跳已埋点待接 |
+| 能力 | 本地关机后 | 运行在 | 原因/备注 |
+|------|:---:|------|------|
+| 热榜 30min 准实时 | ✅ | GH runner | tools/collect-turso.js collect |
+| 公众号/RSS 每天 3 轮 | ✅ | GH runner | 到期驱动 |
+| 数据存储 | ✅ | Turso | 云数据库 |
+| 网页读取/搜索/已读标记 | ✅ | Vercel | api/[...slug].js |
+| 管理后台登录 | ✅ | Vercel | 2026-09-11 修复中间件死锁 |
+| 每日日报 09:03 | ✅ | GH runner | collect-turso.js daily |
+| 静态快照 | ✅ | GH runner | push 后自动部署上线 |
+| **AI 翻译** | ✅ | GH runner | collect-turso.js translate（每轮采集后） |
+| AI 对话/摘要（手动触发） | ✅ | Vercel | /api/ai/chat，调 Agnes API |
+| YouTube/X | ⚠️ 间歇 | GH runner | 反爬掷骰，阈值已放宽 |
+| B站 | ❌ | 仅本地 | wbi 签名未移植（纯 crypto 可移植，待做） |
+| 抖音 | ❌ | 仅本地 | 需 Playwright 登录态，永远本地 |
+| 云端队列 poller（手机提交链接） | ❌ | 仅本地 | poller 在本地调度器；手机提交的链接会堆积，本地开机后补拉 |
+| OPML 源清单同步 | ❌ | 仅本地 | bestblogs 新源不会自动上云 |
+| 采集停滞报警 | ❌ | 仅本地 | 心跳已埋点（settings cloud.collect），报警引擎未上云 |
+| 页面内自动刷新 | ❌ | — | 前端无轮询/SSE（数据层实时，重新打开/切页即最新） |
+
+> 结论：**本地关机，信息流、日报、翻译、阅读全部正常运转**。仅 B站/抖音采集、手机提交队列、OPML 增量同步依赖本地开机。
 
 ## 7. 关键文件速查
 

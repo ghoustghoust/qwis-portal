@@ -43,8 +43,8 @@
 | **RSS 采集** | ✅ | ✅ | runner 直采；YouTube/X 在 runner 海外直连无需代理 |
 | **图片代理** | ✅ | ⚠️ | Vercel 无代码层 SSRF 防护 |
 | **AI 设置** | ✅ | ✅ | Agencs AI 配置 + 功能开关，管理后台「AI 能力」Tab |
-| **AI 翻译** | 🔲 | 🔲 | 待实现 |
-| **AI 摘要** | 🔲 | 🔲 | 待实现 |
+| **AI 翻译** | ✅ | ✅ | 2026-09-11 上云：runner 每轮采集后自动翻译英文文章（Agnes AI） |
+| **AI 摘要** | ✅ | ✅ | /api/ai/chat（Vercel 函数调 Agnes，需登录） |
 | **管理后台** | ✅ | ⚠️ | Vercel 有 httpOnly cookie 鉴权，但 401 前端 needLogin 检查不匹配（P1-12） |
 | **静态快照** | ✅ | ✅ | 兜底 public/data/*.json |
 | **鉴权 JWT** | ✅ | ✅ | 读者 GET 公开，写操作需 Bearer |

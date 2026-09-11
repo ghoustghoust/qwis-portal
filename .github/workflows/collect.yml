@@ -51,6 +51,13 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: node tools/collect-turso.js collect
 
+      - name: Translate pending English articles → Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+        run: node tools/collect-turso.js translate
+
   # ─── 日报生成（北京时间 09:03） ───
   daily-report:
     if: github.event.schedule == '3 1 * * *' || github.event_name == 'workflow_dispatch'
