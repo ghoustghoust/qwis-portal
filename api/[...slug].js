@@ -1029,25 +1029,54 @@ async function handleAiConfig(req) {
 }
 
 // POST /api/ai/ping — 连通性测试
-async function handleAiPing(req) {
-  const cfg = await getSetting('ai', {});
-  const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
-  const apiBase = cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE;
-  const model = cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL;
-  if (!apiKey) return jsonOk({ ok: false, error: '未配置 API Key' });
-  try {
-    const resp = await fetch(`${apiBase.replace(/\/+$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model, messages: [{ role: 'user', content: '请回复"连通成功"四个字。' }], max_tokens: 20 }),
-      signal: AbortSignal.timeout(15000),
+// [2026-09-11] AI 供应商链：settings.ai → AGNES_* env → DEEPSEEK_* env
+// （Agnes key 绑 IP 地区，云端普遍 401；DeepSeek 全球可用，作为云端回退）
+async function aiProviderChain(cfg) {
+  const chain = [];
+  const normBase = (b) => String(b || '').replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  if (cfg.apiKey || process.env.AGNES_API_KEY) {
+    chain.push({
+      name: 'agnes',
+      key: cfg.apiKey || process.env.AGNES_API_KEY,
+      base: normBase(cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE),
+      model: cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL,
     });
-    if (!resp.ok) return jsonOk({ ok: false, error: `HTTP ${resp.status}` });
-    const data = await resp.json();
-    return jsonOk({ ok: true, model, reply: data?.choices?.[0]?.message?.content || '' });
-  } catch (err) {
-    return jsonOk({ ok: false, error: err.message });
   }
+  if (process.env.DEEPSEEK_API_KEY) {
+    chain.push({ name: 'deepseek', key: process.env.DEEPSEEK_API_KEY, base: 'https://api.deepseek.com', model: process.env.DEEPSEEK_MODEL || 'deepseek-chat' });
+  }
+  return chain;
+}
+
+async function aiChatCloud(messages, { temperature = 0.7, timeoutMs = 30000, modelOverride } = {}) {
+  const cfg = await getSetting('ai', {});
+  const chain = await aiProviderChain(cfg);
+  if (!chain.length) return { ok: false, error: '未配置 API Key' };
+  let lastErr = '';
+  for (const p of chain) {
+    try {
+      const resp = await fetch(`${p.base}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${p.key}` },
+        body: JSON.stringify({ model: modelOverride || p.model, messages, temperature, ...(timeoutMs <= 20000 ? { max_tokens: 20 } : {}) }),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!resp.ok) { lastErr = `${p.name} HTTP ${resp.status}`; continue; }
+      const data = await resp.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (!content) { lastErr = `${p.name} 返回空内容`; continue; }
+      return { ok: true, reply: content, provider: p.name, model: modelOverride || p.model };
+    } catch (err) {
+      lastErr = `${p.name}: ${err.message}`;
+    }
+  }
+  return { ok: false, error: lastErr };
+}
+
+async function handleAiPing(req) {
+  const r = await aiChatCloud([{ role: 'user', content: '请回复"连通成功"四个字。' }], { timeoutMs: 15000 });
+  if (!r.ok) return jsonOk({ ok: false, error: r.error });
+  return jsonOk({ ok: true, provider: r.provider, model: r.model, reply: r.reply });
 }
 
 // POST /api/ai/chat — 通用 AI 对话（调试用）
@@ -1055,24 +1084,9 @@ async function handleAiChat(req) {
   const body = req.body || {};
   const { messages, model, temperature } = body;
   if (!Array.isArray(messages) || !messages.length) return jsonOk({ ok: false, error: 'messages 必须是非空数组' });
-  const cfg = await getSetting('ai', {});
-  const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
-  const apiBase = cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE;
-  const useModel = model || cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL;
-  if (!apiKey) return jsonOk({ ok: false, error: '未配置 API Key' });
-  try {
-    const resp = await fetch(`${apiBase.replace(/\/+$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: useModel, messages, temperature: temperature || 0.7 }),
-      signal: AbortSignal.timeout(120000),
-    });
-    if (!resp.ok) return jsonOk({ ok: false, error: `HTTP ${resp.status}` });
-    const data = await resp.json();
-    return jsonOk({ ok: true, reply: data?.choices?.[0]?.message?.content || '' });
-  } catch (err) {
-    return jsonOk({ ok: false, error: err.message });
-  }
+  const r = await aiChatCloud(messages, { temperature: temperature || 0.7, timeoutMs: 25000, modelOverride: model });
+  if (!r.ok) return jsonOk({ ok: false, error: r.error });
+  return jsonOk({ ok: true, reply: r.reply, provider: r.provider });
 }
 
 // ─── P1-1: GET /api/sources/library — 源库列表（含 itemCount + contentKind + extra 脱敏） ───
