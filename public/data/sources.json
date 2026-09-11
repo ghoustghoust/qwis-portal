@@ -645,8 +645,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 400,
@@ -1077,8 +1077,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 488,
@@ -1161,8 +1161,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 70,
@@ -1257,8 +1257,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 99,
@@ -1857,8 +1857,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 607,
@@ -2025,8 +2025,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 627,
@@ -3345,8 +3345,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 291,
@@ -3657,8 +3657,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 366,
@@ -4185,8 +4185,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 207,
@@ -4365,8 +4365,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 635,
@@ -4581,8 +4581,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 410,
@@ -4737,8 +4737,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 684,
@@ -5445,8 +5445,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 352,
@@ -5889,8 +5889,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 375,
@@ -6237,8 +6237,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 653,
@@ -6321,8 +6321,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 657,
@@ -7053,8 +7053,8 @@
       "group_id": 6,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 477,
@@ -7305,8 +7305,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 40,
@@ -7317,8 +7317,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 146,
@@ -7533,8 +7533,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 72,
@@ -7557,8 +7557,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 274,
@@ -7857,8 +7857,8 @@
       "group_id": 5,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 660,
@@ -8029,5 +8029,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T14:15:55.278Z"
+  "generated_at": "2026-09-11T14:31:16.885Z"
 }
