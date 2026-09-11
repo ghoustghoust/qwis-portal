@@ -26,6 +26,7 @@
 | `docs/INDEX.md` | **本文档**：文档索引与导航 |
 | `docs/CLOUD_PIPELINE_GUIDE.md` | **云端实时信息流交付文档**（接手必读 P0）：GH Actions 管线地图、不可破坏的不变量、改动检查清单、故障决策树 |
 | `docs/HANDOVER.md` | **交接/对接文档**：Vercel/Turso/Secrets 配置、API 列表、运维命令 ⚠️ 含敏感凭据，已 gitignore 勿提交 |
+| `docs/DELIVERY_VERIFICATION.md` | **交付验证手册**（线上验证必读）：生产环境验证全流程——推送/触发/三端联验/网络限制解法/标准验证剧本 |
 | `docs/DEV_GUIDE.md` | **开发者上手指南**（新开发者必读）：部署架构、目录结构、快速上手 Checklist |
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
