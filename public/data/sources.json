@@ -1173,8 +1173,8 @@
       "group_id": 7,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 214,
@@ -8029,5 +8029,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T12:31:10.976Z"
+  "generated_at": "2026-09-11T12:45:53.693Z"
 }
