@@ -31,7 +31,8 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
 
   const tags = parseTags(item.tags || article?.tags);
   const score = typeof item.score === 'number' ? item.score : typeof article?.score === 'number' ? article.score : null;
-  const reason = item.reason || article?.reason || '';
+  const reasonRaw = item.reason || article?.reason || '';
+  const reason = (reasonRaw === 'null' || reasonRaw === 'undefined') ? '' : reasonRaw;
   const summary = article?.summary || item.summary || '';
 
   // 拉完整条目（中文正文 + 可能的 original_html）；失败回退摘要
