@@ -1055,7 +1055,8 @@ async function handleAiConfig(req) {
 
 // POST /api/ai/ping — 连通性测试
 // [2026-09-11] AI 供应商链：settings.ai → AGNES_* env → DEEPSEEK_* env
-// （Agnes key 绑 IP 地区，云端普遍 401；DeepSeek 全球可用，作为云端回退）
+// 根因订正：云端 401 并非"绑 IP"（实测家庭/代理/机房 IP 均可用），而是 settings.ai 里
+// 残留的 apiBase 污染指向了 deepseek 域名；settings 覆盖优先级高于 env，改 key 永远修不好。
 async function aiProviderChain(cfg) {
   const chain = [];
   const normBase = (b) => String(b || '').replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
@@ -1083,13 +1084,16 @@ async function aiChatCloud(messages, { temperature = 0.7, timeoutMs = 30000, mod
       const resp = await fetch(`${p.base}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${p.key}` },
-        body: JSON.stringify({ model: modelOverride || p.model, messages, temperature, ...(timeoutMs <= 20000 ? { max_tokens: 20 } : {}) }),
+        // agnes-2.5-flash 是推理模型：max_tokens 太小会被 reasoning 烧光导致 content 为空
+        body: JSON.stringify({ model: modelOverride || p.model, messages, temperature, max_tokens: timeoutMs <= 20000 ? 64 : 512 }),
         signal: AbortSignal.timeout(timeoutMs),
       });
       if (!resp.ok) { lastErr = `${p.name} HTTP ${resp.status}`; continue; }
       const data = await resp.json();
-      const content = data?.choices?.[0]?.message?.content;
-      if (!content) { lastErr = `${p.name} 返回空内容`; continue; }
+      const msg = data?.choices?.[0]?.message || {};
+      // 推理模型兜底：content 为空时回退 reasoning_content / 检查 finish_reason
+      const content = msg.content || msg.reasoning_content || '';
+      if (!content.trim()) { lastErr = `${p.name} 返回空内容(finish=${data?.choices?.[0]?.finish_reason || '?'})`; continue; }
       return { ok: true, reply: content, provider: p.name, model: modelOverride || p.model };
     } catch (err) {
       lastErr = `${p.name}: ${err.message}`;
