@@ -1,5 +1,7 @@
 # 源库管理与自动分类
 
+> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
+
 > `server/routes/sourcelib.js` + `server/services/classify.js`
 > 最后更新：2026-09-06（十期·2026-09-05 实现）
 

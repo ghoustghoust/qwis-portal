@@ -6,7 +6,7 @@
 ## 0. 部署方向决策(2026-09-11 方案A)
 
 - **主部署:Vercel Serverless(读层 + 管理台)**——`api/` 目录为读 API,对外地址 `https://qwis-intel.vercel.app`。
-- **采集主链路:GitHub Actions runner 直写 Turso**——`.github/workflows/collect.yml` 每 30min 跑 `tools/collect-turso.js`(collect/daily/cleanup 三模式),不经 Vercel 函数(根治 Hobby 10s→单次 2 源死局)。runner 海外网络,YouTube/X/RSSHub 直连。
+- **采集主链路:GitHub Actions runner 直写 Turso**——`.github/workflows/collect.yml` 每 15min 跑 `tools/collect-turso.js`(collect/daily/cleanup 三模式),不经 Vercel 函数(根治 Hobby 10s→单次 2 源死局)。runner 海外网络,YouTube/X/RSSHub 直连。
 - **Vercel 端 api/collect.js、api/daily-generate.js 保留为手动备份**(`POST ?key=COLLECT_KEY`),不再是定时链路。
 - **本地 Express + SQLite**:开发/灾备用途。完整功能(含抖音 Playwright)仅在本地可用。
 
@@ -15,7 +15,9 @@
 ```
                         ┌─────────────────────────────────┐
                         │ GitHub Actions runner            │
-                        │ 每30min 全量采集(:07/:37)         │
+                        │ 每15min 全量采集(:07/:22/:37/:52) │
+                        │ cron-job.org 外置触发器(8430047)  │
+                        │ 双保险(GH schedule 会丢任务)      │
                         │ 日报 09:03 / 快照 09:33          │
                         │ 清理 04:13(均北京时间)            │
                         │ tools/collect-turso.js 直写 Turso │
@@ -45,7 +47,7 @@
 | `server/` | Express 后端:routes/(API)、services/(collectors 采集器、ai/daily 日报、events 事件聚合、alerts 报警、scheduler 调度、queue 任务队列)、db.js(本地 better-sqlite3)、cloud/db.js(双模式异步层) |
 | `web/` | 主前端(Vite+React+Tailwind),多入口:index.html(读者)+ admin.html(管理后台,独立 bundle) |
 | `api/` | **Vercel 读层正式代码**:catch-all [...slug].js(读 API)、collect.js/daily-generate.js(手动备份端点) |
-| `tools/` | 运维脚本(2026-09-04 清洁后):export-portal.js、sync-portal.js、import-bestblogs-opml.js、ops-toolkit.js、audit-cloud.js、seed-hotlist.js、seed-turso.js、setup-customer.js、gen_bat.py;一次性脚本已归档 `archive/tools/` |
+| `tools/` | 运维脚本(2026-09-04 清洁后):collect-turso.js(**云端采集主链路**,GH runner 直写 Turso)、generate-snapshots.js(静态快照)、fix-hotlist-times.js(热榜时间戳修正)、export-portal.js、sync-portal.js、import-bestblogs-opml.js、ops-toolkit.js、audit-cloud.js、seed-hotlist.js、seed-turso.js、setup-customer.js、gen_bat.py;一次性脚本已归档 `archive/tools/` |
 | `archive/` | 全部历史资产:reports/(修复报告)、specs/(一~八期)、docs-deprecated/、analysis/、_eval/(参考工程)、tools/(一次性脚本)、测试/ |
 | `opml/` | bestblogs 源清单(wechat2rss 375 公众号 / youtube 124 / podcast 60),2026-09-04 已导入 |
 | ~~`D:\tools\we-mp-rss\`~~ | **已退役(2026-09-04)**:公众号改走 wechat2rss 托管 RSS,不再自建引擎;代码移 trash/,旧 wemp 源 enabled=0 保留历史文章 |
@@ -59,11 +61,12 @@
 3. **catch-all serverless**:Vercel Hobby 限 12 个函数,portal/api/[...slug].js 单函数路由全部 /api/*。
 4. **云端读 Turso 优先,静态 JSON 快照兜底**(portal/public/data/)。
 5. **管理后台是独立 bundle**(admin.html),不随读者前端分发;云端 /admin/ 有口令(httpOnly cookie)。
-6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso——每 30min 全量到期源(:07/:37)、日报 09:03、快照 09:33、清理 04:13(北京时间);**不再**戳 Vercel /api/collect(Hobby 10s 死局)。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。
-7. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
-8. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
-9. **日报保底双保险**:定时 cron(settings daily.time,默认 08:00)+ 启动时 needsGeneration() 补跑(错过定时的场景)+ 前端打开 /daily/ 时 stale 即自动补(F3)。云端部署经 PM2 ecosystem.config.js 注入 TZ=Asia/Shanghai,定时不随服务器时区漂移。日报页(2026-09-05b 混合式改版):栏首封面卡≤3 + 紧凑列表行,栏目折叠/全展、排序(默认/最新/热度)、关键词高亮、渐进渲染(首批 12 行 + content-visibility),偏好存 localStorage(qwis.daily.*)。
-10. **源库管理 + 自动分类(2026-09-05 深夜,十期)**:管理台「源库」Tab(置首位,版心特例 1160px)统一浏览/筛选/批量管理全类型源。`routes/sourcelib.js` 提供 `GET /api/sources/library`(公开只读,含 itemCount/contentKind)、`POST /api/sources/batch`(enable 走 unfreezeSource+6h 随机错峰/focus 只增量/move 带 kind 校验+写锁定)、`POST /api/sources/autoclassify`(dryRun 预览零落库/apply 跳过锁定源,预览清单只含可执行建议——无建议条目单独计 noSuggestion)。**sourcelib 必须挂在 sources 路由之前**(决策:防 /batch 被子路由截胡,index.js 有注释)。手动锁定 = `extra.categoryLocked=1`,统一写在 `POST /api/groups/move`(Sidebar 拖拽/源库下拉/批量移动的汇聚点),自动分类永不覆盖。新源自动分类挂接三点:手动添加(sources.js POST)/OPML 同步(wechat syncOpml)/队列导入(poller resolvePending),全部 try/catch 降级不阻断建源。分类目录内置 8 类(中英别名归一+关键词表,数组顺序即优先级),落组仅精确同名同 kind 复用。破茧栏名单从 daily.js 硬编码改为 `settings['daily.cocoonFamiliar']` 可配+落组自动并入。详见 docs/specs/09-source-library-autoclassify/(spec/plan/task/checklist 四件套)。
+6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso——每 15min 全量到期源(:07/:22/:37/:52)、日报 09:03、快照 09:33、清理 04:13(北京时间);**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。**09-11 采集语义新规**:RSS 云端间隔 60min;热榜时间戳按名次递减 60s 排列(fix-hotlist-times.js);YouTube 熔断阈值 10(同上,已生效)。
+7. **前端无感刷新:60s 轮询 `/api/articles/since`**(2026-09-11):SSE 长连接在 Vercel serverless 不支持(函数 30s 超时即断),已废弃 `server/routes/events-sse.js` 的云端路径,前端改为每 60s 轮询增量端点拉新。
+8. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
+9. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
+10. **日报保底双保险**:定时 cron(settings daily.time,默认 08:00)+ 启动时 needsGeneration() 补跑(错过定时的场景)+ 前端打开 /daily/ 时 stale 即自动补(F3)。本地/服务器部署经 PM2 ecosystem.config.js 注入 TZ=Asia/Shanghai,定时不随服务器时区漂移(注:此为本地/服务器语义,云端日报为 GH runner 09:03 定时直写 Turso,无 PM2)。日报页(2026-09-05b 混合式改版):栏首封面卡≤3 + 紧凑列表行,栏目折叠/全展、排序(默认/最新/热度)、关键词高亮、渐进渲染(首批 12 行 + content-visibility),偏好存 localStorage(qwis.daily.*)。
+11. **源库管理 + 自动分类(2026-09-05 深夜,十期)**:管理台「源库」Tab(置首位,版心特例 1160px)统一浏览/筛选/批量管理全类型源。`routes/sourcelib.js` 提供 `GET /api/sources/library`(公开只读,含 itemCount/contentKind)、`POST /api/sources/batch`(enable 走 unfreezeSource+6h 随机错峰/focus 只增量/move 带 kind 校验+写锁定)、`POST /api/sources/autoclassify`(dryRun 预览零落库/apply 跳过锁定源,预览清单只含可执行建议——无建议条目单独计 noSuggestion)。**sourcelib 必须挂在 sources 路由之前**(决策:防 /batch 被子路由截胡,index.js 有注释)。手动锁定 = `extra.categoryLocked=1`,统一写在 `POST /api/groups/move`(Sidebar 拖拽/源库下拉/批量移动的汇聚点),自动分类永不覆盖。新源自动分类挂接三点:手动添加(sources.js POST)/OPML 同步(wechat syncOpml)/队列导入(poller resolvePending),全部 try/catch 降级不阻断建源。分类目录内置 8 类(中英别名归一+关键词表,数组顺序即优先级),落组仅精确同名同 kind 复用。破茧栏名单从 daily.js 硬编码改为 `settings['daily.cocoonFamiliar']` 可配+落组自动并入。详见 docs/specs/09-source-library-autoclassify/(spec/plan/task/checklist 四件套)。
 
 ## 3.1 模块架构(重构后)
 
@@ -122,7 +125,7 @@ server/services/
 6. **调度器串行是有意的**:抖音/B站并发会被秒封。
 7. **熔断机制**:源连失 3 次自动 enabled=0,修好后手动启用会清零 fail_count。
 8. **日报出库安检**:乱码标题/风控错误页不得入报(daily.js hasMojibake/isErrorPageItem)。
-9. **云端/本地采集语义双实现漂移**:Vercel 端 `portal/api/_collect.js`、`portal/api/_daily.js` 是主系统 `server/services/collectors/*`、`server/services/ai/daily.js` 的移植副本(非同步),写 Turso 云库。**修改任何采集语义(过滤/清洗/熔断/去重/增量)必须同步检查云端副本**，否则漂移。（例：2026-09-02 P0-2 修了 rss/index.js 的 pubDate 过滤器；已核实云端 `_collect.js fetchRss` 当时无同样过滤逻辑，故无需双改）
+9. **云端/本地采集语义三份实现漂移**:Vercel 端 `api/collect.js`(手动备份端点)、GH runner 端 `tools/collect-turso.js`(采集主链路)与本地 `server/services/collectors/*`、`server/services/ai/daily.js` 是三份独立实现(非同步),均写 Turso 云库/本地库。**修改任何采集语义(过滤/清洗/熔断/去重/增量)必须同步检查另两份实现**，否则漂移。（例：2026-09-02 P0-2 修了 rss/index.js 的 pubDate 过滤器；已核实云端副本当时无同样过滤逻辑，故无需多改）
 10. **better-sqlite3 编号参数 `?1 ?2 ?3` 不支持位置绑定**(`.run(a,b,c)` 必抛 RangeError):一律用匿名 `?` 或命名参数对象。(2026-09-04 全文补抓 UPDATE 曾因此空转)
 11. **异步回调(setImmediate/cron)内的同步 DB 操作必须 try/catch**:prepare 引用不存在的列会抛成 uncaughtException 崩进程。(2026-09-04 pending_items 事件)
 12. **pending_items 表结构只有 (id,type,url,name,status,error,imported_at)**——无 source_id/created_at;文章关联一律经 url JOIN articles 取 a.id。
@@ -138,7 +141,7 @@ server/services/
 21. **vercel.json 不做 ${VAR} 插值,且 Vercel Cron 用 GET**:crons 块里写 `?key=${COLLECT_KEY}` 传的是字面量;collect.js 只收 POST → 该 cron 从未生效(已移除,定时管线全归 GH Actions)。
 22. **外部 undici 包的 ProxyAgent 不能喂给 Node 内置 fetch**(符号不兼容,一律 "fetch failed"):走代理必须配套用 undici 包自带的 fetch(tools/collect-turso.js 参考实现)。进程退出用 exitCode 自然退出,process.exit 会触发 libuv UV_HANDLE_CLOSING 断言(exit 127)。
 23. **无索引列上大表查询在 libsql 远程是致命的**(2026-09-11):articles 3.6 万行+全文列后,`MAX(created_at)`、`WHERE created_at>=?`、`ORDER BY COALESCE(published_at,created_at)` 全表扫描 43-46s → Vercel 30s 超时全线 504。修复:补 `idx_articles_created` + 表达式索引 `idx_articles_pubco`(查询 0.1s)。**新增高频过滤/排序列时必须同步建索引,本地 better-sqlite3 快感觉不出来,云端必炸**。
-24. **Agnes AI 的 key 绑调用方 IP 地区**(2026-09-11):同一 key 从亚洲 IP(Clash 香港出口)200,从 Azure US(GH runner)返回 401 "api key invalid"。**Vercel 函数区域必须固定 hnd1(东京)**(vercel.json regions,顺带与 Turso 东京同区降延迟);runner 侧翻译需 DEEPSEEK_API_KEY 回退(llmChat 已内置双供应商链)。另外 Vercel env 曾缺 AGNES_API_KEY(HANDOVER 文档写了但实际没配)——**文档与真实配置要实测核对,不能信纸面**。
+24. **Agnes AI 的 key 绑调用方 IP 地区**(2026-09-11):同一 key 从亚洲 IP(Clash 香港出口)200,从 Azure US(GH runner)返回 401 "api key invalid"。**Vercel 函数区域建议固定 hnd1(东京)**(regions 未落 vercel.json——实测文件中没有该键,如需固定区域应在 Vercel Dashboard 核实;顺带与 Turso 东京同区降延迟);runner 侧翻译需 DEEPSEEK_API_KEY 回退(llmChat 已内置双供应商链),云端 AI 当前因 Agnes key IP 绑定 401 不可用,待 DEEPSEEK_API_KEY 配置后启用。另外 Vercel env 曾缺 AGNES_API_KEY(HANDOVER 文档写了但实际没配)——**文档与真实配置要实测核对,不能信纸面**。
 
 ## 6. 凭据与配置位置
 
@@ -156,7 +159,7 @@ server/services/
 
 - **启动**:`D:\全网情报系统\start-all.bat`(起主系统)
 - **重启情报系统**:`restart-server.bat`(按端口找 PID,管理员运行)
-- **手动同步门户**:`node tools/sync-portal.js` 或 `sync-portal.bat`
+- **手动同步门户(历史脚本)**:portal 独立仓库已合并进根项目,`node tools/sync-portal.js` / `sync-portal.bat` 现存用途仅为导出静态 JSON 快照兜底(export-portal.js),推送分支不再生效
 - **健康自检**:根目录 `npm test`;冒烟 `node smoke-test.js`(生产库副本上跑,零副作用);云端 `node tools/audit-cloud.js`(19 项)
 - **日志**:主进程 console
 - **详细 runbook**:`docs/RUNBOOK.md`(唯一现行运维手册,2026-09-04 整合);平台指南 `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`;历史文档全部在 `archive/`
@@ -184,7 +187,7 @@ pending_items schema 崩溃链、enrichMissing id 错用、调度器清理路径
 - **验收修复**:P2-1 预览口径(无建议条目不再计入变更清单);P2-2 测试空转(3 例重述实现式测试重写为真实路由驱动,新增 401/dryRun 回归锁,tests 168 全绿)。
 - 前端新增 `SourceLibraryTab.jsx`/`BackfillPreviewModal.jsx`,icons.jsx +6(Folder/Search/Filter/Sparkles/Lock/Library)。
 
-## 8.3 2026-09-05 视觉精修（排版向，不改主题配色）
+## 8.3b 2026-09-05 视觉精修（排版向，不改主题配色）
 
 - **设计 token**:`web/src/index.css` 新增 `.pill/.meta/.card-lift/.stat-num/.unread-bar/.stars/.badge-red/.badge-gray/.avatar-fallback`,全部 var() 驱动三主题自适应;共享组件 `web/src/components/ui/`(TagPills/Stars/SourceAvatar/StatCard);util.js 新增 parseTags/formatWords/readingMinutes/sourceLabel(HotPage/HotDetail 已改共享引用)。
 - **后端纯增量**:articles LIST_FIELDS 增加 `tags/reason/content_len`(LENGTH 估算);status 增加 `overview`(enabledSources/todayNew/weekNew/dailyItemCount/dailyTopSources,公开只读);日报 sections 条目条件透传 score/tags。

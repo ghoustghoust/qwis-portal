@@ -1,6 +1,6 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
-> 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南，已与当前代码核对一致）。
+> 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南；已与当前代码核对一致，2026-09-11 复核）。
 > 架构与凭据位置看根目录 `ARCHITECTURE.md`；修复历史看 `archive/docs-deprecated/A_CLASS_FIX_REPORT.md`；历史文档在 `archive/`。
 
 ## 1. 系统形态
@@ -25,7 +25,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 2. 需要抖音功能才装 Playwright：`npx playwright install chromium`（约 300MB）
 3. 配 `.env`：`PORT=3000`；海外源需 `HTTPS_PROXY=http://127.0.0.1:7890`（公众号/B站/抖音/AIHOT 国内源不需要代理）
    > ⚠️ **宝塔部署本身不解决海外源可达性**：能不能抓 YouTube/X 取决于服务器所在地域/出站代理，不取决于面板。国内机房服务器仍需配代理（或换海外机房）；本机之所以能抓是因为本机有代理。
-   > 🔐 **上公网前必须启用 API 鉴权**：当前本地 /api/* 统一放行（含上传快照/整库恢复/删源等写接口），Nginx 暴露公网前必须先启用 API_TOKEN 鉴权（middleware/auth.js 移到路由挂载前 + 前端 Bearer 注入），否则任何人可读写全库。
+   > 🔐 **API 鉴权已上线（2026-09-05，本地/云端一致）**：公开 GET 无需鉴权；写操作（POST/PUT/DELETE）需 `Authorization: Bearer <JWT>`，经 `POST /api/auth/login`（ADMIN_USER/ADMIN_PASSWORD）换取，7 天有效，签名密钥 `AUTH_SECRET`。上公网仍需确认 `.env` 已配置这三个变量。
 4. `npm run build` → `npm run pm2:start` → `pm2 save` → `pm2 startup`（开机自启）
 5. Nginx 反代 `http://127.0.0.1:3000`，`client_max_body_size 10m`
 6. 日志：`npm run pm2:logs`；建议 `pm2 install pm2-logrotate`（50M × 7 天）
@@ -33,7 +33,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 
 ## 4. 云端队列（PHP，可选）
 
-`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端。安卓端配置见 `docs/ANDROID_SUBMIT_GUIDE.md`。
+`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端；云端等价入口 `POST /api/queue/sync`（拉 PHP 云端队列 → pending_items → 清云端，需鉴权）。安卓端配置见 `docs/ANDROID_SUBMIT_GUIDE.md`。
 
 ## 5. 熔断与恢复
 
@@ -46,7 +46,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ## 6. 健康自检与报警
 
 ```powershell
-npm test                      # 回归测试（191 项，187 通过，2026-09-11）
+npm test                      # 回归测试（通过数以实际输出为准）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
 node tools/audit-cloud.js     # 云端 19 项自检
 node tools/ops-toolkit.js check    # 健康总览
@@ -62,6 +62,7 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 - 保留天数：`settings.data.retentionDays`（默认 7，清理定时任务每 24h 执行，数据 Tab 改动即生效）
 - 配置轻量迁移（仅 sources/groups/settings JSON）：管理台「公众号 RSS」Tab 底部——与整库快照用途不同，勿混淆
 - 搬机：拷贝 `data/` + `.env` + `config/customer-config.json`，新机器 `npm install && npm run build && npm start`
+- 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代
 
 ## 8. 源管理要点
 
@@ -87,7 +88,8 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 
 ```powershell
 # GH Actions 定时任务（北京时间）
-# 采集：每 30 分钟（:07/:37）  node tools/collect-turso.js collect
+# 采集：每 15 分钟（UTC :07/:22/:37/:52）+ cron-job.org 双保险（jobId 8430047，每 15min POST workflow_dispatch）
+#                          node tools/collect-turso.js collect
 # 日报：09:03                 node tools/collect-turso.js daily
 # 快照：09:33                 node tools/generate-snapshots.js（push 回仓库）
 # 清理：04:13                 node tools/collect-turso.js cleanup
@@ -100,7 +102,11 @@ node tools/collect-turso.js collect
 curl -X POST "https://qwis-intel.vercel.app/api/collect?key=$COLLECT_KEY"
 curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY"
 
-# 采集停滞排查：查 Turso settings 表 key='cloud.collect' 的 lastRunAt 心跳
+# 云端采集停滞排查 playbook：
+#   1) 查采集心跳：Turso settings 表 key='cloud.collect' 的 lastRunAt（>30min 未更新即停滞），
+#      或 GET /api/health/status 的 collect 字段
+#   2) 看 GH Actions 日志：github.com/ghoustghoust/qwis-portal/actions → collect 工作流最近运行
+#   3) 查 cron-job.org 执行历史（jobId 8430047）：外部双保险触发器是否成功 dispatch
 # 查看 Vercel 部署日志
 # Vercel Dashboard → Project → Deployments → Functions → Logs
 ```

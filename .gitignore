@@ -33,9 +33,8 @@ db-wal
 *.db-shm
 *.db-wal
 
-# 验证截图
-verify-*.png
-turso-page.png
+# 验证截图（统一归档目录）
+验证截图/
 
 # Vercel 本地缓存
 .vercel/

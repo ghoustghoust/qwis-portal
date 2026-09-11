@@ -1,5 +1,8 @@
 # 日报引擎
 
+> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
+> 补注：云端日报由 runner 每日北京 09:03 生成，无 AI 增强（Agnes 401）。
+
 > `server/services/ai/daily.js` + `server/services/ai/_tokens.js` — 每日情报生成
 > 最后更新：2026-09-05
 

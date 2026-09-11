@@ -1,5 +1,7 @@
 # 全网情报系统 (QWIS) — 项目状态说明
 
+> 🗄 已归档 2026-09-11：与 README 重复70%且大面积过时。现行替代：根目录 README.md + ARCHITECTURE.md。
+
 > **Q**uan**W**ang **I**ntel **S**ystem — 私人 AI 情报阅读器
 > 最后更新：2026-09-11（方案A 后；采集架构详见 `docs/changes/2026-09-11-runner-direct-collect.md`）
 

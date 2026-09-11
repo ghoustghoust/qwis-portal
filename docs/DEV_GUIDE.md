@@ -63,7 +63,7 @@ Vercel Serverless（读层主部署）
 3. **管理后台**：`http://localhost:3000/admin/`
 4. **修改前端**：改 `web/src/` → `npm run build` → Ctrl+F5
 5. **修改后端（本地）**：改 `server/` → `restart-server.bat`
-6. **修改后端（Vercel）**：改 `api/` → `git push` → **再手动 `vercel --prod --scope kwei888 --yes`**（⚠️ 项目未连 Git 集成，push 不会自动部署；建议在 Dashboard 连接 Git 仓库后免此步）
+6. **修改后端（Vercel）**：改 `api/` → `git push` 即可（✅ Vercel 与 GitHub 已连 Git 集成，push main 自动部署）
 7. **跑测试**：`npm test`（全绿才算完）
 8. **不要修改**：`src-admin/`、`admin.html`（根目录）、`vite.config.js`（根目录）— 这些是 portal 历史副本
 
@@ -90,7 +90,7 @@ Vercel Serverless（读层主部署）
 
 ### 5.4 已知坑（必读）
 
-详见 `ARCHITECTURE.md` 第 5 节（18 条血泪史），精选：
+详见 `ARCHITECTURE.md` 第 5 节（24 条血泪史），精选：
 
 1. better-sqlite3 编号参数 `?1` 不支持位置绑定 → 用匿名 `?`
 2. 异步回调内同步 DB 操作必须 try/catch

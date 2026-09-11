@@ -1,5 +1,8 @@
 # 采集层架构
 
+> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
+> 补注：云端 YouTube 熔断阈值 10、RSS 间隔 60min。
+
 > `server/services/collectors/` — 数据采集引擎
 > 最后更新：2026-09-05
 

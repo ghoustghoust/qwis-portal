@@ -35,22 +35,23 @@ tools/            # 工具脚本
 
 ---
 
-## 2. 双端同步规则
+## 2. 三端同步规则
 
-系统有两套后端代码：**Vercel Serverless**（`api/`）和 **本地 Express**（`server/`）。
+系统有三套后端实现：**本地 Express**（`server/services/collectors/`）、**Vercel Serverless 备份端点**（`api/collect.js`）、**GH runner 采集主链路**（`tools/collect-turso.js`）。
 
 ### 2.1 强制同步
 
 | 操作 | 必须同步 |
 |------|---------|
-| 新增/修改 API 路由 | ✅ 双端都要改 |
-| 修改数据库查询 | ✅ 确认两端 SQL 兼容 |
-| 新增 settings key | ✅ 双端读写逻辑对齐 |
+| 新增/修改 API 路由 | ✅ 本地/云端都要改 |
+| 修改采集语义（过滤/清洗/熔断/去重/增量） | ✅ 三端同步：`server/services/collectors/` + `api/collect.js` + `tools/collect-turso.js` |
+| 修改数据库查询 | ✅ 确认各端 SQL 兼容 |
+| 新增 settings key | ✅ 各端读写逻辑对齐 |
 | 修改鉴权白名单 | ✅ PUBLIC_GET_PATHS 和 Express middleware 同步 |
 
 ### 2.2 检查流程
 
-1. 改完一端后，搜索另一端是否有对应代码
+1. 改完一端后，搜索其余实现是否有对应代码
 2. 如果只改了一端，在 commit message 标注 `[Vercel only]` 或 `[Local only]` 并说明原因
 3. 新功能优先实现 Vercel 端，再补本地 Express 端
 
@@ -93,10 +94,13 @@ node tools/audit-cloud.js   # 云端巡检（需生产环境可达）
 | 场景 | 需更新的文档 |
 |------|-------------|
 | 修改部署架构 | `ARCHITECTURE.md` |
-| 新增/删除 API 路由 | `docs/MODULE_STATUS.md` + `docs/DEV_GUIDE.md` |
+| 新增/删除 API 路由 | `docs/FEATURE_MATRIX.md` + `docs/DEV_GUIDE.md` |
 | 修复已知问题 | `docs/ISSUES.md`（标记状态） |
 | 修改日报逻辑 | `docs/RUNBOOK.md` §日报 |
 | 新增功能模块 | `docs/features/` 新增对应文档 |
+| 凭据/API 变更 | `docs/HANDOVER.md` |
+| 功能/端点变更 | `docs/FEATURE_MATRIX.md` |
+| 调度频率变更 | 联动 `ARCHITECTURE.md` + `docs/HANDOVER.md` + `docs/RUNBOOK.md` + `docs/CLOUD_PIPELINE_GUIDE.md` 四处 |
 
 ### 4.2 文档格式
 
@@ -121,7 +125,7 @@ node tools/audit-cloud.js   # 云端巡检（需生产环境可达）
 ### 文档
 - [ ] 改架构 → ARCHITECTURE.md 已更新
 - [ ] 修 bug → ISSUES.md 状态已更新
-- [ ] 新功能 → DEV_GUIDE.md / MODULE_STATUS.md 已更新
+- [ ] 新功能 → DEV_GUIDE.md / FEATURE_MATRIX.md 已更新
 
 ### 安全
 - [ ] 新增路由已加入鉴权白名单或公开白名单
@@ -166,10 +170,11 @@ type 可选：
 | `TURSO_DATABASE_URL` | Turso 云数据库地址 | Vercel Env + .env |
 | `TURSO_AUTH_TOKEN` | Turso 认证令牌 | Vercel Env + .env |
 | `AUTH_SECRET` | JWT 签名密钥 | Vercel Env + .env |
-| `COLLECT_KEY` | 采集触发密钥 | Vercel Env + GitHub Secrets |
+| `COLLECT_KEY` | 采集触发密钥 | **三处同步**：本地 .env + Vercel Env + GitHub Secrets |
 | `ADMIN_USER` | 管理员用户名 | Vercel Env + .env |
 | `ADMIN_PASSWORD` | 管理员密码 | Vercel Env + .env |
 | `AGNES_API_KEY` | Agencs AI API Key | Vercel Env + .env |
+| `DEEPSEEK_API_KEY` | DeepSeek API Key（云端 AI 待启用：Agnes key 绑 IP 在云端 401，用 DeepSeek 回退） | Vercel Env + GitHub Secrets + .env |
 
 ### 7.2 安全红线
 

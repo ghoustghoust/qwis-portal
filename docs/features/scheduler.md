@@ -1,5 +1,8 @@
 # 调度引擎
 
+> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
+> 补注：jobs/portal.js 的 portal 同步目标已随 portal 项目删除而失效；云端调度在 .github/workflows/collect.yml。
+
 > `server/services/scheduler/` — 定时任务调度中心
 > 最后更新：2026-09-05
 

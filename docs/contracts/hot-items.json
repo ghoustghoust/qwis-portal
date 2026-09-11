@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GET /api/hot 响应结构",
-  "description": "热榜接口——本地 Express 与 Vercel Portal 两侧均须遵循此契约",
+  "description": "热榜接口——本地 Express 与 Vercel qwis-intel 两侧均须遵循此契约。以云端 api/[...slug].js handleHot 实际返回为准（{ok, items, nextCursor}）；分类清单走独立接口 GET /api/hot/categories，不在本响应内。",
   "type": "object",
   "required": ["ok", "items"],
   "properties": {
@@ -15,19 +15,18 @@
           "id": { "type": "integer" },
           "title": { "type": "string" },
           "source_name": { "type": "string" },
-          "source_type": { "type": "string" },
           "url": { "type": "string" },
+          "author": { "type": ["string", "null"] },
           "cover": { "type": ["string", "null"] },
-          "heat": { "type": "number" },
-          "published_at": { "type": "string" },
-          "category": { "type": "string" }
+          "summary": { "type": ["string", "null"] },
+          "score": { "type": ["number", "null"], "description": "热度原始分（旧契约的 heat 字段不存在）" },
+          "scoreFormatted": { "type": ["string", "null"], "description": "格式化热度值（formatHeat）" },
+          "published_at": { "type": ["string", "null"] },
+          "category": { "type": ["string", "null"] },
+          "later": { "type": "integer", "minimum": 0 }
         }
       }
     },
-    "categories": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "updatedAt": { "type": "string" }
+    "nextCursor": { "type": ["string", "null"] }
   }
 }

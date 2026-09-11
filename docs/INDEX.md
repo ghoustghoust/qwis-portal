@@ -1,7 +1,7 @@
 # 全网情报系统 · 文档索引
 
 > 所有有效文档的路径与用途速查。供 Agent 和开发者快速定位上下文。
-> 最后更新：2026-09-11（方案A 后）
+> 最后更新：2026-09-11（真实环境基准修正：新增 FEATURE_MATRIX，PROJECT_STATUS 等 5 篇归档）
 
 ---
 
@@ -30,8 +30,7 @@
 | `docs/DEV_GUIDE.md` | **开发者上手指南**（新开发者必读）：部署架构、目录结构、快速上手 Checklist |
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
-| `docs/MODULE_STATUS.md` | **模块功能状态**：本地 Express vs Vercel 功能矩阵 |
-| `docs/PROJECT_STATUS.md` | 项目状态说明：架构概览、功能清单、部署方式 |
+| `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威）：本地 Express vs 云端（Vercel qwis-intel）功能覆盖矩阵、迁移路径、待开发目标；其它文档不再维护矩阵一律指向本文 |
 | `docs/RUNBOOK.md` | 运维手册：启动/重启/备份/恢复/Vercel 运维/排障 |
 | `docs/REFACTOR_GUIDE.md` | [历史文档] Phase 1-5 重构迁移记录 |
 | `docs/ANDROID_SUBMIT_GUIDE.md` | 安卓端提交协议：HTTP Shortcuts 配置规范 |
@@ -65,6 +64,11 @@
 
 | 文件 | 归档原因 |
 |------|---------|
+| `docs/deprecated/PROJECT_STATUS.md` | 与 README 重复约 70% 且大面积过时（漂移严重，违反唯一事实源原则） |
+| `docs/deprecated/MODULE_STATUS.md` | 矩阵数据错误（漂移严重，违反唯一事实源原则）；功能矩阵 SSOT 移至 `docs/FEATURE_MATRIX.md` |
+| `docs/deprecated/TOOLS.md` | 运维内容已并入 `docs/RUNBOOK.md`（漂移严重，违反唯一事实源原则） |
+| `docs/deprecated/HEARTBEAT.md` | 与项目无关的空模板 |
+| `docs/deprecated/AGENTS-generic-template.md` | 通用助手模板，项目专用规则见根目录新 `AGENTS.md` |
 | `docs/deprecated/IDENTITY.md` | 空模板，从未填写 |
 | `docs/deprecated/USER.md` | 空模板，从未填写 |
 | `docs/deprecated/SOUL.md` | 通用 Agent 人格模板，无实质内容 |
@@ -79,7 +83,7 @@
 ## 推荐阅读顺序
 
 1. **新接手**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路必读）→ `docs/DEV_GUIDE.md` → `ARCHITECTURE.md` → `docs/DEVELOPMENT_STANDARDS.md`
-2. **了解当前状态**：`docs/ISSUES.md` → `docs/MODULE_STATUS.md`
+2. **了解当前状态**：`docs/FEATURE_MATRIX.md`（功能矩阵 SSOT）→ `docs/ISSUES.md`
 3. **排障**：`docs/RUNBOOK.md` → `ARCHITECTURE.md` 已知坑
 4. **了解决策背景**：`docs/specs/` 按编号顺序阅读
 5. **历史重构**：`docs/REFACTOR_GUIDE.md`（标注为历史文档）

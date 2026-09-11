@@ -1,5 +1,7 @@
 # SQLite 任务队列
 
+> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
+
 > `server/services/queue/taskQueue.js` — 持久化任务队列
 > 最后更新：2026-09-05
 

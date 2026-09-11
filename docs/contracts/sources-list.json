@@ -1,13 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GET /api/sources 响应结构",
-  "description": "订阅源列表接口——本地 Express 与 Vercel Portal 两侧均须遵循此契约",
+  "description": "订阅源列表接口。双端差异：云端（Vercel qwis-intel，api/[...slug].js handleSources）返回 {ok, sources:[...]}；本地 Express（server/routes/sources.js）返回 {ok, items:[...]}。本契约以云端实际返回为准。",
   "type": "object",
-  "required": ["ok", "items"],
+  "required": ["ok", "sources"],
   "properties": {
     "ok": { "type": "boolean", "const": true },
-    "items": {
+    "sources": {
       "type": "array",
+      "description": "云端实际返回键（handleSources SELECT 字段）；本地 Express 同一接口返回键为 items",
       "items": {
         "type": "object",
         "required": ["id", "type", "name", "url", "enabled"],
@@ -17,20 +18,21 @@
           "name": { "type": "string" },
           "url": { "type": "string" },
           "avatar": { "type": ["string", "null"] },
-          "enabled": { "type": "integer", "enum": [0, 1] },
+          "uid": { "type": ["string", "null"] },
           "group_id": { "type": ["integer", "null"] },
           "focus": { "type": "integer", "enum": [0, 1] },
-          "extra": { "type": "string" },
-          "created_at": { "type": "string" },
+          "enabled": { "type": "integer", "enum": [0, 1] },
+          "status": { "type": ["string", "null"] },
           "last_fetched_at": { "type": ["string", "null"] },
           "next_fetch_at": { "type": ["string", "null"] },
-          "unread": { "type": "integer", "minimum": 0 },
-          "intervalMin": { "type": ["number", "null"] },
-          "lastError": { "type": ["string", "null"] },
-          "lastErrorAt": { "type": ["string", "null"] },
-          "marksFeatured": { "type": "boolean" }
+          "fail_count": { "type": "integer" },
+          "created_at": { "type": "string" }
         }
       }
+    },
+    "items": {
+      "type": "array",
+      "description": "仅本地 Express 返回此键（字段见 server/routes/sources.js），云端无此键"
     }
   }
 }

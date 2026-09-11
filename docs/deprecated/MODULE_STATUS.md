@@ -1,5 +1,7 @@
 # 全网情报系统 · 模块功能状态
 
+> 🗄 已归档 2026-09-11：矩阵数据错误，SSOT 移至 FEATURE_MATRIX.md。现行替代：docs/FEATURE_MATRIX.md。
+
 > 逐模块列出本地 Express 与 Vercel 的实际功能状态与限制。
 > 最后更新：2026-09-11（方案A：采集主链路移入 GH Actions runner 直写 Turso）
 

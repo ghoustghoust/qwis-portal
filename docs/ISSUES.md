@@ -40,6 +40,7 @@
 | P1-13 | **`handleArticleLater` Vercel 端响应不一致**：Vercel 返回 `{ ok: true }` 不含 `later` 字段，本地 Express 返回 `{ ok: true, later: 0|1 }` | 前端需自行反推状态（L77 fallback），可能导致 UI 状态不同步 | `api/[...slug].js` L958-963 | ✅ **已修复**（2026-09-11：返回 later 字段，与本地 Express 一致） |
 | P1-14 | **YouTube 对数据中心 IP 反爬返回假 404/500**：频道 ID 正确、源是活的，但 GH runner / 代理出口 IP 被标记后间歇性失败 | YouTube 源间歇性采不到（每轮成功率 ~20-80% 掷骰） | 外部依赖 | 🟡 **已缓解**（2026-09-11 熔断阈值 3→10 + 复活 29 误杀源；彻底解需住宅代理 RSSHub） |
 | P1-15 | **Vercel 项目未连接 Git 集成**（实测 `link: null`）：`git push` 从不触发部署，历史部署全部是 CLI 手动；快照 job 每天 push 的 public/data/ 也不自动上线 | 代码 push 后线上不更新，极易误判"已部署" | Vercel 项目设置 | ✅ **已修复**（2026-09-11：安装 Vercel GitHub App + API 完成 link，productionBranch=main，push 即自动部署） |
+| P1-16 | **Agnes API key 云端 401（IP 绑定）**：key 绑定固定出口 IP，GH runner / Vercel 出口 IP 不在白名单 | 云端 AI 翻译/摘要/日报增强全部不可用 | Vercel env `AGNES_API_KEY` | 🟡 待办：接入 `DEEPSEEK_API_KEY` 替代 |
 
 ## P2 — 逻辑冲突/双端漂移
 
@@ -52,8 +53,8 @@
 | P2-5 | **图片代理无 SSRF 防护**：`/api/img` 可代理任意 URL | 安全隐患（Vercel 网络隔离隐式防护） | `api/[...slug].js` L783-798 | 🟡 待修复 |
 | P2-6 | **LIKE '%keyword%' 慢查询**：文章搜索/筛选使用 LIKE 全表扫描 | 大数据量时性能下降 | `api/[...slug].js` L136 | 🟡 待优化 |
 | P2-7 | **handleDaily 日期比较用 UTC 而非北京时间**：`genDate.toDateString() === now.toDateString()` 按 UTC 判断"同一天"，北京 9:00 前可能误判 | 日报可能在 UTC 跨日时被误认为已生成 | `api/[...slug].js` L520 | 🟡 待修复 |
-| P2-8 | **Vercel 端缺失路由汇总（前端调用但 dispatch 无 handler）**：`/api/articles/read-all`、`/api/reading/batch`、`/api/reading/export`、`/api/daily/regenerate`、`/api/sources/restore-all`、`/api/sources/autoclassify`、`/api/data/*`（snapshot/restore/cleanup）、`/api/alerts/*`、`/api/settings/daily` | 对应前端功能在 Vercel 上全部返回 404/401 | `api/[...slug].js` dispatch 表 | 🟡 需逐项补齐 |
-| P2-9 | **回归测试 4 项预存失败**（2026-09-11 核实非方案A引入）：①`P6-3`/`TQ-3`/`TQ-11`——`retryFailed()` 实现已返回 `{reset, dead}` 对象但测试仍断言数字 0（测试与实现漂移）；②`P6-5`——断言 `docs/specs/01/02/04` 存在，实际已移入 `docs/deprecated/` | npm test 实为 186/191 通过，README 徽章 189/189 已过时 | `tests/regression-phase6.test.js` + `tests/task-queue.test.js` | 🟡 待修（测试或实现对齐） |
+| P2-8 | **Vercel 端缺失路由汇总（2026-09-11 逐项核销）**：已移植 ✅ `/api/sources/restore-all`、`/api/health/*`、`/api/queue/*`、`/api/opml/sync`、`/api/rss/refresh`、`/api/backup/*`、`/api/data/*`（snapshot/restore 501）、`/api/audit`、`/api/alerts/*`（只读）、`/api/sources/library`；仍缺：`sources/batch`、`sources/autoclassify`、`settings/daily`、`groups` 写、`sources` 写（POST/DELETE/refresh）、`ai/translate/*` | 剩余缺失项对应前端功能在 Vercel 上仍不可用 | `api/[...slug].js` dispatch 表 | 🟡 部分补齐，余项待开发（完整清单见 docs/FEATURE_MATRIX.md §2） |
+| P2-9 | **回归测试 4 项预存失败**（2026-09-11 核实非方案A引入）：①`P6-3`/`TQ-3`/`TQ-11`——`retryFailed()` 实现已返回 `{reset, dead}` 对象但测试仍断言数字 0（测试与实现漂移）；②`P6-5`——断言 `docs/specs/01/02/04` 存在，实际已移入 `docs/deprecated/` | npm test 存在预存失败，通过数以实际输出为准；README 徽章已过时 | `tests/regression-phase6.test.js` + `tests/task-queue.test.js` | 🟡 待修（测试或实现对齐） |
 
 ## P3 — 体验优化/低优先级
 
@@ -65,7 +66,7 @@
 | P3-4 | **前端 GET 缓存 TTL 5s 偏短**：频繁请求时性能浪费 | 可提升到 15-30s | 待优化 |
 | P3-5 | **右侧概览轨 `dailyItemCount` / `dailyTopSources` 永远为 undefined**：`handleStatus` 不返回这两个字段 | 显示为 "—" | 待实现 |
 | P3-6 | **视频收藏功能未接入**：前端收藏按钮只操作 `articles.later`，`videos.favorite` 无写入路径 | 视频收藏为空 | 待排查 |
-| P3-7 | **SSE 实时推送 Vercel 端不可用**：`/api/events` 仅在 Express 实现 | Vercel 端无实时推送 | 已知限制 |
+| P3-7 | **SSE 实时推送 Vercel 端不可用**：`/api/events` 仅在 Express 实现 | Vercel 端无实时推送 | ✅ 已解决（2026-09-11：useRealtime 重写为 60s 轮询 /api/articles/since，SSE 废弃） |
 | P3-8 | **21 个暂停源需定期审查** | 部分信息源缺失 | 定期审查 |
 
 ---
@@ -92,6 +93,8 @@
 ---
 
 ## 项 7 专项：源自动刷新问题深度分析
+
+> ✅ 已解决（2026-09-11）：useRealtime 重写为 60s 轮询 `/api/articles/since`（公开 GET），SSE 废弃。以下为历史分析存档。
 
 ### 当前机制
 1. **后端采集**：`api/collect.js` 查询 `next_fetch_at <= now` 的到期源 → 逐源抓取 → 更新 `next_fetch_at`
@@ -153,6 +156,8 @@ collect.yml cron: 整点采集 + 夜间密集 + 日报 + 快照 + cleanup
 ---
 
 ## 双端功能差异矩阵
+
+> ⚠️ 已作废（2026-09-11）：本矩阵停止维护，唯一权威矩阵见 `docs/FEATURE_MATRIX.md`。
 
 | 功能 | 本地 Express | Vercel | 差异等级 |
 |------|:---:|:---:|:---:|

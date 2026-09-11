@@ -3,10 +3,12 @@
 > **Q**uan**W**ang **I**ntel **S**ystem — 私人 AI 情报阅读器
 >
 > 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报，支持 AI 辅助分析与多端推送报警。
+>
+> **生产地址**：<https://qwis-intel.vercel.app>（阅读器 `/reader/`、日报 `/daily/`、热点榜 `/hot/`、管理后台 `/admin/`）
 
 [![License](https://img.shields.io/badge/license-Private-blue)](#)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)](#)
-[![Tests](https://img.shields.io/badge/tests-187%2F191-orange)](docs/ISSUES.md)
+[![Tests](https://img.shields.io/badge/tests-%E8%A7%81ISSUES-orange)](docs/ISSUES.md)
 
 ---
 
@@ -54,6 +56,7 @@
 
 - 手机端/桌面端通过 HTTP Shortcuts 提交链接到云端 PHP 队列
 - 本地 poller 每 10min 拉取 → 写入 pending_items → 清空云端
+- 云端（Vercel）已支持 `POST /api/queue/sync` 直接触发同步
 - 支持 B站视频、抖音视频、公众号文章三队列
 
 ###  鉴权与数据安全
@@ -160,7 +163,7 @@ pm2 startup   # 开机自启
 ### 测试
 
 ```bash
-npm test              # 回归测试（191 项，187 通过，4 项预存失败见 ISSUES P2-9）
+npm test              # 回归测试（数量见 docs/ISSUES.md）
 node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 ```
 
@@ -173,7 +176,7 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 | **后端** | Node.js 20+ / Express 4 / better-sqlite3 (WAL) |
 | **前端** | React 18 / Vite 5 / Tailwind CSS 3 |
 | **采集** | rss-parser / Playwright (抖音) / undici (HTTP) |
-| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso（云端主链路，2026-09-11 方案A） |
+| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso + cron-job.org 外置触发器双保险（云端主链路，2026-09-11 方案A） |
 | **云端** | Vercel Serverless (读层+管理台) / Turso (libSQL) / GH Actions runner (采集) / PHP 队列 |
 | **部署** | Vercel (生产读层) + GH Actions (定时采集) / PM2 (本地开发/灾备) |
 
@@ -184,7 +187,7 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 ```
 qwis-portal/
 ├── server/               # Express 后端
-│   ├── routes/           # 20 个 API 路由
+│   ├── routes/           # 22 个 API 路由
 │   ├── services/         # 采集器 / AI日报 / 事件聚合 / 报警 / 调度 / 源自动分类
 │   ├── cloud/            # 双模式异步数据层（SQLite / Turso）
 │   ├── middleware/       # 鉴权中间件（JWT）
@@ -209,7 +212,7 @@ qwis-portal/
 ├── config/               # customer-config.json（客户化配置）
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
 ├── tools/                # 运维脚本
-├── tests/                # 回归测试（node:test，191 项）
+├── tests/                # 回归测试（node:test，数量见 docs/ISSUES.md）
 ├── docs/                 # 文档（RUNBOOK / 截图等）
 ├── archive/              # 历史资产（报告 / 规格 / 分析）
 └── trash/                # 退役代码（we-mp-rss 等）
@@ -262,6 +265,7 @@ qwis-portal/
 | 端点 | 说明 |
 |------|------|
 | `GET /api/articles` | 文章列表（默认排除热榜/聚合源） |
+| `GET /api/articles/since` | 文章增量（前端 60s 无感刷新轮询用） |
 | `GET /api/videos` | 视频列表 |
 | `GET /api/hot` | 热点榜（精选/全部动态/事件榜） |
 | `GET /api/daily` | 每日情报 |
@@ -290,6 +294,8 @@ qwis-portal/
 | `/api/health` | GET | 健康自检 |
 | `/api/reading` | POST/PUT | 阅读记录写入 |
 | `/api/audit` | GET | 审计日志 |
+
+> 管理端点（restore-all / health / queue / opml / rss-refresh / backup / data / audit 等）全表见 [docs/HANDOVER.md](docs/HANDOVER.md) §3.4
 
 ---
 
@@ -326,6 +332,7 @@ qwis-portal/
 
 - **备份**：管理后台 → 「数据」Tab → 「整库快照」，或调用 `POST /api/backup`
 - **恢复**：管理后台 → 「数据」Tab → 上传 `.db` 文件（文件名白名单 + SQLite 头校验）
+- **云端语义**：配置备份存 Turso `settings` 表；文件型整库快照（`.db`）在云端（Vercel）不支持（501），需整库迁移请用 `tools/migrate-to-turso.js`
 
 ---
 
@@ -336,7 +343,7 @@ qwis-portal/
 | `npm start` | 启动服务（生产模式） |
 | `npm run dev` | 开发模式（nodemon 热重载） |
 | `npm run build` | 构建前端 |
-| `npm test` | 运行回归测试（191 项，187 通过，4 项预存失败见 ISSUES P2-9） |
+| `npm test` | 运行回归测试（数量见 docs/ISSUES.md） |
 | `npm run pm2:start` | PM2 启动守护进程 |
 | `npm run pm2:restart` | PM2 重启 |
 | `npm run pm2:logs` | PM2 查看日志 |
@@ -358,7 +365,9 @@ qwis-portal/
 | [docs/DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) | 开发规范与验收标准 |
 | [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
 | [docs/RUNBOOK.md](docs/RUNBOOK.md) | 运维手册 |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | 项目状态说明 |
+| [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | 功能矩阵（功能/端点状态唯一权威） |
+| [docs/CLOUD_PIPELINE_GUIDE.md](docs/CLOUD_PIPELINE_GUIDE.md) | 云端定时管线指南 |
+| [docs/DELIVERY_VERIFICATION.md](docs/DELIVERY_VERIFICATION.md) | 交付验证清单 |
 | [docs/INDEX.md](docs/INDEX.md) | 文档索引 |
 | [docs/ANDROID_SUBMIT_GUIDE.md](docs/ANDROID_SUBMIT_GUIDE.md) | 安卓端提交客户端指南 |
 | [docs/X_SETUP_GUIDE.md](docs/X_SETUP_GUIDE.md) | X/Twitter RSSHub 设置指南 |

@@ -1,0 +1,117 @@
+# 功能矩阵 · 迁移路径 · 待开发目标 · 理想态
+
+> **本文档是唯一权威的功能覆盖矩阵**（SSOT）。其它文档（MODULE_STATUS 等）不再维护矩阵，一律指向本文。
+> 生成方式：**以真实环境逆向推导**——云端能力逐端点实测于 `https://qwis-intel.vercel.app`（2026-09-11），本地能力以 `server/` 代码为准。
+> 更新规则：任何端点增删改 → 先改本文，再改其它文档。每条功能改动必须云端实测后才允许把矩阵标为 ✅。
+
+---
+
+## 0. 三端定义（先建立正确脑图）
+
+| 端 | 形态 | 职责 | 存储 |
+|---|---|---|---|
+| **本地**（`server/`，localhost:3000） | Express + better-sqlite3，PM2/手动 | 全功能开发/灾备；抖音 Playwright、B站 wbi 等重依赖功能 only here | 本地 `data/app.db` |
+| **Vercel**（`api/`，qwis-intel.vercel.app） | Serverless 读层 + 管理后台 | 面向用户的阅读与管理界面 | Turso（东京） |
+| **GH runner**（`tools/collect-turso.js` + `.github/workflows/collect.yml`） | 每 15min 定时任务 | 采集 / 日报 / 清理，直写 Turso | Turso |
+
+**数据流**：runner 采集 → Turso ⇄ Vercel API → 浏览器。本地与 Turso 之间**无自动同步**（tools/migrate-to-turso.js 为手动迁移工具）。
+
+---
+
+## 1. 功能覆盖矩阵（实测为准）
+
+### 1.1 阅读器（/reader/）
+
+| 功能 | 本地 | Vercel | 说明 |
+|---|---|---|---|
+| 文章列表（全局时间序/筛选/搜索/游标分页） | ✅ | ✅ | |
+| 无感刷新 | SSE `/api/events` | ✅ 60s 增量轮询 `/api/articles/since` | 2026-09-11 重写；serverless 不支持长连 |
+| 文章详情/已读/稍后读/全部已读 | ✅ | ✅ | |
+| 阅读沉淀（我的阅读/批量/导出） | ✅ | ✅ | |
+| 保存视图 / 分组管理 / 拖拽移动 | ✅ | ❌ 404 | 需 `PUT /api/settings`、`/api/groups` 写、`/api/groups/move` |
+| 单源手动刷新 | ✅ | ❌ 404 | 云端替代：`POST /api/rss/refresh`（标记到期，runner ≤15min 补抓） |
+| 视频列表 | ✅ | ✅ | |
+| 视频详情/收藏/播放直链解析 | ✅ | ❌ 404 | 播放依赖 B站 Cookie+wbi，架构上只能本地 |
+| 热榜/事件榜（全局时间序） | ✅ | ✅ | 2026-09-11 修复同源成块 |
+| 热榜英文原文抓取 `/api/hot/original` | ✅ | ❌ 404 | 依赖 jsdom+Readability，可移植（Pro 时长更稳） |
+
+### 1.2 每日情报（/daily/）
+
+| 功能 | 本地 | Vercel | 说明 |
+|---|---|---|---|
+| 日报阅读 | ✅ | ✅ | runner 每日 09:03（北京）生成 |
+| 手动重新生成 | ✅（先补抓到期源） | ✅ 但不补抓、无 AI 增强 | |
+| 日报设置（栏目/来源勾选/时间） | ✅ | ❌ 404 | 需 `GET/PUT /api/settings/daily` |
+| AI 增强（摘要/评分/tags） | ✅ | ❌ | 依赖 AI 链路（见 §2.4，当前 Agnes 云端 401） |
+
+### 1.3 管理后台（/admin/）
+
+| Tab | 本地 | Vercel | 缺口端点 |
+|---|---|---|---|
+| 源库 | ✅ | ⚠️ 只读 | `sources/batch`、`sources/autoclassify`、`groups/move` |
+| 公众号 RSS | ✅ | ⚠️ | 新增/删除/单源刷新源 404；OPML 同步/配置备份/队列同步 ✅ |
+| B站 | ✅ | ⚠️ 只读 | 云端不采集 B站；refresh-all 404 |
+| 抖音 | ✅ | ❌ | 扫码登录/采集依赖 Playwright，**永不云端化**（架构决策） |
+| 日报设置 | ✅ | ❌ | `settings/daily` 读写 |
+| AI 能力 | ✅ | ✅ | config/ping/chat 可用（Agnes 401 待修，见 §2.4） |
+| 翻译 Skill | ✅ | ❌ | `ai/translate/*` 全缺 |
+| 数据 | ✅ | ⚠️ | stats/cleanup ✅；文件型快照/上传/恢复 501（用配置备份替代） |
+| 报警管理 | ✅ | ⚠️ 只读 | 写/测试/删除缺；**云端无报警触发引擎** |
+| 热点榜设置 | ✅ | ⚠️ | AIHOT backfill/enrich 控制缺 |
+| 监控 | ✅ | ⚠️ 近似值 | 无 job_queue 历史，数值为当前状态近似 |
+
+### 1.4 采集与调度
+
+| 能力 | 本地 | runner（云端采集） | 说明 |
+|---|---|---|---|
+| RSS/公众号/YouTube/X | ✅ | ✅ | 60min 间隔，ETag 304 |
+| 热榜 29 源 | ✅ | ✅ | 30min 间隔，浏览器 UA 必需 |
+| B站 wbi 签名采集 | ✅ | ❌ 待移植 | 纯 crypto，无浏览器依赖，**可移植** |
+| 抖音 | ✅ | ❌ 永不 | Playwright 登录态，架构决策 |
+| 全文补抓 / AIHOT enrich | ✅ | ❌ 待移植 | |
+| 报警引擎（7 渠道） | ✅ | ❌ 待移植（轻量版：停滞检测 → webhook） | |
+| 触发可靠性 | 进程常驻 | GH schedule（会丢）+ cron-job.org 外置触发（主力） | 双保险 2026-09-11 落地 |
+
+---
+
+## 2. 待开发目标（按优先级）
+
+| 优先级 | 事项 | 依赖 | 预期效果 |
+|---|---|---|---|
+| P0 | **设置写 API**（`PUT /api/settings` + `/api/settings/daily`） | 无 | 云端管理台可保存视图/日报栏目/队列配置/保留天数，4 个 Tab 复活 |
+| P0 | **源写 API**（sources POST/DELETE/refresh、batch、groups 写、autoclassify） | 无 | 云端源库从只读变可管理；新源经 runner 15min 内入流 |
+| P1 | **DEEPSEEK_API_KEY 接入**（替代 Agnes 401） | 用户提供一个 DeepSeek key | 云端 AI 翻译/摘要/日报增强链路解锁 |
+| P1 | **AI 翻译/摘要移植**（`ai/translate/*`、`summary`） | P1 的 key | 英文源自动精翻；日报 AI 评分 |
+| P1 | **B站 wbi 采集移植 runner**（纯 crypto） | 无 | B站源云端自动更新 |
+| P2 | **报警引擎轻量版**（采集停滞检测 → webhook，挂 runner 每轮尾部） | 无 | 云端停采 30min 内主动报警，不再靠人肉发现 |
+| P2 | 热榜原文抓取 `/api/hot/original` 移植 | jsdom 包体积 | 热榜英文条目一键看原文 |
+| P2 | AIHOT enrich/backfill 移植 runner | 串行限速 | 热点条目富字段 |
+| P3 | 视频详情/收藏 | — | 播放直链永不云端化（B站 Cookie 风控），仅做详情/收藏 |
+| 永不 | 抖音采集/登录、文件型 .db 快照、SSE | 架构决策 | 本地专属；云端已分别用 501 指引、配置备份、轮询替代 |
+
+### 迁移方法论（每个 P0/P1 项都按此流程）
+1. 本地 `server/routes/*.js` 语义为准 → 2. `api/[...slug].js` 写 Turso 版 handler → 3. `npm run build:vercel` + 本地 node --check → 4. push main 自动部署 → 5. **线上实测（docs/DELIVERY_VERIFICATION.md 流程）** → 6. 更新本矩阵 + HANDOVER §3。
+
+---
+
+## 3. 理想态（全部落地后的系统面貌）
+
+**用户视角**：打开 `https://qwis-intel.vercel.app` ——
+- 阅读器每 60 秒无感提示新内容，文章流全局时间序、小时级新鲜；热榜 30 分钟级；日报每天 09:03 自动生成且带 AI 评分/摘要；英文文章自动精翻。
+- 管理后台 11 个 Tab 全部可用：加源/分组/批量管理/自动分类/日报栏目/报警渠道/数据清理，全部云端生效，15 分钟内反映到信息流。
+- 任何一环停摆（采集停滞/源熔断/日报失败）→ webhook 主动报警到钉钉/Bark。
+
+**数据流**：手机/桌面提交链接 → PHP 队列 → runner 拉取解析 → Turso；runner 每 15min 全量采集（cron-job.org 敲门，GH schedule 备份）→ Turso → Vercel 读层 → 浏览器轮询增量。
+
+**本地角色**：抖音/B站重依赖采集 + 整库文件快照灾备 + 新功能开发沙箱，开发完成必须当日移植云端并实测。
+
+---
+
+## 4. 本次审计的根因（为什么文档/云端长期漂移）
+
+1. **本地中心主义流程**：以往 agent 在本地开发→本地验证→结束，push 和云端验证不在验收标准里。
+2. **多份事实拷贝**：调度频率/功能矩阵/测试数在 5-6 份文档各写一份，改一处必漂移。
+3. **否定决策不落档**：云端"不做 XX"的决策（不做云端采集/不做 Vercel 前端）后来被推翻，但旧决策文档没有作废标注，新 agent 读到旧决策继续沿用。
+4. **无真实环境验收环节**：没有任何文档要求"以线上实测为准"。
+
+**强制约束已写入根目录 `AGENTS.md`**，后续所有 agent 必须遵守。

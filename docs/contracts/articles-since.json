@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GET /api/articles/since 响应结构",
+  "description": "增量计数接口（无感刷新轮询专用，返回极小）——Vercel qwis-intel api/[...slug].js handleArticlesSince。查询参数：ts（ISO 时间戳，为空 = 建立基线只回 latest 不计数）、tab（all/later/history）、group_id、source_id。",
+  "type": "object",
+  "required": ["ok", "newCount", "latest"],
+  "properties": {
+    "ok": { "type": "boolean", "const": true },
+    "newCount": { "type": "integer", "description": "自 ts 以来的新条目数；ts 为空时恒为 0" },
+    "latest": { "type": ["string", "null"], "description": "当前最新条目的 published_at/created_at，用作下一轮轮询的 ts" }
+  }
+}

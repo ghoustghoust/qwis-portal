@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GET /api/articles 响应结构",
-  "description": "文章列表接口——本地 Express 与 Vercel Portal 两侧均须遵循此契约",
+  "description": "文章列表接口——本地 Express 与 Vercel qwis-intel 两侧均须遵循此契约。本契约以云端 api/[...slug].js handleArticles 实际返回为准；本地额外字段已标注。",
   "type": "object",
   "required": ["ok", "items"],
   "properties": {
@@ -16,16 +16,22 @@
           "title": { "type": "string" },
           "source_id": { "type": "integer" },
           "source_name": { "type": "string" },
+          "source_focus": { "type": ["integer", "null"], "description": "云端实际返回（s.focus）" },
           "url": { "type": "string" },
-          "published_at": { "type": "string", "format": "date-time" },
+          "author": { "type": ["string", "null"] },
+          "published_at": { "type": ["string", "null"], "format": "date-time" },
+          "created_at": { "type": "string" },
           "cover": { "type": ["string", "null"] },
-          "summary": { "type": "string" },
+          "summary": { "type": ["string", "null"] },
           "read_at": { "type": ["string", "null"] },
           "later": { "type": "integer", "minimum": 0 },
           "score": { "type": ["number", "null"] },
-          "tags": { "type": "string" },
+          "tags": { "type": ["string", "null"] },
+          "reason": { "type": ["string", "null"], "description": "云端实际返回" },
+          "word_count": { "type": ["integer", "null"], "description": "云端实际返回" },
           "related": {
             "type": "array",
+            "description": "仅本地 Express 返回（关联视频/事件）",
             "items": {
               "type": "object",
               "properties": {
@@ -39,21 +45,25 @@
       }
     },
     "nextCursor": { "type": ["string", "null"] },
+    "counts": {
+      "type": "object",
+      "description": "云端实际返回 {later, history}；本地 Express 额外有 total/unread",
+      "properties": {
+        "later": { "type": "integer" },
+        "history": { "type": "integer" },
+        "total": { "type": "integer", "description": "仅本地 Express" },
+        "unread": { "type": "integer", "description": "仅本地 Express" }
+      }
+    },
     "span": {
       "type": "object",
+      "description": "仅本地 Express 返回，云端无此字段",
       "properties": {
         "min": { "type": ["string", "null"] },
         "max": { "type": ["string", "null"] }
       }
     },
-    "counts": {
-      "type": "object",
-      "properties": {
-        "total": { "type": "integer" },
-        "unread": { "type": "integer" }
-      }
-    },
-    "totalClusters": { "type": "integer" },
-    "deduped": { "type": "boolean" }
+    "totalClusters": { "type": "integer", "description": "仅本地 Express（去重模式）" },
+    "deduped": { "type": "boolean", "description": "仅本地 Express 返回，云端无此字段" }
   }
 }

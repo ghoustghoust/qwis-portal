@@ -1,5 +1,7 @@
 # TOOLS.md - 全网情报系统运维备忘
 
+> 🗄 已归档 2026-09-11：内容并入 RUNBOOK。现行替代：docs/RUNBOOK.md。
+
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
 
 ## 项目环境
