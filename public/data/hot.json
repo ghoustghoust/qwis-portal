@@ -1993,18 +1993,6 @@
       "source_name": "GitHub 今日趋势"
     },
     {
-      "id": 241545,
-      "title": "英伟达",
-      "url": "https://xueqiu.com/s/NVDA",
-      "author": "雪球热股",
-      "cover": null,
-      "summary": "",
-      "score": 2,
-      "published_at": "2026-09-11T11:23:33.597Z",
-      "category": "财经热榜",
-      "source_name": "雪球热股"
-    },
-    {
       "id": 240105,
       "title": "jordan-gibbs /      hyperresearch",
       "url": "https://github.com/jordan-gibbs/hyperresearch",
@@ -2097,6 +2085,18 @@
       "summary": "",
       "score": 1,
       "published_at": "2026-09-11T11:25:33.597Z",
+      "category": "财经热榜",
+      "source_name": "雪球热股"
+    },
+    {
+      "id": 241545,
+      "title": "英伟达",
+      "url": "https://xueqiu.com/s/NVDA",
+      "author": "雪球热股",
+      "cover": null,
+      "summary": "",
+      "score": 1,
+      "published_at": "2026-09-11T11:23:33.597Z",
       "category": "财经热榜",
       "source_name": "雪球热股"
     },
@@ -2401,5 +2401,5 @@
       "source_name": "参考消息"
     }
   ],
-  "generated_at": "2026-09-11T14:01:22.864Z"
+  "generated_at": "2026-09-11T14:15:55.007Z"
 }
