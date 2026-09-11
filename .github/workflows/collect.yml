@@ -17,8 +17,11 @@ permissions:
 
 on:
   schedule:
-    # 全量采集：每 30 分钟（错峰 :07/:37，避开整点拥挤）
-    - cron: '7,37 * * * *'
+    # 全量采集：每 15 分钟（:07/:22/:37/:52 错峰）
+    # GH Actions 定时任务在高负载时会延迟甚至丢弃——2026-09-11 曾连丢 03:07~05:07 五轮。
+    # 采集是按 next_fetch_at 到期驱动的，空轮仅几秒成本，用密度换可靠性：
+    # 即使丢掉一半，最坏延迟也只有 30 分钟。
+    - cron: '7,22,37,52 * * * *'
     # 日报生成（UTC 1:03 = 北京 09:03）
     - cron: '3 1 * * *'
     # 静态快照（UTC 1:33 = 北京 09:33，日报后 30 分钟）
@@ -28,9 +31,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ─── 全量采集（每 30 分钟） ───
+  # ─── 全量采集（每 15 分钟） ───
   collect:
-    if: github.event.schedule == '7,37 * * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '7,22,37,52 * * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -109,8 +112,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/data/ static-data/
-          git diff --cached --quiet || git commit -m "chore: update data snapshots $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update data snapshots $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # 并发 dispatch 可能撞车：先 rebase 再推，失败重试 3 次
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 10
+          done
+          exit 1
 
   # ─── 数据清理（北京时间 04:13） ───
   cleanup:
