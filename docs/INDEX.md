@@ -24,6 +24,7 @@
 | 文件 | 用途 |
 |------|------|
 | `docs/INDEX.md` | **本文档**：文档索引与导航 |
+| `docs/CLOUD_PIPELINE_GUIDE.md` | **云端实时信息流交付文档**（接手必读 P0）：GH Actions 管线地图、不可破坏的不变量、改动检查清单、故障决策树 |
 | `docs/HANDOVER.md` | **交接/对接文档**：Vercel/Turso/Secrets 配置、API 列表、运维命令 ⚠️ 含敏感凭据，已 gitignore 勿提交 |
 | `docs/DEV_GUIDE.md` | **开发者上手指南**（新开发者必读）：部署架构、目录结构、快速上手 Checklist |
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
@@ -76,7 +77,7 @@
 
 ## 推荐阅读顺序
 
-1. **新接手**：`docs/DEV_GUIDE.md` → `ARCHITECTURE.md` → `docs/DEVELOPMENT_STANDARDS.md`
+1. **新接手**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路必读）→ `docs/DEV_GUIDE.md` → `ARCHITECTURE.md` → `docs/DEVELOPMENT_STANDARDS.md`
 2. **了解当前状态**：`docs/ISSUES.md` → `docs/MODULE_STATUS.md`
 3. **排障**：`docs/RUNBOOK.md` → `ARCHITECTURE.md` 已知坑
 4. **了解决策背景**：`docs/specs/` 按编号顺序阅读
