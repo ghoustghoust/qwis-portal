@@ -101,6 +101,10 @@ function verifyAuth(req) {
 
 function requireAuth(req) {
   const path = req.url.split('?')[0];
+  // 登录端点必须豁免：否则没有 token 永远拿不到 token（鸡生蛋死锁）
+  // [2026-09-11 P1-10 真根因] 此前登录 401 报 "Unauthorized" 来自本中间件而非 handleLogin，
+  // 与 ADMIN_PASSWORD 值无关——改密码永远修不好
+  if (path === '/api/auth/login' && req.method === 'POST') return null;
   // 公开 GET 请求不需要鉴权（含 /api/articles/:id）
   if (req.method === 'GET') {
     if (PUBLIC_GET_PATHS.has(path)) return null;
