@@ -324,7 +324,7 @@ async function updateSourceOk(sourceId, extra, intervalMin) {
   );
 }
 
-async function updateSourceError(sourceId, extra, errMsg) {
+async function updateSourceError(sourceId, extra, errMsg, sourceType) {
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
   await qRun(
@@ -333,7 +333,10 @@ async function updateSourceError(sourceId, extra, errMsg) {
   );
   const rows = await qAll('SELECT fail_count, enabled FROM sources WHERE id=?', [sourceId]);
   const r = rows[0];
-  if (r && r.fail_count >= 3 && r.enabled !== 0) {
+  // YouTube 对数据中心 IP 反爬会返回假 404/500（间歇性、按 IP 掷骰），
+  // 熔断阈值放宽到 10，避免把活源误杀；真死频道 10 连跪后也照停。
+  const threshold = sourceType === 'youtube' ? 10 : 3;
+  if (r && r.fail_count >= threshold && r.enabled !== 0) {
     await qRun('UPDATE sources SET enabled=0 WHERE id=?', [sourceId]);
     return { autoPaused: true };
   }
@@ -363,7 +366,7 @@ async function collectOne(source, stats) {
     await updateSourceOk(source.id, extra, intervalMin);
     stats.success++;
   } catch (err) {
-    const { autoPaused } = await updateSourceError(source.id, extra, err.message);
+    const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);
     stats.failed++;
     log(`  ✗ ${source.type}:${source.name} — ${err.message}${autoPaused ? ' (已自动暂停)' : ''}`);
   }

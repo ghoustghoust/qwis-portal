@@ -335,7 +335,7 @@ async function updateSourceOk(sourceId, extra, intervalMin) {
   });
 }
 
-async function updateSourceError(sourceId, extra, errMsg) {
+async function updateSourceError(sourceId, extra, errMsg, sourceType) {
   const db = getDb();
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
@@ -343,10 +343,12 @@ async function updateSourceError(sourceId, extra, errMsg) {
     sql: "UPDATE sources SET status='error', fail_count=COALESCE(fail_count,0)+1, extra=? WHERE id=?",
     args: [JSON.stringify(extra), sourceId],
   });
-  // 连失 3 次自动暂停
+  // YouTube 对数据中心 IP 反爬返回假 404/500，阈值放宽到 10 防误杀（与 tools/collect-turso.js 对齐）
+  const threshold = sourceType === 'youtube' ? 10 : 3;
+  // 连失 N 次自动暂停
   const row = await db.execute({ sql: 'SELECT fail_count, enabled FROM sources WHERE id=?', args: [sourceId] });
   const r = Array.from(row.rows)[0];
-  if (r && r.fail_count >= 3 && r.enabled !== 0) {
+  if (r && r.fail_count >= threshold && r.enabled !== 0) {
     await db.execute({ sql: 'UPDATE sources SET enabled=0 WHERE id=?', args: [sourceId] });
     return { failCount: r.fail_count, autoPaused: true };
   }
@@ -427,7 +429,7 @@ async function runCollect(mode = 'collect') {
       await updateSourceOk(source.id, extra, intervalMin);
       stats.success++;
     } catch (err) {
-      const { autoPaused } = await updateSourceError(source.id, extra, err.message);
+      const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);
       stats.failed++;
       console.log(`[collect] ${source.type}:${source.name} 失败: ${err.message}${autoPaused ? ' (已自动暂停)' : ''}`);
     }
