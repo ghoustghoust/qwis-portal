@@ -39,7 +39,7 @@
 | P1-12 | **前端 401 处理缺陷**：`handleResponse` 检查 `data.needLogin` 字段来决定是否弹出登录框，但后端 401 响应格式为 `{ ok: false, error: '...' }`，从不包含 `needLogin` | 用户 token 过期后登录弹窗不会自动弹出，用户只能看到空白页面 | `web/src/api.js` L94 vs `api/[...slug].js` L109 | ✅ **已修复**（移除 needLogin 检查，直接判断 res.status === 401） |
 | P1-13 | **`handleArticleLater` Vercel 端响应不一致**：Vercel 返回 `{ ok: true }` 不含 `later` 字段，本地 Express 返回 `{ ok: true, later: 0|1 }` | 前端需自行反推状态（L77 fallback），可能导致 UI 状态不同步 | `api/[...slug].js` L958-963 | ✅ **已修复**（2026-09-11：返回 later 字段，与本地 Express 一致） |
 | P1-14 | **YouTube 对数据中心 IP 反爬返回假 404/500**：频道 ID 正确、源是活的，但 GH runner / 代理出口 IP 被标记后间歇性失败 | YouTube 源间歇性采不到（每轮成功率 ~20-80% 掷骰） | 外部依赖 | 🟡 **已缓解**（2026-09-11 熔断阈值 3→10 + 复活 29 误杀源；彻底解需住宅代理 RSSHub） |
-| P1-15 | **Vercel 项目未连接 Git 集成**（实测 `link: null`）：`git push` 从不触发部署，历史部署全部是 CLI 手动；快照 job 每天 push 的 public/data/ 也不自动上线 | 代码 push 后线上不更新，极易误判"已部署" | Vercel 项目设置 | 🔴 **待处理**（Dashboard → qwis-intel → Settings → Git → Connect ghoustghoust/qwis-portal；连上后 push 即自动部署，快照随推随上线） |
+| P1-15 | **Vercel 项目未连接 Git 集成**（实测 `link: null`）：`git push` 从不触发部署，历史部署全部是 CLI 手动；快照 job 每天 push 的 public/data/ 也不自动上线 | 代码 push 后线上不更新，极易误判"已部署" | Vercel 项目设置 | ✅ **已修复**（2026-09-11：安装 Vercel GitHub App + API 完成 link，productionBranch=main，push 即自动部署） |
 
 ## P2 — 逻辑冲突/双端漂移
 
