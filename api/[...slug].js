@@ -1209,6 +1209,403 @@ async function handleImg(req) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// 管理功能 serverless 移植（2026-09-11，与本地 server/routes/* 语义对齐）
+// 覆盖：restore-all / health / queue / opml / rss-refresh / backup / data / audit
+// 不适用的云端化裁剪：文件型快照（无持久 FS）→ 配置备份改存 Turso settings；
+// 任务队列统计（job_queue 为本地调度器概念）→ 返回 pending_items 概览 + 零值占位。
+// ═══════════════════════════════════════════════════════════════════
+
+async function auditRecord(action, opts = {}) {
+  try {
+    await qRun('INSERT INTO audit_log(at, user, action, target, detail, ip) VALUES(?,?,?,?,?,?)', [
+      nowIso(), opts.user || 'admin', action, opts.target || null,
+      opts.detail ? JSON.stringify(opts.detail).slice(0, 2000) : null, opts.ip || null,
+    ]);
+  } catch { /* 审计失败不阻断业务 */ }
+}
+
+// 解冻单源（与本地 store.unfreezeSource 同语义：清计数+启用+清错误字段，保留 extra 其它配置）
+function unfreezeStmt(source) {
+  let extra = {};
+  try { extra = JSON.parse(source.extra || '{}'); } catch { /* 忽略 */ }
+  delete extra.lastError; delete extra.lastErrorAt;
+  return {
+    sql: "UPDATE sources SET enabled=1, fail_count=0, status='ok', next_fetch_at=NULL, extra=? WHERE id=?",
+    args: [JSON.stringify(extra), source.id],
+  };
+}
+
+// POST /api/sources/restore-all — 批量恢复熔断源（P3 移植）
+async function handleRestoreAll(req) {
+  const body = req.body || {};
+  let sql = 'SELECT id, name, type, fail_count, extra FROM sources WHERE fail_count >= 3 AND enabled=0';
+  const args = [];
+  if (body.type) { sql += ' AND type=?'; args.push(String(body.type)); }
+  const frozen = await qAll(sql + ' ORDER BY fail_count DESC', args);
+  if (!frozen.length) return jsonOk({ message: '无熔断源需要恢复', restored: 0 });
+  // 分批事务写入
+  for (let i = 0; i < frozen.length; i += 200) {
+    await getDb().batch(frozen.slice(i, i + 200).map(unfreezeStmt), 'write');
+  }
+  await auditRecord('sources.restore-all', { detail: { restored: frozen.length, type: body.type || null } });
+  return jsonOk({
+    message: `成功解冻 ${frozen.length} 个熔断源（已排入下一轮采集，≤15 分钟内由 runner 补抓）`,
+    restored: frozen.length,
+    refreshed: null, // serverless 不支持 refreshImmediately，交 runner 自然补抓
+    failed: null,
+    results: frozen.map((s) => ({ id: s.id, name: s.name, type: s.type, failCount: s.fail_count, restored: true })),
+  });
+}
+
+// GET /api/health/status — 综合健康快照
+async function handleHealthStatus(req) {
+  const total = (await qOne('SELECT COUNT(*) c FROM sources')).c;
+  const enabled = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=1')).c;
+  const errorSources = (await qOne("SELECT COUNT(*) c FROM sources WHERE status='error' AND enabled=1")).c;
+  const frozen = (await qOne('SELECT COUNT(*) c FROM sources WHERE fail_count >= 3 AND enabled=0')).c;
+  const frozenRows = await qAll(
+    'SELECT id, name, type, fail_count, extra FROM sources WHERE fail_count >= 3 AND enabled=0 ORDER BY fail_count DESC LIMIT 20'
+  );
+  const frozenList = frozenRows.map((r) => {
+    let extra = {};
+    try { extra = JSON.parse(r.extra || '{}'); } catch { /* 忽略 */ }
+    return {
+      id: r.id, name: r.name, type: r.type, failCount: r.fail_count,
+      lastError: extra.lastError ? String(extra.lastError).slice(0, 200) : null,
+      lastErrorAt: extra.lastErrorAt || null,
+    };
+  });
+  const errRows = await qAll("SELECT id, name, type, extra FROM sources WHERE status='error' AND extra LIKE '%lastError%'");
+  const cookieIssues = errRows.filter((r) => {
+    let extra = {};
+    try { extra = JSON.parse(r.extra || '{}'); } catch { return false; }
+    return /-2012|cookie.*(过期|失效)|登录态失效|401|-101|SESSDATA/i.test(extra.lastError || '');
+  }).map((r) => ({ id: r.id, name: r.name, type: r.type }));
+  // 云端特有：采集心跳（方案A runner 直采每轮写入）
+  const collect = await getSetting('cloud.collect', null);
+  return jsonOk({
+    sources: { total, enabled, error: errorSources, frozen },
+    frozenList, cookieIssues, collect, checkedAt: nowIso(),
+  });
+}
+
+// GET /api/health/source-stats — 云端无 job_queue 历史，用 sources 当前状态近似
+async function handleHealthSourceStats(req) {
+  const rows = await qAll(
+    'SELECT id, name, type, status, fail_count FROM sources ORDER BY fail_count DESC LIMIT 500'
+  );
+  const items = rows.map((r) => ({
+    source_id: r.id, name: r.name, type: r.type,
+    total: null, success: null, failed: r.fail_count || 0,
+    rate: r.status === 'ok' ? 100 : 0,
+  }));
+  return jsonOk({ items, days: Number(req.query.days) || 7 });
+}
+
+// POST /api/health/unfreeze-all — 批量解冻（restore-all 别名，保持本地前端兼容）
+async function handleUnfreezeAll(req) {
+  return handleRestoreAll(req);
+}
+
+// POST /api/health/unfreeze/:id — 单源解冻
+async function handleUnfreezeOne(req, id) {
+  const rows = await qAll('SELECT * FROM sources WHERE id=?', [id]);
+  if (!rows[0]) return { status: 404, body: jsonErr('not found') };
+  await getDb().batch([unfreezeStmt(rows[0])], 'write');
+  return jsonOk({ id, name: rows[0].name });
+}
+
+// ─── 队列 ───
+const QUEUE_DEFS = [
+  { name: 'wechat', endpoint: 'wechat-rss-queue.php' },
+  { name: 'bilibili', endpoint: 'bilibili-video-queue.php' },
+  { name: 'douyin', endpoint: 'douyin-video-queue.php' },
+];
+
+// GET /api/queue/pending?type=
+async function handleQueuePending(req) {
+  const conds = [];
+  const args = [];
+  if (req.query.type) { conds.push('type=?'); args.push(String(req.query.type)); }
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  const items = await qAll(`SELECT * FROM pending_items ${where} ORDER BY id DESC`, args);
+  return jsonOk({ items });
+}
+
+// GET /api/queue/stats — 云端概览（job_queue 为本地调度器概念，云端返回 pending_items 统计 + 零值占位）
+async function handleQueueStats(req) {
+  const byType = await qAll(
+    `SELECT type, COUNT(*) total,
+       SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) pending,
+       SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) failed,
+       SUM(CASE WHEN status='resolved' THEN 1 ELSE 0 END) resolved
+     FROM pending_items GROUP BY type`
+  );
+  const totalPending = byType.reduce((n, r) => n + (r.pending || 0), 0);
+  return jsonOk({
+    overall: { pending: totalPending, running: 0, completed: 0, failed: byType.reduce((n, r) => n + (r.failed || 0), 0), dead: 0 },
+    byType,
+  });
+}
+
+// GET /api/queue/failed /dead — 云端无本地任务队列，返回 pending_items 中 failed 项
+async function handleQueueFailed(req) {
+  const limit = Math.min(Number(req.query.limit) || 10, 50);
+  const items = await qAll("SELECT * FROM pending_items WHERE status='failed' ORDER BY id DESC LIMIT ?", [limit]);
+  return jsonOk({ items });
+}
+
+// POST /api/queue/sync {name?} — 拉取 PHP 云端队列 → pending_items → 清空云端
+async function handleQueueSync(req) {
+  const name = req.body && req.body.name ? String(req.body.name) : null;
+  const defs = name ? QUEUE_DEFS.filter((d) => d.name === name) : QUEUE_DEFS;
+  if (name && !defs.length) return { status: 400, body: jsonErr(`未知队列: ${name}`) };
+  const q = await getSetting('queue', {});
+  const baseUrl = String(q.baseUrl || '').replace(/\/+$/, '');
+  const token = q.token || '';
+  if (!baseUrl || !token) return { status: 400, body: jsonErr('未配置队列地址或 Token（settings.queue）') };
+
+  let imported = 0, updated = 0, cleared = 0;
+  const errors = [];
+  for (const def of defs) {
+    try {
+      const res = await fetch(`${baseUrl}/${def.endpoint}?token=${encodeURIComponent(token)}&action=pull`, {
+        signal: AbortSignal.timeout(8000),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '云端返回失败');
+      const items = Array.isArray(data.items) ? data.items : [];
+      const count = Number(data.count) || 0;
+      for (const it of items) {
+        const url = String((it && it.url) || '').trim();
+        if (!url) continue;
+        const itemName = String((it && it.name) || '').trim();
+        const existing = await qOne('SELECT * FROM pending_items WHERE type=? AND url=?', [def.name, url]);
+        if (existing) {
+          if (existing.status === 'failed') {
+            await qRun("UPDATE pending_items SET name=?, imported_at=?, status='pending', error=NULL WHERE id=?",
+              [itemName || existing.name, nowIso(), existing.id]);
+          } else {
+            await qRun('UPDATE pending_items SET name=?, imported_at=? WHERE id=?',
+              [itemName || existing.name, nowIso(), existing.id]);
+          }
+          updated++;
+        } else {
+          await qRun("INSERT INTO pending_items(type, url, name, status, imported_at) VALUES(?,?,?,'pending',?)",
+            [def.name, url, itemName, nowIso()]);
+          imported++;
+        }
+      }
+      if (count > 0) {
+        await fetch(`${baseUrl}/${def.endpoint}?token=${encodeURIComponent(token)}&action=clear`, {
+          signal: AbortSignal.timeout(8000),
+        });
+        cleared += count;
+      }
+    } catch (err) {
+      errors.push(`${def.name}: ${err.message}`);
+    }
+  }
+  await setSetting('queue.lastSyncAt', nowIso());
+  await auditRecord('queue.sync', { detail: { imported, updated, cleared } });
+  if (errors.length && imported + updated === 0 && errors.length === defs.length) {
+    return { status: 500, body: jsonErr(errors.join('；')) };
+  }
+  return jsonOk({
+    imported, updated, cleared,
+    errors: errors.length ? errors : undefined,
+    message: `导入 ${imported} 个，更新 ${updated} 个，清空云端 ${cleared} 个（视频类解析订阅在本地端执行）`,
+  });
+}
+
+// ─── OPML / RSS ───
+function parseOpml(xml) {
+  const outlines = [];
+  const re = /<outline\b[^>]*>/gi;
+  let m;
+  const attr = (tag, name) => {
+    const mm = tag.match(new RegExp(`${name}=["']([^"']*)["']`, 'i'));
+    return mm ? mm[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>') : '';
+  };
+  while ((m = re.exec(xml))) {
+    const xmlUrl = attr(m[0], 'xmlUrl');
+    if (xmlUrl) outlines.push({ name: attr(m[0], 'text') || attr(m[0], 'title') || xmlUrl, url: xmlUrl });
+  }
+  return outlines;
+}
+
+// POST /api/opml/sync {url?} — 拉取 OPML → 新增 rss 源（已存在按 url 跳过）
+async function handleOpmlSync(req) {
+  const url = (req.body && req.body.url) || (await getSetting('opml.url', null));
+  if (!url) return { status: 400, body: jsonErr('未配置 OPML 地址') };
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const xml = await res.text();
+    const outlines = parseOpml(xml);
+    if (!outlines.length) throw new Error('OPML 中未发现任何订阅源');
+    const existing = new Set((await qAll('SELECT url FROM sources')).map((r) => r.url));
+    const fresh = outlines.filter((o) => !existing.has(o.url));
+    const stmts = fresh.map((o) => ({
+      sql: "INSERT INTO sources(type, name, url, enabled, status, fail_count, created_at) VALUES('rss', ?, ?, 1, 'pending', 0, ?)",
+      args: [o.name, o.url, nowIso()],
+    }));
+    for (let i = 0; i < stmts.length; i += 200) {
+      await getDb().batch(stmts.slice(i, i + 200), 'write');
+    }
+    const result = { added: fresh.length, restored: 0, updated: 0, total: outlines.length };
+    await setSetting('wechat.lastSyncAt', nowIso());
+    await setSetting('opml.lastResult', result);
+    await auditRecord('opml.sync', { target: url, detail: result });
+    return jsonOk({ ...result, lastSyncAt: nowIso(), message: `新增 ${result.added} 个源（共解析 ${result.total} 个）` });
+  } catch (err) {
+    await setSetting('wechat.lastError', err.message);
+    return { status: 500, body: jsonErr(err.message) };
+  }
+}
+
+// POST /api/rss/refresh — 云端语义：全部可采源立即到期，runner 下轮（≤15min）全量补抓
+async function handleRssRefresh(req) {
+  const r = await qRun(
+    "UPDATE sources SET next_fetch_at=NULL WHERE enabled=1 AND type IN ('wechat','rss','x','youtube','hotlist')"
+  );
+  await auditRecord('rss.refresh', { detail: { sources: r.changes } });
+  return jsonOk({ sources: r.changes, articles: null, errors: 0, message: `已将 ${r.changes} 个源标记为立即到期，最迟 15 分钟内由云端 runner 采集` });
+}
+
+// ─── 配置备份（云端适配：无文件系统，备份 JSON 存 Turso settings） ───
+// POST /api/backup — 导出 sources/groups/settings
+async function handleBackup(req) {
+  const sources = await qAll('SELECT * FROM sources');
+  const groups = await qAll('SELECT * FROM groups');
+  const settings = await qAll('SELECT * FROM settings');
+  const counts = { sources: sources.length, groups: groups.length, settings: settings.length };
+  const name = `qwis-config-${nowIso().slice(0, 10).replace(/-/g, '')}.json`;
+  const payload = { version: 1, at: nowIso(), sources, groups, settings };
+  await setSetting('backup.latest', { name, at: nowIso(), counts, data: payload });
+  await auditRecord('backup.create', { target: name, detail: counts });
+  return jsonOk({ file: name, sizeBytes: JSON.stringify(payload).length, counts });
+}
+
+// GET /api/backup/latest
+async function handleBackupLatest(req) {
+  const b = await getSetting('backup.latest', null);
+  return jsonOk({ backup: b ? { name: b.name, at: b.at, counts: b.counts } : null });
+}
+
+// POST /api/backup/restore — 用最近一次云端备份覆盖 sources/groups/settings（upsert 语义）
+async function handleBackupRestore(req) {
+  const b = await getSetting('backup.latest', null);
+  if (!b || !b.data) return { status: 404, body: jsonErr('云端无可用备份（先执行一次备份）') };
+  const { sources = [], groups = [], settings = [] } = b.data;
+  const upsert = (table, rows) => rows.map((row) => {
+    const keys = Object.keys(row);
+    return { sql: `INSERT OR REPLACE INTO ${table}(${keys.join(',')}) VALUES(${keys.map(() => '?').join(',')})`, args: keys.map((k) => row[k]) };
+  });
+  const stmts = [...upsert('groups', groups), ...upsert('sources', sources), ...upsert('settings', settings)];
+  for (let i = 0; i < stmts.length; i += 200) {
+    await getDb().batch(stmts.slice(i, i + 200), 'write');
+  }
+  await auditRecord('backup.restore', { target: b.name, detail: b.counts });
+  return jsonOk({ restored: b.counts, from: b.name, message: `已从 ${b.name} 恢复配置` });
+}
+
+// ─── 数据管理 ───
+const DATA_TABLES = ['groups', 'sources', 'settings', 'credentials', 'articles', 'videos', 'pending_items', 'daily_reports', 'job_queue', 'audit_log'];
+const CLEAN_TABLES = [
+  { table: 'articles', col: 'COALESCE(published_at, created_at)' },
+  { table: 'videos', col: 'COALESCE(published_at, created_at)' },
+  { table: 'pending_items', col: 'imported_at' },
+  { table: 'daily_reports', col: 'generated_at' },
+];
+
+function cutoffIso(days) {
+  const d = Number(days);
+  if (!Number.isFinite(d) || d <= 0) throw new Error('保留天数必须为正数');
+  return new Date(Date.now() - d * 86400e3).toISOString();
+}
+
+// GET /api/data/stats
+async function handleDataStats(req) {
+  const tables = {};
+  for (const t of DATA_TABLES) {
+    tables[t] = (await qOne(`SELECT COUNT(*) c FROM ${t}`)).c;
+  }
+  return jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables });
+}
+
+// GET /api/data/list — 云端无文件快照，返回配置备份信息
+async function handleDataList(req) {
+  const b = await getSetting('backup.latest', null);
+  return jsonOk({ backups: [], note: '云端 Turso 不支持文件型快照；配置备份见 /api/backup', configBackup: b ? { name: b.name, at: b.at } : null });
+}
+
+// POST /api/data/cleanup/preview {days}
+async function handleDataCleanupPreview(req) {
+  try {
+    const cutoff = cutoffIso((req.body || {}).days);
+    const willDelete = {};
+    let total = 0;
+    for (const { table, col } of CLEAN_TABLES) {
+      const n = (await qOne(`SELECT COUNT(*) c FROM ${table} WHERE ${col} < ?`, [cutoff])).c;
+      willDelete[table] = n;
+      total += n;
+    }
+    return jsonOk({ days: Number((req.body || {}).days), cutoff, willDelete, total });
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) };
+  }
+}
+
+// POST /api/data/cleanup {days, confirm:true}
+async function handleDataCleanup(req) {
+  const body = req.body || {};
+  if (body.confirm !== true) return { status: 400, body: jsonErr('需 confirm:true 确认执行') };
+  try {
+    const cutoff = cutoffIso(body.days);
+    const deleted = {};
+    let total = 0;
+    for (const { table, col } of CLEAN_TABLES) {
+      const n = (await qRun(`DELETE FROM ${table} WHERE ${col} < ?`, [cutoff])).changes;
+      deleted[table] = n;
+      total += n;
+    }
+    await auditRecord('data.cleanup', { detail: { days: body.days, deleted } });
+    return jsonOk({ days: Number(body.days), cutoff, deleted, total });
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) };
+  }
+}
+
+// POST /api/data/snapshot|restore|upload — 文件型整库快照在云端不可用
+async function handleDataUnsupported(req) {
+  return {
+    status: 501,
+    body: jsonErr('云端 Turso 无文件系统，整库 .db 快照/恢复不可用；请使用配置备份（POST /api/backup），或在本地端做整库快照'),
+  };
+}
+
+// ─── 审计日志 ───
+// GET /api/audit?limit=50&action=
+async function handleAuditList(req) {
+  const limit = Math.min(Number(req.query.limit) || 50, 200);
+  const action = req.query.action;
+  const items = action
+    ? await qAll('SELECT * FROM audit_log WHERE action = ? ORDER BY at DESC LIMIT ?', [String(action), limit])
+    : await qAll('SELECT * FROM audit_log ORDER BY at DESC LIMIT ?', [limit]);
+  const total = (await qOne('SELECT COUNT(*) c FROM audit_log')).c;
+  return jsonOk({ items, total });
+}
+
+// DELETE /api/audit?days=30
+async function handleAuditCleanup(req) {
+  const days = Number(req.query.days) || 30;
+  const cutoff = new Date(Date.now() - days * 86400e3).toISOString();
+  const r = await qRun('DELETE FROM audit_log WHERE at < ?', [cutoff]);
+  return jsonOk({ deleted: r.changes });
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -1239,6 +1636,21 @@ async function dispatch(req) {
   const toggleMatch = path.match(/^\/api\/sources\/(\d+)\/toggle$/);
   if (toggleMatch && method === 'POST') return handleSourceToggle(req, Number(toggleMatch[1]));
 
+  // ─── 管理功能移植路由（2026-09-11，全部需鉴权） ───
+  if (path === '/api/sources/restore-all' && method === 'POST') return handleRestoreAll(req);
+  if (path === '/api/health/unfreeze-all' && method === 'POST') return handleUnfreezeAll(req);
+  const unfreezeMatch = path.match(/^\/api\/health\/unfreeze\/(\d+)$/);
+  if (unfreezeMatch && method === 'POST') return handleUnfreezeOne(req, Number(unfreezeMatch[1]));
+  if (path === '/api/queue/sync' && method === 'POST') return handleQueueSync(req);
+  if ((path === '/api/opml/sync' || path === '/api/rss/sync') && method === 'POST') return handleOpmlSync(req);
+  if ((path === '/api/rss/refresh' || path === '/api/opml/refresh') && method === 'POST') return handleRssRefresh(req);
+  if (path === '/api/backup' && method === 'POST') return handleBackup(req);
+  if (path === '/api/backup/restore' && method === 'POST') return handleBackupRestore(req);
+  if (path === '/api/data/cleanup/preview' && method === 'POST') return handleDataCleanupPreview(req);
+  if (path === '/api/data/cleanup' && method === 'POST') return handleDataCleanup(req);
+  if ((path === '/api/data/snapshot' || path === '/api/data/restore' || path === '/api/data/upload') && method === 'POST') return handleDataUnsupported(req);
+  if (path === '/api/audit' && method === 'DELETE') return handleAuditCleanup(req);
+
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
   if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
@@ -1251,6 +1663,15 @@ async function dispatch(req) {
     if (articleIdMatch) return handleArticleById(req, Number(articleIdMatch[1]));
     if (path === '/api/articles/since') return handleArticlesSince(req);
     if (path === '/api/articles') return handleArticles(req);
+    if (path === '/api/health/status') return handleHealthStatus(req);
+    if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
+    if (path === '/api/queue/pending') return handleQueuePending(req);
+    if (path === '/api/queue/stats') return handleQueueStats(req);
+    if (path === '/api/queue/failed' || path === '/api/queue/dead') return handleQueueFailed(req);
+    if (path === '/api/backup/latest') return handleBackupLatest(req);
+    if (path === '/api/data/list') return handleDataList(req);
+    if (path === '/api/data/stats') return handleDataStats(req);
+    if (path === '/api/audit' || path === '/api/audit/count') return handleAuditList(req);
     if (path === '/api/videos') return handleVideos(req);
     if (path === '/api/hot') return handleHot(req);
     if (path === '/api/hot/events') return handleHotEvents(req);
