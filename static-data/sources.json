@@ -1125,8 +1125,8 @@
       "group_id": 1,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 17,
@@ -5601,8 +5601,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 110,
@@ -8065,5 +8065,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T10:01:21.065Z"
+  "generated_at": "2026-09-11T10:15:56.194Z"
 }
