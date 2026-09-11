@@ -14,27 +14,28 @@
 
 ```
                         ┌─────────────────────────────────┐
-                        │ GitHub Actions                   │
-                        │ 整点采集 / 夜间密集采集           │
-                        │ 日报生成(9:00) / 快照 / 清理      │
+                        │ GitHub Actions runner            │
+                        │ 每30min 全量采集(:07/:37)         │
+                        │ 日报 09:03 / 快照 09:33          │
+                        │ 清理 04:13(均北京时间)            │
+                        │ tools/collect-turso.js 直写 Turso │
                         └─────────────┬───────────────────┘
-                                      │ POST /api/collect?key=
-                                      │ POST /api/daily-generate?key=
+                                      │ @libsql/client HTTPS 直写
                                       ▼
 ┌──────────────────┐        ┌──────────────────────────────┐
-│  本地机(开发/灾备)  │        │  Vercel 主部署(正式开发中)      │
+│  本地机(开发/灾备)  │        │  Vercel 主部署(读层+管理台)     │
 │                  │        │                              │
-│  情报系统 :3000   │ 快照同步 │  qwis-intel.vercel.app        │
-│  ├ Express+SQLite│ ──────▶ │  ├ api/[...slug].js (主 API) │
-│  ├ 阅读器/日报/热榜 │        │  ├ api/collect.js (采集函数)  │
-│  ├ /admin/ 管理台 │        │  ├ api/daily-generate.js     │
+│  情报系统 :3000   │        │  qwis-intel.vercel.app        │
+│  ├ Express+SQLite│        │  ├ api/[...slug].js (读 API)  │
+│  ├ 阅读器/日报/热榜 │        │  ├ api/collect.js (手动备份)  │
+│  ├ /admin/ 管理台 │        │  ├ api/daily-generate.js(备份)│
 │  ├ 采集调度器      │        │  ├ 读者前端(完整页面)          │
 │  └ 抖音 Playwright│        │  ├ /admin/ 管理后台           │
-└──────────────────┘        │  └ Turso (东京)              │
+└──────────────────┘        │  └ Turso (东京) ◀── 唯一数据源  │
    公众号 = wechat2rss       └──────────────────────────────┘
 ```
 
-**Vercel 为主部署,本地为开发/灾备**。`api/` 目录是正式生产代码,GH Actions 驱动定时采集和日报生成。本地 Express 保留完整功能(含抖音 Playwright),用于开发和全功能灾备。双端共享语义但独立实现,改一边要检查另一边。
+**Vercel 为读层主部署,采集主链路在 GH Actions runner(方案A,2026-09-11),本地为开发/灾备**。`api/` 目录是读 API 正式代码;采集/日报/清理由 `.github/workflows/collect.yml` 驱动 `tools/collect-turso.js` 直写 Turso(根治 Hobby 10s→单次 2 源死局,详见 docs/changes/2026-09-11-runner-direct-collect.md)。本地 Express 保留完整功能(含抖音 Playwright),用于开发和全功能灾备,未来宝塔/自有服务器全量部署时抖音功能在服务器运行。portal 历史:原 portal/ 独立仓库已合并进根项目 api/,冻结态已解除;Vercel 老项目 qwis-portal 已于 2026-09-11 删除下架。双端共享语义但独立实现,改一边要检查另一边。
 
 ## 2. 仓库与目录
 
@@ -43,7 +44,7 @@
 | `D:\全网情报系统\` | 主仓库(本地 git,非远端托管) |
 | `server/` | Express 后端:routes/(API)、services/(collectors 采集器、ai/daily 日报、events 事件聚合、alerts 报警、scheduler 调度、queue 任务队列)、db.js(本地 better-sqlite3)、cloud/db.js(双模式异步层) |
 | `web/` | 主前端(Vite+React+Tailwind),多入口:index.html(读者)+ admin.html(管理后台,独立 bundle) |
-| `api/` | **Vercel 正式生产代码**:catch-all [...slug].js(主 API)、collect.js(采集函数)、daily-generate.js(日报生成) |
+| `api/` | **Vercel 读层正式代码**:catch-all [...slug].js(读 API)、collect.js/daily-generate.js(手动备份端点) |
 | `tools/` | 运维脚本(2026-09-04 清洁后):export-portal.js、sync-portal.js、import-bestblogs-opml.js、ops-toolkit.js、audit-cloud.js、seed-hotlist.js、seed-turso.js、setup-customer.js、gen_bat.py;一次性脚本已归档 `archive/tools/` |
 | `archive/` | 全部历史资产:reports/(修复报告)、specs/(一~八期)、docs-deprecated/、analysis/、_eval/(参考工程)、tools/(一次性脚本)、测试/ |
 | `opml/` | bestblogs 源清单(wechat2rss 375 公众号 / youtube 124 / podcast 60),2026-09-04 已导入 |
@@ -58,7 +59,7 @@
 3. **catch-all serverless**:Vercel Hobby 限 12 个函数,portal/api/[...slug].js 单函数路由全部 /api/*。
 4. **云端读 Turso 优先,静态 JSON 快照兜底**(portal/public/data/)。
 5. **管理后台是独立 bundle**(admin.html),不随读者前端分发;云端 /admin/ 有口令(httpOnly cookie)。
-6. **定时双轨**:GitHub Actions 整点戳云端 /api/collect(另 :30 backfill、每日 3 点 cleanup);本地调度器管本地采集+快照同步。
+6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso——每 30min 全量到期源(:07/:37)、日报 09:03、快照 09:33、清理 04:13(北京时间);**不再**戳 Vercel /api/collect(Hobby 10s 死局)。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。
 7. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
 8. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
 9. **日报保底双保险**:定时 cron(settings daily.time,默认 08:00)+ 启动时 needsGeneration() 补跑(错过定时的场景)+ 前端打开 /daily/ 时 stale 即自动补(F3)。云端部署经 PM2 ecosystem.config.js 注入 TZ=Asia/Shanghai,定时不随服务器时区漂移。日报页(2026-09-05b 混合式改版):栏首封面卡≤3 + 紧凑列表行,栏目折叠/全展、排序(默认/最新/热度)、关键词高亮、渐进渲染(首批 12 行 + content-visibility),偏好存 localStorage(qwis.daily.*)。
@@ -143,7 +144,8 @@ server/services/
 |---|---|
 | 情报系统配置 | `D:\全网情报系统\.env`(PORT/代理/云队列/ADMIN_USER/ADMIN_PASSWORD/AUTH_SECRET)+ settings 表 |
 | Turso | `.env` 的 TURSO_DATABASE_URL/TURSO_AUTH_TOKEN;Vercel 项目环境变量(production) |
-| COLLECT_KEY | Vercel env + GitHub repo Secrets(Actions) |
+| COLLECT_KEY | Vercel env + GitHub repo Secrets(Actions) + 本地 .env —— **三处必须同步**(坑 #20) |
+| GitHub PAT(管理 Secrets/查日志) | `docs/HANDOVER.md` §1.5(该文件已 gitignore,勿提交;稳定后轮换) |
 | 云端管理口令 | Turso settings `admin.passwordHash`(首次访问设置) |
 | 报警渠道 | settings `alerts`(本地) / Turso settings(云端);支持钉钉/企微/飞书/Server酱/Bark/TG/自定义 webhook |
 | ~~微信读书 Cookie / we-mp-rss SECRET_KEY~~ | **已随 we-mp-rss 退役作废**(2026-09-04);credentials 表 weread 行可不再维护 |

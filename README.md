@@ -6,7 +6,7 @@
 
 [![License](https://img.shields.io/badge/license-Private-blue)](#)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)](#)
-[![Tests](https://img.shields.io/badge/tests-189%2F189%20passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-187%2F191-orange)](docs/ISSUES.md)
 
 ---
 
@@ -160,7 +160,7 @@ pm2 startup   # 开机自启
 ### 测试
 
 ```bash
-npm test              # 回归测试（189 项）
+npm test              # 回归测试（191 项，187 通过，4 项预存失败见 ISSUES P2-9）
 node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 ```
 
@@ -173,9 +173,9 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 | **后端** | Node.js 20+ / Express 4 / better-sqlite3 (WAL) |
 | **前端** | React 18 / Vite 5 / Tailwind CSS 3 |
 | **采集** | rss-parser / Playwright (抖音) / undici (HTTP) |
-| **调度** | node-cron / 自定义 due 驱动 tick 调度器 |
-| **云端** | Vercel Serverless (主部署) / Turso (libSQL) / PHP 队列 |
-| **部署** | Vercel (生产) / PM2 (本地开发/灾备) |
+| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso（云端主链路，2026-09-11 方案A） |
+| **云端** | Vercel Serverless (读层+管理台) / Turso (libSQL) / GH Actions runner (采集) / PHP 队列 |
+| **部署** | Vercel (生产读层) + GH Actions (定时采集) / PM2 (本地开发/灾备) |
 
 ---
 
@@ -200,16 +200,16 @@ qwis-portal/
 │   │   └── main.jsx      # 入口（IconRail 导航 + pathname 路由）
 │   ├── index.html        # 读者入口
 │   └── admin.html        # 管理后台入口（独立 bundle）
-├── api/                  # Vercel 正式生产代码
+├── api/                  # Vercel 读层 API（采集/日报端点保留为手动备份）
 │   ├── [...slug].js      # 主 API（catch-all 路由）
-│   ├── collect.js        # 采集函数
-│   └── daily-generate.js # 日报生成
+│   ├── collect.js        # 采集函数（手动备份；主链路在 GH Actions runner）
+│   └── daily-generate.js # 日报生成（手动备份）
 ├── portal/               # 原 Vercel 项目（已合并到根项目）
 ├── cloud/                # PHP 队列（Token 鉴权 + flock 原子操作）
 ├── config/               # customer-config.json（客户化配置）
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
 ├── tools/                # 运维脚本
-├── tests/                # 回归测试（node:test，189 项）
+├── tests/                # 回归测试（node:test，191 项）
 ├── docs/                 # 文档（RUNBOOK / 截图等）
 ├── archive/              # 历史资产（报告 / 规格 / 分析）
 └── trash/                # 退役代码（we-mp-rss 等）
@@ -319,9 +319,8 @@ qwis-portal/
 
 ### Q: 日报没有自动生成？
 
-- 检查调度器是否正常运行：`npm run pm2:logs`
-- 手动触发：管理后台 → 「日报设置」Tab → 「重新生成」
-- 前端打开 `/daily/` 时 stale 会自动补跑
+- 云端（Vercel）：每天北京时间 09:03 由 GH Actions runner 生成；排查先看 Turso settings `cloud.collect` 心跳，再看 GitHub Actions 运行记录
+- 本地：检查调度器 `npm run pm2:logs`；手动触发：管理后台 → 「日报设置」Tab → 「重新生成」；前端打开 `/daily/` 时 stale 会自动补跑
 
 ### Q: 如何备份和恢复数据？
 
@@ -337,11 +336,12 @@ qwis-portal/
 | `npm start` | 启动服务（生产模式） |
 | `npm run dev` | 开发模式（nodemon 热重载） |
 | `npm run build` | 构建前端 |
-| `npm test` | 运行回归测试（189 项） |
+| `npm test` | 运行回归测试（191 项，187 通过，4 项预存失败见 ISSUES P2-9） |
 | `npm run pm2:start` | PM2 启动守护进程 |
 | `npm run pm2:restart` | PM2 重启 |
 | `npm run pm2:logs` | PM2 查看日志 |
 | `node smoke-test.js` | 冒烟测试（零副作用） |
+| `node tools/collect-turso.js collect` | 手动直采云端 Turso（读 .env 的 TURSO_*，主链路同款脚本） |
 | `node tools/audit-cloud.js` | 云端 19 项健康检查 |
 | `node tools/sync-portal.js` | 手动同步门户快照 |
 
@@ -352,6 +352,8 @@ qwis-portal/
 | 文档 | 说明 |
 |------|------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 架构文档（系统全景、数据通路、已知坑、协作规则） |
+| [docs/changes/2026-09-11-runner-direct-collect.md](docs/changes/2026-09-11-runner-direct-collect.md) | **方案A 变更记录**（云端采集移入 runner 直写 Turso，根治网页不自动更新） |
+| [docs/HANDOVER.md](docs/HANDOVER.md) | 交接/对接文档（Vercel 配置、凭据速查、API 列表）⚠️ 含敏感凭据，已 gitignore |
 | [docs/DEV_GUIDE.md](docs/DEV_GUIDE.md) | 开发者上手指南 |
 | [docs/DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) | 开发规范与验收标准 |
 | [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
@@ -369,7 +371,7 @@ qwis-portal/
 - **敏感文件已排除**：`cloud/token.json`、`.env`、`data/` 均在 `.gitignore` 中
 - **bat 文件必须 GBK 编码**：用 `tools/gen_bat.py` 生成，不要手改
 - **better-sqlite3 单进程锁**：不可 cluster 多实例，PM2 配置 `instances: 1`
-- **Vercel 为主部署**：`api/` 目录为正式生产代码，本地 Express 为开发/灾备
+- **Vercel 为读层主部署**：`api/` 目录为读 API 代码；采集/日报主链路在 GH Actions runner（`tools/collect-turso.js` 直写 Turso），本地 Express 为开发/灾备
 
 ---
 

@@ -1,7 +1,7 @@
 # 全网情报系统 · 模块功能状态
 
 > 逐模块列出本地 Express 与 Vercel 的实际功能状态与限制。
-> 最后更新：2026-09-09（第四次深度扫描后）
+> 最后更新：2026-09-11（方案A：采集主链路移入 GH Actions runner 直写 Turso）
 
 ---
 
@@ -23,10 +23,10 @@
 | **热点榜** | ✅ | ✅ | Vercel 仅最近 3 天 200 条 |
 | **事件聚合** | ✅ | ✅ | 72h 窗口 Jaccard 聚类 |
 | **日报查看** | ✅ | ✅ | Vercel getOrGenerate 自动生成 |
-| **日报生成** | ✅ | ⚠️ | Vercel GH Actions + getOrGenerate 双触发（已验证），但手动 regenerate 路由缺失 |
-| **我的阅读** | ✅ | ❌ | Vercel 只返回 counts，无 items；查询参数全部被忽略 |
-| **阅读批量操作** | ✅ | ❌ | Vercel 无 /api/reading/batch |
-| **阅读导出** | ✅ | ❌ | Vercel 无 /api/reading/export |
+| **日报生成** | ✅ | ✅ | 主链路：GH runner 每天 09:03 生成；Vercel getOrGenerate 兜底；手动 regenerate 路由仍缺失 |
+| **我的阅读** | ✅ | ✅ | 2026-09-09 已修复（P0-1） |
+| **阅读批量操作** | ✅ | ✅ | 2026-09-09 已修复（P0-8） |
+| **阅读导出** | ✅ | ✅ | 2026-09-09 已修复（P0-8） |
 | **源库管理** | ✅ | ❌ | Vercel 无 /api/sources/library |
 | **源批量操作** | ✅ | ❌ | Vercel 无 /api/sources/batch |
 | **自动分类** | ✅ | ❌ | Vercel 无 /api/sources/autoclassify |
@@ -36,11 +36,11 @@
 | **报警管理** | ✅ | 🔲 | Vercel 无报警引擎 |
 | **数据备份/恢复** | ✅ | 🔲 | Vercel 无整库备份 |
 | **健康自检** | ✅ | ✅ | /api/meta 已加入公开白名单 |
-| **采集触发** | ✅ | ✅ | Vercel 走 GH Actions |
+| **采集触发** | ✅ | ✅ | 主链路：GH Actions runner 每 30min 直写 Turso；Vercel /api/collect 仅手动备份（Hobby 10s 限 2 源） |
 | **抖音采集** | ✅ | ❌ | 需要 Playwright，仅本地 |
-| **B站采集** | ✅ | ⚠️ | Vercel 缺 wbi 签名，走 RSS 兜底 |
-| **热榜采集** | ✅ | ✅ | — |
-| **RSS 采集** | ✅ | ✅ | — |
+| **B站采集** | ✅ | ❌ | wbi 签名未移植到云端（纯 crypto 可移植 runner，待做） |
+| **热榜采集** | ✅ | ✅ | ⚠️ 必须浏览器 UA（newsnow 对自定义 UA 403），2026-09-11 已修 |
+| **RSS 采集** | ✅ | ✅ | runner 直采；YouTube/X 在 runner 海外直连无需代理 |
 | **图片代理** | ✅ | ⚠️ | Vercel 无代码层 SSRF 防护 |
 | **AI 设置** | ✅ | ✅ | Agencs AI 配置 + 功能开关，管理后台「AI 能力」Tab |
 | **AI 翻译** | 🔲 | 🔲 | 待实现 |

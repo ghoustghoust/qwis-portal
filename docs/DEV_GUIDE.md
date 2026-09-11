@@ -8,20 +8,23 @@
 
 全网情报系统（QWIS）是私人 AI 情报阅读器，聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报，支持 AI 辅助分析（翻译/摘要/分类）和多端推送报警。
 
-**当前部署形态**：Vercel Serverless 为主部署，本地 Express + SQLite 为开发/灾备。
+**当前部署形态**（2026-09-11 方案A）：Vercel Serverless 为读层主部署；采集/日报/清理主链路在 GitHub Actions runner（`tools/collect-turso.js` 直写 Turso）；本地 Express + SQLite 为开发/灾备。
 
 ---
 
 ## 二、部署架构
 
 ```
-GitHub Actions（定时采集/日报/快照/清理）
-        │
+GitHub Actions runner（采集/日报/快照/清理，直写 Turso）
+        │ @libsql/client HTTPS
         ▼
-Vercel Serverless（主部署）
+Turso（东京，唯一云数据源）
+        ▲
+        │ 读
+Vercel Serverless（读层主部署）
   ├─ api/[...slug].js    主 API（读 Turso）
-  ├─ api/collect.js      采集函数
-  ├─ api/daily-generate.js  日报生成
+  ├─ api/collect.js      采集函数（手动备份）
+  ├─ api/daily-generate.js  日报生成（手动备份）
   ├─ 读者前端（Vite+React+Tailwind）
   └─ Turso（东京，云数据库）
 
@@ -38,7 +41,7 @@ Vercel Serverless（主部署）
 
 | 路径 | 说明 |
 |------|------|
-| `api/` | **Vercel 正式生产代码**：catch-all API、采集函数、日报生成 |
+| `api/` | **Vercel 读层 API**：catch-all 主 API；采集/日报函数为手动备份（主链路在 runner） |
 | `server/` | Express 后端（本地开发/灾备）：routes/services/db.js |
 | `web/` | 主前端（Vite+React+Tailwind）：index.html + admin.html |
 | `portal/` | 原 Vercel 项目（已合并到根项目，待清理） |

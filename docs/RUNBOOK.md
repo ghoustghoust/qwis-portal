@@ -9,7 +9,7 @@
 - 页面：`/reader/` 阅读器、`/daily/` 日报、`/hot/` 热点榜、`/admin/` 管理台（独立 bundle）
 - 源类型：rss（含 wechat2rss 公众号、播客）、youtube（走官方 feed，需代理）、bilibili、douyin（Playwright，仅本地）、x（RSSHub）、hotlist（newsnow）、wechat（OPML）
 - 数据：`data/app.db` + `data/backups/`；配置：`.env` + settings 表 + `config/customer-config.json`
-- 云端：Vercel 主部署（`api/` 正式生产代码，GH Actions 定时采集）；PHP 队列（cloud/*.php，接收手机/桌面提交链接）
+- 云端：Vercel 读层主部署（`api/` 读 API）+ GH Actions runner 直采 Turso（方案A，详见 §10）；PHP 队列（cloud/*.php，接收手机/桌面提交链接）
 
 ## 2. 日常启停（Windows 本机）
 
@@ -38,6 +38,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ## 5. 熔断与恢复
 
 - 规则：源连失 3 次自动 `enabled=0`（熔断）；恢复时 fail_count 清零
+- **例外（2026-09-11）**：云端链路（api/collect.js、tools/collect-turso.js）对 `youtube` 类型阈值放宽为 10 次——YouTube 对数据中心 IP 反爬返回假 404/500，3 次会误杀活源；本地 Express 调度器仍为 3 次
 - **统一解冻语义**（`store.unfreezeSource`）：enabled=1 + fail_count=0 + 清 extra.lastError/lastErrorAt，保留 intervalMin/etag
 - 入口（任选）：管理台各 Tab「批量恢复」按钮 → `POST /api/sources/restore-all`（支持 `type` 过滤、`refreshImmediately`，立即刷新软上限 20）；CLI `node tools/ops-toolkit.js unfreeze [--yes]`；单源用 toggle 开关
 - ⚠️ 不要再手写 SQL 清 extra——intervalMin 存在 extra 里，整体清空会让源级间隔静默回退默认值
@@ -45,7 +46,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ## 6. 健康自检与报警
 
 ```powershell
-npm test                      # 回归测试（189 项，2026-09-06）
+npm test                      # 回归测试（191 项，187 通过，2026-09-11）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
 node tools/audit-cloud.js     # 云端 19 项自检
 node tools/ops-toolkit.js check    # 健康总览
@@ -79,21 +80,27 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 - **端口被占**：`.env` 改 `PORT`
 - **图片不显示**：微信图片走 `/api/img` 代理（SSRF 防护+7 天缓存）；wechat2rss 图片由对方 img-proxy 代理（单点依赖，已知情接受）
 
-## 10. Vercel 主部署运维
+## 10. Vercel 主部署运维（2026-09-11 方案A 后）
+
+定时管线全部在 GH Actions runner 内执行 `tools/collect-turso.js` 直写 Turso，
+**不再**调用 Vercel 函数（Hobby 10s 限制）。无需手动干预：
 
 ```powershell
-# GH Actions 定时任务（自动执行，无需手动干预）
-# 整点采集（每小时 :00）
-# 日报生成（北京时间 9:00）
-# 静态快照（北京时间 9:30）
-# 数据清理（北京时间 4:00）
+# GH Actions 定时任务（北京时间）
+# 采集：每 30 分钟（:07/:37）  node tools/collect-turso.js collect
+# 日报：09:03                 node tools/collect-turso.js daily
+# 快照：09:33                 node tools/generate-snapshots.js（push 回仓库）
+# 清理：04:13                 node tools/collect-turso.js cleanup
 
-# 手动触发采集
+# 手动触发：GitHub → Actions → collect → Run workflow（四个 job 全跑）
+# 本地手动直采（读本地 .env 的 TURSO_* / HTTPS_PROXY）
+node tools/collect-turso.js collect
+
+# 备份端点（Vercel 函数仍可用，仅手动救急；Hobby 10s 单次仅 2 源）
 curl -X POST "https://qwis-intel.vercel.app/api/collect?key=$COLLECT_KEY"
+curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY"
 
-# 手动触发日报生成
-curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY&windowHours=48"
-
+# 采集停滞排查：查 Turso settings 表 key='cloud.collect' 的 lastRunAt 心跳
 # 查看 Vercel 部署日志
 # Vercel Dashboard → Project → Deployments → Functions → Logs
 ```
@@ -102,5 +109,5 @@ curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY&
 
 - 热点榜数据源：AIHOT 聚合源文章（extra.aggregator=1），分类映射六胶囊（模型/产品/行业/论文/教程/观点）
 - 事件榜：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度=Σ权重×24h 半衰×1.5^(信源数-1)，缓存 5min
-- 日报：夜间 23:00-06:00 密集采集，每天 09:00 生成（AI 分析 + 规则分类 + 去重安检）
+- 日报：每天 09:03（北京时间，GH Actions runner 生成；本地为 settings daily.time 默认 08:00）
 - 全文补抓：每 6h（02/08/14/20 点）补抓 <1000 字符的薄内容，限速 2s/条

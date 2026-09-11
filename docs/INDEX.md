@@ -1,7 +1,7 @@
 # 全网情报系统 · 文档索引
 
 > 所有有效文档的路径与用途速查。供 Agent 和开发者快速定位上下文。
-> 最后更新：2026-09-09
+> 最后更新：2026-09-11（方案A 后）
 
 ---
 
@@ -9,15 +9,22 @@
 
 | 文件 | 用途 |
 |------|------|
-| `ARCHITECTURE.md` | **架构移交文档**（必读）：Vercel 主部署架构、数据通路、凭据位置、已知坑、协作规则 |
+| `ARCHITECTURE.md` | **架构移交文档**（必读）：Vercel 读层 + GH Actions runner 直采架构、数据通路、凭据位置、已知坑、协作规则 |
 | `README.md` | 项目 README：快速上手、目录结构、文档导航 |
 | `AGENTS.md` | Agent 通用工程规约：会话启动流程、代码规范、工具使用约束 |
+
+## 变更记录（docs/changes/）
+
+| 文件 | 用途 |
+|------|------|
+| `docs/changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH Actions runner 直写 Turso（根治网页不自动更新），含根因链/验证数据/遗留事项 |
 
 ## 开发文档（docs/）
 
 | 文件 | 用途 |
 |------|------|
 | `docs/INDEX.md` | **本文档**：文档索引与导航 |
+| `docs/HANDOVER.md` | **交接/对接文档**：Vercel/Turso/Secrets 配置、API 列表、运维命令 ⚠️ 含敏感凭据，已 gitignore 勿提交 |
 | `docs/DEV_GUIDE.md` | **开发者上手指南**（新开发者必读）：部署架构、目录结构、快速上手 Checklist |
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
