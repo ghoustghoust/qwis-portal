@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 65,
-    "generated_at": "2026-09-11T12:31:23.390Z",
+    "id": 66,
+    "generated_at": "2026-09-11T12:46:04.742Z",
     "window_hours": 30,
     "sections": [
       {
@@ -125,6 +125,26 @@
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6d7106c4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FiazCrKuBFsicBQ56QCaT4Qp5AuXN89LPpDJd7pdUBicaribLDNFWKqmmK3NBbGiat3Q3iaB2oqAJ1A9ee55alkcL2gia22c7j63DNtVes6faXJcnwc%2F0%3Fwx_fmt%3Djpeg"
           },
           {
+            "id": 242126,
+            "title": "生数双线破局背后：朱军团队正在为世界模型立「通用语法」",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5ODEzMjIyMA==&mid=2247745001&idx=1&sn=52e68befb4dfe67d892e957199ca03ee",
+            "source": "AI科技评论",
+            "published_at": "2026-09-10T12:54:00.000Z",
+            "score": null,
+            "summary": "但在真正动手之前，机器人其实要先回答一串问题：灯泡是否已经对准？再拧一点会不会滑丝？指尖感到阻力时，是该加力，还是退半格重新校正？如果下一步错了，损失的不只是一次“生成失败”，而是一次真实的掉落、损坏，甚至对环境和人的风险。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c4de3a7b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXqAicMdcoiafMyzwoKdxiberW1YtNgicnSeEELBq1yy0hkZ0iaft91SjAoyRvvCX8ibjLrvCP3Qwzyic03mlia70gRTUuusEgyscbgMsW6w5tMibVSdg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 242127,
+            "title": "NUS Show Lab 寿政教授：打通自回归与离散扩散，打造下一代具身大模型底座｜ECCV 2026",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5ODEzMjIyMA==&mid=2247745001&idx=2&sn=afb488fbea0645036a5b57ab2fe96609",
+            "source": "AI科技评论",
+            "published_at": "2026-09-10T12:54:00.000Z",
+            "score": null,
+            "summary": "不同于拼接独立模型的传统做法，NUS Show Lab 选择了一条更原生的架构路线：在单个 Transformer 中同时打通自回归预测与离散扩散生成。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e8e61dd0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXqAicMdcoiafNWnNg3tz2bs17Hml1D1OEmv1pMkdpq0mMSpovPfiadomibL9z5meHwrQmUNA2lwW9EeDDoibNuIb7hnDJQ1Q2u76MqxSRicDkNvUQ%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
             "id": 206767,
             "title": "AI 破解数学千禧年难题，却被人类数学家声讨？",
             "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDM4MDExNQ==&mid=2832654424&idx=2&sn=6bd1c6f235fcb3040c1a96f807d4b771",
@@ -173,26 +193,6 @@
             "score": null,
             "summary": "雷峰网独家获悉，近日国内多家头部AI大厂正在批量扫货 Claude 20X 账号，其中某互联网大厂一次性拿下约 70 万个账号，主要用作模型蒸馏，直接导致市场上的Claude 20X 特权号被炒至两到三千元不等。",
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=43e19e88&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg6FGQ8H1unEbWOX3GbULibpfdfQDSiahpyLz3RzgjluL62qCTamDBE0STG5R5sX6bRu3WexvrZQuOHosAzPnQnv68icr815nuMNeY%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 205887,
-            "title": "“末日预言”刷屏！AI将让更多人失业？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NDMxMzQxMA==&mid=2651692215&idx=2&sn=769d8209061b700f75590c88bfc575cf",
-            "source": "东方财富网",
-            "published_at": "2026-09-10T11:42:00.000Z",
-            "score": null,
-            "summary": "AI到底会给人类带来什么？昨晚，全球顶尖的大模型公司Anthropic发布了一篇经济报告，预测AI将在2030年深刻影响美国的经济和失业率；也正是在同一天，这家公司的一位离职研究员警告：“AI会在十年内杀死所有人”。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bd52917f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8ictYbW1iarX7DcqbGVgJ6B1deMV0MZXUAOXgMwcRxbZDlN8K87jJYrQxJqqKggPFQ32Zicjz0ibmgoQvsaV9ialWEnvb6VvSJKynSQZicrjExLpI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 211699,
-            "title": "国家级顶流AI赛事再开战！第三届「兴智杯」报名开启，等你来战",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651056207&idx=2&sn=d2ff6577e47c8e95c9dc78220a84e788",
-            "source": "机器之心",
-            "published_at": "2026-09-10T11:36:00.000Z",
-            "score": null,
-            "summary": "2026 年 5 月，Anthropic 披露内部合并进入代码库的代码中，超过 80% 已经由 Claude 编写。与 2024 年相比，2026 年第二季度其典型工程师每天合并的代码量提升到了约 8 倍。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c3d2c791&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5L8bhP5dIqFZl9ORON3NWanDEqvE3NIZPPodfYqGOcHkB5LrJKkY0NxeibH14iaea698SemREZOHKrc61oWpfWibZYkfJOnUadr2W3TZokP3q8%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -310,5 +310,5 @@
       "totalItems": 28
     }
   },
-  "generated_at": "2026-09-11T12:45:53.521Z"
+  "generated_at": "2026-09-11T13:01:25.861Z"
 }
