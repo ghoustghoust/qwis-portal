@@ -137,6 +137,7 @@ server/services/
 20. **GH Actions Secrets 与 Vercel env 是两套独立存储**(2026-09-11):COLLECT_KEY 只改一边 → 全部定时任务 403 静默失败 2 天才发现。改密钥必须三处同步(本地 .env / Vercel env / GH Secrets),且要有失败告警。
 21. **vercel.json 不做 ${VAR} 插值,且 Vercel Cron 用 GET**:crons 块里写 `?key=${COLLECT_KEY}` 传的是字面量;collect.js 只收 POST → 该 cron 从未生效(已移除,定时管线全归 GH Actions)。
 22. **外部 undici 包的 ProxyAgent 不能喂给 Node 内置 fetch**(符号不兼容,一律 "fetch failed"):走代理必须配套用 undici 包自带的 fetch(tools/collect-turso.js 参考实现)。进程退出用 exitCode 自然退出,process.exit 会触发 libuv UV_HANDLE_CLOSING 断言(exit 127)。
+23. **无索引列上大表查询在 libsql 远程是致命的**(2026-09-11):articles 3.6 万行+全文列后,`MAX(created_at)`、`WHERE created_at>=?`、`ORDER BY COALESCE(published_at,created_at)` 全表扫描 43-46s → Vercel 30s 超时全线 504。修复:补 `idx_articles_created` + 表达式索引 `idx_articles_pubco`(查询 0.1s)。**新增高频过滤/排序列时必须同步建索引,本地 better-sqlite3 快感觉不出来,云端必炸**。
 
 ## 6. 凭据与配置位置
 

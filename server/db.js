@@ -115,6 +115,13 @@ try { db.exec('ALTER TABLE articles ADD COLUMN original_url TEXT'); } catch { /*
 db.exec('CREATE INDEX IF NOT EXISTS idx_articles_published ON articles(published_at)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_videos_published ON videos(published_at)');
 
+// 2026-09-11：云端 504 事故修复——数据量 3.6 万+全文列后，无索引全表扫描 43-46s 超 Vercel 30s
+// idx_articles_created: meta MAX(created_at) / status todayNew/weekNew
+// idx_articles_pubco: 列表排序 ORDER BY COALESCE(published_at, created_at) 表达式索引
+// （Turso 生产库已同步执行，此处为本地 parity + 新库建库）
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_created ON articles(created_at)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(published_at, created_at))');
+
 // 六期（F6）：articles.category 存 feed 的 <category>（AIHOT 分类映射的主依据）
 try { db.exec('ALTER TABLE articles ADD COLUMN category TEXT'); } catch { /* 列已存在 */ }
 // 增量列迁移（T48）：sources.fail_count 记录连续抓取失败次数（连失 3 次自动暂停）

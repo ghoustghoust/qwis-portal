@@ -199,6 +199,7 @@ collect.yml cron: 整点采集 + 夜间密集 + 日报 + 快照 + cleanup
 | 2026-09-09 | **P0-9 RSS 采集超时修复** | 根因：Vercel Hobby 函数超时 10s（maxDuration:60 仅 Pro），MAX_SOURCES=30+FETCH_TIMEOUT=8000 耗时 56-69s 被强制终止。修复：MAX_SOURCES 30→3, FETCH_TIMEOUT 8000→3000，总耗时 ~9s。手动验证 collect 成功（3 源/13 篇），最新文章 published_at 更新到 9/9 13:30 |
 | 2026-09-11 | **方案A：采集移入 GH Actions runner 直写 Turso** | 根治"网页不自动更新"。根因五连：GH Secret COLLECT_KEY 值错误（403 全灭 2 天）/ Hobby 10s→单次 2 源死局 / newsnow UA 403 热榜全灭 / vercel.json cron 从未生效 / YouTube 反爬假 404 误熔断。修复：新增 tools/collect-turso.js（每 30min 全量到期源直写）；重写三 Secrets；全链路浏览器 UA；复活 19 热榜+29 YouTube 误熔断源；YouTube 熔断阈值 3→10；移除 vercel.json crons；workflow 补 contents:write；快照脚本容错无 .env。详见 `docs/changes/2026-09-11-runner-direct-collect.md` |
 | 2026-09-11 | **Vercel 老项目下架** | 删除 `qwis-portal` 项目（qwis-portal.vercel.app 已 404）；剩余 qwis-intel（主站）+ portal（待确认） |
+| 2026-09-11 | **/api/* 全线 504 修复** | 根因：articles 表 3.6 万行+全文列后，`MAX(created_at)`/`WHERE created_at>=?`/`ORDER BY COALESCE(published_at,created_at)` 无索引全表扫描 43-46s 超 Vercel 30s 上限。修复：Turso 补 `idx_articles_created` + 表达式索引 `idx_articles_pubco`（查询降至 0.1s），server/db.js 同步补索引保持双端 parity。注：与另一个 agent 同时间推送的 P1 修复（79db67d）无因果关系——其 diff 未触碰 articles/meta/status 查询路径 |
 
 ---
 
