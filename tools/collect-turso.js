@@ -362,7 +362,9 @@ async function collectOne(source, stats) {
     if (result.lastModified) extra.lastModified = result.lastModified;
     if (extra.lastError) { delete extra.lastError; delete extra.lastErrorAt; }
 
-    const intervalMin = Number(extra.intervalMin) || (source.type === 'hotlist' ? 30 : 480);
+    // 2026-09-11：RSS 默认间隔 480→60min。runner 容量充足（全量一轮几分钟），
+    // ETag 304 使重复拉取几乎免费；8h 间隔会导致公众号新文章延迟大半天才入流。
+    const intervalMin = Number(extra.intervalMin) || (source.type === 'hotlist' ? 30 : 60);
     await updateSourceOk(source.id, extra, intervalMin);
     stats.success++;
   } catch (err) {

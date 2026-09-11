@@ -425,7 +425,7 @@ async function runCollect(mode = 'collect') {
       if (result.lastModified) extra.lastModified = result.lastModified;
       if (extra.lastError) { delete extra.lastError; delete extra.lastErrorAt; }
 
-      const intervalMin = Number(extra.intervalMin) || (source.type === 'bilibili' ? 60 : (source.type === 'hotlist' ? 30 : 480));
+      const intervalMin = Number(extra.intervalMin) || (source.type === 'bilibili' ? 60 : (source.type === 'hotlist' ? 30 : 60));
       await updateSourceOk(source.id, extra, intervalMin);
       stats.success++;
     } catch (err) {
