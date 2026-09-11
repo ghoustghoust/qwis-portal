@@ -127,6 +127,24 @@
       "source_focus": 0
     },
     {
+      "id": 248274,
+      "source_id": 65,
+      "title": "Arizona’s lifeline for chip manufacturing is drying up",
+      "url": "https://www.theverge.com/science/993522/water-chip-semiconductor-manufacturing-colorado-river",
+      "author": "Justine Calma",
+      "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2293067544.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100",
+      "summary": "Arizona, an epicenter for the bipartisan push to revive American chip manufacturing, is about to lose more than a quarter of the water it typically pulls each year from the Colorado River.",
+      "published_at": "2026-09-11T12:00:00.000Z",
+      "read_at": null,
+      "later": 0,
+      "created_at": "2026-09-11T13:31:34.105Z",
+      "score": null,
+      "tags": null,
+      "word_count": 969,
+      "source_name": "The Verge",
+      "source_focus": 0
+    },
+    {
       "id": 247475,
       "source_id": 657,
       "title": "E251 对话方言：你相信的是价值投资，还是巴菲特的造富神话？",
@@ -3581,25 +3599,7 @@
       "word_count": 260,
       "source_name": "每日经济新闻",
       "source_focus": 0
-    },
-    {
-      "id": 224495,
-      "source_id": 356,
-      "title": "涨价！电子布大牛股2连板，网友：刚卖出就涨停",
-      "url": "https://mp.weixin.qq.com/s?__biz=MjI3Njc0NTk4MQ==&mid=2650641001&idx=1&sn=cfc8c621a35c61a3586e7490bb42937d",
-      "author": "",
-      "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=593cbcc7&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlXk9HhZzYAdc4WETqq8IF73hOMA5HHDSvfFUiat9g98GERGY0C6zSfHyAP99g9WnqnlLx38u8fhoxhPVDX4oSXsMzLtFicC3Nbc8iaMdGh200s%2F0%3Fwx_fmt%3Djpeg",
-      "summary": "9月11日，A股电子布概念板块逆市走强，九鼎新材（002201.SZ）收获2连板，长海股份（300196.SZ）、金安国纪（002636.SZ）、国际复材（301526.SZ）、中国巨石（600176.SH）、生益科技（600183.SH）等产业链个股同步跟涨。",
-      "published_at": "2026-09-11T07:50:00.000Z",
-      "read_at": null,
-      "later": 0,
-      "created_at": "2026-09-11T09:16:34.812Z",
-      "score": null,
-      "tags": null,
-      "word_count": 1225,
-      "source_name": "21世纪经济报道",
-      "source_focus": 0
     }
   ],
-  "generated_at": "2026-09-11T13:31:10.492Z"
+  "generated_at": "2026-09-11T13:45:52.704Z"
 }
