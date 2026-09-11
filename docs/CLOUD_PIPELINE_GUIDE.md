@@ -135,8 +135,8 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | 管理后台登录 | ✅ | Vercel | 2026-09-11 修复中间件死锁 |
 | 每日日报 09:03 | ✅ | GH runner | collect-turso.js daily |
 | 静态快照 | ✅ | GH runner | push 后自动部署上线 |
-| **AI 翻译** | ✅ | GH runner | collect-turso.js translate（每轮采集后） |
-| AI 对话/摘要（手动触发） | ✅ | Vercel | /api/ai/chat，调 Agnes API |
+| **AI 翻译** | ⚠️ 待配 key | GH runner | 代码已就绪（collect-turso.js translate，双供应商链）；现有 Agnes key 绑调用方 IP（仅本地代理出口可用，云机房一律 401），**云端需配 DEEPSEEK_API_KEY（GH Secret）后自动启用** |
+| **AI 对话/摘要（手动触发）** | ⚠️ 待配 key | Vercel | /api/ai/chat 已改供应商链；同样待 DEEPSEEK_API_KEY（Vercel env） |
 | YouTube/X | ⚠️ 间歇 | GH runner | 反爬掷骰，阈值已放宽 |
 | B站 | ❌ | 仅本地 | wbi 签名未移植（纯 crypto 可移植，待做） |
 | 抖音 | ❌ | 仅本地 | 需 Playwright 登录态，永远本地 |

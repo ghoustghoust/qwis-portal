@@ -107,7 +107,7 @@ node tools/collect-turso.js translate   # 手动翻译一批英文文章
 | P1-10 登录修复 | 真根因 = `requireAuth` 未豁免 POST /api/auth/login（中间件死锁，与密码值无关）；已修 + Vercel env 凭据同步为本地 .env 值 |
 | /api/* 504 | articles 表补 `idx_articles_created` + `idx_articles_pubco` 表达式索引（43s→0.1s） |
 | P1-15 Git 集成 | Vercel 项目此前 `link: null` 从未自动部署；已安装 GitHub App + API 连接，push 即部署 |
-| AI 翻译上云 | `tools/collect-turso.js translate` 模式（移植 translate-skill.js 语义），每轮采集后自动翻译英文文章；Turso 补 `translated_title`/`translated_content` 列；GH Secret 新增 `AGNES_API_KEY` |
+| AI 翻译上云 | `tools/collect-turso.js translate` 模式（移植 translate-skill.js 语义），每轮采集后自动翻译英文文章；Turso 补 `translated_title`/`translated_content` 列；GH Secret 新增 `AGNES_API_KEY`。**注意：现有 Agnes key 绑 IP 地区（仅本地代理可用，云机房 401），云端翻译需用户提供 DeepSeek key 后启用**（双供应商回退链已内置，配 DEEPSEEK_API_KEY 即自动生效）。决策：不借用 starhub 的 key，情报系统独立配置 |
 
 ### 8.1 GitHub App 授权步骤（备查）
 
