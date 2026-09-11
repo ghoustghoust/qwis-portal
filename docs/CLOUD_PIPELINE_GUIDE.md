@@ -129,21 +129,21 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | 能力 | 本地关机后 | 运行在 | 原因/备注 |
 |------|:---:|------|------|
 | 热榜 30min 准实时 | ✅ | GH runner | tools/collect-turso.js collect |
-| 公众号/RSS 每天 3 轮 | ✅ | GH runner | 到期驱动 |
+| 公众号/RSS 每小时 1 轮 | ✅ | GH runner | 到期驱动（60min 间隔） |
 | 数据存储 | ✅ | Turso | 云数据库 |
 | 网页读取/搜索/已读标记 | ✅ | Vercel | api/[...slug].js |
 | 管理后台登录 | ✅ | Vercel | 2026-09-11 修复中间件死锁 |
-| 每日日报 09:03 | ✅ | GH runner | collect-turso.js daily |
-| 静态快照 | ✅ | GH runner | push 后自动部署上线 |
-| **AI 翻译** | ⚠️ 待配 key | GH runner | 代码已就绪（collect-turso.js translate，双供应商链）；现有 Agnes key 绑调用方 IP（仅本地代理出口可用，云机房一律 401），**云端需配 DEEPSEEK_API_KEY（GH Secret）后自动启用** |
-| **AI 对话/摘要（手动触发）** | ⚠️ 待配 key | Vercel | /api/ai/chat 已改供应商链；同样待 DEEPSEEK_API_KEY（Vercel env） |
+| 每日日报 09:03 | ✅ | GH runner | collect-turso.js daily（仅 schedule；dispatch 只跑采集） |
+| 静态快照 | ✅ | GH runner | push 后自动部署上线（仅 schedule） |
+| **AI 翻译** | ✅ 已上线 | GH runner | collect-turso.js translate；Agnes 401 真根因=settings.ai 污染，已修复（2026-09-11 晚），实测近 1 小时翻译 110 篇 |
+| **AI 对话/摘要（手动触发）** | ✅ 已上线 | Vercel | /api/ai/chat 供应商链 Agnes 优先；settings.ai 已清空，env 唯一来源 |
 | YouTube/X | ⚠️ 间歇 | GH runner | 反爬掷骰，阈值已放宽 |
 | B站 | ❌ | 仅本地 | wbi 签名未移植（纯 crypto 可移植，待做） |
 | 抖音 | ❌ | 仅本地 | 需 Playwright 登录态，永远本地 |
-| 云端队列 poller（手机提交链接） | ❌ | 仅本地 | poller 在本地调度器；手机提交的链接会堆积，本地开机后补拉 |
-| OPML 源清单同步 | ❌ | 仅本地 | bestblogs 新源不会自动上云 |
-| 采集停滞报警 | ❌ | 仅本地 | 心跳已埋点（settings cloud.collect），报警引擎未上云 |
-| 页面内自动刷新 | ❌ | — | 前端无轮询/SSE（数据层实时，重新打开/切页即最新） |
+| 云端队列 poller（手机提交链接） | ⚠️ 手动 | Vercel 手动 / 本地自动 | 云端已可 `POST /api/queue/sync` 手动拉取；自动轮询仍在本地调度器 |
+| OPML 源清单同步 | ⚠️ 手动 | Vercel 手动 / 本地自动 | 云端已可 `POST /api/opml/sync`；12h 自动同步仍本地 |
+| 采集停滞报警 | ❌ | 仅本地 | 心跳已埋点（settings cloud.collect），报警引擎未上云（15-cloud-alerts 待做） |
+| 页面内自动刷新 | ✅ 已上线 | Vercel | 60s 增量轮询 /api/articles/since（2026-09-11 替代废弃的 SSE） |
 
 > 结论：**本地关机，信息流、日报、翻译、阅读全部正常运转**。仅 B站/抖音采集、手机提交队列、OPML 增量同步依赖本地开机。
 

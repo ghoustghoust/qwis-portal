@@ -61,9 +61,9 @@ jobs:
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
         run: node tools/collect-turso.js translate
 
-  # ─── 日报生成（北京时间 09:03） ───
+  # ─── 日报生成（北京时间 09:03；仅 schedule——cron-job.org 每15min的 dispatch 只跑采集，防日报15min刷一份/快照15min推一个commit） ───
   daily-report:
-    if: github.event.schedule == '3 1 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '3 1 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -84,9 +84,9 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: node tools/collect-turso.js daily
 
-  # ─── 静态快照生成（北京时间 09:33） ───
+  # ─── 静态快照生成（北京时间 09:33；仅 schedule） ───
   snapshot:
-    if: github.event.schedule == '33 1 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '33 1 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -121,9 +121,9 @@ jobs:
           done
           exit 1
 
-  # ─── 数据清理（北京时间 04:13） ───
+  # ─── 数据清理（北京时间 04:13；仅 schedule） ───
   cleanup:
-    if: github.event.schedule == '13 20 * * *' || github.event_name == 'workflow_dispatch'
+    if: github.event.schedule == '13 20 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
