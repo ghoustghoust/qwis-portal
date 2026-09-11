@@ -3,7 +3,6 @@
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "web/dist",
   "framework": "vite",
-  "regions": ["hnd1"],
   "rewrites": [
     { "source": "/api/collect", "destination": "/api/collect" },
     { "source": "/api/daily-generate", "destination": "/api/daily-generate" },
