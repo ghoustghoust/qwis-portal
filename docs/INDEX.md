@@ -31,6 +31,7 @@
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威）：本地 Express vs 云端（Vercel qwis-intel）功能覆盖矩阵、迁移路径、待开发目标；其它文档不再维护矩阵一律指向本文 |
+| `docs/BESTBLOGS_BORROW.md` | BestBlogs 调研借鉴清单：两阶段过滤/六节点管线/三段式翻译/可解释推荐等 10 项范式到总 spec 的映射 |
 | `docs/ROADMAP-2026-09.md` | **需求与愿景母文档**（已确认）：2026-09-11 用户想法归纳 + 4 项已拍板决策（前台公开/自然日日报窗口/AI 六维度/破茧双管） |
 | `docs/HANDOFF_PROMPT.md` | **新窗口接手提示词**：复制即用的开场 prompt + 阅读顺序 + 进度快照 |
 | `docs/specs/12-roadmap-2026/spec.md` | **总体开发 spec**：P0~Pn 阻塞级排序 + mew-spec 拆分清单（13-settings-write 起） |
