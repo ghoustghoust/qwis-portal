@@ -593,34 +593,58 @@ function isEnglish(text) {
   return (latin / total) > 0.5 && (cjk / total) < 0.2;
 }
 
+// AI 调用链：Agnes（主，key 绑 IP 地区，Azure runner 会被 401）→ DeepSeek（备，DEEPSEEK_API_KEY 存在时启用）
+// [2026-09-11 发现] Agnes key 从亚洲 IP（HK/东京）可用，从 Azure US 返回 "api key invalid"
 async function llmChat(messages, { temperature, timeoutMs = 120000 } = {}) {
   const aiCfg = await getSetting('ai', {});
-  const apiKey = process.env.AGNES_API_KEY || aiCfg.apiKey || '';
-  if (!apiKey) throw new Error('未配置 AGNES_API_KEY（GH Secret 或 Turso settings.ai.apiKey）');
-  const apiBase = (process.env.AGNES_API_BASE || aiCfg.apiBase || 'https://apihub.agnes-ai.com/v1').replace(/\/+$/, '');
-  const model = process.env.AGNES_MODEL || aiCfg.model || 'agnes-2.5-flash';
-
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const doFetch = proxyFetch || fetch;
-    const resp = await doFetch(`${apiBase}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({ model, messages, ...(temperature !== undefined ? { temperature } : {}) }),
-      signal: ctrl.signal,
+  const normBase = (b) => String(b || '').replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  const providers = [];
+  if (process.env.AGNES_API_KEY || aiCfg.apiKey) {
+    providers.push({
+      name: 'agnes',
+      key: process.env.AGNES_API_KEY || aiCfg.apiKey,
+      base: normBase(process.env.AGNES_API_BASE || aiCfg.apiBase || 'https://apihub.agnes-ai.com/v1'),
+      model: process.env.AGNES_MODEL || aiCfg.model || 'agnes-2.5-flash',
     });
-    if (!resp.ok) {
-      const bodyText = await resp.text().catch(() => '');
-      throw new Error(`Agnes AI HTTP ${resp.status}: ${bodyText.slice(0, 200)}`);
-    }
-    const data = await resp.json();
-    const content = data?.choices?.[0]?.message?.content;
-    if (!content) throw new Error('Agnes AI 返回空内容');
-    return content.trim();
-  } finally {
-    clearTimeout(timer);
   }
+  if (process.env.DEEPSEEK_API_KEY) {
+    providers.push({
+      name: 'deepseek',
+      key: process.env.DEEPSEEK_API_KEY,
+      base: 'https://api.deepseek.com',
+      model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+    });
+  }
+  if (!providers.length) throw new Error('未配置任何 AI Key（AGNES_API_KEY / DEEPSEEK_API_KEY）');
+
+  let lastErr = null;
+  for (const p of providers) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const doFetch = proxyFetch || fetch;
+      const resp = await doFetch(`${p.base}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${p.key}` },
+        body: JSON.stringify({ model: p.model, messages, ...(temperature !== undefined ? { temperature } : {}) }),
+        signal: ctrl.signal,
+      });
+      if (!resp.ok) {
+        const bodyText = await resp.text().catch(() => '');
+        throw new Error(`${p.name} HTTP ${resp.status}: ${bodyText.slice(0, 200)}`);
+      }
+      const data = await resp.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (!content) throw new Error(`${p.name} 返回空内容`);
+      return content.trim();
+    } catch (err) {
+      lastErr = err;
+      log(`  [AI] ${p.name} 失败: ${err.message.slice(0, 120)}${p !== providers[providers.length - 1] ? '，回退下一个' : ''}`);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr;
 }
 
 async function translateOne(article, prompt) {
