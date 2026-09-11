@@ -30,10 +30,11 @@ function parseHeat(info) {
 }
 
 function mapNewsnow(data, platform, category) {
-  const updated = data.updatedTime ? new Date(Number(data.updatedTime)).toISOString() : null;
+  // 2026-09-11：按榜内名次每条递减 60s，避免同源同刻时间戳并列成块（与云端 collect 对齐）
+  const updatedMs = data.updatedTime ? Number(data.updatedTime) : null;
   return (data.items || [])
     .filter((it) => it && it.url && it.title)
-    .map((it) => {
+    .map((it, idx) => {
       const title = String(it.title).trim();
       let hover = (it.extra && it.extra.hover) || '';
       // 上游编码问题防御:hover 含乱码特征(西里尔/修饰字母等)则丢弃摘要
@@ -47,7 +48,7 @@ function mapNewsnow(data, platform, category) {
         content_html: hover
           ? `<p>${hover}</p><p><a href="${it.url}" target="_blank" rel="noopener">查看原文 →</a></p>`
           : `<p>${title}</p><p><a href="${it.url}" target="_blank" rel="noopener">查看原文 →</a></p>`,
-        published_at: updated,
+        published_at: updatedMs ? new Date(updatedMs - idx * 60000).toISOString() : null,
         category,
         score: parseHeat(it.extra && it.extra.info),
       };

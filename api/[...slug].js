@@ -185,6 +185,27 @@ async function handleArticles(req) {
   return jsonOk({ items: rows, nextCursor, counts: { later: laterCount, history: historyCount } });
 }
 
+// GET /api/articles/since?ts=<ISO> — 增量计数（无感刷新轮询专用，返回极小）
+// ts 为空 = 建立基线（只回当前最新 sortKey，不计数）
+async function handleArticlesSince(req) {
+  const q = req.query;
+  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  const conds = [];
+  const args = [];
+  const ts = String(q.ts || '');
+  if (ts) { conds.push('COALESCE(a.published_at, a.created_at) > ?'); args.push(ts); }
+  if (q.include_hot !== '1') conds.push(NOISE);
+  if (q.source_id) { conds.push('a.source_id=?'); args.push(Number(q.source_id)); }
+  if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
+  if (q.tab === 'later') conds.push('a.later=1');
+  else if (q.tab === 'history') conds.push('a.read_at IS NOT NULL');
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  const row = await qOne(
+    `SELECT COUNT(*) c, MAX(COALESCE(a.published_at, a.created_at)) latest
+     FROM articles a JOIN sources s ON s.id=a.source_id ${where}`, args);
+  return jsonOk({ newCount: ts ? (row.c || 0) : 0, latest: row.latest || null });
+}
+
 // GET /api/articles/:id — 单篇文章详情（含 content_html）
 async function handleArticleById(req, id) {
   const row = await qOne(
@@ -265,11 +286,15 @@ async function handleHot(req) {
     }
   }
 
+  // 排序：精选按热度；全部动态按全局时间序（2026-09-11 修复：原来按 score 排导致同源成块）
+  const orderBy = tab === 'featured'
+    ? 'a.score DESC NULLS LAST, a.published_at DESC, a.id DESC'
+    : 'a.published_at DESC, a.id DESC';
   const rows = await qAll(
     `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
      ${where}${cursorCond}
-     ORDER BY a.score DESC NULLS LAST, a.published_at DESC LIMIT ?`,
+     ORDER BY ${orderBy} LIMIT ?`,
     [...args, ...cursorArgs, PAGE_SIZE + 1]
   );
 
@@ -1224,6 +1249,7 @@ async function dispatch(req) {
     // GET /api/articles/:id 必须在 /api/articles 之前匹配
     const articleIdMatch = path.match(/^\/api\/articles\/(\d+)$/);
     if (articleIdMatch) return handleArticleById(req, Number(articleIdMatch[1]));
+    if (path === '/api/articles/since') return handleArticlesSince(req);
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/videos') return handleVideos(req);
     if (path === '/api/hot') return handleHot(req);

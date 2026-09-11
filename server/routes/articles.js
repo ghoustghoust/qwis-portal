@@ -209,6 +209,18 @@ router.post('/read-all', (req, res) => {
   res.json({ ok: true, updated: r.changes });
 });
 
+// GET /api/articles/since?ts=<ISO> —— 增量计数（无感刷新轮询用，与云端 [...slug].js 对齐；须先于 /:id 注册）
+router.get('/since', (req, res) => {
+  const ts = String(req.query.ts || '');
+  const keyExpr = 'COALESCE(a.published_at, a.created_at)';
+  const { where, args } = buildWhere(req.query);
+  const cond = where ? `${where} AND ${keyExpr} > ?` : `WHERE ${keyExpr} > ?`;
+  const row = ts
+    ? db.prepare(`SELECT COUNT(*) c, MAX(${keyExpr}) latest FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${cond}`).get(...args, ts)
+    : db.prepare(`SELECT 0 c, MAX(${keyExpr}) latest FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where || ''}`).get(...args);
+  res.json({ ok: true, newCount: ts ? (row.c || 0) : 0, latest: row.latest || null });
+});
+
 // GET /api/articles/:id —— 返回全文，顺手置 read_at（入历史存档）
 router.get('/:id', (req, res) => {
   const row = db.prepare(`

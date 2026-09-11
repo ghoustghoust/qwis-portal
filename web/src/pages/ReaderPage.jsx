@@ -26,11 +26,15 @@ const EMPTY_FILTER = {
 // T12/F4：文章与视频的筛选（含日期 from/to）各自独立记住
 export default function ReaderPage() {
   const { settings, refresh: refreshStore } = useStore();
-  const { newCount, lastEvent, consumeNewCount } = useRealtime();
   const [mode, setMode] = useState('article'); // article | video
   const [filters, setFilters] = useState({
     article: { ...EMPTY_FILTER, sort: readSort() },
     video: { ...EMPTY_FILTER },
+  });
+  // 无感刷新：轮询 /api/articles/since，跟随当前 tab/组/源筛选
+  const curFilter = filters[mode];
+  const { newCount, lastEvent, consumeNewCount } = useRealtime({
+    tab: curFilter.tab, groupId: curFilter.groupId, sourceId: curFilter.sourceId,
   });
   const [q, setQ] = useState('');
   const [selectedArticleId, setSelectedArticleId] = useState(null);
