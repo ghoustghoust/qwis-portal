@@ -1117,6 +1117,18 @@
       "fail_count": 0
     },
     {
+      "id": 18,
+      "type": "rss",
+      "name": "Google AI 博客",
+      "url": "https://blog.google/technology/ai/rss/",
+      "avatar": "https://blog.google/favicon.ico",
+      "group_id": 1,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 17,
       "type": "rss",
       "name": "Google DeepMind",
@@ -2071,6 +2083,18 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug",
       "avatar": "null",
       "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 643,
+      "type": "rss",
+      "name": "TIANYU2FM — 对谈未知领域",
+      "url": "https://rsshub.xiaowuaiblog.com/xiaoyuzhou/podcast/5f22729f9504bbdb77253e46",
+      "avatar": "null",
+      "group_id": 17,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -5569,6 +5593,18 @@
       "fail_count": 0
     },
     {
+      "id": 64,
+      "type": "hotlist",
+      "name": "每天60秒读懂世界",
+      "url": "hotlist60s://60s",
+      "avatar": null,
+      "group_id": 2,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 110,
       "type": "wemp",
       "name": "每日经济新闻",
@@ -8029,5 +8065,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T09:45:53.291Z"
+  "generated_at": "2026-09-11T10:01:21.065Z"
 }
