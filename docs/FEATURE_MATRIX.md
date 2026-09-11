@@ -42,7 +42,7 @@
 | 日报阅读 | ✅ | ✅ | runner 每日 09:03（北京）生成 |
 | 手动重新生成 | ✅（先补抓到期源） | ✅ 但不补抓、无 AI 增强 | |
 | 日报设置（栏目/来源勾选/时间） | ✅ | ❌ 404 | 需 `GET/PUT /api/settings/daily` |
-| AI 增强（摘要/评分/tags） | ✅ | ❌ | 依赖 AI 链路（见 §2.4，当前 Agnes 云端 401） |
+| AI 增强（摘要/评分/tags） | ✅ | ⚠️ 链路已通待移植 | Agnes 云端已修复（2026-09-11，根因=settings.ai 污染）；翻译/摘要/日报增强按 specs/12-roadmap-2026 移植 |
 
 ### 1.3 管理后台（/admin/）
 
@@ -53,7 +53,7 @@
 | B站 | ✅ | ⚠️ 只读 | 云端不采集 B站；refresh-all 404 |
 | 抖音 | ✅ | ❌ | 扫码登录/采集依赖 Playwright，**永不云端化**（架构决策） |
 | 日报设置 | ✅ | ❌ | `settings/daily` 读写 |
-| AI 能力 | ✅ | ✅ | config/ping/chat 可用（Agnes 401 待修，见 §2.4） |
+| AI 能力 | ✅ | ✅ | config/ping/chat 云端实测可用（2026-09-11 修复） |
 | 翻译 Skill | ✅ | ❌ | `ai/translate/*` 全缺 |
 | 数据 | ✅ | ⚠️ | stats/cleanup ✅；文件型快照/上传/恢复 501（用配置备份替代） |
 | 报警管理 | ✅ | ⚠️ 只读 | 写/测试/删除缺；**云端无报警触发引擎** |
@@ -80,7 +80,7 @@
 |---|---|---|---|
 | P0 | **设置写 API**（`PUT /api/settings` + `/api/settings/daily`） | 无 | 云端管理台可保存视图/日报栏目/队列配置/保留天数，4 个 Tab 复活 |
 | P0 | **源写 API**（sources POST/DELETE/refresh、batch、groups 写、autoclassify） | 无 | 云端源库从只读变可管理；新源经 runner 15min 内入流 |
-| P1 | **DEEPSEEK_API_KEY 接入**（替代 Agnes 401） | 用户提供一个 DeepSeek key | 云端 AI 翻译/摘要/日报增强链路解锁 |
+| ~~P1~~ | ~~DEEPSEEK_API_KEY 接入~~ | — | ✅ 已作废：Agnes 云端修复可用（2026-09-11），用户决策优先用免费 Agnes |
 | P1 | **AI 翻译/摘要移植**（`ai/translate/*`、`summary`） | P1 的 key | 英文源自动精翻；日报 AI 评分 |
 | P1 | **B站 wbi 采集移植 runner**（纯 crypto） | 无 | B站源云端自动更新 |
 | P2 | **报警引擎轻量版**（采集停滞检测 → webhook，挂 runner 每轮尾部） | 无 | 云端停采 30min 内主动报警，不再靠人肉发现 |

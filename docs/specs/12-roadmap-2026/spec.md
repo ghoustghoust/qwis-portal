@@ -22,11 +22,12 @@
 - 同步修本地：本地 alerts 对 YouTube 反爬假 404 误报（阈值与云端对齐 + 原因分类）
 - 依赖：无。效果：停采 30min 内收到报警，不再靠人肉发现
 
-## P1 AI 体系（解锁前置：DEEPSEEK_API_KEY）
+## P1 AI 体系（~~解锁前置：DEEPSEEK_API_KEY~~ → 已解决，Agnes 云端可用 2026-09-11）
 
-### P1-1 AI 供应商接入
-- DeepSeek key 入三处（.env/Vercel/GH Secrets）；Agnes 保留但标记其限制（无思考模式/无并发/限流）
-- 供应商链：Agnes（免费优先）→ DeepSeek（兜底）
+### P1-1 AI 供应商接入（已完成）
+- Agnes 已修复云端可用：根因是 settings.ai 的 apiBase 污染（非 IP 绑定），已重置 + 三处 key 同步
+- Agnes 官方约束写入架构：免费池文本实测 20 RPM、推理模型（reasoning 烧 max_tokens）、无思考模式 → 所有调用串行限流 + 给足 max_tokens
+- 供应商链：Agnes（免费主力）→ DeepSeek（可选兜底，用户给 key 才启用）
 
 ### P1-2 AI 基础设施
 - 串行限流调用队列（Agnes 无并发）+ 调用失败报警 + 结果缓存表（translations 缓存，只译增量）
