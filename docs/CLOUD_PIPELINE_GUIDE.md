@@ -79,6 +79,18 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
 - [ ] 改完必须跑：`npm test`（187/191 为基线，4 项预存失败见 ISSUES P2-9，不许新增失败）。
 - [ ] 涉及云端的改动 → 部署后跑一次 `workflow_dispatch` 验证 4 个 job 全绿（见 §4）。
 
+## 3.1 部署方式（2026-09-11 实测更正）
+
+⚠️ **Vercel 项目没有连接 Git 集成（`link: null`），`git push` 不会触发部署！**
+历史上所有部署都是 CLI 手动执行（`vercel --prod`）。这意味着：
+
+- **改代码后必须手动部署**：`vercel --prod --scope kwei888 --yes`（本地 CLI 已登录已 link）
+- **快照 job 每天 push 的 public/data/ 不会自动上线**——静态快照要等下一次部署才生效
+- 根治方案（二选一，推荐①）：
+  1. Vercel Dashboard → qwis-intel → Settings → Git → **Connect Git Repository**（选 ghoustghoust/qwis-portal）→ 之后 push 即自动部署，快照也随推随上线
+  2. 或 GH Actions 加 deploy job（需 Dashboard 创建 Vercel Token 存 Secrets）
+- Vercel CLI 红线：禁止 `vercel env pull`（会覆盖本地 .env 丢失 PORT/HTTPS_PROXY 等本地变量）、禁止交互式 login 流程
+
 ## 4. 验证管线是否活着（30 秒自检）
 
 ```bash

@@ -63,7 +63,7 @@ Vercel Serverless（读层主部署）
 3. **管理后台**：`http://localhost:3000/admin/`
 4. **修改前端**：改 `web/src/` → `npm run build` → Ctrl+F5
 5. **修改后端（本地）**：改 `server/` → `restart-server.bat`
-6. **修改后端（Vercel）**：改 `api/` → `git push` → Vercel 自动部署
+6. **修改后端（Vercel）**：改 `api/` → `git push` → **再手动 `vercel --prod --scope kwei888 --yes`**（⚠️ 项目未连 Git 集成，push 不会自动部署；建议在 Dashboard 连接 Git 仓库后免此步）
 7. **跑测试**：`npm test`（全绿才算完）
 8. **不要修改**：`src-admin/`、`admin.html`（根目录）、`vite.config.js`（根目录）— 这些是 portal 历史副本
 
