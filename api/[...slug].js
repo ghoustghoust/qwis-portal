@@ -84,7 +84,7 @@ async function setSetting(key, val) {
 
 // ─── 鉴权 ───
 const PUBLIC_GET_PATHS = new Set([
-  '/api/articles', '/api/videos', '/api/hot', '/api/daily',
+  '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings',
   '/api/reading', '/api/img', '/api/meta',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
