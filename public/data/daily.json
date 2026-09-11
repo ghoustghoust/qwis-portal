@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 69,
-    "generated_at": "2026-09-11T13:31:34.805Z",
+    "id": 70,
+    "generated_at": "2026-09-11T13:46:07.462Z",
     "window_hours": 30,
     "sections": [
       {
@@ -310,5 +310,5 @@
       "totalItems": 28
     }
   },
-  "generated_at": "2026-09-11T13:45:54.421Z"
+  "generated_at": "2026-09-11T14:01:23.080Z"
 }
