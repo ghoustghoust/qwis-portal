@@ -133,6 +133,18 @@
       "fail_count": 0
     },
     {
+      "id": 511,
+      "type": "youtube",
+      "name": "AI Master",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0yHbz4OxdQFwmVX2BBQqLg",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 512,
       "type": "youtube",
       "name": "AI Search",
@@ -143,6 +155,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 513,
+      "type": "youtube",
+      "name": "AI Video School",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUb7KwmlVSSCnPu5KEhym8A",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 390,
@@ -469,6 +493,18 @@
       "fail_count": 0
     },
     {
+      "id": 612,
+      "type": "youtube",
+      "name": "Anthony Vicino",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCpTupIxGdmt3sTpOHjegwxQ",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 21,
       "type": "rss",
       "name": "Anthropic",
@@ -637,6 +673,18 @@
       "fail_count": 0
     },
     {
+      "id": 589,
+      "type": "youtube",
+      "name": "Chris Williamson",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIaH-gZIVC432YRjNVvnyCA",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 518,
       "type": "youtube",
       "name": "Claude",
@@ -659,6 +707,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 519,
+      "type": "youtube",
+      "name": "Cognitive Revolution",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCjNRVMBVI30Sak_p6HRWhIA",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 556,
@@ -793,6 +853,18 @@
       "fail_count": 0
     },
     {
+      "id": 599,
+      "type": "youtube",
+      "name": "DesignCourse",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCVyRiMvfUNMA1UPlDPzG5Ow",
+      "avatar": "null",
+      "group_id": 28,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 600,
       "type": "youtube",
       "name": "DesignerUp",
@@ -801,8 +873,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 170,
@@ -889,6 +961,18 @@
       "fail_count": 0
     },
     {
+      "id": 601,
+      "type": "youtube",
+      "name": "Figma",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCQsVmhSa4X-G3lHlUtejzLA",
+      "avatar": "null",
+      "group_id": 28,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 621,
       "type": "youtube",
       "name": "Fireship",
@@ -967,6 +1051,18 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3905744947.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_png%2F8ch67Cgq6HlFEpI8rB0pxEbvY4akcbTLWcAWJhsagOtmiaicjKFQDdxuYPSAgRtEq5SXibjhDtWnBoia8kgOVsibguA%2F0%3Fwx_fmt%3Dpng",
       "group_id": 10,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
+      "id": 622,
+      "type": "youtube",
+      "name": "GitHub",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC7c3Kb6jYCRj4JOHHZTxKsQ",
+      "avatar": "null",
+      "group_id": 27,
       "focus": 0,
       "enabled": 1,
       "status": "error",
@@ -1053,8 +1149,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 48,
@@ -1141,6 +1237,18 @@
       "fail_count": 0
     },
     {
+      "id": 623,
+      "type": "youtube",
+      "name": "Hussein Nasser",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC_ML5xP23TOWKUcc-oAE_Eg",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 45,
       "type": "hotlist",
       "name": "IT之家",
@@ -1201,6 +1309,18 @@
       "fail_count": 0
     },
     {
+      "id": 613,
+      "type": "youtube",
+      "name": "Justin Sung",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2Zs9v2hL2qZZ7vsAENsg4w",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 289,
       "type": "rss",
       "name": "KnowYourself",
@@ -1237,6 +1357,18 @@
       "fail_count": 0
     },
     {
+      "id": 527,
+      "type": "youtube",
+      "name": "Last Week in AI",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKARTq-t5SPMzwtft8FWwnA",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 604,
       "type": "youtube",
       "name": "Lenny&apos;s Podcast",
@@ -1267,6 +1399,18 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg",
       "avatar": "null",
       "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 567,
+      "type": "youtube",
+      "name": "Luma",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC45T0I4p7A3dI0XvhivafZQ",
+      "avatar": "null",
+      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1307,6 +1451,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 529,
+      "type": "youtube",
+      "name": "Machine Learning Street Talk",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMLtBahI5DMrt0NPvDSoIRQ",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 614,
@@ -1381,6 +1537,18 @@
       "fail_count": 0
     },
     {
+      "id": 605,
+      "type": "youtube",
+      "name": "Mind the Product",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCiT1BmYvOBsEvU9iw0076Sw",
+      "avatar": "null",
+      "group_id": 28,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 187,
       "type": "rss",
       "name": "MiniMax 稀宇科技",
@@ -1403,6 +1571,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 624,
+      "type": "youtube",
+      "name": "Modern Software Engineering",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCCfqyGl3nq_V0bo64CjZh8g",
+      "avatar": "null",
+      "group_id": 27,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 590,
@@ -1429,6 +1609,18 @@
       "fail_count": 0
     },
     {
+      "id": 606,
+      "type": "youtube",
+      "name": "NNgroup",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2oCugzU6W8-h95W7eBTUEg",
+      "avatar": "null",
+      "group_id": 28,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 343,
       "type": "rss",
       "name": "NOV心理",
@@ -1453,12 +1645,36 @@
       "fail_count": 0
     },
     {
+      "id": 569,
+      "type": "youtube",
+      "name": "Naval",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCh_dVD10YuSghle8g6yjePg",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 533,
       "type": "youtube",
       "name": "NetworkChuck",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9x0AN7BWHpCDHSm9NiJFJQ",
       "avatar": "null",
       "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 12,
+      "type": "youtube",
+      "name": "NeuralNine",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8wZnXYK_CGKlBcZp-GxYPA",
+      "avatar": "https://www.youtube.com/favicon.ico",
+      "group_id": null,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1485,8 +1701,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 535,
@@ -1583,6 +1799,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 537,
+      "type": "youtube",
+      "name": "Pika Labs",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0SclYU4iiQRihtmDnak-gQ",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 259,
@@ -1765,6 +1993,18 @@
       "fail_count": 0
     },
     {
+      "id": 540,
+      "type": "youtube",
+      "name": "Siraj Raval",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCWN3xxRkmTPmbKwht9FuE5A",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 593,
       "type": "youtube",
       "name": "SmarterEveryDay",
@@ -1773,8 +2013,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 51,
@@ -1837,6 +2077,18 @@
       "fail_count": 0
     },
     {
+      "id": 541,
+      "type": "youtube",
+      "name": "Tao Prompts",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCc1qMq2UBJD9cSKbeBwGoZQ",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 67,
       "type": "rss",
       "name": "TechCrunch",
@@ -1871,6 +2123,30 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 608,
+      "type": "youtube",
+      "name": "The Futur",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-b3c7kxa5vU-bnmaROgvog",
+      "avatar": "null",
+      "group_id": 28,
+      "focus": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 576,
+      "type": "youtube",
+      "name": "The Knowledge Project Podcast",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 628,
@@ -1957,6 +2233,18 @@
       "fail_count": 0
     },
     {
+      "id": 543,
+      "type": "youtube",
+      "name": "Tina Huang",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2UXDak6o7rBm23k3Vv5dww",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 630,
       "type": "youtube",
       "name": "Traversy Media",
@@ -1981,6 +2269,18 @@
       "fail_count": 0
     },
     {
+      "id": 545,
+      "type": "youtube",
+      "name": "Unsupervised Learning: Redpoint&apos;s AI Podcast",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUl-s_Vp-Kkk_XVyDylNwLA",
+      "avatar": "null",
+      "group_id": 26,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 503,
       "type": "rss",
       "name": "Wallpaper中文版",
@@ -1991,6 +2291,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 631,
+      "type": "youtube",
+      "name": "Web Dev Simplified",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCFbNIlppjAuEX4znoulh0Cw",
+      "avatar": "null",
+      "group_id": 27,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 151,
@@ -2125,6 +2437,18 @@
       "fail_count": 0
     },
     {
+      "id": 582,
+      "type": "youtube",
+      "name": "a16z",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9cn0TuPq4dnbTY-CBsm8XA",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 424,
       "type": "rss",
       "name": "caoz的梦呓",
@@ -2255,6 +2579,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 585,
+      "type": "youtube",
+      "name": "struthless",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvcEBQ0K3UsQ8bzWKHKQmbw",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 212,
@@ -3129,8 +3465,8 @@
       "group_id": 22,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 431,
@@ -4943,6 +5279,18 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 616,
+      "type": "youtube",
+      "name": "李永乐老师",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvNxfitQbWkmLuCd44UfrYQ",
+      "avatar": "null",
+      "group_id": 16,
+      "focus": 0,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 191,
@@ -7693,5 +8041,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T02:35:22.992Z"
+  "generated_at": "2026-09-11T02:44:33.555Z"
 }

@@ -1,42 +1,188 @@
 {
   "report": {
-    "id": 45,
-    "generated_at": "2026-09-11T02:05:03.244Z",
+    "id": 46,
+    "generated_at": "2026-09-11T02:35:25.554Z",
     "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
+        "items": [
+          {
+            "id": 209649,
+            "title": "这件事，一号位必须亲自下场",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654908075&idx=1&sn=f9d5a2324c9677aa7cc11c5075fa399e",
+            "source": "笔记侠",
+            "published_at": "2026-09-10T13:46:00.000Z",
+            "score": null,
+            "summary": "内容来源：2026年8月8日-10日，笔记侠在杭州举办的【AI十倍增长营】02期课程中，森创启睿CEO/企业AI转型实战总架构师渊虹分享的精华内容整理。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0f8d8fee&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8b91BQ8yFl3Hxybic5P9vO7qPfg5g1CVwKIvcTnOQ3Bn02LhbQWuDBCdLMgW9aIVaUTdDXPDaW0Vta55KIoicxGTMCFZqOaZoJl2lyYvOoalA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 206397,
+            "title": "2026年夏更新 产品相关培训咨询服务介绍",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzE3MDQ3Mw==&mid=2650411949&idx=2&sn=30ec628dda7d1b237cb2f0ccaf2801ab",
+            "source": "iamsujie",
+            "published_at": "2026-09-10T07:54:00.000Z",
+            "score": null,
+            "summary": "亦可点击原文链接，获取随时更新的在线文档（包含服务概述、讲师顾问介绍、内容模块、过往典型客户、案例举例等）",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bfa02b8b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FArmv0pa9c8jW2xG1XQ4p3uhEVsXaYCNrP5Tqtz0VpK664qXYec1HEwkDS4oP2eK6pic8tfgECtUkQibYpymibOyJJz3SYy1gFzfJw3K6Abex7Q%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "AI技术",
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 205346,
-            "title": "机器人、眼镜、车机都在接入：高德想做 AI 时代的「空间大脑」",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651756644&idx=1&sn=11c282e3e43fe0b044b3b05302e96fdd",
-            "source": "雷峰网",
-            "published_at": "2026-09-10T10:04:00.000Z",
+            "id": 209367,
+            "title": "OpenAI Agents API",
+            "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-10T19:43:22.000Z",
             "score": null,
-            "summary": "9月初，大洋彼岸的 OpenAI 带着最新模型 GPT-6 Astra 继续领跑。这一次，秀的是空间推理能力——被称作“人类最后的堡垒”。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1ec5505b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FACzflXDibhg7WyjqcBCYhGlbVhB84qOf7MUa43acK9iboa7Z9tnpGpFf59YeibJjJraYDa9lDXwKvmUASn6ka1eiaXI2xzWbY0080xibiaMNM7EPk%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Article URL: https://developers.openai.com/api/docs/guides/agents-api/overview",
+            "cover": null
           },
           {
-            "id": 205326,
-            "title": "8 月产品月报｜MQTT 支持 QUIC 协议，弱网、跨网连接更稳定，消息查询与轨迹、客户端能力全面增强",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAxMTQ2NTA1Mg==&mid=2247506957&idx=1&sn=887c2be1b8a32ffd0fcc9564a285ebc4",
-            "source": "腾讯云中间件",
-            "published_at": "2026-09-10T09:21:00.000Z",
+            "id": 209169,
+            "title": "How a researcher uses Codex and ChatGPT to search for new antimicrobial molecules",
+            "url": "https://openai.com/index/using-codex-chatgpt-to-search-for-new-antimicrobials",
+            "source": "OpenAI",
+            "published_at": "2026-09-10T16:00:00.000Z",
             "score": null,
-            "summary": "7 月产品月报 ｜ RocketMQ 5.x 上新 Lite Topic：为多 Agent 协作而生",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2121654b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Frr8qV9FtowBfb1x4ZXOD2TGTbfiaWLx1B84AHxckBVfV8yQMjRoZKoEMB4wGwWbxhTDABk3BbGF5OJKNial3kFRIo2CtK3vPE7y2cibdJGeSI4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "César de la Fuente and his lab probe the genomes of living and extinct organisms for molecules that could help fight drug-resistant infections.",
+            "cover": "https://images.ctfassets.net/kftzwdyauwt9/2Kovot5B2upbAxiLOfbEIO/464b5e73306e047fa31f8456acb34fa3/art-card.png?w=3840&q=90&fm=webp"
           },
           {
-            "id": 205246,
-            "title": "李飞飞出王炸，谁在走同一条路？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI5ODk1NjY1MA==&mid=2247739358&idx=1&sn=5e688ec6d6b882580eebf68887e38072",
-            "source": "投资界",
-            "published_at": "2026-09-10T07:23:00.000Z",
+            "id": 211948,
+            "title": "不让每一层都“翻旧账”！浙大 & 港大最新开源 LayerRecall，让长视频记忆更准、用得更精",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzEwMzIwOQ==&mid=2247519396&idx=1&sn=474578f325ea9a38f44a26eac5b39e6c",
+            "source": "青稞AI",
+            "published_at": "2026-09-10T16:00:00.000Z",
             "score": null,
-            "summary": "这是一个从零预训练的世界模型，以单一架构打通世界生成、空间重建与时空模拟，并原生处理文本、图像、视频和3D数据。单张照片可以生成一分钟1440p视频，三五台普通手机就能实现“子弹时间”，手机拍摄的普通房间也能变成机器人的仿真训练场，Atlas将“世界模型”的边界又往前推了一步。其背后，是World Labs累计超过12亿美元的融资，以及约50亿美元的估值。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=88a14819&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F0gtDY3RcibDsgnMwLIYDOUQ52fdSGRViaIJMKj2YicBDibPO9f9ib4FjOoRl8P7uicInAD57rC8iaJDUR5fvo4JblqgZDk14q9vUk1VQicic3Ricz6IN4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "浙江大学杨易教授团队与香港大学提出并开源LayerRecall：仅训练约1.65M（165万）参数的记忆路由模块，参数量约为5B骨干的0.033%，生成骨干保持冻结。它不把整段历史一股脑塞回模型，而是同时回答两个问题——现在该想起什么？这段记忆又该在哪些层里使用？",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f82d8a89&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkqA90yjYex7MvAFQbvqWBvcVFvia9mPXRFQibpetgruCbsURN9JDiafPwRxLUKvic0Wob28KtTXBXEgRRzfpKCxxf65jfZKFicfjWm9NctEiaH8sc%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 206969,
+            "title": "把Agent队伍装进系统，百度营销定义生意增长新范式",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NTE0ODc2Nw==&mid=2650979591&idx=2&sn=82bf7ab72f8ccd964f1760f7e826571a",
+            "source": "界面新闻",
+            "published_at": "2026-09-10T14:21:00.000Z",
+            "score": null,
+            "summary": "9月9日的产品发布会上，百度擎舵3.0与两大全新升级的智能投放产品，AIMax 智投、AI 投放助手，正式亮相。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=37a6cd8d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibrevicNauKAUjheddm3bnicVViaaB0V7kdHbm9h5PFfSSLGpfTiaHhl1aqTYqA1r7WhZlD8eOGmQJsMiaMU8qLqe9vBRSuHs4XVJApmRX6diaXQQE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 206883,
+            "title": "顶尖AI模型训练师离职，炮轰美国科技巨头：拿人类生命下注",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzI5NTU3MQ==&mid=2652567808&idx=2&sn=11c223fec6111ce997222a30e28682f8",
+            "source": "澎湃新闻",
+            "published_at": "2026-09-10T14:03:00.000Z",
+            "score": null,
+            "summary": "当地时间8日，美国人工智能公司Anthropic的研究员雅各布·考克森在社交平台X上宣布辞职，并在辞职声明中警告称，业内领先的人工智能公司正在竞相开发“可能在本十年末毁灭我们所有人”的超级人工智能技术。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=21e8de0e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FibIciaJ2dfKYdPHgQd1UaCz7EPjxoicBjewPTqlMhV1BWpYCVj5fhonFqshDKqmYRR8UIXB0DzsIDPfpgdQcVVFPviaYcl9sknzwtBB342L7gJk%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 207036,
+            "title": "［9月10日］指数估值数据（成长和价值，收益差别在哪儿；红利指数估值表更新）",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAwNzQ5ODk3Nw==&mid=2651097760&idx=1&sn=bb2d37d8085bdc556e59e7fe2d14ac8f",
+            "source": "银行螺丝钉",
+            "published_at": "2026-09-10T13:55:00.000Z",
+            "score": null,
+            "summary": "今天的AI大模型也是一样，市面上比较出名的已经有好几家，最终谁胜出，站在现在很难预测。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4071ac5c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FgAxPsMgDxSxD3acMuYrkoJfyafIHRkLxAGkRgwPWQDtgHDwAsgWUcRJLR4kxyVKwK2gL3qJxsZfQq8MZ2yNG1C77EB1BOJOKTzUibNkwOJR4%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 211868,
+            "title": "从词元规模转向应用价值：中国联通如何经营Token？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248902325&idx=1&sn=3998208682ea5bf08284d2398dd56faa",
+            "source": "36氪",
+            "published_at": "2026-09-10T13:46:00.000Z",
+            "score": null,
+            "summary": "一家制造企业的CIO计划将大模型接入生产系统，一连串问题很快摆到面前：调用哪家模型更稳定？敏感数据能否留在厂区？每次推理产生的成本又该计入哪个部门？",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=acf3da7e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeGgmDbRiacTJ49A1AMpQhkjjDz7ZyISRFpm7I62Hhxo2CWQ93THzb5N9Xw0ibQJ0HdXKaITOBFibT8ZsMbBiar8lNqpvSetkVmc07U%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 211928,
+            "title": "[Agent Memory / 强化学习] MemPO源码学习笔记 ---（1）--- 总体",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247489817&idx=1&sn=1dd9437c9432b9f18d4cb9fd391b9a77",
+            "source": "罗西的思考",
+            "published_at": "2026-09-10T13:10:00.000Z",
+            "score": null,
+            "summary": "现有的基于强化学习的 Memory 管理方法往往缺乏一种有效机制针对 Memory 的更新内容进行引导优化，Memory 的内容难以保证质量。而 MemPO（Self-Memory Policy Optimization）使模型对 Memory 进行自管理，并引入了基于有效信息含量的 Memory-level 的优势估计，引导 Memory 保留对解决任务更有效的信息，进而提升记忆有效性。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6d7106c4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FiazCrKuBFsicBQ56QCaT4Qp5AuXN89LPpDJd7pdUBicaribLDNFWKqmmK3NBbGiat3Q3iaB2oqAJ1A9ee55alkcL2gia22c7j63DNtVes6faXJcnwc%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 206767,
+            "title": "AI 破解数学千禧年难题，却被人类数学家声讨？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDM4MDExNQ==&mid=2832654424&idx=2&sn=6bd1c6f235fcb3040c1a96f807d4b771",
+            "source": "知乎日报",
+            "published_at": "2026-09-10T12:41:00.000Z",
+            "score": null,
+            "summary": "OpenAI 于当地时间 9 月 8 日宣布：其内部一个未公开的 AI 模型攻克了纳维 - 斯托克斯方程（N-S 方程）的「存在性与光滑性」问题。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d5039871&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkrSqjDRWFlFRiaTZsr4LzCcNppicnTe0QeDPTWSiaxBiceyWSp01pamAnmebPRQFheJ5PBJvoKxsGicIBaBDicHYHxHlDb4jFYSI06NKwc0uDjW4c%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 206846,
+            "title": "一种长期难测的粒子衰变，打开检验标准模型的新路径",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDU1MDY5OA==&mid=2653246939&idx=1&sn=842382d4caa312565d1f307f31a25ea5",
+            "source": "原理",
+            "published_at": "2026-09-10T12:30:00.000Z",
+            "score": null,
+            "summary": "早在公元前400年，哲学家就提出，万物都是由“原子”构成的。如今我们知道，原子其实并不是不可分割的。原子由原子核和围绕原子核运动的电子组成；原子核则由中子和质子组成。而中子和质子本身，又由更小的粒子——夸克组成。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2a98bdf5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FtIcW54Co1nOEeds8ZXIzYUOMrg7WhFy1CpUJpG2zglts1yqSfQheD1hyeWZkvscuoNUqsI0aN2fGNdMFU9oJmM9q1YeAo7ABMkCsaGUEJZs%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 211518,
+            "title": "Linkloud沙龙第44期： Agent如何从“能做”，走向“能用”与“能卖”?｜9月19日成都线下",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI0NTAwMzU1MA==&mid=2247506349&idx=1&sn=42af23de436611011699fe618702c927",
+            "source": "随机小分队",
+            "published_at": "2026-09-10T11:59:00.000Z",
+            "score": null,
+            "summary": "上个月我们在《硅谷万字观察：当“AI已来，SaaS将死”不再是一句玩笑》调研里写道：",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a49e53a2&u=https%3A%2F%2Fmmecoa.qpic.cn%2Fmmecoa_jpg%2FCDOXpzGmicHCpnExkcicuRvu6Jstd0hfY1egzI6u8TzV8Ko1icoDjw37TjDOTcGOwoVaWKMUbfUWr65yQaUV6PJuVXFxK0dYt08X0OCGVEst5M%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 205887,
+            "title": "“末日预言”刷屏！AI将让更多人失业？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NDMxMzQxMA==&mid=2651692215&idx=2&sn=769d8209061b700f75590c88bfc575cf",
+            "source": "东方财富网",
+            "published_at": "2026-09-10T11:42:00.000Z",
+            "score": null,
+            "summary": "AI到底会给人类带来什么？昨晚，全球顶尖的大模型公司Anthropic发布了一篇经济报告，预测AI将在2030年深刻影响美国的经济和失业率；也正是在同一天，这家公司的一位离职研究员警告：“AI会在十年内杀死所有人”。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bd52917f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8ictYbW1iarX7DcqbGVgJ6B1deMV0MZXUAOXgMwcRxbZDlN8K87jJYrQxJqqKggPFQ32Zicjz0ibmgoQvsaV9ialWEnvb6VvSJKynSQZicrjExLpI%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 211699,
+            "title": "国家级顶流AI赛事再开战！第三届「兴智杯」报名开启，等你来战",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651056207&idx=2&sn=d2ff6577e47c8e95c9dc78220a84e788",
+            "source": "机器之心",
+            "published_at": "2026-09-10T11:36:00.000Z",
+            "score": null,
+            "summary": "2026 年 5 月，Anthropic 披露内部合并进入代码库的代码中，超过 80% 已经由 Claude 编写。与 2024 年相比，2026 年第二季度其典型工程师每天合并的代码量提升到了约 8 倍。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c3d2c791&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5L8bhP5dIqFZl9ORON3NWanDEqvE3NIZPPodfYqGOcHkB5LrJKkY0NxeibH14iaea698SemREZOHKrc61oWpfWibZYkfJOnUadr2W3TZokP3q8%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 209529,
+            "title": "破除人形崇拜！京东用“狼族”军团重做物理AI",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651292728&idx=1&sn=09f813822e886c5edcf65f5c5a746ce7",
+            "source": "InfoQ",
+            "published_at": "2026-09-10T11:08:00.000Z",
+            "score": null,
+            "summary": "当科技圈还在为人形机器人叠衣服、打拳击而狂热不止时，真实的供应链产线却是另一番景象。Interact Analysis 最新数据显示，全球超七成的仓库严重依赖人力，自动化渗透率不足 25%。即便在已部署机器人的自动化仓库，拣选、理货等柔性环节依然吞噬掉过半运营成本。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eab66b3c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNgXBzWDOTl5SwVQuGXYcD57O5R3icD3D57Aklye49BnOTxH4kfnfIm8hnibkG7TSzf8icyv8OuA2o7pu7m8BkbK2G6vfcYcN7ZH3Q%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 209530,
+            "title": "Meta Muse突袭：人手一台AI虚拟机，全天候干活！扎克伯格想让 AI 自己“挣回饭钱",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651292728&idx=2&sn=0de09a4c09c7d688407e551e1d375770",
+            "source": "InfoQ",
+            "published_at": "2026-09-10T11:08:00.000Z",
+            "score": null,
+            "summary": "与主要负责回答问题、生成内容的传统聊天机器人不同，Meta 对 Muse 的定位是“个人 AI Agent”：用户不需要逐步告诉它如何操作，只需说出目标，Muse 就可以自己拆解任务、打开网页、填写表单，并调用外部应用完成工作。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4f337eef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNian7jBlbp8y4ckW8DPBHuOqIyRNyG2J4PdXzCwVfIxgQptpeiagkaD4a5ictMoDib97ibxJC8x1bY6Oz1hHmGkTmGF59diaSFvWRWibs%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -45,114 +191,114 @@
         "desc": "",
         "items": [
           {
-            "id": 205288,
-            "title": "老外排队购买！东方气味，正在全球爆单",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276453&idx=1&sn=b528f3fa2c101d60bf4815461937b2ba",
-            "source": "央视财经",
-            "published_at": "2026-09-10T16:55:00.000Z",
+            "id": 208901,
+            "title": "299 教练队员像父子 校园净土羞谈钱：从甲子园和箱根驿传看日本学生竞技的纠结",
+            "url": "https://www.xiaoyuzhoufm.com/episode/6aa2d29a9d32647781673cdc",
+            "source": "东亚观察局",
+            "published_at": "2026-09-10T22:00:00.000Z",
             "score": null,
-            "summary": "从俄罗斯游客为寻一款马年生肖香走进中国小店，到广州工厂里昼夜不停发往沙特的香水货柜；从年轻人重新点燃一支线香找寻内心宁静，到AI技术为每个人定制独一无二的“专属气味”……一股名为“中式香氛”的热潮，正以前所未有的速度，从中国飘向世界。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=575059f0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnXgaYeEbuqg4w6jkIGkX681lzP3m54hxtQan2vJJcybic4wq4bwpwhf5Mt7jrsg2QHL0IS5INGnXvDoncGyTeKhUtyURsWY0agiaWVFuh7HG4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "推荐您使用小宇宙app、苹果播客、喜马拉雅、网易云音乐、蜻蜓FM等平台订阅收听《东亚观察局》",
+            "cover": "https://image.xyzcdn.net/FjkZbQP_65dFI7ma44X6b7u-vvzt.jpg"
           },
           {
-            "id": 205289,
-            "title": "黄金、白银，双双下跌",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276453&idx=2&sn=6b97fe05d31213f38d82d751d6328788",
-            "source": "央视财经",
-            "published_at": "2026-09-10T16:55:00.000Z",
+            "id": 206246,
+            "title": "来了！新闻早班车",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAxNDM4MA==&mid=2667031584&idx=1&sn=2c93bcb93b751d557d3945237986da30",
+            "source": "人民日报",
+            "published_at": "2026-09-10T21:55:00.000Z",
             "score": null,
-            "summary": "当地时间10日，美国劳工统计局公布的数据显示，8月美国生产者价格指数（PPI）同比上涨5.4%，高于市场预期，较前值4.7%明显提速。生产者价格指数作为衡量生产端价格压力的先行指标，其同比涨幅的持续扩大，意味着上游企业端通胀明显反弹，并可能逐步向消费端传导，对后续消费者价格指数（CPI）走势构成上行风险。数据公布后，市场对美联储加息预期升温。芝商所美联储观察工具的数据显示，截至北京时间10日21时",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=436fb766&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnXgaYeEbuqhMTwKNrKlzR5hj5qMOZ167rjcIibJOp23EU2YmG2s8qQwSLdzahf4Aakjg4ysx85lWv0jE0E7xHUdiampAiag2uxourJtagwMzsU%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "习近平对山东青岛市北海造船厂一货轮火灾事故作出重要指示强调，深入排查整治各类火灾隐患，落实落细防范措施，坚决遏制重特大事故发生。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=88351bb5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQaRWjMxooXszxuDL9AgJspTM1F1pLvibGGGx9VnMhZFKmnmKqzSiclTlClHYxUCUdaJFh4KkvR9xfRpIf1gaKKmibfflJohVzkzXice7AxGqAyE%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 205290,
-            "title": "利好！北京，重要发布",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276435&idx=1&sn=cc0f7af89cf7318c69f71acf883b6543",
-            "source": "央视财经",
-            "published_at": "2026-09-10T14:35:00.000Z",
+            "id": 209310,
+            "title": "Jensen Huang explains why Nvidia will grow an astounding 70% next year",
+            "url": "https://techcrunch.com/2026/09/10/jensen-huang-explains-why-nvidia-will-grow-an-astounding-70-next-year/",
+            "source": "TechCrunch",
+            "published_at": "2026-09-10T21:51:59.000Z",
             "score": null,
-            "summary": "9月9日，北京市人民政府印发《北京市“十五五”时期高精尖产业发展规划》，从七个方面提出了22条具体政策举措，加快发展新质生产力，大力发展高精尖产业。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=75d4e2c0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnXgaYeEbuqgHkp1cysKH3hreQFYBA2J8qncOBOyqBjyPL8xac3HKJBKJqibtQKO7TEnficGsFsaHUauqM626JUicm06dWibHzmDgFhibGSWb70oE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Nvidia has its finger in every pie, and sees another year of plenty in its future, Jensen Huang says. But, he insists, its deals are not circular.",
+            "cover": null
           },
           {
-            "id": 205291,
-            "title": "从工业节能到楼宇智控！中企自主研发，再添3项“国际领先”",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276435&idx=2&sn=cf955ddb0f869c935392267d10d01b66",
-            "source": "央视财经",
-            "published_at": "2026-09-10T14:35:00.000Z",
+            "id": 206086,
+            "title": "早啊！新闻来了〔2026.09.11〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTI0MDU3NDYwMQ==&mid=2657969305&idx=1&sn=b1fdfc763304fef0070e3336788f7206",
+            "source": "央视新闻",
+            "published_at": "2026-09-10T21:40:00.000Z",
             "score": null,
-            "summary": "近日，格力电器等企业自主研发的“大温升冷热联供螺杆式复叠高温热泵”“中温水高效空调系统关键技术及应用”及“生态开放的全链生成式楼宇智控系统”三项技术经中国机械工业联合会鉴定，达到“国际领先”水平。三项成果创新性突出、自主知识产权完备、节能效果显著、经济与社会效益俱佳。至此，格力累计拥有“国际领先”技术达53项，自主创新实力再获有力印证。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fbde3768&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnXgaYeEbuqhbSswn2gibgpM6DlzXAibJLKQNEPQBsAPQ8hh5KY9cM56icblpDUQLagmT2bzpYv6SyWf355ZQzyz7LEA2TyDFRecYGrZzcaZxhM%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "10日，习近平对山东青岛市北海造船厂一货轮火灾事故作出重要指示强调，深入排查整治各类火灾隐患，落实落细防范措施，坚决遏制重特大事故发生。详情",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=83cc000c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FJPu5lvAD1XGt3Ro4vNxSjQuJovLGictlOfxZtOEb9GJdc8aSJOaVbtE5Ep9Yibd4mthayOFBd1dYq1hUZETBqzGznGIw6zeMe716ErowwppUA%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 205336,
-            "title": "美国兰德智库扒完1181家中美AI公司，发现真正的中美AI差异",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656202541&idx=1&sn=6120eabea613a4d8932581567e165c4e",
-            "source": "虎嗅APP",
-            "published_at": "2026-09-10T13:54:00.000Z",
+            "id": 209311,
+            "title": "Mark Wahlberg is coming to TechCrunch Disrupt 2026, and he wants to talk about your work, not his",
+            "url": "https://techcrunch.com/2026/09/10/mark-wahlberg-is-coming-to-techcrunch-disrupt-2026/",
+            "source": "TechCrunch",
+            "published_at": "2026-09-10T21:35:00.000Z",
             "score": null,
-            "summary": "创新区研究，就在TOP研究院。TOP研究院专注于全球创新区的一体化研究，从Talent(个人), Organization(组织), Place(区域)三大维度出发，通过“研究/连接/分享”，探索中国创新区的实践路径。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7ecd2519&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F87nD5Qvn8kKkJjpdz54xRaialqgzFg7cJvupBrbKAXI6BxM6vkpekvewCjiaG39KXBmEbsvdOhqiaZOpGsXnyuQCpkjU9Lxbgia6ptB6xpn1plo%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Mark Wahlberg joins Bruce K. Lee at Disrupt to discuss investing, entrepreneurship, healthcare, wellness and building businesses.",
+            "cover": null
           },
           {
-            "id": 205337,
-            "title": "游资爆炒大消费",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656202541&idx=2&sn=65b9af359b2d7412685c523f2551e946",
-            "source": "虎嗅APP",
-            "published_at": "2026-09-10T13:54:00.000Z",
+            "id": 209364,
+            "title": "NTSB issues investigative update on B-767 runway excursion accident in Miami",
+            "url": "https://www.ntsb.gov:443/news/press-releases/Pages/NR20260909.aspx",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-10T21:30:55.000Z",
             "score": null,
-            "summary": "9日，黄酒股逆势涨停，而传媒与农业批量暴跌，商贸零售（百大集团、中百集团涨停）和旅游酒店（桂林旅游午后涨停）则在内部分化中局部走高。10日，桂林旅游四连板，但中百集团尾盘炸板，百大集团大幅回落。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=353df8f7&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F87nD5Qvn8kLyoT9CUsicfMnlyf2zVibtlLJFgjEuygbxFHFSmicsObwgiciaXmmkNeDhtuq4hD0qQazmeibIuDZAmyNEdq0pjaAdsbsFhBAQdSViaI%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Article URL: https://www.ntsb.gov:443/news/press-releases/Pages/NR20260909.aspx",
+            "cover": null
           },
           {
-            "id": 205338,
-            "title": "全球AI职位Offer超7成被男性拿下，“阴阳失调”的AI风口？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656202541&idx=3&sn=e987d0ce0469830f11bee9bff132ca3d",
-            "source": "虎嗅APP",
-            "published_at": "2026-09-10T13:54:00.000Z",
+            "id": 206076,
+            "title": "早知天下事〔2026.09.11〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237149&idx=1&sn=b33ab0a4c7e622a3835db9904b8c1d98",
+            "source": "新华社",
+            "published_at": "2026-09-10T21:30:00.000Z",
             "score": null,
-            "summary": "本文来自微信公众号：LinkedIn领英，作者：Danielle Yuan，头图来自：AI生成",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7afb18f1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F87nD5Qvn8kJQSfPzUxJ0Fk6upCZibqvjuoTeyOPx7Ccp9icI63PFRftFfibwgqOibaTmTHZOdhRCvrQmDgYwPVqGtR1HdB0g9y1obrWrTF1woZo%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "外交部发言人10日表示，元首外交对中美关系具有不可替代的战略引领作用，双方就年内元首互动安排保持着沟通。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=92d5c66b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOISvlvuklwmP2VuxMZMWuLYwwyc7v7xS5QiaRmcgUVsLIbPY8G6KgTOgkeiaL0qUqm7vGlFH8rdMlz8Akes1VR2s8SCQqLdPbEsIs%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 205339,
-            "title": "别在教师节空谈奉献，别让年轻老师沦为形式主义牺牲品",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656202541&idx=4&sn=fc7850bf57f640feddd6d73ee44cd0cd",
-            "source": "虎嗅APP",
-            "published_at": "2026-09-10T13:54:00.000Z",
+            "id": 209199,
+            "title": "Slack can now vibe-code interactive charts and reports inside chats",
+            "url": "https://www.theverge.com/tech/989853/slackforce-surfaces-launch",
+            "source": "The Verge",
+            "published_at": "2026-09-10T21:25:21.000Z",
             "score": null,
-            "summary": "“尊重教师”这种空话，人人都会说，但想想历史就知道，“臭老九”的声音并不遥远，如今的老一辈，当年有几个没批斗过自己老师呢？记得有篇文章讲民国时期青岛一些中学的师资，简直是超豪华阵容，结果讲着讲着就讲不下去了，因为这些老师后来都很凄凉。至于有些人认为当下老师师德不行，张嘴就是以前如何如何，我觉得也很可笑，以前那么好，为啥被你们批斗呢？嚷嚷后来不行了，但不就是你们的同龄人在当老师吗？",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=cbcf8abe&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F87nD5Qvn8kJ0b8siaOtWJSrXdvo3gkSe3NO7poR3X6JnNXkCgGkzBVzSYgZDabA3GR5ZQgAd09U145eQmtDOZyibnvCCkVj45LqEIoBpibkaQo%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "A new feature coming to Slack will allow you to build interactive reports, polls, dashboards, presentations, microsites, and other tools directly inside a chat. With Slackforce Surfaces, you can descr",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/IMG_2464.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           },
           {
-            "id": 205292,
-            "title": "铜价，突然跳水",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276365&idx=1&sn=132496613ed6f7a13a62bfcc0dfa3c06",
-            "source": "央视财经",
-            "published_at": "2026-09-10T12:23:00.000Z",
+            "id": 209365,
+            "title": "OpenAI’s Navier-Stokes release included a Lean 4 formal proof",
+            "url": "https://www.johndcook.com/blog/2026/09/09/formal-method-revolution/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-10T21:22:59.000Z",
             "score": null,
-            "summary": "据路透社10日报道，有知情人士透露，白宫尚未敲定精炼铜进口关税方案。目前，白宫官员一方面担心铜价上涨可能会抬升制造业成本，另一方面又希望借此鼓励本土矿业发展。随着11月中期选举临近，美国政府愈发关注物价可负担性，特朗普总统以及共和党议员需要证明其经济政策是降低而非抬高美国消费者与企业的成本。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6813b2cd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnXgaYeEbuqgficrIiabHjGibSXAeRDQRmqVozoM4A6qCDpX6hWhTmOCOd8iarqE7Sm9H7wCibvjykribx6FcYlvuFp6jrXiaZC4OU0XicUpV6Svic1Qs%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Article URL: https://www.johndcook.com/blog/2026/09/09/formal-method-revolution/",
+            "cover": null
           },
           {
-            "id": 205293,
-            "title": "特朗普：若赢下中期选举，将给每名成年美国人发5000美元",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658276365&idx=2&sn=3ea000880b96a748dd4f48090cc33b1d",
-            "source": "央视财经",
-            "published_at": "2026-09-10T12:23:00.000Z",
+            "id": 209312,
+            "title": "OpenAI puts Pro subscriptions on hold due to Astra demand",
+            "url": "https://techcrunch.com/2026/09/10/openai-puts-pro-subscriptions-on-hold-due-to-astra-demand/",
+            "source": "TechCrunch",
+            "published_at": "2026-09-10T20:59:51.000Z",
             "score": null,
-            "summary": "当地时间9日，美国总统特朗普在得州参加共和党特别全国代表大会时说，如果共和党在国会中期选举中胜利，他将向每名美国成年公民发放5000美元。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f05c8a86&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnXgaYeEbuqj8emS3KFicfWJPDHMUr9MDnjwiacUpRiabpv6zjTZic2SdxsdCofsg7OibU5lZutKrztYBQMtNPtCeBlqibSkvXfDlA9hC5LNlcmtVg%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "The company said Pro subscriptions put the most strain on its systems, so it's pausing sign-ups while adding more capacity.",
+            "cover": null
           }
         ]
       }
     ],
     "stats": {
-      "candidates": 35,
-      "articles": 35,
-      "sections": 2,
-      "totalItems": 13
+      "candidates": 500,
+      "articles": 500,
+      "sections": 3,
+      "totalItems": 27
     }
   },
-  "generated_at": "2026-09-11T02:35:22.824Z"
+  "generated_at": "2026-09-11T02:44:33.340Z"
 }
