@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 51,
-    "generated_at": "2026-09-11T08:12:01.618Z",
+    "id": 52,
+    "generated_at": "2026-09-11T09:16:05.369Z",
     "window_hours": 30,
     "sections": [
       {
@@ -145,6 +145,26 @@
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a49e53a2&u=https%3A%2F%2Fmmecoa.qpic.cn%2Fmmecoa_jpg%2FCDOXpzGmicHCpnExkcicuRvu6Jstd0hfY1egzI6u8TzV8Ko1icoDjw37TjDOTcGOwoVaWKMUbfUWr65yQaUV6PJuVXFxK0dYt08X0OCGVEst5M%2F0%3Fwx_fmt%3Djpeg"
           },
           {
+            "id": 217548,
+            "title": "硬刚OpenAI的乐享科技，对巨头来了一次「釜底抽薪」",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651756669&idx=1&sn=1ffe3c4f8364781143d489deb84e680d",
+            "source": "雷峰网",
+            "published_at": "2026-09-10T11:56:00.000Z",
+            "score": null,
+            "summary": "9月3日，OpenAI上线新一代模型GPT-6 Astra官网；三天后，首席科学家Jakub Pachocki发表署名长文《异星心智》（An Alien Mind），抛出两个判断：",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1b57d5dd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg45R7674z3rWCrlsiaoQX7jbqR5d6RVEV6k4dIJn6Ia6HZxDAVRoO6L4DhAxjDNFfxsGzFrxYVMn02t8VnuMWXSpwib5iczK8Hk1Q%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 217549,
+            "title": "独家丨大厂集体扫货 Claude 20X 做蒸馏，黑市特权号炒至 2500 元",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651756669&idx=2&sn=05aa6c958e9e947ed978b1458b6646b8",
+            "source": "雷峰网",
+            "published_at": "2026-09-10T11:56:00.000Z",
+            "score": null,
+            "summary": "雷峰网独家获悉，近日国内多家头部AI大厂正在批量扫货 Claude 20X 账号，其中某互联网大厂一次性拿下约 70 万个账号，主要用作模型蒸馏，直接导致市场上的Claude 20X 特权号被炒至两到三千元不等。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=43e19e88&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg6FGQ8H1unEbWOX3GbULibpfdfQDSiahpyLz3RzgjluL62qCTamDBE0STG5R5sX6bRu3WexvrZQuOHosAzPnQnv68icr815nuMNeY%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
             "id": 205887,
             "title": "“末日预言”刷屏！AI将让更多人失业？",
             "url": "https://mp.weixin.qq.com/s?__biz=MzA5NDMxMzQxMA==&mid=2651692215&idx=2&sn=769d8209061b700f75590c88bfc575cf",
@@ -163,26 +183,6 @@
             "score": null,
             "summary": "2026 年 5 月，Anthropic 披露内部合并进入代码库的代码中，超过 80% 已经由 Claude 编写。与 2024 年相比，2026 年第二季度其典型工程师每天合并的代码量提升到了约 8 倍。",
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c3d2c791&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5L8bhP5dIqFZl9ORON3NWanDEqvE3NIZPPodfYqGOcHkB5LrJKkY0NxeibH14iaea698SemREZOHKrc61oWpfWibZYkfJOnUadr2W3TZokP3q8%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 209529,
-            "title": "破除人形崇拜！京东用“狼族”军团重做物理AI",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651292728&idx=1&sn=09f813822e886c5edcf65f5c5a746ce7",
-            "source": "InfoQ",
-            "published_at": "2026-09-10T11:08:00.000Z",
-            "score": null,
-            "summary": "当科技圈还在为人形机器人叠衣服、打拳击而狂热不止时，真实的供应链产线却是另一番景象。Interact Analysis 最新数据显示，全球超七成的仓库严重依赖人力，自动化渗透率不足 25%。即便在已部署机器人的自动化仓库，拣选、理货等柔性环节依然吞噬掉过半运营成本。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eab66b3c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNgXBzWDOTl5SwVQuGXYcD57O5R3icD3D57Aklye49BnOTxH4kfnfIm8hnibkG7TSzf8icyv8OuA2o7pu7m8BkbK2G6vfcYcN7ZH3Q%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 209530,
-            "title": "Meta Muse突袭：人手一台AI虚拟机，全天候干活！扎克伯格想让 AI 自己“挣回饭钱",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651292728&idx=2&sn=0de09a4c09c7d688407e551e1d375770",
-            "source": "InfoQ",
-            "published_at": "2026-09-10T11:08:00.000Z",
-            "score": null,
-            "summary": "与主要负责回答问题、生成内容的传统聊天机器人不同，Meta 对 Muse 的定位是“个人 AI Agent”：用户不需要逐步告诉它如何操作，只需说出目标，Muse 就可以自己拆解任务、打开网页、填写表单，并调用外部应用完成工作。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4f337eef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNian7jBlbp8y4ckW8DPBHuOqIyRNyG2J4PdXzCwVfIxgQptpeiagkaD4a5ictMoDib97ibxJC8x1bY6Oz1hHmGkTmGF59diaSFvWRWibs%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -190,6 +190,36 @@
         "column": "其它重要",
         "desc": "",
         "items": [
+          {
+            "id": 218487,
+            "title": "《生活圈》“小助手”与广大圈友正式见面啦！专业又贴心的服务与内容都在这里，诚邀全体圈友加入！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=1&sn=b957766492d04f64b8bd8b38832249eb",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-10T22:00:00.000Z",
+            "score": null,
+            "summary": "“小助手”是《生活圈》栏目在手机上与您进行沟通服务的小助手，是由我们《生活圈》打造的可以与您直接互动的服务账号。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9b5e3bc8&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgcZHEXicvt8MVDY6lmCP2FgTd81ibQKRsAWL0KkDTEBfibqCqx7d0ibsZ6oauVeDm9wVciaD0ibKbdvKbS6jDmd0MiabsCmhiaMGFgGcBE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 218488,
+            "title": "别让你的骨头比你先老！常练2个动作，帮你预防骨质疏松",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=2&sn=24c9bae003058be97bf76bbfcf23a153",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-10T22:00:00.000Z",
+            "score": null,
+            "summary": "坐在椅子边缘，双手抱胸或向前平举，慢慢从坐位站起，再从站位缓慢坐下，如此往复进行。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=130c7c94&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgcJwXImTNbNuycrHtxlSicDibFd8UHGmkahDwm0UWIbdB3LpbYUL8mzvazLO0mcibFb7ScVN3bJNQQOsMSgJ25NWePNXArkRM43tk%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 218489,
+            "title": "脸变圆、背变厚？可能不是胖了，而是内分泌在报警！中医教你4招调理",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=3&sn=80d5293bc89da98fc4bb984b8cbef9c4",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-10T22:00:00.000Z",
+            "score": null,
+            "summary": "从中医角度来看，有一部分内分泌紊乱的人，比如皮质醇代谢异常人群，可能会出现脸部圆润饱满的情况，也就是大家常说的“满月脸”。还可能伴随躯干部位的体态变化，既有腹部脂肪增多形成的腹型肥胖，也有背部增厚变宽，也就是俗称的 “水牛背”。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bffb93fd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgeCTgEPKN0kwQbTotNkAhY7LicoiapWZF3CTHviazZ42XVyPomGDVAE9jlEv2XSdMRSibp2yxDatqO2Uf9vAEmic7Nx6EHqcCyh8Se0%2F0%3Fwx_fmt%3Djpeg"
+          },
           {
             "id": 208901,
             "title": "299 教练队员像父子 校园净土羞谈钱：从甲子园和箱根驿传看日本学生竞技的纠结",
@@ -259,36 +289,6 @@
             "score": null,
             "summary": "外交部发言人10日表示，元首外交对中美关系具有不可替代的战略引领作用，双方就年内元首互动安排保持着沟通。",
             "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=92d5c66b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOISvlvuklwmP2VuxMZMWuLYwwyc7v7xS5QiaRmcgUVsLIbPY8G6KgTOgkeiaL0qUqm7vGlFH8rdMlz8Akes1VR2s8SCQqLdPbEsIs%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 209199,
-            "title": "Slack can now vibe-code interactive charts and reports inside chats",
-            "url": "https://www.theverge.com/tech/989853/slackforce-surfaces-launch",
-            "source": "The Verge",
-            "published_at": "2026-09-10T21:25:21.000Z",
-            "score": null,
-            "summary": "A new feature coming to Slack will allow you to build interactive reports, polls, dashboards, presentations, microsites, and other tools directly inside a chat. With Slackforce Surfaces, you can descr",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/IMG_2464.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
-          },
-          {
-            "id": 209365,
-            "title": "OpenAI’s Navier-Stokes release included a Lean 4 formal proof",
-            "url": "https://www.johndcook.com/blog/2026/09/09/formal-method-revolution/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-10T21:22:59.000Z",
-            "score": null,
-            "summary": "Article URL: https://www.johndcook.com/blog/2026/09/09/formal-method-revolution/",
-            "cover": null
-          },
-          {
-            "id": 209312,
-            "title": "OpenAI puts Pro subscriptions on hold due to Astra demand",
-            "url": "https://techcrunch.com/2026/09/10/openai-puts-pro-subscriptions-on-hold-due-to-astra-demand/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-10T20:59:51.000Z",
-            "score": null,
-            "summary": "The company said Pro subscriptions put the most strain on its systems, so it's pausing sign-ups while adding more capacity.",
-            "cover": null
           }
         ]
       }
@@ -300,5 +300,5 @@
       "totalItems": 27
     }
   },
-  "generated_at": "2026-09-11T09:15:52.891Z"
+  "generated_at": "2026-09-11T09:31:12.381Z"
 }

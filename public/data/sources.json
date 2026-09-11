@@ -5569,18 +5569,6 @@
       "fail_count": 0
     },
     {
-      "id": 64,
-      "type": "hotlist",
-      "name": "每天60秒读懂世界",
-      "url": "hotlist60s://60s",
-      "avatar": null,
-      "group_id": 2,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 1
-    },
-    {
       "id": 110,
       "type": "wemp",
       "name": "每日经济新闻",
@@ -8041,5 +8029,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T09:15:53.088Z"
+  "generated_at": "2026-09-11T09:31:12.539Z"
 }
