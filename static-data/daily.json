@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 72,
-    "generated_at": "2026-09-11T14:16:09.069Z",
+    "id": 75,
+    "generated_at": "2026-09-12T05:30:44.923Z",
     "window_hours": 30,
     "sections": [
       {
@@ -9,34 +9,44 @@
         "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
         "items": [
           {
-            "id": 209649,
-            "title": "这件事，一号位必须亲自下场",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654908075&idx=1&sn=f9d5a2324c9677aa7cc11c5075fa399e",
-            "source": "笔记侠",
-            "published_at": "2026-09-10T13:46:00.000Z",
+            "id": 272184,
+            "title": "乌克兰施“美人计”：3名俄男子被乌女特工“招募”，主动传送防空导弹阵地、油库、军车行进路线等敏感信息",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NTA5MjkyNQ==&mid=2248586047&idx=1&sn=3663c546dcc65e124bbc16f70586f7a1",
+            "source": "每日经济新闻",
+            "published_at": "2026-09-11T16:10:00.000Z",
             "score": null,
-            "summary": "内容来源：2026年8月8日-10日，笔记侠在杭州举办的【AI十倍增长营】02期课程中，森创启睿CEO/企业AI转型实战总架构师渊虹分享的精华内容整理。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0f8d8fee&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8b91BQ8yFl3Hxybic5P9vO7qPfg5g1CVwKIvcTnOQ3Bn02LhbQWuDBCdLMgW9aIVaUTdDXPDaW0Vta55KIoicxGTMCFZqOaZoJl2lyYvOoalA%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "据红星新闻，俄罗斯联邦安全局近日通报，三名男子通过交友网站被乌克兰国防部情报总局招募，向对方传送了防空导弹阵地、油库和军车行进路线等敏感信息。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6beed1d1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FGXaOuDJovOrjDibR23CBjfJaAqq3XsUFgBIgB6VW3jEDTMLbor5Zw2znMzxFpQBUItWtibgZE4WMmFTuCS0KRgDRaPCibDn7FQepSZ0A0mtTOw%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 228492,
-            "title": "企培这份“肥差”，我终于找到省力的搭子了",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkwMzE4NjU5NA==&mid=2247520560&idx=1&sn=64d899761d9cbc6d7c08cd6ceae0e31a",
-            "source": "袋鼠帝AI客栈",
-            "published_at": "2026-09-10T10:55:00.000Z",
+            "id": 252045,
+            "title": "为什么散户不要做事件投资策略？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5MTk5OTY4Mw==&mid=2649662740&idx=1&sn=954b9964f01dd9f0aae40a0248003b38",
+            "source": "思想钢印",
+            "published_at": "2026-09-11T12:26:00.000Z",
             "score": null,
-            "summary": "但是很多时候企业的需求是不一样的，而且AI一直在飞速发展。以及AI领域东西太多了，我感觉之前培训过的课件、资料，不太好复用，或者只能在一小段时间里面复用。经常都是需要做新的课件。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=507b6001&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FPF8icWqEe2PSx8dDBrIMziajY4iaYqRGe9icKjjfk2ia4ibg9jViaIcz59mFTEdlB9ibcZVmA0Mdk7D521wBDZlO361gic790Nw0kI2d7fBQkkmViaYaQ%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "下面的问答，摘自我的两个社区“思想钢印知识星球”和“钢大的财富新思维圈子”，都是我挑选出来有共性价值的问题，回答不仅仅是针对问题本身，也会上升到方法论的角度。这些内容非常有价值，我会定期挑选一些公开，如果你也有问题想问我，可以加入这两个社群。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ac6ebd94&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FoiaHIzp5rfuMqaFD3icICfYk06aHCpyiceiaspVia3UsGaNUlRvsF4GPBTvhpQMsiaNoD10xSnrauYFmuwZ1UQwdZkkciaBQOVa1tu3yUgx6eU8CL4%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 206397,
-            "title": "2026年夏更新 产品相关培训咨询服务介绍",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzE3MDQ3Mw==&mid=2650411949&idx=2&sn=30ec628dda7d1b237cb2f0ccaf2801ab",
-            "source": "iamsujie",
-            "published_at": "2026-09-10T07:54:00.000Z",
+            "id": 292375,
+            "title": "离开互联网的程序员，走向工厂车间：月入过万，全年出差",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656202797&idx=4&sn=1a455bbd690741afe3e4a3109eee66f2",
+            "source": "虎嗅APP",
+            "published_at": "2026-09-11T09:18:00.000Z",
             "score": null,
-            "summary": "亦可点击原文链接，获取随时更新的在线文档（包含服务概述、讲师顾问介绍、内容模块、过往典型客户、案例举例等）",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bfa02b8b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FArmv0pa9c8jW2xG1XQ4p3uhEVsXaYCNrP5Tqtz0VpK664qXYec1HEwkDS4oP2eK6pic8tfgECtUkQibYpymibOyJJz3SYy1gFzfJw3K6Abex7Q%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "8月中旬，28岁的李闻在社交账号上发布了一张图片，画面仅有四个字：“前端已死”。当天他刚刚拿到低压电工证，计划第二天就去培训机构系统学习PLC课程。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a2e4f253&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F87nD5Qvn8kICfqSlgicIDe1AcqDhUGHqTgbhRO9JjssOcsiccFMl8aCia7lZ0YtQdHdbQud5RL0AFcERiaE8RwTb2ScZibFIjoTSlXjBwAYtZffE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 237920,
+            "title": "多地青年夜校“开课即秒空”，背后反映了什么？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTU4Nzc0Mg==&mid=2659049203&idx=1&sn=fb83264744a88d5cc75287e868a1c35a",
+            "source": "半月谈",
+            "published_at": "2026-09-11T08:48:00.000Z",
+            "score": null,
+            "summary": "今年以来，多地青年夜校走红。在上海，青年夜校被纳入为民办实事项目，教学点覆盖各个行政区，仅在浦东就开设184个办班点，其中39个开在商圈内，不少课程“开课即秒空”；在四川，成都文化馆晚间课程上线后点击量瞬间破万，抢课成了学员圈的常态……",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e2511b68&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FRqbrDLsdoDicleSzSGPyYkUKy1YS1vupEFicHJPAuJsFWicWYNez101icNic5AbUHY0ZM6c7Ic1Geq7BmYOK9Yt0SPhchI1Rj8XQRetTeZlG2TZM%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -45,154 +55,154 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 209367,
-            "title": "OpenAI Agents API",
-            "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-10T19:43:22.000Z",
+            "id": 277528,
+            "title": "银行Agent上岗：4200万小微经营者可用，信贷、票据、财税一把梭",
+            "url": "https://www.qbitai.com/2026/09/487631.html",
+            "source": "量子位博客",
+            "published_at": "2026-09-11T18:02:36.000Z",
             "score": null,
-            "summary": "Article URL: https://developers.openai.com/api/docs/guides/agents-api/overview",
+            "summary": "看清「一个真正的人」",
             "cover": null
           },
           {
-            "id": 209169,
-            "title": "How a researcher uses Codex and ChatGPT to search for new antimicrobial molecules",
-            "url": "https://openai.com/index/using-codex-chatgpt-to-search-for-new-antimicrobials",
-            "source": "OpenAI",
-            "published_at": "2026-09-10T16:00:00.000Z",
-            "score": null,
-            "summary": "César de la Fuente and his lab probe the genomes of living and extinct organisms for molecules that could help fight drug-resistant infections.",
-            "cover": "https://images.ctfassets.net/kftzwdyauwt9/2Kovot5B2upbAxiLOfbEIO/464b5e73306e047fa31f8456acb34fa3/art-card.png?w=3840&q=90&fm=webp"
-          },
-          {
-            "id": 211948,
-            "title": "不让每一层都“翻旧账”！浙大 & 港大最新开源 LayerRecall，让长视频记忆更准、用得更精",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzEwMzIwOQ==&mid=2247519396&idx=1&sn=474578f325ea9a38f44a26eac5b39e6c",
+            "id": 293089,
+            "title": "北大助理教授招生｜LLM/Agent 后训练、RSI、Discovery Intelligence（2028 Fall 硕博 + 博后 + 实习长期开放）",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzEwMzIwOQ==&mid=2247519445&idx=2&sn=e3fc96197c429adaa5793f5f498e1d84",
             "source": "青稞AI",
-            "published_at": "2026-09-10T16:00:00.000Z",
+            "published_at": "2026-09-11T16:00:00.000Z",
             "score": null,
-            "summary": "浙江大学杨易教授团队与香港大学提出并开源LayerRecall：仅训练约1.65M（165万）参数的记忆路由模块，参数量约为5B骨干的0.033%，生成骨干保持冻结。它不把整段历史一股脑塞回模型，而是同时回答两个问题——现在该想起什么？这段记忆又该在哪些层里使用？",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f82d8a89&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkqA90yjYex7MvAFQbvqWBvcVFvia9mPXRFQibpetgruCbsURN9JDiafPwRxLUKvic0Wob28KtTXBXEgRRzfpKCxxf65jfZKFicfjWm9NctEiaH8sc%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "杨灵，即将加入北京大学国际机器学习研究中心，担任助理教授、研究员、博士生导师。此前在普林斯顿大学 AI Lab 从事博士后研究。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3b17cb14&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkqA90yjYex6wmwMHN8sFliaqp2K9jaCOXlwwGaRqmQgtK4I2H8E9PeTQyfric2DObU3aRfQQ70W1r488DCDibbb8ibRzHmtUWYrSrQmg86kZw7s%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 206969,
-            "title": "把Agent队伍装进系统，百度营销定义生意增长新范式",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NTE0ODc2Nw==&mid=2650979591&idx=2&sn=82bf7ab72f8ccd964f1760f7e826571a",
-            "source": "界面新闻",
-            "published_at": "2026-09-10T14:21:00.000Z",
+            "id": 314469,
+            "title": "国常会定调算力基建，构建多层次网络化体系，这些板块迎来利好丨大咖星选",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661805853&idx=2&sn=f8da39d44db82f3de312abeb3dd34e66",
+            "source": "第一财经",
+            "published_at": "2026-09-11T15:01:00.000Z",
             "score": null,
-            "summary": "9月9日的产品发布会上，百度擎舵3.0与两大全新升级的智能投放产品，AIMax 智投、AI 投放助手，正式亮相。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=37a6cd8d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibrevicNauKAUjheddm3bnicVViaaB0V7kdHbm9h5PFfSSLGpfTiaHhl1aqTYqA1r7WhZlD8eOGmQJsMiaMU8qLqe9vBRSuHs4XVJApmRX6diaXQQE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "- 事件：国常会明确提出“完善算力基础设施，推进关键技术装备研发”，构建多层次网络化算力体系；浪潮信息拟募资90亿元投建AI基础设施；OpenAI推出Agents API，DeepSeek续供V4 Pro，且中证指数公司即将发布港股通人工智能应用指数。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=99bc0d67&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCKQvfL3aB0ibUc8oTBia6aF0vITXQghf0BxMUISoQRY68fRf1j7MykDZcZFWaL8sfm5WPuKk1kYx6AvYr5pLHcibXx9icaMSiaI4G0Y%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 206883,
-            "title": "顶尖AI模型训练师离职，炮轰美国科技巨头：拿人类生命下注",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzI5NTU3MQ==&mid=2652567808&idx=2&sn=11c223fec6111ce997222a30e28682f8",
-            "source": "澎湃新闻",
-            "published_at": "2026-09-10T14:03:00.000Z",
+            "id": 286264,
+            "title": "服贸会首设“中国服务案例展”！这些硬核科技，正在走出国门",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTI0MDU3NDYwMQ==&mid=2657969781&idx=2&sn=1c3ce7e92711b34c7de3bebb8e442972",
+            "source": "央视新闻",
+            "published_at": "2026-09-11T14:36:00.000Z",
             "score": null,
-            "summary": "当地时间8日，美国人工智能公司Anthropic的研究员雅各布·考克森在社交平台X上宣布辞职，并在辞职声明中警告称，业内领先的人工智能公司正在竞相开发“可能在本十年末毁灭我们所有人”的超级人工智能技术。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=21e8de0e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FibIciaJ2dfKYdPHgQd1UaCz7EPjxoicBjewPTqlMhV1BWpYCVj5fhonFqshDKqmYRR8UIXB0DzsIDPfpgdQcVVFPviaYcl9sknzwtBB342L7gJk%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "今年服贸会，第一次办起了中国服务案例展。140个来自各行各业的服务创新案例集中亮相，近四成都用上了AI、大模型这类新技术。越来越多“中国方案”“中国服务”，正在走向全世界。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d66ff739&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FJPu5lvAD1XGml4CvGoYXxGxPP0pzxKW4QvyoJSTGqOT9D8ib8rmdFQwrbvcrgYpnV7jQYZMHHxkCkC4HJP3St3EwcycEzmWFibia0r58iaLE0Ps%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 207036,
-            "title": "［9月10日］指数估值数据（成长和价值，收益差别在哪儿；红利指数估值表更新）",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAwNzQ5ODk3Nw==&mid=2651097760&idx=1&sn=bb2d37d8085bdc556e59e7fe2d14ac8f",
-            "source": "银行螺丝钉",
-            "published_at": "2026-09-10T13:55:00.000Z",
+            "id": 263602,
+            "title": "GPT-6 Astra：我将如何利用它赚钱丨Greg Isenberg",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzcxMDA5NTI0OA==&mid=2247488925&idx=1&sn=d9f73ab29bed810c93a65dd2c428f42f",
+            "source": "晚点再听LaterCast",
+            "published_at": "2026-09-11T14:00:00.000Z",
             "score": null,
-            "summary": "今天的AI大模型也是一样，市面上比较出名的已经有好几家，最终谁胜出，站在现在很难预测。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4071ac5c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FgAxPsMgDxSxD3acMuYrkoJfyafIHRkLxAGkRgwPWQDtgHDwAsgWUcRJLR4kxyVKwK2gL3qJxsZfQq8MZ2yNG1C77EB1BOJOKTzUibNkwOJR4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "从改善现有产品、拆解服务流程，到给自己的 AI 助手做一台音箱，Greg Isenberg 与 Ras Mic 展示了更强的模型可以推进哪些生意和产品想法。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e27cdf05&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FUNwPtic6UWKZDW9WN6f1Dhh37lTcTWTLIXQwM8OVrpJlm0BFib3gPhXxVsj9SKcLzo6qhupenHA5M8rwBUfAAGgqJHUj6kchPc10MIlLVDoQk%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 211868,
-            "title": "从词元规模转向应用价值：中国联通如何经营Token？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248902325&idx=1&sn=3998208682ea5bf08284d2398dd56faa",
-            "source": "36氪",
-            "published_at": "2026-09-10T13:46:00.000Z",
+            "id": 268225,
+            "title": "Show HN: Clawfight.ai MCP-driven agentic game play",
+            "url": "https://clawfight.ai/agents.md",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-11T13:54:17.000Z",
             "score": null,
-            "summary": "一家制造企业的CIO计划将大模型接入生产系统，一连串问题很快摆到面前：调用哪家模型更稳定？敏感数据能否留在厂区？每次推理产生的成本又该计入哪个部门？",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=acf3da7e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeGgmDbRiacTJ49A1AMpQhkjjDz7ZyISRFpm7I62Hhxo2CWQ93THzb5N9Xw0ibQJ0HdXKaITOBFibT8ZsMbBiar8lNqpvSetkVmc07U%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "How should agents interact with other agents? What happens when they rap or fight against each other with the pressure of human spectators? Clawfight.ai is an experiment to explore this space.This is ",
+            "cover": null
           },
           {
-            "id": 211928,
-            "title": "[Agent Memory / 强化学习] MemPO源码学习笔记 ---（1）--- 总体",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247489817&idx=1&sn=1dd9437c9432b9f18d4cb9fd391b9a77",
-            "source": "罗西的思考",
-            "published_at": "2026-09-10T13:10:00.000Z",
+            "id": 284633,
+            "title": "专做“AI套壳”的App工厂，估值破了10亿美元？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTAzMjc4MA==&mid=2650890402&idx=1&sn=5757aa51384fdd9ee0dd92b9ad897882",
+            "source": "创业邦",
+            "published_at": "2026-09-11T13:31:00.000Z",
             "score": null,
-            "summary": "现有的基于强化学习的 Memory 管理方法往往缺乏一种有效机制针对 Memory 的更新内容进行引导优化，Memory 的内容难以保证质量。而 MemPO（Self-Memory Policy Optimization）使模型对 Memory 进行自管理，并引入了基于有效信息含量的 Memory-level 的优势估计，引导 Memory 保留对解决任务更有效的信息，进而提升记忆有效性。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6d7106c4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FiazCrKuBFsicBQ56QCaT4Qp5AuXN89LPpDJd7pdUBicaribLDNFWKqmmK3NBbGiat3Q3iaB2oqAJ1A9ee55alkcL2gia22c7j63DNtVes6faXJcnwc%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "“AI 套壳”应用，大概是过去两年移动互联网最不缺、也最不被看好的东西。接入大模型 API，套上模板界面，取一个带“AI”的名字。这类产品批量出现，也批量消失。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fb7537ca&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FcYfMwRADOvoKs2n88KJMSjktFWZ46ICicFic7CnVxGf6RCQNHvzdZy2e1bwUjsmkiamHj4Aau9nTCE8VWGLTuY9hjtLevjMlPoANcGW91uRWia0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 242126,
-            "title": "生数双线破局背后：朱军团队正在为世界模型立「通用语法」",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA5ODEzMjIyMA==&mid=2247745001&idx=1&sn=52e68befb4dfe67d892e957199ca03ee",
-            "source": "AI科技评论",
-            "published_at": "2026-09-10T12:54:00.000Z",
+            "id": 255148,
+            "title": "Claude users found ways around safeguards for bioweapons research",
+            "url": "https://arstechnica.com/ai/2026/09/claude-users-found-ways-around-safeguards-for-bioweapons-research/",
+            "source": "Ars Technica",
+            "published_at": "2026-09-11T13:02:35.000Z",
             "score": null,
-            "summary": "但在真正动手之前，机器人其实要先回答一串问题：灯泡是否已经对准？再拧一点会不会滑丝？指尖感到阻力时，是该加力，还是退半格重新校正？如果下一步错了，损失的不只是一次“生成失败”，而是一次真实的掉落、损坏，甚至对环境和人的风险。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c4de3a7b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXqAicMdcoiafMyzwoKdxiberW1YtNgicnSeEELBq1yy0hkZ0iaft91SjAoyRvvCX8ibjLrvCP3Qwzyic03mlia70gRTUuusEgyscbgMsW6w5tMibVSdg%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Anthropic said it stopped multiple attempts by scientists this year to use its technology for research that could help develop biological weapons, as experts increasingly fear the threat that AI poses",
+            "cover": null
           },
           {
-            "id": 242127,
-            "title": "NUS Show Lab 寿政教授：打通自回归与离散扩散，打造下一代具身大模型底座｜ECCV 2026",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA5ODEzMjIyMA==&mid=2247745001&idx=2&sn=afb488fbea0645036a5b57ab2fe96609",
-            "source": "AI科技评论",
-            "published_at": "2026-09-10T12:54:00.000Z",
+            "id": 259053,
+            "title": "腾讯最炙手可热的AI产品，想用游戏为Agent祛魅",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTc2ODUxMw==&mid=2650021515&idx=1&sn=3fd307f7adbcee78e1c5c83ad9b7b81e",
+            "source": "游戏葡萄",
+            "published_at": "2026-09-11T12:25:00.000Z",
             "score": null,
-            "summary": "不同于拼接独立模型的传统做法，NUS Show Lab 选择了一条更原生的架构路线：在单个 Transformer 中同时打通自回归预测与离散扩散生成。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e8e61dd0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXqAicMdcoiafNWnNg3tz2bs17Hml1D1OEmv1pMkdpq0mMSpovPfiadomibL9z5meHwrQmUNA2lwW9EeDDoibNuIb7hnDJQ1Q2u76MqxSRicDkNvUQ%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "模型排名一天一个样，稿子如果写慢了，可能都跟不上版本迭代的速度，老牌公司拼命在卷，新锐团队也在不断冒头。但就在这炮火连天的时候，腾讯的AI工作台WorkBuddy干了件画风不太一样的事。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=46254f8e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FjV8YHDicAiasZFYTicN4xTNuIjwCbwoicywKhntTSFeXeNYHcBmiasAHzOxXIc89icwtamyU0ZjRgG6s1MGJdBBWc0DMQ8uHT2ZibHiajW0rFzAAiclw%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 206767,
-            "title": "AI 破解数学千禧年难题，却被人类数学家声讨？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDM4MDExNQ==&mid=2832654424&idx=2&sn=6bd1c6f235fcb3040c1a96f807d4b771",
-            "source": "知乎日报",
-            "published_at": "2026-09-10T12:41:00.000Z",
+            "id": 249415,
+            "title": "一个小白的 GPT-6 Astra 3D 奇幻之旅，Blender 还有必要学吗？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&mid=2650454273&idx=1&sn=ed878119a2e778cf6883c611c9f01527",
+            "source": "AINLP",
+            "published_at": "2026-09-11T11:53:00.000Z",
             "score": null,
-            "summary": "OpenAI 于当地时间 9 月 8 日宣布：其内部一个未公开的 AI 模型攻克了纳维 - 斯托克斯方程（N-S 方程）的「存在性与光滑性」问题。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d5039871&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkrSqjDRWFlFRiaTZsr4LzCcNppicnTe0QeDPTWSiaxBiceyWSp01pamAnmebPRQFheJ5PBJvoKxsGicIBaBDicHYHxHlDb4jFYSI06NKwc0uDjW4c%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "这次 GPT-6 Astra 的 3D 能力很吸引我：它能调用 Blender 搭建模型和场景，还能继续制作展示视频。我也想试试，一个零基础用户，靠描述需求究竟能做到哪一步。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=49dfea47&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQsOstc0fpvnjLUeuLmpwLl2ibzBQicbNNsRDphv1Y6T9MaR7icgVnouJdMTyyZbXR2wN8g7wTO3mkp8DegIDe24YOosvMme5eplbW5CgFWibZuw%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 206846,
-            "title": "一种长期难测的粒子衰变，打开检验标准模型的新路径",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDU1MDY5OA==&mid=2653246939&idx=1&sn=842382d4caa312565d1f307f31a25ea5",
-            "source": "原理",
-            "published_at": "2026-09-10T12:30:00.000Z",
+            "id": 247200,
+            "title": "Moonshot serves Claude instead of Kimi and collects exchanges for model training",
+            "url": "https://twitter.com/DavidAgranovich/status/2098168522862215449",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-11T11:36:24.000Z",
             "score": null,
-            "summary": "早在公元前400年，哲学家就提出，万物都是由“原子”构成的。如今我们知道，原子其实并不是不可分割的。原子由原子核和围绕原子核运动的电子组成；原子核则由中子和质子组成。而中子和质子本身，又由更小的粒子——夸克组成。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2a98bdf5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FtIcW54Co1nOEeds8ZXIzYUOMrg7WhFy1CpUJpG2zglts1yqSfQheD1hyeWZkvscuoNUqsI0aN2fGNdMFU9oJmM9q1YeAo7ABMkCsaGUEJZs%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Article URL: https://twitter.com/DavidAgranovich/status/2098168522862215449",
+            "cover": null
           },
           {
-            "id": 211518,
-            "title": "Linkloud沙龙第44期： Agent如何从“能做”，走向“能用”与“能卖”?｜9月19日成都线下",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI0NTAwMzU1MA==&mid=2247506349&idx=1&sn=42af23de436611011699fe618702c927",
-            "source": "随机小分队",
-            "published_at": "2026-09-10T11:59:00.000Z",
+            "id": 251496,
+            "title": "千人预约！2026成都AI文娱大会：汇聚平台、模型、工具与出海全链路，报名即将截止",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU5Mjg5MjQ5Ng==&mid=2247522643&idx=1&sn=a067c81a19d6c561d5520a7389b80330",
+            "source": "非凡产研",
+            "published_at": "2026-09-11T11:07:00.000Z",
             "score": null,
-            "summary": "上个月我们在《硅谷万字观察：当“AI已来，SaaS将死”不再是一句玩笑》调研里写道：",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a49e53a2&u=https%3A%2F%2Fmmecoa.qpic.cn%2Fmmecoa_jpg%2FCDOXpzGmicHCpnExkcicuRvu6Jstd0hfY1egzI6u8TzV8Ko1icoDjw37TjDOTcGOwoVaWKMUbfUWr65yQaUV6PJuVXFxK0dYt08X0OCGVEst5M%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "模型能力拉平之后，拼的是谁能稳定量产、谁能让用户付费、谁能卖到全球、谁能把钱留住。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c1e15bdb&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1ZTGteQRfa21tDMicsJrCztYRnnRfQmeCLtAEoiav3znotbRxQeuWNakPvLWo689cYSlbAOzpd9V7xXMkERYaiaWEcp2M9t3Mfz2gjKR5ETVfY%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 217548,
-            "title": "硬刚OpenAI的乐享科技，对巨头来了一次「釜底抽薪」",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651756669&idx=1&sn=1ffe3c4f8364781143d489deb84e680d",
-            "source": "雷峰网",
-            "published_at": "2026-09-10T11:56:00.000Z",
+            "id": 234840,
+            "title": "Claude is no longer available for minors",
+            "url": "https://support.claude.com/en/articles/15171100-age-assurance-on-claude",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-11T10:48:00.000Z",
             "score": null,
-            "summary": "9月3日，OpenAI上线新一代模型GPT-6 Astra官网；三天后，首席科学家Jakub Pachocki发表署名长文《异星心智》（An Alien Mind），抛出两个判断：",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1b57d5dd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg45R7674z3rWCrlsiaoQX7jbqR5d6RVEV6k4dIJn6Ia6HZxDAVRoO6L4DhAxjDNFfxsGzFrxYVMn02t8VnuMWXSpwib5iczK8Hk1Q%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Article URL: https://support.claude.com/en/articles/15171100-age-assurance-on-claude",
+            "cover": null
           },
           {
-            "id": 217549,
-            "title": "独家丨大厂集体扫货 Claude 20X 做蒸馏，黑市特权号炒至 2500 元",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651756669&idx=2&sn=05aa6c958e9e947ed978b1458b6646b8",
-            "source": "雷峰网",
-            "published_at": "2026-09-10T11:56:00.000Z",
+            "id": 256574,
+            "title": "晚点独家丨超维动力完成超 5 亿元天使 + 轮融资，要做高拟人机器人",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3Mjk1OTQ0Ng==&mid=2247538662&idx=2&sn=981a10d7a555e5ba28c655eab7523149",
+            "source": "晚点LatePost",
+            "published_at": "2026-09-11T10:13:00.000Z",
             "score": null,
-            "summary": "雷峰网独家获悉，近日国内多家头部AI大厂正在批量扫货 Claude 20X 账号，其中某互联网大厂一次性拿下约 70 万个账号，主要用作模型蒸馏，直接导致市场上的Claude 20X 特权号被炒至两到三千元不等。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=43e19e88&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg6FGQ8H1unEbWOX3GbULibpfdfQDSiahpyLz3RzgjluL62qCTamDBE0STG5R5sX6bRu3WexvrZQuOHosAzPnQnv68icr815nuMNeY%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "我们独家获悉，近期，具身智能公司超维动力（Kinetix AI）完成超 5 亿元天使 + 轮系列融资，由新加坡淡马锡控股旗下 VC 机构祥峰资本、方广资本、万石资本等加注。据了解，这笔融资将被用于加速 “数据-模型-本体” 的迭代，推动具身智能产品落地。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=584cb0c4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FJ3iaQ6X4GdYVodqA1XrapEc9RuAKAia3TNSK5rVR0I5CHYaG9LK4xNHeicNdzKm5iapc1woAicgibfu2ibUYQTiaazq0ocMmrke3ALlkvZbnfxgbOiaI%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 285784,
+            "title": "美国太空司令部完成首次实飞太空演习；OpenAI因Astra需求暂停部分新订阅；宇树科技开源60亿参数具身基座模型",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTg1MjI3MzY2MQ==&mid=2652375891&idx=2&sn=1153764c206ebe9894c601558902ae70",
+            "source": "果壳",
+            "published_at": "2026-09-11T10:09:00.000Z",
+            "score": null,
+            "summary": "今天是9月11日，星期五。1952年的今天，查尔斯·赫夫纳格尔医生首次成功为患者植入有机玻璃管制成的人工主动脉瓣，成功恢复了患者心脏血液动力学功能，开创了心脏瓣膜置换手术先河。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e68b4f22&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FvXUelfKjHMiavW2UfaicfjiarmG4qykS3dxbgB2Pibs32uteafCwTWiaNFBd0SRntAnn3GdQHsv9MyWhwWGE67QYyeyEBYPlspGJ3M2PMibhmoErc%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -201,104 +211,104 @@
         "desc": "",
         "items": [
           {
-            "id": 218487,
-            "title": "《生活圈》“小助手”与广大圈友正式见面啦！专业又贴心的服务与内容都在这里，诚邀全体圈友加入！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=1&sn=b957766492d04f64b8bd8b38832249eb",
-            "source": "CCTV生活圈",
-            "published_at": "2026-09-10T22:00:00.000Z",
-            "score": null,
-            "summary": "“小助手”是《生活圈》栏目在手机上与您进行沟通服务的小助手，是由我们《生活圈》打造的可以与您直接互动的服务账号。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9b5e3bc8&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgcZHEXicvt8MVDY6lmCP2FgTd81ibQKRsAWL0KkDTEBfibqCqx7d0ibsZ6oauVeDm9wVciaD0ibKbdvKbS6jDmd0MiabsCmhiaMGFgGcBE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 218488,
-            "title": "别让你的骨头比你先老！常练2个动作，帮你预防骨质疏松",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=2&sn=24c9bae003058be97bf76bbfcf23a153",
-            "source": "CCTV生活圈",
-            "published_at": "2026-09-10T22:00:00.000Z",
-            "score": null,
-            "summary": "坐在椅子边缘，双手抱胸或向前平举，慢慢从坐位站起，再从站位缓慢坐下，如此往复进行。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=130c7c94&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgcJwXImTNbNuycrHtxlSicDibFd8UHGmkahDwm0UWIbdB3LpbYUL8mzvazLO0mcibFb7ScVN3bJNQQOsMSgJ25NWePNXArkRM43tk%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 218489,
-            "title": "脸变圆、背变厚？可能不是胖了，而是内分泌在报警！中医教你4招调理",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595784&idx=3&sn=80d5293bc89da98fc4bb984b8cbef9c4",
-            "source": "CCTV生活圈",
-            "published_at": "2026-09-10T22:00:00.000Z",
-            "score": null,
-            "summary": "从中医角度来看，有一部分内分泌紊乱的人，比如皮质醇代谢异常人群，可能会出现脸部圆润饱满的情况，也就是大家常说的“满月脸”。还可能伴随躯干部位的体态变化，既有腹部脂肪增多形成的腹型肥胖，也有背部增厚变宽，也就是俗称的 “水牛背”。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bffb93fd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgeCTgEPKN0kwQbTotNkAhY7LicoiapWZF3CTHviazZ42XVyPomGDVAE9jlEv2XSdMRSibp2yxDatqO2Uf9vAEmic7Nx6EHqcCyh8Se0%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 208901,
-            "title": "299 教练队员像父子 校园净土羞谈钱：从甲子园和箱根驿传看日本学生竞技的纠结",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6aa2d29a9d32647781673cdc",
-            "source": "东亚观察局",
-            "published_at": "2026-09-10T22:00:00.000Z",
-            "score": null,
-            "summary": "推荐您使用小宇宙app、苹果播客、喜马拉雅、网易云音乐、蜻蜓FM等平台订阅收听《东亚观察局》",
-            "cover": "https://image.xyzcdn.net/FjkZbQP_65dFI7ma44X6b7u-vvzt.jpg"
-          },
-          {
-            "id": 206246,
-            "title": "来了！新闻早班车",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAxNDM4MA==&mid=2667031584&idx=1&sn=2c93bcb93b751d557d3945237986da30",
-            "source": "人民日报",
-            "published_at": "2026-09-10T21:55:00.000Z",
-            "score": null,
-            "summary": "习近平对山东青岛市北海造船厂一货轮火灾事故作出重要指示强调，深入排查整治各类火灾隐患，落实落细防范措施，坚决遏制重特大事故发生。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=88351bb5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQaRWjMxooXszxuDL9AgJspTM1F1pLvibGGGx9VnMhZFKmnmKqzSiclTlClHYxUCUdaJFh4KkvR9xfRpIf1gaKKmibfflJohVzkzXice7AxGqAyE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 209310,
-            "title": "Jensen Huang explains why Nvidia will grow an astounding 70% next year",
-            "url": "https://techcrunch.com/2026/09/10/jensen-huang-explains-why-nvidia-will-grow-an-astounding-70-next-year/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-10T21:51:59.000Z",
-            "score": null,
-            "summary": "Nvidia has its finger in every pie, and sees another year of plenty in its future, Jensen Huang says. But, he insists, its deals are not circular.",
-            "cover": null
-          },
-          {
-            "id": 206086,
-            "title": "早啊！新闻来了〔2026.09.11〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTI0MDU3NDYwMQ==&mid=2657969305&idx=1&sn=b1fdfc763304fef0070e3336788f7206",
-            "source": "央视新闻",
-            "published_at": "2026-09-10T21:40:00.000Z",
-            "score": null,
-            "summary": "10日，习近平对山东青岛市北海造船厂一货轮火灾事故作出重要指示强调，深入排查整治各类火灾隐患，落实落细防范措施，坚决遏制重特大事故发生。详情",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=83cc000c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FJPu5lvAD1XGt3Ro4vNxSjQuJovLGictlOfxZtOEb9GJdc8aSJOaVbtE5Ep9Yibd4mthayOFBd1dYq1hUZETBqzGznGIw6zeMe716ErowwppUA%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 209311,
-            "title": "Mark Wahlberg is coming to TechCrunch Disrupt 2026, and he wants to talk about your work, not his",
-            "url": "https://techcrunch.com/2026/09/10/mark-wahlberg-is-coming-to-techcrunch-disrupt-2026/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-10T21:35:00.000Z",
-            "score": null,
-            "summary": "Mark Wahlberg joins Bruce K. Lee at Disrupt to discuss investing, entrepreneurship, healthcare, wellness and building businesses.",
-            "cover": null
-          },
-          {
-            "id": 209364,
-            "title": "NTSB issues investigative update on B-767 runway excursion accident in Miami",
-            "url": "https://www.ntsb.gov:443/news/press-releases/Pages/NR20260909.aspx",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-10T21:30:55.000Z",
-            "score": null,
-            "summary": "Article URL: https://www.ntsb.gov:443/news/press-releases/Pages/NR20260909.aspx",
-            "cover": null
-          },
-          {
-            "id": 206076,
-            "title": "早知天下事〔2026.09.11〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237149&idx=1&sn=b33ab0a4c7e622a3835db9904b8c1d98",
+            "id": 300507,
+            "title": "早知天下事〔2026.09.12〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237320&idx=1&sn=f56179e37c60ec0deeb9ebab0e700355",
             "source": "新华社",
-            "published_at": "2026-09-10T21:30:00.000Z",
+            "published_at": "2026-09-11T22:00:00.000Z",
             "score": null,
-            "summary": "外交部发言人10日表示，元首外交对中美关系具有不可替代的战略引领作用，双方就年内元首互动安排保持着沟通。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=92d5c66b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOISvlvuklwmP2VuxMZMWuLYwwyc7v7xS5QiaRmcgUVsLIbPY8G6KgTOgkeiaL0qUqm7vGlFH8rdMlz8Akes1VR2s8SCQqLdPbEsIs%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "《智能网联新能源汽车产业发展“十五五”规划》对外发布，提出到2030年，我国进入世界汽车强国行列。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=45960358&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIRjGjcnavd5D4nZDC2FWCZ8apibrSIfBoaGyzHibakjjcojQAvaxdMEZV43c40tTicTGQiaIACSkiapfWAicsb2ibK9WW6Ee4Dib9899dc%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 328886,
+            "title": "秋燥分两种，很多人都补反了，越补燥感越重！梨、胖大海别盲目吃，中医教你快速自测体质",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595844&idx=1&sn=2bc9d85f4977e4846b1232ddb9d30b6b",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-11T22:00:00.000Z",
+            "score": null,
+            "summary": "入秋不少人喉咙阵阵发痒，总想清嗓子、干咳。中医认为，咽痒多和风邪有关，秋燥伤肺，津液不足，咽喉失去濡养，就会出现干痒。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1bfa6fc5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRge9cHb3uiaPJjZibj7hQ2zaaDhbtz3nFMrtljjB2JmOicuFOGrOYtp2WHNCGT4ibwhhgDyVmXLh761agicJXUicrwhztnwDxsRmEq7TQ%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 304450,
+            "title": "Show HN: ResolveHQ – A Helpdesk Built on Cloudflare Workers, D1, R2 and Queues",
+            "url": "https://github.com/mirza-rizvi/ResolveHQ",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-11T21:48:00.000Z",
+            "score": null,
+            "summary": "Article URL: https://github.com/mirza-rizvi/ResolveHQ",
+            "cover": null
+          },
+          {
+            "id": 307787,
+            "title": "来了！新闻早班车",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAxNDM4MA==&mid=2667031884&idx=1&sn=8a8b28262cb30d74cbd9e897c0f8d8e6",
+            "source": "人民日报",
+            "published_at": "2026-09-11T21:43:00.000Z",
+            "score": null,
+            "summary": "外交部介绍习近平主席出席金砖国家领导人会晤安排。中印双方正在安排习近平主席同印度总理莫迪举行双边会晤。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=883b55fc&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQaRWjMxooXv2jZLOT6dZ7sxWmZ8iawicfzK7tUH4nRicnA2hZYkllicvtTfoSFHcl6Xs8ia0sfOqxL3Tf4H4NNyNUGUvUJKuf0KF7CJHIDHrmMjo%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 303583,
+            "title": "Random rewards enrich classic game-theory contests",
+            "url": "https://arstechnica.com/science/2026/09/random-rewards-enrich-classic-game-theory-contests/",
+            "source": "Ars Technica",
+            "published_at": "2026-09-11T21:41:16.000Z",
+            "score": null,
+            "summary": "Games may be life with all the hard bits removed, but they provide a way to study why people make the choices they make. Traditional games are usually played against a static background: the rewards p",
+            "cover": null
+          },
+          {
+            "id": 311653,
+            "title": "AI researchers debate how close we are to recursive self-improvement",
+            "url": "https://www.dwarkesh.com/p/john-beren-charlie",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-11T21:35:29.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.dwarkesh.com/p/john-beren-charlie",
+            "cover": null
+          },
+          {
+            "id": 308097,
+            "title": "早啊！新闻来了〔2026.09.12〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTI0MDU3NDYwMQ==&mid=2657969790&idx=1&sn=3e059ddc94e058437bfe23c8bf46a3f2",
+            "source": "央视新闻",
+            "published_at": "2026-09-11T21:27:00.000Z",
+            "score": null,
+            "summary": "应印度共和国总理莫迪邀请，国家主席习近平将于12日至13日赴印度新德里出席金砖国家领导人第十八次会晤。外交部发言人11日表示，中印双方正在安排习近平主席同印度总理莫迪举行双边会晤，这将是两国领导人继喀山、天津会晤之后连续第三年会晤。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=cb265be3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FJPu5lvAD1XEmDSP3mOsP9AcFObwaIdFerTtSHrSwHbTCRgsxr9fF9mPX0ibv9SGkOHZlgGjpF6B8l293AEYZ9fNkouooBibWzYVXicHaibZibKyQ%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 296444,
+            "title": "Khosla Ventures is opening a New York office this fall — its first outpost outside Sand Hill Road",
+            "url": "https://techcrunch.com/2026/09/11/khosla-ventures-is-opening-a-new-york-office-this-fall-its-first-outpost-outside-sand-hill-road/",
+            "source": "TechCrunch",
+            "published_at": "2026-09-11T21:19:05.000Z",
+            "score": null,
+            "summary": "\"It's actually allegedly being built out now,\" said Rabois, who has clearly dealt with a missed construction timeline or two.",
+            "cover": null
+          },
+          {
+            "id": 303584,
+            "title": "Bouncy castle launches horrifying MRSA outbreak, striking 48 kids in Ireland",
+            "url": "https://arstechnica.com/health/2026/09/bouncy-castle-launches-horrifying-mrsa-outbreak-striking-48-kids-in-ireland/",
+            "source": "Ars Technica",
+            "published_at": "2026-09-11T21:14:26.000Z",
+            "score": null,
+            "summary": "For a child bursting with energy, few things are more fun than hurtling through a bouncy castle, launching into the air, and ping-ponging between every surface. But that childhood buoyancy will quickl",
+            "cover": null
+          },
+          {
+            "id": 296445,
+            "title": "Y Combinator’s Garry Tan wants U.S. open-weight AI labs to ‘distill’ frontier models, too",
+            "url": "https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/",
+            "source": "TechCrunch",
+            "published_at": "2026-09-11T20:59:47.000Z",
+            "score": null,
+            "summary": "Tan argues that frontier models themselves trained on public human knowledge so access to capable AI should be \"a form of public good.\"",
+            "cover": null
           }
         ]
       }
@@ -307,8 +317,8 @@
       "candidates": 500,
       "articles": 500,
       "sections": 3,
-      "totalItems": 28
+      "totalItems": 29
     }
   },
-  "generated_at": "2026-09-11T14:31:16.755Z"
+  "generated_at": "2026-09-12T06:06:03.460Z"
 }

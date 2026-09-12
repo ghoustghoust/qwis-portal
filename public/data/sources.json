@@ -19,7 +19,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3264997043.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FQicyPhNHD5vae5iaz2AnhGezX4ecJkRqemSibPbIeH8jLoGqT2HqU0Bp4MtOfcfdVNhHzibONSk2JINYQMnV1RiaK8g%2F0%3Fwx_fmt%3Dpng",
       "group_id": 13,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -117,8 +117,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 510,
@@ -137,30 +137,6 @@
       "type": "youtube",
       "name": "AI Master",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0yHbz4OxdQFwmVX2BBQqLg",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 512,
-      "type": "youtube",
-      "name": "AI Search",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 513,
-      "type": "youtube",
-      "name": "AI Video School",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUb7KwmlVSSCnPu5KEhym8A",
       "avatar": "null",
       "group_id": 26,
       "focus": 0,
@@ -189,8 +165,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 8
     },
     {
       "id": 27,
@@ -393,8 +369,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 427,
@@ -429,26 +405,14 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 611,
       "type": "youtube",
       "name": "Ali Abdaal",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCoOae5nYA7VqaXzerajD0lg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 552,
-      "type": "youtube",
-      "name": "All-In Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCESLZhusAkFfsNsApnjF_Cg",
       "avatar": "null",
       "group_id": 16,
       "focus": 0,
@@ -465,8 +429,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 515,
@@ -477,8 +441,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 588,
@@ -501,8 +465,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 21,
@@ -525,8 +489,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 7
     },
     {
       "id": 66,
@@ -565,18 +529,6 @@
       "fail_count": 0
     },
     {
-      "id": 553,
-      "type": "youtube",
-      "name": "Better Ideas",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCtUId5WFnN82GdDy7DgaQ7w",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 618,
       "type": "youtube",
       "name": "Beyond Coding",
@@ -585,8 +537,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 501,
@@ -609,8 +561,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 555,
@@ -633,8 +585,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 39,
@@ -645,8 +597,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 400,
@@ -693,8 +645,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 200,
@@ -717,8 +669,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 556,
@@ -765,8 +717,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 559,
@@ -777,8 +729,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 167,
@@ -801,8 +753,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 165,
@@ -861,8 +813,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 600,
@@ -873,8 +825,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 170,
@@ -895,30 +847,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/54dd1b1511fd066dfea2b4acde3e62787e8a687b.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 560,
-      "type": "youtube",
-      "name": "Dwarkesh Patel",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXl4i9dYBrFOabk0xGmbkRA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 561,
-      "type": "youtube",
-      "name": "EO",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UClWTCPVi-AU9TeCN6FkGARg",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -961,36 +889,12 @@
       "fail_count": 0
     },
     {
-      "id": 601,
-      "type": "youtube",
-      "name": "Figma",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCQsVmhSa4X-G3lHlUtejzLA",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 621,
       "type": "youtube",
       "name": "Fireship",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
       "avatar": "null",
       "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 602,
-      "type": "youtube",
-      "name": "First of Kind",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSuJzNoyNb6ICi8punp3mCg",
-      "avatar": "null",
-      "group_id": 28,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1005,8 +909,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 124,
@@ -1041,8 +945,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 86,
@@ -1077,8 +981,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 488,
@@ -1113,8 +1017,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 17,
@@ -1137,8 +1041,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 563,
@@ -1161,8 +1065,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 70,
@@ -1233,8 +1137,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 623,
@@ -1257,8 +1161,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 99,
@@ -1293,8 +1197,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 166,
@@ -1317,8 +1221,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 289,
@@ -1353,8 +1257,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 527,
@@ -1389,8 +1293,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 6
     },
     {
       "id": 528,
@@ -1413,8 +1317,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 237,
@@ -1447,18 +1351,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/a657b0a3a865418b8ed7c619214cd4b8c7a28218.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 529,
-      "type": "youtube",
-      "name": "Machine Learning Street Talk",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMLtBahI5DMrt0NPvDSoIRQ",
-      "avatar": "null",
-      "group_id": 26,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1509,8 +1401,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 480,
@@ -1573,18 +1465,6 @@
       "fail_count": 0
     },
     {
-      "id": 624,
-      "type": "youtube",
-      "name": "Modern Software Engineering",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCCfqyGl3nq_V0bo64CjZh8g",
-      "avatar": "null",
-      "group_id": 27,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 590,
       "type": "youtube",
       "name": "MrBeast",
@@ -1593,8 +1473,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 568,
@@ -1603,18 +1483,6 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
       "avatar": "null",
       "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 606,
-      "type": "youtube",
-      "name": "NNgroup",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2oCugzU6W8-h95W7eBTUEg",
-      "avatar": "null",
-      "group_id": 28,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1653,8 +1521,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 533,
@@ -1689,20 +1557,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 570,
-      "type": "youtube",
-      "name": "Nikhil Kamath",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCnC8SAZzQiBGYVSKZ_S3y4Q",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 535,
@@ -1797,20 +1653,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 537,
-      "type": "youtube",
-      "name": "Pika Labs",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0SclYU4iiQRihtmDnak-gQ",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 259,
@@ -1857,8 +1701,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 607,
@@ -1869,8 +1713,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 211,
@@ -1909,18 +1753,6 @@
       "fail_count": 0
     },
     {
-      "id": 538,
-      "type": "youtube",
-      "name": "Riley Brown",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMcoud_ZW7cfxeIugBflSBw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 539,
       "type": "youtube",
       "name": "Runway",
@@ -1929,20 +1761,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 626,
-      "type": "youtube",
-      "name": "Ryan Peterman",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCzB7YGrrxDC_POenf86H3_Q",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 280,
@@ -1981,18 +1801,6 @@
       "fail_count": 0
     },
     {
-      "id": 572,
-      "type": "youtube",
-      "name": "Silicon Valley Girl",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCiq1FIgtEK7LRAOB1JXTPig",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 540,
       "type": "youtube",
       "name": "Siraj Raval",
@@ -2001,8 +1809,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 593,
@@ -2025,18 +1833,6 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
-    },
-    {
-      "id": 627,
-      "type": "youtube",
-      "name": "Spring I/O",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLMPXsvSrhNPN3i9h-u8PYg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
       "status": "ok",
       "fail_count": 0
     },
@@ -2049,20 +1845,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 574,
-      "type": "youtube",
-      "name": "Stripe",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCM1guA1E-RHLO2OyfQPOkEQ",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 9
     },
     {
       "id": 597,
@@ -2073,8 +1857,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 9
     },
     {
       "id": 541,
@@ -2109,8 +1893,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 575,
@@ -2121,8 +1905,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 608,
@@ -2137,18 +1921,6 @@
       "fail_count": 0
     },
     {
-      "id": 576,
-      "type": "youtube",
-      "name": "The Knowledge Project Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 628,
       "type": "youtube",
       "name": "The Pragmatic Engineer",
@@ -2157,8 +1929,8 @@
       "group_id": 27,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 577,
@@ -2169,8 +1941,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 65,
@@ -2193,8 +1965,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 578,
@@ -2241,8 +2013,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 630,
@@ -2253,8 +2025,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 544,
@@ -2277,8 +2049,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 503,
@@ -2287,18 +2059,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/3865e1eb71366ebddfc6d292da83fde9162e7b01.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 631,
-      "type": "youtube",
-      "name": "Web Dev Simplified",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCFbNIlppjAuEX4znoulh0Cw",
-      "avatar": "null",
-      "group_id": 27,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -2325,8 +2085,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 646,
@@ -2335,18 +2095,6 @@
       "url": "https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e74b52c418a84a046ecaceb",
       "avatar": "null",
       "group_id": 22,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 594,
-      "type": "youtube",
-      "name": "White Cube YouTube",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC488ANgGUANDqqhlr_eF9JQ",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -2409,8 +2157,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 164,
@@ -2445,8 +2193,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 4
     },
     {
       "id": 424,
@@ -2455,18 +2203,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/8e2047ef236238b91abf91562b79ef4a1e7ba39d.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 583,
-      "type": "youtube",
-      "name": "companyman",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCb4xHi3i7upzKMaLrauVFtg",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -2541,8 +2277,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 615,
@@ -2565,8 +2301,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 341,
@@ -2589,8 +2325,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 212,
@@ -2637,8 +2373,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 329,
@@ -2671,18 +2407,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/4f8c07cc1c9eee6998b27eb99d7f134778871f0f.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 595,
-      "type": "youtube",
-      "name": "一席",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -3345,8 +3069,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 291,
@@ -3631,7 +3355,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_2397003540.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FOVAmd6VfEiaNo9YhjtdEmib2sM9v4x3YXicD2I21sXfiasYSghibxxV9MGeDGXlV6vQqfkVCiaxnASibPT92fIFd3Itsg%2F0%3Fwx_fmt%3Dpng",
       "group_id": 12,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -3657,8 +3381,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 366,
@@ -4027,7 +3751,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3207765945.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2F5fknb41ib9qGErgbAAhiaht2FBwPtIicZ71VGcCM5KYywFmHzAV96ppvJ8ntuiaUx4icePOwoxz5mhPwmup3yibyibqQQ%2F0%3Fwx_fmt%3Dpng",
       "group_id": 14,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -4185,8 +3909,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 207,
@@ -4365,8 +4089,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 635,
@@ -4581,8 +4305,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 410,
@@ -4737,8 +4461,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 684,
@@ -4939,7 +4663,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3271041950.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FUicQ7HgWiaUb27w0Aw0CyUGVElB6ibyE1fYyiaNHRpfQ8voAiaRicXDORqaibXnwHx4VJEYeja6zHnF0natYBX86oKmOw%2F0%3Fwx_fmt%3Dpng",
       "group_id": 14,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -5047,7 +4771,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3572959446.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FVWpZENjIo5shpibl3ibKsc1iaR8H1U2mwdZByoibtqaCQBODt48OxjZIEcFUIyFvfHEdNSOB8pWJkmspuWv1pjErVw%2F0%3Fwx_fmt%3Dpng",
       "group_id": 12,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -5239,7 +4963,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_3073282833.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FKmXPKA19gW8Hw3m9nYrAsOLx3ZicPxogLrGibnMYybTBN7EGzEhCVulznVbDob2ib3mwdMMQXtOhO6bqCdSz9kX7w%2F0%3Fwx_fmt%3Dpng",
       "group_id": 14,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -5275,18 +4999,6 @@
       "url": "https://www.gcores.com/rss",
       "avatar": "https://alioss.gcores.com/page_resources/misc/logo-red.png",
       "group_id": 6,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 616,
-      "type": "youtube",
-      "name": "李永乐老师",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvNxfitQbWkmLuCd44UfrYQ",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -5445,8 +5157,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 352,
@@ -5889,8 +5601,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 375,
@@ -5935,7 +5647,7 @@
       "url": "http://127.0.0.1:8001/feed/MP_WXS_2831008240.atom?limit=20",
       "avatar": "/api/img?u=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FdyDu14T9ZVAx7ASwWEibxTC3m8M754c1omAlN9JuGGDGMeAV2pAicrB2ibicUp9QcpVmTxepSkWvTROMho1w5AgJhw%2F0%3Fwx_fmt%3Dpng",
       "group_id": 13,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -6237,8 +5949,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 653,
@@ -6321,8 +6033,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 657,
@@ -6799,7 +6511,7 @@
       "url": "hotlist://zaobao",
       "avatar": "/api/img?u=https%3A%2F%2Fzaobao.com%2Ffavicon.ico",
       "group_id": 5,
-      "focus": 1,
+      "focus": 0,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -7053,8 +6765,8 @@
       "group_id": 6,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 477,
@@ -7305,8 +7017,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 40,
@@ -7317,8 +7029,8 @@
       "group_id": 2,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 146,
@@ -7389,8 +7101,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 656,
@@ -7533,8 +7245,8 @@
       "group_id": 3,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 72,
@@ -7557,8 +7269,8 @@
       "group_id": 4,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 274,
@@ -7857,8 +7569,8 @@
       "group_id": 5,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 660,
@@ -8029,5 +7741,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-11T14:31:16.885Z"
+  "generated_at": "2026-09-12T06:06:03.586Z"
 }
