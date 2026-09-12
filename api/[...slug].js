@@ -1178,13 +1178,8 @@ const SENSITIVE_KEYS = ['url', 'secret', 'sendKey', 'deviceKey', 'token', 'botTo
 
 async function handleAlertsConfig(req) {
   const cfg = await getSetting('alerts', {});
-  const channels = Array.isArray(cfg.channels) ? cfg.channels.map(c => {
-    const masked = { ...c };
-    for (const k of SENSITIVE_KEYS) {
-      if (masked[k]) masked[k] = masked[k].slice(0, 4) + '****';
-    }
-    return masked;
-  }) : [];
+  // 2026-09-12 修复：密钥在 c.config 嵌套层，原先只在渠道顶层打码等于没打（webhook URL 明文外泄）
+  const channels = _alerts.maskChannels(Array.isArray(cfg.channels) ? cfg.channels : []);
   return jsonOk({
     channels,
     events: cfg.events || {},
