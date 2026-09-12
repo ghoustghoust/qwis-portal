@@ -28,7 +28,7 @@
 | 无感刷新 | SSE `/api/events` | ✅ 60s 增量轮询 `/api/articles/since` | 2026-09-11 重写；serverless 不支持长连 |
 | 文章详情/已读/稍后读/全部已读 | ✅ | ✅ | |
 | 阅读沉淀（我的阅读/批量/导出） | ✅ | ✅ | |
-| 保存视图 / 分组管理 / 拖拽移动 | ✅ | ❌ 404 | 需 `PUT /api/settings`、`/api/groups` 写、`/api/groups/move` |
+| 保存视图（设置写） | ✅ | ✅ 2026-09-11 | 分组管理/拖拽仍待 14-sources-write |
 | 单源手动刷新 | ✅ | ❌ 404 | 云端替代：`POST /api/rss/refresh`（标记到期，runner ≤15min 补抓） |
 | 视频列表 | ✅ | ✅ | |
 | 视频详情/收藏/播放直链解析 | ✅ | ❌ 404 | 播放依赖 B站 Cookie+wbi，架构上只能本地 |

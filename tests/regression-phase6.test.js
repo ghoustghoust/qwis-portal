@@ -116,22 +116,25 @@ test('P6-4: 未知任务类型标记 failed 而非崩溃', async () => {
 test('P6-5: 重构后文档体系完整', () => {
   const ROOT = path.join(__dirname, '..');
 
-  // 核心文档存在
+  // 核心文档存在（2026-09-11 文档重整后对齐：PROJECT_STATUS 等已归档 deprecated/，决策文档在 deprecated/）
   const requiredDocs = [
     'ARCHITECTURE.md',
+    'AGENTS.md',
     'docs/INDEX.md',
-    'docs/PROJECT_STATUS.md',
+    'docs/FEATURE_MATRIX.md',
     'docs/RUNBOOK.md',
     'docs/REFACTOR_GUIDE.md',
+    'docs/CLOUD_PIPELINE_GUIDE.md',
     'docs/features/collectors.md',
     'docs/features/scheduler.md',
     'docs/features/task-queue.md',
     'docs/features/daily-report.md',
     'docs/features/events-alerts.md',
-    'docs/specs/01-部署架构决策.md',
-    'docs/specs/02-不做云端采集决策.md',
+    'docs/deprecated/PROJECT_STATUS.md',
+    'docs/deprecated/01-部署架构决策.md',
+    'docs/deprecated/02-不做云端采集决策.md',
     'docs/specs/03-公众号走托管RSS决策.md',
-    'docs/specs/04-不做Vercel前端决策.md',
+    'docs/deprecated/04-不做Vercel前端决策.md',
     'docs/specs/05-任务队列选型决策.md',
   ];
 

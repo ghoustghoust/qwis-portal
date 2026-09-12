@@ -40,6 +40,7 @@
 | P1-13 | **`handleArticleLater` Vercel 端响应不一致**：Vercel 返回 `{ ok: true }` 不含 `later` 字段，本地 Express 返回 `{ ok: true, later: 0|1 }` | 前端需自行反推状态（L77 fallback），可能导致 UI 状态不同步 | `api/[...slug].js` L958-963 | ✅ **已修复**（2026-09-11：返回 later 字段，与本地 Express 一致） |
 | P1-14 | **YouTube 对数据中心 IP 反爬返回假 404/500**：频道 ID 正确、源是活的，但 GH runner / 代理出口 IP 被标记后间歇性失败 | YouTube 源间歇性采不到（每轮成功率 ~20-80% 掷骰） | 外部依赖 | 🟡 **已缓解**（2026-09-11 熔断阈值 3→10 + 复活 29 误杀源；彻底解需住宅代理 RSSHub） |
 | P1-15 | **Vercel 项目未连接 Git 集成**（实测 `link: null`）：`git push` 从不触发部署，历史部署全部是 CLI 手动；快照 job 每天 push 的 public/data/ 也不自动上线 | 代码 push 后线上不更新，极易误判"已部署" | Vercel 项目设置 | ✅ **已修复**（2026-09-11：安装 Vercel GitHub App + API 完成 link，productionBranch=main，push 即自动部署） |
+| P2-10 | **taskQueue 重试语义 3 项回归测试失败**（P6-3/TQ-3/TQ-11：retryFailed 重置边界与退避） | 本地任务队列失败重试行为与测试预期不符（2026-09-11 前即存在，与当日改动无关，已经干净树对照实验确认） | server/services/queue/taskQueue.js | 🔴 待排查：确认是测试预期过时还是实现退化 |
 | P1-16 | ~~Agnes API key 云端 401~~ **已解决 2026-09-11**：实测证明 key 不限 IP（官方文档：401=key 无效/格式错误）。真根因：Turso `settings.ai` 残留污染（apiBase 指向 deepseek 域名+空 key），settings 覆盖优先级高于 env；叠加 agnes-2.5-flash 是推理模型，max_tokens=20 被 reasoning 烧光返回空内容。修复：settings.ai 重置 {} + 重写 Vercel/GH 三处 key + max_tokens 64/512 + reasoning_content 兜底。云端 ping/chat 实测 ✅ | 已修复 | 云端 AI 已可用（agnes，agnes-2.5-flash） | ✅ |
 
 ## P2 — 逻辑冲突/双端漂移

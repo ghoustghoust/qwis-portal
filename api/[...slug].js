@@ -85,7 +85,7 @@ async function setSetting(key, val) {
 // ─── 鉴权 ───
 const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
-  '/api/groups', '/api/sources', '/api/status', '/api/settings',
+  '/api/groups', '/api/sources', '/api/status', '/api/settings', '/api/settings/daily',
   '/api/reading', '/api/img', '/api/meta',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
 ]);
@@ -1610,6 +1610,207 @@ async function handleAuditCleanup(req) {
   return jsonOk({ deleted: r.changes });
 }
 
+// ═══ 设置写（13-settings-write, 2026-09-11） ═══
+// 与本地 server/routes/settings.js + routes/daily.js settingsRouter 语义对齐
+const SETTINGS_BLOCKLIST = ['auth.secret', 'admin.passwordHash', 'backup.latest', 'cloud.collect'];
+
+const DAILY_DEFAULT_COLUMNS = [
+  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
+  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
+  { id: 'fallback', name: '其它重要', special: 'fallback' },
+];
+const DAILY_ARTICLE_TYPES = ['wechat', 'rss', 'x'];
+const DAILY_VIDEO_TYPES = ['bilibili', 'douyin', 'youtube'];
+
+// 对象型 setting 合并写；敏感键留空（undefined/''）不覆盖
+async function mergeSetting(key, patch, sensitiveKeys = []) {
+  const cur = (await getSetting(key, {})) || {};
+  const next = { ...cur };
+  for (const [k, v] of Object.entries(patch || {})) {
+    if (sensitiveKeys.includes(k) && (v === undefined || v === '')) continue;
+    if (v !== undefined) next[k] = v;
+  }
+  await setSetting(key, next);
+}
+
+// 与本地 routes/daily.js validateDailyPatch 同强度
+function validateDailyPatch(patch) {
+  const out = {};
+  if (patch.windowHours !== undefined) {
+    const n = Number(patch.windowHours);
+    if (!Number.isFinite(n) || n <= 0) throw new Error('windowHours 必须是正数');
+    out.windowHours = n;
+  }
+  if (patch.time !== undefined) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(patch.time));
+    if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) throw new Error('time 格式必须是 HH:MM');
+    out.time = `${m[1].padStart(2, '0')}:${m[2]}`;
+  }
+  return out;
+}
+
+// 与本地 routes/daily.js sanitizeColumns 同语义（keywords 支持 AND 数组组合）
+function sanitizeColumns(cols) {
+  if (!Array.isArray(cols) || !cols.length) throw new Error('columns 必须是非空数组');
+  return cols.map((c, i) => {
+    const out = { id: c.id || `c${Date.now()}_${i}`, name: String(c.name || '').trim() };
+    if (!out.name) throw new Error('栏目名称不能为空');
+    if (c.special === 'focus' || c.special === 'fallback') {
+      out.special = c.special;
+    } else {
+      if (c.desc !== undefined) out.desc = String(c.desc);
+      out.keywords = Array.isArray(c.keywords)
+        ? c.keywords.map((k) => {
+            if (Array.isArray(k)) return k.map((s) => String(s).trim()).filter(Boolean);
+            return String(k).trim();
+          }).filter((k) => (Array.isArray(k) ? k.length > 0 : k))
+        : [];
+    }
+    return out;
+  });
+}
+
+// PUT /api/settings — 分区合并写（F1/F3/F4/F5/F6）
+async function handleSettingsPut(req) {
+  const body = req.body || {};
+  // F3：黑名单系统键永不可写（顶层或任一区内）
+  for (const [k, v] of Object.entries(body)) {
+    if (SETTINGS_BLOCKLIST.includes(k)) return { status: 400, body: jsonErr(`含系统保留键 ${k}，禁止写入`) };
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      for (const kk of Object.keys(v)) {
+        if (SETTINGS_BLOCKLIST.includes(kk)) return { status: 400, body: jsonErr(`含系统保留键 ${kk}，禁止写入`) };
+      }
+    }
+  }
+  // F4：AI 区云端锁定 env-only（2026-09-11 settings.ai 污染事故决策）
+  if (body.ai !== undefined) {
+    return { status: 400, body: jsonErr('云端 AI 配置锁定为环境变量（AGNES_*），请在 Vercel 环境变量中修改') };
+  }
+  // F6：全部校验先于任何写入
+  let dailyPatch = null;
+  try {
+    if (body.daily) dailyPatch = { ...body.daily, ...validateDailyPatch(body.daily) };
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) };
+  }
+  if (body.views !== undefined) {
+    const views = body.views;
+    if (!Array.isArray(views) || views.length > 20) {
+      return { status: 400, body: jsonErr('views 必须为数组且不超过 20 个') };
+    }
+    for (const v of views) {
+      if (!v || typeof v.name !== 'string' || !v.name.trim() || v.name.length > 20) {
+        return { status: 400, body: jsonErr('视图名称须为非空且不超过 20 字') };
+      }
+      if (!v.filter || typeof v.filter !== 'object') {
+        return { status: 400, body: jsonErr('视图 filter 须为对象') };
+      }
+    }
+  }
+  if (body.data && body.data.retentionDays !== undefined) {
+    const n = Number(body.data.retentionDays);
+    if (!Number.isInteger(n) || n < 1 || n > 90) {
+      return { status: 400, body: jsonErr('retentionDays 必须是 1-90 的整数') };
+    }
+  }
+  // 分区写入
+  const sections = [];
+  if (body.intervals) { await mergeSetting('intervals', body.intervals); sections.push('intervals'); }
+  if (body.opml) {
+    if (body.opml.url !== undefined) await setSetting('opml.url', String(body.opml.url));
+    if (body.opml.enabled !== undefined) await setSetting('opml.enabled', !!body.opml.enabled);
+    sections.push('opml');
+  }
+  if (body.queue) { await mergeSetting('queue', body.queue, ['token']); sections.push('queue'); }
+  if (dailyPatch) { await mergeSetting('daily', dailyPatch); sections.push('daily'); }
+  if (body.hot) { await mergeSetting('hot', body.hot); sections.push('hot'); }
+  if (body.data) { await mergeSetting('data', body.data); sections.push('data'); }
+  if (body.views !== undefined) { await setSetting('reader.views', body.views); sections.push('views'); }
+  if (body.bilibili && body.bilibili.cookie) {
+    await qRun(
+      'INSERT INTO credentials(platform, cookie, updated_at) VALUES(?,?,?) ON CONFLICT(platform) DO UPDATE SET cookie=excluded.cookie, updated_at=excluded.updated_at',
+      ['bilibili', String(body.bilibili.cookie), nowIso()]
+    );
+    sections.push('bilibili');
+  }
+  await auditRecord('settings.update', { detail: { sections } });
+  return jsonOk({ sections });
+}
+
+// GET /api/settings/daily — 日报设置页数据源
+async function handleDailySettingsGet(req) {
+  const cfg = (await getSetting('daily', {})) || {};
+  const columns = (await getSetting('daily.columns', null)) || DAILY_DEFAULT_COLUMNS;
+  const sourceList = async (types, selectedIds) => {
+    const rows = await qAll(
+      `SELECT id, type, name, focus FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
+    return rows.map((s) => ({
+      id: s.id, type: s.type, name: s.name, focus: !!s.focus,
+      selected: selectedIds ? selectedIds.includes(s.id) : true,
+    }));
+  };
+  const articleSourceIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds : null;
+  const videoSourceIds = Array.isArray(cfg.videoSourceIds) ? cfg.videoSourceIds : null;
+  return jsonOk({
+    windowHours: Number(cfg.windowHours) || 48,
+    time: cfg.time || '08:00',
+    articleSourceIds,
+    videoSourceIds,
+    articleSources: await sourceList(DAILY_ARTICLE_TYPES, articleSourceIds),
+    videoSources: await sourceList(DAILY_VIDEO_TYPES, videoSourceIds),
+    columns,
+    defaultColumns: DAILY_DEFAULT_COLUMNS,
+  });
+}
+
+// PUT /api/settings/daily — 窗口/时间/来源勾选/focus/栏目
+async function handleDailySettingsPut(req) {
+  const body = req.body || {};
+  // 预校验（零写入）
+  let patch;
+  try {
+    patch = validateDailyPatch(body);
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) };
+  }
+  if (body.articleSourceIds !== undefined && !Array.isArray(body.articleSourceIds)) {
+    return { status: 400, body: jsonErr('articleSourceIds 必须是数组') };
+  }
+  if (body.videoSourceIds !== undefined && !Array.isArray(body.videoSourceIds)) {
+    return { status: 400, body: jsonErr('videoSourceIds 必须是数组') };
+  }
+  let columns;
+  try {
+    if (body.columns !== undefined && !body.restoreDefaultColumns) columns = sanitizeColumns(body.columns);
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) };
+  }
+  // 写入 daily 区
+  if (body.articleSourceIds !== undefined) patch.articleSourceIds = body.articleSourceIds.map(Number);
+  if (body.videoSourceIds !== undefined) patch.videoSourceIds = body.videoSourceIds.map(Number);
+  if (Object.keys(patch).length) await mergeSetting('daily', patch);
+  // focus 两种写法（与本地一致：focusSourceIds 全量替换；focus 对象局部增量）
+  if (body.focusSourceIds !== undefined) {
+    if (!Array.isArray(body.focusSourceIds)) return { status: 400, body: jsonErr('focusSourceIds 必须是数组') };
+    const ids = body.focusSourceIds.map(Number);
+    await qRun(
+      'UPDATE sources SET focus = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
+      [JSON.stringify(ids)]
+    );
+  } else if (body.focus && typeof body.focus === 'object') {
+    const stmts = Object.entries(body.focus).map(([id, v]) => ({
+      sql: 'UPDATE sources SET focus=? WHERE id=?', args: [v ? 1 : 0, Number(id)],
+    }));
+    if (stmts.length) await getDb().batch(stmts, 'write');
+  }
+  // 栏目管理
+  if (body.restoreDefaultColumns) await setSetting('daily.columns', DAILY_DEFAULT_COLUMNS);
+  else if (columns) await setSetting('daily.columns', columns);
+  await auditRecord('daily.settings', { detail: { keys: Object.keys(body) } });
+  return jsonOk({});
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -1654,6 +1855,9 @@ async function dispatch(req) {
   if (path === '/api/data/cleanup' && method === 'POST') return handleDataCleanup(req);
   if ((path === '/api/data/snapshot' || path === '/api/data/restore' || path === '/api/data/upload') && method === 'POST') return handleDataUnsupported(req);
   if (path === '/api/audit' && method === 'DELETE') return handleAuditCleanup(req);
+  // 设置写（13-settings-write）
+  if (path === '/api/settings' && method === 'PUT') return handleSettingsPut(req);
+  if (path === '/api/settings/daily' && method === 'PUT') return handleDailySettingsPut(req);
 
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
@@ -1690,6 +1894,7 @@ async function dispatch(req) {
     if (path === '/api/sources/library') return handleSourcesLibrary(req);
     if (path === '/api/sources') return handleSources(req);
     if (path === '/api/status') return handleStatus(req);
+    if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/settings') return handleSettings(req);
     if (path === '/api/reading') return handleReading(req);
     if (path === '/api/meta') return handleMeta(req);
