@@ -334,9 +334,17 @@ async function analyzeArticle(article) {
 async function generateTheme(items) {
   const tpl = await loadPrompt('daily-theme');
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
-  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 200, timeoutMs: 60000 });
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
   if (!r.ok) return null;
-  return r.reply.replace(/^["'「『]+|["'」』]+$/g, '').trim().slice(0, 120);
+  // 推理模型会把思考过程混进输出：剥掉分析行，取最后一个像导语的句子
+  const lines = r.reply.split('\n').map((l) => l.trim()).filter(Boolean);
+  const isAnalysis = (l) =>
+    /^(用户要求|让我|我来|分析|首先|然后|所以|这[几些]|###|\d+\.|[-*•])/.test(l) ||
+    /^(Let me|The user|I need|First|Then|So )/i.test(l) || l.length > 120;
+  const candidates = lines.filter((l) => !isAnalysis(l));
+  const theme = (candidates[candidates.length - 1] || lines[lines.length - 1] || '')
+    .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
+  return theme ? theme + '。' : null;
 }
 
 module.exports = {
