@@ -7,10 +7,10 @@
 
 ## P0 阻塞级（管理台复活 + 报警止血）
 
-### P0-1 设置写 API 上云
-- 端点：`PUT /api/settings`、`GET/PUT /api/settings/daily`
-- 效果：保存视图、日报栏目、队列配置、保留天数等 4 个管理 Tab 复活
-- 依赖：无。风险：settings 是共享键值表，注意并发覆盖（整对象读-改-写）
+### P0-1 设置写 API 上云 —— ✅ 已完成（2026-09-11，commit 2b66b76+fcfa03f）
+- 端点：`PUT /api/settings`、`GET/PUT /api/settings/daily` 已上线并实测
+- 四件套：docs/specs/13-settings-write/（spec/plan/task/checklist）
+- 关键决策落档：云端 AI 配置锁定 env-only（settings.ai 污染事故）；黑名单键拦截；先校验后写入
 
 ### P0-2 源写 API 上云
 - 端点：`POST /api/sources`（新增）、`DELETE /:id`、`POST /:id/refresh`、`POST /refresh-all`、`POST /batch`、`POST /autoclassify`、`/api/groups` 写 + `/move`

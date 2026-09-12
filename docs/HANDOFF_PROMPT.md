@@ -21,10 +21,11 @@ cron-job.org 外置触发兜底）。采集语义有三份实现，改一必查�
 否定决策要落档；凭据三处同步（.env/Vercel/GH Secrets）。
 ````
 
-## 当前进度快照（2026-09-11）
+## 当前进度快照（2026-09-11 晚）
 
 - 采集链路：✅ 全自动（cron-job.org 每15min 触发 → runner 直采 → Turso）
 - 无感刷新/热榜时间序：✅ 已上线并实测
 - 管理功能：✅ 8 组 20 端点已移植云端
-- 进行中：ROADMAP 已确认 → 总 spec 已出 → 待 mew-spec 逐项细分（从 13-settings-write 开始）
-- 阻塞项：云端 AI（Agnes 401）等用户提供 DEEPSEEK_API_KEY
+- 云端 AI：✅ Agnes 已修复可用（真根因=settings.ai 污染非 IP 绑定）；翻译已在 runner 真实运转
+- mew-spec 进行中：13-settings-write ✅ 完成（设置写上云+线上验收）；下一项 14-sources-write
+- 无阻塞项
