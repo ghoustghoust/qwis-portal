@@ -1836,6 +1836,219 @@ async function handleDailySettingsPut(req) {
   return jsonOk({});
 }
 
+// ═══ 源写（14-sources-write, 2026-09-12） ═══
+// 与本地 server/routes/sources.js / sourcelib.js / groups.js 语义对齐
+const _classify = require('./_classify');
+
+const SOURCE_TYPES = ['rss', 'wechat', 'x', 'youtube', 'hotlist', 'bilibili', 'douyin'];
+
+// 云端简化 URL 类型识别（本地走适配器 registry 全量探测；10s 限制下用启发式）
+function detectTypeByUrl(url) {
+  const u = String(url || '').toLowerCase();
+  if (u.startsWith('hotlist://') || u.startsWith('hotlist60s://')) return 'hotlist';
+  if (u.includes('bilibili.com')) return 'bilibili';
+  if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
+  if (u.includes('mp.weixin.qq.com')) return 'wechat';
+  if (u.includes('douyin.com')) return 'douyin';
+  if (u.includes('x.com') || u.includes('twitter.com')) return 'x';
+  return 'rss';
+}
+
+// POST /api/sources {url, name?, type?} — F1
+async function handleSourceCreate(req) {
+  const { url, name, type } = req.body || {};
+  if (!url || !String(url).trim()) return { status: 400, body: jsonErr('缺少 url') };
+  const input = String(url).trim();
+  if (type && !SOURCE_TYPES.includes(type)) return { status: 400, body: jsonErr(`未知订阅源类型: ${type}`) };
+  // N4 幂等：url 查重
+  const dup = await qOne('SELECT * FROM sources WHERE url=?', [input]);
+  if (dup) return jsonOk({ item: dup, duplicated: true });
+  const finalType = type || detectTypeByUrl(input);
+  const finalName = (name && String(name).trim()) || (() => { try { return new URL(input).hostname; } catch { return input; } })();
+  const r = await qRun(
+    "INSERT INTO sources(type, name, url, enabled, status, fail_count, created_at) VALUES(?,?,?,1,'pending',0,?)",
+    [finalType, finalName, input, nowIso()]
+  );
+  const newId = Number((await qOne('SELECT MAX(id) m FROM sources')).m);
+  try { await _classify.autoClassifySourceId(newId); } catch { /* 降级为未分组 */ }
+  const item = await qOne('SELECT * FROM sources WHERE id=?', [newId]);
+  await auditRecord('source.create', { target: finalName, detail: { id: newId, type: finalType, url: input } });
+  return jsonOk({ item });
+}
+
+// DELETE /api/sources/:id — F2 级联删除
+async function handleSourceDelete(req, id) {
+  const s = await qOne('SELECT * FROM sources WHERE id=?', [id]);
+  if (!s) return { status: 404, body: jsonErr('not found') };
+  await getDb().batch([
+    { sql: 'DELETE FROM articles WHERE source_id=?', args: [id] },
+    { sql: 'DELETE FROM videos WHERE source_id=?', args: [id] },
+    { sql: 'DELETE FROM sources WHERE id=?', args: [id] },
+  ], 'write');
+  await auditRecord('source.delete', { target: s.name, detail: { id, type: s.type } });
+  return jsonOk({});
+}
+
+// POST /api/sources/:id/refresh — F3 云端语义：标记立即到期（runner ≤15min 补抓）
+async function handleSourceRefresh(req, id) {
+  const s = await qOne('SELECT * FROM sources WHERE id=?', [id]);
+  if (!s) return { status: 404, body: jsonErr('not found') };
+  await qRun('UPDATE sources SET next_fetch_at=NULL WHERE id=?', [id]);
+  await auditRecord('source.refresh', { target: s.name, detail: { id } });
+  return jsonOk({ id, deferred: true, message: '已标记立即到期，最迟 15 分钟内由云端 runner 采集' });
+}
+
+// POST /api/sources/refresh-all?type= — F4
+async function handleSourceRefreshAll(req) {
+  const filterType = req.query.type;
+  const conds = ['enabled=1'];
+  const args = [];
+  if (filterType) { conds.push('type=?'); args.push(filterType); }
+  const r = await qRun(`UPDATE sources SET next_fetch_at=NULL WHERE ${conds.join(' AND ')}`, args);
+  await auditRecord('source.refresh-all', { detail: { affected: r.changes, filterType: filterType || null } });
+  return jsonOk({ affected: r.changes, deferred: true, message: `已将 ${r.changes} 个源标记为立即到期，最迟 15 分钟内由云端 runner 采集` });
+}
+
+// PUT /api/sources/:id/interval — F5
+async function handleSourceInterval(req, id) {
+  const s = await qOne('SELECT * FROM sources WHERE id=?', [id]);
+  if (!s) return { status: 404, body: jsonErr('not found') };
+  const { intervalMin } = req.body || {};
+  let extra = {};
+  try { extra = JSON.parse(s.extra || '{}'); } catch { /* 重置 */ }
+  if (intervalMin === null || intervalMin === undefined) {
+    delete extra.intervalMin;
+  } else {
+    const n = Number(intervalMin);
+    if (!Number.isFinite(n) || n <= 0) return { status: 400, body: jsonErr('intervalMin 必须是正数分钟数或 null') };
+    extra.intervalMin = n;
+  }
+  await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(extra), id]);
+  await auditRecord('source.interval', { target: s.name, detail: { intervalMin: extra.intervalMin ?? null } });
+  return jsonOk({ intervalMin: extra.intervalMin ?? null });
+}
+
+// POST /api/sources/batch — F6
+async function handleSourcesBatch(req) {
+  const { ids, action, groupId } = req.body || {};
+  if (!Array.isArray(ids) || !ids.length) return { status: 400, body: jsonErr('缺少 ids') };
+  const validActions = ['enable', 'disable', 'focus', 'unfocus', 'move'];
+  if (!validActions.includes(action)) return { status: 400, body: jsonErr(`action 须为 ${validActions.join('|')}`) };
+  if (action === 'move' && groupId === undefined) return { status: 400, body: jsonErr('move 需要 groupId') };
+  const truncated = ids.length > 200;
+  const workIds = ids.slice(0, 200);
+
+  let succeeded = 0;
+  const errors = [];
+  for (const rawId of workIds) {
+    const sid = Number(rawId);
+    if (!Number.isFinite(sid)) { errors.push({ id: rawId, error: '无效 id' }); continue; }
+    const source = await qOne('SELECT * FROM sources WHERE id=?', [sid]);
+    if (!source) { errors.push({ id: sid, error: 'not found' }); continue; }
+    try {
+      if (action === 'enable') {
+        // 解冻语义 + 0-6h 随机错峰（与本地一致）
+        let extra = {};
+        try { extra = JSON.parse(source.extra || '{}'); } catch { /* ignore */ }
+        delete extra.lastError; delete extra.lastErrorAt;
+        const next = new Date(Date.now() + Math.floor(Math.random() * 6 * 3600e3)).toISOString();
+        await qRun("UPDATE sources SET enabled=1, fail_count=0, status='ok', extra=?, next_fetch_at=? WHERE id=?",
+          [JSON.stringify(extra), next, sid]);
+      } else if (action === 'disable') {
+        await qRun('UPDATE sources SET enabled=0 WHERE id=?', [sid]);
+      } else if (action === 'focus') {
+        await qRun('UPDATE sources SET focus=1 WHERE id=?', [sid]);
+      } else if (action === 'unfocus') {
+        await qRun('UPDATE sources SET focus=0 WHERE id=?', [sid]);
+      } else if (action === 'move') {
+        if (groupId !== null) {
+          const g = await qOne('SELECT * FROM groups WHERE id=?', [groupId]);
+          if (!g) { errors.push({ id: sid, error: '分组不存在' }); continue; }
+          if (_classify.kindOfType(source.type) !== g.kind) { errors.push({ id: sid, error: '文件夹类型不匹配' }); continue; }
+        }
+        await qRun('UPDATE sources SET group_id=? WHERE id=?', [groupId ?? null, sid]);
+        let extra = {};
+        try { extra = JSON.parse(source.extra || '{}'); } catch { /* ignore */ }
+        extra.categoryLocked = 1;
+        await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(extra), sid]);
+      }
+      succeeded++;
+    } catch (err) {
+      errors.push({ id: sid, error: err.message });
+    }
+  }
+  await auditRecord('source.batch', { detail: { action, succeeded, failed: errors.length } });
+  return jsonOk({ succeeded, failed: errors.length, errors: errors.length ? errors : undefined, truncated: truncated || undefined });
+}
+
+// POST /api/sources/autoclassify — F7
+async function handleAutoclassify(req) {
+  const { dryRun, apply, ids, includeLocked, showAll } = req.body || {};
+  if (dryRun) {
+    const result = await _classify.previewReclassify({ includeLocked: !!includeLocked, showAll: !!showAll });
+    return jsonOk(result);
+  }
+  if (apply) {
+    if (!Array.isArray(ids) || !ids.length) return { status: 400, body: jsonErr('apply 需要 ids 数组') };
+    const result = await _classify.applyReclassify(ids.map(Number));
+    await auditRecord('source.autoclassify', { detail: { applied: result.applied, skippedLocked: result.skippedLocked } });
+    return jsonOk(result);
+  }
+  return { status: 400, body: jsonErr('需要 dryRun:true 或 apply:true') };
+}
+
+// /api/groups 写 — F8
+async function handleGroupCreate(req) {
+  const { kind, name } = req.body || {};
+  if (!kind || !name) return { status: 400, body: jsonErr('缺少 kind/name') };
+  if (!['article', 'video'].includes(kind)) return { status: 400, body: jsonErr('kind 须为 article|video') };
+  const maxSort = (await qOne('SELECT COALESCE(MAX(sort),0) m FROM groups WHERE kind=?', [kind])).m;
+  await qRun('INSERT INTO groups(kind, name, sort) VALUES(?,?,?)', [kind, String(name).trim(), maxSort + 1]);
+  const item = await qOne('SELECT * FROM groups ORDER BY id DESC LIMIT 1');
+  await auditRecord('group.create', { target: item.name, detail: { id: item.id, kind } });
+  return jsonOk({ item });
+}
+
+async function handleGroupUpdate(req, id) {
+  const g = await qOne('SELECT * FROM groups WHERE id=?', [id]);
+  if (!g) return { status: 404, body: jsonErr('not found') };
+  const { name, sort } = req.body || {};
+  await qRun('UPDATE groups SET name=?, sort=? WHERE id=?',
+    [name !== undefined ? String(name) : g.name, sort !== undefined ? Number(sort) : g.sort, id]);
+  await auditRecord('group.update', { target: name !== undefined ? String(name) : g.name, detail: { id } });
+  return jsonOk({});
+}
+
+async function handleGroupDelete(req, id) {
+  const g = await qOne('SELECT * FROM groups WHERE id=?', [id]);
+  if (!g) return { status: 404, body: jsonErr('not found') };
+  await getDb().batch([
+    { sql: 'UPDATE sources SET group_id=NULL WHERE group_id=?', args: [id] },
+    { sql: 'DELETE FROM groups WHERE id=?', args: [id] },
+  ], 'write');
+  await auditRecord('group.delete', { target: g.name, detail: { id } });
+  return jsonOk({});
+}
+
+async function handleGroupMove(req) {
+  const { source_id, group_id } = req.body || {};
+  if (!source_id) return { status: 400, body: jsonErr('缺少 source_id') };
+  const s = await qOne('SELECT * FROM sources WHERE id=?', [source_id]);
+  if (!s) return { status: 404, body: jsonErr('not found') };
+  if (group_id !== null && group_id !== undefined) {
+    const g = await qOne('SELECT * FROM groups WHERE id=?', [group_id]);
+    if (!g) return { status: 404, body: jsonErr('分组不存在') };
+    if (_classify.kindOfType(s.type) !== g.kind) return { status: 400, body: jsonErr('文件夹类型不匹配') };
+  }
+  await qRun('UPDATE sources SET group_id=? WHERE id=?', [group_id ?? null, source_id]);
+  let extra = {};
+  try { extra = JSON.parse(s.extra || '{}'); } catch { /* ignore */ }
+  extra.categoryLocked = 1;
+  await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(extra), source_id]);
+  await auditRecord('group.move', { target: s.name, detail: { source_id, group_id: group_id ?? null } });
+  return jsonOk({});
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -1883,6 +2096,23 @@ async function dispatch(req) {
   // 设置写（13-settings-write）
   if (path === '/api/settings' && method === 'PUT') return handleSettingsPut(req);
   if (path === '/api/settings/daily' && method === 'PUT') return handleDailySettingsPut(req);
+
+  // ─── 源写（14-sources-write）静态路径必须先于 /:id 正则（防截胡） ───
+  if (path === '/api/sources' && method === 'POST') return handleSourceCreate(req);
+  if (path === '/api/sources/batch' && method === 'POST') return handleSourcesBatch(req);
+  if (path === '/api/sources/autoclassify' && method === 'POST') return handleAutoclassify(req);
+  if (path === '/api/sources/refresh-all' && method === 'POST') return handleSourceRefreshAll(req);
+  const srcRefreshMatch = path.match(/^\/api\/sources\/(\d+)\/refresh$/);
+  if (srcRefreshMatch && method === 'POST') return handleSourceRefresh(req, Number(srcRefreshMatch[1]));
+  const srcIntervalMatch = path.match(/^\/api\/sources\/(\d+)\/interval$/);
+  if (srcIntervalMatch && method === 'PUT') return handleSourceInterval(req, Number(srcIntervalMatch[1]));
+  const srcDeleteMatch = path.match(/^\/api\/sources\/(\d+)$/);
+  if (srcDeleteMatch && method === 'DELETE') return handleSourceDelete(req, Number(srcDeleteMatch[1]));
+  if (path === '/api/groups' && method === 'POST') return handleGroupCreate(req);
+  if (path === '/api/groups/move' && method === 'POST') return handleGroupMove(req);
+  const groupMatch = path.match(/^\/api\/groups\/(\d+)$/);
+  if (groupMatch && method === 'PUT') return handleGroupUpdate(req, Number(groupMatch[1]));
+  if (groupMatch && method === 'DELETE') return handleGroupDelete(req, Number(groupMatch[1]));
 
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);

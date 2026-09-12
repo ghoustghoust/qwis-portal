@@ -28,7 +28,7 @@
 | 无感刷新 | SSE `/api/events` | ✅ 60s 增量轮询 `/api/articles/since` | 2026-09-11 重写；serverless 不支持长连 |
 | 文章详情/已读/稍后读/全部已读 | ✅ | ✅ | |
 | 阅读沉淀（我的阅读/批量/导出） | ✅ | ✅ | |
-| 保存视图（设置写） | ✅ | ✅ 2026-09-11 | 分组管理/拖拽仍待 14-sources-write |
+| 保存视图 / 分组管理 / 拖拽移动 | ✅ | ✅ 2026-09-12 | 13+14 两项完成 |
 | 单源手动刷新 | ✅ | ❌ 404 | 云端替代：`POST /api/rss/refresh`（标记到期，runner ≤15min 补抓） |
 | 视频列表 | ✅ | ✅ | |
 | 视频详情/收藏/播放直链解析 | ✅ | ❌ 404 | 播放依赖 B站 Cookie+wbi，架构上只能本地 |
@@ -48,7 +48,7 @@
 
 | Tab | 本地 | Vercel | 缺口端点 |
 |---|---|---|---|
-| 源库 | ✅ | ⚠️ 只读 | `sources/batch`、`sources/autoclassify`、`groups/move` |
+| 源库 | ✅ | ✅ 2026-09-12 | 全部可写（14-sources-write） |
 | 公众号 RSS | ✅ | ⚠️ | 新增/删除/单源刷新源 404；OPML 同步/配置备份/队列同步 ✅ |
 | B站 | ✅ | ⚠️ 只读 | 云端不采集 B站；refresh-all 404 |
 | 抖音 | ✅ | ❌ | 扫码登录/采集依赖 Playwright，**永不云端化**（架构决策） |
@@ -79,7 +79,7 @@
 | 优先级 | 事项 | 依赖 | 预期效果 |
 |---|---|---|---|
 | P0 | **设置写 API**（`PUT /api/settings` + `/api/settings/daily`） | 无 | 云端管理台可保存视图/日报栏目/队列配置/保留天数，4 个 Tab 复活 |
-| P0 | **源写 API**（sources POST/DELETE/refresh、batch、groups 写、autoclassify） | 无 | 云端源库从只读变可管理；新源经 runner 15min 内入流 |
+| ~~P0~~ | ~~源写 API~~ | — | ✅ 已完成 2026-09-12（14-sources-write：12 项回归测试绿；autoclassify N+1 优化 70s→0.7s） |
 | ~~P1~~ | ~~DEEPSEEK_API_KEY 接入~~ | — | ✅ 已作废：Agnes 云端修复可用（2026-09-11），用户决策优先用免费 Agnes |
 | P1 | **AI 翻译/摘要移植**（`ai/translate/*`、`summary`） | P1 的 key | 英文源自动精翻；日报 AI 评分 |
 | P1 | **B站 wbi 采集移植 runner**（纯 crypto） | 无 | B站源云端自动更新 |
