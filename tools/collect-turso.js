@@ -680,7 +680,9 @@ async function llmChat(messages, { temperature, timeoutMs = 120000 } = {}) {
   throw lastErr;
 }
 
+// 16-ai-infra：翻译改走统一通道（串行限流 + Agnes→Bing→Google 降级链 + 术语库注入）
 async function translateOne(article, prompt) {
+  const _ai = require('../api/_ai');
   const title = String(article.title || '').trim();
   const plainText = String(article.content_html || '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -693,11 +695,10 @@ async function translateOne(article, prompt) {
   if (!plainText && !title) return null;
 
   const input = title ? `Title: ${title}\n\nArticle:\n${plainText}` : plainText;
-  const reply = await llmChat([
-    { role: 'system', content: prompt },
-    { role: 'user', content: input },
-  ], { temperature: 0.3 });
+  const r = await _ai.translateText(input, { kind: 'translate' });
+  if (!r.ok) throw new Error(r.error || '翻译失败');
 
+  const reply = r.text;
   let translatedTitle = '';
   let translatedContent = reply;
   if (title && reply.includes('\n')) {
@@ -707,7 +708,21 @@ async function translateOne(article, prompt) {
       translatedContent = reply.slice(firstLine.length).replace(/^\n+/, '');
     }
   }
-  return { title: translatedTitle, content: translatedContent };
+  // 术语自动生长（仅 Agnes 译文做提取——降级机翻不喂库）
+  if (r.provider === 'agnes') {
+    try {
+      const tpl = await _ai.loadPrompt('term-extract');
+      const tr = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${input.slice(0, 2000)}\n\n## 译文\n${reply.slice(0, 2000)}` }], { kind: 'term-extract', maxTokens: 384 });
+      if (tr.ok) {
+        const m = tr.reply.match(/\[[\s\S]*\]/);
+        if (m) {
+          const g = await _ai.growGlossary(JSON.parse(m[0]));
+          if (g.added || g.updated) log(`  术语库 +${g.added} 新 / ${g.updated} 累计`);
+        }
+      }
+    } catch { /* 术语生长失败不阻断翻译主流程 */ }
+  }
+  return { title: translatedTitle, content: translatedContent, provider: r.provider };
 }
 
 async function runTranslate() {

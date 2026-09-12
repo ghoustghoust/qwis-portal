@@ -1100,31 +1100,9 @@ async function aiProviderChain(cfg) {
 }
 
 async function aiChatCloud(messages, { temperature = 0.7, timeoutMs = 30000, modelOverride } = {}) {
-  const cfg = await getSetting('ai', {});
-  const chain = await aiProviderChain(cfg);
-  if (!chain.length) return { ok: false, error: '未配置 API Key' };
-  let lastErr = '';
-  for (const p of chain) {
-    try {
-      const resp = await fetch(`${p.base}/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${p.key}` },
-        // agnes-2.5-flash 是推理模型：max_tokens 太小会被 reasoning 烧光导致 content 为空
-        body: JSON.stringify({ model: modelOverride || p.model, messages, temperature, max_tokens: timeoutMs <= 20000 ? 64 : 512 }),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
-      if (!resp.ok) { lastErr = `${p.name} HTTP ${resp.status}`; continue; }
-      const data = await resp.json();
-      const msg = data?.choices?.[0]?.message || {};
-      // 推理模型兜底：content 为空时回退 reasoning_content / 检查 finish_reason
-      const content = msg.content || msg.reasoning_content || '';
-      if (!content.trim()) { lastErr = `${p.name} 返回空内容(finish=${data?.choices?.[0]?.finish_reason || '?'})`; continue; }
-      return { ok: true, reply: content, provider: p.name, model: modelOverride || p.model };
-    } catch (err) {
-      lastErr = `${p.name}: ${err.message}`;
-    }
-  }
-  return { ok: false, error: lastErr };
+  // 16-ai-infra：收敛到统一通道 _ai.aiChat（限流串行/重试/统计/报警联动）
+  const r = await _ai.aiChat(messages, { kind: 'chat', temperature, timeoutMs, model: modelOverride });
+  return r;
 }
 
 async function handleAiPing(req) {
@@ -2046,6 +2024,7 @@ async function handleGroupMove(req) {
 
 // ═══ 报警配置写（15-cloud-alerts, 2026-09-12） ═══
 const _alerts = require('./_alerts');
+const _ai = require('./_ai'); // 16-ai-infra：统一 AI 通道
 
 // PUT /api/alerts/config — 整体写（掩码合并：掩码/空值保留旧密钥）
 async function handleAlertsConfigPut(req) {
