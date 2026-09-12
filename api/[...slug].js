@@ -707,13 +707,38 @@ async function handleStatus(req) {
 async function handleSettings(req) {
   const daily = await getSetting('daily', {});
   const intervals = await getSetting('intervals', {});
+  const queue = await getSetting('queue', {});
+  const data = await getSetting('data', {});
+  const hot = await getSetting('hot', {});
+  const views = await getSetting('reader.views', []);
+  const aiCfg = await getSetting('ai', {});
+  // 凭据存在性（不落值）
+  const creds = await qAll('SELECT platform, cookie FROM credentials');
+  const credSet = new Set(creds.filter((c) => c.cookie).map((c) => c.platform));
+  // queue.token 脱敏：只回是否已配置（与本地 maskSection 一致）
+  const queueOut = { intervalMin: 10, enabled: false, ...queue };
+  if ('token' in queueOut) { queueOut.tokenConfigured = !!queueOut.token; delete queueOut.token; }
   return jsonOk({
-    daily: {
-      time: daily.time || '08:00',
-      windowHours: daily.windowHours || 24,
-      cocoonFamiliar: daily.cocoonFamiliar || [],
+    intervals: { opml: 12, rss: 0.5, bilibili: 60, douyin: 360, queue: 10, ...intervals },
+    opml: { url: await getSetting('opml.url', ''), enabled: await getSetting('opml.enabled', true) },
+    queue: queueOut,
+    daily: { time: '08:00', windowHours: 48, ...daily },
+    data: { retentionDays: 7, ...data },
+    hot: { enabled: hot.enabled !== false },
+    views,
+    bilibili: { cookieConfigured: credSet.has('bilibili') },
+    douyin: { cookieConfigured: credSet.has('douyin') },
+    wechat: {
+      lastSyncAt: await getSetting('wechat.lastSyncAt', null),
+      lastResult: await getSetting('wechat.lastResult', null),
     },
-    intervals,
+    ai: {
+      enabled: !!aiCfg.enabled,
+      apiKeyConfigured: !!process.env.AGNES_API_KEY,
+      model: process.env.AGNES_MODEL || 'agnes-2.5-flash',
+      envSource: process.env.AGNES_API_KEY ? 'env' : 'settings',
+      locked: 'env', // 13-settings-write：云端 AI 配置锁定 env-only
+    },
   });
 }
 
