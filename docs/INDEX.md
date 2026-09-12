@@ -17,6 +17,7 @@
 
 | 文件 | 用途 |
 |------|------|
+| `docs/changes/2026-09-12-my-brief.md` | 我的早报（19）状态：已完成/已修问题/待测试清单/配额说明 |
 | `docs/changes/2026-09-11-settings-write.md` | 设置写 API 上云（13-settings-write）：端点/决策/验收证据 |
 | `docs/changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH Actions runner 直写 Turso（根治网页不自动更新），含根因链/验证数据/遗留事项 |
 

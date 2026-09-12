@@ -86,7 +86,7 @@ async function setSetting(key, val) {
 const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings', '/api/settings/daily',
-  '/api/reading', '/api/img', '/api/meta', '/api/mybrief',
+  '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/weekly',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
 ]);
 
@@ -2082,6 +2082,21 @@ async function handleMyBrief(req) {
   return jsonOk({ report });
 }
 
+// GET /api/weekly — 精选周刊（20-weekly-picks；公开读，?issue=N 归档查询）
+async function handleWeekly(req) {
+  const issue = Number(req.query.issue) || 0;
+  if (issue > 0) {
+    const archive = (await getSetting('weekly.archive', [])) || [];
+    const hit = archive.find((a) => a.issue === issue);
+    if (!hit) return { status: 404, body: jsonErr('期号不存在') };
+    return jsonOk({ report: hit.report });
+  }
+  const report = await getSetting('weekly.latest', null);
+  if (!report) return jsonOk({ empty: 'no-content' });
+  const archive = (await getSetting('weekly.archive', [])) || [];
+  return jsonOk({ report, archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -2192,6 +2207,7 @@ async function dispatch(req) {
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
+    if (path === '/api/weekly') return handleWeekly(req);
     if (path === '/api/settings') return handleSettings(req);
     if (path === '/api/reading') return handleReading(req);
     if (path === '/api/meta') return handleMeta(req);

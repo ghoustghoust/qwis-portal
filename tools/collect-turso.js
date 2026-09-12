@@ -460,6 +460,113 @@ async function runCleanup() {
   return r;
 }
 
+// ─── 模式：weekly（20-weekly-picks：精选周刊，周五 18:03 北京，窗口=前7天） ───
+const WEEKLY_THEMES = [
+  { key: '行业大变化', weight: 1.2, kws: ['发布', '上线', '推出', '开源', '收购', '融资', '上市', '政策', '监管', '法案', '离职', '裁员', '合并'] },
+  { key: '重大影响', weight: 1.15, kws: ['安全', '漏洞', '泄露', '下架', '事故', '宕机', '成本', '涨价', '降价', '禁令', '诉讼'] },
+  { key: '教学课程', weight: 1.1, kws: ['教程', '指南', '实战', '课程', '训练营', '入门', '手册', '手把手', '从 0 到 1', '从0到1', '万字'] },
+  { key: '新理解', weight: 1.05, kws: ['观点', '思考', '复盘', '范式', '趋势', '方法论', '本质', '洞察', '认知'] },
+];
+function classifyWeeklyTheme(item) {
+  const text = `${item.title || ''} ${item.summary || ''} ${(item.tags || []).join(' ')}`;
+  for (const t of WEEKLY_THEMES) {
+    if (t.kws.some((k) => text.includes(k))) return t.key;
+  }
+  return '其它';
+}
+const WEEKLY_WEIGHT = { 行业大变化: 1.2, 重大影响: 1.15, 教学课程: 1.1, 新理解: 1.05, 其它: 0.9 };
+
+async function runWeekly() {
+  const _ai = require('../api/_ai');
+  const BUDGET_MS = 60 * 60e3;
+  const t0 = Date.now();
+
+  const endUtc = nowIso();
+  const startUtc = new Date(Date.now() - 7 * 86400e3).toISOString();
+  log(`weekly 窗口: ${startUtc} ~ ${endUtc}（前 7 天）`);
+
+  const candidates = await qAll(
+    `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name
+     FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+     WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
+       AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
+     ORDER BY a.published_at DESC LIMIT 2000`,
+    [startUtc, endUtc]
+  );
+  const valid = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
+  log(`周刊候选 ${valid.length} 篇，开始初筛`);
+
+  const passed = [];
+  for (const a of valid) {
+    if (Date.now() - t0 > BUDGET_MS * 0.4) { log('初筛预算截断'); break; }
+    const f = await _ai.filterArticle({ title: a.title, source: a.source_name, summary: a.summary });
+    if (!f.ignore) passed.push(a);
+  }
+  log(`初筛通过 ${passed.length}，开始深析（预算 ≤150 篇）`);
+
+  const analyzed = [];
+  let consecFail = 0;
+  for (const a of passed.slice(0, 150)) {
+    if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
+    const r = await _ai.analyzeArticle(a);
+    if (!r) {
+      consecFail++;
+      if (consecFail >= 3 && analyzed.length === 0) {
+        // 降级：热度排序产出
+        log('AI 连败 3 次，周刊降级为热度排序');
+        const degraded = passed
+          .sort((x, y) => (y.score || 0) - (x.score || 0))
+          .slice(0, 20)
+          .map((a, i) => ({ rank: i + 1, id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name, cover: a.cover || null, totalScore: null, weeklyTheme: classifyWeeklyTheme(a) }));
+        await saveWeekly(null, degraded, true, t0);
+        return { degraded: true, count: degraded.length };
+      }
+      continue;
+    }
+    consecFail = 0;
+    analyzed.push({ ...a, ...r });
+  }
+  log(`深析完成 ${analyzed.length} 篇，终选 top 20`);
+
+  const items = analyzed
+    .map((a) => {
+      const weeklyTheme = classifyWeeklyTheme(a);
+      return {
+        rank: 0, id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
+        cover: a.cover || null, published_at: a.published_at,
+        totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
+        quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
+        weeklyTheme, impactScore: Math.round(a.totalScore * (WEEKLY_WEIGHT[weeklyTheme] || 1)),
+      };
+    })
+    .sort((x, y) => y.impactScore - x.impactScore)
+    .slice(0, 20)
+    .map((it, i) => ({ ...it, rank: i + 1 }));
+
+  const theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch(() => null);
+  await saveWeekly(theme, items, false, t0);
+  return { count: items.length, theme };
+}
+
+async function saveWeekly(theme, items, degraded, t0) {
+  // 期号与归档
+  const archive = (await getSetting('weekly.archive', [])) || [];
+  const issue = archive.length ? (archive[archive.length - 1].issue || 0) + 1 : 1;
+  const dateEnd = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const dateStart = new Date(Date.now() + 8 * 3600e3 - 7 * 86400e3).toISOString().slice(0, 10);
+  const report = {
+    issue, dateStart, dateEnd, theme, degraded,
+    generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
+    items,
+  };
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.latest', ?)", args: [JSON.stringify(report)] });
+  archive.push({ issue, dateStart, dateEnd, theme, count: items.length, report });
+  while (archive.length > 4) archive.shift();
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.archive', ?)", args: [JSON.stringify(archive)] });
+  log(`周刊第 ${issue} 期生成完成: ${items.length} 条${degraded ? '（降级）' : ''}, 主题: ${theme || '(无)'}`);
+  await writeHeartbeat('weekly', { issue, count: items.length, degraded });
+}
+
 // ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报，自然日窗口） ───
 async function runDailyAi() {
   const _ai = require('../api/_ai');
@@ -1010,6 +1117,7 @@ async function runTranslate() {
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
     else if (MODE === 'daily-ai') await runDailyAi();
+    else if (MODE === 'weekly') await runWeekly();
     else if (MODE === 'translate') await runTranslate();
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {

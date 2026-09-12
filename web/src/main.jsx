@@ -8,9 +8,10 @@ import { StoreProvider, useSettings } from './store.jsx';
 import ReaderPage from './pages/ReaderPage.jsx';
 import DailyPage from './pages/DailyPage.jsx';
 import MyBriefPage from './pages/MyBriefPage.jsx';
+import WeeklyPage from './pages/WeeklyPage.jsx';
 import HotPage from './pages/HotPage.jsx';
 import MyReadingPage from './pages/MyReadingPage.jsx';
-import { RssIcon, CalendarIcon, FlameIcon, BookIcon, RadarLogo, SunIcon } from './components/icons.jsx';
+import { RssIcon, CalendarIcon, FlameIcon, BookIcon, RadarLogo, SunIcon, DocIcon } from './components/icons.jsx';
 import LoginGate from './components/LoginGate.jsx';
 import { LanguageProvider, useI18n } from './i18n.jsx';
 
@@ -40,9 +41,10 @@ export function IconRail() {
   const hotEnabled = settings.hot?.enabled !== false;
 
   const items = [
-    { href: '/reader/', Icon: RssIcon, label: t('nav.reader'), active: !path.startsWith('/daily') && !path.startsWith('/hot') && !path.startsWith('/reading') && !path.startsWith('/mybrief') },
+    { href: '/reader/', Icon: RssIcon, label: t('nav.reader'), active: !path.startsWith('/daily') && !path.startsWith('/hot') && !path.startsWith('/reading') && !path.startsWith('/mybrief') && !path.startsWith('/weekly') },
     { href: '/daily/', Icon: CalendarIcon, label: t('nav.daily'), active: path.startsWith('/daily') },
     { href: '/mybrief/', Icon: SunIcon, label: t('nav.mybrief'), active: path.startsWith('/mybrief') },
+    { href: '/weekly/', Icon: DocIcon, label: t('nav.weekly'), active: path.startsWith('/weekly') },
     ...(hotEnabled ? [{ href: '/hot/', Icon: FlameIcon, label: t('nav.hot'), active: path.startsWith('/hot') }] : []),
     { href: '/reading/', Icon: BookIcon, label: t('nav.reading'), active: path.startsWith('/reading') },
   ];
@@ -112,6 +114,7 @@ function App() {
   let page;
   if (path.startsWith('/daily')) page = <DailyPage />;
   else if (path.startsWith('/mybrief')) page = <MyBriefPage />;
+  else if (path.startsWith('/weekly')) page = <WeeklyPage />;
   else if (path.startsWith('/hot')) page = <HotPage />;
   else if (path.startsWith('/reading')) page = <MyReadingPage />;
   else page = <ReaderPage />;
