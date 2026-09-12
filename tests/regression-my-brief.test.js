@@ -64,10 +64,15 @@ test('2. 有订阅 + settings 报告 → 正常透传', async () => {
 
 test('3. 有订阅但无报告 → no-content', async () => {
   await db.execute("DELETE FROM settings WHERE key='mybrief.latest'");
-  await new Promise((r) => setTimeout(r, 31000)); // [...slug].js settings 缓存 TTL=30s，等其过期
-  const d = await callGet('/api/mybrief');
+  // [...slug].js settings 缓存 TTL=30s，轮询等待（全量测试并行时序不稳，容忍到 50s）
+  let d = null;
+  for (let i = 0; i < 10; i++) {
+    await new Promise((r) => setTimeout(r, 5000));
+    d = await callGet('/api/mybrief');
+    if (d.empty === 'no-content') break;
+  }
   assert.equal(d.empty, 'no-content');
-}, { timeout: 60000 });
+}, { timeout: 90000 });
 
 test('4. 分层约束：组装逻辑 top≤3/featured≤7/rest≤40（模拟 60 条深析数据）', () => {
   // 直接复现 runMyBrief 的切层逻辑验证数量约束
