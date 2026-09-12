@@ -29,15 +29,22 @@ async function callGet(url) {
 
 let testSourceId = null;
 let origMybrief = null;
+let origFocusIds = [];
 
 before(async () => {
   const r = await db.execute("SELECT value FROM settings WHERE key='mybrief.latest'");
   origMybrief = r.rows[0] ? r.rows[0].value : null;
+  // 快照全部 focus 状态（测试会清零，必须恢复——曾误清用户标记）
+  const f = await db.execute('SELECT id FROM sources WHERE focus=1');
+  origFocusIds = f.rows.map((x) => x.id);
 });
 
 after(async () => {
   if (testSourceId) await db.execute('DELETE FROM sources WHERE id=?', [testSourceId]);
   if (origMybrief !== null) await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('mybrief.latest',?)", args: [origMybrief] });
+  // 恢复 focus 快照
+  await db.execute('UPDATE sources SET focus=0');
+  for (const id of origFocusIds) await db.execute('UPDATE sources SET focus=1 WHERE id=?', [id]);
   db.close();
 });
 

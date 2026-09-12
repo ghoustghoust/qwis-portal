@@ -340,7 +340,8 @@ async function generateTheme(items) {
   const lines = r.reply.split('\n').map((l) => l.trim()).filter(Boolean);
   const isAnalysis = (l) =>
     /^(用户要求|让我|我来|分析|首先|然后|所以|这[几些]|###|\d+\.|[-*•])/.test(l) ||
-    /^(Let me|The user|I need|First|Then|So )/i.test(l) || l.length > 120;
+    /^(Let me|The user|I need|First|Then|So |Looking|Analyzing|Reviewing|Summarizing|Now |Here)/i.test(l) ||
+    /[::：]\s*$/.test(l) || l.length > 120;
   const candidates = lines.filter((l) => !isAnalysis(l));
   const theme = (candidates[candidates.length - 1] || lines[lines.length - 1] || '')
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
