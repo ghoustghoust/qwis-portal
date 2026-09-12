@@ -460,6 +460,120 @@ async function runCleanup() {
   return r;
 }
 
+// ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报，自然日窗口） ───
+async function runDailyAi() {
+  const _ai = require('../api/_ai');
+  const BUDGET_MS = 90 * 60e3;
+  const t0 = Date.now();
+
+  // 窗口：北京自然日 [昨00:00, 今00:00)
+  const bjOffset = 8 * 3600e3;
+  const bjNow = new Date(Date.now() + bjOffset);
+  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
+  const startUtc = new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString();
+  const endUtc = new Date(todayStart.getTime() - bjOffset).toISOString();
+  log(`daily-ai 窗口: ${startUtc} ~ ${endUtc}（北京自然日）`);
+
+  // 候选（沿用关键词版排除规则）
+  const cfg = await getSetting('daily', {});
+  const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
+  let sql = `SELECT a.id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.translated_title, s.name AS source_name, s.focus AS source_focus
+             FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+             WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
+               AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1`;
+  const args = [startUtc, endUtc];
+  if (selectedIds && selectedIds.length) {
+    sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
+    args.push(...selectedIds);
+  }
+  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+  const candidates = await qAll(sql, args);
+  const AI_LIMIT = Number(process.env.DAILY_AI_LIMIT) || Infinity; // 调试用：限制候选数
+  const valid = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a)).slice(0, AI_LIMIT);
+  log(`候选 ${valid.length} 篇，开始两阶段初筛`);
+
+  // 阶段 1：初筛
+  const passed = [];
+  for (const a of valid) {
+    if (Date.now() - t0 > BUDGET_MS * 0.5) { log('初筛预算过半，截断'); break; }
+    const f = await _ai.filterArticle({ title: a.title, source: a.source_name, category: null, summary: a.summary });
+    if (!f.ignore) passed.push({ ...a, filterScore: f.score, filterReason: f.reason });
+  }
+  log(`初筛通过 ${passed.length}/${valid.length}，开始深析`);
+
+  // 降级判定：首批深析连败 3 次 → AI 链路全挂
+  const analyzed = [];
+  let consecFail = 0;
+  for (const a of passed) {
+    if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
+    const r = await _ai.analyzeArticle(a);
+    if (!r) {
+      consecFail++;
+      if (consecFail >= 3 && analyzed.length === 0) {
+        log('AI 链路连败 3 次，降级关键词版');
+        const stats = await runDaily();
+        await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.degraded', json('true'), '$.schemaVersion', '1') WHERE id = (SELECT MAX(id) FROM daily_reports)");
+        return { degraded: true, fallback: stats };
+      }
+      continue;
+    }
+    consecFail = 0;
+    analyzed.push({ ...a, ...r });
+  }
+  log(`深析完成 ${analyzed.length} 篇，组装栏目`);
+
+  // 栏目组装（沿用 columns 语义：focus 优先 → 关键词 → fallback 按总分）
+  const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
+  const used = new Set();
+  const sections = [];
+  const fmt = (a) => ({
+    id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
+    source_name: a.source_name, published_at: a.published_at,
+    totalScore: a.totalScore, score: a.totalScore, // score 兼容现有 Stars 组件
+    scores: a.scores,
+    reason: a.reason, summary: a.summary, quote: a.quote, points: a.points, tags: a.tags,
+    translated: !!a.translated_title,
+  });
+  for (const col of columns) {
+    const items = [];
+    if (col.special === 'focus') {
+      for (const a of analyzed) {
+        if (used.has(a.id)) continue;
+        if (a.source_focus) { items.push(fmt(a)); used.add(a.id); }
+      }
+    } else if (col.special === 'fallback') {
+      const rest = analyzed.filter((a) => !used.has(a.id)).sort((x, y) => y.totalScore - x.totalScore).slice(0, 10);
+      for (const a of rest) { items.push(fmt(a)); used.add(a.id); }
+    } else if (col.keywords && col.keywords.length) {
+      for (const a of analyzed) {
+        if (used.has(a.id)) continue;
+        const text = `${a.title} ${a.summary || ''} ${(a.tags || []).join(' ')}`;
+        if (col.keywords.some((kw) => text.includes(kw))) { items.push(fmt(a)); used.add(a.id); }
+      }
+    }
+    const deduped = dedupItems(items);
+    if (deduped.length) sections.push({ column: col.name, desc: col.desc || '', items: deduped.slice(0, 15) });
+  }
+
+  // 主题导语
+  const allItems = sections.flatMap((s) => s.items);
+  const theme = await _ai.generateTheme(allItems).catch(() => null);
+
+  const stats = {
+    schemaVersion: 2, theme, degraded: false,
+    filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
+    sections: sections.length, totalItems: allItems.length,
+    elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
+  };
+  await qRun(
+    'INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
+    [nowIso(), 24, JSON.stringify(stats), JSON.stringify(sections)]
+  );
+  log(`daily-ai 早报生成完成: ${sections.length} 栏 ${allItems.length} 条, 耗时 ${stats.elapsedMin}min, 主题: ${theme || '(无)'}`);
+  await writeHeartbeat('daily-ai', stats);
+  return stats;
+}
+
 // ─── 模式：daily（日报生成，逻辑与 api/daily-generate.js 对齐） ───
 const DEFAULT_COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
@@ -819,6 +933,7 @@ async function runTranslate() {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
+    else if (MODE === 'daily-ai') await runDailyAi();
     else if (MODE === 'translate') await runTranslate();
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {

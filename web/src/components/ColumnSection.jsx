@@ -181,6 +181,26 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
             {item.summary}
           </p>
         ) : null}
+        {/* 18-daily-ai-v2：AI 推荐理由 + 金句 + 关键观点 */}
+        {item.reason ? (
+          <p className="mt-2 text-[12px] leading-relaxed t-accent">
+            推荐：{item.reason}
+          </p>
+        ) : null}
+        {item.quote ? (
+          <blockquote className="mt-2 pl-3 border-l-2 text-[12px] italic leading-relaxed t-muted" style={{ borderColor: 'var(--accent)' }}>
+            {item.quote}
+          </blockquote>
+        ) : null}
+        {Array.isArray(item.points) && item.points.length > 0 ? (
+          <ul className="mt-2 space-y-1">
+            {item.points.map((p, pi) => (
+              <li key={pi} className="text-[12px] leading-relaxed t-text flex gap-1.5">
+                <span className="t-accent flex-none">·</span><span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {/* 2026-09-05 视觉精修：标签胶囊行（最多 3 个，无 tags 字段时不渲染） */}
         <TagPills tags={item.tags} max={3} className="mt-2.5" />
         <div className="mt-3 flex items-center justify-between text-[11px] t-muted">
@@ -207,6 +227,12 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
       <span className="flex-1 min-w-0 truncate text-[13px] t-text">
         {highlightTitle(item.title, keywords, highlight)}
       </span>
+      {/* 18-daily-ai-v2：AI 推荐理由（窄屏隐藏） */}
+      {item.reason ? (
+        <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>
+          {item.reason}
+        </span>
+      ) : null}
       {/* 2026-09-05 视觉精修：星级评分 + 标签胶囊（窄屏隐藏，无字段时不渲染） */}
       <Stars score={item.score} size={11} showNum={false} className="flex-none hidden sm:inline-flex" />
       <TagPills tags={item.tags} max={3} className="flex-none hidden lg:flex flex-nowrap" />

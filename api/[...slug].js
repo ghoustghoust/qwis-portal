@@ -612,7 +612,13 @@ async function handleDaily(req) {
       let stats = {};
       try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
       return jsonOk({
-        report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats },
+        report: {
+          id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats,
+          // 18-daily-ai-v2：透出 v2 字段
+          theme: stats.theme || null,
+          schemaVersion: stats.schemaVersion || 1,
+          degraded: !!stats.degraded,
+        },
         stale: false,
       });
     }

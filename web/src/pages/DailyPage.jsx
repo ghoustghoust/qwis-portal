@@ -168,6 +168,19 @@ export default function DailyPage() {
             onRegenerate={() => regenerate(false)}
           />
 
+          {/* 18-daily-ai-v2：今日主题导语区 */}
+          {report?.theme && (
+            <div className="mt-6">
+              <div className="text-[11px] tracking-widest t-accent font-medium">今日主题</div>
+              <p className="serif mt-2 text-lg sm:text-2xl italic leading-relaxed t-text">
+                {report.theme}
+              </p>
+              {report.degraded && (
+                <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
+              )}
+            </div>
+          )}
+
           {/* T13/F3：stale 打开即补的进行中提示 */}
           {autoGen && (
             <div className="mt-6 card px-6 py-10 text-center text-[13px] t-muted">

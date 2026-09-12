@@ -16,7 +16,7 @@ export default function DailyHeader({ report, regenerating, onRegenerate }) {
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
       <div className="min-w-0">
         <div className="text-[11px] tracking-widest t-muted">{windowHours} 小时订阅情报</div>
-        <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold leading-tight t-text">每日情报</h1>
+        <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold leading-tight t-text">每日早报</h1>
         <div className="mt-3 text-xs t-muted break-words leading-relaxed">{meta}</div>
       </div>
       <div className="flex-none flex items-center gap-2 sm:pt-2">

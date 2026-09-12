@@ -262,6 +262,8 @@ const PROMPT_FILES = {
   'term-extract': path.join(__dirname, '..', 'prompts', 'term-extract.md'),
   'translate-refine': path.join(__dirname, '..', 'prompts', 'translate-refine.md'),
   'translate-polish': path.join(__dirname, '..', 'prompts', 'translate-polish.md'),
+  'daily-analyze': path.join(__dirname, '..', 'prompts', 'daily-analyze.md'),
+  'daily-theme': path.join(__dirname, '..', 'prompts', 'daily-theme.md'),
 };
 // Vercel 部署可能不含 prompts/ 文件 → 内嵌兜底（与 prompts/ 同步义务）
 const EMBEDDED_PROMPTS = {
@@ -270,6 +272,8 @@ const EMBEDDED_PROMPTS = {
   'term-extract': '从中英对照文本提取专业术语对，置信度<0.7丢弃。严格输出 JSON 数组 [{"en","zh","domain","confidence"}]\n',
   'translate-refine': '你是术语校对专家。只修正译文中与术语表不一致处，其余一字不动，只输出修正后全文。术语表：\n{{glossary}}\n',
   'translate-polish': '你是资深科技出版编辑。从术语/表达/文化适应/格式四维改进译文，只输出最终稿。\n',
+  'daily-analyze': '你是科技媒体主编。按 选题/内容/深度/实用/创新/表达（各0-10）评分，给出 totalScore(0-100)/reason/summary/quote/points/tags。只输出严格 JSON。\n',
+  'daily-theme': '你是科技媒体主编。用一句话（≤60字，样式「从X，到Y，再到Z，判断W」）概括今日内容主线。只输出导语。\n',
 };
 async function loadPrompt(name) {
   const custom = await getSetting(`prompt.${name}`, '');
@@ -299,8 +303,44 @@ async function refinePass(original, draft) {
   return r.ok ? r.reply : draft;
 }
 
+// ═══ 早报深析（18-daily-ai-v2） ═══
+const DAILY_DIMS = ['选题', '内容', '深度', '实用', '创新', '表达'];
+
+async function analyzeArticle(article) {
+  const tpl = await loadPrompt('daily-analyze');
+  const text = String(article.content_html || '')
+    .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1500);
+  const input = `标题：${article.title || ''}\n来源：${article.source_name || article.author || ''}\n摘要：${String(article.summary || '').slice(0, 300)}\n正文：${text}`;
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 待评文章\n\n${input}` }], { kind: 'analyze', maxTokens: 768, timeoutMs: 60000 });
+  if (!r.ok) return null;
+  const m = r.reply.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  try {
+    const j = JSON.parse(m[0]);
+    const scores = {};
+    for (const d of DAILY_DIMS) scores[d] = Math.max(0, Math.min(10, Number(j.scores?.[d]) || 0));
+    return {
+      scores,
+      totalScore: Math.max(0, Math.min(100, Number(j.totalScore) || 0)),
+      reason: String(j.reason || '').slice(0, 100),
+      summary: String(j.summary || '').slice(0, 300),
+      quote: String(j.quote || '').slice(0, 200),
+      points: Array.isArray(j.points) ? j.points.slice(0, 3).map((p) => String(p).slice(0, 100)) : [],
+      tags: Array.isArray(j.tags) ? j.tags.slice(0, 4).map((t) => String(t).slice(0, 20)) : [],
+    };
+  } catch { return null; }
+}
+
+async function generateTheme(items) {
+  const tpl = await loadPrompt('daily-theme');
+  const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 200, timeoutMs: 60000 });
+  if (!r.ok) return null;
+  return r.reply.replace(/^["'「『]+|["'」』]+$/g, '').trim().slice(0, 120);
+}
+
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme,
   _setProviderOverride, // tests only
 };
