@@ -10,8 +10,40 @@ export default function QuickStudyModal({ item, onClose }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fav, setFav] = useState(false);
+  // 17-translate：中英切换 + 手动翻译
+  const [showTranslated, setShowTranslated] = useState(true);
+  const [translating, setTranslating] = useState(false);
 
   const isVideo = item?.kind === 'video';
+  const articleId = item?.ref_id || item?.id;
+  const hasTranslation = !!(detail?.translated_title || detail?.translated_content);
+  const isEnglishTitle = !!item?.title && (item.title.replace(/[^ -~]/g, '').length / item.title.length) > 0.7;
+
+  // 入队后轮询，译文出现即切换
+  useEffect(() => {
+    if (!translating || !articleId || isVideo) return;
+    const timer = setInterval(() => {
+      api.get(`/api/articles/${articleId}`).then((data) => {
+        const d = data?.item || data?.article || data;
+        if (d && (d.translated_title || d.translated_content)) {
+          setDetail(d);
+          setTranslating(false);
+          setShowTranslated(true);
+          toast('翻译完成');
+        }
+      }).catch(() => {});
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [translating, articleId, isVideo]);
+
+  const requestTranslate = async () => {
+    try {
+      const r = await api.post(`/api/articles/${articleId}/translate`);
+      if (r?.already) { toast('已有翻译'); return; }
+      setTranslating(true);
+      toast('已加入翻译队列，约 20 分钟内完成');
+    } catch (e) { toast(e.message); }
+  };
 
   useEffect(() => {
     if (!item) return;
@@ -19,7 +51,7 @@ export default function QuickStudyModal({ item, onClose }) {
     setDetail(null);
     setFav(false);
     setLoading(true);
-    const path = isVideo ? `/api/videos/${item.ref_id}` : `/api/articles/${item.ref_id}`;
+    const path = isVideo ? `/api/videos/${item.ref_id}` : `/api/articles/${item.ref_id || item.id}`;
     api
       .get(path)
       .then((data) => {
@@ -52,7 +84,9 @@ export default function QuickStudyModal({ item, onClose }) {
     }
   };
 
-  const contentHtml = detail?.content_html;
+  const contentHtml = showTranslated && detail?.translated_content
+    ? detail.translated_content.replace(/\n/g, '<br/>')
+    : detail?.content_html;
   const intro = detail?.intro || detail?.summary || item.summary;
   // 2026-09-05 视觉精修：meta 行字数（优先纯文本字数列，缺失回退正文/简介长度）
   const contentLen = detail?.word_count ?? (contentHtml || intro || '').length;
@@ -110,6 +144,17 @@ export default function QuickStudyModal({ item, onClose }) {
               <button className="btn-ghost" onClick={() => item.url && copyText(item.url)}>
                 复制链接
               </button>
+              {/* 17-translate：翻译按钮/切换 */}
+              {!isVideo && hasTranslation && (
+                <button className="btn-ghost" onClick={() => setShowTranslated((v) => !v)}>
+                  {showTranslated ? '查看原文' : '查看译文'}
+                </button>
+              )}
+              {!isVideo && !hasTranslation && isEnglishTitle && (
+                translating
+                  ? <span className="text-xs t-muted animate-pulse px-2">翻译中…</span>
+                  : <button className="btn-ghost" onClick={requestTranslate}>翻译</button>
+              )}
               <button
                 className="btn-primary"
                 style={{ background: 'var(--green)' }}

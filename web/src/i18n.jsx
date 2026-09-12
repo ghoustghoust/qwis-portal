@@ -47,6 +47,12 @@ const DICT = {
   'article.allMarkedRead': { zh: '已全部标为已读',     en: 'All marked as read' },
   'article.translated':    { zh: '译文',               en: 'Translated' },
   'article.translatedTip': { zh: '当前显示翻译内容',   en: 'Showing translated content' },
+  'article.translateNow':  { zh: '翻译',               en: 'Translate' },
+  'article.translating':   { zh: '翻译中…',            en: 'Translating…' },
+  'article.translateQueued': { zh: '已加入翻译队列，约 20 分钟内完成', en: 'Queued for translation, ready in ~20 min' },
+  'article.translateDone': { zh: '翻译完成',           en: 'Translation ready' },
+  'article.aiTranslated':  { zh: 'AI 精翻',            en: 'AI refined' },
+  'article.machineTranslated': { zh: '机翻',           en: 'Machine translated' },
   'article.videoExpired':  { zh: '▶ 内嵌视频已失效（源站签名过期），点击打开原文观看 ↗', en: '▶ Embedded video expired, click to open original ↗' },
 
   // 热点榜（HotPage）

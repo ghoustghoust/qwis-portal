@@ -12,6 +12,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   const [loading, setLoading] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [showTranslated, setShowTranslated] = useState(true); // P0-4：翻译/原文切换
+  const [translating, setTranslating] = useState(false); // 17-translate：手动翻译入队后轮询
   const contentRef = useRef(null);
   const { t } = useI18n();
 
@@ -114,6 +115,34 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   const laterActive = !!(article && article.later);
   const contentLen = article?.word_count ?? (article?.content_html || '').length; // 2026-09-05：优先用纯文本字数列，缺失时回退正文长度
   const hasTranslation = !!(article?.translated_title || article?.translated_content);
+  // 17-translate：未翻译的英文文章显示手动翻译按钮（标题 ASCII 占比启发式）
+  const isEnglishTitle = !!article?.title && (article.title.replace(/[^ -~]/g, '').length / article.title.length) > 0.7;
+
+  // 17-translate：入队后每 60s 轮询，译文出现即自动切换
+  useEffect(() => {
+    if (!translating || !articleId) return;
+    const timer = setInterval(() => {
+      api.get(`/api/articles/${articleId}`).then((data) => {
+        const item = data?.item || data?.article || data;
+        if (item && (item.translated_title || item.translated_content)) {
+          setArticle(item);
+          setTranslating(false);
+          setShowTranslated(true);
+          toast(t('article.translateDone') || '翻译完成');
+        }
+      }).catch(() => {});
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [translating, articleId]);
+
+  const requestTranslate = async () => {
+    try {
+      const r = await api.post(`/api/articles/${articleId}/translate`);
+      if (r?.already) { toast(t('article.translated') || '已有翻译'); return; }
+      setTranslating(true);
+      toast(t('article.translateQueued') || '已加入翻译队列，约 20 分钟内完成');
+    } catch (e) { toast(e.message); }
+  };
 
   return (
     <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
@@ -156,6 +185,20 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
           )}
         </div>
         <div className="flex-1" />
+        {/* 17-translate：未翻译英文文章的手动翻译按钮 */}
+        {!hasTranslation && isEnglishTitle && (
+          translating ? (
+            <span className="text-[10px] px-1.5 py-0.5 rounded t-muted flex-none animate-pulse">{t('article.translating') || '翻译中…'}</span>
+          ) : (
+            <button
+              className="text-[10px] px-1.5 py-0.5 rounded t-accent-soft t-accent font-medium flex-none hover:opacity-80 transition-opacity"
+              title={t('article.translateNow') || '翻译为中文'}
+              onClick={requestTranslate}
+            >
+              {t('article.translateNow') || '翻译'}
+            </button>
+          )
+        )}
         {hasTranslation && (
           <button
             className="text-[10px] px-1.5 py-0.5 rounded t-accent-soft t-accent font-medium flex-none hover:opacity-80 transition-opacity"
@@ -206,6 +249,15 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
               <span className="truncate">{article.source_name || article.author || ''}</span>
               <span className="sep">·</span>
               <span className="flex-none">{formatDateTime(article.published_at)}</span>
+              {/* 17-translate：翻译来源徽章（诚实标记精翻/机翻） */}
+              {hasTranslation && article.translation_provider && (
+                <>
+                  <span className="sep">·</span>
+                  <span className="flex-none t-accent">
+                    {article.translation_provider === 'agnes' ? (t('article.aiTranslated') || 'AI 精翻') : (t('article.machineTranslated') || '机翻')}
+                  </span>
+                </>
+              )}
               {contentLen > 0 && (
                 <>
                   <span className="sep">·</span>

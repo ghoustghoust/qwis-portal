@@ -260,12 +260,16 @@ const PROMPT_FILES = {
   translate: path.join(__dirname, '..', 'prompts', 'translate.md'),
   filter: path.join(__dirname, '..', 'prompts', 'filter.md'),
   'term-extract': path.join(__dirname, '..', 'prompts', 'term-extract.md'),
+  'translate-refine': path.join(__dirname, '..', 'prompts', 'translate-refine.md'),
+  'translate-polish': path.join(__dirname, '..', 'prompts', 'translate-polish.md'),
 };
 // Vercel 部署可能不含 prompts/ 文件 → 内嵌兜底（与 prompts/ 同步义务）
 const EMBEDDED_PROMPTS = {
   translate: '你是资深科技翻译专家。只输出译文，保留 Markdown 结构，代码/产品名不译，中英文间加空格。术语对照（必须严格遵循）：\n{{glossary}}\n',
   filter: '你是初筛编辑。按 内容深度30/相关性30/写作质量20/实用创新20 打分，营销减分。严格输出 JSON：{"score":0-100,"ignore":bool,"reason":"30字内"}\n',
   'term-extract': '从中英对照文本提取专业术语对，置信度<0.7丢弃。严格输出 JSON 数组 [{"en","zh","domain","confidence"}]\n',
+  'translate-refine': '你是术语校对专家。只修正译文中与术语表不一致处，其余一字不动，只输出修正后全文。术语表：\n{{glossary}}\n',
+  'translate-polish': '你是资深科技出版编辑。从术语/表达/文化适应/格式四维改进译文，只输出最终稿。\n',
 };
 async function loadPrompt(name) {
   const custom = await getSetting(`prompt.${name}`, '');
@@ -277,7 +281,26 @@ async function loadPrompt(name) {
   }
 }
 
+// ═══ 多轮精翻（17-translate） ═══
+// 轮 2：词库对照修正（glossary 非空才值得跑）
+async function refineWithGlossary(original, draft) {
+  const glossary = await loadGlossary();
+  if (!glossary.length) return draft;
+  const tpl = await loadPrompt('translate-refine');
+  const glossaryText = glossary.map((t) => `${t.en} → ${t.zh}`).join('\n');
+  const r = await aiChat([{ role: 'user', content: `${tpl.replace('{{glossary}}', glossaryText)}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 初翻草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 60000 });
+  return r.ok ? r.reply : draft; // 修正失败用初翻草稿
+}
+
+// 轮 3：精翻（长文专用）
+async function refinePass(original, draft) {
+  const tpl = await loadPrompt('translate-polish');
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 译文草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 90000 });
+  return r.ok ? r.reply : draft;
+}
+
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
+  refineWithGlossary, refinePass,
   _setProviderOverride, // tests only
 };

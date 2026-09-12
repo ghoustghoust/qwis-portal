@@ -681,7 +681,8 @@ async function llmChat(messages, { temperature, timeoutMs = 120000 } = {}) {
 }
 
 // 16-ai-infra：翻译改走统一通道（串行限流 + Agnes→Bing→Google 降级链 + 术语库注入）
-async function translateOne(article, prompt) {
+// 17-translate：多轮管线 轮1初翻 → 轮2词库对照 → 轮3精翻（长文）
+async function translatePipeline(article) {
   const _ai = require('../api/_ai');
   const title = String(article.title || '').trim();
   const plainText = String(article.content_html || '')
@@ -695,10 +696,24 @@ async function translateOne(article, prompt) {
   if (!plainText && !title) return null;
 
   const input = title ? `Title: ${title}\n\nArticle:\n${plainText}` : plainText;
+  // 轮 1：初翻（含降级链）
   const r = await _ai.translateText(input, { kind: 'translate' });
   if (!r.ok) throw new Error(r.error || '翻译失败');
+  let reply = r.text;
+  const provider = r.provider;
+  let rounds = 1;
 
-  const reply = r.text;
+  // 轮 2/3 只对 Agnes 精翻路径打磨（机翻降级结果不再加工）
+  if (provider === 'agnes') {
+    const refined = await _ai.refineWithGlossary(input, reply);
+    if (refined !== reply) rounds = 2;
+    reply = refined;
+    if (plainText.length >= 1500) {
+      reply = await _ai.refinePass(input, reply);
+      rounds = 3;
+    }
+  }
+
   let translatedTitle = '';
   let translatedContent = reply;
   if (title && reply.includes('\n')) {
@@ -709,7 +724,7 @@ async function translateOne(article, prompt) {
     }
   }
   // 术语自动生长（仅 Agnes 译文做提取——降级机翻不喂库）
-  if (r.provider === 'agnes') {
+  if (provider === 'agnes') {
     try {
       const tpl = await _ai.loadPrompt('term-extract');
       const tr = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${input.slice(0, 2000)}\n\n## 译文\n${reply.slice(0, 2000)}` }], { kind: 'term-extract', maxTokens: 384 });
@@ -722,16 +737,43 @@ async function translateOne(article, prompt) {
       }
     } catch { /* 术语生长失败不阻断翻译主流程 */ }
   }
-  return { title: translatedTitle, content: translatedContent, provider: r.provider };
+  return { title: translatedTitle, content: translatedContent, provider, rounds };
 }
 
 async function runTranslate() {
   const cfg = await getSetting('translate', {});
   if (cfg.enabled === false) { log('翻译功能已停用（settings translate.enabled=false），跳过'); return { skipped: true }; }
-  const prompt = (await getSetting('translate.prompt', '')) || TRANSLATE_DEFAULT_PROMPT;
   const limit = Number(process.env.TRANSLATE_LIMIT) || 10;
+  const stats = { total: 0, success: 0, failed: 0 };
 
-  // 两步走：先拉轻量标题过滤英文（content_html 全量拉太贵），再按 id 取正文
+  // 17-translate：手动队列优先（POST /api/articles/:id/translate 入队的）
+  const queue = (await getSetting('translate.queue', { ids: [] })) || { ids: [] };
+  if (Array.isArray(queue.ids) && queue.ids.length) {
+    log(`手动翻译队列 ${queue.ids.length} 篇，优先处理`);
+    const remain = [];
+    for (const id of queue.ids) {
+      try {
+        const rows = await qAll('SELECT id, title, content_html, translated_title, translated_content FROM articles WHERE id=?', [id]);
+        const art = rows[0];
+        if (!art || art.translated_title || art.translated_content) continue; // 已翻译/不存在 → 出队
+        const r = await translatePipeline(art);
+        if (r) {
+          await qRun('UPDATE articles SET translated_title=?, translated_content=?, translation_provider=? WHERE id=?',
+            [r.title || null, r.content || null, r.provider, id]);
+          stats.success++;
+          log(`  ✓ [手动] #${id} ${String(art.title).slice(0, 40)}（${r.provider}，${r.rounds} 轮）`);
+        } else { remain.push(id); }
+      } catch (err) {
+        stats.failed++;
+        remain.push(id); // 失败保留下轮重试
+        log(`  ✗ [手动] #${id} ${err.message}`);
+      }
+    }
+    stats.total += queue.ids.length;
+    await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('translate.queue', ?)", args: [JSON.stringify({ ids: remain })] });
+  }
+
+  // 自动增量：两步走（先拉轻量标题过滤英文，再按 id 取正文）
   const titleRows = await qAll(
     `SELECT id, title FROM articles
      WHERE translated_title IS NULL AND translated_content IS NULL
@@ -741,17 +783,17 @@ async function runTranslate() {
   const candidates = titleRows.filter(a => isEnglish(a.title)).slice(0, limit);
   log(`英文候选 ${candidates.length} 篇（扫描最近 ${titleRows.length} 条标题，本轮上限 ${limit}）`);
 
-  const stats = { total: candidates.length, success: 0, failed: 0 };
+  stats.total += candidates.length;
   for (const c of candidates) {
     try {
       const full = await qAll('SELECT id, title, content_html FROM articles WHERE id=?', [c.id]);
       if (!full[0]) { stats.failed++; continue; }
-      const r = await translateOne(full[0], prompt);
+      const r = await translatePipeline(full[0]);
       if (r) {
-        await qRun('UPDATE articles SET translated_title=?, translated_content=? WHERE id=?',
-          [r.title || null, r.content || null, c.id]);
+        await qRun('UPDATE articles SET translated_title=?, translated_content=?, translation_provider=? WHERE id=?',
+          [r.title || null, r.content || null, r.provider, c.id]);
         stats.success++;
-        log(`  ✓ #${c.id} ${String(c.title).slice(0, 40)}`);
+        log(`  ✓ #${c.id} ${String(c.title).slice(0, 40)}（${r.provider}，${r.rounds} 轮）`);
       } else { stats.failed++; }
     } catch (err) {
       stats.failed++;
@@ -771,6 +813,8 @@ async function runTranslate() {
 // ─── 主流程 ───
 (async () => {
   log(`=== collect-turso 模式=${MODE} ===`);
+  // 17-translate：translation_provider 列迁移（已存在则忽略）
+  try { await getDb().execute('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
   try {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();

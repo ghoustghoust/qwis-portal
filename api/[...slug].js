@@ -2052,6 +2052,21 @@ async function handleAlertsClearCooldowns(req) {
   return jsonOk({});
 }
 
+// POST /api/articles/:id/translate — 手动翻译入队（17-translate；Hobby 10s 限制→异步入队，runner 拾取）
+async function handleArticleTranslate(req, id) {
+  const row = await qOne('SELECT id, title, translated_title, translated_content FROM articles WHERE id=?', [id]);
+  if (!row) return { status: 404, body: jsonErr('not found') };
+  if (row.translated_title || row.translated_content) return jsonOk({ queued: false, already: true });
+  const q = (await getSetting('translate.queue', { ids: [] })) || { ids: [] };
+  if (!Array.isArray(q.ids)) q.ids = [];
+  if (!q.ids.includes(id)) {
+    q.ids.push(id);
+    await setSetting('translate.queue', q);
+    await auditRecord('article.translate', { target: row.title, detail: { id } });
+  }
+  return jsonOk({ queued: true, etaMin: 20, message: '已加入翻译队列，runner 每 15 分钟处理' });
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -2074,6 +2089,10 @@ async function dispatch(req) {
   // POST /api/articles/:id/later
   const laterMatch = path.match(/^\/api\/articles\/(\d+)\/later$/);
   if (laterMatch && method === 'POST') return handleArticleLater(req, Number(laterMatch[1]));
+
+  // POST /api/articles/:id/translate（17-translate 手动翻译入队）
+  const translateMatch = path.match(/^\/api\/articles\/(\d+)\/translate$/);
+  if (translateMatch && method === 'POST') return handleArticleTranslate(req, Number(translateMatch[1]));
 
   // POST /api/daily/regenerate（P1-11 修复，必须在 /daily GET 之前）
   if (path === '/api/daily/regenerate' && method === 'POST') return handleDailyRegenerate(req);
