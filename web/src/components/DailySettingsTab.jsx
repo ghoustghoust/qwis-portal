@@ -5,7 +5,7 @@ import { toast } from '../toast';
 // 管理后台日报设置 Tab（F18）：统计窗口/生成时间/来源勾选 + 重点关照/栏目管理
 // 替代 DailySettingsModal 弹窗，独立页面展示
 export default function DailySettingsTab() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // 初始必须为 true：首帧渲染 form=null 时不得穿透到表单（2026-09-12 日报设置崩溃根因）
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(null);
   const [articleSources, setArticleSources] = useState([]);
@@ -62,8 +62,11 @@ export default function DailySettingsTab() {
     load();
   }, []);
 
-  if (!form && loading) {
-    return <div className="py-12 text-center text-sm t-muted">加载中…</div>;
+  if (!form) {
+    // 加载中或加载失败都不得穿透到下方表单（form=null 时读 form.windowHours 会崩）
+    return loading
+      ? <div className="py-12 text-center text-sm t-muted">加载中…</div>
+      : <div className="py-12 text-center text-sm t-muted">日报设置加载失败，请检查网络后<button className="ml-2 underline" onClick={() => { setLoading(true); load(); }}>重试</button></div>;
   }
 
   const toggleIn = (arr, id) => (arr.includes(id) ? arr.filter((x) => x !== id) : [...arr, id]);
