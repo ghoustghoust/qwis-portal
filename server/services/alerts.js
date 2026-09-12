@@ -306,19 +306,34 @@ const EVENT_TITLE = {
   collect_stalled: '⏸ 采集停滞',
 };
 
+// 2026-09-12：错误分类器（与 api/_alerts.js 同规则，改规则两边同步——三端同步义务）
+function classifyError(errMsg, sourceType) {
+  const m = String(errMsg || '');
+  if (sourceType === 'youtube' && /HTTP (404|500)/.test(m)) {
+    return { category: '反爬封锁', advice: 'YouTube 对机房/代理 IP 间歇封锁（假 404/500），换 IP 自动重试；一般无需处理' };
+  }
+  if (/HTTP 403/.test(m)) return { category: '访问被拒', advice: '源站拒绝访问（鉴权/反爬）。持续 24h 未恢复建议检查或换源' };
+  if (/HTTP 404/.test(m)) return { category: '地址失效', advice: 'feed 地址可能已变更，建议管理台核对或换源' };
+  if (/HTTP 5\d\d/.test(m)) return { category: '源站故障', advice: '对方服务器错误，自动重试' };
+  if (/timeout|aborted|ETIMEDOUT/i.test(m)) return { category: '超时', advice: '源站响应慢或网络抖动，自动重试' };
+  if (/ENOTFOUND|EAI_AGAIN/i.test(m)) return { category: 'DNS 解析失败', advice: '域名不可达，检查地址或源站状态' };
+  return { category: '未知错误', advice: '到管理台源库查看 lastError 详情' };
+}
+
 function sourceError(source, failCount, errMsg) {
+  const { category, advice } = classifyError(errMsg, source.type);
   if (failCount >= 3) {
     return dispatch('source_paused', {
       sourceId: source.id,
       title: EVENT_TITLE.source_paused,
-      text: `源「${source.name}」连续失败 ${failCount} 次，已自动暂停。请到管理后台检查或重新启用。\n最近错误：${log.mask(String(errMsg || '').slice(0, 120))}`, // ✅ 脱敏
+      text: `源「${source.name}」（${source.type}）连续失败 ${failCount} 次，已自动暂停。\n原因分类：${category}\n最近错误：${log.mask(String(errMsg || '').slice(0, 120))}\n处置建议：${advice}\n恢复入口：管理后台 → 源库 → 重新启用`, // ✅ 脱敏
     });
   }
   if (failCount >= 2) {
     return dispatch('source_error', {
       sourceId: source.id,
       title: EVENT_TITLE.source_error,
-      text: `源「${source.name}」连续失败 ${failCount} 次。\n错误：${log.mask(String(errMsg || '').slice(0, 120))}`, // ✅ 脱敏
+      text: `源「${source.name}」（${source.type}）连续失败 ${failCount} 次。\n原因分类：${category}\n错误：${log.mask(String(errMsg || '').slice(0, 120))}\n建议：${advice}`, // ✅ 脱敏
     });
   }
   return Promise.resolve({ sent: 0, skipped: 'below-threshold' });

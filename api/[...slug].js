@@ -2049,6 +2049,35 @@ async function handleGroupMove(req) {
   return jsonOk({});
 }
 
+// ═══ 报警配置写（15-cloud-alerts, 2026-09-12） ═══
+const _alerts = require('./_alerts');
+
+// PUT /api/alerts/config — 整体写（掩码合并：掩码/空值保留旧密钥）
+async function handleAlertsConfigPut(req) {
+  const body = req.body || {};
+  const cur = await _alerts.getConfig();
+  const next = { ...cur, ...(body.alerts || body) };
+  if (next.channels) next.channels = _alerts.mergeChannelSecrets(cur.channels, next.channels);
+  delete next.recentLog; // 日志不随配置回写
+  await _alerts.saveConfig(next);
+  await auditRecord('alerts.config', { detail: { channels: (next.channels || []).length } });
+  return jsonOk({});
+}
+
+// POST /api/alerts/test — 向全部启用渠道发测试消息
+async function handleAlertsTest(req) {
+  const r = await _alerts.testAll();
+  await auditRecord('alerts.test', { detail: { sent: r.sent } });
+  return jsonOk(r);
+}
+
+// POST /api/alerts/clear-cooldowns
+async function handleAlertsClearCooldowns(req) {
+  await setSetting('alerts.cooldowns', {});
+  await auditRecord('alerts.clear-cooldowns', {});
+  return jsonOk({});
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -2113,6 +2142,10 @@ async function dispatch(req) {
   const groupMatch = path.match(/^\/api\/groups\/(\d+)$/);
   if (groupMatch && method === 'PUT') return handleGroupUpdate(req, Number(groupMatch[1]));
   if (groupMatch && method === 'DELETE') return handleGroupDelete(req, Number(groupMatch[1]));
+  // 报警配置写（15-cloud-alerts）
+  if (path === '/api/alerts/config' && method === 'PUT') return handleAlertsConfigPut(req);
+  if (path === '/api/alerts/test' && method === 'POST') return handleAlertsTest(req);
+  if (path === '/api/alerts/clear-cooldowns' && method === 'POST') return handleAlertsClearCooldowns(req);
 
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);

@@ -373,6 +373,8 @@ async function collectOne(source, stats) {
     const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);
     stats.failed++;
     log(`  ✗ ${source.type}:${source.name} — ${err.message}${autoPaused ? ' (已自动暂停)' : ''}`);
+    // 15-cloud-alerts：收集失败源供批次尾部报警
+    stats.failures.push({ source, errMsg: err.message });
   }
 }
 
@@ -401,7 +403,7 @@ async function writeHeartbeat(mode, stats) {
 // ─── 模式：collect ───
 async function runCollect() {
   const now = nowIso();
-  const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0 };
+  const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, failures: [] };
 
   const sources = await qAll(
     `SELECT * FROM sources WHERE enabled=1 AND ${UNSUPPORTED_TYPES} AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
@@ -416,7 +418,32 @@ async function runCollect() {
 
   log(`采集完成: 成功 ${stats.success} / 失败 ${stats.failed} / 跳过 ${stats.skipped} / 新增 ${stats.articles} 篇 / 耗时 ${sec}s`);
   await writeHeartbeat('collect', stats);
+  await postRunAlerts(stats); // 15-cloud-alerts：批次尾部报警（失败隔离，绝不影响退出码）
   return stats;
+}
+
+// 15-cloud-alerts：批次尾部报警检测（源失败/熔断/停滞）
+async function postRunAlerts(stats) {
+  try {
+    const alerts = require('../api/_alerts');
+    // 逐失败源（failCount 重查以获得最新值）
+    for (const f of stats.failures || []) {
+      const row = await qOne('SELECT fail_count FROM sources WHERE id=?', [f.source.id]);
+      const failCount = row ? row.fail_count : 1;
+      if (failCount >= 2) await alerts.sourceAlert({ ...f.source }, failCount, f.errMsg);
+    }
+    // 停滞检测：本轮有到期源但 0 成功，且近 1h 无任何成功采集
+    if (stats.total > 0 && stats.success === 0) {
+      const recent = await qOne(
+        "SELECT COUNT(*) c FROM sources WHERE enabled=1 AND last_fetched_at > datetime('now','-1 hour')"
+      );
+      if (recent.c === 0) {
+        await alerts.collectStalled(`本轮到期 ${stats.total} 源全部失败（runner 批次 ${nowIso()}）`);
+      }
+    }
+  } catch (err) {
+    console.log(`[alerts] 报警检测自身失败（已隔离）: ${err.message}`);
+  }
 }
 
 // ─── 模式：cleanup（清理 7 天前热榜旧数据） ───
@@ -428,6 +455,8 @@ async function runCleanup() {
   );
   log(`清理完成: 删除 ${r.changes} 条热榜旧数据`);
   await writeHeartbeat('cleanup', { deleted: r.changes });
+  // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
+  try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
   return r;
 }
 
@@ -717,6 +746,10 @@ async function runTranslate() {
   }
   log(`翻译完成: 成功 ${stats.success} / 失败 ${stats.failed}`);
   await writeHeartbeat('translate', stats);
+  // 15-cloud-alerts：翻译批次有失败 → AI 链路报警
+  if (stats.failed > 0) {
+    try { await require('../api/_alerts').aiFailed(`翻译批次 ${stats.failed}/${stats.success + stats.failed} 篇失败`); } catch { /* 隔离 */ }
+  }
   return stats;
 }
 
@@ -731,6 +764,10 @@ async function runTranslate() {
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {
     console.error(`Fatal: ${err.message}`);
+    // 15-cloud-alerts：daily 失败发报警后再退出
+    if (MODE === 'daily') {
+      try { await require('../api/_alerts').dailyFailed(err.message); } catch { /* 隔离 */ }
+    }
     process.exit(1);
   }
   // 有序收尾：关连接后自然退出（process.exit 会触发 libuv UV_HANDLE_CLOSING 断言，exit 127）
