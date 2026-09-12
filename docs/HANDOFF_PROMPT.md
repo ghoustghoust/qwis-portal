@@ -21,11 +21,10 @@ cron-job.org 外置触发兜底）。采集语义有三份实现，改一必查�
 否定决策要落档；凭据三处同步（.env/Vercel/GH Secrets）。
 ````
 
-## 当前进度快照（2026-09-11 晚）
+## 当前进度快照（2026-09-12 晚）
 
-- 采集链路：✅ 全自动（cron-job.org 每15min 触发 → runner 直采 → Turso）
-- 无感刷新/热榜时间序：✅ 已上线并实测
-- 管理功能：✅ 8 组 20 端点已移植云端
-- 云端 AI：✅ Agnes 已修复可用（真根因=settings.ai 污染非 IP 绑定）；翻译已在 runner 真实运转
-- mew-spec 进行中：13-settings-write ✅ 完成（设置写上云+线上验收）；下一项 14-sources-write
-- 无阻塞项
+- 采集链路：✅ 全自动（cron-job.org 每15min → runner 直采/翻译/日报/周刊 → Turso）
+- mew-spec 流水线 13~21 全部完成：设置写/源写/云端报警(飞书实测)/AI基础设施/翻译链/每日早报v2/我的早报/精选周刊/B站采集
+- **先读 docs/AUDIT-2026-09-12.md**（交叉审核报告：验证状态矩阵 + 现存 bug B1-B2 + 待验证 V1-V5 + 风险 R1-R5）
+- 待验证挂 AI 配额：mybrief 内容验证/黄金集跑分（恢复后执行，见 changes/2026-09-12-my-brief.md）
+- 待办：P2-1 订阅模型 / P2-2 推荐算法 / P2-4 管理后台 UX / P2-10 taskQueue 存量失败 / R2 B站 Cookie 配置
