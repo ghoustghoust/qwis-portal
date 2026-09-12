@@ -587,8 +587,31 @@ async function runMyBrief(analyzed) {
     return { empty: 'no-subscription' };
   }
   const subIds = new Set(subs.map((s) => s.id));
-  const mine = (analyzed || []).filter((a) => subIds.has(a.source_id)).sort((x, y) => y.totalScore - x.totalScore);
   const dateStr = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  // 设计修正：早报不能依赖 daily 的 top-N 切片共享池（订阅源可能不在内）——
+  // 订阅源在窗口内的文章单独补齐分析；已在池中的复用，零重复调用
+  const analyzedIds = new Set((analyzed || []).map((a) => a.id));
+  const bjOffset = 8 * 3600e3;
+  const bjNow = new Date(Date.now() + bjOffset);
+  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
+  const startUtc = new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString();
+  const endUtc = new Date(todayStart.getTime() - bjOffset).toISOString();
+  const subArticles = await qAll(
+    `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.content_html, a.published_at, a.cover, a.translated_title, s.name AS source_name
+     FROM articles a JOIN sources s ON s.id = a.source_id
+     WHERE a.source_id IN (${subs.map(() => '?').join(',')})
+       AND a.published_at >= ? AND a.published_at < ?
+     ORDER BY a.published_at DESC LIMIT 60`,
+    [...subs.map((s) => s.id), startUtc, endUtc]
+  );
+  const minePool = (analyzed || []).filter((a) => subIds.has(a.source_id));
+  const toAnalyze = subArticles.filter((a) => !analyzedIds.has(a.id)).slice(0, 30);
+  log(`mybrief: 订阅源窗口内 ${subArticles.length} 篇（复用池 ${minePool.length} / 待补析 ${toAnalyze.length}）`);
+  for (const a of toAnalyze) {
+    const r = await _ai.analyzeArticle({ ...a, source_name: a.source_name });
+    if (r) minePool.push({ ...a, ...r });
+  }
+  const mine = minePool.sort((x, y) => y.totalScore - x.totalScore);
   if (!mine.length) {
     await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify({ empty: 'no-content', date: dateStr, message: '今天你的订阅源没有新的精选内容' })] });
     log('mybrief: 订阅源今日无深析内容，写空态');

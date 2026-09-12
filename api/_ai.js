@@ -344,6 +344,7 @@ async function generateTheme(items) {
     /[::：]\s*$/.test(l) || l.length > 120;
   const candidates = lines.filter((l) => !isAnalysis(l));
   const theme = (candidates[candidates.length - 1] || lines[lines.length - 1] || '')
+    .replace(/^(导语应该是|导语|今日主题|主题导语|主题)[:：]?\s*/g, '')
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
   return theme ? theme + '。' : null;
 }
