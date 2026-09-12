@@ -86,7 +86,7 @@ async function setSetting(key, val) {
 const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings', '/api/settings/daily',
-  '/api/reading', '/api/img', '/api/meta',
+  '/api/reading', '/api/img', '/api/meta', '/api/mybrief',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
 ]);
 
@@ -2073,6 +2073,15 @@ async function handleArticleTranslate(req, id) {
   return jsonOk({ queued: true, etaMin: 20, message: '已加入翻译队列，runner 每 15 分钟处理' });
 }
 
+// GET /api/mybrief — 我的早报（19-my-brief；公开读，三态响应）
+async function handleMyBrief(req) {
+  const subs = await qAll('SELECT id FROM sources WHERE focus=1 AND enabled=1');
+  if (!subs.length) return jsonOk({ empty: 'no-subscription' });
+  const report = await getSetting('mybrief.latest', null);
+  if (!report) return jsonOk({ empty: 'no-content' });
+  return jsonOk({ report });
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -2182,6 +2191,7 @@ async function dispatch(req) {
     if (path === '/api/sources') return handleSources(req);
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
+    if (path === '/api/mybrief') return handleMyBrief(req);
     if (path === '/api/settings') return handleSettings(req);
     if (path === '/api/reading') return handleReading(req);
     if (path === '/api/meta') return handleMeta(req);

@@ -40,6 +40,7 @@ async function auditRecord(action, opts = {}) {
 const DEFAULT_EVENTS = {
   source_error: true, source_paused: true, daily_failed: true,
   collect_stalled: true, ai_failed: true, frozen_digest: true,
+  mybrief: true, // 19-my-brief：我的早报推送
 };
 
 async function getConfig() {

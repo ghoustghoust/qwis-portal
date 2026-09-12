@@ -477,7 +477,7 @@ async function runDailyAi() {
   // 候选（沿用关键词版排除规则）
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
-  let sql = `SELECT a.id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.translated_title, s.name AS source_name, s.focus AS source_focus
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.focus AS source_focus
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
                AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1`;
@@ -571,7 +571,60 @@ async function runDailyAi() {
   );
   log(`daily-ai 早报生成完成: ${sections.length} 栏 ${allItems.length} 条, 耗时 ${stats.elapsedMin}min, 主题: ${theme || '(无)'}`);
   await writeHeartbeat('daily-ai', stats);
+  // 19-my-brief：复用深析池生成「我的早报」（零额外深析调用）
+  try { await runMyBrief(analyzed); } catch (err) { log(`mybrief 生成失败（已隔离）: ${err.message}`); }
   return stats;
+}
+
+// ─── 我的早报（19-my-brief）：订阅源专属策展，复用 daily-ai 深析池 ───
+async function runMyBrief(analyzed) {
+  const _ai = require('../api/_ai');
+  // v1 订阅集合 = focus 特别关注（P2-1 订阅模型上线后切换取值）
+  const subs = await qAll('SELECT id FROM sources WHERE focus=1 AND enabled=1');
+  if (!subs.length) {
+    await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify({ empty: 'no-subscription', date: nowIso().slice(0, 10) })] });
+    log('mybrief: 无订阅源（focus=0），写引导态');
+    return { empty: 'no-subscription' };
+  }
+  const subIds = new Set(subs.map((s) => s.id));
+  const mine = (analyzed || []).filter((a) => subIds.has(a.source_id)).sort((x, y) => y.totalScore - x.totalScore);
+  const dateStr = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  if (!mine.length) {
+    await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify({ empty: 'no-content', date: dateStr, message: '今天你的订阅源没有新的精选内容' })] });
+    log('mybrief: 订阅源今日无深析内容，写空态');
+    return { empty: 'no-content' };
+  }
+  const fmt = (a) => ({
+    id: a.id, source_id: a.source_id, title: a.translated_title || a.title, url: a.url,
+    source: a.source_name, cover: a.cover || null, published_at: a.published_at,
+    totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
+    quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
+  });
+  const sections = {
+    top: mine.slice(0, 3).map(fmt),
+    featured: mine.slice(3, 10).map(fmt),
+    rest: mine.slice(10, 50).map(fmt),
+  };
+  // 编辑导语 + 关键词标签行
+  const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch(() => null);
+  const tagFreq = {};
+  for (const m of mine) for (const t of m.tags || []) tagFreq[t] = (tagFreq[t] || 0) + 1;
+  const keywords = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
+  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections };
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
+  log(`mybrief 生成完成: top ${sections.top.length} / featured ${sections.featured.length} / rest ${sections.rest.length}, 主题: ${theme || '(无)'}`);
+  // 飞书推送（导语 + 头条 3 条；pushEnabled 默认 true）
+  const pushCfg = await getSetting('mybrief', {});
+  if (pushCfg.pushEnabled !== false) {
+    try {
+      const d = new Date(Date.now() + 8 * 3600e3);
+      await require('../api/_alerts').dispatch('mybrief', {
+        title: `☀️ 我的早报 · ${d.getUTCMonth() + 1}月${d.getUTCDate()}日`,
+        text: `${theme || '今日精选'}\n\n${sections.top.map((it, i) => `${i + 1}. ${it.title}（${it.source}）`).join('\n')}`,
+      });
+    } catch { /* 推送失败不阻断 */ }
+  }
+  return report;
 }
 
 // ─── 模式：daily（日报生成，逻辑与 api/daily-generate.js 对齐） ───

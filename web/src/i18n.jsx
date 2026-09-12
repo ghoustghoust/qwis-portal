@@ -9,6 +9,7 @@ const DICT = {
   // 导航栏（IconRail）
   'nav.reader':        { zh: '阅读器',     en: 'Reader' },
   'nav.daily':         { zh: '每日早报',   en: 'Daily' },
+  'nav.mybrief':       { zh: '我的早报',   en: 'My Brief' },
   'nav.hot':           { zh: '热点榜',     en: 'Hot' },
   'nav.reading':       { zh: '我的阅读',   en: 'My Reading' },
   'nav.lang':          { zh: 'EN',         en: '中文' },
