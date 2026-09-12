@@ -37,8 +37,9 @@ const CONCURRENCY = Number(process.env.COLLECT_CONCURRENCY) || 6;
 const FETCH_TIMEOUT = 10000;   // 单源抓取超时（无 serverless 限制，给足 10s）
 // 必须用浏览器 UA：newsnow 等热榜 API 对自定义 UA 直接 403（ARCHITECTURE 已知坑 #4 链路）
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
-// serverless/云端不可采类型：wemp 已退役、douyin 需 Playwright 登录态、bilibili 需 wbi 签名（后续移植）
-const UNSUPPORTED_TYPES = "type NOT IN ('wemp', 'bilibili', 'douyin')";
+// serverless/云端不可采类型：wemp 已退役、douyin 需 Playwright 登录态
+// bilibili 已于 2026-09-12 移植 runner（api/_bilibili.js，wbi 纯 crypto + 合集/搜索兜底）
+const UNSUPPORTED_TYPES = "type NOT IN ('wemp', 'douyin')";
 
 const rssParser = new Parser({
   timeout: FETCH_TIMEOUT,
@@ -275,6 +276,8 @@ function getAdapter(type) {
       return { fetch: fetchRss };
     case 'hotlist':
       return { fetch: fetchHotlist };
+    case 'bilibili':
+      return { fetch: (source) => require('../api/_bilibili').fetchBiliVideos(source) };
     default:
       return null;
   }
@@ -314,6 +317,21 @@ async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) 
   }
   // 注意：UPDATE 行数也计入，仅作统计口径偏宽松，不影响正确性
   return added;
+}
+
+// ─── 视频落库（21-bilibili-runner：vid 去重） ───
+async function saveVideos(sourceId, videos) {
+  if (!videos.length) return 0;
+  const db = getDb();
+  const now = nowIso();
+  const stmts = videos.map((v) => ({
+    sql: `INSERT OR IGNORE INTO videos(source_id, title, url, vid, cover, duration, author, intro, published_at, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [sourceId, v.title || '', v.url, v.vid || '', v.cover || null, v.duration || null,
+      v.author || '', v.intro || '', v.published_at || null, now],
+  }));
+  const results = await db.batch(stmts, 'write');
+  return results.reduce((n, r) => n + (r.rowsAffected || 0), 0);
 }
 
 // ─── 源状态 ───
@@ -357,6 +375,11 @@ async function collectOne(source, stats) {
     const result = await adapter.fetch(source);
     if (result.skipped) { stats.skipped++; return; }
 
+    // 21-bilibili-runner：视频走 videos 表（vid 去重），文章走 articles 表
+    if (Array.isArray(result.videos)) {
+      const vAdded = await saveVideos(source.id, result.videos);
+      stats.videos = (stats.videos || 0) + vAdded;
+    }
     const added = await saveArticles(source.id, result.articles || [], { marksFeatured: !!extra.marksFeatured });
     stats.articles += added;
 
@@ -1112,6 +1135,8 @@ async function runTranslate() {
   log(`=== collect-turso 模式=${MODE} ===`);
   // 17-translate：translation_provider 列迁移（已存在则忽略）
   try { await getDb().execute('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
+  // 21-bilibili-runner：videos.vid 唯一索引（INSERT OR IGNORE 去重依赖）
+  try { await getDb().execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_vid ON videos(vid)'); } catch { /* 已存在/空表兼容 */ }
   try {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();

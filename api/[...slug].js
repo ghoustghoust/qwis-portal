@@ -2097,6 +2097,12 @@ async function handleWeekly(req) {
   return jsonOk({ report, archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
 }
 
+// GET /api/sources/bilibili-diagnose — B站 Cookie/wbi/登录态诊断（21-bilibili-runner）
+async function handleBilibiliDiagnose(req) {
+  const r = await require('./_bilibili').diagnose();
+  return jsonOk(r);
+}
+
 // ─── 路由分发 ───
 async function dispatch(req) {
   const path = req.url.split('?')[0];
@@ -2208,6 +2214,7 @@ async function dispatch(req) {
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
     if (path === '/api/weekly') return handleWeekly(req);
+    if (path === '/api/sources/bilibili-diagnose') return handleBilibiliDiagnose(req);
     if (path === '/api/settings') return handleSettings(req);
     if (path === '/api/reading') return handleReading(req);
     if (path === '/api/meta') return handleMeta(req);
