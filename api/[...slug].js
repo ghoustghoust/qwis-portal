@@ -802,8 +802,9 @@ async function handleSettings(req) {
 // GET /api/reading — 聚合列表（tab / type / q / cursor 分页）
 async function handleReading(req) {
   const q = req.query;
-  const tab = q.tab || 'all';
-  const type = q.type || 'all';
+  // tab 白名单（对抗性审查 2026-09-13：未知 tab 值原会落入快路径被当 all 处理）
+  const tab = ['all', 'favorited', 'read'].includes(q.tab) ? q.tab : 'all';
+  const type = ['all', 'article', 'video', 'podcast'].includes(q.type) ? q.type : 'all';
   const searchQ = (q.q || '').trim();
   const PAGE_SIZE = 30;
 
@@ -890,7 +891,8 @@ async function handleReading(req) {
 
   // T3-3 快路径（2026-09-13 实测 9-13s→~350ms）：无筛选时两段式——
   // ①窄查询只取 id/sort_key（表达式覆盖索引 idx_*_sk，不触碰宽行）②按 id 取 31 条全列
-  if (!aConds.length) {
+  // ⚠️ 仅 tab=all 且 type=all（对抗性审查：type=video 时快路径曾泄漏文章——快路径不解析 type）
+  if (!aConds.length && tab === 'all' && type === 'all') {
     const narrowConds = [];
     const narrowArgs = [];
     if (q.cursor) { narrowConds.push('sort_key < ?'); narrowArgs.push(String(q.cursor)); }
@@ -942,6 +944,9 @@ async function handleReading(req) {
   }
 
   // 带筛选（type/q）：回退单条宽查询（低频路径，可接受）
+  // 对抗性审查修正：①type=video 强制无文章分支；②OR 拆分的每个分支必须重复绑定自己的 LIKE 参数
+  //（libsql 参数数不匹配直接抛错——曾致 q=AI 搜索返回空）
+  const includeArticles = type !== 'video';
   const aBranch = (tabCond) => `
       SELECT
         a.id, 'article' AS item_type, a.title, a.url, a.cover, a.summary,
@@ -951,9 +956,17 @@ async function handleReading(req) {
         COALESCE(a.published_at, a.created_at) AS sort_key
       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
       WHERE ${tabCond}${aExtra}`;
-  const articleSql = aTabOr
-    ? `${aBranch(aTabOr)}\n      UNION ALL\n${aBranch('a.later = 1 AND a.read_at IS NULL')}`
-    : (aConds.length ? aBranch('1=1') : '');
+  const aBranchDefs = [];
+  if (includeArticles) {
+    if (aTabOr) {
+      aBranchDefs.push({ cond: aTabOr, args: aArgs });
+      aBranchDefs.push({ cond: 'a.later = 1 AND a.read_at IS NULL', args: aArgs });
+    } else {
+      aBranchDefs.push({ cond: '1=1', args: aArgs });
+    }
+  }
+  const articleSql = aBranchDefs.length ? aBranchDefs.map((b) => aBranch(b.cond)).join('\n      UNION ALL\n') : '';
+  const branchArgs = aBranchDefs.flatMap((b) => b.args);
   const videoSql = vConds.length ? `
       SELECT
         v.id, 'video' AS item_type, v.title, v.url, v.cover, v.intro AS summary,
@@ -981,7 +994,7 @@ ${branches}
     WHERE 1=1 ${cursorCond}
     ORDER BY sort_key DESC, id DESC
     LIMIT ?
-  `, [...aArgs, ...vArgs, ...cursorArgs, PAGE_SIZE + 1]);
+  `, [...branchArgs, ...vArgs, ...cursorArgs, PAGE_SIZE + 1]);
 
   let nextCursor = null;
   let items = rows;
@@ -1598,8 +1611,9 @@ async function handleOpmlExport(req) {
   for (const sRow of loose) lines.push(`    <outline type="rss" text="${esc(sRow.name)}" title="${esc(sRow.name)}" xmlUrl="${esc(sRow.url)}"/>`);
   lines.push('  </body>', '</opml>');
   const xml = lines.join('\n');
+  // raw 约定：顶层仅对 raw 结果套用 headers 并原样发 body（否则会被 res.json 序列化成 JSON 字符串）
   return {
-    status: 200,
+    raw: true,
     headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Content-Disposition': 'attachment; filename="qwis-sources.opml"' },
     body: xml,
   };

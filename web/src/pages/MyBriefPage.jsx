@@ -184,6 +184,7 @@ function RestRow({ item, index, onOpen }) {
     <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 4}</span>
       <span className="flex-1 min-w-0 truncate text-[13px] t-text">{item.title}</span>
+      {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}
       {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate">{item.reason}</span>}
       <span className="flex-none text-[11px] t-muted whitespace-nowrap">{item.source}</span>
     </div>

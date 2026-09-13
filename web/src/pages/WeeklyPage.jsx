@@ -92,6 +92,14 @@ export default function WeeklyPage() {
                   </section>
                 );
               })}
+
+              {/* 周报 AI 总结注脚（T3-1 R8） */}
+              {report.weeklySummary && (
+                <footer className="mt-10 card p-4 sm:p-5">
+                  <div className="text-[11px] tracking-widest t-accent font-medium">本周总结</div>
+                  <p className="mt-2 text-[13.5px] leading-relaxed t-text">{report.weeklySummary}</p>
+                </footer>
+              )}
             </>
           )}
           <div className="h-16" />

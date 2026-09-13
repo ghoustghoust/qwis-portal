@@ -28,8 +28,10 @@ on:
     - cron: '33 1 * * *'
     # 数据清理（UTC 20:13 = 北京 04:13 低峰期）
     - cron: '13 20 * * *'
-    # AI 早报批处理（UTC 16:32 = 北京 00:32，自然日窗口闭合后）
+    # AI 早报批处理（UTC 16:32 = 北京 00:32，自然日窗口闭合后；备跑兜底）
     - cron: '32 16 * * *'
+    # 晚间生成主批（UTC 13:30 = 北京 21:30，滚动24h 窗口——T3-1 R0：晚间整理，次日早上呈现）
+    - cron: '30 13 * * *'
     # 精选周刊（UTC 周五 10:03 = 北京周五 18:03，用户拍板周末阅读场景）
     - cron: '3 10 * * 5'
   workflow_dispatch:
@@ -89,6 +91,28 @@ jobs:
         run: node tools/collect-turso.js daily
 
   # ─── AI 早报批处理（北京时间 00:32，18-daily-ai-v2；仅 schedule） ───
+  daily-ai-evening:
+    if: github.event.schedule == '30 13 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Generate evening AI brief (rolling 24h) → Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: node tools/collect-turso.js daily-ai --rolling24
+
   daily-ai:
     if: github.event.schedule == '32 16 * * *'
     runs-on: ubuntu-latest

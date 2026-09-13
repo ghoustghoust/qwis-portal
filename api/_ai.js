@@ -369,8 +369,24 @@ async function analyzeArticle(article) {
   } catch { return null; }
 }
 
-async function generateTheme(items) {
-  const tpl = await loadPrompt('daily-theme');
+// ═══ 周刊 AI 总结注脚（T3-1 R8，2026-09-13）═══
+// 每期周刊页脚的本周主线/趋势判断（≤200 字）。推理模型污染用 generateTheme 同款分析行拒绝兜底。
+async function generateWeeklySummary(items) {
+  const list = items.slice(0, 20).map((it, i) => `${i + 1}. ${it.title}（${it.reason || it.summary || ''}）`).join('\n');
+  const prompt = '你是科技媒体主编。基于本周精选内容写一段 150-200 字的本周总结：概括 2-3 条主线，给出一个趋势判断。只输出总结正文，不要标题、不要列表符号、不要解释。';
+  const r = await aiChat([{ role: 'user', content: `${prompt}\n\n## 本周精选\n\n${list}` }], { kind: 'theme', maxTokens: 512, timeoutMs: 60000 });
+  if (!r.ok) return null;
+  const lines = String(r.reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
+  const isMeta = (l) =>
+    /^(用户|让我|我来|我需要|好的|以下|这是|#|\d+[.、]|[-*•])/.test(l) ||
+    /^(Let me|The user|I need|Okay|Here|Sure|Based on|This week's)/i.test(l) ||
+    l.length > 160;
+  const body = lines.filter((l) => !isMeta(l)).join('');
+  if (!body || body.length < 60) return null; // 全被拒或过短 → 不出注脚
+  return body.slice(0, 300);
+}
+
+async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme');
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
   const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
   if (!r.ok) return null;
@@ -399,6 +415,6 @@ async function generateTheme(items) {
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme, sanitizeTranslationReply, isThinkingLikeReply,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };

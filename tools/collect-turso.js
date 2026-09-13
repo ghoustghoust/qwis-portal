@@ -645,18 +645,26 @@ async function runWeekly() {
     .map((it, i) => ({ ...it, rank: i + 1 }));
 
   const theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch(() => null);
-  await saveWeekly(theme, items, false, t0);
-  return { count: items.length, theme };
+  // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
+  const weeklySummary = items.length ? await _ai.generateWeeklySummary(items).catch(() => null) : null;
+  await saveWeekly(theme, items, false, t0, weeklySummary);
+  return { count: items.length, theme, weeklySummary };
 }
 
-async function saveWeekly(theme, items, degraded, t0) {
+async function saveWeekly(theme, items, degraded, t0, weeklySummary = null) {
+  // 对抗性审查补丁（2026-09-13）：周报引用的文章打 featured=1——cleanup 的保留清理豁免 featured，
+  // 否则大清理会把「周刊永久归档」引用的文章删掉（详情断链，违背周刊长久存储决策）
+  const itemIds = (items || []).map((it) => Number(it.id)).filter(Number.isFinite);
+  if (itemIds.length) {
+    await qRun(`UPDATE articles SET featured=1 WHERE id IN (${itemIds.join(',')}) AND COALESCE(featured,0)=0`);
+  }
   // 期号与归档
   const archive = (await getSetting('weekly.archive', [])) || [];
   const issue = archive.length ? (archive[archive.length - 1].issue || 0) + 1 : 1;
   const dateEnd = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
   const dateStart = new Date(Date.now() + 8 * 3600e3 - 7 * 86400e3).toISOString().slice(0, 10);
   const report = {
-    issue, dateStart, dateEnd, theme, degraded,
+    issue, dateStart, dateEnd, theme, degraded, weeklySummary,
     generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
     items,
   };
@@ -668,19 +676,32 @@ async function saveWeekly(theme, items, degraded, t0) {
   await writeHeartbeat('weekly', { issue, count: items.length, degraded });
 }
 
-// ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报，自然日窗口） ───
+// ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报） ───
+// 窗口二态（T3-1 R0）：默认北京自然日 [昨00:00, 今00:00)；--rolling24 时取滚动 24h [now-24h, now)
+// ——晚间 21:30 的 cron 用 rolling24，实现「晚间整理刚过去的一天，次日早上呈现」
+const ROLLING24 = process.argv.includes('--rolling24');
+
+function briefWindow() {
+  if (ROLLING24) {
+    const end = Date.now();
+    return { startUtc: new Date(end - 24 * 3600e3).toISOString(), endUtc: new Date(end).toISOString(), label: '滚动24h' };
+  }
+  const bjOffset = 8 * 3600e3;
+  const todayStart = new Date(Date.now() + bjOffset); todayStart.setUTCHours(0, 0, 0, 0);
+  return {
+    startUtc: new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString(),
+    endUtc: new Date(todayStart.getTime() - bjOffset).toISOString(),
+    label: '北京自然日',
+  };
+}
+
 async function runDailyAi() {
   const _ai = require('../api/_ai');
   const BUDGET_MS = 90 * 60e3;
   const t0 = Date.now();
 
-  // 窗口：北京自然日 [昨00:00, 今00:00)
-  const bjOffset = 8 * 3600e3;
-  const bjNow = new Date(Date.now() + bjOffset);
-  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
-  const startUtc = new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString();
-  const endUtc = new Date(todayStart.getTime() - bjOffset).toISOString();
-  log(`daily-ai 窗口: ${startUtc} ~ ${endUtc}（北京自然日）`);
+  const { startUtc, endUtc, label } = briefWindow();
+  log(`daily-ai 窗口: ${startUtc} ~ ${endUtc}（${label}）`);
 
   // 候选（沿用关键词版排除规则）
   const cfg = await getSetting('daily', {});
@@ -806,11 +827,7 @@ async function runMyBrief(analyzed) {
   // 设计修正：早报不能依赖 daily 的 top-N 切片共享池（订阅源可能不在内）——
   // 订阅源在窗口内的文章单独补齐分析；已在池中的复用，零重复调用
   const analyzedIds = new Set((analyzed || []).map((a) => a.id));
-  const bjOffset = 8 * 3600e3;
-  const bjNow = new Date(Date.now() + bjOffset);
-  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
-  const startUtc = new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString();
-  const endUtc = new Date(todayStart.getTime() - bjOffset).toISOString();
+  const { startUtc, endUtc } = briefWindow(); // T3-1 R0：与 daily-ai 同窗口二态（晚间 rolling24）
   const subArticles = await qAll(
     `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.content_html, a.published_at, a.cover, a.translated_title, s.name AS source_name
      FROM articles a JOIN sources s ON s.id = a.source_id
@@ -838,10 +855,23 @@ async function runMyBrief(analyzed) {
     totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
     quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
   });
+  // 补充阅读固定 10 条（T3-1 R4）：订阅源条目不足时，从共享深析池的**非订阅源**高分内容补足，
+  // 标记 explore=true（破茧/探索语义）；补足仅为展示层，不改订阅集合
+  const restBase = mine.slice(10, 50).map(fmt);
+  if (restBase.length < 10) {
+    const chosen = new Set(mine.slice(0, 10).map((m) => m.id).concat(restBase.map((r) => r.id)));
+    const explore = (analyzed || [])
+      .filter((a) => !subIds.has(a.source_id) && !chosen.has(a.id) && (a.totalScore || 0) >= 70)
+      .sort((x, y) => y.totalScore - x.totalScore)
+      .slice(0, 10 - restBase.length)
+      .map((a) => ({ ...fmt(a), explore: true }));
+    restBase.push(...explore);
+    if (explore.length) log(`mybrief: 补充阅读从探索池补足 ${explore.length} 条`);
+  }
   const sections = {
     top: mine.slice(0, 3).map(fmt),
     featured: mine.slice(3, 10).map(fmt),
-    rest: mine.slice(10, 50).map(fmt),
+    rest: restBase,
   };
   // 编辑导语 + 关键词标签行
   const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch(() => null);
@@ -1146,7 +1176,21 @@ async function translatePipeline(article) {
   return { title: translatedTitle, content: translatedContent, provider, rounds };
 }
 
+// T3-1 R0b 生成 > 翻译：早报/周报生成窗口内 translate 批次让路（配额让给深析/导语/综述）
+// 保护窗（北京时）：每日 18:30~次日 03:30（晚间 21:30 rolling24 生成 + 00:32 备份批）；周五另加 15:00~21:00（周刊 18:03）
+function inGenerationGuard() {
+  const bj = new Date(Date.now() + 8 * 3600e3);
+  const h = bj.getUTCHours() + bj.getUTCMinutes() / 60;
+  if (h >= 18.5 || h < 3.5) return true;
+  if (bj.getUTCDay() === 5 && h >= 15 && h < 21) return true; // 周五
+  return false;
+}
+
 async function runTranslate() {
+  if (inGenerationGuard()) {
+    log('translate: 处于早报/周报生成保护窗（T3-1 R0b），本轮让路跳过');
+    return { skipped: 'generation-window' };
+  }
   const cfg = await getSetting('translate', {});
   if (cfg.enabled === false) { log('翻译功能已停用（settings translate.enabled=false），跳过'); return { skipped: true }; }
   const limit = Number(process.env.TRANSLATE_LIMIT) || 10;
