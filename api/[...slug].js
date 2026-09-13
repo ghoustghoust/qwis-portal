@@ -267,10 +267,19 @@ async function handleHot(req) {
   }
   // tab=all：全部源全部内容，无类型限制
 
-  // 真实分类过滤（T5-1：tags 子串匹配，如 模型→模型发布/AI模型）
-  if (category) {
-    conds.push('a.tags LIKE ?');
-    args.push(`%${category}%`);
+  // 真实分类过滤（T5-1）：分类映射到 tags 关键词组（实际词表为 模型发布/论文/研究/大佬观点 等复合词）
+  const CATEGORY_KWS = {
+    '模型': ['模型'],
+    '产品': ['产品'],
+    '行业': ['行业', '现象/趋势', '产业', '市场'],
+    '论文': ['论文', '研究', 'arXiv'],
+    '教程': ['教程', '实战', '指南', '入门', '手把手'],
+    '观点': ['观点', '思考', '评论', '观察'],
+  };
+  if (category && CATEGORY_KWS[category]) {
+    // 匹配 标题/摘要/tags（tags 只有深析文章才有，单靠 tags 命中率过低）
+    conds.push(`(${CATEGORY_KWS[category].map(() => '(a.title LIKE ? OR a.summary LIKE ? OR a.tags LIKE ?)').join(' OR ')})`);
+    args.push(...CATEGORY_KWS[category].flatMap((k) => [`%${k}%`, `%${k}%`, `%${k}%`]));
   }
   if (searchQ) {
     conds.push('(a.title LIKE ? OR a.summary LIKE ?)');
