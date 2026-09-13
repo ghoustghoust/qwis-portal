@@ -857,7 +857,7 @@ async function buildReadingDigest() {
 async function persistScores(analyzed) {
   const rows = (analyzed || []).filter((a) => typeof a.id === 'number' && Number.isFinite(a.totalScore));
   for (const a of rows) {
-    await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(a.totalScore), a.id]);
+    await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(a.totalScore), a.reason || null, a.id]);
   }
   return rows.length;
 }
@@ -1134,7 +1134,7 @@ async function runMyBrief(analyzed) {
     if (r) {
       minePool.push({ ...a, ...r });
       if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
-        try { await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(r.totalScore), a.id]); } catch { /* 回写失败不阻断 */ }
+        try { await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, a.id]); } catch { /* 回写失败不阻断 */ }
       }
     }
   }
