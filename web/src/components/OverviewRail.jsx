@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import StatCard from './ui/StatCard.jsx';
+import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 右侧统计轨（2026-09-05 视觉精修）：未选中文章时的右栏占位
 // 数据来自 GET /api/status 的 overview（口径已去噪：不含热榜/聚合源）
@@ -56,6 +57,7 @@ export default function OverviewRail() {
               {top.map((s, i) => (
                 <div key={s.name} className="flex items-center gap-2.5 py-1 text-[13px]">
                   <span className="w-4 text-right text-xs t-muted tabular-nums flex-none">{i + 1}</span>
+                  <SourceAvatar name={s.name} avatar={s.avatar} size={18} />
                   <span className="flex-1 truncate t-text">{s.name}</span>
                   <span className="text-xs t-muted tabular-nums flex-none">{s.count} 次</span>
                 </div>

@@ -740,6 +740,13 @@ async function handleStatus(req) {
     overview.dailyTopSources = Object.entries(srcCount)
       .sort((a, b) => b[1] - a[1]).slice(0, 5)
       .map(([name, count]) => ({ name, count }));
+    // 用户期望「头像+xx源+入榜次数」：按名字补源头像（一次小查询）
+    const topNames = overview.dailyTopSources.map((t) => t.name);
+    if (topNames.length) {
+      const avRows = await qAll(`SELECT name, avatar FROM sources WHERE name IN (${topNames.map(() => '?').join(',')})`, topNames);
+      const avMap = new Map(avRows.map((r) => [r.name, r.avatar]));
+      for (const t of overview.dailyTopSources) t.avatar = avMap.get(t.name) || null;
+    }
   } catch { /* 统计失败不阻断 status */ }
 
   const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
