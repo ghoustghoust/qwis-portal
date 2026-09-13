@@ -142,8 +142,7 @@ async function aiChat(messages, opts = {}) {
 }
 
 // ═══ 翻译降级链（F4）：Agnes → Bing → Google ═══
-async function _translateBing(text) {
-  // 免 key 方案：抓 bing translator 页面取 IG/IID/token（脆弱，仅兜底）
+async function _translateBing(text) {  // 免 key 方案：抓 bing translator 页面取 IG/IID/token（脆弱，仅兜底）
   const page = await (await fetch('https://www.bing.com/translator', { signal: AbortSignal.timeout(8000) })).text();
   const ig = page.match(/IG:"([0-9A-F]+)"/)?.[1];
   const tokenM = page.match(/params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)"/);
@@ -173,7 +172,15 @@ async function translateText(text, { kind = 'translate', glossaryNote = '' } = {
   try {
     const prompt = await renderTranslatePrompt(glossaryNote ? [glossaryNote] : null, text);
     const r = await aiChat([{ role: 'user', content: prompt }], { kind, maxTokens: 2048, timeoutMs: 60000 });
-    if (r.ok) return { ok: true, text: r.reply, provider: 'agnes' };
+    if (r.ok) {
+      // 思维链/纯分析输出不能当译文（2026-09-13 F3：实测「Here's a thinking process:」整段入库）
+      // → 视为本次失败，落入 L2/L3 机翻保底；带「译文：」标记的由 sanitize 提取后放行
+      const cleaned = sanitizeTranslationReply(r.reply, '');
+      if (!isThinkingLikeReply(r.reply) && cleaned.trim() && !isThinkingLikeReply(cleaned)) {
+        return { ok: true, text: cleaned, provider: 'agnes' };
+      }
+      throw new Error('agnes 输出为思维链/分析文本');
+    }
     throw new Error(r.error);
   } catch (e) {
     await recordStat({ at: nowIso(), kind, ok: false, provider: 'agnes', error: String(e.message).slice(0, 100) });
@@ -286,18 +293,24 @@ async function loadPrompt(name) {
 }
 
 // ═══ 多轮精翻（17-translate） ═══
-// 译文输出清洗（2026-09-13 F3）：agnes-2.5-flash 是推理模型（坑 #24），精翻轮会把指令复述/
-// 四维分析混进输出（实测样本：「用户提供了一篇…要求我从四个维度检查并改进译文…」）。
-// 与 generateTheme 的导语思维链剥离同类：先试「译文/最终稿」标记提取，纯分析则回退上一轮草稿。
+// 译文输出清洗（2026-09-13 F3）：agnes-2.5-flash 是推理模型（坑 #24），会把思维链/指令复述/
+// 四维分析混进输出。实测两种污染形态：①中文「用户提供了一篇…要求我从四个维度检查并改进译文…」
+// ②英文「Here's a thinking process: 1. **Analyze User Input:** …」。
+// 策略：先试「译文/最终稿」标记提取；思维链式回复拒收（轮2/3回退上一轮草稿，轮1触发机翻降级）。
 const TRANSLATE_MARKER_RE = /(?:^|\n)\s*(?:#{1,3}\s*)?(?:最终译文|最终稿|译文|翻译如下|Translation)\s*[:：]\s*\n?/g;
+// 思维链/分析性回复特征（只收"元任务"话术，避免误伤以"首先"等开头的正常译文）
+const THINKING_START_RE = /^(?:here'?s?(?:\s+a)?\s+thinking|thinking process|okay[,.]|alright[,.]|sure[,!]?\s+(?:here|below)|hmm+|let me|i need|i'll|the user|analyzing|reviewing|用户提供|让我|我来|我需要|我将|好的[，,]下面|以下是我|分析如下|先分析)/i;
+const THINKING_STRUCT_RE = /^\s*\d+\.\s*\*\*/m; // 「1. **Analyze User Input:**」编号加粗分析结构
+const THINKING_FIELD_RE = /\*\*(?:Role|Task|Goal|Steps|Input|Output)\*\*/;
+function isThinkingLikeReply(text) {
+  const t = String(text || '').trim();
+  if (!t) return false;
+  const head = t.slice(0, 500);
+  return THINKING_START_RE.test(t) || THINKING_STRUCT_RE.test(head) || THINKING_FIELD_RE.test(head);
+}
 function sanitizeTranslationReply(reply, draft) {
   const text = String(reply || '');
   if (!text.trim()) return draft || text;
-  // 分析性回复特征：复述指令/分维点评（与 generateTheme.isAnalysis 同风格）
-  const looksAnalytical =
-    /^(用户提供|让我|我来|我需要|我将对|好的[，,]?下面|以下是我|I need|I'll|The user|Let me|Here (?:is|'s) my|Analyzing|Reviewing)/i.test(text.trim()) ||
-    /要求我从.{0,6}维度|四个维度|维度检查|改进译文|检查并改进/.test(text.slice(0, 300)) ||
-    /^\s*(?:\d+\.|[-*•])\s*(?:术语|语言表达|行业表达|文化适应|格式|原文|译文)/m.test(text);
   // 1) 有「译文」标记：取最后一个标记之后的正文（标记前的指令回显/分析全部丢弃）
   TRANSLATE_MARKER_RE.lastIndex = 0;
   let m, lastMarker = null;
@@ -306,8 +319,8 @@ function sanitizeTranslationReply(reply, draft) {
     const body = text.slice(lastMarker.index + lastMarker[0].length).trim();
     if (body.length > 40) return body; // 提取出的正文太短视为无效，继续走拒绝分支
   }
-  // 2) 纯分析/指令回显且无标记：拒收，回退上一轮草稿（轮1输出受「只输出译文」约束，天然干净）
-  if (looksAnalytical) return draft || text;
+  // 2) 思维链/纯分析且无标记：拒收，回退上一轮草稿（轮1由调用方触发机翻降级）
+  if (isThinkingLikeReply(text)) return draft || text;
   return text;
 }
 
@@ -376,6 +389,6 @@ async function generateTheme(items) {
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme, sanitizeTranslationReply,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };

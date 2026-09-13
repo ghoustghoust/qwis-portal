@@ -1068,7 +1068,8 @@ async function translatePipeline(article) {
   let translatedContent = reply;
   if (title && reply.includes('\n')) {
     const firstLine = reply.split('\n')[0].trim();
-    if (firstLine.length < 100 && firstLine.length > 2) {
+    // 首行做标题前先过思维链检测（2026-09-13 F3：「Here's a thinking process:」曾被当标题入库）
+    if (firstLine.length < 100 && firstLine.length > 2 && !_ai.isThinkingLikeReply(firstLine)) {
       translatedTitle = firstLine;
       translatedContent = reply.slice(firstLine.length).replace(/^\n+/, '');
     }

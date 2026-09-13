@@ -43,6 +43,20 @@ test('F3-4 无草稿且纯分析 → 原样返回（由上层决定丢弃）', (
   assert.strictEqual(_ai.sanitizeTranslationReply(analytical, ''), analytical);
 });
 
+test('F3-5 英文思维链形态（Here\'s a thinking process + 编号加粗分析）被识别', () => {
+  const thinking = "Here's a thinking process:\n1.  **Analyze User Input:**\n   - **Role:** Senior tech publishing editor.\n   - **Task:** Translate-polish from English to Chinese\n2.  **Draft the translation:**\n\n## Final Polish\nPerplexity 信任 GPT-6 Astra 管理端到端系统。";
+  // 无「译文」中文标记但有「## Final Polish」→ 不在标记表 → 整体判定思维链 → 回退草稿
+  assert.strictEqual(_ai.sanitizeTranslationReply(thinking, '初翻草稿'), '初翻草稿');
+  assert.strictEqual(_ai.isThinkingLikeReply(thinking), true);
+  assert.strictEqual(_ai.isThinkingLikeReply('Here\'s a thinking process:'), true);
+});
+
+test('F3-6 正常英文开头的译文不被误伤', () => {
+  const legit = 'Here is how the new system works, according to the company.';
+  assert.strictEqual(_ai.isThinkingLikeReply(legit), false);
+  assert.strictEqual(_ai.sanitizeTranslationReply(legit, '草稿'), legit);
+});
+
 // ─── F2：未来时间 pubDate 钳制（本地隔离库，真实 repo 落库） ───
 const { db } = require('../server/db');
 const repo = require('../server/services/collectors/repo');
