@@ -766,6 +766,8 @@ async function handleSettings(req) {
   const intervals = await getSetting('intervals', {});
   const queue = await getSetting('queue', {});
   const data = await getSetting('data', {});
+  const mybriefCfg = await getSetting('mybrief', {});
+  const weeklyCfg = await getSetting('weekly', {});
   const hot = await getSetting('hot', {});
   const views = await getSetting('reader.views', []);
   const aiCfg = await getSetting('ai', {});
@@ -781,6 +783,8 @@ async function handleSettings(req) {
     queue: queueOut,
     daily: { time: '08:00', windowHours: 48, ...daily },
     data: { retentionDays: 7, ...data },
+    mybrief: { pushEnabled: true, ...mybriefCfg },
+    weekly: { ...weeklyCfg },
     hot: { enabled: hot.enabled !== false },
     views,
     bilibili: { cookieConfigured: credSet.has('bilibili') },
@@ -1440,6 +1444,35 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/health/collect-history — 采集心跳历史（T3-2 监控折线图数据源）
+async function handleCollectHistory(req) {
+  const hb = await getSetting('cloud.collect', {});
+  const history = Array.isArray(hb.history) ? hb.history : [];
+  return jsonOk({ lastRunAt: hb.lastRunAt || null, mode: hb.mode || null, history });
+}
+
+// GET /api/brief/history — 早报中心生成历史（T3-2 R1）
+async function handleBriefHistory(req) {
+  const reports = await qAll('SELECT id, generated_at, window_hours, stats FROM daily_reports ORDER BY id DESC LIMIT 7');
+  const daily = reports.map((r) => {
+    let st = {};
+    try { st = JSON.parse(r.stats || '{}'); } catch { /* 坏行 */ }
+    return { id: r.id, generatedAt: r.generated_at, windowHours: r.window_hours,
+             theme: st.theme || null, degraded: !!st.degraded, totalItems: st.totalItems || 0, elapsedMin: st.elapsedMin || null };
+  });
+  const archive = (await getSetting('weekly.archive', [])) || [];
+  const weekly = archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme || null, count: a.count, degraded: !!(a.report && a.report.degraded) })).reverse();
+  const mb = await getSetting('mybrief.latest', null);
+  const digest = await getSetting('reading.digest', null);
+  return jsonOk({
+    daily,
+    weekly,
+    mybrief: mb ? { date: mb.date || null, generatedAt: mb.generatedAt || null, empty: mb.empty || null,
+                    counts: mb.sections ? { top: mb.sections.top?.length || 0, featured: mb.sections.featured?.length || 0, rest: mb.sections.rest?.length || 0 } : null } : null,
+    digest: digest ? { date: digest.date, readCount: digest.readCount, laterCount: digest.laterCount } : null,
+  });
+}
+
 // GET /api/health/source-stats — 云端无 job_queue 历史，用 sources 当前状态近似
 async function handleHealthSourceStats(req) {
   const rows = await qAll(
@@ -1922,6 +1955,8 @@ async function handleSettingsPut(req) {
   if (dailyPatch) { await mergeSetting('daily', dailyPatch); sections.push('daily'); }
   if (body.hot) { await mergeSetting('hot', body.hot); sections.push('hot'); }
   if (body.data) { await mergeSetting('data', body.data); sections.push('data'); }
+  if (body.mybrief) { await mergeSetting('mybrief', body.mybrief); sections.push('mybrief'); }
+  if (body.weekly) { await mergeSetting('weekly', body.weekly); sections.push('weekly'); }
   if (body.views !== undefined) { await setSetting('reader.views', body.views); sections.push('views'); }
   if (body.bilibili && body.bilibili.cookie) {
     await qRun(
@@ -2276,6 +2311,19 @@ async function handleMyBrief(req) {
   return jsonOk({ report, ...(digest ? { digest } : {}) });
 }
 
+
+// DELETE /api/weekly/archive/:issue — 删除单期周刊归档（T3-2 R1；latest 若指向该期则清空 latest）
+async function handleWeeklyArchiveDelete(req, issue) {
+  const archive = (await getSetting('weekly.archive', [])) || [];
+  const next = archive.filter((a) => a.issue !== Number(issue));
+  if (next.length === archive.length) return { status: 404, body: jsonErr(`第 ${issue} 期不存在`) };
+  await setSetting('weekly.archive', next);
+  const latest = await getSetting('weekly.latest', null);
+  if (latest && Number(latest.issue) === Number(issue)) await setSetting('weekly.latest', next[next.length - 1] ? next[next.length - 1].report : null);
+  await auditRecord('weekly.archiveDelete', { detail: { issue } });
+  return jsonOk({ removed: Number(issue), remaining: next.length });
+}
+
 // GET /api/weekly — 精选周刊（20-weekly-picks；公开读，?issue=N 归档查询）
 async function handleWeekly(req) {
   const issue = Number(req.query.issue) || 0;
@@ -2385,6 +2433,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
+    if (path === '/api/health/collect-history') return handleCollectHistory(req);
+    if (path === '/api/brief/history') return handleBriefHistory(req);
     if (path === '/api/queue/pending') return handleQueuePending(req);
     if (path === '/api/queue/stats') return handleQueueStats(req);
     if (path === '/api/queue/failed' || path === '/api/queue/dead') return handleQueueFailed(req);
@@ -2408,6 +2458,9 @@ async function dispatch(req) {
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
+    const weeklyDelMatch = path.match(/^\/api\/weekly\/archive\/(\d+)$/);
+    if (weeklyDelMatch && method === 'DELETE') return handleWeeklyArchiveDelete(req, Number(weeklyDelMatch[1]));
+    if (path === '/api/weekly/archive' && method === 'GET') return jsonOk({ archive: (await getSetting('weekly.archive', [])) || [] });
     if (path === '/api/weekly') return handleWeekly(req);
     if (path === '/api/sources/bilibili-diagnose') return handleBilibiliDiagnose(req);
     if (path === '/api/settings') return handleSettings(req);

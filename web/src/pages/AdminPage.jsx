@@ -15,6 +15,7 @@ const DailySettingsTab = lazy(() => import('../components/DailySettingsTab.jsx')
 const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
+const BriefCenterTab = lazy(() => import('../components/BriefCenterTab.jsx'));
 
 // Tab 切换时的加载占位
 function TabLoader() {
@@ -32,6 +33,7 @@ export default function AdminPage() {
     { id: 'bilibili', label: 'B 站' },
     { id: 'douyin', label: '抖音' },
     { id: 'daily', label: '日报设置' },
+    { id: 'brief', label: '早报中心' },
     { id: 'ai', label: 'AI 能力' },
     { id: 'translate', label: '翻译 Skill' },
     { id: 'data', label: '数据' },
@@ -78,6 +80,7 @@ export default function AdminPage() {
               {tab === 'bilibili' && <BilibiliTab />}
               {tab === 'douyin' && <DouyinTab />}
               {tab === 'daily' && <DailySettingsTab />}
+              {tab === 'brief' && <BriefCenterTab />}
               {tab === 'ai' && <AiSettingsTab />}
               {tab === 'translate' && <TranslateSkillTab />}
               {tab === 'data' && <DataTab />}

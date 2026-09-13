@@ -433,9 +433,16 @@ async function runPool(items, worker, concurrency) {
 // ─── 心跳（/api/status 可读，监控用） ───
 async function writeHeartbeat(mode, stats) {
   try {
+    // T3-2：追加式历史（保留最近 168 条 ≈ 7 天×24），供监控折线图（成功率/入库量趋势）
+    let history = [];
+    try {
+      const prev = await getSetting('cloud.collect', {});
+      if (Array.isArray(prev.history)) history = prev.history.slice(-167);
+    } catch { /* 首次无历史 */ }
+    history.push({ mode, at: nowIso(), stats });
     await qRun(
       'INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)',
-      ['cloud.collect', JSON.stringify({ mode, lastRunAt: nowIso(), stats })]
+      ['cloud.collect', JSON.stringify({ mode, lastRunAt: nowIso(), stats, history })]
     );
   } catch (err) { log(`心跳写入失败（忽略）: ${err.message}`); }
 }

@@ -34,6 +34,39 @@ function snapTime(s) {
   return s.created_at || s.time || s.mtime || null;
 }
 
+
+// T3-2 R2：各表行数占比饼图（conic-gradient 零依赖）
+function PieChart({ tables }) {
+  const entries = Object.entries(tables || {}).filter(([, v]) => v > 0);
+  const total = entries.reduce((n, [, v]) => n + v, 0);
+  if (!total) return null;
+  const COLORS = ['var(--accent)', 'var(--green)', '#8A5A33', '#5B7A9E', '#9E5B7A', '#7A9E5B', '#B08D57', '#6B6B6B'];
+  let acc = 0;
+  const stops = entries.map(([, v], i) => {
+    const from = (acc / total) * 360; acc += v;
+    const to = (acc / total) * 360;
+    return `${COLORS[i % COLORS.length]} ${from}deg ${to}deg`;
+  });
+  return (
+    <div className="mt-4 flex items-center gap-6 flex-wrap">
+      <div
+        className="rounded-full flex-none"
+        style={{ width: 140, height: 140, background: `conic-gradient(${stops.join(',')})` }}
+        role="img" aria-label="各表行数占比饼图"
+      />
+      <div className="flex flex-col gap-1 text-[12px]">
+        {entries.map(([k, v], i) => (
+          <span key={k} className="flex items-center gap-1.5">
+            <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: COLORS[i % COLORS.length] }} />
+            <span className="t-text">{k}</span>
+            <span className="t-muted tabular-nums">{v.toLocaleString()}（{Math.round((v / total) * 100)}%）</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DataTab() {
   const [ready, setReady] = useState(true); // /api/data 是否就绪
   const [stats, setStats] = useState(null);
@@ -373,7 +406,8 @@ export default function DataTab() {
           </div>
         )}
         {!tables && ready && <p className="mt-2 text-xs t-muted">暂无统计数据</p>}
-      </section>
+      
+        <PieChart tables={stats?.tables} /></section>
 
       {/* F6 问题#3: 快照导入模态框 */}
       {importModalOpen && (

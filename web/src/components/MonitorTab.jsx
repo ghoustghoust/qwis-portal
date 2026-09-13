@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
+import CollectTrendChart from './CollectTrendChart.jsx';
 
 function rateColor(rate) {
   if (rate >= 90) return 't-success';
@@ -14,19 +15,22 @@ export default function MonitorTab() {
   const [health, setHealth] = useState(null);
   const [queueStats, setQueueStats] = useState(null);
   const [sourceStats, setSourceStats] = useState(null);
+  const [collectHistory, setCollectHistory] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [h, qs, ss] = await Promise.all([
+      const [h, qs, ss, ch] = await Promise.all([
         api.get('/api/health/status').catch(() => null),
         api.get('/api/queue/stats').catch(() => null),
         api.get('/api/health/source-stats?days=7').catch(() => null),
+        api.get('/api/health/collect-history').catch(() => null),
       ]);
       setHealth(h);
       setQueueStats(qs);
       setSourceStats(ss);
+      setCollectHistory(ch);
     } catch (e) {
       toast('加载监控数据失败: ' + e.message);
     } finally {
@@ -47,6 +51,13 @@ export default function MonitorTab() {
 
   return (
     <div className="space-y-6">
+      {/* T3-2 R2：采集趋势折线图 */}
+      <section className="card p-5 mb-4">
+        <h3 className="text-sm font-semibold t-text">采集趋势（心跳追加式历史）</h3>
+        <div className="mt-3">
+          <CollectTrendChart history={collectHistory?.history} />
+        </div>
+      </section>
       {/* 健康概览 */}
       <section className="card p-5">
         <h3 className="text-sm font-semibold t-text">健康概览</h3>

@@ -554,7 +554,9 @@ export default function AlertsTab() {
           </div>
         </div>
         {log.length > 0 ? (
-          <div className="card divide-y divide-[var(--border)]">
+          <div className="card divide-y divide-[var(--border)] relative">
+            {/* T3-2 R2：时间线视觉（左缘竖线 + 行首圆点） */}
+            <div className="absolute left-[26px] top-3 bottom-3 w-px" style={{ background: 'var(--border)' }} aria-hidden />
             {pageLog.map((r, i) => (
               <div key={r.at + i} className="px-4 py-2.5 relative group">
                 {/* 行操作按钮（悬停时显示） */}
@@ -568,6 +570,7 @@ export default function AlertsTab() {
                 </button>
                 
                 <div className="flex items-start gap-2 flex-wrap">
+                  <span className="flex-none w-2 h-2 rounded-full mt-1.5 -ml-1" style={{ background: 'var(--accent)' }} aria-hidden />
                   <div className="flex-1 min-w-0">
                     {/* 格式化时间显示（主）+ 相对时间（title 悬停） */}
                     <span 
