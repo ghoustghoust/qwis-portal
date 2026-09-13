@@ -68,8 +68,16 @@ fixtures 里加未来 pubDate 用例，断言入库后 `published_at <= now`。
 ### 修复方案（`api/_ai.js`）
 新增 `sanitizeTranslationReply(reply, draft)`：
 1. **提取**：若回复含 `译文：`/`最终稿：`/`## 译文` 等标记 → 取最后一个标记之后的内容；
-2. **拒绝**：若回复以分析性文本开头（`用户提供…`/`让我…`/`I need…`/`The user…` 等，复用 generateTheme 的 isAnalysis 模式扩展）且无译文标记 → **回退上一轮草稿**（草稿经轮 1「只输出译文」约束，天然干净）；
-3. 应用点：`refineWithGlossary` 与 `refinePass` 的成功分支 + `translatePipeline` 轮 1 输出兜底。
+2. **拒绝**：思维链式回复（`isThinkingLikeReply`：元任务起始话术/编号加粗分析结构/`**Role:**` 字段三类特征）→ **回退上一轮草稿**；
+3. 应用点：`refineWithGlossary` 与 `refinePass` 的成功分支 + `translatePipeline` 轮 1 输出兜底 + 标题提取护栏。
+
+**⏩ 二轮强化（上线后线上复测发现漏网形态）**：首轮清洗只覆盖中文指令回显，英文思维链
+`Here's a thinking process: 1. **Analyze User Input:** …` 整段入库且首行被当标题。追加：
+- `translateText` L1：思维链输出**视为本次失败** → 自动降级 Bing/Google 机翻（保证永不入库）；
+- `isThinkingLikeReply` 独立导出供标题提取护栏复用；
+- 测试 F3-5（思维链识别）/F3-6（正常英文开头译文不误伤）。
+> 教训：推理模型的污染形态不止一种，清洗规则必须「标记提取 → 思维链拒绝 → 机翻降级」三层兜底，
+> 且验收必须包含**真实模型输出**的线上复测，单测 fixture 过了≠线上干净。
 
 ### 存量修复
 扫描 `translated_content` 命中污染特征（`要求我%改进译文`/`译文草稿`/`四个维度检查` 等）→ 置 NULL 重新入队翻译；本次实测命中含 #353996。
