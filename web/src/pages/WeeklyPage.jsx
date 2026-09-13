@@ -52,10 +52,10 @@ export default function WeeklyPage() {
               <header>
                 <div className="text-[11px] tracking-widest t-accent font-medium">精选周刊 · 本周必看 {report.items?.length || 0} 条</div>
                 <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
-                  {report.coverTheme || `第 ${report.issue} 期`}
+                  {report.coverTheme ? `第 ${report.issue} 期——${report.coverTheme}` : `第 ${report.issue} 期`}
                 </h1>
                 <div className="mt-1 text-[13px] t-muted">
-                  {report.coverTheme ? `第 ${report.issue} 期 · ` : ''}{report.dateStart} ~ {report.dateEnd}
+                  {report.coverTheme ? `本周必看 ${report.items?.length || 0} 条 · ` : ''}{report.dateStart} ~ {report.dateEnd}
                 </div>
                 {report.theme && (
                   <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted">{report.theme}</p>

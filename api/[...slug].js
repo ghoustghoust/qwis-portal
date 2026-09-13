@@ -1314,6 +1314,7 @@ async function handleAlertsConfig(req) {
     channels,
     events: cfg.events || {},
     cooldownMin: cfg.cooldownMin || 120,
+    recentLog: Array.isArray(cfg.recentLog) ? cfg.recentLog : [], // B5：管理台报警记录直接随 config 返回
     eventMeta: {
       fuse: '源熔断', stall: '采集停滞', queue: '队列异常', error: '系统错误'
     },

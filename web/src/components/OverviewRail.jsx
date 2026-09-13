@@ -13,15 +13,21 @@ const TIPS = [
   '热榜类内容在「热点榜」页浏览，不占这里的未读数',
 ];
 
+// B12：模块级缓存——切页回来立即命中（60s TTL），不再重新拉取
+let _ovCache = { data: null, ts: 0 };
+const OV_TTL = 60e3;
+
 export default function OverviewRail() {
-  const [ov, setOv] = useState(null);
+  const [ov, setOv] = useState(_ovCache.data && Date.now() - _ovCache.ts < OV_TTL ? _ovCache.data : null);
 
   useEffect(() => {
     let cancelled = false;
+    if (_ovCache.data && Date.now() - _ovCache.ts < OV_TTL) return;
     api
       .get('/api/status')
       .then((d) => {
-        if (!cancelled) setOv(d?.overview || null);
+        _ovCache = { data: d?.overview || null, ts: Date.now() };
+        if (!cancelled) setOv(_ovCache.data);
       })
       .catch(() => {});
     return () => {

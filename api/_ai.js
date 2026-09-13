@@ -395,7 +395,7 @@ async function generateWeeklyMagazine(items) {
     .join('\n');
 
   const r1 = await aiChat(
-    [{ role: 'user', content: `你是科技周刊主编。把下面 ${items.length} 条本周精选组织成 3-5 条递进主线。只输出严格 JSON（不要解释）：\n{"coverTheme":"本期主题词（2-6字，如：可托付的智能）","storylines":[{"title":"主线标题（观点式，≤20字）","itemNumbers":[1,3,7],"narrative":"本线叙事（≤100字，说明这条线为什么重要、递进关系）"}]}\n\n每条 itemNumbers 至少 2 个、全部条目尽量被覆盖、编号不得越界。\n\n## 本周精选\n\n${list}` }],
+    [{ role: 'user', content: `你是科技周刊主编。把下面 ${items.length} 条本周精选组织成 3-5 条递进主线。只输出严格 JSON（不要解释）：\n{"coverTheme":"本期主题（4-12字完整可读短语，让读者一看就懂本周在讲什么，如：AI减速与全球震荡、可托付的智能）","storylines":[{"title":"主线标题（观点式，≤20字）","itemNumbers":[1,3,7],"narrative":"本线叙事（≤100字，说明这条线为什么重要、递进关系）"}]}\n\n每条 itemNumbers 至少 2 个、全部条目尽量被覆盖、编号不得越界。\n\n## 本周精选\n\n${list}` }],
     { kind: 'theme', maxTokens: 3200, timeoutMs: 90000 }
   );
   if (!r1.ok) return null;
@@ -418,7 +418,7 @@ async function generateWeeklyMagazine(items) {
       .filter((sl) => sl.items.length >= 2)
       .slice(0, 5);
     if (!storylines.length) return null;
-    magazine = { coverTheme: String(j.coverTheme).slice(0, 12), storylines };
+    magazine = { coverTheme: String(j.coverTheme).slice(0, 20), storylines };
   } catch { return null; }
 
   magazine.editorNote = await generateWeeklyEditorNote(items, magazine.storylines);

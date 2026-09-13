@@ -283,6 +283,13 @@ function getAdapter(type) {
   }
 }
 
+
+// B6（2026-09-14）：RSS 条目链接为 YouTube（含 shorts）时跳过——官方博客混推视频、
+// 无正文，被当文章抓会导致"点开没内容"。三处采集实现同步（坑 #9）。
+function isYouTubeLink(url) {
+  return /(?:youtube\.com\/(?:shorts|watch|embed)|youtu\.be\/)/i.test(String(url || ''));
+}
+
 // ─── 落库（按源聚合 batch，减少 Turso 往返） ───
 // 未来时间钳制（2026-09-13 F2）：openrss 等网页转 RSS 桥接会解析出未来 pubDate（实测 2026-09-14
 // 整点合成值），入库前晚于当前 5min 以上一律钳为 now，避免排序霸榜+前端显示未来日期
@@ -298,7 +305,7 @@ async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) 
   const db = getDb();
   const now = nowIso();
   const stmts = [];
-  for (const a of articles) {
+  for (const a of articles.filter((x) => !isYouTubeLink(x.url))) { // B6：YouTube 链接不入文章流
     const score = Number(a.score);
     const wc = textLen(a.content_html);
     stmts.push({

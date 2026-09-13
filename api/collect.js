@@ -264,6 +264,12 @@ function getAdapter(type) {
   }
 }
 
+
+// B6（2026-09-14）：RSS 条目链接为 YouTube 时跳过（与 tools/collect-turso.js 同步，坑 #9）
+function isYouTubeLink(url) {
+  return /(?:youtube\.com\/(?:shorts|watch|embed)|youtu\.be\/)/i.test(String(url || ''));
+}
+
 // ─── 数据落库 ───
 // 未来时间钳制（2026-09-13 F2，与 tools/collect-turso.js、server/services/collectors/repo.js 三处同步）
 function clampPubDate(iso, now) {
@@ -278,7 +284,7 @@ async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) 
   const db = getDb();
   let added = 0;
   const now = nowIso();
-  for (const a of articles) {
+  for (const a of articles.filter((x) => !isYouTubeLink(x.url))) { // B6：YouTube 链接不入文章流
     const score = Number(a.score);
     const wc = textLen(a.content_html);
     try {

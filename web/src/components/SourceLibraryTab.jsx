@@ -350,8 +350,10 @@ export default function SourceLibraryTab() {
                     <td className="py-2 px-1.5">
                       <button
                         className={`switch ${s.enabled ? 'on' : ''}`}
+                        style={s.type === 'wemp' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
+                        disabled={s.type === 'wemp'}
                         onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}
-                        title={s.enabled ? '点击停用' : '点击启用'}
+                        title={s.type === 'wemp' ? '已退役：该源采集引擎已下线，无法重新启用——请改用 wechat2rss 新源' : (s.enabled ? '点击停用' : '点击启用')}
                       />
                     </td>
                   </tr>
