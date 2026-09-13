@@ -243,7 +243,9 @@ async function handleVideos(req) {
   return jsonOk({ items: rows });
 }
 
-// GET /api/hot — 支持 tab/category/q/source 筛选 + 游标分页
+// GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
+// tab: all(全部动态=自有源+热榜全量) | featured(精选=六维≥70 + 热榜高热度) | hotlist(纯热搜子视图)
+// 分类=tags 子串匹配；q/source/cursor 沿用；时间窗默认 7 天（days 可调，上限 30）
 async function handleHot(req) {
   const q = req.query;
   const tab = q.tab || 'all';
@@ -251,24 +253,25 @@ async function handleHot(req) {
   const searchQ = (q.q || '').trim();
   const source = q.source || '';
   const PAGE_SIZE = 200;
+  const days = Math.min(Number(q.days) || 7, 30);
 
   const conds = [];
   const args = [];
 
   if (tab === 'featured') {
-    // 精选：高分热榜条目（score > 10000 或标记 focus）
-    conds.push("s.type='hotlist'");
-    conds.push('(a.score > 10000 OR COALESCE(s.focus,0)=1)');
-    if (category) {
-      conds.push('a.category=?');
-      args.push(category);
-    }
-  } else {
-    // 全部动态：所有热榜源条目
+    // 精选：自有源六维高分 + 热榜高热度（热度值量级与六维分不同，分开设门槛）
+    // CAST 防御：库中存在 score='null' 文本行（TEXT 与数字比较按类型序恒真，坑 #25 同族）
+    conds.push("((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 70) OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))");
+  } else if (tab === 'hotlist') {
     conds.push("s.type='hotlist'");
   }
+  // tab=all：全部源全部内容，无类型限制
 
-  // 全部动态 Tab 筛选
+  // 真实分类过滤（T5-1：tags 子串匹配，如 模型→模型发布/AI模型）
+  if (category) {
+    conds.push('a.tags LIKE ?');
+    args.push(`%${category}%`);
+  }
   if (searchQ) {
     conds.push('(a.title LIKE ? OR a.summary LIKE ?)');
     args.push(`%${searchQ}%`, `%${searchQ}%`);
@@ -278,9 +281,9 @@ async function handleHot(req) {
     args.push(source);
   }
 
-  // 时间窗口：近 3 天（参数化 ISO，命中 idx_articles_pubco；原 datetime('now') 逐行计算且与 'T' 格式文本序错位）
+  // 时间窗口：默认 7 天（覆盖回溯，G5；参数化命中 idx_articles_pubco）
   conds.push('a.published_at >= ?');
-  args.push(new Date(Date.now() - 3 * 86400e3).toISOString());
+  args.push(new Date(Date.now() - days * 86400e3).toISOString());
 
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
 
@@ -295,12 +298,13 @@ async function handleHot(req) {
     }
   }
 
-  // 排序：精选按热度；全部动态按全局时间序（2026-09-11 修复：原来按 score 排导致同源成块）
+  // 排序：精选=自有源高分优先（热榜热度百万量级会压制六维分，分列排序）+ 时间序；
+  //       全部动态按全局时间序（2026-09-11 修复：原来按 score 排导致同源成块）
   const orderBy = tab === 'featured'
-    ? 'a.score DESC NULLS LAST, a.published_at DESC, a.id DESC'
+    ? "(s.type='hotlist') ASC, CAST(a.score AS REAL) DESC NULLS LAST, a.published_at DESC, a.id DESC"
     : 'a.published_at DESC, a.id DESC';
   const rows = await qAll(
-    `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.published_at, a.category, a.later, s.name AS source_name
+    `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
      ${where}${cursorCond}
      ORDER BY ${orderBy} LIMIT ?`,
