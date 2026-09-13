@@ -48,7 +48,7 @@ const countByStatus = db.prepare(`
 
 const fetchRetryable = db.prepare(`
   SELECT * FROM job_queue
-  WHERE status = 'failed' AND attempts < retries
+  WHERE status = 'failed'
     AND (completed_at IS NULL OR completed_at <= ?)
   ORDER BY priority DESC, id ASC
   LIMIT 10
@@ -196,7 +196,9 @@ class TaskQueue {
     const now = Date.now();
     let resetCount = 0;
     let deadCount = 0;
-    const jobs = fetchRetryable.all(now); // 取最近 10 条 failed 候选
+    // 2026-09-12 修复：completed_at 是 ISO 字符串，必须按字符串比较（原先传毫秒数字，
+    // SQLite 类型序 INTEGER < TEXT 恒假 → 重试永不发生）；超上限 dead 判定移入循环内（原 WHERE 预过滤使其不可达）
+    const jobs = fetchRetryable.all(new Date(now).toISOString());
     for (const job of jobs) {
       // 超过重试上限 → dead
       if (job.attempts >= job.retries) {

@@ -88,11 +88,13 @@ test('P6-3: 超过重试上限的任务不再被 retryFailed 重置', async () =
   assert.equal(stats.failed, 1);
 
   // retryFailed 不应重置这个任务（attempts >= retries）
-  const resetCount = await q.retryFailed();
-  assert.equal(resetCount, 0);
+  // 2026-09-12 语义对齐：超上限任务标记为 dead（实现语义，见 taskQueue.js retryFailed）
+  const r = await q.retryFailed();
+  assert.equal(r.reset, 0);
+  assert.equal(r.dead, 1);
 
   const afterRetry = db.prepare("SELECT status FROM job_queue WHERE type='p6_retry_limit'").get();
-  assert.equal(afterRetry.status, 'failed');
+  assert.equal(afterRetry.status, 'dead');
 });
 
 // ─── 对抗性场景 4：未知任务类型容错 ─────────────────────────────────────────

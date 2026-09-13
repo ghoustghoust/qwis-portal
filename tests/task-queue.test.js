@@ -74,8 +74,10 @@ test('TQ-3: 失败重试（retryFailed 重置 failed → pending）', async () =
   assert.equal(attempts, 1);
 
   // retryFailed 将 failed 重置为 pending
-  const resetCount = await q.retryFailed();
-  assert.equal(resetCount, 1);
+  // 2026-09-12 语义对齐：返回 {reset, dead} 对象（实现已演进：超上限 dead 化+指数退避）
+  const r = await q.retryFailed();
+  assert.equal(r.reset, 1);
+  assert.equal(r.dead, 0);
 
   stats = q.getStats();
   assert.equal(stats.pending, 1);
@@ -236,8 +238,9 @@ test('TQ-11: 重试退避（retryDelayMs 未到不重置）', async () => {
   q.enqueue('test_backoff', {});
   await q.process();
   assert.equal(q.getStats().failed, 1);
-  const resetCount = await q.retryFailed(); // 刚失败，退避期内不应重置
-  assert.equal(resetCount, 0);
+  const r = await q.retryFailed(); // 刚失败，退避期内不应重置（60s 退避未过）
+  assert.equal(r.reset, 0);
+  assert.equal(r.dead, 0);
   assert.equal(q.getStats().failed, 1);
 });
 
