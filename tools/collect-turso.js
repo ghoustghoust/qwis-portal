@@ -705,6 +705,9 @@ async function runWeekly() {
     }
     consecFail = 0;
     analyzed.push({ ...a, ...r });
+    if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
+      try { await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(r.totalScore), a.id]); } catch { /* 回写失败不阻断 */ }
+    }
   }
   log(`深析完成 ${analyzed.length} 篇，终选 top 20`);
 
@@ -846,6 +849,17 @@ async function buildReadingDigest() {
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('reading.digest', ?)", args: [JSON.stringify(digest)] });
   log(`阅读足迹: 今日读 ${readCount} 篇，稍后读 ${laterCount} 条`);
   return digest;
+}
+
+
+// T4-2 R4 配套（2026-09-14）：六维评分回写 articles.score——此前评分只存快照 JSON，
+// 热点榜精选/权威加权/score_min 全部无米下锅。视频条目（'v' 前缀）跳过。
+async function persistScores(analyzed) {
+  const rows = (analyzed || []).filter((a) => typeof a.id === 'number' && Number.isFinite(a.totalScore));
+  for (const a of rows) {
+    await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(a.totalScore), a.id]);
+  }
+  return rows.length;
 }
 
 async function runDailyAi() {
@@ -1050,6 +1064,8 @@ async function runDailyAi() {
   );
   log(`daily-ai 早报生成完成: ${sections.length} 栏 ${allItems.length} 条, 耗时 ${stats.elapsedMin}min, 主题: ${theme || '(无)'}`);
   await writeHeartbeat('daily-ai', stats);
+  // 六维评分回写 articles.score（热点榜精选/权威加权的数据源）
+  try { const n = await persistScores(analyzed); if (n) log(`六维评分回写 ${n} 条 → articles.score`); } catch (e) { log(`评分回写失败（不阻断）: ${e.message}`); }
   // 19-my-brief：复用深析池生成「我的早报」（零额外深析调用）
   try { await runMyBrief(analyzed); } catch (err) { log(`mybrief 生成失败（已隔离）: ${err.message}`); }
   // T3-1 R7：阅读足迹小结
@@ -1115,7 +1131,12 @@ async function runMyBrief(analyzed) {
   log(`mybrief: 订阅源窗口内 ${subArticles.length} 篇（复用池 ${minePool.length} / 待补析 ${toAnalyze.length}）`);
   for (const a of toAnalyze) {
     const r = await _ai.analyzeArticle({ ...a, source_name: a.source_name });
-    if (r) minePool.push({ ...a, ...r });
+    if (r) {
+      minePool.push({ ...a, ...r });
+      if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
+        try { await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(r.totalScore), a.id]); } catch { /* 回写失败不阻断 */ }
+      }
+    }
   }
   // R5 行为画像加权：条目标签命中画像 Top5 → 每命中 +8（上限 +24，显式行为驱动个性化排序）
   let boostN = 0;

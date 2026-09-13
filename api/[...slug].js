@@ -261,7 +261,7 @@ async function handleHot(req) {
   if (tab === 'featured') {
     // 精选：自有源六维高分 + 热榜高热度（热度值量级与六维分不同，分开设门槛）
     // CAST 防御：库中存在 score='null' 文本行（TEXT 与数字比较按类型序恒真，坑 #25 同族）
-    conds.push("((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 70) OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))");
+    conds.push("((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60) OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))");
   } else if (tab === 'hotlist') {
     conds.push("s.type='hotlist'");
   }

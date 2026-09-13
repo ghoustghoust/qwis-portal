@@ -150,6 +150,7 @@ export default function HotPage() {
   const [failed, setFailed] = useState(false); // 接口未就绪
   const [detail, setDetail] = useState(null); // 打开详情的条目
   const [collapsedMap, setCollapsedMap] = useState({}); // 日期分组折叠状态
+  const [topEvents, setTopEvents] = useState([]); // T5-1 样图：页首「当前热点」Top5
   const boxRef = useRef(null);
   const loadingRef = useRef(false);
 
@@ -182,6 +183,11 @@ export default function HotPage() {
       .catch(() => setSources([]));
   }, [tab]);
 
+  // 当前热点 Top5（跨源事件聚合 top5）
+  useEffect(() => {
+    api.get('/api/hot/events').then((d) => setTopEvents((d?.events || []).slice(0, 5))).catch(() => {});
+  }, []);
+
   // 全部动态搜索防抖
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 350);
@@ -199,7 +205,7 @@ export default function HotPage() {
           `/api/hot${qs({
             tab,
             category: category || undefined, // T5-1：featured/all 都支持真实分类过滤
-            q: tab === 'all' ? qDebounced || undefined : undefined,
+            q: qDebounced || undefined, // T5-1：featured/all 都支持搜索
             source: tab === 'all' ? source || undefined : undefined,
             cursor: cur || undefined,
           })}`
@@ -306,31 +312,59 @@ export default function HotPage() {
             ))}
             <div className="flex-1" />
             {tab === 'all' && (
-              <>
-                <select
-                  className="input !w-44"
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  title={t('hot.sourceFilter')}
-                >
-                  <option value="">{t('hot.sourceAll')}</option>
-                  {sources.map((s) => (
-                    <option key={s.name} value={s.name}>
-                      {s.name}
-                      {s.count != null ? `（${s.count}）` : ''}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="input !w-56"
-                  placeholder={t('hot.searchPlaceholder')}
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                />
-              </>
+              <select
+                className="input !w-44"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                title={t('hot.sourceFilter')}
+              >
+                <option value="">{t('hot.sourceAll')}</option>
+                {sources.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {s.name}
+                    {s.count != null ? `（${s.count}）` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+            {tab !== 'events' && (
+              <input
+                className="input !w-56"
+                placeholder={t('hot.searchPlaceholder')}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
             )}
           </div>
         </header>
+
+        {/* 当前热点 Top5（T5-1 样图：页首排名卡，点击进完整榜单） */}
+        {tab !== 'events' && topEvents.length > 0 && (
+          <div className="flex-none t-surface border-b t-border px-6 py-3">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium t-text">当前热点</span>
+              <span className="flex-1" />
+              <button className="text-xs t-muted hover:t-text hover:underline" onClick={() => setTab('events')}>
+                完整榜单 →
+              </button>
+            </div>
+            <div className="space-y-1">
+              {topEvents.map((ev, i) => (
+                <button
+                  key={ev.rank ?? i}
+                  className="w-full text-left flex items-center gap-2.5 text-[13px] px-2 py-1.5 rounded hover:t-surface2"
+                  onClick={() => setTab('events')}
+                >
+                  <span className="flex-none w-5 text-right font-bold tabular-nums t-accent">{i + 1}</span>
+                  <span className="flex-1 min-w-0 truncate t-text">{ev.title}</span>
+                  {(ev.count ?? ev.sources) != null && (
+                    <span className="flex-none text-[11px] t-muted tabular-nums">{ev.count ?? ev.sources} 源</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 精选：分类胶囊（2026-09-05 视觉精修：统一 .pill/.pill.on） */}
         {tab === 'featured' && (
