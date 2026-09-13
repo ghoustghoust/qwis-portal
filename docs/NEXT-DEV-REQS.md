@@ -142,6 +142,8 @@
 
 ## T4-2 源治理与反过载（依赖 specs/23 七层设计）
 
+> 进度（2026-09-13 深夜四）：R1 查重合并 ✅ + R2 failover ✅ + R3 频率自适应 ✅（9c4f21e；R3 需对源打 autoInterval 标记生效，明晨 04:13 首跑）；R4 早报管线七层防御接入（L2 事件聚类默认化/L3 配额/L5 权威加权/MMR）→ 下一批
+
 - **R1 源合并**：同 URL 已去重；追加"同内容源"检测——同域名+同名或同 feed 指纹的源合并（保留一个，其余 enabled=0 标 `extra.mergedInto`）。
 - **R2 源并联 failover**：允许把 N 个源标为同一 failover 组（`extra.failoverGroup`），主源熔断时 runner 自动用组内备用源，全部挂才报熔断。
 - **R3 频率自适应**：按源实测出文频率自动调 intervalMin（腹泻源降频聚合、低频源放宽），替代静态分层（specs/23 L1）。

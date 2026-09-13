@@ -39,6 +39,16 @@
 
 ---
 
+## 修复记录（2026-09-13 深夜四，第 5 批 T4-2 源治理：commit 9c4f21e/99caab6）
+
+| 项 | 内容 | 验证 |
+|---|---|---|
+| T4-2 R2 | failover：同 failoverGroup 只采主源（备源跳过省重复抓取），主失败顺序试备源（≤10 组） | 部署后首条心跳 total=110 全流程正常 |
+| T4-2 R1 | 查重合并：POST /api/sources/dedupe（dryRun/apply；URL 归一/同名同域两组规则；保留 启用>fail低>id老；mergedInto 标记且自动恢复跳过）+ 源库「查重合并」按钮 | 线上 dryRun 实测 14 组重复（Business Insider 等），未授权 401 |
+| T4-2 R3 | 频率自适应：cleanup 对 autoInterval===true 的源按近 14 天出文频率调 intervalMin（60/120/240/720 四档） | 明晨 04:13 首跑（当前无源开启，批量源可按需打开） |
+| 对抗 | 心跳历史瘦身（failures 内嵌全 source 行会膨胀数 MB → 只留 id/name/type/errMsg） | smoke 20/20 |
+| 观察 | 首条心跳：110 源中 36 失败（25 个热榜 HTTP 500 为瞬时 + 新导入源若干 404/403 + xgo.ing 400）——T3-5 观察继续 | collect-history |
+
 ## 修复记录（2026-09-13 深夜三，第 4 批 T3-2：commit 243a23e）
 
 | 项 | 内容 | 验证 |
