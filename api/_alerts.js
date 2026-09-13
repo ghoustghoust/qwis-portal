@@ -225,6 +225,11 @@ async function dispatch(event, { sourceId, sourceType, title, text } = {}) {
 // ─── 事件入口（F4 可诊断文案） ───
 async function sourceAlert(source, failCount, errMsg) {
   const { category, advice } = classifyError(errMsg, source.type);
+  // 2026-09-13：反爬类（YouTube 假 404/500）不发 source_error 逐条报警——可自愈且量大成灾（93 源/轮轰炸实证），
+  // 只在真正熔断（failCount>=10 由阈值控制）时以 frozen_digest 汇总出现
+  if (category === '反爬封锁' && failCount < 10) {
+    return { sent: 0, skipped: 'anti-bot-transient' };
+  }
   if (failCount >= 3) {
     return dispatch('source_paused', {
       sourceId: source.id, sourceType: source.type,
@@ -263,10 +268,10 @@ function aiFailed(detail) {
   });
 }
 
-// F5 熔断不沉默：每日汇总当前熔断待处理源
+// F5 熔断不沉默：每日汇总当前熔断待处理源（排除 localhost 本地自建源——云端不可达是设计使然，不算待处理）
 async function frozenDigest() {
   const rows = await qAll(
-    "SELECT id, name, type, fail_count, extra FROM sources WHERE fail_count >= 3 AND enabled=0 ORDER BY fail_count DESC"
+    "SELECT id, name, type, fail_count, extra, url FROM sources WHERE fail_count >= 3 AND enabled=0 AND url NOT LIKE 'http://127.%' AND url NOT LIKE 'http://localhost%' ORDER BY fail_count DESC"
   );
   if (!rows.length) return { sent: 0, skipped: 'no-frozen' };
   const lines = rows.slice(0, 20).map((s) => {

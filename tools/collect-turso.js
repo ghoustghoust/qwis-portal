@@ -367,6 +367,11 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType) {
 async function collectOne(source, stats) {
   const adapter = getAdapter(source.type);
   if (!adapter) { stats.skipped++; return; }
+  // 本地自建源（127.0.0.1/localhost）在云端 runner 永远不可达，直接跳过不计失败（防熔断误伤）
+  if (/^https?:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(source.url || '')) {
+    stats.skipped++;
+    return;
+  }
 
   let extra = {};
   try { extra = JSON.parse(source.extra || '{}'); } catch { /* 无 extra */ }
@@ -449,11 +454,26 @@ async function runCollect() {
 async function postRunAlerts(stats) {
   try {
     const alerts = require('../api/_alerts');
-    // 逐失败源（failCount 重查以获得最新值）
-    for (const f of stats.failures || []) {
-      const row = await qOne('SELECT fail_count FROM sources WHERE id=?', [f.source.id]);
-      const failCount = row ? row.fail_count : 1;
-      if (failCount >= 2) await alerts.sourceAlert({ ...f.source }, failCount, f.errMsg);
+    const failures = stats.failures || [];
+    // 2026-09-13：批量失败聚合——单轮 >5 个源失败时发一条汇总，不逐条轰炸（93 源/轮实证）
+    if (failures.length > 5) {
+      const byCat = {};
+      for (const f of failures) {
+        const { category } = alerts.classifyError(f.errMsg, f.source.type);
+        byCat[category] = (byCat[category] || 0) + 1;
+      }
+      const breakdown = Object.entries(byCat).map(([c, n]) => `${c} ${n} 个`).join('，');
+      await alerts.dispatch('source_error', {
+        title: `⚠️ 本轮采集 ${failures.length} 个源失败`,
+        text: `分类统计：${breakdown}\n反爬类（YouTube 假 404/500）会随 IP 轮换自愈，无需逐条处理；真死源见每日熔断汇总。`,
+      });
+    } else {
+      // 少量失败逐条报（反爬类在 sourceAlert 内部已抑制）
+      for (const f of failures) {
+        const row = await qOne('SELECT fail_count FROM sources WHERE id=?', [f.source.id]);
+        const failCount = row ? row.fail_count : 1;
+        if (failCount >= 2) await alerts.sourceAlert({ ...f.source }, failCount, f.errMsg);
+      }
     }
     // 停滞检测：本轮有到期源但 0 成功，且近 1h 无任何成功采集
     if (stats.total > 0 && stats.success === 0) {
