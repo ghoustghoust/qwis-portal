@@ -124,3 +124,32 @@ fixtures 里加未来 pubDate 用例，断言入库后 `published_at <= now`。
 - YouTube 55 源熔断：反爬假 404，阈值 10 是既有决策；彻底解需住宅代理 RSSHub（P1-14 挂案）
 - smart 排序本地端数值游标的同型隐患：本轮顺手绑定 Number 对齐（低风险）
 - 代理端口 7890→12000 的文档修订：随用户确认后的全量文档同步执行
+
+---
+
+## 9. 验证任务执行记录（AI 配额恢复后，2026-09-13 下午）
+
+| 任务 | 结果 | 证据 |
+|---|---|---|
+| AI 配额 | ✅ 恢复（期间 05:17~06:02 再次超限触发 ai_failed 报警，~06:13 自愈） | Agnes 直连 200 |
+| daily-ai 全量 | ✅ 3 栏 27 条（深析 43 篇后预算截断，部分降级）；今晚 00:32 定时任务会以完整预算重跑 | collect-turso daily-ai 日志 |
+| 我的早报（今天） | ✅ 先标 8 个 focus 订阅源（The Verge/HN/量子位/36氪/财联社/第一财经/新华社/半导体行业观察，用户可在源库改）→ 生成 top3/featured7/rest N，飞书推送 1/1 成功；导语三轮均被推理模型污染 → 已强化 generateTheme（形状校验+一票否决+null 语义），污染导语清空不渲染 | /mybrief/ 页面 + 飞书 |
+| 精选周刊（本周首期） | ⚠️ 第 1 期已生成落库（20 条，归档 1 期，页面正常含降级标注），但为**降级版**（按热度排序）——深析阶段 Agnes 二度超限连败 3 次触发降级链。首跑 `Fatal: terminated`（2000 行×content_html 一次拉取超 libsql HTTP 限制）已修复。**周五 18:03 定时任务会生成完整 AI 版第 2 期**；如需重出干净的 AI 版第 1 期，清空 `weekly.latest`+`weekly.archive` 后在配额窗口内重跑 `node tools/collect-turso.js weekly` | weekly-run2.log + /weekly/ 页面 |
+| eval-filter 黄金集 | ⚠️ **本轮结果无效**：20 条全部 50 分（=「解析失败放行」兜底分），配额高压下模型输出不可解析。**需在配额空闲窗口重跑**（建议明早 08:00 前，避开 00:32 daily-ai 与 15min translate 的配额占用） | eval-filter 输出 |
+| translate 线上直调 | ✅ POST /api/articles/353996/translate 通；重译产物干净（英文思维链形态已在二轮强化中堵住） | API 实测 |
+
+## 10. ⚠️ 本轮意外事故：npm test 清空线上订阅配置（已修复）
+
+**cloud 回归测试直接打真实 Turso 是既定模式，但 `regression-cloud-settings` 测 9 的
+`focusSourceIds` 全量替换语义会 `UPDATE sources SET focus=CASE...ELSE 0 END` 写整表，
+旧"恢复"只复位 2 个测试 id → 跑一次测试 = 清空用户全部 focus 订阅源。**
+本轮实测撞上（04:42 审计日志 `daily.settings {"keys":["focusSourceIds"]}`）。
+修复：测试前快照全部 focus=1 源，finally 中用同一条 CASE 语句精确还原；
+验证 = 测试前后 focus=1 集合断言一致。
+**教训：凡"全量替换/整表 UPDATE"语义的测试，恢复逻辑必须覆盖同 Zoo 的全部行，不能只测自己摸过的行。**
+
+## 11. 运维能力增量
+
+- `node tools/collect-turso.js mybrief`：手动重生成我的早报（独立分析订阅源窗口 ~30 篇，约 15-20 min，不必跑 90 min 的 daily-ai 全管线）
+- weekly/daily-ai 大窗口查询一律不带 content_html，深析按 id 单取（libsql HTTP 大 payload 会被掐断）
+- 本机代理实际端口 12000（Clash 面板），`.env` HTTPS_PROXY 已改；git 已配置 `http.proxy=127.0.0.1:12000`
