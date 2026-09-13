@@ -39,6 +39,14 @@
 
 ---
 
+## 修复记录（2026-09-13 深夜三，第 4 批 T3-2：commit 243a23e）
+
+| 项 | 内容 | 验证 |
+|---|---|---|
+| T3-2 R1 | 早报中心 Tab：生成历史表（7 天三报+足迹）、推送开关（settings PUT/GET 补 mybrief/weekly 分区）、周刊归档删除（DELETE /api/weekly/archive/:issue 专用端点+审计）、手动生成命令 | 浏览器实测完整渲染 ✅ |
+| T3-2 R2 | 心跳追加式（168 条）+ /api/health/collect-history + MonitorTab 折线图（SVG 双线）+ DataTab conic-gradient 饼图 + AlertsTab 时间线视觉 | 端点授权/结构实测 ✅，折线图心跳积累 ~1h 后出图 |
+| 对抗 | brief/history 未授权 401 ✅；DELETE 不存在期 404 ✅；PUT mybrief 回读 ✅；archive 独立键写回会清库 → 专用端点（代码评审发现） | 实测 |
+
 ## 修复记录（2026-09-13 深夜二，第 3 批次批：commit 4aa76d2）
 
 | 项 | 内容 | 验证 |
