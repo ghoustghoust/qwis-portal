@@ -1,3 +1,5 @@
+> 📦 本文档已于 2026-09-13 归档：所载变更均已完结并上线，权威功能状态见 `docs/FEATURE_MATRIX.md`，本轮交付全记录见 `docs/changes/2026-09-13-reader-pagination-and-content-fixes.md`。
+
 # 交付文档（2026-09-13 凌晨紧急修复 + 全周期状态）
 
 > 覆盖：白屏修复部署 + 报警轰炸治理 + localhost 源处理 + 全周期交付状态

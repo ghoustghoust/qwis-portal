@@ -1,3 +1,5 @@
+> 📦 本文档已于 2026-09-13 归档：所载变更均已完结并上线，权威功能状态见 `docs/FEATURE_MATRIX.md`，本轮交付全记录见 `docs/changes/2026-09-13-reader-pagination-and-content-fixes.md`。
+
 # 变更记录：云端报警引擎（15-cloud-alerts）
 
 > 日期：2026-09-12 ｜ 类型：功能移植 + 质量修复（P0-3）｜ 流程：mew-spec 四件套

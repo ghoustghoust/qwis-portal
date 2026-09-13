@@ -1,98 +1,59 @@
 # 全网情报系统 · 文档索引
 
 > 所有有效文档的路径与用途速查。供 Agent 和开发者快速定位上下文。
-> 最后更新：2026-09-11（真实环境基准修正：新增 FEATURE_MATRIX，PROJECT_STATUS 等 5 篇归档）
+> 最后更新：2026-09-13 晚（文档大整理：changes 归档制、ISSUES 大清洗、T3 需求定稿、根目录文档去历史堆积）
 
 ---
+
+## 阅读顺序（固定）
+
+1. **接手必读**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路+不变量）→ `AGENTS.md`（强制约束）→ `ARCHITECTURE.md`
+2. **当前状态**：`docs/FEATURE_MATRIX.md`（功能 SSOT）→ `docs/ISSUES.md`（活跃问题）→ `docs/NEXT-DEV-REQS.md`（T3 需求）
+3. **排障**：`docs/RUNBOOK.md` → `ARCHITECTURE.md` §5 已知坑（28 条）
+4. **凭据**：`docs/HANDOVER.md`（⚠️ 含密钥，本地文件，永不提交）
 
 ## 根目录核心文档
 
 | 文件 | 用途 |
 |------|------|
-| `ARCHITECTURE.md` | **架构移交文档**（必读）：Vercel 读层 + GH Actions runner 直采架构、数据通路、凭据位置、已知坑、协作规则 |
-| `README.md` | 项目 README：快速上手、目录结构、文档导航 |
-| `AGENTS.md` | **项目专用 Agent 强制约束**（2026-09-11 重写）：三端心智模型、7 条不可协商规则（必推云端/必实测/必同步文档/否定决策落档/SSOT/凭据三处同步/不动刀） |
+| `AGENTS.md` | 项目专用 Agent 强制约束：三端心智模型 + 7 条不可协商规则 |
+| `ARCHITECTURE.md` | 架构决策 + 28 条已知坑（§8 历史纪要已收敛为速览+归档指针） |
+| `README.md` | 快速上手、目录结构 |
 
-## 变更记录（docs/changes/）
+## 变更记录（docs/changes/，活跃层只保留未收敛文档）
 
 | 文件 | 用途 |
-|------|------|
-| `docs/changes/2026-09-12-my-brief.md` | 我的早报（19）状态：已完成/已修问题/待测试清单/配额说明 |
-| `docs/changes/2026-09-11-settings-write.md` | 设置写 API 上云（13-settings-write）：端点/决策/验收证据 |
-| `docs/changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH Actions runner 直写 Turso（根治网页不自动更新），含根因链/验证数据/遗留事项 |
+|---|---|
+| `docs/changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH runner 直写 Turso（P0 必读，根因链全在里头） |
+| `docs/changes/2026-09-13-reader-pagination-and-content-fixes.md` | **09-13 交付全记录**：游标分页断裂/翻译思维链污染/未来pubDate/导航/周刊归档 + 测试隔离事故复盘 + 验证任务执行记录 |
+| `docs/changes/archive/` | **已完结变更归档**（09-11 settings-write、09-12 cloud-alerts/my-brief/sources-write、09-13 交付文档）：读 `docs/FEATURE_MATRIX.md` 即可，不再逐篇维护 |
 
 ## 开发文档（docs/）
 
 | 文件 | 用途 |
 |------|------|
-| `docs/INDEX.md` | **本文档**：文档索引与导航 |
-| `docs/CLOUD_PIPELINE_GUIDE.md` | **云端实时信息流交付文档**（接手必读 P0）：GH Actions 管线地图、不可破坏的不变量、改动检查清单、故障决策树 |
-| `docs/HANDOVER.md` | **交接/对接文档**：Vercel/Turso/Secrets 配置、API 列表、运维命令 ⚠️ 含敏感凭据，已 gitignore 勿提交 |
-| `docs/DELIVERY_VERIFICATION.md` | **交付验证手册**（线上验证必读）：生产环境验证全流程——推送/触发/三端联验/网络限制解法/标准验证剧本 |
-| `docs/DEV_GUIDE.md` | **开发者上手指南**（新开发者必读）：部署架构、目录结构、快速上手 Checklist |
-| `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
-| `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
-| `docs/NEXT-DEV-REQS.md` | **后续开发需求（T2 系列）**：订阅模型/推荐算法/管理后台UX/taskQueue修复 的需求定义+排期 |
-| `docs/DELIVERY-2026-09-13.md` | 交付文档（09-13 凌晨紧急修复：白屏/报警轰炸/localhost源 + 全周期状态） |
-| `docs/AUDIT-2026-09-12.md` | **交叉审核报告（09-11~12 全量变更）**：实现逻辑/验证状态矩阵/现存 bug/风险/优化建议——新 Agent 审阅入口 |
-| `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威）：本地 Express vs 云端（Vercel qwis-intel）功能覆盖矩阵、迁移路径、待开发目标；其它文档不再维护矩阵一律指向本文 |
-| `docs/BESTBLOGS_BORROW.md` | BestBlogs 调研借鉴清单：两阶段过滤/六节点管线/三段式翻译/可解释推荐等 10 项范式到总 spec 的映射 |
-| `docs/ROADMAP-2026-09.md` | **需求与愿景母文档**（已确认）：2026-09-11 用户想法归纳 + 4 项已拍板决策（前台公开/自然日日报窗口/AI 六维度/破茧双管） |
-| `docs/HANDOFF_PROMPT.md` | **新窗口接手提示词**：复制即用的开场 prompt + 阅读顺序 + 进度快照 |
-| `docs/specs/12-roadmap-2026/spec.md` | **总体开发 spec**：P0~Pn 阻塞级排序 + mew-spec 拆分清单（13-settings-write 起） |
-| `docs/RUNBOOK.md` | 运维手册：启动/重启/备份/恢复/Vercel 运维/排障 |
-| `docs/REFACTOR_GUIDE.md` | [历史文档] Phase 1-5 重构迁移记录 |
-| `docs/ANDROID_SUBMIT_GUIDE.md` | 安卓端提交协议：HTTP Shortcuts 配置规范 |
-| `docs/X_SETUP_GUIDE.md` | X/Twitter 接入指南：RSSHub 配置 |
+| `docs/INDEX.md` | 本文档 |
+| `docs/CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
+| `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威，其它文档不再维护矩阵） |
+| `docs/ISSUES.md` | **活跃问题清单**（2026-09-13 大清洗后只留 4 bug + 6 挂案；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`） |
+| `docs/NEXT-DEV-REQS.md` | **T3 系列需求**（2026-09-13 定稿）：早报体系 v3 / 管理台早报中心 / 读层性能 / 入早报来源榜；T2 存档在文末 |
+| `docs/DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 127.0.0.1:12000） |
+| `docs/DEV_GUIDE.md` | 开发者上手指南 |
+| `docs/DEVELOPMENT_STANDARDS.md` | 开发规范与验收标准 |
+| `docs/ROADMAP-2026-09.md` | 需求与愿景母文档（用户已拍板决策） |
+| `docs/RUNBOOK.md` | 运维手册 |
+| `docs/HANDOFF_PROMPT.md` | 新窗口接手提示词 |
+| `docs/BESTBLOGS_BORROW.md` | BestBlogs 范式借鉴清单（T3-1 主题全景的需求源头） |
+| `docs/AUDIT-2026-09-12.md` | 09-11~12 交叉审核报告（历史审阅入口） |
+| `docs/REFACTOR_GUIDE.md` | [历史] Phase 1-5 重构记录 |
+| `docs/ANDROID_SUBMIT_GUIDE.md` / `docs/X_SETUP_GUIDE.md` | 平台指南 |
 
-## 功能文档（docs/features/）
+## 功能文档（docs/features/）· 决策 Spec（docs/specs/）
 
-| 文件 | 用途 |
-|------|------|
-| `docs/features/collectors.md` | 采集层架构：适配器契约、注册表、数据仓储、抓取编排、并发防护 |
-| `docs/features/scheduler.md` | 调度引擎：tick/scanAndEnqueue 流程、jobs/ 子模块、生命周期 |
-| `docs/features/task-queue.md` | SQLite 任务队列：表结构、TaskQueue API、优先级/去重/崩溃恢复 |
-| `docs/features/daily-report.md` | 日报引擎：候选筛选、分栏分类、去重限流、AI 降级、出库安检 |
-| `docs/features/events-alerts.md` | 事件聚合与报警：纯函数引擎、报警渠道、冷却机制、阈值升级 |
-| `docs/features/source-library-autoclassify.md` | 源库管理与自动分类：统一源列表、批量操作、8 类分类目录、OPML 层级解析、破茧栏联动 |
-| `docs/features/my-reading.md` | 我的阅读沉淀页：已读+稍后读+收藏聚合、批量操作、Markdown 导出 |
+- `docs/features/`：collectors / scheduler / task-queue / daily-report / events-alerts / source-library-autoclassify / my-reading（语义权威，长生命周期）
+- `docs/specs/`：03 / 05 / 09 / 12（总 spec）+ **13~21 全部已交付**（四件套含验收证据）；新 T3 项动工前按 mew-spec 建四件套
 
-## 决策 Spec（docs/specs/）
+## 归档（docs/deprecated/ 与 docs/changes/archive/）
 
-| 文件 | 类型 | 内容 |
-|------|------|------|
-| `docs/specs/03-公众号走托管RSS决策.md` | 已确定 | 公众号走 wechat2rss 托管 RSS |
-| `docs/specs/05-任务队列选型决策.md` | 已确定 | SQLite-backed TaskQueue |
-| `docs/specs/09-source-library-autoclassify/` | 已实现 | 十期·源库管理+自动分类（2026-09-05 验收通过） |
-| `docs/specs/10-my-reading/` | 待审批 | 我的阅读沉淀页 |
-| `docs/specs/11-advanced-filter-views/` | 待审批 | 阅读器高级筛选+保存视图 |
-
-## 归档文档（docs/deprecated/）
-
-历史文档归档，仅供参考，不代表当前系统状态：
-
-| 文件 | 归档原因 |
-|------|---------|
-| `docs/deprecated/PROJECT_STATUS.md` | 与 README 重复约 70% 且大面积过时（漂移严重，违反唯一事实源原则） |
-| `docs/deprecated/MODULE_STATUS.md` | 矩阵数据错误（漂移严重，违反唯一事实源原则）；功能矩阵 SSOT 移至 `docs/FEATURE_MATRIX.md` |
-| `docs/deprecated/TOOLS.md` | 运维内容已并入 `docs/RUNBOOK.md`（漂移严重，违反唯一事实源原则） |
-| `docs/deprecated/HEARTBEAT.md` | 与项目无关的空模板 |
-| `docs/deprecated/AGENTS-generic-template.md` | 通用助手模板，项目专用规则见根目录新 `AGENTS.md` |
-| `docs/deprecated/IDENTITY.md` | 空模板，从未填写 |
-| `docs/deprecated/USER.md` | 空模板，从未填写 |
-| `docs/deprecated/SOUL.md` | 通用 Agent 人格模板，无实质内容 |
-| `docs/deprecated/PHASE6_REVIEW_REPORT.md` | 已完成的历史审查报告 |
-| `docs/deprecated/REPOWIKI_AUDIT_2026-09-06.md` | 已完成的知识库审计 |
-| `docs/deprecated/1.CODE_REVIEW_2026-09-05.md` | 已完成的代码审查 |
-| `docs/deprecated/VERCEL_MIGRATION.md` | 迁移方向与当前部署矛盾 |
-| `docs/deprecated/01-部署架构决策.md` | 已被"Vercel 为主"取代 |
-| `docs/deprecated/02-不做云端采集决策.md` | 云端采集现已启用 |
-| `docs/deprecated/04-不做Vercel前端决策.md` | Vercel 已解冻进入正式开发 |
-
-## 推荐阅读顺序
-
-1. **新接手**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路必读）→ `docs/DEV_GUIDE.md` → `ARCHITECTURE.md` → `docs/DEVELOPMENT_STANDARDS.md`
-2. **了解当前状态**：`docs/FEATURE_MATRIX.md`（功能矩阵 SSOT）→ `docs/ISSUES.md`
-3. **排障**：`docs/RUNBOOK.md` → `ARCHITECTURE.md` 已知坑
-4. **了解决策背景**：`docs/specs/` 按编号顺序阅读
-5. **历史重构**：`docs/REFACTOR_GUIDE.md`（标注为历史文档）
+漂移/过时/已完结文档统一入档并加头注指向现役文档，包括 2026-09-13 新归档的：
+`ISSUES-resolved-2026-09-13.md`（旧问题清单 242 行全文）、`changes/archive/2026-09-13-delivery-emergency-fixes.md`（原根目录 DELIVERY 文档，已并入 09-13 交付记录）。

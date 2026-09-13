@@ -1,3 +1,5 @@
+> 📦 本文档已于 2026-09-13 归档：所载变更均已完结并上线，权威功能状态见 `docs/FEATURE_MATRIX.md`，本轮交付全记录见 `docs/changes/2026-09-13-reader-pagination-and-content-fixes.md`。
+
 # 变更记录：源写 API 上云（14-sources-write）
 
 > 日期：2026-09-12 ｜ 类型：功能移植（P0-2）｜ 流程：mew-spec 四件套

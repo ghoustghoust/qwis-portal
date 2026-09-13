@@ -77,7 +77,7 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
       `api/daily-generate.js`、`tools/collect-turso.js` 的 `runDaily()`、`api/[...slug].js` 的 getOrGenerate 兜底。
 - [ ] 改了 Turso schema？→ 四处采集实现 + `tools/generate-snapshots.js` + `api/[...slug].js` 全部要对齐。
 - [ ] 改了 workflow 的 cron？→ 注意 GH Actions 是 **UTC**，且整点拥挤，用错峰分钟（:07/:37 风格）。
-- [ ] 改完必须跑：`npm test`（187/191 为基线，4 项预存失败见 ISSUES P2-9，不许新增失败）。
+- [ ] 改完必须跑：`npm test`（259 项全绿为基线，2026-09-13 起；不许新增失败）。
 - [ ] 涉及云端的改动 → 部署后跑一次 `workflow_dispatch` 验证 4 个 job 全绿（见 §4）。
 
 ## 3.1 部署方式（2026-09-11 晚更新）
@@ -151,7 +151,7 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 
 | 文件 | 角色 |
 |------|------|
-| `tools/collect-turso.js` | **云端采集主链路**（collect/daily/cleanup 三模式） |
+| `tools/collect-turso.js` | **云端采集主链路**（collect/daily/cleanup/daily-ai/translate/weekly/mybrief 七模式；mybrief=手动重生成我的早报） |
 | `.github/workflows/collect.yml` | 定时调度定义（全部北京时间见注释） |
 | `api/collect.js` / `api/daily-generate.js` | Vercel 手动备份端点（Hobby 10s 限 2 源，仅救急） |
 | `api/[...slug].js` | 读 API（含日报 getOrGenerate 兜底） |

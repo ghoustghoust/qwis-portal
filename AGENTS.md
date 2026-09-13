@@ -25,7 +25,7 @@
 本项目曾长期"本地开发完不推云端、不实测、不写文档"，导致云端停摆 2 天无人发现、5 份文档 5 个版本。以下规则不可协商：
 
 1. **改完必须推云端**：`git push origin main` 即触发 Vercel 自动部署（Git 集成已连）。本地验证 ≠ 完成。
-2. **必须云端实测**：按 `docs/DELIVERY_VERIFICATION.md` 流程打真实线上端点（需代理 `http://127.0.0.1:7890` + curl `--ssl-no-revoke`）。截图/curl 响应才算证据。
+2. **必须云端实测**：按 `docs/DELIVERY_VERIFICATION.md` 流程打真实线上端点（需代理 `http://127.0.0.1:12000`（本机 Clash 实际端口，2026-09-13 起；git 亦已配 http.proxy） + curl `--ssl-no-revoke`）。截图/curl 响应才算证据。
 3. **必须同步文档**：功能变更 → 改 `docs/FEATURE_MATRIX.md` + `docs/HANDOVER.md`；调度/频率/链路变更 → 还要改 `ARCHITECTURE.md` + `docs/RUNBOOK.md` + `docs/CLOUD_PIPELINE_GUIDE.md`。
 4. **否定/作废决策也要落档**：推翻旧决策时，在旧文档头部加「已作废 + 日期 + 替代决策链接」，禁止静默删除。
 5. **单一事实源**：调度频率、功能矩阵、凭据位置、测试数等易变事实，全库只许一份写死值，其它文档写"见 XX"。
