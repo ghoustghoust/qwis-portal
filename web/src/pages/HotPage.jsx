@@ -63,21 +63,24 @@ function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
     >
       <div className="flex items-center gap-2 text-[11px]">
         <span className="t-muted uppercase tracking-wide truncate">{sourceLabel(it)}</span>
-        {!!it.featured && (
+        {/* T5-14 H-A：六维高分精选徽章（对齐样图 ✦精选） */}
+        {!!it.score && it.score <= 100 && it.score >= 80 && (
           <span
             className="badge-green flex-none"
             style={{ color: 'var(--accent)', borderColor: 'var(--accent)' }}
           >
-            {t('hot.featuredBadge')}
+            ✦ 精选
           </span>
         )}
         <span className="flex-1" />
-        {/* 热度值格式化显示（原始 score 为平台热度如 4510000 → "451万"） */}
-        {it.score != null && it.score > 0 && (
+        {/* 自有源：AI 评分右置（对齐样图「AI 评分 85/100」）；热榜：热度值 */}
+        {!!it.score && it.score > 0 && it.score <= 100 ? (
+          <span className="t-accent font-medium tabular-nums text-[11px]">AI 评分 {Math.round(it.score)}/100</span>
+        ) : it.score != null && it.score > 0 ? (
           <span className="t-accent font-medium tabular-nums text-[11px]" title={`${t('hot.heat')} ${it.score}`}>
             🔥 {formatHeat(it.score)}
           </span>
-        )}
+        ) : null}
         <HeartButton
           active={!!it.later}
           t={t}
@@ -138,6 +141,7 @@ export default function HotPage() {
   const { t } = useI18n();
   const [tab, setTab] = useState('featured'); // featured | all | events
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [allGroups, setAllGroups] = useState([]); // T5-14 H-D：分类对齐阅读器分组
   const [category, setCategory] = useState(''); // '' = 全部
   const [q, setQ] = useState('');
   const [qDebounced, setQDebounced] = useState('');
@@ -205,6 +209,7 @@ export default function HotPage() {
           `/api/hot${qs({
             tab,
             category: category || undefined, // T5-1：featured/all 都支持真实分类过滤
+            group_id: category && /^\d+$/.test(category) ? category : undefined,
             q: qDebounced || undefined, // T5-1：featured/all 都支持搜索
             source: tab === 'all' ? source || undefined : undefined,
             cursor: cur || undefined,
@@ -366,16 +371,22 @@ export default function HotPage() {
           </div>
         )}
 
-        {/* 精选：分类胶囊（2026-09-05 视觉精修：统一 .pill/.pill.on） */}
-        {tab === 'featured' && (
-          <div className="flex-none t-surface border-b t-border px-6 py-2.5 flex flex-wrap gap-1.5">
-            {['', ...categories].map((c) => (
+        {/* T5-14 H-D：分类对齐阅读器——pills 读分组（groups），过滤 group_id；featured/all 常驻 */}
+        {tab !== 'events' && (
+          <div className="flex-none t-surface border-b t-border px-6 py-2.5 flex gap-1.5 overflow-x-auto">
+            <button
+              onClick={() => setCategory('')}
+              className={`pill cursor-pointer flex-none ${category === '' ? 'on' : ''}`}
+            >
+              {t('sidebar.all')}
+            </button>
+            {(allGroups || []).map((g) => (
               <button
-                key={c || 'all'}
-                onClick={() => setCategory(c)}
-                className={`pill cursor-pointer ${category === c ? 'on' : ''}`}
+                key={g.id}
+                onClick={() => setCategory(String(g.id))}
+                className={`pill cursor-pointer flex-none ${category === String(g.id) ? 'on' : ''}`}
               >
-                {c || t('sidebar.all')}
+                {g.name}
               </button>
             ))}
           </div>

@@ -289,6 +289,11 @@ async function handleHot(req) {
     conds.push('s.name=?');
     args.push(source);
   }
+  // T5-14 H-D：分类对齐阅读器分组（group_id 过滤）
+  if (q.group_id && /^\d+$/.test(q.group_id)) {
+    conds.push('s.group_id=?');
+    args.push(Number(q.group_id));
+  }
 
   // 时间窗口：默认 7 天（覆盖回溯，G5；参数化命中 idx_articles_pubco）
   conds.push('a.published_at >= ?');
@@ -471,6 +476,7 @@ async function handleHotEvents(req) {
       const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
       events.push({
         title: rep.title,
+        _scores: c.items.filter(i => i.source_type !== 'hotlist').map(i => Number(i.score) || 0),
         domain: evDomain,
         heat: Math.round(heat * 10) / 10,
         heatFormatted: formatHeat(Math.round(heat * 10) / 10),
@@ -490,7 +496,10 @@ async function handleHotEvents(req) {
           })),
       });
     }
-    events.sort((a, b) => b.heat - a.heat);
+    // T5-14 二-2：热点从 1500 源挑——排序加权 = 热度衰减 + 自有源六维最高分×大权重
+    //（热榜同题簇热度天然高会刷屏；自有源高分事件（AI 评分内容聚成的簇）应置顶）
+    const selfMax = (e) => Math.max(0, ...(e._scores || []));
+    events.sort((a, b) => (selfMax(b) * 50 + b.heat) - (selfMax(a) * 50 + a.heat));
     // 添加 rank
     events.forEach((ev, idx) => { ev.rank = idx + 1; });
     _eventsCache = { at: Date.now(), events };
