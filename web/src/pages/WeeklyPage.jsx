@@ -48,10 +48,15 @@ export default function WeeklyPage() {
 
           {report && (
             <>
+              {/* 封面头（specs/24 杂志版：有 coverTheme 用大字主题，否则回退期号） */}
               <header>
                 <div className="text-[11px] tracking-widest t-accent font-medium">精选周刊 · 本周必看 {report.items?.length || 0} 条</div>
-                <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">第 {report.issue} 期</h1>
-                <div className="mt-1 text-[13px] t-muted">{report.dateStart} ~ {report.dateEnd}</div>
+                <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
+                  {report.coverTheme || `第 ${report.issue} 期`}
+                </h1>
+                <div className="mt-1 text-[13px] t-muted">
+                  {report.coverTheme ? `第 ${report.issue} 期 · ` : ''}{report.dateStart} ~ {report.dateEnd}
+                </div>
                 {report.theme && (
                   <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted">{report.theme}</p>
                 )}
@@ -73,7 +78,33 @@ export default function WeeklyPage() {
 
               <div className="mt-6 border-t-2" style={{ borderColor: 'var(--text)' }} />
 
-              {THEME_ORDER.map((theme) => {
+              {/* 编辑长综述（specs/24） */}
+              {report.editorNote && (
+                <section className="mt-8 card p-5 sm:p-6">
+                  <div className="text-[11px] tracking-widest t-accent font-medium">编辑综述</div>
+                  <p className="serif mt-3 text-[15px] sm:text-base leading-loose t-text whitespace-pre-line">{report.editorNote}</p>
+                </section>
+              )}
+
+              {/* 主线策展（specs/24 杂志版） */}
+              {(report.storylines || []).map((sl, i) => (
+                <section key={sl.title} className="mt-8">
+                  <div className="flex items-baseline gap-3">
+                    <span className="serif flex-none text-2xl t-accent font-bold">{i + 1}</span>
+                    <h2 className="serif text-lg sm:text-2xl font-bold t-text flex-1 min-w-0">{sl.title}</h2>
+                    <span className="flex-none text-[11px] t-muted tabular-nums">{sl.items.length} 条</span>
+                  </div>
+                  {sl.narrative && <p className="mt-2 text-[13.5px] leading-relaxed t-muted">{sl.narrative}</p>}
+                  <div className="mt-4 flex flex-col gap-4">
+                    {sl.items.map((it) => (
+                      <WeeklyCard key={it.id} item={it} onOpen={setStudyItem} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+
+              {/* 旧版分主题视图（无杂志结构的期号兼容） */}
+              {!report.storylines?.length && THEME_ORDER.map((theme) => {
                 const list = (report.items || []).filter((it) => it.weeklyTheme === theme);
                 if (!list.length) return null;
                 return (

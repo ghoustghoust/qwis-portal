@@ -386,6 +386,56 @@ async function generateWeeklySummary(items) {
   return body.slice(0, 300);
 }
 
+// ═══ 周刊 v2 杂志结构（specs/24，2026-09-14）═══
+// 两次调用：①storylines JSON（封面主题词 + 3-5 条主线，每线标题/叙事≤100字/条目编号）
+// ②编辑长综述（500-700 字递进叙述）。污染兜底：JSON 解析失败/越界编号丢弃 → 调用方回退旧版视图
+async function generateWeeklyMagazine(items) {
+  const list = items
+    .map((it, i) => `${i + 1}. ${it.title}｜分类：${it.weeklyTheme || '其它'}｜来源：${it.source || ''}｜摘要：${String(it.summary || it.reason || '').slice(0, 120)}`)
+    .join('\n');
+
+  const r1 = await aiChat(
+    [{ role: 'user', content: `你是科技周刊主编。把下面 ${items.length} 条本周精选组织成 3-5 条递进主线。只输出严格 JSON（不要解释）：\n{"coverTheme":"本期主题词（2-6字，如：可托付的智能）","storylines":[{"title":"主线标题（观点式，≤20字）","itemNumbers":[1,3,7],"narrative":"本线叙事（≤100字，说明这条线为什么重要、递进关系）"}]}\n\n每条 itemNumbers 至少 2 个、全部条目尽量被覆盖、编号不得越界。\n\n## 本周精选\n\n${list}` }],
+    { kind: 'theme', maxTokens: 3200, timeoutMs: 90000 }
+  );
+  if (!r1.ok) return null;
+  let magazine = null;
+  try {
+    const m = String(r1.reply || '').match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (!j.coverTheme || !Array.isArray(j.storylines)) return null;
+    const storylines = j.storylines
+      .filter((sl) => sl && sl.title && Array.isArray(sl.itemNumbers))
+      .map((sl) => {
+        const nums = sl.itemNumbers.map(Number).filter((n) => n >= 1 && n <= items.length);
+        return {
+          title: String(sl.title).slice(0, 30),
+          narrative: String(sl.narrative || '').slice(0, 200),
+          items: nums.map((n) => items[n - 1]).filter(Boolean),
+        };
+      })
+      .filter((sl) => sl.items.length >= 2)
+      .slice(0, 5);
+    if (!storylines.length) return null;
+    magazine = { coverTheme: String(j.coverTheme).slice(0, 12), storylines };
+  } catch { return null; }
+
+  const r2 = await aiChat(
+    [{ role: 'user', content: `你是科技周刊主笔。基于本周精选与下列主线划分，写 500-700 字的编辑综述：递进式叙述（不要小标题、不要列表），把各主线串成一个连贯判断。只输出综述正文。\n\n## 本周精选\n\n${list.slice(0, 1200)}\n\n## 主线\n\n${magazine.storylines.map((sl) => `- ${sl.title}：${sl.narrative}`).join('\n')}` }],
+    { kind: 'theme', maxTokens: 2600, timeoutMs: 90000 }
+  );
+  if (r2.ok) {
+    const lines = String(r2.reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
+    const isMeta = (l) =>
+      /^(用户|让我|我来|我需要|好的|以下|这是|#)/.test(l) ||
+      /^(Let me|The user|I need|Okay|Here|Sure|Based on)/i.test(l);
+    const body = lines.filter((l) => !isMeta(l)).join('\n\n');
+    if (body.length >= 200) magazine.editorNote = body.slice(0, 1600);
+  }
+  return magazine;
+}
+
 async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme');
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
   const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
@@ -415,6 +465,6 @@ async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, sanitizeTranslationReply, isThinkingLikeReply,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, generateWeeklyMagazine, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };

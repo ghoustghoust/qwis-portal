@@ -719,11 +719,16 @@ async function runWeekly() {
   const theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch(() => null);
   // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
   const weeklySummary = items.length ? await _ai.generateWeeklySummary(items).catch(() => null) : null;
-  await saveWeekly(theme, items, false, t0, weeklySummary);
-  return { count: items.length, theme, weeklySummary };
+  // 周刊 v2 杂志结构（specs/24）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
+  let magazine = null;
+  if (items.length >= 4) {
+    try { magazine = await _ai.generateWeeklyMagazine(items); } catch (e) { log(`周刊杂志结构失败（回退旧版）: ${e.message}`); }
+  }
+  await saveWeekly(theme, items, false, t0, weeklySummary, magazine);
+  return { count: items.length, theme, weeklySummary, magazine: !!magazine };
 }
 
-async function saveWeekly(theme, items, degraded, t0, weeklySummary = null) {
+async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, magazine = null) {
   // 对抗性审查补丁（2026-09-13）：周报引用的文章打 featured=1——cleanup 的保留清理豁免 featured，
   // 否则大清理会把「周刊永久归档」引用的文章删掉（详情断链，违背周刊长久存储决策）
   const itemIds = (items || []).map((it) => Number(it.id)).filter(Number.isFinite);
@@ -737,6 +742,7 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null) {
   const dateStart = new Date(Date.now() + 8 * 3600e3 - 7 * 86400e3).toISOString().slice(0, 10);
   const report = {
     issue, dateStart, dateEnd, theme, degraded, weeklySummary,
+    ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
     generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
     items,
   };
