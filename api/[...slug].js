@@ -2271,7 +2271,9 @@ async function handleMyBrief(req) {
   if (!subs.length) return jsonOk({ empty: 'no-subscription' });
   const report = await getSetting('mybrief.latest', null);
   if (!report) return jsonOk({ empty: 'no-content' });
-  return jsonOk({ report });
+  // T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键）
+  const digest = await getSetting('reading.digest', null);
+  return jsonOk({ report, ...(digest ? { digest } : {}) });
 }
 
 // GET /api/weekly — 精选周刊（20-weekly-picks；公开读，?issue=N 归档查询）

@@ -8,6 +8,8 @@ import { imgUrl, relativeTime } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
+import ThemePanorama from '../components/ThemePanorama.jsx';
+import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { SunIcon } from '../components/icons.jsx';
 
 const TYPES = [
@@ -28,6 +30,7 @@ export default function MyBriefPage() {
   }, []);
 
   const report = data?.report;
+  const digest = data?.digest;
   const empty = data?.empty || report?.empty;
 
   return (
@@ -82,6 +85,7 @@ export default function MyBriefPage() {
                   </div>
                 )}
               </header>
+              <ThemePanorama themes={report.themes} />
 
               {/* 类型筛选 */}
               <div className="mt-6 flex gap-1.5 border-t-2 pt-4" style={{ borderColor: 'var(--text)' }}>
@@ -106,6 +110,26 @@ export default function MyBriefPage() {
           <div className="h-16" />
         </div>
       </main>
+      {digest && (
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 pb-8 w-full">
+          <section className="card p-4 sm:p-5">
+            <div className="text-[11px] tracking-widest t-accent font-medium">阅读足迹 · {digest.date}</div>
+            <div className="mt-2 text-[13px] t-text">
+              过去 24 小时读了 <b className="t-accent">{digest.readCount}</b> 篇 · 稍后读 {digest.laterCount} 条
+            </div>
+            {digest.topSources?.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                {digest.topSources.map((src) => (
+                  <span key={src.name} className="flex items-center gap-1.5 text-[12px] t-muted">
+                    <SourceAvatar name={src.name} avatar={src.avatar} size={16} />
+                    {src.name} · {src.count}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
       {studyItem && <QuickStudyModal item={studyItem} onClose={() => setStudyItem(null)} />}
     </div>
   );
@@ -133,7 +157,7 @@ function BriefSection({ title, items, kind, type, onOpen }) {
 
 function BriefCard({ item, rank, onOpen }) {
   return (
-    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
+    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
       <div className="flex gap-4 p-3 sm:p-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -181,7 +205,7 @@ function BriefCard({ item, rank, onOpen }) {
 
 function RestRow({ item, index, onOpen }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
+    <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 4}</span>
       <span className="flex-1 min-w-0 truncate text-[13px] t-text">{item.title}</span>
       {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}

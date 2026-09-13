@@ -147,7 +147,7 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
   return (
     <article
       className="card card-lift overflow-hidden cursor-pointer"
-      onClick={() => onOpen?.(item)}
+      onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}
     >
       {item.cover ? (
         <img
@@ -220,7 +220,7 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
   return (
     <div
       className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)]"
-      onClick={() => onOpen?.(item)}
+      onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}
       style={{ borderColor: 'var(--border)' }}
     >
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 1}</span>

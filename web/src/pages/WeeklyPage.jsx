@@ -112,7 +112,7 @@ export default function WeeklyPage() {
 
 function WeeklyCard({ item, onOpen }) {
   return (
-    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
+    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
       <div className="flex gap-4 p-3 sm:p-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">

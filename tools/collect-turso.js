@@ -594,6 +594,20 @@ async function runWeekly() {
     [startUtc, endUtc]
   );
   const valid = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
+  // T4-3 周报视频入报：窗口内视频取最近 15 条并入候选（跳过初筛直接深析段，kind=video + id v 前缀）
+  try {
+    const wVideos = await qAll(
+      `SELECT v.id, v.source_id, v.title, v.url, v.intro, v.cover, v.published_at, s.name AS source_name
+       FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+       WHERE v.created_at >= ? AND v.created_at < ? AND s.enabled = 1
+       ORDER BY v.published_at DESC LIMIT 15`,
+      [startUtc, endUtc]
+    );
+    for (const v of wVideos) {
+      valid.push({ ...v, id: 'v' + v.id, kind: 'video', summary: v.intro || '', content_html: v.intro || '' });
+    }
+    if (wVideos.length) log(`周刊视频候选 +${wVideos.length}`);
+  } catch { /* 不阻断 */ }
   log(`周刊候选 ${valid.length} 篇，开始初筛`);
 
   const passed = [];
@@ -676,6 +690,51 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null) {
   await writeHeartbeat('weekly', { issue, count: items.length, degraded });
 }
 
+// ─── T3-1 R0c 主题全景（2026-09-13）───
+// 把碎片聚合成主题全景：标题 Jaccard 聚类 → 每簇 AI 命名 + 四类视角 + 跨源综述。
+// 用户需求原文：把碎片聚合成主题全景，事件/领域/人物/产品对比四类视角。
+async function buildThemePanorama(items) {
+  const _ai = require('../api/_ai');
+  if (!items || items.length < 2) return [];
+  const clusters = [];
+  for (const it of items) {
+    const tok = titleTokens(it.translated_title || it.title || '');
+    if (!tok.length) continue;
+    let hit = null;
+    for (const c of clusters) {
+      if (jaccard(tok, c.tokens) >= 0.45) { hit = c; break; }
+    }
+    if (hit) { hit.items.push(it); for (const t of tok) hit.tokens.add(t); }
+    else clusters.push({ tokens: new Set(tok), items: [it] });
+  }
+  const rated = clusters
+    .filter((c) => c.items.length >= 2)
+    .map((c) => ({ items: c.items, score: c.items.reduce((n, i) => n + (i.totalScore || 0), 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4); // 最多 4 个主题，控 AI 配额
+  const VIEWS = ['事件', '领域', '人物', '产品对比'];
+  const themes = [];
+  for (const c of rated) {
+    const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.reason ? `｜评语：${i.reason}` : ''}`).join('\n');
+    const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述，指出共识与分歧"}\n\n${list}`;
+    const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
+    if (!r.ok) continue;
+    const m = String(r.reply || '').match(/\{[\s\S]*\}/);
+    if (!m) continue;
+    try {
+      const j = JSON.parse(m[0]);
+      if (!j.name || !j.summary) continue;
+      themes.push({
+        name: String(j.name).slice(0, 20),
+        viewpoint: VIEWS.includes(j.viewpoint) ? j.viewpoint : '事件',
+        summary: String(j.summary).slice(0, 160),
+        items: c.items.map((i) => ({ id: i.id, title: i.translated_title || i.title, url: i.url, source: i.source_name, kind: i.kind || 'article' })),
+      });
+    } catch { /* 跳过坏簇 */ }
+  }
+  return themes;
+}
+
 // ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报） ───
 // 窗口二态（T3-1 R0）：默认北京自然日 [昨00:00, 今00:00)；--rolling24 时取滚动 24h [now-24h, now)
 // ——晚间 21:30 的 cron 用 rolling24，实现「晚间整理刚过去的一天，次日早上呈现」
@@ -693,6 +752,29 @@ function briefWindow() {
     endUtc: new Date(todayStart.getTime() - bjOffset).toISOString(),
     label: '北京自然日',
   };
+}
+
+
+// ─── T3-1 R7 阅读足迹（2026-09-13）：晚间生成当日阅读小结（reading 表聚合，规则版零 AI 消耗）───
+async function buildReadingDigest() {
+  const since = new Date(Date.now() - 24 * 3600e3).toISOString();
+  const readCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at >= ?', [since])).c;
+  const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
+  const topSources = await qAll(
+    `SELECT s.name AS name, s.avatar AS avatar, COUNT(*) c
+     FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+     WHERE a.read_at >= ? AND s.id IS NOT NULL
+     GROUP BY s.name ORDER BY c DESC LIMIT 5`,
+    [since]
+  );
+  const digest = {
+    date: nowIso().slice(0, 10), generatedAt: nowIso(),
+    readCount, laterCount,
+    topSources: topSources.map((r) => ({ name: r.name, avatar: r.avatar, count: r.c })),
+  };
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('reading.digest', ?)", args: [JSON.stringify(digest)] });
+  log(`阅读足迹: 今日读 ${readCount} 篇，稍后读 ${laterCount} 条`);
+  return digest;
 }
 
 async function runDailyAi() {
@@ -751,6 +833,33 @@ async function runDailyAi() {
   }
   log(`深析完成 ${analyzed.length} 篇，组装栏目`);
 
+  // T4-3 视频入报（2026-09-13）：窗口内视频取最近 20 条直接深析并入同池；
+  // id 加 v 前缀防与文章 id 冲突（report 条目 kind='video'，前端点开走外链）
+  try {
+    const videoRows = await qAll(
+      `SELECT v.id, v.source_id, v.title, v.url, v.intro, v.cover, v.published_at, s.name AS source_name, s.focus AS source_focus
+       FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+       WHERE v.created_at >= ? AND v.created_at < ? AND s.enabled = 1
+       ORDER BY v.published_at DESC LIMIT 20`,
+      [startUtc, endUtc]
+    );
+    let vCount = 0;
+    for (const v of videoRows) {
+      if (Date.now() - t0 > BUDGET_MS) { log('视频深析预算耗尽，截断'); break; }
+      const text = { ...v, content_html: v.intro || '', summary: v.intro || '' };
+      const r = await _ai.analyzeArticle(text);
+      if (!r) continue;
+      analyzed.push({ ...text, ...r, id: 'v' + v.id, kind: 'video', vid: v.id });
+      vCount++;
+    }
+    if (vCount) log(`视频入报: 深析 ${vCount}/${videoRows.length} 条`);
+  } catch (e) { log(`视频入报失败（不阻断）: ${e.message}`); }
+
+  // T3-1 R0c 主题全景：深析条目按标题聚类（Jaccard≥0.45，簇≥2），每簇 1 次 AI 调用出
+  // 主题名 + 四类视角（事件/领域/人物/产品对比）+ ≤100 字跨源综述；按簇总分取前 4
+  let themes = [];
+  try { themes = await buildThemePanorama(analyzed); } catch (e) { log(`主题全景失败（不阻断）: ${e.message}`); }
+
   // 栏目组装（沿用 columns 语义：focus 优先 → 关键词 → fallback 按总分）
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const used = new Set();
@@ -759,7 +868,7 @@ async function runDailyAi() {
     id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
     source_name: a.source_name, published_at: a.published_at,
     totalScore: a.totalScore, score: a.totalScore, // score 兼容现有 Stars 组件
-    scores: a.scores,
+    scores: a.scores, kind: a.kind || 'article',
     reason: a.reason, summary: a.summary, quote: a.quote, points: a.points, tags: a.tags,
     translated: !!a.translated_title,
   });
@@ -795,7 +904,7 @@ async function runDailyAi() {
     windowVideos = (await qOne('SELECT COUNT(*) c FROM videos WHERE created_at >= ?', [startUtc])).c || 0;
   } catch { /* 统计失败不阻断 */ }
   const stats = {
-    schemaVersion: 2, theme, degraded: false,
+    schemaVersion: 2, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
     sections: sections.length, totalItems: allItems.length,
@@ -809,6 +918,8 @@ async function runDailyAi() {
   await writeHeartbeat('daily-ai', stats);
   // 19-my-brief：复用深析池生成「我的早报」（零额外深析调用）
   try { await runMyBrief(analyzed); } catch (err) { log(`mybrief 生成失败（已隔离）: ${err.message}`); }
+  // T3-1 R7：阅读足迹小结
+  try { await buildReadingDigest(); } catch (err) { log(`阅读足迹失败（已隔离）: ${err.message}`); }
   return stats;
 }
 
@@ -878,7 +989,10 @@ async function runMyBrief(analyzed) {
   const tagFreq = {};
   for (const m of mine) for (const t of m.tags || []) tagFreq[t] = (tagFreq[t] || 0) + 1;
   const keywords = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
-  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections };
+  // 主题全景（订阅视角）：与 daily-ai 同管线，簇取自 mine
+  let themes = [];
+  try { themes = await buildThemePanorama(mine); } catch { /* 不阻断 */ }
+  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections, themes };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
   log(`mybrief 生成完成: top ${sections.top.length} / featured ${sections.featured.length} / rest ${sections.rest.length}, 主题: ${theme || '(无)'}`);
   // 飞书推送（导语 + 头条 3 条；pushEnabled 默认 true）

@@ -5,6 +5,7 @@ import { toast } from '../toast';
 import DailyHeader from '../components/DailyHeader.jsx';
 import StatCards from '../components/StatCards.jsx';
 import ColumnSection from '../components/ColumnSection.jsx';
+import ThemePanorama from '../components/ThemePanorama.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 
 // 每日情报日报页（/daily/，F13~F20）：报纸风页头 + 统计卡 + 栏目 + 快速学习弹窗
@@ -192,6 +193,7 @@ export default function DailyPage() {
 
           <div className="mt-5 sm:mt-6">
             <StatCards stats={report?.stats} windowHours={windowHours} totalItems={report ? totalItems : undefined} />
+            <ThemePanorama themes={report?.stats?.themes} />
           </div>
 
           {report === undefined && (
