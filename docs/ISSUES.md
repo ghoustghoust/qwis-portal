@@ -7,6 +7,19 @@
 
 ---
 
+## 🔴 活跃 bug（2026-09-14 用户验收新增，定性见 docs/NEXT-DEV-REQS.md T5）
+
+| # | 问题 | 定性 |
+|---|---|---|
+| B5 | 管理台报警记录显示"暂无"但飞书有报警——云端 recentLog 有 29 条在 settings alerts，/api/alerts/config 未回传 | 端点字段缺失（小修） |
+| B6 | OpenAI feed 混入 YouTube shorts 条目被当文章抓（如 GPT-6 Astra，url=youtube.com/shorts，正文空） | 采集分类缺失（feed 条目链接是 YouTube → 判 video 或跳过） |
+| B7 | 周刊封面主题压缩到看不懂（"失控的智能"）——生成 prompt 需「第N期——主题」可读格式 | prompt 问题 |
+| B8 | 综述/文章详情无排版（加粗/重点标注丢失，纯文本渲染） | 前端渲染层（markdown 化） |
+| B9 | 已退役 wemp 源开关可开但永远无法采集（引擎已退役）——需引导换 RSS 源或明示禁用 | UX + 数据语义 |
+| B10 | 每日早报 AI 版仍显示关键词版栏目注解（"Codex、Claude、豆包…"） | AI 栏目 desc 未更新 |
+| B11 | 多页面切换懒加载 chunk + 冷启动导致"加载半天" | 感知性能（骨架屏已做前台，后台 Tab 未覆盖） |
+| B12 | 本周概览每次切页回来重新拉取（api 缓存随组件卸载失效） | 前端缓存策略 |
+
 ## 🔴 活跃 bug
 
 > B1-B4 已于 2026-09-13 晚修复并云端实测（commit d8b0347/8860be4/fce6edb/4ec3e47），详见文末修复记录。
