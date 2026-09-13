@@ -7,6 +7,15 @@
 
 ---
 
+## ✅ 2026-09-14 凌晨修复（28 热点榜重设计数据层，commits 88042ce/4322909/e89cf52/835f2d0）
+
+| 项 | 修复 | 线上验证 |
+|---|---|---|
+| 根因 | handleHot 两 tab 硬编码 `s.type='hotlist'`——自有源六维内容从不进热点榜；featured score>10000 是热榜热度量级 | tab=all 现 200 条 33 来源（自有源+热榜混排）✅ |
+| 重写 | tab=all=全部源 7 天；featured=自有源≥70 分置顶（分列排序防热度压制）+热榜高热度；hotlist 子视图保留；分类=标题/摘要/tags 关键词组（六分类命中 108-928）；q/source/cursor 沿用；SELECT 补 reason | featured 首条自有源 72 分+reason ✅；分类「模型」200 条 ✅；搜索 165 条 ✅ |
+| 对抗 | score 列 19780 条文本 'null'（TEXT vs 数字恒真，坑 #25 同族第二次）→ CAST(a.score AS REAL) 防御 + 数据清 NULL | 精选不再混入空分条目 ✅ |
+| 前端 | 分类 pills 两 tab 全传参；时间线卡有推荐理由即展示 | 部署 ✅ |
+
 ## ✅ 2026-09-14 深夜修复（34-misc-fixes，commit ca2d91a）
 
 | # | 修复 | 验证 |
