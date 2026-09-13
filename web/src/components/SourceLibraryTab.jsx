@@ -4,7 +4,7 @@ import { toast } from '../toast';
 import { relativeTime } from '../util';
 import {
   SearchIcon, SparklesIcon, LockIcon, StarIcon,
-  FolderIcon, ChevronDownIcon, RefreshIcon,
+  FolderIcon, ChevronDownIcon, RefreshIcon, TrashIcon,
 } from './icons.jsx';
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
@@ -182,6 +182,30 @@ export default function SourceLibraryTab() {
           <option value="focus">仅特别关注</option>
         </select>
         <span className="flex-1" />
+        <button
+          className="btn-ghost text-sm flex items-center gap-1"
+          title="新建文件夹后可在行内下拉把源移动进去"
+          onClick={async () => {
+            const name = window.prompt('新文件夹名称：');
+            if (!name || !name.trim()) return;
+            const kind = filterKind === 'video' ? 'video' : 'article';
+            try {
+              await api.post('/api/groups', { name: name.trim(), kind });
+              toast('已创建文件夹「' + name.trim() + '」');
+              load();
+            } catch (e) { toast(e.message); }
+          }}
+        >
+          <FolderIcon size={15} /> 新建文件夹
+        </button>
+        <a
+          className="btn-ghost text-sm flex items-center gap-1"
+          href="/api/opml/export"
+          download="qwis-sources.opml"
+          title="导出全部订阅源为标准 OPML，可导入其他 RSS 阅读器"
+        >
+          <RefreshIcon size={15} /> 导出 OPML
+        </a>
         <button className="btn-ghost text-sm flex items-center gap-1" onClick={() => setShowBackfill(true)}>
           <SparklesIcon size={15} /> 自动分类回填
         </button>
@@ -230,7 +254,8 @@ export default function SourceLibraryTab() {
                 <th className="py-2 px-1.5 text-left w-20">状态</th>
                 <th className="py-2 px-1.5 text-right w-16">条目</th>
                 <th className="py-2 px-1.5 text-left w-24">最近抓取</th>
-                <th className="py-2 px-1.5 w-8">☆</th>
+                <th className="py-2 px-1.5 w-8" title="特别关注">☆</th>
+                <th className="py-2 px-1.5 w-8" title="删除源（级联删除其文章/视频）">删</th>
                 <th className="py-2 px-1.5 w-10">启用</th>
               </tr>
             </thead>
@@ -290,6 +315,18 @@ export default function SourceLibraryTab() {
                           className={s.focus ? 't-accent' : ''}
                           style={s.focus ? { fill: 'currentColor' } : undefined}
                         />
+                      </button>
+                    </td>
+                    <td className="py-2 px-1.5">
+                      <button
+                        className="icon-btn !w-7 !h-7 t-muted hover:text-red-500"
+                        title="删除源（级联删除其全部文章/视频，不可恢复）"
+                        onClick={async () => {
+                          if (!window.confirm('确认删除源「' + s.name + '」？其全部文章/视频将一并删除。')) return;
+                          try { await api.del('/api/sources/' + s.id); toast('已删除 ' + s.name); load(); } catch (e) { toast(e.message); }
+                        }}
+                      >
+                        <TrashIcon size={13} />
                       </button>
                     </td>
                     <td className="py-2 px-1.5">

@@ -367,7 +367,9 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType) {
   // 熔断阈值放宽到 10，避免把活源误杀；真死频道 10 连跪后也照停。
   const threshold = sourceType === 'youtube' ? 10 : 3;
   if (r && r.fail_count >= threshold && r.enabled !== 0) {
-    await qRun('UPDATE sources SET enabled=0 WHERE id=?', [sourceId]);
+    // Q7 自动恢复依赖：熔断时刻落 frozenAt（历史冻结源由 cleanup 用 lastErrorAt 兜底）
+    if (!extra.frozenAt) extra.frozenAt = nowIso();
+    await qRun('UPDATE sources SET enabled=0, extra=? WHERE id=?', [JSON.stringify(extra), sourceId]);
     return { autoPaused: true };
   }
   return { autoPaused: false };
@@ -499,18 +501,61 @@ async function postRunAlerts(stats) {
   }
 }
 
-// ─── 模式：cleanup（清理 7 天前热榜旧数据） ───
+// ─── 模式：cleanup（数据清理，每日 04:13 北京） ───
 async function runCleanup() {
-  const cutoff = new Date(Date.now() - 7 * 86400000).toISOString();
+  // 1) 热榜旧数据：固定 7 天（热榜是时效性内容，无保留价值）
+  const hotCutoff = new Date(Date.now() - 7 * 86400000).toISOString();
   const r = await qRun(
     `DELETE FROM articles WHERE source_id IN (SELECT id FROM sources WHERE type='hotlist') AND published_at < ? AND read_at IS NULL AND later=0`,
-    [cutoff]
+    [hotCutoff]
   );
   log(`清理完成: 删除 ${r.changes} 条热榜旧数据`);
-  await writeHeartbeat('cleanup', { deleted: r.changes });
+
+  // 2) 普通文章按保留天数（T4-1 Q4，用户决策 2026-09-13：默认 7 天）
+  //    豁免：已读/稍后读/精选标记（入过报与用户交互过的都不删）；视频/播客永不清理
+  let retentionDeleted = 0;
+  const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
+  if (retentionDays > 0) {
+    const cutoff = new Date(Date.now() - retentionDays * 86400000).toISOString();
+    const rr = await qRun(
+      `DELETE FROM articles
+       WHERE published_at < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
+         AND source_id NOT IN (SELECT id FROM sources WHERE type='hotlist')`,
+      [cutoff]
+    );
+    retentionDeleted = rr.changes;
+    log(`保留天数清理: ${retentionDays} 天前未读未标记文章删除 ${retentionDeleted} 条`);
+  }
+
+  // 3) 熔断源自动恢复（T4-1 Q7）：冻结超 48h 自动重新启用（错峰），连续自动恢复 3 次仍熔断则冷却延长到 7 天
+  let resumed = 0;
+  try {
+    const frozen = await qAll(`SELECT id, name, type, extra, last_fetched_at FROM sources WHERE enabled=0 AND status='error'`);
+    const now = Date.now();
+    for (const s of frozen) {
+      let extra = {};
+      try { extra = JSON.parse(s.extra || '{}'); } catch { /* 无 extra */ }
+      if (extra.mergedInto || extra.retired) continue; // 合并/退役源不自动恢复
+      const frozenAt = Date.parse(extra.frozenAt || extra.lastErrorAt || s.last_fetched_at || '') || 0;
+      if (!frozenAt) continue;
+      const resumeCount = Number(extra.resumeCount || 0);
+      const waitMs = resumeCount >= 3 ? 7 * 86400e3 : 48 * 3600e3;
+      if (now - frozenAt < waitMs) continue;
+      extra.resumeCount = resumeCount + 1;
+      extra.frozenAt = nowIso(); // 重置计时起点（下次若再熔断从新时刻算）
+      await qRun(
+        `UPDATE sources SET enabled=1, status='ok', fail_count=0, extra=?, next_fetch_at=? WHERE id=?`,
+        [JSON.stringify(extra), new Date(now + Math.floor(Math.random() * 6 * 3600e3)).toISOString(), s.id]
+      );
+      resumed++;
+      log(`自动恢复熔断源 #${s.id} ${String(s.name).slice(0, 24)}（第 ${extra.resumeCount} 次）`);
+    }
+  } catch (e) { log(`自动恢复失败（不阻断）: ${e.message}`); }
+
+  await writeHeartbeat('cleanup', { deleted: r.changes, retentionDeleted, resumed });
   // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
   try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
-  return r;
+  return { deleted: r.changes, retentionDeleted, resumed };
 }
 
 // ─── 模式：weekly（20-weekly-picks：精选周刊，周五 18:03 北京，窗口=前7天） ───
@@ -722,8 +767,15 @@ async function runDailyAi() {
   const allItems = sections.flatMap((s) => s.items);
   const theme = await _ai.generateTheme(allItems).catch(() => null);
 
+  // 统计卡契约（B2 修复）：StatCards 读 candidates/articles/videos——daily-ai 候选全是文章，
+  // 视频数取窗口内 videos 表新增（T4-3 视频入报后此处口径随之升级）
+  let windowVideos = 0;
+  try {
+    windowVideos = (await qOne('SELECT COUNT(*) c FROM videos WHERE created_at >= ?', [startUtc])).c || 0;
+  } catch { /* 统计失败不阻断 */ }
   const stats = {
     schemaVersion: 2, theme, degraded: false,
+    candidates: valid.length, articles: valid.length, videos: windowVideos,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
     sections: sections.length, totalItems: allItems.length,
     elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
@@ -1171,6 +1223,14 @@ async function runTranslate() {
   try { await getDb().execute('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
   // 21-bilibili-runner：videos.vid 唯一索引（INSERT OR IGNORE 去重依赖）
   try { await getDb().execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_vid ON videos(vid)'); } catch { /* 已存在/空表兼容 */ }
+  // T3-3 读层性能索引（与 Turso/server/db.js 三处同步，2026-09-13）
+  for (const ddl of [
+    'CREATE INDEX IF NOT EXISTS idx_articles_read ON articles(read_at)',
+    'CREATE INDEX IF NOT EXISTS idx_articles_later ON articles(later)',
+    'CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(score)',
+    'CREATE INDEX IF NOT EXISTS idx_videos_favorite ON videos(favorite)',
+    'CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)',
+  ]) { try { await getDb().execute(ddl); } catch { /* 已存在 */ } }
   try {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();

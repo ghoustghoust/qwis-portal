@@ -88,6 +88,7 @@ const PUBLIC_GET_PATHS = new Set([
   '/api/groups', '/api/sources', '/api/status', '/api/settings', '/api/settings/daily',
   '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/weekly',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
+  '/api/opml/export',
 ]);
 
 function verifyAuth(req) {
@@ -277,8 +278,9 @@ async function handleHot(req) {
     args.push(source);
   }
 
-  // 时间窗口：近 3 天
-  conds.push("a.published_at >= datetime('now', '-3 days')");
+  // 时间窗口：近 3 天（参数化 ISO，命中 idx_articles_pubco；原 datetime('now') 逐行计算且与 'T' 格式文本序错位）
+  conds.push('a.published_at >= ?');
+  args.push(new Date(Date.now() - 3 * 86400e3).toISOString());
 
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
 
@@ -693,17 +695,53 @@ async function handleStatus(req) {
   const rssLast = (rssLastRaw === 'null' || rssLastRaw === undefined) ? null : rssLastRaw;
   const biliLast = (biliLastRaw === 'null' || biliLastRaw === undefined) ? null : biliLastRaw;
 
-  const NOISE = "(s.type='hotlist' OR COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)=1)";
+  // 抗过载优化（T3-3）：①json_extract 只在 sources（小表 1.4k 行）上算一次，替代逐行扫 articles；②四组 COUNT 合并为单次扫描
+  const noisyIds = (await qAll(`SELECT id FROM sources WHERE type='hotlist' OR COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)=1`)).map((r) => r.id);
+  const notNoise = noisyIds.length ? `a.source_id NOT IN (${noisyIds.join(',')})` : '1=1';
+  const enabledNotNoise = noisyIds.length ? `enabled=1 AND id NOT IN (${noisyIds.join(',')})` : 'enabled=1';
   const now = Date.now();
   const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
   const weekAgo = new Date(now - 7 * 86400e3).toISOString();
 
-  const overview = {
-    enabledSources: (await qOne(`SELECT COUNT(*) c FROM sources s WHERE s.enabled=1 AND NOT ${NOISE}`)).c,
-    unreadArticles: (await qOne(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND NOT ${NOISE}`)).c,
-    todayNew: (await qOne(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, [dayStart.toISOString()])).c,
-    weekNew: (await qOne(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, [weekAgo])).c,
-  };
+  let overview;
+  {
+    const row = await qOne(`
+      SELECT
+        SUM(CASE WHEN a.read_at IS NULL THEN 1 ELSE 0 END) AS unread,
+        SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS todayNew,
+        SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS weekNew
+      FROM articles a WHERE ${notNoise}
+    `, [dayStart.toISOString(), weekAgo]);
+    overview = {
+      unreadArticles: row?.unread || 0,
+      todayNew: row?.todayNew || 0,
+      weekNew: row?.weekNew || 0,
+    };
+  }
+  overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE ${enabledNotNoise}`)).c;
+
+  // B4/P3-5：入早报统计——最近 7 天 daily_reports 的 sections 条目按来源聚合（≤7 行 JSON，JS 聚合零表扫描）
+  try {
+    const since = new Date(now - 7 * 86400e3).toISOString();
+    const reports = await qAll('SELECT stats, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
+    const srcCount = {};
+    let itemCount = 0;
+    for (const rep of reports) {
+      let sections = [];
+      try { sections = JSON.parse(rep.sections || '[]'); } catch { /* 忽略坏行 */ }
+      for (const col of sections) {
+        for (const it of (col.items || [])) {
+          itemCount++;
+          const nm = it.source || it.source_name;
+          if (nm) srcCount[nm] = (srcCount[nm] || 0) + 1;
+        }
+      }
+    }
+    overview.dailyItemCount = itemCount;
+    overview.dailyTopSources = Object.entries(srcCount)
+      .sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([name, count]) => ({ name, count }));
+  } catch { /* 统计失败不阻断 status */ }
 
   const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
 
@@ -1450,6 +1488,39 @@ function parseOpml(xml) {
   return outlines;
 }
 
+// GET /api/opml/export — 全量启用源导出标准 OPML 2.0（T4-1 Q2，其他阅读器可直接导入）
+async function handleOpmlExport(req) {
+  const groups = await qAll('SELECT id, name, kind FROM groups ORDER BY kind, sort, id');
+  const sources = await qAll("SELECT name, url, group_id FROM sources WHERE enabled=1 ORDER BY group_id, name");
+  const esc = (t) => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const byGroup = {};
+  const loose = [];
+  for (const sRow of sources) {
+    if (sRow.group_id && groups.some((g) => g.id === sRow.group_id)) {
+      const key = sRow.group_id;
+      (byGroup[key] = byGroup[key] || []).push(sRow);
+    } else loose.push(sRow);
+  }
+  const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<opml version="2.0">', '  <head>',
+    '    <title>qwis-intel sources</title>', `    <dateCreated>${new Date().toISOString()}</dateCreated>`,
+    '  </head>', '  <body>'];
+  for (const g of groups) {
+    const list = byGroup[g.id] || [];
+    if (!list.length) continue;
+    lines.push(`    <outline text="${esc(g.name)}" title="${esc(g.name)}">`);
+    for (const sRow of list) lines.push(`      <outline type="rss" text="${esc(sRow.name)}" title="${esc(sRow.name)}" xmlUrl="${esc(sRow.url)}"/>`);
+    lines.push('    </outline>');
+  }
+  for (const sRow of loose) lines.push(`    <outline type="rss" text="${esc(sRow.name)}" title="${esc(sRow.name)}" xmlUrl="${esc(sRow.url)}"/>`);
+  lines.push('  </body>', '</opml>');
+  const xml = lines.join('\n');
+  return {
+    status: 200,
+    headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Content-Disposition': 'attachment; filename="qwis-sources.opml"' },
+    body: xml,
+  };
+}
+
 // POST /api/opml/sync {url?} — 拉取 OPML → 新增 rss 源（已存在按 url 跳过）
 async function handleOpmlSync(req) {
   const url = (req.body && req.body.url) || (await getSetting('opml.url', null));
@@ -1529,11 +1600,19 @@ async function handleBackupRestore(req) {
 // ─── 数据管理 ───
 const DATA_TABLES = ['groups', 'sources', 'settings', 'credentials', 'articles', 'videos', 'pending_items', 'daily_reports', 'job_queue', 'audit_log'];
 const CLEAN_TABLES = [
-  { table: 'articles', col: 'COALESCE(published_at, created_at)' },
-  { table: 'videos', col: 'COALESCE(published_at, created_at)' },
+  // articles 走专门函数（豁免已读/稍后读/精选；T4-1 Q4 与 runner cleanup 同语义）
+  { table: 'videos', col: 'COALESCE(published_at, created_at)', skip: true }, // 视频/播客永不自动清理（用户决策 2026-09-13）
   { table: 'pending_items', col: 'imported_at' },
   { table: 'daily_reports', col: 'generated_at' },
 ];
+
+// 文章保留清理：豁免用户交互过的（已读/稍后读/精选标记）与热榜（热榜由 runner cleanup 固定 7 天规则处理）
+const ARTICLE_CLEAN_WHERE = `COALESCE(published_at, created_at) < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
+       AND source_id NOT IN (SELECT id FROM sources WHERE type='hotlist')`;
+async function cleanupArticles(cutoff, { preview = false } = {}) {
+  if (preview) return qOne(`SELECT COUNT(*) c FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);
+  return qRun(`DELETE FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);
+}
 
 function cutoffIso(days) {
   const d = Number(days);
@@ -1562,12 +1641,16 @@ async function handleDataCleanupPreview(req) {
     const cutoff = cutoffIso((req.body || {}).days);
     const willDelete = {};
     let total = 0;
-    for (const { table, col } of CLEAN_TABLES) {
+    const art = await cleanupArticles(cutoff, { preview: true });
+    willDelete.articles = art?.c || 0;
+    total += willDelete.articles;
+    for (const { table, col, skip } of CLEAN_TABLES) {
+      if (skip) { willDelete[table] = 0; continue; }
       const n = (await qOne(`SELECT COUNT(*) c FROM ${table} WHERE ${col} < ?`, [cutoff])).c;
       willDelete[table] = n;
       total += n;
     }
-    return jsonOk({ days: Number((req.body || {}).days), cutoff, willDelete, total });
+    return jsonOk({ days: Number((req.body || {}).days), cutoff, willDelete, total, note: '视频/播客不清理；已读/稍后读/精选豁免' });
   } catch (err) {
     return { status: 400, body: jsonErr(err.message) };
   }
@@ -1581,7 +1664,11 @@ async function handleDataCleanup(req) {
     const cutoff = cutoffIso(body.days);
     const deleted = {};
     let total = 0;
-    for (const { table, col } of CLEAN_TABLES) {
+    const art = await cleanupArticles(cutoff);
+    deleted.articles = art.changes || 0;
+    total += deleted.articles;
+    for (const { table, col, skip } of CLEAN_TABLES) {
+      if (skip) { deleted[table] = 0; continue; }
       const n = (await qRun(`DELETE FROM ${table} WHERE ${col} < ?`, [cutoff])).changes;
       deleted[table] = n;
       total += n;
@@ -2151,6 +2238,7 @@ async function dispatch(req) {
   if (unfreezeMatch && method === 'POST') return handleUnfreezeOne(req, Number(unfreezeMatch[1]));
   if (path === '/api/queue/sync' && method === 'POST') return handleQueueSync(req);
   if ((path === '/api/opml/sync' || path === '/api/rss/sync') && method === 'POST') return handleOpmlSync(req);
+  if (path === '/api/opml/export' && method === 'GET') return handleOpmlExport(req);
   if ((path === '/api/rss/refresh' || path === '/api/opml/refresh') && method === 'POST') return handleRssRefresh(req);
   if (path === '/api/backup' && method === 'POST') return handleBackup(req);
   if (path === '/api/backup/restore' && method === 'POST') return handleBackupRestore(req);

@@ -120,6 +120,12 @@ db.exec('CREATE INDEX IF NOT EXISTS idx_videos_published ON videos(published_at)
 // idx_articles_pubco: 列表排序 ORDER BY COALESCE(published_at, created_at) 表达式索引
 // （Turso 生产库已同步执行，此处为本地 parity + 新库建库）
 db.exec('CREATE INDEX IF NOT EXISTS idx_articles_created ON articles(created_at)');
+// T3-3 读层性能（2026-09-13，与 Turso 同步）：reading 计数/hot 排序/视频收藏走索引
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_read ON articles(read_at)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_later ON articles(later)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(score)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_videos_favorite ON videos(favorite)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(published_at, created_at))');
 
 // 六期（F6）：articles.category 存 feed 的 <category>（AIHOT 分类映射的主依据）

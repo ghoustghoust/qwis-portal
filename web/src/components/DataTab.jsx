@@ -327,7 +327,7 @@ export default function DataTab() {
         <h3 className="text-sm font-semibold t-text">存储统计</h3>
         <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
           <span className="t-muted">
-            库体积：<b className="t-text tabular-nums">{fmtSize(dbSize)}</b>
+            库体积：<b className="t-text tabular-nums">{dbSize ? fmtSize(dbSize) : (stats?.sizeNote || '—')}</b>
           </span>
           <button className="btn-ghost !py-1 !px-2.5" disabled={!ready || !!busy} onClick={() => { loadStats(); loadSnaps(); }}>
             刷新

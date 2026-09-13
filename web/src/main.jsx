@@ -78,14 +78,6 @@ export function IconRail() {
         </a>
       ))}
       <div className="mt-auto flex flex-col items-center gap-1.5">
-        {/* i18n：中英文切换 */}
-        <button
-          className="icon-btn text-[10px] font-bold w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:t-accent-soft hover:t-accent t-muted"
-          title={lang === 'zh' ? 'Switch to English' : '切换为中文'}
-          onClick={toggleLang}
-        >
-          {t('nav.lang')}
-        </button>
         {/* 管理后台为独立应用,阅读器不再提供入口;直接访问 /admin/ 即可 */}
         <ThemeButton />
       </div>

@@ -113,7 +113,9 @@ function buildOpmlCategoryMap() {
   const map = new Map();
   const opmlDir = path.join(__dirname, '..', '..', 'opml');
   if (!fs.existsSync(opmlDir)) return map;
-  const files = fs.readdirSync(opmlDir).filter((f) => f.endsWith('.opml'));
+  // 只读带分类层级的 bestblogs 系 OPML——扁平结构文件（tidings-*/BestBlogs_RSS_* 等，
+  // 无分类分组，顶层即源）会把分类映射污染成源名（2026-09-13 classify 测试实锤）
+  const files = fs.readdirSync(opmlDir).filter((f) => f.endsWith('.opml') && f.startsWith('bestblogs_'));
   for (const file of files) {
     const xml = fs.readFileSync(path.join(opmlDir, file), 'utf8');
     // 逐行解析 outline 标签，跟踪当前父分类
