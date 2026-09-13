@@ -33,6 +33,7 @@
 | `docs/DEVELOPMENT_STANDARDS.md` | **开发规范与验收标准**：代码规范、双端同步规则、测试要求、PR Checklist |
 | `docs/ISSUES.md` | **已知问题清单**（活文档）：P0-P3 分级，含修复记录 |
 | `docs/NEXT-DEV-REQS.md` | **后续开发需求（T2 系列）**：订阅模型/推荐算法/管理后台UX/taskQueue修复 的需求定义+排期 |
+| `docs/DELIVERY-2026-09-13.md` | 交付文档（09-13 凌晨紧急修复：白屏/报警轰炸/localhost源 + 全周期状态） |
 | `docs/AUDIT-2026-09-12.md` | **交叉审核报告（09-11~12 全量变更）**：实现逻辑/验证状态矩阵/现存 bug/风险/优化建议——新 Agent 审阅入口 |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威）：本地 Express vs 云端（Vercel qwis-intel）功能覆盖矩阵、迁移路径、待开发目标；其它文档不再维护矩阵一律指向本文 |
 | `docs/BESTBLOGS_BORROW.md` | BestBlogs 调研借鉴清单：两阶段过滤/六节点管线/三段式翻译/可解释推荐等 10 项范式到总 spec 的映射 |
