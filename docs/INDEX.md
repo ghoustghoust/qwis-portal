@@ -35,7 +35,8 @@
 | `docs/INDEX.md` | 本文档 |
 | `docs/CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威，其它文档不再维护矩阵） |
-| `docs/ISSUES.md` | **活跃问题清单**（2026-09-13 大清洗后只留 4 bug + 6 挂案；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`） |
+| `docs/ISSUES.md` | **活跃问题清单**（B5-B12 与热点榜项动态核销；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`） |
+| `docs/DELIVERY-2026-09-14.md` | **交付文档**（09-13~14 全量：最近修改/出错问题/未来计划/文件索引/热点榜二阶段） |
 | `docs/NEXT-DEV-REQS.md` | **T3+T4 系列需求**：T3（早报体系 v3/管理台早报中心/读层性能/来源榜）+ T4（快改清单/源治理与反过载/内容形态补全/原定目标存续盘点） |
 | `docs/pitfalls/` | **踩坑库**（2026-09-13 起）：按域单文件（collection/backend/ai/frontend/deployment/testing），每条含症状/根因/规则/案例，换手必读；ARCHITECTURE §5 只留索引 |
 | `docs/DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 127.0.0.1:12000） |
