@@ -695,10 +695,9 @@ async function handleStatus(req) {
   const rssLast = (rssLastRaw === 'null' || rssLastRaw === undefined) ? null : rssLastRaw;
   const biliLast = (biliLastRaw === 'null' || biliLastRaw === undefined) ? null : biliLastRaw;
 
-  // 抗过载优化（T3-3）：①json_extract 只在 sources（小表 1.4k 行）上算一次，替代逐行扫 articles；②四组 COUNT 合并为单次扫描
-  const noisyIds = (await qAll(`SELECT id FROM sources WHERE type='hotlist' OR COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)=1`)).map((r) => r.id);
-  const notNoise = noisyIds.length ? `a.source_id NOT IN (${noisyIds.join(',')})` : '1=1';
-  const enabledNotNoise = noisyIds.length ? `enabled=1 AND id NOT IN (${noisyIds.join(',')})` : 'enabled=1';
+  // 抗过载优化（T3-3，Turso 实测）：①噪声过滤用正连接（104ms），弃 NOT IN(1500 字面量)（12.8s/次——
+  // 逐行评估巨型 IN 列表）；②四组 COUNT 合并单次扫描
+  const notNoiseJoin = "JOIN sources s ON s.id=a.source_id WHERE s.type!='hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)!=1";
   const now = Date.now();
   const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
   const weekAgo = new Date(now - 7 * 86400e3).toISOString();
@@ -710,7 +709,7 @@ async function handleStatus(req) {
         SUM(CASE WHEN a.read_at IS NULL THEN 1 ELSE 0 END) AS unread,
         SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS todayNew,
         SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS weekNew
-      FROM articles a WHERE ${notNoise}
+      FROM articles a ${notNoiseJoin}
     `, [dayStart.toISOString(), weekAgo]);
     overview = {
       unreadArticles: row?.unread || 0,
@@ -718,7 +717,7 @@ async function handleStatus(req) {
       weekNew: row?.weekNew || 0,
     };
   }
-  overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE ${enabledNotNoise}`)).c;
+  overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE enabled=1 AND type!='hotlist' AND COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)!=1`)).c;
 
   // B4/P3-5：入早报统计——最近 7 天 daily_reports 的 sections 条目按来源聚合（≤7 行 JSON，JS 聚合零表扫描）
   try {
