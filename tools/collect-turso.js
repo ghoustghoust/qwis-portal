@@ -1229,7 +1229,9 @@ async function runTranslate() {
     'CREATE INDEX IF NOT EXISTS idx_articles_later ON articles(later)',
     'CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(score)',
     'CREATE INDEX IF NOT EXISTS idx_videos_favorite ON videos(favorite)',
-    'CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)',
+    'CREATE INDEX IF NOT EXISTS idx_articles_read_sk ON articles(read_at, COALESCE(published_at, created_at) DESC, id DESC)',
+    'CREATE INDEX IF NOT EXISTS idx_articles_later_sk ON articles(later, COALESCE(published_at, created_at) DESC, id DESC)',
+    'CREATE INDEX IF NOT EXISTS idx_videos_fav_sk ON videos(favorite, published_at DESC, id DESC)',
   ]) { try { await getDb().execute(ddl); } catch { /* 已存在 */ } }
   try {
     if (MODE === 'collect') await runCollect();

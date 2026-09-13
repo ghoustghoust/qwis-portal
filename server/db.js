@@ -126,6 +126,10 @@ db.exec('CREATE INDEX IF NOT EXISTS idx_articles_later ON articles(later)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(score)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_videos_favorite ON videos(favorite)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)');
+// 表达式覆盖索引：reading 快路径窄查询专用（T3-3，与 Turso/runner 同步）
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_read_sk ON articles(read_at, COALESCE(published_at, created_at) DESC, id DESC)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_articles_later_sk ON articles(later, COALESCE(published_at, created_at) DESC, id DESC)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_videos_fav_sk ON videos(favorite, published_at DESC, id DESC)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(published_at, created_at))');
 
 // 六期（F6）：articles.category 存 feed 的 <category>（AIHOT 分类映射的主依据）

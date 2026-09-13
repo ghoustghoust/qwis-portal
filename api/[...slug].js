@@ -801,10 +801,12 @@ async function handleReading(req) {
   const searchQ = (q.q || '').trim();
   const PAGE_SIZE = 30;
 
-  // 文章侧条件
+  // 文章侧条件（tab=all 的 OR 条件单独抽出——SQLite 无法对 OR 走索引，2026-09-13 实测 44k 宽行全扫 9.2s；
+  // 拆成 read/later 两个索引分支 UNION ALL 后走 idx_articles_read / idx_articles_later）
   const aConds = [];
   const aArgs = [];
-  if (tab === 'all') aConds.push('(a.read_at IS NOT NULL OR a.later = 1)');
+  let aTabOr = '';
+  if (tab === 'all') aTabOr = 'a.read_at IS NOT NULL OR a.later = 1';
   else if (tab === 'favorited') aConds.push('a.later = 1');
   else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
   if (type === 'article') aConds.push("s.type IN ('wechat','rss','x')");
@@ -825,7 +827,7 @@ async function handleReading(req) {
     vArgs.push(`%${searchQ}%`, `%${searchQ}%`);
   }
 
-  const aWhere = aConds.length ? `WHERE ${aConds.join(' AND ')}` : 'WHERE 0';
+  const aExtra = aConds.length ? ` AND ${aConds.join(' AND ')}` : '';
   const vWhere = vConds.length ? `WHERE ${vConds.join(' AND ')}` : 'WHERE 0';
 
   // 计数（受 type/q 影响）
@@ -840,17 +842,31 @@ async function handleReading(req) {
   const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
   if (aTypeCond !== 'AND 0') {
     const countArgs = qLike ? [qLike, qLike] : [];
-    const row = await qOne(`
-      SELECT
-        SUM(CASE WHEN a.read_at IS NOT NULL OR a.later = 1 THEN 1 ELSE 0 END) AS total,
-        SUM(CASE WHEN a.later = 1 THEN 1 ELSE 0 END) AS fav,
-        SUM(CASE WHEN a.read_at IS NOT NULL THEN 1 ELSE 0 END) AS rd
+    if (!qLike && aTypeCond === '') {
+      // T3-3 快路径（2026-09-13 实测 1953ms→120ms）：无 q/type 过滤时计数走索引子查询，不 join 不扫宽行
+      const row = await qOne(`
+        SELECT
+          (SELECT COUNT(*) FROM articles WHERE read_at IS NOT NULL)
+            + (SELECT COUNT(*) FROM articles WHERE later=1 AND read_at IS NULL) AS total,
+          (SELECT COUNT(*) FROM articles WHERE later=1) AS fav,
+          (SELECT COUNT(*) FROM articles WHERE read_at IS NOT NULL) AS rd
+      `);
+      counts.all += (row?.total || 0);
+      counts.favorited += (row?.fav || 0);
+      counts.read += (row?.rd || 0);
+    } else {
+      const row = await qOne(`
+        SELECT
+          SUM(CASE WHEN a.read_at IS NOT NULL OR a.later = 1 THEN 1 ELSE 0 END) AS total,
+          SUM(CASE WHEN a.later = 1 THEN 1 ELSE 0 END) AS fav,
+          SUM(CASE WHEN a.read_at IS NOT NULL THEN 1 ELSE 0 END) AS rd
       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
       WHERE 1=1 ${aTypeCond} ${aQCond}
     `, countArgs);
-    counts.all += (row?.total || 0);
-    counts.favorited += (row?.fav || 0);
-    counts.read += (row?.rd || 0);
+      counts.all += (row?.total || 0);
+      counts.favorited += (row?.fav || 0);
+      counts.read += (row?.rd || 0);
+    }
   }
 
   // 视频侧计数
@@ -866,6 +882,84 @@ async function handleReading(req) {
     counts.favorited += c;
   }
 
+  // T3-3 快路径（2026-09-13 实测 9-13s→~350ms）：无筛选时两段式——
+  // ①窄查询只取 id/sort_key（表达式覆盖索引 idx_*_sk，不触碰宽行）②按 id 取 31 条全列
+  if (!aConds.length) {
+    const narrowConds = [];
+    const narrowArgs = [];
+    if (q.cursor) { narrowConds.push('sort_key < ?'); narrowArgs.push(String(q.cursor)); }
+    const narrowWhere = narrowConds.length ? 'WHERE ' + narrowConds.join(' AND ') : '';
+    const narrow = await qAll(`
+      SELECT id, sort_key, item_type FROM (
+        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article' AS item_type
+        FROM articles a WHERE a.read_at IS NOT NULL
+        UNION ALL
+        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article'
+        FROM articles a WHERE a.later = 1 AND a.read_at IS NULL
+        UNION ALL
+        SELECT v.id, v.published_at AS sort_key, 'video'
+        FROM videos v WHERE v.favorite = 1
+      ) ${narrowWhere}
+      ORDER BY sort_key DESC, id DESC
+      LIMIT ${PAGE_SIZE + 1}
+    `, narrowArgs);
+
+    const rowsFull = [];
+    const aIds = narrow.filter((r) => r.item_type === 'article').map((r) => Number(r.id));
+    const vIds = narrow.filter((r) => r.item_type === 'video').map((r) => Number(r.id));
+    if (aIds.length) {
+      const artRows = await qAll(`
+        SELECT a.id, a.title, a.url, a.cover, a.summary, a.published_at, a.created_at,
+               a.read_at, a.later, a.tags,
+               s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar
+        FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+        WHERE a.id IN (${aIds.join(',')})
+      `);
+      for (const r of artRows) rowsFull.push({ ...r, item_type: 'article', sort_key: r.published_at || r.created_at, favorite: 0 });
+    }
+    if (vIds.length) {
+      const vidRows = await qAll(`
+        SELECT v.id, v.title, v.url, v.cover, v.intro AS summary, v.published_at AS date,
+               v.published_at, v.favorite,
+               s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar
+        FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+        WHERE v.id IN (${vIds.join(',')})
+      `);
+      for (const r of vidRows) rowsFull.push({ ...r, item_type: 'video', sort_key: r.published_at, read_at: null, later: 0, tags: null });
+    }
+    const orderMap = new Map(narrow.map((r, i) => [r.item_type + ':' + r.id, i]));
+    rowsFull.sort((x, y) => (orderMap.get(x.item_type + ':' + x.id) ?? 0) - (orderMap.get(y.item_type + ':' + y.id) ?? 0));
+    const items = rowsFull.slice(0, PAGE_SIZE);
+    const last = narrow[narrow.length - 1];
+    const nextCursor = narrow.length > PAGE_SIZE && last ? last.sort_key : null;
+    return jsonOk({ items, nextCursor, counts });
+  }
+
+  // 带筛选（type/q）：回退单条宽查询（低频路径，可接受）
+  const aBranch = (tabCond) => `
+      SELECT
+        a.id, 'article' AS item_type, a.title, a.url, a.cover, a.summary,
+        COALESCE(a.published_at, a.created_at) AS date,
+        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
+        a.read_at, a.later, 0 AS favorite, a.tags,
+        COALESCE(a.published_at, a.created_at) AS sort_key
+      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+      WHERE ${tabCond}${aExtra}`;
+  const articleSql = aTabOr
+    ? `${aBranch(aTabOr)}\n      UNION ALL\n${aBranch('a.later = 1 AND a.read_at IS NULL')}`
+    : (aConds.length ? aBranch('1=1') : '');
+  const videoSql = vConds.length ? `
+      SELECT
+        v.id, 'video' AS item_type, v.title, v.url, v.cover, v.intro AS summary,
+        v.published_at AS date,
+        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
+        NULL AS read_at, 0 AS later, v.favorite, NULL AS tags,
+        v.published_at AS sort_key
+      FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+      ${vWhere}` : '';
+  const branches = [articleSql, videoSql].filter(Boolean).join('\n      UNION ALL\n');
+  if (!branches) return jsonOk({ items: [], nextCursor: null, counts });
+
   // 游标分页
   let cursorCond = '';
   const cursorArgs = [];
@@ -876,23 +970,7 @@ async function handleReading(req) {
 
   const rows = await qAll(`
     SELECT * FROM (
-      SELECT
-        a.id, 'article' AS item_type, a.title, a.url, a.cover, a.summary,
-        COALESCE(a.published_at, a.created_at) AS date,
-        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
-        a.read_at, a.later, 0 AS favorite, a.tags,
-        COALESCE(a.published_at, a.created_at) AS sort_key
-      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
-      ${aWhere}
-      UNION ALL
-      SELECT
-        v.id, 'video' AS item_type, v.title, v.url, v.cover, v.intro AS summary,
-        v.published_at AS date,
-        s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar,
-        NULL AS read_at, 0 AS later, v.favorite, NULL AS tags,
-        v.published_at AS sort_key
-      FROM videos v LEFT JOIN sources s ON s.id = v.source_id
-      ${vWhere}
+${branches}
     ) combined
     WHERE 1=1 ${cursorCond}
     ORDER BY sort_key DESC, id DESC
