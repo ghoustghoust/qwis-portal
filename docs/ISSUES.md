@@ -39,6 +39,15 @@
 
 ---
 
+## 修复记录（2026-09-13 深夜二，第 3 批次批：commit 4aa76d2）
+
+| 项 | 内容 | 验证 |
+|---|---|---|
+| T3-1 R0c | 主题全景：标题 Jaccard 聚类 + AI 命名/四类视角/综述 → stats.themes/mybrief.themes → ThemePanorama 组件（Daily/MyBrief 页） | 今晚 21:30 首跑出真实主题 |
+| T4-3 | 视频入报：daily-ai +20、weekly +15（id 'v' 前缀防冲突，kind=video 前端外链）；播客源本为 RSS 形态已在管线 | 回归无泄漏/无冲突 |
+| T3-1 R7 | 阅读足迹：buildReadingDigest（24h 已读/稍后读/Top5 来源）→ reading.digest → /api/mybrief → MyBriefPage 足迹卡 | 今晚 21:30 首跑 |
+| 对抗自查 | 视频 id 三处命名空间（used/QuickStudy/featured）；digest 失败不阻断；旧数据缺键优雅隐藏 | 部署实测无回归 |
+
 ## 修复记录（2026-09-13 深夜，第 3 批首批 + 对抗性审查）
 
 | 项 | 内容 | 证据 |
