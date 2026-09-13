@@ -55,7 +55,7 @@ function HeartButton({ active, onToggle, t }) {
 // 时间轴卡片（两个 Tab 共用）
 function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
   const tags = parseTags(it.tags);
-  const showReason = !!it.reason && (tab === 'featured' || !!it.featured);
+  const showReason = !!it.reason; // T5-1：时间线卡有推荐理由即展示（自有源深析内容都有）
   return (
     <article
       className="card card-lift p-4 cursor-pointer"
@@ -198,7 +198,7 @@ export default function HotPage() {
         const data = await api.get(
           `/api/hot${qs({
             tab,
-            category: tab === 'featured' ? category || undefined : undefined,
+            category: category || undefined, // T5-1：featured/all 都支持真实分类过滤
             q: tab === 'all' ? qDebounced || undefined : undefined,
             source: tab === 'all' ? source || undefined : undefined,
             cursor: cur || undefined,
