@@ -2061,6 +2061,52 @@ function detectTypeByUrl(url) {
 }
 
 // POST /api/sources {url, name?, type?} — F1
+
+// POST /api/sources/dedupe {apply?:bool} — 源查重合并（T4-2 R1）
+// 组1=归一化 URL 相同；组2=同名+同域名。保留策略：启用>停用、fail_count 低者优先、id 老者优先；
+// 其余 enabled=0 且 extra.mergedInto=保留项 id（cleanup 自动恢复会跳过 mergedInto 源）
+async function handleSourcesDedupe(req) {
+  const apply = !!(req.body || {}).apply;
+  const rows = await qAll('SELECT id, name, type, url, enabled, fail_count, created_at, extra FROM sources');
+  const normUrl = (u) => String(u || '').trim().toLowerCase().replace(/^http:\/\//, 'https://').replace(/\/+$/, '');
+  const normName = (n) => String(n || '').trim().toLowerCase().replace(/\s+/g, '');
+  const domainOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+  const groups = [];
+  const byKey = new Map();
+  for (const r of rows) {
+    const k1 = 'u:' + normUrl(r.url);
+    const k2 = r.name ? 'n:' + normName(r.name) + '@' + domainOf(r.url) : null;
+    let g = byKey.get(k1) || (k2 && byKey.get(k2)) || null;
+    if (!g) { g = { members: [] }; groups.push(g); }
+    if (!byKey.has(k1)) byKey.set(k1, g);
+    if (k2 && !byKey.has(k2)) byKey.set(k2, g);
+    g.members.push(r);
+  }
+  const dupGroups = groups
+    .filter((g) => g.members.length > 1)
+    .map((g) => {
+      const sorted = [...g.members].sort((a, b) => (b.enabled - a.enabled) || ((a.fail_count || 0) - (b.fail_count || 0)) || (a.id - b.id));
+      const keep = sorted[0];
+      return {
+        keep: { id: keep.id, name: keep.name, enabled: !!keep.enabled },
+        merged: sorted.slice(1).map((m) => ({ id: m.id, name: m.name, url: m.url, enabled: !!m.enabled })),
+      };
+    });
+  if (!apply) return jsonOk({ groups: dupGroups.length, plan: dupGroups, note: 'apply:true 执行合并' });
+  let mergedCount = 0;
+  for (const g of dupGroups) {
+    for (const m of g.merged) {
+      let extra = {};
+      try { extra = JSON.parse((rows.find((r) => r.id === m.id) || {}).extra || '{}'); } catch { /* 无 extra */ }
+      extra.mergedInto = g.keep.id;
+      await qRun('UPDATE sources SET enabled=0, extra=? WHERE id=?', [JSON.stringify(extra), m.id]);
+      mergedCount++;
+    }
+  }
+  await auditRecord('sources.dedupe', { detail: { groups: dupGroups.length, merged: mergedCount } });
+  return jsonOk({ groups: dupGroups.length, merged: mergedCount });
+}
+
 async function handleSourceCreate(req) {
   const { url, name, type } = req.body || {};
   if (!url || !String(url).trim()) return { status: 400, body: jsonErr('缺少 url') };
@@ -2400,6 +2446,7 @@ async function dispatch(req) {
 
   // ─── 源写（14-sources-write）静态路径必须先于 /:id 正则（防截胡） ───
   if (path === '/api/sources' && method === 'POST') return handleSourceCreate(req);
+  if (path === '/api/sources/dedupe' && method === 'POST') return handleSourcesDedupe(req);
   if (path === '/api/sources/batch' && method === 'POST') return handleSourcesBatch(req);
   if (path === '/api/sources/autoclassify' && method === 'POST') return handleAutoclassify(req);
   if (path === '/api/sources/refresh-all' && method === 'POST') return handleSourceRefreshAll(req);

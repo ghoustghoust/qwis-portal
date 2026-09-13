@@ -456,11 +456,40 @@ async function runCollect() {
     `SELECT * FROM sources WHERE enabled=1 AND ${UNSUPPORTED_TYPES} AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
     [now, LIMIT]
   );
-  stats.total = sources.length;
-  log(`到期源 ${sources.length} 个，并发 ${CONCURRENCY} 开始采集`);
+
+  // T4-2 R2 failover：同 failoverGroup 只采主源（fail_count 最少者，备源本轮跳过省重复抓取）
+  const extraOf = (s) => { try { return JSON.parse(s.extra || '{}'); } catch { return {}; } };
+  const byGroup = {};
+  const due = [];
+  let groupSkipped = 0;
+  for (const s of sources) {
+    const fg = extraOf(s).failoverGroup;
+    if (!fg) { due.push(s); continue; }
+    (byGroup[fg] = byGroup[fg] || []).push(s);
+  }
+  for (const members of Object.values(byGroup)) {
+    members.sort((a, b) => (a.fail_count || 0) - (b.fail_count || 0) || String(b.last_fetched_at || '').localeCompare(String(a.last_fetched_at || '')));
+    due.push(members[0]);
+    groupSkipped += members.length - 1;
+  }
+  stats.total = due.length;
+  log(`到期源 ${sources.length} 个（failover 组 ${Object.keys(byGroup).length}，备源跳过 ${groupSkipped}），并发 ${CONCURRENCY} 开始采集`);
 
   const t0 = Date.now();
-  await runPool(sources, (s) => collectOne(s, stats), CONCURRENCY);
+  await runPool(due, (s) => collectOne(s, stats), CONCURRENCY);
+
+  // 主源失败 → 顺序尝试同组备源（上限 10 组防雪崩；备源失败如实计入 stats）
+  const failedGroupPrimaries = (stats.failures || []).map((f) => f.source).filter((s) => s && extraOf(s).failoverGroup);
+  for (const p of failedGroupPrimaries.slice(0, 10)) {
+    const siblings = (byGroup[extraOf(p).failoverGroup] || []).filter((m) => m.id !== p.id);
+    for (const sb of siblings) {
+      log(`failover: ${String(p.name).slice(0, 24)} 失败 → 尝试备源 ${String(sb.name).slice(0, 24)}`);
+      const before = stats.failed;
+      await collectOne(sb, stats);
+      if (stats.failed === before) { log(`failover 生效: ${String(sb.name).slice(0, 24)} 成功`); break; }
+    }
+  }
+
   const sec = ((Date.now() - t0) / 1000).toFixed(1);
 
   log(`采集完成: 成功 ${stats.success} / 失败 ${stats.failed} / 跳过 ${stats.skipped} / 新增 ${stats.articles} 篇 / 耗时 ${sec}s`);
@@ -559,7 +588,27 @@ async function runCleanup() {
     }
   } catch (e) { log(`自动恢复失败（不阻断）: ${e.message}`); }
 
-  await writeHeartbeat('cleanup', { deleted: r.changes, retentionDeleted, resumed });
+  // 4) 频率自适应（T4-2 R3）：仅 extra.autoInterval===true 的源，按近 14 天实测出文频率调 intervalMin
+  //    （≥10 篇/天→60min；3-10→120；1-3→240；<1→720）。批量导入源将 autoInterval 打开即自动分层
+  let autoAdj = 0;
+  try {
+    const autos = await qAll(`SELECT id, extra FROM sources WHERE enabled=1 AND type IN ('rss','x') AND COALESCE(json_extract(COALESCE(extra,'{}'),'$.autoInterval'),0)=1`);
+    const since14 = new Date(Date.now() - 14 * 86400e3).toISOString();
+    for (const s2 of autos) {
+      const cnt = (await qOne('SELECT COUNT(*) c FROM articles WHERE source_id=? AND published_at >= ?', [s2.id, since14])).c;
+      const perDay = cnt / 14;
+      const suggested = perDay >= 10 ? 60 : perDay >= 3 ? 120 : perDay >= 1 ? 240 : 720;
+      let ex = {};
+      try { ex = JSON.parse(s2.extra || '{}'); } catch { /* 无 extra */ }
+      if (ex.intervalMin === suggested) continue;
+      ex.intervalMin = suggested;
+      await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(ex), s2.id]);
+      autoAdj++;
+    }
+    if (autoAdj) log(`频率自适应: 调整 ${autoAdj} 个源的 intervalMin`);
+  } catch (e) { log(`频率自适应失败（不阻断）: ${e.message}`); }
+
+  await writeHeartbeat('cleanup', { deleted: r.changes, retentionDeleted, resumed, autoAdj });
   // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
   try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
   return { deleted: r.changes, retentionDeleted, resumed };

@@ -198,6 +198,24 @@ export default function SourceLibraryTab() {
         >
           <FolderIcon size={15} /> 新建文件夹
         </button>
+        <button
+          className="btn-ghost text-sm flex items-center gap-1"
+          title="同 URL 或 同名同域 的重复源合并：每组保留最优，其余停用并标记"
+          onClick={async () => {
+            try {
+              const prev = await api.post('/api/sources/dedupe', {});
+              if (!prev.groups) return toast('查重完成：无重复');
+              if (!window.confirm(`发现 ${prev.groups} 组重复源。
+合并将停用每组冗余源（保留启用中/失败最少的一个）并标记 mergedInto。
+执行合并？`)) return;
+              const r = await api.post('/api/sources/dedupe', { apply: true });
+              toast(`已合并 ${r.merged} 个冗余源（${r.groups} 组）`);
+              load();
+            } catch (e) { toast(e.message); }
+          }}
+        >
+          查重合并
+        </button>
         <a
           className="btn-ghost text-sm flex items-center gap-1"
           href="/api/opml/export"
