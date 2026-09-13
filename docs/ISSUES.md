@@ -7,7 +7,10 @@
 
 ---
 
-## 🔴 活跃 bug（待用户确认后修复）
+## 🔴 活跃 bug
+
+> B1-B4 已于 2026-09-13 晚修复并云端实测（commit d8b0347/8860be4/fce6edb/4ec3e47），详见文末修复记录。
+
 
 | # | 问题 | 根因（已定性） | 修复方案 | 预估 |
 |---|------|------|------|------|
@@ -33,3 +36,21 @@
 
 - **2026-09-09 ~ 09-12 的 P0-1~P0-11、P1-1~P1-16、P2-2/P2-8/P2-9/P2-10、P3 系列**：全部修复并云端实测，完整清单与修复记录见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`。
 - 专项分析（源自动刷新/调度冲突/双端差异矩阵）已随方案A落地失效，一并存档于上述文件。
+
+---
+
+## 修复记录（2026-09-13 晚，阻塞清单第 0/1/2 批）
+
+| # | 修复 | 实测证据 |
+|---|---|---|
+| B1 | daily_reports #84 主题"2。"清空（json_set theme=null）；管线侧三层加固已在前批 | /api/daily theme=null ✅ |
+| B2 | runDailyAi stats 补 candidates/articles/videos（videos=窗口内 videos 表新增） | 下一轮 00:32 生成后统计卡齐全 |
+| B3 | 读层性能：status=overview 正连接（104ms）+四组合一；reading=两段式快路径（表达式覆盖索引+窄查询 221ms+按 id 取 31 行 120ms）；hot 时间窗参数化；补 8 个索引（Turso/server/db.js/runner 三处同步） | 线上热态：status 0.77s（原 6.1s/15s）、reading 1.5-2.8s（原 11-14s）、hot 1.0-2.3s、articles 1.1-2.5s；冷启动首轮仍 15-27s（Vercel 冷启动，另一议题） |
+| B4 | handleStatus overview 补 dailyItemCount/dailyTopSources（近 7 天 daily_reports sections JS 聚合+头像回查） | 浏览器实测右栏渲染头像+来源+次数 ✅ |
+| Q1 | IconRail EN 按钮移除 | 浏览器实测 ✅ |
+| Q2 | GET /api/opml/export（公开 GET，标准 OPML 2.0 按分组嵌套）+ 源库导出按钮 | curl 200 + 结构正确 ✅ |
+| Q3 | 库体积显示 sizeNote（Turso 云库口径说明） | 部署即生效 |
+| Q4 | runner cleanup 默认 7 天保留清理（豁免已读/稍后读/精选；视频播客永不清）+ 云端 /api/data/cleanup 同语义 | 明晨 04:13 首跑观察 |
+| Q5/Q6 | 源库：新建文件夹按钮、行内删除源（级联确认）、☆表头补语义 | 部署即生效（浏览器可验） |
+| Q7 | 熔断源自动恢复：冻结 48h 自动重启（resumeCount，3 次后冷却 7 天），freeze 落 frozenAt | 明晨 04:13 首跑观察（92 个 YouTube 冻结源将被自动重试） |
+| 顺手 | classify.buildOpmlCategoryMap 只读 bestblogs_*.opml（扁平 opml 污染分类映射，测试实锤修复） | tests 259 全绿 |
