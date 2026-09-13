@@ -275,7 +275,7 @@ const PROMPT_FILES = {
 // Vercel 部署可能不含 prompts/ 文件 → 内嵌兜底（与 prompts/ 同步义务）
 const EMBEDDED_PROMPTS = {
   translate: '你是资深科技翻译专家。只输出译文，保留 Markdown 结构，代码/产品名不译，中英文间加空格。术语对照（必须严格遵循）：\n{{glossary}}\n',
-  filter: '你是初筛编辑。按 内容深度30/相关性30/写作质量20/实用创新20 打分，营销减分。严格输出 JSON：{"score":0-100,"ignore":bool,"reason":"30字内"}\n',
+  filter: '你是初筛编辑。按 内容深度30/相关性30/写作质量20/实用创新20 打分。强制压分负例（命中即 ≤15 且 ignore=true）：标题党钩子（震惊/不看后悔/必看）、纯广告导购、荐股荐币拉人头、无信源八卦、内容农场空洞文。严格输出 JSON：{"score":0-100,"ignore":bool,"reason":"30字内"}\n',
   'term-extract': '从中英对照文本提取专业术语对，置信度<0.7丢弃。严格输出 JSON 数组 [{"en","zh","domain","confidence"}]\n',
   'translate-refine': '你是术语校对专家。只修正译文中与术语表不一致处，其余一字不动，只输出修正后全文。术语表：\n{{glossary}}\n',
   'translate-polish': '你是资深科技出版编辑。从术语/表达/文化适应/格式四维改进译文，只输出最终稿。\n',

@@ -163,7 +163,20 @@ export default function BriefCenterTab() {
           />
           生成后推送到飞书（含导语与头条 3 条）
         </label>
-        <p className="mt-2 text-xs t-muted">订阅源在「源库」标记 ☆ 特别关注（当前订阅集即我的早报内容范围）；行为画像与 Domain 篇数配额在 T4-2 后提供。</p>
+        <div className="mt-3 flex items-center gap-2 flex-wrap">
+          <span className="text-[13px] t-text">探索强度（补充阅读里来自未订阅源的比例）：</span>
+          {[['low', '低（2 条）'], ['mid', '中（4 条）'], ['high', '高（6 条）']].map(([k, label]) => (
+            <button
+              key={k}
+              className={`pill !py-1 !px-2.5 cursor-pointer ${String(mybriefCfg?.exploreStrength || 'mid') === k ? 'on' : ''}`}
+              disabled={busy}
+              onClick={() => saveCfg('mybrief', { ...mybriefCfg, exploreStrength: k })}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs t-muted">订阅源在「源库」标记 ☆ 特别关注（当前订阅集即我的早报内容范围）；探索位按 MMR 多样性选源（specs/23 L6）；行为画像与 Domain 篇数配额在 T4-2 后提供。</p>
       </section>
 
       {/* 周刊设置 + 手动生成 */}

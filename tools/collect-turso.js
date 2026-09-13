@@ -918,9 +918,45 @@ async function runDailyAi() {
   let themes = [];
   try { themes = await buildThemePanorama(analyzed); } catch (e) { log(`主题全景失败（不阻断）: ${e.message}`); }
 
+  // ── T4-2 R4 七层防御入报 ──
+  // L5a 权威加权：近 30 天源级高分率 → authority ∈ [0.8,1.2] 乘入 totalScore（权威大事件排前）
+  try {
+    const since30 = new Date(Date.now() - 30 * 86400e3).toISOString();
+    const authRows = await qAll(
+      `SELECT s.name AS name, COUNT(*) total, SUM(CASE WHEN a.score >= 70 THEN 1 ELSE 0 END) good
+       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+       WHERE a.published_at >= ? AND a.score IS NOT NULL AND s.id IS NOT NULL
+       GROUP BY s.name HAVING total >= 5`,
+      [since30]
+    );
+    const authMap = new Map(authRows.map((r) => [r.name, Math.max(0.8, Math.min(1.2, 0.8 + 0.4 * (r.good / r.total)))]));
+    for (const a of analyzed) {
+      const k = authMap.get(a.source_name);
+      if (k !== undefined) a.totalScore = Math.max(0, Math.min(100, Math.round((a.totalScore || 0) * k)));
+    }
+    if (authMap.size) log(`L5 权威加权: ${authMap.size} 源有系数`);
+  } catch (e) { log(`L5 权威加权失败（不阻断）: ${e.message}`); }
+
+  // L5b 低曝光保护位：近 14 天从未入报且六维 ≥75 的源，保底 2 个名额（防小众行业级内容被淹没）
+  let protectedItems = [];
+  try {
+    const exposed = new Set();
+    const reps = await qAll('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 14', [new Date(Date.now() - 14 * 86400e3).toISOString()]);
+    for (const rep of reps) {
+      try { for (const col of JSON.parse(rep.sections || '[]')) for (const it of (col.items || [])) if (it.source) exposed.add(it.source); } catch { /* 坏行 */ }
+    }
+    protectedItems = analyzed
+      .filter((a) => a.source_name && !exposed.has(a.source_name) && (a.totalScore || 0) >= 75)
+      .sort((x, y) => y.totalScore - x.totalScore)
+      .slice(0, 2);
+    if (protectedItems.length) log(`L5b 低曝光保护位: ${protectedItems.map((p) => p.source_name).join('/')}`);
+  } catch (e) { log(`L5b 保护位失败（不阻断）: ${e.message}`); }
+
   // 栏目组装（沿用 columns 语义：focus 优先 → 关键词 → fallback 按总分）
+  // L3 单源配额：同源单日入报 ≤3（跨栏计数，防单源刷屏）；全局总条数 ≤36
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const used = new Set();
+  const perSource = {};
   const sections = [];
   const fmt = (a) => ({
     id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
@@ -930,25 +966,52 @@ async function runDailyAi() {
     reason: a.reason, summary: a.summary, quote: a.quote, points: a.points, tags: a.tags,
     translated: !!a.translated_title,
   });
+  const take = (a) => {
+    const nm = a.source_name || '?';
+    if ((perSource[nm] || 0) >= 3) return false;
+    perSource[nm] = (perSource[nm] || 0) + 1;
+    used.add(a.id);
+    return true;
+  };
   for (const col of columns) {
     const items = [];
     if (col.special === 'focus') {
       for (const a of analyzed) {
         if (used.has(a.id)) continue;
-        if (a.source_focus) { items.push(fmt(a)); used.add(a.id); }
+        if (a.source_focus && take(a)) items.push(fmt(a));
       }
     } else if (col.special === 'fallback') {
       const rest = analyzed.filter((a) => !used.has(a.id)).sort((x, y) => y.totalScore - x.totalScore).slice(0, 10);
-      for (const a of rest) { items.push(fmt(a)); used.add(a.id); }
+      for (const a of rest) { if (take(a)) items.push(fmt(a)); }
     } else if (col.keywords && col.keywords.length) {
       for (const a of analyzed) {
         if (used.has(a.id)) continue;
         const text = `${a.title} ${a.summary || ''} ${(a.tags || []).join(' ')}`;
-        if (col.keywords.some((kw) => text.includes(kw))) { items.push(fmt(a)); used.add(a.id); }
+        if (col.keywords.some((kw) => text.includes(kw))) { if (take(a)) items.push(fmt(a)); }
       }
     }
     const deduped = dedupItems(items);
     if (deduped.length) sections.push({ column: col.name, desc: col.desc || '', items: deduped.slice(0, 15) });
+  }
+  // L5b 保底注入：保护位条目若未被任何栏收纳，插入第一个栏目第 2 位
+  if (sections.length && protectedItems.length) {
+    const placed = new Set(sections.flatMap((sec) => sec.items.map((i) => i.id)));
+    const first = sections[0];
+    let pos = 1;
+    for (const p of protectedItems) {
+      if (placed.has(p.id) || first.items.length >= 15) continue;
+      if (first.items.some((i) => i.id === p.id)) continue;
+      first.items.splice(pos, 0, fmt(p));
+      pos++;
+    }
+  }
+  // L3 全局上限 36
+  {
+    let n = 0;
+    for (const sec of sections) {
+      if (n + sec.items.length > 36) sec.items = sec.items.slice(0, Math.max(0, 36 - n));
+      n += sec.items.length;
+    }
   }
 
   // 主题导语
@@ -1026,17 +1089,37 @@ async function runMyBrief(analyzed) {
   });
   // 补充阅读固定 10 条（T3-1 R4）：订阅源条目不足时，从共享深析池的**非订阅源**高分内容补足，
   // 标记 explore=true（破茧/探索语义）；补足仅为展示层，不改订阅集合
-  const restBase = mine.slice(10, 50).map(fmt);
-  if (restBase.length < 10) {
-    const chosen = new Set(mine.slice(0, 10).map((m) => m.id).concat(restBase.map((r) => r.id)));
-    const explore = (analyzed || [])
-      .filter((a) => !subIds.has(a.source_id) && !chosen.has(a.id) && (a.totalScore || 0) >= 70)
-      .sort((x, y) => y.totalScore - x.totalScore)
-      .slice(0, 10 - restBase.length)
-      .map((a) => ({ ...fmt(a), explore: true }));
-    restBase.push(...explore);
-    if (explore.length) log(`mybrief: 补充阅读从探索池补足 ${explore.length} 条`);
+  // L6 补充阅读精确 10 条（T4-2 R4）：订阅余量优先 + 探索位按 MMR（0.7·相关性 − 0.3·最大相似）
+  // 探索强度（settings mybrief.exploreStrength）：low=2 / mid=4 / high=6 条来自未订阅源
+  const mbCfg = await getSetting('mybrief', {});
+  const strength = ({ low: 2, mid: 4, high: 6 })[String(mbCfg.exploreStrength || 'mid')] ?? 4;
+  const subRest = mine.slice(10, 10 + (10 - strength)).map(fmt);
+  const chosen = new Set(mine.slice(0, 10 + subRest.length).map((m) => m.id));
+  const pool = (analyzed || [])
+    .filter((a) => !subIds.has(a.source_id) && !chosen.has(a.id) && (a.totalScore || 0) >= 70)
+    .sort((x, y) => y.totalScore - x.totalScore)
+    .slice(0, 30)
+    .map((a) => ({ a, tok: titleTokens(a.translated_title || a.title || '') }));
+  const selected = [];
+  const selToks = [];
+  while (selected.length < strength && pool.length) {
+    let best = -1, bestVal = -Infinity;
+    for (let i = 0; i < pool.length; i++) {
+      const rel = (pool[i].a.totalScore || 0) / 100;
+      let maxSim = 0;
+      for (const tk of selToks) {
+        const sim = jaccard(pool[i].tok, tk);
+        if (sim > maxSim) maxSim = sim;
+      }
+      const val = 0.7 * rel - 0.3 * maxSim;
+      if (val > bestVal) { bestVal = val; best = i; }
+    }
+    const [pick] = pool.splice(best, 1);
+    selToks.push(pick.tok);
+    selected.push(pick.a);
   }
+  if (selected.length) log(`mybrief: 探索位 MMR 选 ${selected.length} 条（强度 ${strength}）`);
+  const restBase = [...subRest, ...selected.map((a) => ({ ...fmt(a), explore: true }))];
   const sections = {
     top: mine.slice(0, 3).map(fmt),
     featured: mine.slice(3, 10).map(fmt),
