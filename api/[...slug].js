@@ -422,6 +422,7 @@ async function handleHotEvents(req) {
       [cutoff]
     );
     const items = rows.filter(r => (r.title || '').trim().length >= 6);
+    const clusteredIds = new Set(); // T5-14 二-2：已入多源簇的条目
 
     // Jaccard 聚类
     const clusters = [];
@@ -474,6 +475,7 @@ async function handleHotEvents(req) {
       else if (ageH > 12 && freshH < 12) status = '发酵中';
 
       const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
+      for (const i of c.items) clusteredIds.add(i.id);
       events.push({
         title: rep.title,
         _scores: c.items.filter(i => i.source_type !== 'hotlist').map(i => Number(i.score) || 0),
@@ -499,6 +501,29 @@ async function handleHotEvents(req) {
     // T5-14 二-2：热点从 1500 源挑——排序加权 = 热度衰减 + 自有源六维最高分×大权重
     //（热榜同题簇热度天然高会刷屏；自有源高分事件（AI 评分内容聚成的簇）应置顶）
     const selfMax = (e) => Math.max(0, ...(e._scores || []));
+    // T5-14 二-2：未成簇的自有源高分条目 → 单条型事件并入（热点从 1500 源里挑；
+    // 排序权重的可作用对象——否则自有源内容因"不成簇"整体缺席本榜）
+    const solo = items
+      .filter((i) => !clusteredIds.has(i.id) && i.source_type !== 'hotlist' && (Number(i.score) || 0) >= 60)
+      .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
+      .slice(0, 10);
+    for (const i of solo) {
+      const sc = Number(i.score) || 0;
+      events.push({
+        title: i.title,
+        _scores: [sc],
+        domain: i.domain || i.category || i.source_name || '其它',
+        heat: sc,
+        heatFormatted: `AI 评分 ${Math.round(sc)}/100`,
+        sourceCount: 1,
+        reportCount: 1,
+        firstAt: i.published_at,
+        latestAt: i.published_at,
+        status: '精选',
+        items: [{ id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type }],
+      });
+    }
+    if (solo.length) log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);
     events.sort((a, b) => (selfMax(b) * 50 + b.heat) - (selfMax(a) * 50 + a.heat));
     // 添加 rank
     events.forEach((ev, idx) => { ev.rank = idx + 1; });
