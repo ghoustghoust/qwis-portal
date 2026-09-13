@@ -1464,12 +1464,15 @@ async function handleBriefHistory(req) {
   const weekly = archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme || null, count: a.count, degraded: !!(a.report && a.report.degraded) })).reverse();
   const mb = await getSetting('mybrief.latest', null);
   const digest = await getSetting('reading.digest', null);
+  const profile = await getSetting('mybrief.interestProfile', null);
   return jsonOk({
     daily,
     weekly,
     mybrief: mb ? { date: mb.date || null, generatedAt: mb.generatedAt || null, empty: mb.empty || null,
                     counts: mb.sections ? { top: mb.sections.top?.length || 0, featured: mb.sections.featured?.length || 0, rest: mb.sections.rest?.length || 0 } : null } : null,
     digest: digest ? { date: digest.date, readCount: digest.readCount, laterCount: digest.laterCount } : null,
+    profile: profile || { tags: [], updatedAt: null },
+    domainQuotas: (await getSetting('mybrief', {})).domainQuotas || {},
   });
 }
 

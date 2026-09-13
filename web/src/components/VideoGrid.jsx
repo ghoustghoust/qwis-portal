@@ -3,6 +3,7 @@ import { api, qs } from '../api';
 import { formatDuration, relativeTime, imgUrl } from '../util';
 import DateFilter from './DateFilter.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修：UP 主头像统一走共享组件
+import { SkeletonCards } from './Skeleton.jsx';
 
 // 视频网格（F8）：多列卡片，封面+时长角标、两行标题、UP主头像+名称+N天前
 // N5/T47：游标分页（每页 30）+ 手写窗口化渲染（虚拟滚动）——1000+ 条时 DOM 节点数恒定，滚动不卡顿
@@ -177,7 +178,7 @@ export default function VideoGrid({ filter, onDateChange, onSelect, onMeta, relo
           ))}
           {bottomPad > 0 && <div style={{ gridColumn: '1 / -1', height: bottomPad }} aria-hidden="true" />}
         </div>
-        {loading && <div className="py-6 text-center text-xs t-muted">加载中…</div>}
+        {loading && <SkeletonCards n={6} />}
         {!loading && items.length === 0 && (
           <div className="py-16 text-center text-xs t-muted">
             {filter.tab === 'favorite' ? '暂无收藏视频' : filter.tab === 'history' ? '暂无历史存档' : '暂无视频，去管理后台（/admin/）添加 UP 主'}

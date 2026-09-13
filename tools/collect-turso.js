@@ -1051,6 +1051,33 @@ async function runDailyAi() {
 }
 
 // ─── 我的早报（19-my-brief）：订阅源专属策展，复用 daily-ai 深析池 ───
+
+// ─── T3-1 R5 行为画像（2026-09-14）：显式行为驱动（阅读/稍后读 → 标签权重）───
+async function buildInterestProfile() {
+  const since = new Date(Date.now() - 30 * 86400e3).toISOString();
+  const rows = await qAll(
+    `SELECT a.tags,
+            SUM((CASE WHEN a.read_at >= ? THEN 2 ELSE 0 END) + (CASE WHEN a.later = 1 THEN 1 ELSE 0 END)) AS w
+     FROM articles a
+     WHERE (a.read_at >= ? OR a.later = 1) AND a.tags IS NOT NULL AND a.tags != ''
+     GROUP BY a.tags HAVING w > 0 LIMIT 800`,
+    [since, since]
+  );
+  const freq = {};
+  for (const r of rows) {
+    let tags = [];
+    try { tags = JSON.parse(r.tags); } catch { continue; }
+    if (!Array.isArray(tags)) continue;
+    for (const t of tags) if (t) freq[t] = (freq[t] || 0) + Number(r.w || 0);
+  }
+  const tags = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 12)
+    .map(([tag, weight]) => ({ tag, weight: Math.round(weight * 10) / 10 }));
+  const profile = { tags, updatedAt: nowIso() };
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.interestProfile', ?)", args: [JSON.stringify(profile)] });
+  log(`行为画像: ${tags.length} 个标签（Top: ${tags.slice(0, 3).map((t) => t.tag + ':' + t.weight).join(', ')}）`);
+  return profile;
+}
+
 async function runMyBrief(analyzed) {
   const _ai = require('../api/_ai');
   // v1 订阅集合 = focus 特别关注（P2-1 订阅模型上线后切换取值）
@@ -1061,11 +1088,13 @@ async function runMyBrief(analyzed) {
     return { empty: 'no-subscription' };
   }
   const subIds = new Set(subs.map((s) => s.id));
+  const mbCfg = await getSetting('mybrief', {}); // T3-1 R5：exploreStrength/domainQuotas 读取前提
   const dateStr = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
   // 设计修正：早报不能依赖 daily 的 top-N 切片共享池（订阅源可能不在内）——
   // 订阅源在窗口内的文章单独补齐分析；已在池中的复用，零重复调用
   const analyzedIds = new Set((analyzed || []).map((a) => a.id));
   const { startUtc, endUtc } = briefWindow(); // T3-1 R0：与 daily-ai 同窗口二态（晚间 rolling24）
+  const profile = await buildInterestProfile().catch(() => null);
   const subArticles = await qAll(
     `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.content_html, a.published_at, a.cover, a.translated_title, s.name AS source_name
      FROM articles a JOIN sources s ON s.id = a.source_id
@@ -1081,7 +1110,37 @@ async function runMyBrief(analyzed) {
     const r = await _ai.analyzeArticle({ ...a, source_name: a.source_name });
     if (r) minePool.push({ ...a, ...r });
   }
+  // R5 行为画像加权：条目标签命中画像 Top5 → 每命中 +8（上限 +24，显式行为驱动个性化排序）
+  let boostN = 0;
+  const profMap = new Map((profile?.tags || []).slice(0, 5).map((t) => [t.tag, t.weight]));
+  for (const a of minePool) {
+    let hit = 0;
+    let tags = [];
+    try { tags = typeof a.tags === 'string' ? JSON.parse(a.tags) : (a.tags || []); } catch { tags = []; }
+    for (const t of tags) if (profMap.has(t)) hit++;
+    if (hit) { a.totalScore = Math.min(100, (a.totalScore || 0) + Math.min(24, hit * 8)); boostN++; }
+  }
   const mine = minePool.sort((x, y) => y.totalScore - x.totalScore);
+  if (boostN) log(`mybrief: 行为画像加权 ${boostN} 条`);
+
+  // Domain 篇数配额（T3-1 R5）：主标签（tags[0]）超配额的条目移出本日早报
+  const quotas = (mbCfg.domainQuotas && typeof mbCfg.domainQuotas === 'object') ? mbCfg.domainQuotas : null;
+  if (quotas) {
+    const usedQ = {};
+    const kept = [];
+    for (const a of mine) {
+      let tags = [];
+      try { tags = typeof a.tags === 'string' ? JSON.parse(a.tags) : (a.tags || []); } catch { tags = []; }
+      const pt = tags[0];
+      const cap = pt ? quotas[pt] : undefined;
+      if (cap !== undefined && cap !== null && (usedQ[pt] || 0) >= Number(cap)) { continue; }
+      if (pt) usedQ[pt] = (usedQ[pt] || 0) + 1;
+      kept.push(a);
+    }
+    if (kept.length !== mine.length) log(`mybrief: Domain 配额移出 ${mine.length - kept.length} 条`);
+    mine.length = 0;
+    mine.push(...kept);
+  }
   if (!mine.length) {
     await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify({ empty: 'no-content', date: dateStr, message: '今天你的订阅源没有新的精选内容' })] });
     log('mybrief: 订阅源今日无深析内容，写空态');
@@ -1097,7 +1156,6 @@ async function runMyBrief(analyzed) {
   // 标记 explore=true（破茧/探索语义）；补足仅为展示层，不改订阅集合
   // L6 补充阅读精确 10 条（T4-2 R4）：订阅余量优先 + 探索位按 MMR（0.7·相关性 − 0.3·最大相似）
   // 探索强度（settings mybrief.exploreStrength）：low=2 / mid=4 / high=6 条来自未订阅源
-  const mbCfg = await getSetting('mybrief', {});
   const strength = ({ low: 2, mid: 4, high: 6 })[String(mbCfg.exploreStrength || 'mid')] ?? 4;
   const subRest = mine.slice(10, 10 + (10 - strength)).map(fmt);
   const chosen = new Set(mine.slice(0, 10 + subRest.length).map((m) => m.id));

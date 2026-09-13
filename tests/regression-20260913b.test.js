@@ -103,7 +103,7 @@ test('R7 周刊编辑综述：任务结构整段复述一票否决（specs/24 �
   const r = await _ai2.generateWeeklyEditorNote([{ title: 'a', weeklyTheme: '其它', source: 's' }], [{ title: '主线', narrative: 'n', items: [{ id: 1, title: 'a' }, { id: 2, title: 'b' }] }]);
   assert.equal(r, null, '结构化输出应整段否决');
   // 干净综述通过
-  _ai2._setProviderOverride(async () => '本期最值得关注的张力，来自AI能力对既有治理体系的持续冲击。大模型被武器化的风险首次进入公共讨论，而算力竞赛与资本开支仍在加码。治理补课、地缘博弈与个体叙事共同构成本周的主线，值得逐一展开。');
+  _ai2._setProviderOverride(async () => '本期最值得关注的张力，来自AI能力对既有治理体系的持续冲击。胡塞武装用Claude Code编写导弹制导软件的案例首次将大模型被武器化的风险摆上台面，而对齐评估的反复击穿说明治理体系仍在补课。与此同时，算力基建竞赛白热化：互联网巨头大举借债扩建数据中心，欧洲则在讨论主权算力的独立路径。个体的注意力成了新的稀缺资源——从健身数据泄露到消费理性的回归，安全管理正在从组织层面渗透到每个人的日常。三条主线共同指向一个判断：能力越便宜，可托付与可验证就越昂贵。');
   const ok = await _ai2.generateWeeklyEditorNote([{ title: 'a', weeklyTheme: '其它', source: 's' }], [{ title: '主线', narrative: 'n', items: [{ id: 1, title: 'a' }, { id: 2, title: 'b' }] }]);
   assert.ok(ok && ok.length >= 200, '干净综述应通过');
   _ai2._setProviderOverride(null);

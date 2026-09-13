@@ -11,6 +11,7 @@ import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { SunIcon } from '../components/icons.jsx';
+import { SkeletonCards } from '../components/Skeleton.jsx';
 
 const TYPES = [
   { key: 'all', label: '全部' },
@@ -61,7 +62,7 @@ export default function MyBriefPage() {
             </div>
           )}
 
-          {data === undefined && <div className="py-20 text-center text-sm t-muted">加载中…</div>}
+          {data === undefined && <div className="space-y-4"><SkeletonCards n={3} /></div>}
 
           {/* 正常态 */}
           {report && !empty && (

@@ -9,6 +9,7 @@ export default function BriefCenterTab() {
   const [hist, setHist] = useState(null);
   const [mybriefCfg, setMybriefCfg] = useState(null);
   const [weeklyCfg, setWeeklyCfg] = useState(null);
+  const [quotas, setQuotas] = useState({}); // T3-1 R5：Domain 篇数配额编辑态
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +23,7 @@ export default function BriefCenterTab() {
       setHist(h);
       setMybriefCfg(st?.mybrief || {});
       setWeeklyCfg(st?.weekly || {});
+      setQuotas(h?.domainQuotas || {});
     } catch (e) {
       toast('加载失败: ' + e.message);
     } finally {
@@ -177,6 +179,59 @@ export default function BriefCenterTab() {
           ))}
         </div>
         <p className="mt-2 text-xs t-muted">订阅源在「源库」标记 ☆ 特别关注（当前订阅集即我的早报内容范围）；探索位按 MMR 多样性选源（specs/23 L6）；行为画像与 Domain 篇数配额在 T4-2 后提供。</p>
+      </section>
+
+      {/* 行为画像 + Domain 篇数配额（T3-1 R5） */}
+      <section className="card p-5">
+        <h3 className="text-sm font-semibold t-text">兴趣画像（近 30 天阅读行为驱动）</h3>
+        {(hist.profile?.tags || []).length === 0 ? (
+          <p className="mt-2 text-xs t-muted">暂无画像——阅读文章后自动积累标签权重（每晚随早报更新）</p>
+        ) : (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {hist.profile.tags.map((t, i) => (
+              <span key={t.tag} className="pill on !cursor-default text-[11px]" title={`权重 ${t.weight}`}>
+                {t.tag}<span className="t-muted ml-1">{Math.round(t.weight)}</span>
+                {i < 5 && <span className="ml-1 t-accent" title="参与我的早报排序加权">★</span>}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="mt-2 text-[11px] t-muted">★ = 参与「我的早报」排序加权（每命中 +8，上限 +24）。画像每晚随早报自动更新。</p>
+
+        {(hist.profile?.tags || []).length > 0 && (
+          <div className="mt-4">
+            <div className="text-[13px] font-medium t-text">Domain 篇数配额（主标签每日入报上限，留空不限）</div>
+            <div className="mt-2 flex flex-wrap gap-3">
+              {hist.profile.tags.slice(0, 8).map((t) => (
+                <label key={t.tag} className="flex items-center gap-1.5 text-[12px]">
+                  <span className="t-muted truncate max-w-[120px]" title={t.tag}>{t.tag}</span>
+                  <input
+                    type="number" min="0" max="20"
+                    className="input !w-16 !py-1 !text-xs"
+                    value={quotas[t.tag] ?? ''}
+                    placeholder="不限"
+                    onChange={(e) => setQuotas((prev) => {
+                      const next = { ...prev };
+                      const v = e.target.value;
+                      if (v === '') delete next[t.tag]; else next[t.tag] = Math.max(0, Number(v));
+                      return next;
+                    })}
+                  />
+                </label>
+              ))}
+            </div>
+            <button
+              className="btn-ghost !py-1 !px-2.5 mt-3"
+              disabled={busy}
+              onClick={async () => {
+                try { await api.put('/api/settings', { mybrief: { ...mybriefCfg, domainQuotas: quotas } }); toast('Domain 配额已保存（次日凌晨生成生效）'); load(); }
+                catch (e) { toast(e.message); }
+              }}
+            >
+              保存配额
+            </button>
+          </div>
+        )}
       </section>
 
       {/* 周刊设置 + 手动生成 */}

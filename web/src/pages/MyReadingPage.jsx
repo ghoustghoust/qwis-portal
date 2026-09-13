@@ -7,6 +7,7 @@ import TagPills from '../components/ui/TagPills.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { imgUrl } from '../util.js';
 import { useI18n } from '../i18n.jsx';
+import { SkeletonList } from '../components/Skeleton.jsx';
 
 // 我的阅读（沉淀聚合页）：已读文章 + 稍后读 + 收藏视频 的并集
 // F1 日期分组聚合  F2 分段 Tab（全部/已收藏/已读）  F3 类型筛选
@@ -309,7 +310,7 @@ export default function MyReadingPage() {
               </div>
             ))}
 
-            {loading && <div className="py-6 text-center text-xs t-muted">{t('reading.loading')}</div>}
+            {loading && <SkeletonList n={8} />}
             {!loading && items.length === 0 && (
               <div className="card px-4 py-16 text-center text-[13px] t-muted">
                 {tab === 'favorited' ? t('reading.noFavorite') : tab === 'read' ? t('reading.noRead') : t('reading.noData')}

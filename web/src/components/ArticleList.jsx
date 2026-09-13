@@ -9,6 +9,7 @@ import TagPills from './ui/TagPills.jsx';
 import Stars from './ui/Stars.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 import NewArticlesBanner from './NewArticlesBanner.jsx';
+import { SkeletonList } from './Skeleton.jsx';
 
 const DEDUP_KEY = 'qwis.dedup'; // 「合并同事件」开关记忆（缺省 '1' 开启）
 
@@ -293,7 +294,7 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
             </div>
           );
         })}
-        {loading && <div className="py-4 text-center text-xs t-muted">加载中…</div>}
+        {loading && <SkeletonList n={5} />}
         {!loading && items.length === 0 && (
           <div className="py-10 text-center text-xs t-muted">
             {filter.tab === 'history' ? '暂无历史存档' : filter.tab === 'later' ? '暂无稍后阅读' : '暂无文章'}

@@ -7,6 +7,7 @@ import TagPills from '../components/ui/TagPills.jsx';
 import HotDetail from '../components/HotDetail.jsx';
 import HotEvents from '../components/HotEvents.jsx';
 import { useI18n } from '../i18n.jsx';
+import { SkeletonList } from '../components/Skeleton.jsx';
 
 // 热点榜页（七期 T9/F3）：精选/全部动态统一为日期分组时间轴（对齐 AIHOT 官网结构）
 // 分组头「M月D日 星期X · N 条」可折叠（默认最新日展开）；左列 HH:mm + 竖线时间轴
@@ -383,7 +384,7 @@ export default function HotPage() {
               </DateGroup>
             ))}
 
-            {loading && <div className="py-6 text-center text-xs t-muted">{t('hot.loading')}</div>}
+            {loading && <SkeletonList n={8} />}
             {!loading && items.length === 0 && (
               <div className="card px-4 py-16 text-center text-[13px] t-muted">{emptyText}</div>
             )}
