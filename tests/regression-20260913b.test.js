@@ -93,3 +93,18 @@ test('R6 cleanup preview：视频恒 0 + 豁免语义（授权只读）', async 
   assert.ok(typeof wd.articles === 'number' && wd.articles >= 0);
   assert.ok(d.body?.total >= wd.articles);
 });
+
+test('R7 周刊编辑综述：任务结构整段复述一票否决（specs/24 对抗案例）', async () => {
+  const _ai2 = require('../api/_ai');
+  // 实测污染形态：模型输出 "1. **Analyze User Input:** - **Role:** …" 任务结构
+  _ai2._setProviderOverride(async () =>
+    '1.  **Analyze User Input:**\n   - **Role:** Tech weekly editor-in-chief\n   - **Task:** Write a 500-700 word editorial review\n2.  **Draft the review:**\nSome content here.'
+  );
+  const r = await _ai2.generateWeeklyEditorNote([{ title: 'a', weeklyTheme: '其它', source: 's' }], [{ title: '主线', narrative: 'n', items: [{ id: 1, title: 'a' }, { id: 2, title: 'b' }] }]);
+  assert.equal(r, null, '结构化输出应整段否决');
+  // 干净综述通过
+  _ai2._setProviderOverride(async () => '本期最值得关注的张力，来自AI能力对既有治理体系的持续冲击。大模型被武器化的风险首次进入公共讨论，而算力竞赛与资本开支仍在加码。治理补课、地缘博弈与个体叙事共同构成本周的主线，值得逐一展开。');
+  const ok = await _ai2.generateWeeklyEditorNote([{ title: 'a', weeklyTheme: '其它', source: 's' }], [{ title: '主线', narrative: 'n', items: [{ id: 1, title: 'a' }, { id: 2, title: 'b' }] }]);
+  assert.ok(ok && ok.length >= 200, '干净综述应通过');
+  _ai2._setProviderOverride(null);
+}, { timeout: 30000 });

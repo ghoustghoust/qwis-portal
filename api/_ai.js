@@ -421,19 +421,34 @@ async function generateWeeklyMagazine(items) {
     magazine = { coverTheme: String(j.coverTheme).slice(0, 12), storylines };
   } catch { return null; }
 
+  magazine.editorNote = await generateWeeklyEditorNote(items, magazine.storylines);
+  return magazine;
+}
+
+// 编辑综述生成+清洗（specs/24 对抗案例 2026-09-14：模型把任务结构整段复述
+// 「1. **Analyze User Input:** - **Role:** …」——逐行过滤不兜底，需整段结构化一票否决）
+async function generateWeeklyEditorNote(items, storylines) {
+  const list = items
+    .map((it, i) => `${i + 1}. ${it.title}｜分类：${it.weeklyTheme || '其它'}｜来源：${it.source || ''}｜摘要：${String(it.summary || it.reason || '').slice(0, 120)}`)
+    .join('\n');
   const r2 = await aiChat(
-    [{ role: 'user', content: `你是科技周刊主笔。基于本周精选与下列主线划分，写 500-700 字的编辑综述：递进式叙述（不要小标题、不要列表），把各主线串成一个连贯判断。只输出综述正文。\n\n## 本周精选\n\n${list.slice(0, 1200)}\n\n## 主线\n\n${magazine.storylines.map((sl) => `- ${sl.title}：${sl.narrative}`).join('\n')}` }],
+    [{ role: 'user', content: `你是科技周刊主笔。基于本周精选与下列主线划分，写 500-700 字的编辑综述：递进式叙述（不要小标题、不要列表、不要复述任务），把各主线串成一个连贯判断。只输出综述正文。\n\n## 本周精选\n\n${list.slice(0, 1200)}\n\n## 主线\n\n${storylines.map((sl) => `- ${sl.title}：${sl.narrative}`).join('\n')}` }],
     { kind: 'theme', maxTokens: 2600, timeoutMs: 90000 }
   );
-  if (r2.ok) {
-    const lines = String(r2.reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
-    const isMeta = (l) =>
-      /^(用户|让我|我来|我需要|好的|以下|这是|#)/.test(l) ||
-      /^(Let me|The user|I need|Okay|Here|Sure|Based on)/i.test(l);
-    const body = lines.filter((l) => !isMeta(l)).join('\n\n');
-    if (body.length >= 200) magazine.editorNote = body.slice(0, 1600);
-  }
-  return magazine;
+  if (!r2.ok) return null;
+  const raw = String(r2.reply || '').trim();
+  // 整段思维链/任务结构判定（一票否决）
+  const looksStructured = /^(```|\d+[.、]|\*\*|[-*•]\s)/.test(raw) ||
+    /\*\*(?:Role|Task|Input|Output|Structure|Goal|Steps)\*\*/.test(raw.slice(0, 400));
+  if (looksStructured) return null;
+  const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+  const isMeta = (l) =>
+    /^(用户|让我|我来|我需要|好的|以下|这是|#|\d+[.、]|[-*•])/.test(l) ||
+    /^(Let me|The user|I need|Okay|Here|Sure|Based on|This week's|As the)/i.test(l) ||
+    /\*\*(?:Role|Task|Input|Output|Structure)\*\*/.test(l);
+  const body = lines.filter((l) => !isMeta(l)).join('\n\n');
+  if (!body || body.length < 200) return null;
+  return body.slice(0, 800); // 设计 500-700 字，硬上限 800
 }
 
 async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme');
@@ -465,6 +480,6 @@ async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, generateWeeklyMagazine, sanitizeTranslationReply, isThinkingLikeReply,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };
