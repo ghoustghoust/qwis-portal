@@ -286,6 +286,31 @@ async function loadPrompt(name) {
 }
 
 // ═══ 多轮精翻（17-translate） ═══
+// 译文输出清洗（2026-09-13 F3）：agnes-2.5-flash 是推理模型（坑 #24），精翻轮会把指令复述/
+// 四维分析混进输出（实测样本：「用户提供了一篇…要求我从四个维度检查并改进译文…」）。
+// 与 generateTheme 的导语思维链剥离同类：先试「译文/最终稿」标记提取，纯分析则回退上一轮草稿。
+const TRANSLATE_MARKER_RE = /(?:^|\n)\s*(?:#{1,3}\s*)?(?:最终译文|最终稿|译文|翻译如下|Translation)\s*[:：]\s*\n?/g;
+function sanitizeTranslationReply(reply, draft) {
+  const text = String(reply || '');
+  if (!text.trim()) return draft || text;
+  // 分析性回复特征：复述指令/分维点评（与 generateTheme.isAnalysis 同风格）
+  const looksAnalytical =
+    /^(用户提供|让我|我来|我需要|我将对|好的[，,]?下面|以下是我|I need|I'll|The user|Let me|Here (?:is|'s) my|Analyzing|Reviewing)/i.test(text.trim()) ||
+    /要求我从.{0,6}维度|四个维度|维度检查|改进译文|检查并改进/.test(text.slice(0, 300)) ||
+    /^\s*(?:\d+\.|[-*•])\s*(?:术语|语言表达|行业表达|文化适应|格式|原文|译文)/m.test(text);
+  // 1) 有「译文」标记：取最后一个标记之后的正文（标记前的指令回显/分析全部丢弃）
+  TRANSLATE_MARKER_RE.lastIndex = 0;
+  let m, lastMarker = null;
+  while ((m = TRANSLATE_MARKER_RE.exec(text)) !== null) lastMarker = m;
+  if (lastMarker) {
+    const body = text.slice(lastMarker.index + lastMarker[0].length).trim();
+    if (body.length > 40) return body; // 提取出的正文太短视为无效，继续走拒绝分支
+  }
+  // 2) 纯分析/指令回显且无标记：拒收，回退上一轮草稿（轮1输出受「只输出译文」约束，天然干净）
+  if (looksAnalytical) return draft || text;
+  return text;
+}
+
 // 轮 2：词库对照修正（glossary 非空才值得跑）
 async function refineWithGlossary(original, draft) {
   const glossary = await loadGlossary();
@@ -293,14 +318,14 @@ async function refineWithGlossary(original, draft) {
   const tpl = await loadPrompt('translate-refine');
   const glossaryText = glossary.map((t) => `${t.en} → ${t.zh}`).join('\n');
   const r = await aiChat([{ role: 'user', content: `${tpl.replace('{{glossary}}', glossaryText)}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 初翻草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 60000 });
-  return r.ok ? r.reply : draft; // 修正失败用初翻草稿
+  return r.ok ? sanitizeTranslationReply(r.reply, draft) : draft; // 修正失败用初翻草稿
 }
 
 // 轮 3：精翻（长文专用）
 async function refinePass(original, draft) {
   const tpl = await loadPrompt('translate-polish');
   const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 译文草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 90000 });
-  return r.ok ? r.reply : draft;
+  return r.ok ? sanitizeTranslationReply(r.reply, draft) : draft;
 }
 
 // ═══ 早报深析（18-daily-ai-v2） ═══
@@ -351,6 +376,6 @@ async function generateTheme(items) {
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, sanitizeTranslationReply,
   _setProviderOverride, // tests only
 };

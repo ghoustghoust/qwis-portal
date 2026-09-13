@@ -3,6 +3,7 @@
 // 三态：no-subscription（引导标记）/ no-content（今日无更新）/ 正常
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
+import { IconRail } from '../main.jsx';
 import { imgUrl, relativeTime } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
@@ -31,6 +32,7 @@ export default function MyBriefPage() {
 
   return (
     <div className="flex h-full">
+      <IconRail />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
           {/* 引导态：无订阅 */}

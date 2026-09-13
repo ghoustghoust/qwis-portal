@@ -265,6 +265,15 @@ function getAdapter(type) {
 }
 
 // ─── 数据落库 ───
+// 未来时间钳制（2026-09-13 F2，与 tools/collect-turso.js、server/services/collectors/repo.js 三处同步）
+function clampPubDate(iso, now) {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return null;
+  if (t > Date.parse(now) + 5 * 60e3) return now;
+  return new Date(t).toISOString();
+}
+
 async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) {
   const db = getDb();
   let added = 0;
@@ -278,7 +287,7 @@ async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) 
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           sourceId, a.title || '', a.url, a.author || '', a.cover || null,
-          a.summary || '', a.content_html || '', a.published_at || null, now,
+          a.summary || '', a.content_html || '', clampPubDate(a.published_at, now), now,
           a.category || null, a.original_url || null,
           Number.isFinite(score) ? score : null, wc,
         ],

@@ -284,6 +284,16 @@ function getAdapter(type) {
 }
 
 // ─── 落库（按源聚合 batch，减少 Turso 往返） ───
+// 未来时间钳制（2026-09-13 F2）：openrss 等网页转 RSS 桥接会解析出未来 pubDate（实测 2026-09-14
+// 整点合成值），入库前晚于当前 5min 以上一律钳为 now，避免排序霸榜+前端显示未来日期
+function clampPubDate(iso, now) {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return null;
+  if (t > Date.parse(now) + 5 * 60e3) return now;
+  return new Date(t).toISOString();
+}
+
 async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) {
   const db = getDb();
   const now = nowIso();
@@ -296,7 +306,7 @@ async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         sourceId, a.title || '', a.url, a.author || '', a.cover || null,
-        a.summary || '', a.content_html || '', a.published_at || null, now,
+        a.summary || '', a.content_html || '', clampPubDate(a.published_at, now), now,
         a.category || null, a.original_url || null,
         Number.isFinite(score) ? score : null, wc,
       ],
@@ -603,8 +613,8 @@ async function saveWeekly(theme, items, degraded, t0) {
     items,
   };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.latest', ?)", args: [JSON.stringify(report)] });
+  // 长久存储（2026-09-13 F5 用户决策）：一周才一份，归档不再截断保留全部期号
   archive.push({ issue, dateStart, dateEnd, theme, count: items.length, report });
-  while (archive.length > 4) archive.shift();
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.archive', ?)", args: [JSON.stringify(archive)] });
   log(`周刊第 ${issue} 期生成完成: ${items.length} 条${degraded ? '（降级）' : ''}, 主题: ${theme || '(无)'}`);
   await writeHeartbeat('weekly', { issue, count: items.length, degraded });
@@ -1039,7 +1049,7 @@ async function translatePipeline(article) {
   // 轮 1：初翻（含降级链）
   const r = await _ai.translateText(input, { kind: 'translate' });
   if (!r.ok) throw new Error(r.error || '翻译失败');
-  let reply = r.text;
+  let reply = _ai.sanitizeTranslationReply(r.text, '');
   const provider = r.provider;
   let rounds = 1;
 

@@ -154,8 +154,11 @@ async function handleArticles(req) {
     const [cursorVal, cursorId] = q.cursor.split('|');
     if (cursorVal && cursorId) {
       const op = dir === 'DESC' ? '<' : '>';
+      // 游标值必须与排序键同型：new/old 的排序键是 ISO 文本列（SQLite TEXT vs 数字串按类型序恒假，2026-09-13 F1）；
+      // smart 的排序键是数值表达式，必须绑数字
+      const sortArg = sort === 'smart' ? Number(cursorVal) : cursorVal;
       cursorCond = ` AND (${orderExpr} ${op} ? OR (${orderExpr} = ? AND a.id ${op} ?))`;
-      args.push(cursorVal, cursorVal, Number(cursorId));
+      args.push(sortArg, sortArg, Number(cursorId));
     }
   }
 
@@ -172,10 +175,14 @@ async function handleArticles(req) {
   if (rows.length > PAGE_SIZE) {
     rows.pop();
     const last = rows[rows.length - 1];
-    const sortVal = sort === 'smart'
-      ? (new Date(last.published_at || last.created_at).getTime() / 1000 + (last.source_focus || 0) * 259200)
-      : new Date(last.published_at || last.created_at).getTime() / 1000;
-    nextCursor = `${sortVal}|${last.id}`;
+    // 游标发排序键的原生列值（ISO 文本），与 cursorCond 的文本比较同型（2026-09-13 F1：
+    // 原 epoch 秒数值与 ISO 文本列字典序比较恒假 → 第二页恒空 → 阅读器 30 条后无法下滑）
+    if (sort === 'smart') {
+      const sortVal = Math.floor(new Date(last.published_at || last.created_at).getTime() / 1000) + (last.source_focus || 0) * 259200;
+      nextCursor = `${sortVal}|${last.id}`;
+    } else {
+      nextCursor = `${last.published_at || last.created_at}|${last.id}`;
+    }
   }
 
   // 计数（轻量级：只查 later/history 总数，不做 NOT EXISTS 子查询）
@@ -302,8 +309,8 @@ async function handleHot(req) {
   if (rows.length > PAGE_SIZE) {
     rows.pop();
     const last = rows[rows.length - 1];
-    const sortVal = new Date(last.published_at || last.created_at).getTime() / 1000;
-    nextCursor = `${sortVal}|${last.id}`;
+    // 游标发原生列值（ISO 文本），与 cursorCond 的 published_at 文本比较同型（2026-09-13 F1，同 handleArticles）
+    nextCursor = `${last.published_at || ''}|${last.id}`;
   }
 
   // 格式化热度值

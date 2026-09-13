@@ -2,6 +2,7 @@
 // 刊头（第N期+日期范围+导语）+ 类别分组（行业大变化/重大影响/教学课程/新理解/其它）+ 归档切换
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
+import { IconRail } from '../main.jsx';
 import { imgUrl, relativeTime } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
@@ -32,6 +33,7 @@ export default function WeeklyPage() {
 
   return (
     <div className="flex h-full">
+      <IconRail />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
           {data === undefined && <div className="py-20 text-center text-sm t-muted">加载中…</div>}

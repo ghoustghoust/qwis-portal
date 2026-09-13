@@ -175,9 +175,11 @@ router.get('/', (req, res) => {
   if (req.query.cursor) {
     const sep = String(req.query.cursor).lastIndexOf('|');
     if (sep > 0) {
+      // smart 排序键是数值表达式，游标必须绑数字（TEXT 类型序会让文本游标恒真/恒假，2026-09-13 F1 同源）
+      const sortArg = sortMode === 'smart' ? Number(req.query.cursor.slice(0, sep)) : req.query.cursor.slice(0, sep);
       cursorCond = (where ? ' AND' : 'WHERE') +
         ` (${keyExpr} ${cmp} ? OR (${keyExpr} = ? AND a.id ${cmp} ?))`;
-      cursorArgs.push(req.query.cursor.slice(0, sep), req.query.cursor.slice(0, sep), Number(req.query.cursor.slice(sep + 1)));
+      cursorArgs.push(sortArg, sortArg, Number(req.query.cursor.slice(sep + 1)));
     } else {
       // 兼容旧版纯 id 游标
       cursorCond = (where ? ' AND' : 'WHERE') + ` a.id ${cmp} ?`;
