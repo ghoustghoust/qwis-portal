@@ -101,6 +101,24 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
     }
   };
 
+  // 17-translate：入队后每 60s 轮询，译文出现即自动切换
+  // ⚠️ hooks 必须在所有早退 return 之前（曾致 React #310 白屏：hook 数量跨渲染不一致）
+  useEffect(() => {
+    if (!translating || !articleId) return;
+    const timer = setInterval(() => {
+      api.get(`/api/articles/${articleId}`).then((data) => {
+        const item = data?.item || data?.article || data;
+        if (item && (item.translated_title || item.translated_content)) {
+          setArticle(item);
+          setTranslating(false);
+          setShowTranslated(true);
+          toast(t('article.translateDone') || '翻译完成');
+        }
+      }).catch(() => {});
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [translating, articleId]);
+
   // 2026-09-05 视觉精修：空态由 OverviewRail 取代，本组件仅在选中文章时渲染
   // 2026-09-05：未选中文章时渲染空态引导（原 return null；右侧本周概览已常驻，空态回到正文区）
   if (!articleId) {
@@ -117,23 +135,6 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   const hasTranslation = !!(article?.translated_title || article?.translated_content);
   // 17-translate：未翻译的英文文章显示手动翻译按钮（标题 ASCII 占比启发式）
   const isEnglishTitle = !!article?.title && (article.title.replace(/[^ -~]/g, '').length / article.title.length) > 0.7;
-
-  // 17-translate：入队后每 60s 轮询，译文出现即自动切换
-  useEffect(() => {
-    if (!translating || !articleId) return;
-    const timer = setInterval(() => {
-      api.get(`/api/articles/${articleId}`).then((data) => {
-        const item = data?.item || data?.article || data;
-        if (item && (item.translated_title || item.translated_content)) {
-          setArticle(item);
-          setTranslating(false);
-          setShowTranslated(true);
-          toast(t('article.translateDone') || '翻译完成');
-        }
-      }).catch(() => {});
-    }, 60000);
-    return () => clearInterval(timer);
-  }, [translating, articleId]);
 
   const requestTranslate = async () => {
     try {
