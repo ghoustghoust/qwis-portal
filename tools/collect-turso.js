@@ -439,7 +439,9 @@ async function writeHeartbeat(mode, stats) {
       const prev = await getSetting('cloud.collect', {});
       if (Array.isArray(prev.history)) history = prev.history.slice(-167);
     } catch { /* 首次无历史 */ }
-    history.push({ mode, at: nowIso(), stats });
+    // 对抗性瘦身：failures 内嵌完整 source 行（含 avatar/extra），168 条会膨胀数 MB —— 只留定位所需字段
+    const slim = { ...stats, failures: (stats.failures || []).slice(-20).map((f) => ({ id: f.source?.id, name: f.source?.name, type: f.source?.type, errMsg: String(f.errMsg || '').slice(0, 120) })) };
+    history.push({ mode, at: nowIso(), stats: slim });
     await qRun(
       'INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)',
       ['cloud.collect', JSON.stringify({ mode, lastRunAt: nowIso(), stats, history })]
