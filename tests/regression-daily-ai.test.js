@@ -39,6 +39,23 @@ test('3. generateTheme：导语清洗（去引号截断）', async () => {
   _ai._setProviderOverride(null);
 }, { timeout: 30000 });
 
+test('3b. generateTheme：思维链/元任务污染行全部拒绝 → 返回 null（不得回退污染行）', async () => {
+  // 2026-09-13 两次线上实测污染形态
+  _ai._setProviderOverride(async () =>
+    'The dominant themes emerging are AI and machine learning discussions, semiconductor and chip technology, the tension between technological progress and cultural anxiety.'
+  );
+  assert.equal(await _ai.generateTheme([{ title: 'a', reason: 'r' }]), null, '英文思维链长句应被拒绝');
+  _ai._setProviderOverride(async () => '用户希望我作为科技媒体主编，从入选列表中提炼出一句话导语。');
+  assert.equal(await _ai.generateTheme([{ title: 'a', reason: 'r' }]), null, '角色/任务复述应被拒绝');
+  // 混合输出：污染行 + 干净导语行 → 取干净行
+  _ai._setProviderOverride(async () =>
+    '分析：\n1. 先看AI主线\n从芯片互联，到算力调度，再到端侧落地，判断基础设施红利窗口。'
+  );
+  const t3 = await _ai.generateTheme([{ title: 'a', reason: 'r' }]);
+  assert.ok(t3 && t3.includes('从芯片互联'), '混合输出应取干净导语行');
+  _ai._setProviderOverride(null);
+}, { timeout: 30000 });
+
 test('4. 窗口计算：北京自然日边界', () => {
   // 复现 runDailyAi 的窗口算法
   const bjOffset = 8 * 3600e3;

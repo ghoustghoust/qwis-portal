@@ -135,14 +135,24 @@ test('9. focusSourceIds 全量替换生效', async () => {
   const srcs = await db.execute('SELECT id FROM sources LIMIT 2');
   if (srcs.rows.length < 2) return; // 数据不足跳过
   const [a, b] = srcs.rows.map(r => r.id);
-  const r = await call('PUT', '/api/settings/daily', { focusSourceIds: [a] });
-  assert.equal(r.status, 200, JSON.stringify(r.body));
-  const fa = await db.execute('SELECT focus FROM sources WHERE id=?', [a]);
-  const fb = await db.execute('SELECT focus FROM sources WHERE id=?', [b]);
-  assert.equal(fa.rows[0].focus, 1);
-  assert.equal(fb.rows[0].focus, 0);
-  // 恢复：清空 focus（测试前状态未记录，焦点位为可逆标志位，置 0 为安全默认）
-  await db.execute({ sql: 'UPDATE sources SET focus=0 WHERE id IN (?,?)', args: [a, b] });
+  // ⚠️ 全量替换语义会写整表 focus（不在名单内的全部清零）——必须先快照全部 focus=1 源，
+  // 测后精确还原。2026-09-13 事故：旧"恢复"只复位 2 个测试 id，曾把线上用户标记的
+  // 8 个 focus 订阅源全部清零（ARCHITECTURE 坑 #17 的测试侧翻版）。
+  const before = await db.execute('SELECT id FROM sources WHERE focus=1');
+  const focusIds = before.rows.map(r => r.id);
+  try {
+    const r = await call('PUT', '/api/settings/daily', { focusSourceIds: [a] });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    const fa = await db.execute('SELECT focus FROM sources WHERE id=?', [a]);
+    const fb = await db.execute('SELECT focus FROM sources WHERE id=?', [b]);
+    assert.equal(fa.rows[0].focus, 1);
+    assert.equal(fb.rows[0].focus, 0);
+  } finally {
+    await db.execute(
+      'UPDATE sources SET focus = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
+      [JSON.stringify(focusIds)]
+    );
+  }
 });
 
 test('10. 成功写入产生审计记录', async () => {

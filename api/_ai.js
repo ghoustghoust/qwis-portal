@@ -378,13 +378,23 @@ async function generateTheme(items) {
   const lines = r.reply.split('\n').map((l) => l.trim()).filter(Boolean);
   const isAnalysis = (l) =>
     /^(用户要求|让我|我来|分析|首先|然后|所以|这[几些]|###|\d+\.|[-*•])/.test(l) ||
-    /^(Let me|The user|I need|First|Then|So |Looking|Analyzing|Reviewing|Summarizing|Now |Here)/i.test(l) ||
+    /^(Let me|The user|I need|First|Then|So |Looking|Analyzing|Reviewing|Summarizing|Now |Here|The dominant|Overall|These|Based on|As the|I should)/i.test(l) ||
+    // 元任务话术：导语必须只谈内容，凡复述"角色/任务"的句子一律拒绝
+    // （2026-09-13 二次实测污染："用户希望我作为科技媒体主编，从入选列表中提炼出一句话导语"）
+    /(用户希望|用户要求|需要我|要求我|作为.{0,12}(主编|编辑|专家)|提炼|一句话导语|入选列表|概括(一|今日)|总结(一|今日|一下))/.test(l) ||
     /[::：]\s*$/.test(l) || l.length > 120;
   const candidates = lines.filter((l) => !isAnalysis(l));
-  const theme = (candidates[candidates.length - 1] || lines[lines.length - 1] || '')
+  // 2026-09-13：全部行都是分析文本时直接放弃（返回 null → 前端无导语展示），
+  // 不得回退取分析行——实测曾把英文思维链整段当导语写入 mybrief
+  if (!candidates.length) return null;
+  // prompt 约定样式「从 X，到 Y，再到 Z，判断 W」（≤60 字）：优先取形状匹配的行
+  const shaped = candidates.filter((l) => /^从/.test(l) && /[，,]/.test(l) && l.length <= 70);
+  const picked = (shaped[shaped.length - 1] || candidates[candidates.length - 1])
     .replace(/^(导语应该是|导语|今日主题|主题导语|主题)[:：]?\s*/g, '')
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
-  return theme ? theme + '。' : null;
+  // 第一人称/写作过程元文本一票否决（三轮实测污染：英文思维链句/角色复述/「我想到一个更好的方式来组织这个叙事」）
+  if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到)|叙事|让我|输出|写作|这个方式/.test(picked)) return null;
+  return picked + '。';
 }
 
 module.exports = {

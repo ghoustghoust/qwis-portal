@@ -538,8 +538,10 @@ async function runWeekly() {
   const startUtc = new Date(Date.now() - 7 * 86400e3).toISOString();
   log(`weekly 窗口: ${startUtc} ~ ${endUtc}（前 7 天）`);
 
+  // 候选不拉 content_html：7 天窗口 × 2000 行全文一次取会被 libsql HTTP 链路掐断（Fatal: terminated），
+  // 深析阶段按 id 单取（与 runTranslate 两步走同范式）
   const candidates = await qAll(
-    `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name
+    `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name
      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
      WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
        AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
@@ -561,7 +563,8 @@ async function runWeekly() {
   let consecFail = 0;
   for (const a of passed.slice(0, 150)) {
     if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
-    const r = await _ai.analyzeArticle(a);
+    const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
+    const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
     if (!r) {
       consecFail++;
       if (consecFail >= 3 && analyzed.length === 0) {
@@ -1174,6 +1177,7 @@ async function runTranslate() {
     else if (MODE === 'daily') await runDaily();
     else if (MODE === 'daily-ai') await runDailyAi();
     else if (MODE === 'weekly') await runWeekly();
+    else if (MODE === 'mybrief') await runMyBrief([]); // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）
     else if (MODE === 'translate') await runTranslate();
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {
