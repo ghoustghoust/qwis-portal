@@ -31,7 +31,7 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/c68b58fb17ac7ae4b23c2af276cdd61c9eca1a48.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -118,31 +118,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
-    },
-    {
-      "id": 510,
-      "type": "youtube",
-      "name": "AI Explained",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCNJ1Ymd5yFuUPtn21xtRbbw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 511,
-      "type": "youtube",
-      "name": "AI Master",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0yHbz4OxdQFwmVX2BBQqLg",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "fail_count": 3
     },
     {
       "id": 390,
@@ -155,18 +131,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 514,
-      "type": "youtube",
-      "name": "AICodeKing",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC0m81bQuthaQZmFbXEY9QSw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
     },
     {
       "id": 27,
@@ -361,18 +325,6 @@
       "fail_count": 0
     },
     {
-      "id": 598,
-      "type": "youtube",
-      "name": "AJ&amp;Smart",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCeB_OpLspKJGiKv1CYkWFFw",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 427,
       "type": "rss",
       "name": "APPSO",
@@ -385,54 +337,6 @@
       "fail_count": 0
     },
     {
-      "id": 550,
-      "type": "youtube",
-      "name": "Acquired",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyFqFYfTW2VoIQKylJ04Rtw",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 551,
-      "type": "youtube",
-      "name": "Alex Kantrowitz",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCye1YedIypHffYb8k6Gp9wg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 611,
-      "type": "youtube",
-      "name": "Ali Abdaal",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCoOae5nYA7VqaXzerajD0lg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 617,
-      "type": "youtube",
-      "name": "Amigoscode",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2KfmYEM4KCuA1ZurravgYw",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 4
-    },
-    {
       "id": 515,
       "type": "youtube",
       "name": "Andrej Karpathy",
@@ -442,7 +346,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 588,
@@ -453,20 +357,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 612,
-      "type": "youtube",
-      "name": "Anthony Vicino",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCpTupIxGdmt3sTpOHjegwxQ",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 5
+      "fail_count": 6
     },
     {
       "id": 21,
@@ -479,18 +371,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 516,
-      "type": "youtube",
-      "name": "Anthropic",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCrDwWp7EBBv4NwvScIpBDOA",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 7
     },
     {
       "id": 66,
@@ -513,8 +393,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 495,
@@ -529,48 +409,12 @@
       "fail_count": 0
     },
     {
-      "id": 618,
-      "type": "youtube",
-      "name": "Beyond Coding",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdMz6KKEDW_1Qqas-ya7S6w",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 501,
       "type": "rss",
       "name": "BranD的好奇心",
       "url": "https://wechat2rss.bestblogs.dev/feed/34d96e92ccf01ddc902863a94dc390794050edd7.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 554,
-      "type": "youtube",
-      "name": "Branch Education",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdp4_l1vPmpN-gDbUwhaRUQ",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 555,
-      "type": "youtube",
-      "name": "Business Insider",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcyq283he07B7_KUX07mmtA",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -586,7 +430,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 5
     },
     {
       "id": 39,
@@ -625,18 +469,6 @@
       "fail_count": 0
     },
     {
-      "id": 589,
-      "type": "youtube",
-      "name": "Chris Williamson",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIaH-gZIVC432YRjNVvnyCA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 518,
       "type": "youtube",
       "name": "Claude",
@@ -646,7 +478,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 200,
@@ -661,18 +493,6 @@
       "fail_count": 0
     },
     {
-      "id": 519,
-      "type": "youtube",
-      "name": "Cognitive Revolution",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCjNRVMBVI30Sak_p6HRWhIA",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 556,
       "type": "youtube",
       "name": "ColdFusion",
@@ -681,8 +501,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 620,
@@ -693,20 +513,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 557,
-      "type": "youtube",
-      "name": "Core Memory Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2ohDbbkpfngjaeV7TBHRcg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 558,
@@ -718,7 +526,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 5
     },
     {
       "id": 559,
@@ -729,8 +537,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 3
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 167,
@@ -743,18 +551,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 520,
-      "type": "youtube",
-      "name": "DeepLearningAI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcIXc5mJsHVYTZR1maL5l9w",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 4
     },
     {
       "id": 165,
@@ -814,19 +610,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
-    },
-    {
-      "id": 600,
-      "type": "youtube",
-      "name": "DesignerUp",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCw2R8kz3aotYtV9utqf0uaw",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 3
+      "fail_count": 2
     },
     {
       "id": 170,
@@ -865,18 +649,6 @@
       "fail_count": 0
     },
     {
-      "id": 521,
-      "type": "youtube",
-      "name": "Every",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCjIMtrzxYc0lblGhmOgC_CA",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 73,
       "type": "rss",
       "name": "FT中文网",
@@ -897,20 +669,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 603,
-      "type": "youtube",
-      "name": "Flux Academy",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCN7dywl5wDxTu1RM3eJ_h9Q",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 5
     },
     {
       "id": 124,
@@ -937,18 +697,6 @@
       "fail_count": 0
     },
     {
-      "id": 522,
-      "type": "youtube",
-      "name": "Futurepedia",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC_RovKmk0OCbuZjA8f08opw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 86,
       "type": "wemp",
       "name": "GQ实验室",
@@ -959,18 +707,6 @@
       "enabled": 1,
       "status": "error",
       "fail_count": 1
-    },
-    {
-      "id": 622,
-      "type": "youtube",
-      "name": "GitHub",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC7c3Kb6jYCRj4JOHHZTxKsQ",
-      "avatar": "null",
-      "group_id": 27,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
     },
     {
       "id": 49,
@@ -1009,48 +745,12 @@
       "fail_count": 0
     },
     {
-      "id": 562,
-      "type": "youtube",
-      "name": "Google",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCK8sQmJBp8GCxrOtXWBpyEA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 17,
       "type": "rss",
       "name": "Google DeepMind",
       "url": "https://openrss.org/feed/deepmind.google/blog/",
       "avatar": "https://deepmind.google/favicon.ico",
       "group_id": 1,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 523,
-      "type": "youtube",
-      "name": "Google DeepMind",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCP7jMXSY2xbc3KCAE0MHQ-A",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 563,
-      "type": "youtube",
-      "name": "Greg Isenberg",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCPjNBjflYl0-HQtUvOx0Ibw",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1075,7 +775,7 @@
       "url": "https://hnrss.org/frontpage",
       "avatar": "https://news.ycombinator.com/favicon.ico",
       "group_id": 7,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -1105,48 +805,12 @@
       "fail_count": 0
     },
     {
-      "id": 524,
-      "type": "youtube",
-      "name": "How I AI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCRYY7IEbkHLH_ScJCu9eWDQ",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 19,
       "type": "rss",
       "name": "Hugging Face",
       "url": "https://huggingface.co/blog/feed.xml",
       "avatar": "https://huggingface.co/favicon.ico",
       "group_id": 1,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 525,
-      "type": "youtube",
-      "name": "Hung-yi Lee",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2ggjtuuWvxrHHHiaDH1dlQ",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 4
-    },
-    {
-      "id": 623,
-      "type": "youtube",
-      "name": "Hussein Nasser",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC_ML5xP23TOWKUcc-oAE_Eg",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1221,8 +885,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 3
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 289,
@@ -1245,32 +909,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 526,
-      "type": "youtube",
-      "name": "LangChain",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 4
-    },
-    {
-      "id": 527,
-      "type": "youtube",
-      "name": "Last Week in AI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKARTq-t5SPMzwtft8FWwnA",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "fail_count": 3
     },
     {
       "id": 604,
@@ -1281,44 +921,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 566,
-      "type": "youtube",
-      "name": "Lex Fridman",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 6
-    },
-    {
-      "id": 528,
-      "type": "youtube",
-      "name": "Liam Ottley",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 567,
-      "type": "youtube",
-      "name": "Luma",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC45T0I4p7A3dI0XvhivafZQ",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
+      "fail_count": 3
     },
     {
       "id": 237,
@@ -1357,18 +961,6 @@
       "fail_count": 0
     },
     {
-      "id": 614,
-      "type": "youtube",
-      "name": "Matt D&apos;Avella",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCJ24N4O0bP7LGLBDvye7oCA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 530,
       "type": "youtube",
       "name": "Matt Wolfe",
@@ -1377,8 +969,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 531,
@@ -1389,20 +981,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 532,
-      "type": "youtube",
-      "name": "Matthew Berman",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCawZsQWqfGSbCI5yjkdVkTA",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 5
+      "fail_count": 3
     },
     {
       "id": 480,
@@ -1423,18 +1003,6 @@
       "url": "https://openrss.org/feed/ai.meta.com/blog/",
       "avatar": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.2365-6/384127954_1010009116964035_2906046058102555347_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=e280be&_nc_ohc=sJopLRMdwgAQ7kNvwEQ_-5d&_nc_oc=AdqoD9BAc2vmMjhEMrU2iT1-5EUWXobwN23JoiIrpmtZ9GvrgdvyZK9SDQCHxJhbQx0&_nc_zt=14&_nc_ht=scontent-xxc1-1.xx&_nc_gid=BJ3SKn5kZAQ4Gn_4zJNwWQ&_nc_ss=7f289&oh=00_AQEuSYkepN6G7QlCMhFXLUxfwAb0LYsua5ke7TM4U__UXQ&oe=6A993945",
       "group_id": 1,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 605,
-      "type": "youtube",
-      "name": "Mind the Product",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCiT1BmYvOBsEvU9iw0076Sw",
-      "avatar": "null",
-      "group_id": 28,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1474,19 +1042,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
-    },
-    {
-      "id": 568,
-      "type": "youtube",
-      "name": "My First Million",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "fail_count": 5
     },
     {
       "id": 343,
@@ -1509,20 +1065,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 569,
-      "type": "youtube",
-      "name": "Naval",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCh_dVD10YuSghle8g6yjePg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 5
+      "fail_count": 3
     },
     {
       "id": 533,
@@ -1533,20 +1077,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 12,
-      "type": "youtube",
-      "name": "NeuralNine",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8wZnXYK_CGKlBcZp-GxYPA",
-      "avatar": "https://www.youtube.com/favicon.ico",
-      "group_id": null,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 534,
@@ -1558,19 +1090,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 535,
-      "type": "youtube",
-      "name": "No Priors",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSI7h9hydQ40K5MJHnCrQvw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "fail_count": 3
     },
     {
       "id": 16,
@@ -1593,8 +1113,8 @@
       "group_id": 26,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 253,
@@ -1654,7 +1174,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 6
     },
     {
       "id": 259,
@@ -1677,8 +1197,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 471,
@@ -1705,18 +1225,6 @@
       "fail_count": 0
     },
     {
-      "id": 607,
-      "type": "youtube",
-      "name": "Product School",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6hlQ0x6kPbAGjYkoz53cvA",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 211,
       "type": "rss",
       "name": "Qunar技术沙龙",
@@ -1741,48 +1249,12 @@
       "fail_count": 0
     },
     {
-      "id": 625,
-      "type": "youtube",
-      "name": "Real Engineering",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCR1IuLEqb6UEA_zQ81kwXfg",
-      "avatar": "null",
-      "group_id": 27,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 539,
-      "type": "youtube",
-      "name": "Runway",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUBqu_z5uP0AZhYtuyFZB3g",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 280,
       "type": "rss",
       "name": "SaaS白夜行",
       "url": "https://wechat2rss.bestblogs.dev/feed/a0f20f6277c356668a2567632a67e15b0413f395.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 571,
-      "type": "youtube",
-      "name": "Sabin Civil Engineering",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCqZQJ4600a9wIfMPbYc60OQ",
-      "avatar": "null",
-      "group_id": 27,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1797,20 +1269,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 540,
-      "type": "youtube",
-      "name": "Siraj Raval",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCWN3xxRkmTPmbKwht9FuE5A",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 5
+      "fail_count": 3
     },
     {
       "id": 593,
@@ -1821,8 +1281,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 51,
@@ -1831,42 +1291,6 @@
       "url": "hotlist://solidot",
       "avatar": "/api/img?u=https%3A%2F%2Fsolidot.org%2Ffavicon.ico",
       "group_id": 3,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 573,
-      "type": "youtube",
-      "name": "StatQuest with Josh Starmer",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCtYLUTtgS3k1Fg4y5tAhLbw",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 9
-    },
-    {
-      "id": 597,
-      "type": "youtube",
-      "name": "TED",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 9
-    },
-    {
-      "id": 541,
-      "type": "youtube",
-      "name": "Tao Prompts",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCc1qMq2UBJD9cSKbeBwGoZQ",
-      "avatar": "null",
-      "group_id": 26,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -1885,30 +1309,6 @@
       "fail_count": 0
     },
     {
-      "id": 542,
-      "type": "youtube",
-      "name": "The AI Advantage",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCHhYXsLBEVVnbvsq57n1MTQ",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 575,
-      "type": "youtube",
-      "name": "The Diary Of A CEO",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCGq-a57w-aPwyi3pW7XLiHw",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 608,
       "type": "youtube",
       "name": "The Futur",
@@ -1917,8 +1317,8 @@
       "group_id": 28,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 628,
@@ -1930,7 +1330,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 577,
@@ -1942,7 +1342,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 65,
@@ -1951,22 +1351,10 @@
       "url": "https://www.theverge.com/rss/index.xml",
       "avatar": "https://www.theverge.com/favicon.ico",
       "group_id": 7,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 629,
-      "type": "youtube",
-      "name": "Theo - t3․gg",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
     },
     {
       "id": 578,
@@ -1977,74 +1365,14 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 579,
-      "type": "youtube",
-      "name": "This Week in Startups",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkkhmBWfS7pILYIk0izkc3A",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 580,
-      "type": "youtube",
-      "name": "Thomas Frank",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCG-KntY7aVnIGXYEBQvmBAQ",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 543,
-      "type": "youtube",
-      "name": "Tina Huang",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2UXDak6o7rBm23k3Vv5dww",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 630,
-      "type": "youtube",
-      "name": "Traversy Media",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC29ju8bIPH5as8OGnQzwJyA",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 4
+      "fail_count": 2
     },
     {
       "id": 544,
       "type": "youtube",
       "name": "Two Minute Papers",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 545,
-      "type": "youtube",
-      "name": "Unsupervised Learning: Redpoint&apos;s AI Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUl-s_Vp-Kkk_XVyDylNwLA",
       "avatar": "null",
       "group_id": 26,
       "focus": 0,
@@ -2145,8 +1473,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 7
     },
     {
       "id": 547,
@@ -2158,7 +1486,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 164,
@@ -2194,7 +1522,7 @@
       "focus": 0,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 3
     },
     {
       "id": 424,
@@ -2229,8 +1557,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 411,
@@ -2269,18 +1597,6 @@
       "fail_count": 0
     },
     {
-      "id": 548,
-      "type": "youtube",
-      "name": "leerob",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZMli3czZnd1uoc1ShTouQw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 615,
       "type": "youtube",
       "name": "minutephysics",
@@ -2289,20 +1605,8 @@
       "group_id": 16,
       "focus": 0,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 584,
-      "type": "youtube",
-      "name": "mrblock 區塊先生",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCN2hSM8fBcvZBa8OOKc24eg",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
       "status": "error",
-      "fail_count": 3
+      "fail_count": 5
     },
     {
       "id": 341,
@@ -2315,18 +1619,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 585,
-      "type": "youtube",
-      "name": "struthless",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvcEBQ0K3UsQ8bzWKHKQmbw",
-      "avatar": "null",
-      "group_id": 16,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
     },
     {
       "id": 212,
@@ -2363,18 +1655,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 609,
-      "type": "youtube",
-      "name": "yobi321",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCB_DbqNN9w30tnyWJSrIwyA",
-      "avatar": "null",
-      "group_id": 28,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
     },
     {
       "id": 329,
@@ -2443,18 +1723,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/8b41f783bf37ab39171e6da45730047e0e65e660.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 596,
-      "type": "youtube",
-      "name": "一条",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCulFhrW_YCwkq_BP16C82mA",
-      "avatar": "null",
-      "group_id": 16,
       "focus": 0,
       "enabled": 1,
       "status": "ok",
@@ -3319,7 +2587,7 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/39f625822b35f7573a7e70d3b27a735a3c0d24a4.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -4627,7 +3895,7 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/6671f30c6010d2efdd1338836e6063748b5f1e0e.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -6271,7 +5539,7 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/e2cc4ff2ae914ebfd4150420ece80dd93be7a6d9.xml",
       "avatar": "null",
       "group_id": 22,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -7003,7 +6271,7 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/8e9c7dfaf07013f4da379dd0f87c3a298f2ed501.xml",
       "avatar": "null",
       "group_id": 15,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -7091,18 +6359,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 549,
-      "type": "youtube",
-      "name": "跟李沐学AI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8WCW6C3BWLKSZ5cMzD8Gyw",
-      "avatar": "null",
-      "group_id": 26,
-      "focus": 0,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
     },
     {
       "id": 656,
@@ -7255,7 +6511,7 @@
       "url": "https://www.qbitai.com/feed",
       "avatar": "https://www.qbitai.com/favicon.ico",
       "group_id": 3,
-      "focus": 0,
+      "focus": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -7741,5 +6997,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-12T06:06:03.586Z"
+  "generated_at": "2026-09-13T06:29:22.621Z"
 }
