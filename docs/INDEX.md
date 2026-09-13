@@ -9,7 +9,7 @@
 
 1. **接手必读**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路+不变量）→ `AGENTS.md`（强制约束）→ `ARCHITECTURE.md`
 2. **当前状态**：`docs/FEATURE_MATRIX.md`（功能 SSOT）→ `docs/ISSUES.md`（活跃问题）→ `docs/NEXT-DEV-REQS.md`（T3 需求）
-3. **排障**：`docs/RUNBOOK.md` → `ARCHITECTURE.md` §5 已知坑（28 条）
+3. **排障**：`docs/RUNBOOK.md` → `docs/pitfalls/`（踩坑库，按域单文件，30+ 条含症状/根因/规则）
 4. **凭据**：`docs/HANDOVER.md`（⚠️ 含密钥，本地文件，永不提交）
 
 ## 根目录核心文档
@@ -36,7 +36,8 @@
 | `docs/CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威，其它文档不再维护矩阵） |
 | `docs/ISSUES.md` | **活跃问题清单**（2026-09-13 大清洗后只留 4 bug + 6 挂案；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`） |
-| `docs/NEXT-DEV-REQS.md` | **T3 系列需求**（2026-09-13 定稿）：早报体系 v3 / 管理台早报中心 / 读层性能 / 入早报来源榜；T2 存档在文末 |
+| `docs/NEXT-DEV-REQS.md` | **T3+T4 系列需求**：T3（早报体系 v3/管理台早报中心/读层性能/来源榜）+ T4（快改清单/源治理与反过载/内容形态补全/原定目标存续盘点） |
+| `docs/pitfalls/` | **踩坑库**（2026-09-13 起）：按域单文件（collection/backend/ai/frontend/deployment/testing），每条含症状/根因/规则/案例，换手必读；ARCHITECTURE §5 只留索引 |
 | `docs/DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 127.0.0.1:12000） |
 | `docs/DEV_GUIDE.md` | 开发者上手指南 |
 | `docs/DEVELOPMENT_STANDARDS.md` | 开发规范与验收标准 |
@@ -51,7 +52,7 @@
 ## 功能文档（docs/features/）· 决策 Spec（docs/specs/）
 
 - `docs/features/`：collectors / scheduler / task-queue / daily-report / events-alerts / source-library-autoclassify / my-reading（语义权威，长生命周期）
-- `docs/specs/`：03 / 05 / 09 / 12（总 spec）+ **13~21 全部已交付**（四件套含验收证据）；新 T3 项动工前按 mew-spec 建四件套
+- `docs/specs/`：03 / 05 / 09 / 12（总 spec）+ 13~21 已交付（四件套含验收证据）+ **22 采集路线 RSS 优先决策 / 23 信息过载与茧房防御七层设计 / 24 周刊 v2 杂志型**（2026-09-13）；新项动工前按 mew-spec 建四件套
 
 ## 归档（docs/deprecated/ 与 docs/changes/archive/）
 

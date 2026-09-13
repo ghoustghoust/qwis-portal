@@ -115,39 +115,26 @@ server/services/
 | bilibili | wbi 签名 + 合集/搜索兜底 | 风控 -352 时走兜底 |
 | 抖音 | Playwright + 登录态 | **仅本地**,云端不跑 |
 
-## 5. 已知坑(血泪史,勿再踩)
+## 5. 已知坑（血泪史 → 已迁至 docs/pitfalls/ 踩坑库）
 
-1. **mmbiz.qpic.cn 图片防盗链**:加 `referrerpolicy="no-referrer"`;封面走 `/api/img` 代理(服务端无 Referer)。
-2. **微信文章懒加载**:`data-src` → 必须转 `src`(cleanContent 已处理)。
-3. ~~we-mp-rss 列表分页是 limit/offset~~(已随 we-mp-rss 退役作废,2026-09-04)。
-4. **fetch 超时**:无头抓取/全文补抓要限速(微信 3s/篇)。
-5. **bat 文件必须 GBK 编码**(cmd 按 ANSI 解析),用 `tools/gen_bat.py` 生成,别手改。
-6. **调度器串行是有意的**:抖音/B站并发会被秒封。
-7. **熔断机制**:源连失 3 次自动 enabled=0,修好后手动启用会清零 fail_count。
-8. **日报出库安检**:乱码标题/风控错误页不得入报(daily.js hasMojibake/isErrorPageItem)。
-9. **云端/本地采集语义三份实现漂移**:Vercel 端 `api/collect.js`(手动备份端点)、GH runner 端 `tools/collect-turso.js`(采集主链路)与本地 `server/services/collectors/*`、`server/services/ai/daily.js` 是三份独立实现(非同步),均写 Turso 云库/本地库。**修改任何采集语义(过滤/清洗/熔断/去重/增量)必须同步检查另两份实现**，否则漂移。（例：2026-09-02 P0-2 修了 rss/index.js 的 pubDate 过滤器；已核实云端副本当时无同样过滤逻辑，故无需多改）
-10. **better-sqlite3 编号参数 `?1 ?2 ?3` 不支持位置绑定**(`.run(a,b,c)` 必抛 RangeError):一律用匿名 `?` 或命名参数对象。(2026-09-04 全文补抓 UPDATE 曾因此空转)
-11. **异步回调(setImmediate/cron)内的同步 DB 操作必须 try/catch**:prepare 引用不存在的列会抛成 uncaughtException 崩进程。(2026-09-04 pending_items 事件)
-12. **pending_items 表结构只有 (id,type,url,name,status,error,imported_at)**——无 source_id/created_at;文章关联一律经 url JOIN articles 取 a.id。
-13. **smoke-test.js 跑的是生产库副本**(启动时 backup 到临时目录 + APP_DATA_DIR 注入,结束清理);任何测试文件 require server 模块前必须先 require tests/helpers,严禁直写 data/app.db。
-14. **Express 中间件按注册序执行**:鉴权/防护类中间件必须注册在路由挂载之前——2026-09-04 前 authMiddleware 挂在路由之后导致全 API 零鉴权(已修复并有 P0-1e 回归锁)。
-15. **aggregator 是 `extra` JSON 标志,不是 sources.type 取值**:判断聚合源一律 `json_extract(COALESCE(extra,'{}'),'$.aggregator')=1`(2026-09-05 前 fulltext.js 的 `type != 'aggregator'` 恒真,曾导致 AIHOT 条目被越权直抓第三方原站)。
-16. **正则从 HTML 属性取 URL 必须解 `&amp;` 实体**:firstImg 用正则取 `<img src>`,原始属性值里的 `&` 是 `&amp;`,不解码会让 wechat2rss img-proxy 收到错误参数(`amp;u`)封面全挂;JSDOM 取的属性(og:image)已自动解码无需处理。阅读器文章流默认排除 hotlist/聚合源(见 §8.4)。
-16. **cron 任务必须模块级句柄管理**:reschedule() 会重复调 scheduleXxx(),不停旧就叠加(2026-09-05b 前 fulltext cron 每改一次设置多挂一个,已修:fulltext.js stopFulltextRecovery + scheduler stop() 清理)。同理长任务禁同步执行:门户同步曾 execSync 阻塞主进程数分钟,已改 spawn detached 子进程 + in-flight 守卫(jobs/portal.js)。
-17. **focus 有两种写法,选错会互踩**:日报设置页 `focusSourceIds` 是全量替换(不在名单的源 focus 清零);源库 batch focus/unfocus 是逐 id 增量。**新代码一律用增量**,全量替换只保留在日报设置页那一个入口。手动改归锁定统一走 `extra.categoryLocked`(写入点只有 `POST /api/groups/move` 与 batch move),判断用 `json_extract(COALESCE(extra,'{}'),'$.categoryLocked')` 或 JSON.parse 后读键,别新加列。
-18. **回归测试必须驱动真实路由**:在测试体内手写与实现相同的 SQL 再断言自己,实现改了测试照样绿(2026-09-05 验收发现 3 例空转)。路由行为测试一律起 express 实例打真实 HTTP(tests/regression-sourcelib.test.js 是样板:app.listen(0)+generateToken+fetch)。
-19. **newsnow 热榜 API 必须浏览器 UA**(2026-09-11):自定义 UA(qwis-collector/1.0)直接 403,曾致 29 个热榜源云端全灭、19 个被熔断停用。采集链路(api/collect.js、tools/collect-turso.js)UA 统一为 Chrome。
-20. **GH Actions Secrets 与 Vercel env 是两套独立存储**(2026-09-11):COLLECT_KEY 只改一边 → 全部定时任务 403 静默失败 2 天才发现。改密钥必须三处同步(本地 .env / Vercel env / GH Secrets),且要有失败告警。
-21. **vercel.json 不做 ${VAR} 插值,且 Vercel Cron 用 GET**:crons 块里写 `?key=${COLLECT_KEY}` 传的是字面量;collect.js 只收 POST → 该 cron 从未生效(已移除,定时管线全归 GH Actions)。
-22. **外部 undici 包的 ProxyAgent 不能喂给 Node 内置 fetch**(符号不兼容,一律 "fetch failed"):走代理必须配套用 undici 包自带的 fetch(tools/collect-turso.js 参考实现)。进程退出用 exitCode 自然退出,process.exit 会触发 libuv UV_HANDLE_CLOSING 断言(exit 127)。
-23. **无索引列上大表查询在 libsql 远程是致命的**(2026-09-11):articles 3.6 万行+全文列后,`MAX(created_at)`、`WHERE created_at>=?`、`ORDER BY COALESCE(published_at,created_at)` 全表扫描 43-46s → Vercel 30s 超时全线 504。修复:补 `idx_articles_created` + 表达式索引 `idx_articles_pubco`(查询 0.1s)。**新增高频过滤/排序列时必须同步建索引,本地 better-sqlite3 快感觉不出来,云端必炸**。
-24. ~~Agnes AI 的 key 绑调用方 IP 地区~~ **误诊订正（2026-09-11 晚）**：实测同一 key 从家庭 IP / 代理出口 / Vercel 机房均可 200，官方文档明确 401=key 无效或格式错误。真根因是 **Turso `settings.ai` 残留污染**（apiBase 指向 deepseek 域名 + 空 key），settings 覆盖优先级高于 env——改环境变量永远修不好。叠加 agnes-2.5-flash 是**推理模型**：max_tokens 太小会被 reasoning 烧光导致 content 为空（aiChatCloud 已改 64/512 + reasoning_content 兜底）。**教训沉淀：settings 覆盖 env 的配置链路上，任何"环境异常"先查 settings 残留再怀疑供应商**；Vercel env 曾缺 AGNES_API_KEY（HANDOVER 写了但实际没配）——文档与真实配置要实测核对，不能信纸面。云端 AI 已修复可用（ping/chat/translate 全通）。
+> 全部 30 条坑已按域拆分到 **`docs/pitfalls/`** 单独文件（2026-09-13 重构），每条含症状/根因/规则/案例，换手必读。
+> 本节只留索引，编号全局通用（历史文档引用的坑 #N 不变）：
+
+| 域 | 文件 | 坑编号 | 一句话核心 |
+|---|---|---|---|
+| 采集与信源 | `docs/pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 | 三份实现同步改；浏览器 UA；反爬熔断是常态；大查询禁携全文 |
+| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 | 游标同型；无索引大查询云端必炸；focus 双语义 |
+| AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #A1 | settings 覆盖 env 先查残留；推理模型输出三层清洗 |
+| 前端 | `docs/pitfalls/frontend.md` | #1 #2 #16 #F1 | 防盗链；hook 必须在早退 return 前 |
+| 部署与运维 | `docs/pitfalls/deployment.md` | #5 #20 #21 #22 #D1 | 密钥三处同步；vercel.json 无 crons；push 后验远端 SHA |
+| 测试 | `docs/pitfalls/testing.md` | #13 #18 #27 #T1 | 云端测试直打生产库；全量替换语义必须快照还原 |
 
 ## 6. 凭据与配置位置
 
 | 凭据 | 位置 |
 |---|---|
 | 情报系统配置 | `D:\全网情报系统\.env`(PORT/代理/云队列/ADMIN_USER/ADMIN_PASSWORD/AUTH_SECRET)+ settings 表 |
+| 本地代理（Clash） | `http://127.0.0.1:12000`（2026-09-13 实测，旧 7890 已失效）；git 已配 http.proxy=127.0.0.1:12000 |
 | Turso | `.env` 的 TURSO_DATABASE_URL/TURSO_AUTH_TOKEN;Vercel 项目环境变量(production) |
 | COLLECT_KEY | Vercel env + GitHub repo Secrets(Actions) + 本地 .env —— **三处必须同步**(坑 #20) |
 | GitHub PAT(管理 Secrets/查日志) | `docs/HANDOVER.md` §1.5(该文件已 gitignore,勿提交;稳定后轮换) |
@@ -170,40 +157,13 @@ server/services/
 - 每个线上修过的 bug 必须有回归测试(regression-phase9.test.js、regression-aclass.test.js 是样板)
 - 改完跑 `npm test` + `npm run build`(含 portal build),全绿才算完
 
-## 8.1 2026-09-04 A 类硬伤修复(详见 archive/docs-deprecated/A_CLASS_FIX_REPORT.md)
+## 8. 历史修复纪要（2026-09-04 ~ 09-05，已收敛归档）
 
-pending_items schema 崩溃链、enrichMissing id 错用、调度器清理路径错误、全文补抓编号参数空转、hotlist score 落库、DataTab 契约错位+真实上传导入(POST /api/data/upload)、抖音登录双端点(/api/auth/douyin/status|start)、AlertsTab 删除(api.del + DELETE /api/alerts/log/:index 带 at 指纹)、portal src-admin 重复声明修复、backfill.js→_backfill.js、解冻脚本保留 extra、smoke 副本隔离;另修 clearCooldowns 键写错、aihot-parse 测试隔离。
-
-## 8.2 2026-09-04 we-mp-rss 退役 + bestblogs 源迁移(详见 archive/docs-deprecated/A_CLASS_FIX_REPORT.md 第三轮)
-
-- **迁移**:`node tools/import-bestblogs-opml.js` 把 opml/ 三个 OPML 导入——wechat2rss 公众号 375(type='rss',分组「公众号」)、YouTube 124(type='youtube',分组「YouTube」)、播客 53(type='rss',分组「播客」);旧 65 个 wemp 源 enabled=0(历史文章保留)。首刷 next_fetch_at 在 6h 内随机错峰。执行前快照 `data/backups/app-20260904-180351.db`。
-- **退役代码**(均移 trash/):services/wempSupervisor.js、routes/wemp.js、collectors/wemp/、web WempTab.jsx、tests/wemp-routes.test.js、tools/wemp-*/seed-mp-library/fix-wemp-shells 等;scheduler wemp 心跳、alerts 的 wemp_down/wemp_cookie_expired 事件、health 的 wemp 字段、ops-toolkit reset-wemp 命令同步移除。
-- **依赖减一**:不再需要 Python/we-mp-rss 子进程;.env 的 WEMP_* 变量全部失效可删。
-
-## 8.3 2026-09-05 十期:源库管理 + 源自动分类(四件套 docs/specs/09-source-library-autoclassify/)
-
-- **源库 Tab**(管理台首位):全类型源统一列表(含停用/熔断/已退役 wemp/marksFeatured 标记源),四筛选(类型/文件夹/状态)+搜索+本地分页,批量启用/停用/特别关注/移动,单源改组下拉(同 kind 过滤),累计条目数(区别未读数口径)。
-- **自动分类**:内置 8 类目录(bestblogs OPML 中英别名归一 + 关键词兜底);OPML 层级解析(buildOpmlCategoryMap,YouTube 8 类/播客 7 类;公众号 OPML 扁平天然不适用);新源三挂接点自动入组;存量回填 dryRun 预览(默认只列可执行变更,无建议条目计 noSuggestion)→ 勾选确认 → apply。
-- **验收修复**:P2-1 预览口径(无建议条目不再计入变更清单);P2-2 测试空转(3 例重述实现式测试重写为真实路由驱动,新增 401/dryRun 回归锁,tests 168 全绿)。
-- 前端新增 `SourceLibraryTab.jsx`/`BackfillPreviewModal.jsx`,icons.jsx +6(Folder/Search/Filter/Sparkles/Lock/Library)。
-
-## 8.3b 2026-09-05 视觉精修（排版向，不改主题配色）
-
-- **设计 token**:`web/src/index.css` 新增 `.pill/.meta/.card-lift/.stat-num/.unread-bar/.stars/.badge-red/.badge-gray/.avatar-fallback`,全部 var() 驱动三主题自适应;共享组件 `web/src/components/ui/`(TagPills/Stars/SourceAvatar/StatCard);util.js 新增 parseTags/formatWords/readingMinutes/sourceLabel(HotPage/HotDetail 已改共享引用)。
-- **后端纯增量**:articles LIST_FIELDS 增加 `tags/reason/content_len`(LENGTH 估算);status 增加 `overview`(enabledSources/todayNew/weekNew/dailyItemCount/dailyTopSources,公开只读);日报 sections 条目条件透传 score/tags。
-- **结构性新功能**:阅读器文章模式未选中文章时右栏渲染 `OverviewRail`(本周概览 2×2 + 近7天入早报 Top5 + 使用提示)。
-- **回归测试**:tests/regression-ui-data.test.js(UI-D1~D3)。
-- **顺手修复**:scheduler 增加 `started` 守卫——reschedule() 在未启动进程(测试/脚本)中不再自启调度器(曾致全量测试挂起);LoginModal 去掉用户名预填 admin。
-
-## 8.4 2026-09-05 阅读器信息架构修正(热榜/聚合源退出文章流)
-
-- **问题**:热榜源(微博热搜等 29 个)与聚合源(AIHOT)的文章混在阅读器,未读高达 2.5 万(「综合热搜」一组 9002),文件夹聚合阅读模型失效;统计轨被噪音刷爆。
-- **语义变更**:`/api/articles` 默认排除 `type='hotlist'` 与 `extra.aggregator=1` 源的文章(显式 `source_id` 或 `include_hot=1` 豁免);counts(later/history)同口径。热榜/聚合内容的阅读入口是热点榜页(/hot/),不受影响。
-- **侧栏文件夹优先**:文章模式不列热榜/聚合源;无可见成员的组不渲染;分组默认折叠(localStorage `qwis.groupsCollapsed` 语义反转:false=显式展开),点组名=读该组聚合流;未分组区空时隐藏(拖拽中仍显示作投放目标)。
-- **统计轨去噪**:overview 的 enabledSources/todayNew/weekNew/来源榜均排除热榜/聚合源,新增 unreadArticles。
-- **数据归档**:阮一峰→编程技术、NeuralNine→编程技术(视频)、影视飓风→新建视频组「影音创作」;未分组启用源清零(备份 data/backups/app-before-group-filing-*)。
-- 回归:UI-D4/D5(regression-ui-data.test.js)。
-- **同轮修正**:① 阅读器列表常驻搜索框(原仅历史存档可搜,q 全 tab 透传);② 「本周概览」常驻右栏(xl 以上),正文区选中文章不再卸载它,空态由 ArticleView 自渲;③ 侧栏组行尾双数字改单未读数(成员数收进 tooltip);④ /api/reading 的 counts.all 修复为已读+稍后读并集(原误为全库文章数,「我的阅读·全部」曾显示 2.6 万);⑤ firstImg 解码 &amp; 实体(坑 #16),存量 3891 条坏封面已清洗;⑥ 我的阅读缩略图走 imgUrl 代理 + no-referrer + 失败回退源头像(reading 接口补 source_avatar);⑦ **字数虚高修复**:新增 articles.word_count 纯文本字数列(写入/全文补抓/enrich 三链路维护,存量 26677 条已回填),列表/详情/快读的「N 字·约 M 分钟」改用它——此前用 LENGTH(content_html) 把公众号内联样式算成字数(500 字新闻显示 5.2 万字)。回归 UI-D6/D7。
+> 完整过程记录已归档至 `docs/changes/archive/` 与 `docs/deprecated/`，语义权威见 `docs/features/`。速览：
+- **09-04 A 类硬伤批量修复**：pending_items schema、编号参数空转、DataTab 上传契约、抖音双端点等（archive/docs-deprecated/A_CLASS_FIX_REPORT.md）。
+- **09-04 we-mp-rss 退役 + bestblogs 迁移**：公众号=wechat2rss 托管 RSS（375 源入「公众号」组）；自建引擎代码移 trash/；.env WEMP_* 失效。
+- **09-05 十期**：源库 Tab + 自动分类（spec：docs/specs/09-source-library-autoclassify/）。
+- **09-05 视觉精修 / 信息架构修正**：设计 token 共享组件；热榜/聚合源退出文章流（默认排除，include_hot=1 豁免）；word_count 纯文本字数列替代 LENGTH(content_html)；OverviewRail 右栏（features：docs/features/my-reading.md 等）。
 
 ## 9. Agent 协作规则
 
