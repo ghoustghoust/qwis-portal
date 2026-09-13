@@ -39,6 +39,12 @@ const insertVideo = db.prepare(`
   ON CONFLICT(url) DO UPDATE SET play_uri=COALESCE(excluded.play_uri, videos.play_uri)
 `);
 
+
+// B6（2026-09-14）：RSS 条目链接为 YouTube 时跳过（与 tools/collect-turso.js 同步，坑 #9）
+function isYouTubeLink(url) {
+  return /(?:youtube\.com\/(?:shorts|watch|embed)|youtu\.be\/)/i.test(String(url || ''));
+}
+
 // ─── 文章落库 ─────────────────────────────────────────────────────────────────
 // 未来时间钳制（2026-09-13 F2，与 tools/collect-turso.js、api/collect.js 三处同步）：
 // openrss 等网页转 RSS 桥接会解析出未来 pubDate，入库前晚于当前 5min 以上钳为 now
@@ -52,7 +58,7 @@ function clampPubDate(iso, now) {
 
 function saveArticles(sourceId, articles, { marksFeatured = false } = {}) {
   let added = 0;
-  for (const a of articles) {
+  for (const a of articles.filter((x) => !isYouTubeLink(x.url))) { // B6：YouTube 链接不入文章流
     const score = Number(a.score); // 归一：字符串热度（如 "99"）也可入库，非数值落 NULL
     const now = nowIso();
     const r = insertArticle.run(
