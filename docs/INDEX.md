@@ -1,7 +1,7 @@
 # 全网情报系统 · 文档索引
 
 > 所有有效文档的路径与用途速查。供 Agent 和开发者快速定位上下文。
-> 最后更新：2026-09-13 晚（文档大整理：changes 归档制、ISSUES 大清洗、T3 需求定稿、根目录文档去历史堆积）
+> 最后更新：2026-09-15（ISSUES 二次大清洗：09-13~14 完成批全量入 deprecated/ISSUES-resolved-2026-09-14.md；热点榜三阶段/媒体治理/quickscore 落档）
 
 ---
 
@@ -35,9 +35,9 @@
 | `docs/INDEX.md` | 本文档 |
 | `docs/CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
 | `docs/FEATURE_MATRIX.md` | **功能矩阵 SSOT**（唯一权威，其它文档不再维护矩阵） |
-| `docs/ISSUES.md` | **活跃问题清单**（B5-B12 与热点榜项动态核销；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md`） |
+| `docs/ISSUES.md` | **活跃问题清单**（只保留未修复/观察中/挂案；已核销历史见 `docs/deprecated/ISSUES-resolved-2026-09-13.md` 与 `ISSUES-resolved-2026-09-14.md`） |
 | `docs/DELIVERY-2026-09-14.md` | **交付文档**（09-13~14 全量：最近修改/出错问题/未来计划/文件索引/热点榜二阶段） |
-| `docs/NEXT-DEV-REQS.md` | **T3+T4 系列需求**：T3（早报体系 v3/管理台早报中心/读层性能/来源榜）+ T4（快改清单/源治理与反过载/内容形态补全/原定目标存续盘点） |
+| `docs/NEXT-DEV-REQS.md` | **需求队列**：T3/T4/T5-1/14/16/4 已核销；当前活跃 = T5 剩余项（T5-2 信息架构重构 / T5-3 AI 分领域栏目 / 小组件打包） |
 | `docs/pitfalls/` | **踩坑库**（2026-09-13 起）：按域单文件（collection/backend/ai/frontend/deployment/testing），每条含症状/根因/规则/案例，换手必读；ARCHITECTURE §5 只留索引 |
 | `docs/DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 127.0.0.1:12000） |
 | `docs/DEV_GUIDE.md` | 开发者上手指南 |
@@ -46,8 +46,8 @@
 | `docs/RUNBOOK.md` | 运维手册 |
 | `docs/HANDOFF_PROMPT.md` | 新窗口接手提示词 |
 | `docs/BESTBLOGS_BORROW.md` | BestBlogs 范式借鉴清单（T3-1 主题全景的需求源头） |
-| `docs/AUDIT-2026-09-12.md` | 09-11~12 交叉审核报告（历史审阅入口） |
-| `docs/REFACTOR_GUIDE.md` | [历史] Phase 1-5 重构记录 |
+| `docs/deprecated/AUDIT-2026-09-12.md` | [已归档] 09-11~12 交叉审核报告 |
+| `docs/deprecated/REFACTOR_GUIDE.md` | [已归档] Phase 1-5 重构记录 |
 | `docs/ANDROID_SUBMIT_GUIDE.md` / `docs/X_SETUP_GUIDE.md` | 平台指南 |
 
 ## 功能文档（docs/features/）· 决策 Spec（docs/specs/）
@@ -58,4 +58,4 @@
 ## 归档（docs/deprecated/ 与 docs/changes/archive/）
 
 漂移/过时/已完结文档统一入档并加头注指向现役文档，包括 2026-09-13 新归档的：
-`ISSUES-resolved-2026-09-13.md`（旧问题清单 242 行全文）、`changes/archive/2026-09-13-delivery-emergency-fixes.md`（原根目录 DELIVERY 文档，已并入 09-13 交付记录）。
+`ISSUES-resolved-2026-09-13.md`（旧问题清单全文）、`ISSUES-resolved-2026-09-14.md`（09-13~09-15 已核销全量：热点榜三阶段/媒体治理/头像回填/精选断更根治）、`changes/archive/2026-09-13-delivery-emergency-fixes.md`（原根目录 DELIVERY 文档）。
