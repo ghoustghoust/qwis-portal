@@ -174,6 +174,13 @@ async function fetchRss(source) {
   const xml = await res.text();
   const feed = await rssParser.parseString(xml);
 
+  // 头像自愈（2026-09-14：feed 已抓到就零成本取 channel image；源头像此前 676 个空缺全是单字母占位）
+  let feedImage = (feed.image && feed.image.url) || (feed.itunes && feed.itunes.image) || null;
+  if (feedImage && !/^https?:\/\//.test(feedImage)) {
+    try { feedImage = new URL(feedImage, url).href; } catch { feedImage = null; }
+  }
+  if (feedImage && (/[<>]/.test(feedImage) || /%3C|%3E/i.test(feedImage))) feedImage = null; // 模板占位符防呆
+
   // YouTube 频道 feed → videos 表（2026-09-14 修：runner 的 fetchRss 此前只产 articles，
   // 又被 B6 的 YouTube 链接过滤全部丢弃——视频板块自 09-07 起断更。语义移植自本地
   // server/services/collectors/rss/index.js 的 mapYoutubeItem；三份采集实现同步义务见坑 #9）
@@ -217,7 +224,7 @@ async function fetchRss(source) {
     };
   }).filter(a => a.title && a.url);
 
-  return { articles, etag, lastModified };
+  return { articles, etag, lastModified, feedImage };
 }
 
 // ─── 热榜解析 ───
@@ -439,6 +446,14 @@ async function collectOne(source, stats) {
     if (result.etag) extra.etag = result.etag;
     if (result.lastModified) extra.lastModified = result.lastModified;
     if (extra.lastError) { delete extra.lastError; delete extra.lastErrorAt; }
+
+    // 头像自愈：源无头像且本次 feed 带 channel image → 回填（零额外请求）
+    if (!source.avatar && result.feedImage) {
+      try {
+        await qRun('UPDATE sources SET avatar=? WHERE id=?', [result.feedImage, source.id]);
+        log(`  头像回填: ${source.name}`);
+      } catch { /* 不阻断 */ }
+    }
 
     // 2026-09-11：RSS 默认间隔 480→60min。runner 容量充足（全量一轮几分钟），
     // ETag 304 使重复拉取几乎免费；8h 间隔会导致公众号新文章延迟大半天才入流。
