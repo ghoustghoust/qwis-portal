@@ -26,6 +26,7 @@
 │ GitHub Actions（.github/workflows/collect.yml）              │
 │                                                             │
 │  每 15min :07/:22/:37/:52 ──► collect-turso.js collect（采集）│
+│                             │  └─ 尾部：热搜事件预聚合 + quickscore 即时补分│
 │                             └─► translate（AI 翻译）         │
 │  每天 09:03 日报 daily ｜ 每天 00:32 daily-ai（兜底补跑）      │
 │  每天 21:30 晚间生成主批（daily-ai + mybrief，rolling24h）     │
@@ -70,6 +71,11 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    （Windows 上触发 libuv UV_HANDLE_CLOSING 断言 → exit 127）。
 8. **本地代理**：`HTTPS_PROXY` 存在时必须用 undici 包自带的 `fetch` + `ProxyAgent`
    配套使用，不能把外部 undici 的 Agent 喂给 Node 内置 fetch（符号不兼容，全部 fetch failed）。
+11. **精选即时补分（quickscore）**：六维评分此前只在早报批次（21:30/00:32/09:03）跑，
+   白天新文章 score 全空 → 热点榜「AI 精选」白天无今日内容（2026-09-14 用户验收发现）。
+   现 collect 批次尾部追加 `runQuickScore`：近 24h 未评分、自有源、AI 相关文章每轮补 8 篇
+   （QUICKSCORE_LIMIT 可调；生成保护窗内让路，同翻译 R0b）。
+
 10. **热搜事件预聚合**：`/api/hot/events` 的聚合（3000 行窗口采样 + Jaccard 聚类）在 serverless 冷启动
    超 30s 上限必 504（2026-09-14 实测连续超时）。主路径 = runner collect 批次尾部 `runHotEventsCache`
    预聚合写 `settings['hot.eventsCache']`（15min 刷新），云端读层直读缓存（>45min 视为 runner 异常才内联兜底）。

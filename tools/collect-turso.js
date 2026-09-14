@@ -503,10 +503,63 @@ async function runCollect() {
 
   log(`采集完成: 成功 ${stats.success} / 失败 ${stats.failed} / 跳过 ${stats.skipped} / 新增 ${stats.articles} 篇 / 耗时 ${sec}s`);
   await runHotEventsCache(); // 热搜事件预聚合（云端读层主路径；失败不阻断采集退出码）
+  await runQuickScore(); // 精选即时补分（六维评分原来只有早晚报批次才跑，白天精选无今日内容——用户 2026-09-14 验收发现）
   await writeHeartbeat('collect', stats);
   await postRunAlerts(stats); // 15-cloud-alerts：批次尾部报警（失败隔离，绝不影响退出码）
   return stats;
 }
+
+// 2026-09-14：精选即时补分（轻量六维评分）
+// 起因：六维评分此前只跑在 daily-ai 早报批次（21:30/00:32/09:03），白天新文章 score 全空，
+//       热点榜「AI 精选」（口径=自有源六维≥60 且 AI 相关）白天无今日内容。
+// 策略：每轮采集尾部补分「近 24h、自有源、未评分、AI 相关」的新文章，上限 QUICKSCORE_LIMIT（默认 8 篇/轮，
+//       15min 一轮 ≈ 32 篇/小时增量，Agnes 15RPM 配额可承受）；生成保护窗内让路（同翻译 R0b 语义）。
+async function runQuickScore() {
+  if (inGenerationGuard()) { log('quickscore: 生成保护窗内，本轮让路'); return { skipped: 'generation-window' }; }
+  const _ai = require('../api/_ai');
+  const { aiRelevanceCond } = require('../lib/ai-relevance');
+  const LIMIT_QS = Number(process.env.QUICKSCORE_LIMIT) || 8;
+  const args = [new Date(Date.now() - 24 * 3600e3).toISOString()];
+  const aiCond = aiRelevanceCond(args);
+  const rows = await qAll(
+    `SELECT a.id, a.title, a.summary, a.published_at, s.name AS source_name
+     FROM articles a JOIN sources s ON s.id = a.source_id
+     LEFT JOIN groups g ON g.id = s.group_id
+     WHERE a.published_at >= ? AND s.enabled = 1
+       AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
+       AND (a.score IS NULL OR a.score = '' OR CAST(a.score AS REAL) = 0)
+       AND ${aiCond}
+     ORDER BY a.published_at DESC LIMIT 60`,
+    args
+  );
+  const candidates = rows.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a)).slice(0, LIMIT_QS);
+  if (!candidates.length) { log('quickscore: 无待补分候选'); return { scored: 0 }; }
+  let scored = 0;
+  for (const a of candidates) {
+    try {
+      const f = await _ai.filterArticle({ title: a.title, source: a.source_name, summary: a.summary });
+      if (f.ignore) {
+        // 初筛即垃圾：写低分占位（免每轮重扫；低于精选门槛 60 不会入精选）
+        await qRun('UPDATE articles SET score=? WHERE id=?', [Math.min(Number(f.score) || 20, 40), a.id]);
+        continue;
+      }
+      const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
+      const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
+      if (r && Number.isFinite(r.totalScore)) {
+        await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, a.id]);
+        scored++;
+        log(`  ✓ [补分] #${a.id} ${Math.round(r.totalScore)}分 ${String(a.title).slice(0, 36)}`);
+      }
+    } catch (e) {
+      log(`  ✗ [补分] #${a.id} ${e.message.slice(0, 100)}`);
+    }
+    await new Promise((r2) => setTimeout(r2, 1200)); // 限速护配额
+  }
+  log(`quickscore: 候选 ${rows.length}，本轮补分 ${scored}/${candidates.length}`);
+  return { scored };
+}
+
+
 
 // 2026-09-14：热搜事件预聚合写 settings['hot.eventsCache']
 // 起因：云端 serverless 内联聚合（3000 行窗口查询 + Jaccard 聚类）冷启动超 30s 上限 504，用户实测事件榜长时间「加载中」
