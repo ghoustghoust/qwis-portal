@@ -21,7 +21,11 @@ router.get('/events', (req, res) => {
     const list = events.getEvents(domain);
     res.json({
       ok: true,
-      events: list.map((e, i) => ({ rank: i + 1, ...e, items: undefined })), // 列表不带簇内条目
+      // 列表不带簇内条目明细（明细走 /events/:rank），只带 digest 报道摘要（2026-09-14 与云端对齐）
+      events: list.map((e, i) => {
+        const { items, ...rest } = e;
+        return { rank: i + 1, ...rest, digest: (items?.[0]?.summary || '').slice(0, 200) };
+      }),
       domains: [...new Set(events.getEvents('all').map((e) => e.domain))],
     });
   } catch (err) {

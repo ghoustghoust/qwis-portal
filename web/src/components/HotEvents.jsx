@@ -252,10 +252,10 @@ export default function HotEvents() {
                 <span className="text-[14.5px] font-bold leading-snug t-text">{ev.title}</span>
               </div>
               {/* 报道摘要（样图：标题下摘要 2 行截断，行首「报道摘要」小标） */}
-              {ev.items?.[0]?.summary && (
+              {ev.digest && (
                 <p className="mt-1.5 text-[12px] leading-relaxed t-muted line-clamp-2">
                   <span className="t-accent font-medium">报道摘要　</span>
-                  {ev.items[0].summary}
+                  {ev.digest}
                 </p>
               )}
               {/* 信源胶囊（分组·名称）+ 元信息行 */}

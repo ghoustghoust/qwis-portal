@@ -620,7 +620,10 @@ async function handleHotEvents(req) {
 
   // 领域清单（从全量事件提取）
   const domains = [...new Set(_eventsCache.events.map(e => e.domain))].filter(Boolean).sort();
-  return jsonOk({ events: result, domains });
+  // 列表瘦身（2026-09-14：全量 items 曾使列表响应 246KB、页面长时间「加载中」）——
+  // 列表只带报道摘要 digest + 信源/趋势，明细留给 /api/hot/events/:rank
+  const list = result.map(({ items, ...e }) => ({ ...e, digest: (items?.[0]?.summary || '').slice(0, 200) }));
+  return jsonOk({ events: list, domains });
 }
 
 // GET /api/hot/events/:rank — 事件详情
