@@ -58,6 +58,8 @@ jobs:
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          # 2026-09-15 修：collect 尾部 quickscore 需 AI Key（缺 key 时评分静默全灭，精选断更根因）
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
         run: node tools/collect-turso.js collect
 
       - name: Translate pending English articles → Turso
@@ -111,6 +113,8 @@ jobs:
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          # 2026-09-15 修：晚间主批此前缺 AI Key——深析全灭降级为关键词版（无评分产出）
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
         run: node tools/collect-turso.js daily-ai --rolling24
 
   daily-ai:
