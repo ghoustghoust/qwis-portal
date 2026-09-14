@@ -1,6 +1,7 @@
 # 视频/播客上榜可播放（31-media-playback）
 
-> **状态：草案（未开工）**——总 spec 见 `../26-platform-ia-refactor.md`（四层信息金字塔/源四轴模型）。
+> **状态：✅ 已实施（2026-09-14，commits 09576cc/e72e22d/d799d86）**——总 spec 见 `../26-platform-ia-refactor.md`。
+> 落地形态：云端补齐 `/api/videos/:id`、`/play`（YouTube/B站官方 embed）、`/favorite`；播客 enclosure 音频归位 `audio_url`（lib/media.js）并入视频板块（🎧 卡 + 图片+声音播放页）；日报/我的早报新增「视频与播客」栏（窗口内新媒体免 AI 直列）；QuickStudyModal 视频 embed/播客 audio 可播放。
 > 确认后按 mew-spec 四件套（spec/plan/task/checklist）补全再实施。
 
 ## 开发什么
