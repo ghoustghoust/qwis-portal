@@ -70,6 +70,11 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    （Windows 上触发 libuv UV_HANDLE_CLOSING 断言 → exit 127）。
 8. **本地代理**：`HTTPS_PROXY` 存在时必须用 undici 包自带的 `fetch` + `ProxyAgent`
    配套使用，不能把外部 undici 的 Agent 喂给 Node 内置 fetch（符号不兼容，全部 fetch failed）。
+10. **热搜事件预聚合**：`/api/hot/events` 的聚合（3000 行窗口采样 + Jaccard 聚类）在 serverless 冷启动
+   超 30s 上限必 504（2026-09-14 实测连续超时）。主路径 = runner collect 批次尾部 `runHotEventsCache`
+   预聚合写 `settings['hot.eventsCache']`（15min 刷新），云端读层直读缓存（>45min 视为 runner 异常才内联兜底）。
+   聚合逻辑唯一实现：`lib/hot-events.js`（纯函数，runner 与云端兜底共用，勿再写第三份）。
+
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
    dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份
