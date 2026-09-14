@@ -71,7 +71,8 @@
 | 早报纳入媒体 | 日报/我的早报加「视频与播客」栏（窗口内新媒体免 AI 直列）；QuickStudyModal 视频 embed 播放 | 今晚批次生效 |
 | 云端视频端点 | /api/videos/:id、/play、/favorite 此前 404 → 补齐（YouTube/B站官方 embed） | ✅ |
 | 播客卡视觉 | 米色块+大 emoji 占位被验收嫌丑 → PodcastCover 组件（主题色渐变+波形条+播客徽章+播放钮），有头像源走头像底+暗化徽章；四处占位全替换（d799d86） | 云端截图实测 ✅ |
-| 源头像空缺 | 676 启用源无头像全是单字母占位 → backfill-avatars.cjs 实跑回填 398 个（feed channel image/itunes:image→favicon 兜底）；采集链路头像自愈（fetchRss 返回 feedImage 落库，d5124fc）。剩余 273=死源/X/YouTube（后两类需页面抓取，另行处理） | 阅读器截图实测图标已出 ✅ |
+| 源头像空缺 | 676 启用源无头像全是单字母占位 → backfill-avatars.cjs 实跑回填 398 个（feed channel image/itunes:image→favicon 兜底）；采集链路头像自愈（fetchRss 返回 feedImage 落库，d5124fc） | 阅读器截图实测图标已出 ✅ |
+| 字符串 null 头像 | 回填没覆盖播客源的根因：库里 559 个源 avatar 是**字符串 'null'**（坑 #25 同族 TEXT 污染）→ UPDATE 清洗 + 二轮回填；读层同步归一（封面/头像/audio_url 渲染前剔 'null'，2041995）。最终 1253 启用源仅 257 无头像（死源/X/YouTube），播客组 66/67 有图标 | 视频板块播客卡 10/10 带头像 ✅ |
 
 ## ✅ 2026-09-14 上午（28 热点榜二阶段 T5-14 全部完成，commits 52dca08/d7f2337/152ee03/e7e8d05）
 
