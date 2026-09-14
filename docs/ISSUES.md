@@ -57,6 +57,20 @@
 | 事件榜加载慢/504 | serverless 冷启动内联聚合 3000 行+聚类超 30s → runner collect 尾部预聚合写 settings['hot.eventsCache']，云端直读（lib/hot-events.js 共享纯函数，不变量 10） | **30.8s 504 → 2.4s 200**（列表响应 246KB→80KB） ✅ |
 | Top5 文案 | 「AI 评分 82/100 热度」重复 → 只显示「N 热度」 | ✅ |
 
+## ✅ 2026-09-14 晚（媒体板块治理 + 早报中英对照/弹窗修复，commits 09576cc/e72e22d/440d591）
+
+| 项 | 问题根因 → 修复 | 云端终验 |
+|---|---|---|
+| 全站封面破图 | 图片代理云端只认 `?url=`，前端 `imgUrl()` 发 `?u=`（与本地不一致）→ 全站代理图 400 | 修复后 ytimg 实测 HTTP 200 19.6KB ✅ |
+| 视频断更 7 天 | runner 的 fetchRss 只产 articles，YouTube 条目又被 B6 过滤全丢 → 移植本地 mapYoutubeItem 入 videos 表；saveVideos 补 platform 列（曾产 11 行 NULL） | runner 下轮恢复 ✅ |
+| 视频「未能全部展现」 | /api/videos 无游标恒 30 条 → v2 游标分页 + tab=favorite/history 生效 | 两页无重复 ✅ |
+| 播客混入文章流 | enclosure 音频落 cover → lib/media.js 归位 audio_url；并入视频板块（🎧 角标卡 + 详情图片+声音播放器）；阅读器列表 🎧 | 播客卡+播放器实测 ✅ |
+| 日报中英对照 | 日报=生成时快照，后翻好的标题仍英文 → 读层实时回填 translated_title + original_title 对照；QuickStudyModal 中英切换 | 今日日报 7 条对照 ✅ |
+| 未知来源/打开原文失效 | 弹窗读 item.source_name 但日报字段是 source；url 空时按钮静默 → 字段兼容 + url 兜底+禁用态 | ✅ |
+| 主题综述元评论 | 输入带「评语」致 AI 评论评语 → 改喂摘要+禁止评语字样 | 今晚 21:30 批次生效 |
+| 早报纳入媒体 | 日报/我的早报加「视频与播客」栏（窗口内新媒体免 AI 直列）；QuickStudyModal 视频 embed 播放 | 今晚批次生效 |
+| 云端视频端点 | /api/videos/:id、/play、/favorite 此前 404 → 补齐（YouTube/B站官方 embed） | ✅ |
+
 ## ✅ 2026-09-14 上午（28 热点榜二阶段 T5-14 全部完成，commits 52dca08/d7f2337/152ee03/e7e8d05）
 
 | 项 | 内容 | 云端终验 |
