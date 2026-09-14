@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, formatWords, readingMinutes } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
 import { safeHtml } from '../sanitize';
 import { RadarLogo } from './icons.jsx';
 import { useI18n } from '../i18n.jsx';
@@ -268,6 +268,25 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
                 </>
               )}
             </div>
+            {/* 播客音频播放器（2026-09-14：播客单集 enclosure 音频已归位 audio_url，图片+声音） */}
+            {article.audio_url && (
+              <div className="mt-5 rounded-xl border t-border p-4 flex items-center gap-4">
+                {(article.cover || article.source_avatar) ? (
+                  <img
+                    src={imgUrl(article.cover || article.source_avatar)}
+                    alt=""
+                    className="w-16 h-16 rounded-lg object-cover flex-none"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : (
+                  <span className="w-16 h-16 rounded-lg t-accent-soft flex-none flex items-center justify-center text-2xl">🎧</span>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] t-muted mb-1.5">🎧 播客音频 · 点击播放</div>
+                  <audio controls preload="none" src={article.audio_url} className="w-full h-9" />
+                </div>
+              </div>
+            )}
             <div
               ref={contentRef}
               className="article-content mt-6"

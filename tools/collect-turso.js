@@ -771,7 +771,7 @@ async function runWeekly() {
         const degraded = passed
           .sort((x, y) => (y.score || 0) - (x.score || 0))
           .slice(0, 20)
-          .map((a, i) => ({ rank: i + 1, id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name, cover: a.cover || null, totalScore: null, weeklyTheme: classifyWeeklyTheme(a) }));
+          .map((a, i) => ({ rank: i + 1, id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, cover: a.cover || null, totalScore: null, weeklyTheme: classifyWeeklyTheme(a) }));
         await saveWeekly(null, degraded, true, t0);
         return { degraded: true, count: degraded.length };
       }
@@ -789,7 +789,7 @@ async function runWeekly() {
     .map((a) => {
       const weeklyTheme = classifyWeeklyTheme(a);
       return {
-        rank: 0, id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
+        rank: 0, id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name,
         cover: a.cover || null, published_at: a.published_at,
         totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
         quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
@@ -863,8 +863,10 @@ async function buildThemePanorama(items) {
   const VIEWS = ['事件', '领域', '人物', '产品对比'];
   const themes = [];
   for (const c of rated) {
-    const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.reason ? `｜评语：${i.reason}` : ''}`).join('\n');
-    const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述，指出共识与分歧"}\n\n${list}`;
+    // 2026-09-14 修复：输入不再带「评语」——AI 曾把综述写成对评语的元评论（"分歧在于评语高度相似…"），
+    // 综述应总结事件/主题本身的事实与各源侧重（用户验收：「这个地方不是总结吗？」）
+    const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.summary ? `｜摘要：${String(i.summary).slice(0, 80)}` : ''}`).join('\n');
+    const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述：概括这件事/这个主题本身的事实与各源侧重；禁止评论文章质量、评分或'评语'，禁止出现'评语'二字"}\n\n${list}`;
     const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
     if (!r.ok) continue;
     const m = String(r.reply || '').match(/\{[\s\S]*\}/);
@@ -1060,7 +1062,7 @@ async function runDailyAi() {
   const perSource = {};
   const sections = [];
   const fmt = (a) => ({
-    id: a.id, title: a.translated_title || a.title, url: a.url, source: a.source_name,
+    id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name,
     source_name: a.source_name, published_at: a.published_at,
     totalScore: a.totalScore, score: a.totalScore, // score 兼容现有 Stars 组件
     scores: a.scores, kind: a.kind || 'article',
@@ -1249,7 +1251,7 @@ async function runMyBrief(analyzed) {
     return { empty: 'no-content' };
   }
   const fmt = (a) => ({
-    id: a.id, source_id: a.source_id, title: a.translated_title || a.title, url: a.url,
+    id: a.id, source_id: a.source_id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url,
     source: a.source_name, cover: a.cover || null, published_at: a.published_at,
     totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
     quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
@@ -1576,7 +1578,8 @@ async function translatePipeline(article) {
     const firstLine = reply.split('\n')[0].trim();
     // 首行做标题前先过思维链检测（2026-09-13 F3：「Here's a thinking process:」曾被当标题入库）
     if (firstLine.length < 100 && firstLine.length > 2 && !_ai.isThinkingLikeReply(firstLine)) {
-      translatedTitle = firstLine;
+      // 2026-09-14：剥掉「标题：」/「# 」等标注残留（曾以脏前缀入库）
+      translatedTitle = require('../lib/text-clean').cleanTranslatedTitle(firstLine);
       translatedContent = reply.slice(firstLine.length).replace(/^\n+/, '');
     }
   }

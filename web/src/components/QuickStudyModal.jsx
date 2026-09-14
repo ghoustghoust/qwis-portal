@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, formatWords, readingMinutes } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
 import { safeHtml } from '../sanitize';
 
 // 快速学习弹窗（F17/F20）：类型标签 + 标题 + 来源时间 + 收藏/复制链接/打开原文 + 内容简介 + 正文
@@ -90,6 +90,16 @@ export default function QuickStudyModal({ item, onClose }) {
   const intro = detail?.intro || detail?.summary || item.summary;
   // 2026-09-05 视觉精修：meta 行字数（优先纯文本字数列，缺失回退正文/简介长度）
   const contentLen = detail?.word_count ?? (contentHtml || intro || '').length;
+  // 2026-09-14 修复：日报条目的来源字段是 source（生成时 dailyFormatItem 写入），此前只读 source_name → 恒「未知来源」
+  const sourceName = item.source_name || item.source || detail?.source_name || '未知来源';
+  // 打开原文兜底：条目 url → 详情 url → original_url（此前 item.url 为空时点了没反应）
+  const openUrl = item.url || detail?.url || detail?.original_url || '';
+  // 中英对照标题：详情已译 → 中文主标题 + 英文原标题副行
+  const zhTitle = detail?.translated_title || item.title;
+  const origTitle = detail?.translated_title && detail.translated_title !== item.title ? item.title : (item.original_title || '');
+  // 播客音频（2026-09-14：cover 里的音频 enclosure 已被服务端归位到 audio_url）
+  const audioUrl = detail?.audio_url || item.audio_url || '';
+  const audioImg = detail?.cover || detail?.source_avatar || item.cover || '';
 
   return (
     <div
@@ -116,11 +126,14 @@ export default function QuickStudyModal({ item, onClose }) {
         <div className="flex-1 overflow-y-auto px-6 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <span className="badge-green">{isVideo ? '视频' : '公众号文章'}</span>
-              <h1 className="serif mt-2 text-xl font-bold leading-snug t-text">{item.title}</h1>
+              <span className="badge-green">{isVideo ? '视频' : audioUrl ? '播客' : '文章'}</span>
+              <h1 className="serif mt-2 text-xl font-bold leading-snug t-text">{zhTitle}</h1>
+              {origTitle && (
+                <div className="mt-1 text-[12px] t-muted leading-snug">{origTitle}</div>
+              )}
               {/* 2026-09-05 视觉精修：meta 行 = 来源 · 时间 · 字数 · 阅读时长 */}
               <div className="meta mt-2 flex-wrap">
-                <span className="truncate">{item.source_name || '未知来源'}</span>
+                <span className="truncate">{sourceName}</span>
                 <span className="sep">·</span>
                 <span className="tabular-nums">{formatDateTime(item.published_at)}</span>
                 {formatWords(contentLen) && (
@@ -141,7 +154,7 @@ export default function QuickStudyModal({ item, onClose }) {
               >
                 {fav ? '已收藏' : '加入收藏'}
               </button>
-              <button className="btn-ghost" onClick={() => item.url && copyText(item.url)}>
+              <button className="btn-ghost" onClick={() => openUrl && copyText(openUrl)}>
                 复制链接
               </button>
               {/* 17-translate：翻译按钮/切换 */}
@@ -158,12 +171,28 @@ export default function QuickStudyModal({ item, onClose }) {
               <button
                 className="btn-primary"
                 style={{ background: 'var(--green)' }}
-                onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
+                disabled={!openUrl}
+                onClick={() => openUrl && window.open(openUrl, '_blank', 'noopener')}
               >
                 打开原文
               </button>
             </div>
           </div>
+
+          {/* 播客播放器（图片+声音，2026-09-14） */}
+          {audioUrl && (
+            <div className="mt-5 rounded-xl border t-border p-4 flex items-center gap-4">
+              {audioImg ? (
+                <img src={imgUrl(audioImg)} alt="" className="w-16 h-16 rounded-lg object-cover flex-none" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              ) : (
+                <span className="w-16 h-16 rounded-lg t-accent-soft flex-none flex items-center justify-center text-2xl">🎧</span>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] t-muted mb-1.5">🎧 播客音频</div>
+                <audio controls preload="none" src={audioUrl} className="w-full h-9" />
+              </div>
+            </div>
+          )}
 
           {/* 内容简介卡（历史日报数据中的 AI 摘要仍可展示） */}
           {item.summary ? (

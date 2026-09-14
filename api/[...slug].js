@@ -106,10 +106,11 @@ function requireAuth(req) {
   // [2026-09-11 P1-10 真根因] 此前登录 401 报 "Unauthorized" 来自本中间件而非 handleLogin，
   // 与 ADMIN_PASSWORD 值无关——改密码永远修不好
   if (path === '/api/auth/login' && req.method === 'POST') return null;
-  // 公开 GET 请求不需要鉴权（含 /api/articles/:id）
+  // 公开 GET 请求不需要鉴权（含 /api/articles/:id、/api/videos/:id(/play)）
   if (req.method === 'GET') {
     if (PUBLIC_GET_PATHS.has(path)) return null;
     if (/^\/api\/articles\/\d+$/.test(path)) return null;
+    if (/^\/api\/videos\/\d+(\/play)?$/.test(path)) return null;
     if (/^\/api\/hot\/events\/\d+$/.test(path)) return null;
   }
   const user = verifyAuth(req);
@@ -163,14 +164,18 @@ async function handleArticles(req) {
     }
   }
 
-  const fields = `a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary,
+  const fields = `a.id, a.source_id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary,
     a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
-    s.focus AS source_focus, a.score, a.tags, a.reason, a.word_count`;
+    s.focus AS source_focus, s.avatar AS source_avatar, a.score, a.tags, a.reason, a.word_count`;
 
-  const rows = await qAll(
+  const rows = (await qAll(
     `SELECT ${fields} FROM articles a JOIN sources s ON s.id=a.source_id ${where}${cursorCond} ORDER BY ${orderExpr} ${dir}, a.id ${dir} LIMIT ?`,
     [...args, PAGE_SIZE + 1]
-  );
+  )).map((r) => {
+    const m = mapAudioFields(r); // 播客音频识别（cover 里的 enclosure 音频 → audio_url）
+    if (m.translated_title) m.translated_title = cleanTranslatedTitle(m.translated_title);
+    return m;
+  });
 
   let nextCursor = null;
   if (rows.length > PAGE_SIZE) {
@@ -224,7 +229,9 @@ async function handleArticleById(req, id) {
   if (!row) return { status: 404, body: jsonErr('Article not found') };
   // 顺手标记已读
   await qRun('UPDATE articles SET read_at=COALESCE(read_at, ?) WHERE id=? AND read_at IS NULL', [nowIso(), id]);
-  return jsonOk({ item: row });
+  const item = mapAudioFields(row);
+  if (item.translated_title) item.translated_title = cleanTranslatedTitle(item.translated_title);
+  return jsonOk({ item });
 }
 
 // GET /api/videos
@@ -243,11 +250,49 @@ async function handleVideos(req) {
   return jsonOk({ items: rows });
 }
 
+// GET /api/videos/:id — 视频详情（云端移植 2026-09-14；此前 404，视频详情/播放全挂）
+async function handleVideoById(req, id) {
+  const row = await qOne(
+    `SELECT v.*, s.name AS source_name, s.avatar AS source_avatar
+     FROM videos v LEFT JOIN sources s ON s.id=v.source_id WHERE v.id=?`,
+    [id]
+  );
+  if (!row) return { status: 404, body: jsonErr('Video not found') };
+  return jsonOk({ item: row });
+}
+
+// GET /api/videos/:id/play — 播放地址（云端版：YouTube/B站走官方 embed；douyin 外链；本地直链解析不回源到云端）
+async function handleVideoPlay(req, id) {
+  const row = await qOne('SELECT id, vid, platform, url FROM videos WHERE id=?', [id]);
+  if (!row) return { status: 404, body: jsonErr('Video not found') };
+  if (row.platform === 'bilibili') {
+    return jsonOk({ mode: 'official', url: `https://player.bilibili.com/player.html?bvid=${row.vid}&autoplay=0` });
+  }
+  if (row.platform === 'youtube') {
+    // youtube-nocookie 域（隐私模式）；浏览器侧可达性由用户网络决定
+    return jsonOk({ mode: 'official', url: `https://www.youtube-nocookie.com/embed/${row.vid}` });
+  }
+  // douyin 等无 iframe embed：外链原平台
+  return jsonOk({ mode: 'external', url: row.url || `https://www.douyin.com/video/${row.vid}` });
+}
+
+// POST /api/videos/:id/favorite — 切换收藏
+async function handleVideoFavorite(req, id) {
+  const row = await qOne('SELECT id, favorite FROM videos WHERE id=?', [id]);
+  if (!row) return { status: 404, body: jsonErr('Video not found') };
+  const favorite = row.favorite ? 0 : 1;
+  await qRun('UPDATE videos SET favorite=? WHERE id=?', [favorite, id]);
+  return jsonOk({ favorite });
+}
+
 // ─── AI 相关性词表：已抽为共享模块 lib/ai-relevance.js（本文件与 tools/collect-turso.js 同用一份） ───
 // 坑 #31：OR 链必须平衡二叉树拼接（SQLite 表达式树深度上限 100，实测超长 OR 链报 Expression tree is too large）
 const { aiRelevanceCond, aiTitleConds } = require('../lib/ai-relevance');
 // ─── 热搜事件聚合：共享纯函数 lib/hot-events.js（runner 预聚合写 settings，云端读缓存优先） ───
 const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, hasCJK } = require('../lib/hot-events');
+// 播客音频识别（cover 里的音频 enclosure → audio_url）
+const { mapAudioFields } = require('../lib/media');
+const { cleanTranslatedTitle } = require('../lib/text-clean');
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
@@ -369,13 +414,13 @@ async function handleHot(req) {
     const sum = (rawSum && hasCJK(rawSum)) ? rawSum
       : (String(r.zh_digest || '').trim() || rawSum || plainText(r.content_fallback));
     const { content_fallback, zh_digest, ...rest } = r;
-    return {
+    return mapAudioFields({
       ...rest,
-      title: r.translated_title || r.title,
+      title: cleanTranslatedTitle(r.translated_title) || r.title,
       original_title: r.translated_title ? r.title : undefined,
       summary: sum.slice(0, 300),
       scoreFormatted: formatHeat(r.score),
-    };
+    });
   });
   return jsonOk({ items, nextCursor });
 }
@@ -521,7 +566,7 @@ function dailyDedup(items) {
   return result;
 }
 function dailyFormatItem(a) {
-  return { id: a.id, title: a.title, url: a.url, source: a.source_name, published_at: a.published_at, score: a.score, summary: (a.summary || '').slice(0, 200), cover: a.cover };
+  return { id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, published_at: a.published_at, score: a.score, summary: (a.summary || '').slice(0, 200), cover: a.cover };
 }
 
 async function generateDailyInline() {
@@ -584,6 +629,36 @@ async function generateDailyInline() {
 }
 
 // GET /api/daily（含 getOrGenerate：当日无日报且已过 9:00 北京时间则自动生成）
+// 2026-09-14：读出时实时回填译文标题——日报是生成时快照，生成后才翻好的标题之前永远显示英文；
+// 现在读层批量查 translated_title，命中即换成中文标题并把原英文标题放 original_title（前端中英对照）
+async function enrichDailyTranslated(sections) {
+  if (!Array.isArray(sections) || !sections.length) return sections;
+  const ids = [];
+  for (const s of sections) for (const it of s.items || []) {
+    if (Number.isFinite(Number(it.id)) && !String(it.id).startsWith('v')) ids.push(Number(it.id));
+  }
+  if (!ids.length) return sections;
+  const map = new Map();
+  // IN 分批（单批 ≤500 防 SQL 变量上限）
+  for (let i = 0; i < ids.length; i += 500) {
+    const batch = ids.slice(i, i + 500);
+    const rows = await qAll(
+      `SELECT id, translated_title, source_id FROM articles WHERE id IN (${batch.map(() => '?').join(',')}) AND translated_title IS NOT NULL AND translated_title != ''`,
+      batch
+    );
+    for (const r of rows) map.set(r.id, cleanTranslatedTitle(r.translated_title));
+  }
+  for (const s of sections) {
+    for (const it of s.items || []) {
+      const t = map.get(Number(it.id));
+      if (t && t !== it.title) { it.original_title = it.title; it.title = t; }
+      // 顺手修来源字段名：日报条目是 source，弹窗用 source_name——双写兼容（2026-09-14「未知来源」修复）
+      if (!it.source_name && it.source) it.source_name = it.source;
+    }
+  }
+  return sections;
+}
+
 async function handleDaily(req) {
   const row = await qOne('SELECT * FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
 
@@ -597,6 +672,7 @@ async function handleDaily(req) {
       try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
       let stats = {};
       try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
+      sections = await enrichDailyTranslated(sections);
       return jsonOk({
         report: {
           id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats,
@@ -617,7 +693,7 @@ async function handleDaily(req) {
   if (hour >= 1) { // UTC 1:00 = 北京 9:00
     try {
       const report = await generateDailyInline();
-      return jsonOk({ report: { generated_at: report.generated_at, sections: report.sections, stats: report.stats }, stale: false, autoGenerated: true });
+      return jsonOk({ report: { generated_at: report.generated_at, sections: await enrichDailyTranslated(report.sections), stats: report.stats }, stale: false, autoGenerated: true });
     } catch (err) {
       console.error('[daily] auto-generate failed:', err.message);
     }
@@ -631,6 +707,7 @@ async function handleDaily(req) {
   try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
   let stats = {};
   try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
+  sections = await enrichDailyTranslated(sections);
   return jsonOk({
     report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats },
     stale: true,
@@ -2471,6 +2548,13 @@ async function dispatch(req) {
     if (path === '/api/data/stats') return handleDataStats(req);
     if (path === '/api/audit' || path === '/api/audit/count') return handleAuditList(req);
     if (path === '/api/videos') return handleVideos(req);
+    // GET /api/videos/:id 与 /:id/play（2026-09-14 云端补齐，此前 404 视频不能看）
+    const videoPlayMatch = path.match(/^\/api\/videos\/(\d+)\/play$/);
+    if (videoPlayMatch && method === 'GET') return handleVideoPlay(req, Number(videoPlayMatch[1]));
+    const videoFavMatch = path.match(/^\/api\/videos\/(\d+)\/favorite$/);
+    if (videoFavMatch && method === 'POST') return handleVideoFavorite(req, Number(videoFavMatch[1]));
+    const videoIdMatch = path.match(/^\/api\/videos\/(\d+)$/);
+    if (videoIdMatch && method === 'GET') return handleVideoById(req, Number(videoIdMatch[1]));
     if (path === '/api/hot') return handleHot(req);
     if (path === '/api/hot/events') return handleHotEvents(req);
     if (path === '/api/hot/categories') return handleHotCategories(req);

@@ -212,6 +212,7 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
                   <div className="meta">
                     <SourceAvatar name={a.source_name || a.author} avatar={a.source_avatar || a.avatar} size={16} />
                     <span className="truncate">{a.source_name || a.author || ''}</span>
+                    {a.audio_url && <span className="flex-none" title="播客音频（点开可播放）">🎧</span>}
                     <span className="sep flex-none">·</span>
                     <span className="flex-none">{relativeTime(a.published_at)}</span>
                   </div>

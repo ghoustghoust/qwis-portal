@@ -161,9 +161,17 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
       ) : null}
       <div className="p-3 sm:p-4">
         <div className="flex items-start gap-2">
-          <h3 className="flex-1 min-w-0 mt-1 text-[15px] font-bold leading-snug t-text line-clamp-2">
-            {highlightTitle(item.title, keywords, highlight)}
-          </h3>
+          <div className="flex-1 min-w-0 mt-1">
+            <h3 className="text-[15px] font-bold leading-snug t-text line-clamp-2">
+              {highlightTitle(item.title, keywords, highlight)}
+            </h3>
+            {/* 中英对照：已译条目附英文原标题（2026-09-14） */}
+            {item.original_title && (
+              <div className="mt-0.5 text-[11px] t-muted leading-snug truncate" title={item.original_title}>
+                {item.original_title}
+              </div>
+            )}
+          </div>
           {/* 2026-09-05 视觉精修：右上星级评分（无 score 字段时 Stars 不渲染） */}
           <Stars score={item.score} size={12} className="flex-none mt-1.5" />
         </div>
@@ -224,8 +232,16 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
       style={{ borderColor: 'var(--border)' }}
     >
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 1}</span>
-      <span className="flex-1 min-w-0 truncate text-[13px] t-text">
-        {highlightTitle(item.title, keywords, highlight)}
+      <span className="flex-1 min-w-0">
+        <span className="block truncate text-[13px] t-text">
+          {highlightTitle(item.title, keywords, highlight)}
+        </span>
+        {/* 中英对照：已译条目附英文原标题（2026-09-14） */}
+        {item.original_title && (
+          <span className="block truncate text-[11px] t-muted mt-0.5" title={item.original_title}>
+            {item.original_title}
+          </span>
+        )}
       </span>
       {/* 18-daily-ai-v2：AI 推荐理由（窄屏隐藏） */}
       {item.reason ? (
