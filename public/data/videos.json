@@ -14,6 +14,32 @@
       "source_name": "影视飓风"
     },
     {
+      "id": 15364,
+      "source_id": 2,
+      "platform": null,
+      "title": "【影视飓风】iPhone Duo折叠屏真机上手",
+      "url": "https://www.bilibili.com/video/BV12PYh62E3c",
+      "vid": "BV12PYh62E3c",
+      "cover": "https://i2.hdslb.com/bfs/archive/478a80fc69fb800fa969c5f2325d8085cd6426f1.jpg",
+      "duration": 310,
+      "author": "影视飓风",
+      "published_at": "2026-09-10T00:11:38.000Z",
+      "source_name": "影视飓风"
+    },
+    {
+      "id": 14848,
+      "source_id": 2,
+      "platform": null,
+      "title": "对话汉斯·季默！如何用一段旋律创造一个电影宇宙？",
+      "url": "https://www.bilibili.com/video/BV1awbg6XELn",
+      "vid": "BV1awbg6XELn",
+      "cover": "http://i2.hdslb.com/bfs/archive/e10d02c5d1ae6cc411fa1fe1258a86967c178fcd.jpg",
+      "duration": 987,
+      "author": "影视飓风",
+      "published_at": "2026-09-08T03:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 12741,
       "source_id": 514,
       "platform": "youtube",
@@ -1273,33 +1299,7 @@
       "author": "GitHub",
       "published_at": "2026-09-04T16:10:27.000Z",
       "source_name": "GitHub"
-    },
-    {
-      "id": 9223,
-      "source_id": 622,
-      "platform": "youtube",
-      "title": "Introducing Project HydraFusion: multi-model orchestration in GitHub Copilot",
-      "url": "https://www.youtube.com/watch?v=dJmt1PHsETM",
-      "vid": "dJmt1PHsETM",
-      "cover": "https://i.ytimg.com/vi/dJmt1PHsETM/hqdefault.jpg",
-      "duration": "null",
-      "author": "GitHub",
-      "published_at": "2026-09-04T16:10:08.000Z",
-      "source_name": "GitHub"
-    },
-    {
-      "id": 8591,
-      "source_id": 12,
-      "platform": "youtube",
-      "title": "OpenWhispr: Use Your Voice For Everything",
-      "url": "https://www.youtube.com/watch?v=PKzCW5OpMVM",
-      "vid": "PKzCW5OpMVM",
-      "cover": "https://i.ytimg.com/vi/PKzCW5OpMVM/hqdefault.jpg",
-      "duration": "null",
-      "author": "NeuralNine",
-      "published_at": "2026-09-04T16:00:09.000Z",
-      "source_name": "NeuralNine"
     }
   ],
-  "generated_at": "2026-09-13T06:29:20.370Z"
+  "generated_at": "2026-09-14T06:39:26.986Z"
 }

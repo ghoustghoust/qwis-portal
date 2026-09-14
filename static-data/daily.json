@@ -1,478 +1,188 @@
 {
   "report": {
-    "id": 84,
-    "generated_at": "2026-09-13T06:03:04.699Z",
-    "window_hours": 24,
+    "id": 87,
+    "generated_at": "2026-09-14T05:57:15.702Z",
+    "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
+        "items": [
+          {
+            "id": 534318,
+            "title": "北交所公募产品矩阵“上新”，部分三个月持有期基金14日开售",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806452&idx=2&sn=9afc4604a65b6fa13883c3bdb0060cd5",
+            "source": "第一财经",
+            "published_at": "2026-09-13T15:50:00.000Z",
+            "score": null,
+            "summary": "据证监会官网，易方达基金近期披露了“易方达北交所优选3个月持有混合”基金的招募说明书、托管协议、基金合同等多份文件。其中显示，该基金首次募集规模上限为5亿元，公开发售时间为9月14日至9月24日‌。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9552c63e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCLhjHxCibtAbUA09jiavr1QJzXV8wW21ibsrPHZ6HEI7QOofLgyGfE1VNFSQU5Kdb26M5WqghYLKRdaEWKVBYmPe0KBnFufz6xK9M%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 569978,
+            "title": "“安全健康教育网”培训？多地官方辟谣",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzI5NTU3MQ==&mid=2652568674&idx=1&sn=5a59934075cca6368f36618e378e0320",
+            "source": "澎湃新闻",
+            "published_at": "2026-09-13T15:11:00.000Z",
+            "score": null,
+            "summary": "2026年9月10日，内蒙古自治区兴安盟卫生健康委员会发布辟谣声明，提醒各单位警惕一家名为“安全健康教育网”的机构假借安全健康教育名义开展培训。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f38024ef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibIciaJ2dfKYes4TehVvVNYYAoiaKHbJ2Dwjdr3RQ118jdrmdIFyINCFU3ibqSmo5Bic3l5icicicdmBBWA509XYRhWrVuWBOYgiahLLQNOFdu164hkc%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 432119,
-            "title": "详讯丨习近平会见印度总理莫迪",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806107&idx=1&sn=1cacbede1a961ab52973b32914e79e58",
-            "source": "第一财经",
-            "source_name": "第一财经",
-            "published_at": "2026-09-12T15:40:00.000Z",
-            "totalScore": 48,
-            "score": 48,
-            "scores": {
-              "选题": 7,
-              "内容": 7,
-              "深度": 4,
-              "实用": 3,
-              "创新": 3,
-              "表达": 8
-            },
-            "reason": "中印关系重要动态报道，信息来源权威，对关注地缘政治的读者有参考价值。",
-            "summary": "习近平在金砖国家会晤期间会见莫迪，双方就中印关系达成重要共识。习主席提出四点建议：以战略认知校准方向、合作共赢相互成就、政治智慧排除干扰、多边协作兼济天下。莫迪表示愿与中国做伙伴，在台湾、涉藏问题上立场未变，承诺全力支持中国明年担任金砖主席国。",
-            "quote": "中印两国国情不同，完全可以取长补短、相互支持、彼此成就、共同发展。",
-            "points": [
-              "中印要做伙伴而不是对手，互为发展机遇",
-              "双方要双轨并进，平衡解决经贸关切",
-              "印方承诺全力支持中国明年担任金砖主席国"
-            ],
-            "tags": [
-              "中印关系",
-              "外交时政"
-            ],
-            "translated": false
+            "id": 599921,
+            "title": "Registration without a phone number on Signal will use zero-knowledge proofs",
+            "url": "https://community.signalusers.org/t/registration-without-a-phone-number/2222?page=10",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T21:47:04.000Z",
+            "score": null,
+            "summary": "Article URL: https://community.signalusers.org/t/registration-without-a-phone-number/2222?page=10",
+            "cover": null
           },
           {
-            "id": 411467,
-            "title": "龙舟，火到新疆了！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237603&idx=1&sn=dcbc5977e7979ece65f041d719fdb449",
+            "id": 601014,
+            "title": "早知天下事〔2026.09.14〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237766&idx=1&sn=6d4a3e4c5f3948e819119644ad5fbf5e",
             "source": "新华社",
-            "source_name": "新华社",
-            "published_at": "2026-09-12T15:35:00.000Z",
-            "totalScore": 38,
-            "score": 38,
-            "scores": {
-              "选题": 5,
-              "内容": 6,
-              "深度": 4,
-              "实用": 2,
-              "创新": 4,
-              "表达": 7
-            },
-            "reason": "传统体育文化传播报道，地域视角有新意，但偏软新闻，缺乏深度分析与实用价值，适合文化休闲阅读。",
-            "summary": "龙舟首次成为新疆自治区运动会比赛项目，于田县龙舟队从零基础上成长为区域性劲旅。文章展示了沙漠龙舟、冰上龙舟等创新形式，体现各族人民在运动中感受传统文化魅力、收获友谊。",
-            "quote": "龙舟换的是赛道，没变的是'同舟共济'。",
-            "points": [
-              "龙舟首次成为新疆自治区第十五届运动会正式比赛项目",
-              "于田县从零基础到走出新疆参赛的励志故事",
-              "沙漠龙舟、冰上龙舟展现地域适配的创新形式"
-            ],
-            "tags": [
-              "传统文化",
-              "民族体育"
-            ],
-            "translated": false
+            "published_at": "2026-09-13T21:30:00.000Z",
+            "score": null,
+            "summary": "习近平出席金砖国家领导人第十八次会晤第二阶段会议并发表重要讲话。详情&gt;&gt;",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=da4e0104&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOITkZuO9Chicic4MNgH7Bib8DoPmqnPxYWIhL9ZZ1bZGhjO7LRyjtE1fcyRicmoDc1UQhsLAhmyLfIgG0oMOhHzOCGO5ueiceKPfdZU0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 391868,
-            "title": "标题：是时候迎来卢德主义复兴了吗？",
-            "url": "https://www.npr.org/2026/09/08/nx-s1-5955618/is-it-time-for-a-luddite-renaissance",
+            "id": 599922,
+            "title": "Why is privacy so hard?",
+            "url": "https://cacm.acm.org/blogcacm/why-is-privacy-so-hard/",
             "source": "Hacker News 首页",
-            "source_name": "Hacker News 首页",
-            "published_at": "2026-09-12T15:24:47.000Z",
-            "totalScore": 48,
-            "score": 48,
-            "scores": {
-              "选题": 6,
-              "内容": 4,
-              "深度": 5,
-              "实用": 3,
-              "创新": 5,
-              "表达": 6
-            },
-            "reason": "NPR 观点类文章，探讨技术反思主题，但缺乏具体数据与案例支撑，HN 热度一般。",
-            "summary": "文章讨论是否应重提卢德主义对技术过度依赖的批判。作为媒体观点稿，触及 AI 时代的技术焦虑，但信息密度有限，适合寻找谈资或思考技术边界的读者。",
-            "quote": "Is it time for a Luddite Renaissance?",
-            "points": [
-              "技术乐观主义面临反思",
-              "卢德主义并非完全过时",
-              "AI 时代重新审视人与技术关系"
-            ],
-            "tags": [
-              "技术哲学",
-              "社会思潮"
-            ],
-            "translated": true
+            "published_at": "2026-09-13T21:13:43.000Z",
+            "score": null,
+            "summary": "Article URL: https://cacm.acm.org/blogcacm/why-is-privacy-so-hard/",
+            "cover": null
           },
           {
-            "id": 432120,
-            "title": "微信：别取这种名字，会封号",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806106&idx=1&sn=fe3d60795774d8675f7ef52fbb301659",
-            "source": "第一财经",
-            "source_name": "第一财经",
-            "published_at": "2026-09-12T15:19:00.000Z",
-            "totalScore": 62,
-            "score": 62,
-            "scores": {
-              "选题": 6,
-              "内容": 6,
-              "深度": 4,
-              "实用": 7,
-              "创新": 3,
-              "表达": 6
-            },
-            "reason": "微信官方明确整治账号名称乱象，创作者需规避仿冒官方、未认证头衔等红线，实操性强。",
-            "summary": "9月11日，微信珊瑚安全发布第六期专项行动公告，持续整治账号名称信息乱象。今年以来共处置违规账号91226个、关闭2396个，重点打击仿冒官方机构、滥用媒体属性表述、未经认证加注专业头衔、夹带违规信息等违规行为，并提醒创作者保持真实标识，避免混淆误导。",
-            "quote": "对于名称冒充、身份伪装、夹带违规信息、名称信息黑灰产等问题，平台将进一步从严处置相关违规账号和内容。",
-            "points": [
-              "微信今年已处置违规账号超9万个，关闭账号2396个",
-              "仿冒官方机构、新闻媒体、未认证专业头衔是重点整治方向",
-              "严禁通过刷量软件伪造数据、买卖虚假大V认证及僵尸账号"
-            ],
-            "tags": [
-              "微信政策",
-              "账号治理"
-            ],
-            "translated": false
+            "id": 588945,
+            "title": "Ask HN: In The Matrix, the bad guys are the 'agents'. Coincidence? Clairvoyance?",
+            "url": "https://news.ycombinator.com/item?id=49688761",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T21:13:13.000Z",
+            "score": null,
+            "summary": "My buddy, Dario, says agents are getting more aggressive and will soon kill everybody, and I feel like I've seen this movie before.",
+            "cover": null
           },
           {
-            "id": 395806,
-            "title": "【电报解读】机构称随着英伟达Vera Rubin等机架级系统中铜缆全面转为光纤，光学互联渗透率或提升，公司参股企业实现保偏光纤正式量产认证",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247848999&idx=1&sn=c82a1ebea75a3a5f1927259e05fb8430",
+            "id": 588946,
+            "title": "Fable 5.1 Solves the Cyphral Distich, a 370-year-old cipher",
+            "url": "https://www.vals.ai/blogs/fable-solves-cyphral-distich",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T21:06:13.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.vals.ai/blogs/fable-solves-cyphral-distich",
+            "cover": null
+          },
+          {
+            "id": 577969,
+            "title": "Flawed Routers Flood University of Wisconsin Internet Time Server (2003)",
+            "url": "https://pages.cs.wisc.edu/~plonka/netgear-sntp/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T20:33:18.000Z",
+            "score": null,
+            "summary": "Article URL: https://pages.cs.wisc.edu/~plonka/netgear-sntp/",
+            "cover": null
+          },
+          {
+            "id": 590140,
+            "title": "阿曼外交部：原定于14日举行的地区会议延期",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247849293&idx=1&sn=65e5aca95c049887cc7ad004020a15eb",
             "source": "财联社",
-            "source_name": "财联社",
-            "published_at": "2026-09-12T15:18:00.000Z",
-            "totalScore": 56,
-            "score": 56,
-            "scores": {
-              "选题": 7,
-              "内容": 4,
-              "深度": 4,
-              "实用": 5,
-              "创新": 3,
-              "表达": 5
-            },
-            "reason": "紧扣英伟达Vera Rubin架构迭代带来的光学互联机遇，但内容为机构观点汇编+荐股软文，缺乏独立深度分析。",
-            "summary": "国常会要求加强算力监测与骨干光纤建设，机构指出英伟达Vera Rubin等机架级系统正从铜缆转向光纤，带动光学互联附加值和渗透率提升。文中提及两家公司：参股企业实现保偏光纤量产认证，另一家具备光棒-光纤-光缆一体化产业链且产能满载。",
-            "quote": "随着英伟达Vera Rubin等机架级系统中铜缆全面转为光纤，光学互联附加值和渗透率有望同步提升",
-            "points": [
-              "国常会要求加强算力资源监测调度和骨干光纤网络建设",
-              "英伟达Vera Rubin等机架级系统正从铜缆全面转向光纤",
-              "参股企业实现保偏光纤正式量产认证"
-            ],
-            "tags": [
-              "光学互联",
-              "算力基础设施"
-            ],
-            "translated": false
+            "published_at": "2026-09-13T20:12:00.000Z",
+            "score": null,
+            "summary": "据央视新闻，当地时间13日晚，阿曼外交部宣布，原定于14日在阿曼南部港口城市塞拉莱举行的地区会议将推迟。日期另行确定。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=05b37118&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaT753WpeTSHGH1QY4XtticUp0tTen5mf6fo9yVJbZEiaOF6COxU5WqdA4NhJhTFEfLAnicmc74vDhk6WIGR2G4X20ZvMGCoKeic5bI%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 385751,
-            "title": "# Ask HN: 你使用什么默认模型，以及为什么？",
-            "url": "https://news.ycombinator.com/item?id=49672966",
+            "id": 567981,
+            "title": "Mark Zuckerberg: \"Cambridge Analytica\" (2017)",
+            "url": "https://twitter.com/TechEmails/status/2099214399840059428",
             "source": "Hacker News 首页",
-            "source_name": "Hacker News 首页",
-            "published_at": "2026-09-12T14:58:44.000Z",
-            "totalScore": 52,
-            "score": 52,
-            "scores": {
-              "选题": 5,
-              "内容": 4,
-              "深度": 3,
-              "实用": 5,
-              "创新": 3,
-              "表达": 4
-            },
-            "reason": "开发者对主流模型的实用性评测，Opus 4.8 性价比获认可，Fable 过度设计警示有参考。",
-            "summary": "作者分享日常主要使用 Claude，认为 Fable 对简单移动应用规划场景属于过度设计，多 agent 模式会快速消耗积分。Opus 4.8 成为当前首选，价格合理且满足需求，暂不升级至 5 版本。",
-            "quote": "Opus 4.8 is now my goto and I will be avoiding 5 until I see a reason to switch back. 4.8 is 'good enough' for what I need and has been a great value.",
-            "points": [
-              "Fable 多 agent 模式对简单任务属于过度设计，消耗积分过快",
-              "Opus 4.8 在当前场景下性价比优于新版",
-              "开发者模型选择趋向务实，'够用'比'最新'更重要"
-            ],
-            "tags": [
-              "AI模型",
-              "开发工具"
-            ],
-            "translated": true
+            "published_at": "2026-09-13T20:08:45.000Z",
+            "score": null,
+            "summary": "Article URL: https://twitter.com/TechEmails/status/2099214399840059428",
+            "cover": null
           },
           {
-            "id": 432121,
-            "title": "公职人员醉驾致一对夫妻身亡，死者家属质疑主次责任认定，警方通报",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806099&idx=1&sn=21bf6a5efc8598e00021d0b7ff6dc75c",
-            "source": "第一财经",
-            "source_name": "第一财经",
-            "published_at": "2026-09-12T14:57:00.000Z",
-            "totalScore": 68,
-            "score": 68,
-            "scores": {
-              "选题": 7,
-              "内容": 8,
-              "深度": 5,
-              "实用": 4,
-              "创新": 3,
-              "表达": 9
-            },
-            "reason": "警方通报以详实数据还原事故经过，直面舆论质疑并承诺复核公开，信息权威、回应及时。",
-            "summary": "山西蒲县一镇政府公职人员杜某某醉驾（147.01mg/100ml）、超速且夜间未开灯，撞死一对推人力车过路的夫妻。家属质疑事故主次责任认定，已申请复核。警方通报事实清楚，强调对公职人员违法“不袒护、不降格、不拖延”，复核程序已启动。",
-            "quote": "公职人员涉嫌违法犯罪的，不袒护、不降格、不拖延。",
-            "points": [
-              "公职人员醉驾、超速、未开车灯酿成二人死亡事故，已被刑拘。",
-              "家属对原事故责任认定（主次责）有异议，已提交复核申请。",
-              "警方同步推进刑事办案与复核程序，承诺复核结论依法公开。"
-            ],
-            "tags": [
-              "醉驾",
-              "交通事故责任"
-            ],
-            "translated": false
+            "id": 570098,
+            "title": "Trump and Mike Johnson think the AI industry is overreacting",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/994441/trump-mike-johnson-ai-industry-overreacting",
+            "source": "The Verge",
+            "published_at": "2026-09-13T19:41:48.000Z",
+            "score": null,
+            "summary": "Yesterday, Anthropic CEO Dario Amodei published a lengthy open letter saying it was time to \"pace the frontier\" and slow down AI development. OpenAI's Sam Altman and Elon Musk both agreed, publicly vo",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/STK466_ELECTION_2024_CVirginia_E.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           },
           {
-            "id": 411468,
-            "title": "习近平会见印度总理莫迪",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237601&idx=1&sn=8d5bf5ca0a9f891687a1c555c19823bf",
-            "source": "新华社",
-            "source_name": "新华社",
-            "published_at": "2026-09-12T14:53:00.000Z",
-            "totalScore": 43,
-            "score": 43,
-            "scores": {
-              "选题": 5,
-              "内容": 6,
-              "深度": 4,
-              "实用": 2,
-              "创新": 3,
-              "表达": 7
-            },
-            "reason": "官方外交报道，信息准确但缺乏科技视角，对科技读者参考价值有限",
-            "summary": "习近平在印度新德里金砖会晤期间会见莫迪，双方就深化中印伙伴关系达成共识。中方提出四点建议：战略认知校准方向、合作共赢相互成就、互尊互谅排除干扰、多边协作兼济天下。莫迪表示愿同中国做伙伴，不受第三方影响，支持中方明年担任金砖主席国。",
-            "quote": "中印两国国情不同，完全可以取长补短、相互支持、彼此成就、共同发展。",
-            "points": [
-              "中印关系实现从'再出发'到'再提升'的战略转向",
-              "双方同意推动边界问题双轨并进、相互促进",
-              "印方重申台湾、涉藏立场不变，愿密切人文交流"
-            ],
-            "tags": [
-              "中印关系",
-              "金砖合作"
-            ],
-            "translated": false
-          },
-          {
-            "id": 389689,
-            "title": "中国算力大会，“年度重大突破成果”揭晓",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247849000&idx=1&sn=253b708231ec83610abc3ff451c6ff02",
-            "source": "财联社",
-            "source_name": "财联社",
-            "published_at": "2026-09-12T14:46:00.000Z",
-            "totalScore": 50,
-            "score": 50,
-            "scores": {
-              "选题": 6,
-              "内容": 5,
-              "深度": 4,
-              "实用": 4,
-              "创新": 4,
-              "表达": 6
-            },
-            "reason": "算力行业年度成果发布，案例有具体数据支撑，但整体偏通稿风格，缺乏深度分析与独到观点。",
-            "summary": "2026中国算力大会揭晓15项年度重大突破成果，具备国际先进、国内领先水准。典型案例包括中兴OEX架构将芯片适配周期压缩至3-6个月，长飞空芯光纤创世界纪录，已落地13个商用及试点项目，在效益与技术创新上取得阶段性成果。",
-            "quote": "长飞的空芯光纤算力互联技术创下最低衰减0.04dB/km、最长拉丝91.2公里等世界纪录，已在国内外完成超过13个商用及试点项目。",
-            "points": [
-              "15项年度重大突破成果具备国际先进、国内领先水准",
-              "核心技术创新突出，成果转化落地成效显著",
-              "典型案例涵盖芯片适配周期压缩与光纤通信技术突破"
-            ],
-            "tags": [
-              "算力",
-              "科技政策"
-            ],
-            "translated": false
-          },
-          {
-            "id": 408197,
-            "title": "标题：我制作了一个构建可视化工具来理解 Bun 的编译时间",
-            "url": "https://lalitm.com/post/buildprof/",
+            "id": 567982,
+            "title": "There Is No AI (It's Just People) with Jaron Lanier",
+            "url": "https://singjupost.com/startalk-there-is-no-ai-really-its-just-people-w-jaron-lanier-transcript/",
             "source": "Hacker News 首页",
-            "source_name": "Hacker News 首页",
-            "published_at": "2026-09-12T14:45:28.000Z",
-            "totalScore": 72,
-            "score": 72,
-            "scores": {
-              "选题": 6,
-              "内容": 6,
-              "深度": 7,
-              "实用": 7,
-              "创新": 6,
-              "表达": 7
-            },
-            "reason": "Bun 生态实用工具分享，构建性能可视化为开发者提供可参考的调试思路与优化路径。",
-            "summary": "作者开发了一款构建可视化工具，用于分析 Bun 的编译耗时，帮助理解构建流程中的瓶颈所在。文章分享了工具的设计思路与使用体验，为使用 Bun 的开发者提供了性能诊断的实践参考。",
-            "quote": "（原文引用待补充）",
-            "points": [
-              "构建了专门的可视化工具来追踪 Bun 编译耗时",
-              "通过工具分析揭示构建流程中的性能瓶颈",
-              "为前端构建优化提供了可复用的调试方法"
-            ],
-            "tags": [
-              "Bun",
-              "构建工具",
-              "性能优化"
-            ],
-            "translated": true
+            "published_at": "2026-09-13T19:41:06.000Z",
+            "score": null,
+            "summary": "Article URL: https://singjupost.com/startalk-there-is-no-ai-really-its-just-people-w-jaron-lanier-transcript/",
+            "cover": null
           },
           {
-            "id": 385753,
-            "title": "标题：你不需要矩阵微积分",
-            "url": "https://julesjacobs.com/2024/07/28/you-dont-need-matrix-calculus.html",
+            "id": 567983,
+            "title": "AI recursive self-improvement might not come so quickly after all (August 2026)",
+            "url": "https://www.technologyreview.com/2026/08/18/1142188/ai-recursive-self-improvement/",
             "source": "Hacker News 首页",
-            "source_name": "Hacker News 首页",
-            "published_at": "2026-09-12T14:15:08.000Z",
-            "totalScore": 71,
-            "score": 71,
-            "scores": {
-              "选题": 7,
-              "内容": 6,
-              "深度": 8,
-              "实用": 7,
-              "创新": 7,
-              "表达": 7
-            },
-            "reason": "对AI/ML从业者的认知减负指南，直击矩阵微积分过度包装痛点，有方法论价值",
-            "summary": "作者主张用向量和标量微积分替代矩阵微积分训练ML模型，认为后者引入不必要的复杂性与歧义。通过实际推导展示标量方法同样严谨高效，适合需要理解反向传播原理的工程师和学生。",
-            "quote": "（需原文确认）",
-            "points": [
-              "矩阵微积分在ML实践中常被过度使用，引入维度歧义（如Jacobian vs denominator layout混乱）",
-              "向量/标量微积分足以推导反向传播等核心算法，且更直觉、更不易出错",
-              "该风格适合教学与实践，可降低入门门槛并减少实现bug"
-            ],
-            "tags": [
-              "机器学习",
-              "数学方法"
-            ],
-            "translated": true
+            "published_at": "2026-09-13T18:49:44.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.technologyreview.com/2026/08/18/1142188/ai-recursive-self-improvement/",
+            "cover": null
           },
           {
-            "id": 389690,
-            "title": "造船巨头，启动A股IPO辅导",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247848995&idx=1&sn=60a8750819862c0b2b8047414821b7e0",
-            "source": "财联社",
-            "source_name": "财联社",
-            "published_at": "2026-09-12T14:14:00.000Z",
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 7,
-              "内容": 8,
-              "深度": 5,
-              "实用": 5,
-              "创新": 4,
-              "表达": 7
-            },
-            "reason": "央企造船巨头冲刺A股IPO，数据详实，但对投资者决策参考价值有限，属中规中矩的财经快讯。",
-            "summary": "中远海运重工获IPO辅导备案，由中金公司、招商证券联合辅导。公司船舶制造能力全国第二，修理改装规模世界第一，2025年营收近500亿元，手持造船订单216艘、2477万载重吨，全球排名第六。公司2024年研发投入强度8.87%，战略性新兴产业贡献约四分之一收入和利润。",
-            "quote": "2025年新接造船订单79艘、金额413亿元；手持造船订单216艘、2477万载重吨。",
-            "points": [
-              "中远海运重工是央企唯一股东的全资子公司，船舶修理改装能力居世界首位",
-              "2025年手持订单2477万载重吨，全球排名第二梯队，增长势头强劲",
-              "研发投入强度8.87%，高于国内主要船企平均水平1.35个百分点"
-            ],
-            "tags": [
-              "IPO",
-              "央企改革"
-            ],
-            "translated": false
+            "id": 559083,
+            "title": "Apple is reportedly working on iPhone game controllers",
+            "url": "https://www.theverge.com/tech/994426/apple-iphone-game-controllers",
+            "source": "The Verge",
+            "published_at": "2026-09-13T18:30:16.000Z",
+            "score": null,
+            "summary": "Bloomberg's Mark Gurman says Apple is developing two game controllers for the iPhone and will likely sell them under the Beats brand. Rumors that Apple might enter the game controller business have ci",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24522825/4._Ultimate_2.4_Whit___iPhone.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           },
           {
-            "id": 385755,
-            "title": "Compiler Can Undo Your Security Checks",
-            "url": "https://davidbombal.com/your-compiler-can-undo-your-security-checks/",
+            "id": 557029,
+            "title": "I'm being cyberattacked by Tesla, Inc",
+            "url": "https://dreamstation.systems/personal/tesla.html",
             "source": "Hacker News 首页",
-            "source_name": "Hacker News 首页",
-            "published_at": "2026-09-12T14:07:58.000Z",
-            "totalScore": 62,
-            "score": 62,
-            "scores": {
-              "选题": 7,
-              "内容": 6,
-              "深度": 6,
-              "实用": 7,
-              "创新": 5,
-              "表达": 0
-            },
-            "reason": "编译器安全问题对系统开发者有警示价值，提醒安全验证不能过度依赖编译优化。",
-            "summary": "本文探讨编译器优化可能绕过安全检查的问题，涉及系统编程中的安全风险。作者通过案例说明编译器在优化过程中可能削弱程序员设置的安全屏障，提醒开发者在关键路径上需特别注意编译行为。",
-            "quote": "",
-            "points": [
-              "编译器优化可能绕过程序中的安全检查机制",
-              "系统安全不能仅依赖编译器的默认行为",
-              "开发者需要在敏感操作处进行额外防护"
-            ],
-            "tags": [
-              "编译器",
-              "安全"
-            ],
-            "translated": false
+            "published_at": "2026-09-13T18:03:09.000Z",
+            "score": null,
+            "summary": "Article URL: https://dreamstation.systems/personal/tesla.html",
+            "cover": null
           },
           {
-            "id": 411469,
-            "title": "那些经常关灯看手机的人，后来都怎么样？这4种变化你肯定想不到",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237580&idx=1&sn=464502262887af88258cee4235de5a8e",
-            "source": "新华社",
-            "source_name": "新华社",
-            "published_at": "2026-09-12T14:05:00.000Z",
-            "totalScore": 68,
-            "score": 68,
-            "scores": {
-              "选题": 5,
-              "内容": 8,
-              "深度": 7,
-              "实用": 6,
-              "创新": 3,
-              "表达": 8
-            },
-            "reason": "新华社出品，科普扎实，机制解释清晰，但内容偏向常识普及，无独家观点。",
-            "summary": "文章系统梳理关灯玩手机对眼睛的四类危害：暗适应导致的暂时性视力下降、干眼与视疲劳、近视度数加深，以及闭角型青光眼风险。结合视锥细胞、视杆细胞、泪膜等医学原理解释，并提供护眼模式的相关说明，是一篇结构完整、通俗易懂的健康科普文。",
-            "quote": "熬夜后眼睛红，其实是你的眼睛在提醒你，它很疲劳，要休息。",
-            "points": [
-              "关灯后侧躺玩手机会导致单眼暂时看不清，属暗适应现象，通常可逆",
-              "长时间盯屏幕降低眨眼频率，泪膜稳定性下降，引发干眼和视疲劳",
-              "暗光下瞳孔扩大可能阻碍房水循环，诱发闭角型青光眼急性发作"
-            ],
-            "tags": [
-              "健康科普",
-              "用眼习惯"
-            ],
-            "translated": false
+            "id": 557030,
+            "title": "Global Shortage Has Led to Motor Oil Rationing at Costco",
+            "url": "https://guessingheadlights.com/global-shortage-has-led-to-motor-oil-rationing-at-costco/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T17:57:59.000Z",
+            "score": null,
+            "summary": "Article URL: https://guessingheadlights.com/global-shortage-has-led-to-motor-oil-rationing-at-costco/",
+            "cover": null
           },
           {
-            "id": 383208,
-            "title": "OpenAI“去英伟达化”首个试验品退役，模型行业进入快速淘汰期",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806089&idx=2&sn=805c76afd95956fdf780c6903a181712",
-            "source": "第一财经",
-            "source_name": "第一财经",
-            "published_at": "2026-09-12T14:00:00.000Z",
-            "totalScore": 68,
-            "score": 68,
-            "scores": {
-              "选题": 7,
-              "内容": 7,
-              "深度": 7,
-              "实用": 5,
-              "创新": 6,
-              "表达": 8
-            },
-            "reason": "OpenAI首个去英伟达化模型退役，折射模型迭代加速与算力多元化布局，有行业前瞻价值。",
-            "summary": "OpenAI宣布退役GPT-5.3-Codex-Spark，这是其采用Cerebras晶圆级芯片推理的首个实验性模型，生命周期不足8个月。文章指出，随着GPT-5.6 Sol Ultrafast在同硬件平台实现更高速度，Spark已无独立存在必要。作者认为这标志着模型行业进入快速淘汰期，迭代模式趋近互联网软件的持续实验：先小规模验证，再迁移至主力模型，迅速淘汰旧版本。",
-            "quote": "这也意味着模型行业进入快速淘汰期——过去大模型迭代往往以半年甚至数年的版本周期为主，如今正越来越接近互联网软件的持续实验模式。",
-            "points": [
-              "GPT-5.3-Codex-Spark是OpenAI首个部署Cerebras芯片的模型，仅存活不足8个月即退役",
-              "Cerebras合作是OpenAI降低对英伟达GPU单一依赖的战略尝试，合作金额超200亿美元",
-              "模型快速淘汰成为新常态，验证模式趋近互联网软件的持续迭代：小模型试水→技术迁移→迅速淘汰"
-            ],
-            "tags": [
-              "AI模型迭代",
-              "算力多元化"
-            ],
-            "translated": false
+            "id": 557031,
+            "title": "Device Drivers lab exercise – COSC562",
+            "url": "https://web.eecs.utk.edu/~smarz1/courses/cosc562/drivers.html",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-13T17:41:50.000Z",
+            "score": null,
+            "summary": "Article URL: https://web.eecs.utk.edu/~smarz1/courses/cosc562/drivers.html",
+            "cover": null
           }
         ]
       },
@@ -481,130 +191,154 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 390929,
-            "title": "#718. RSI：人工智能研究人员就当前范式能走多远展开辩论",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6aa56b809d32647781681ac0",
-            "source": "跨国串门儿计划",
-            "source_name": "跨国串门儿计划",
-            "published_at": "2026-09-12T15:24:16.000Z",
-            "totalScore": 68,
-            "score": 68,
-            "scores": {
-              "选题": 7,
-              "内容": 7,
-              "深度": 8,
-              "实用": 5,
-              "创新": 6,
-              "表达": 8
-            },
-            "reason": "三位一线研究者就RSI核心瓶颈展开具体讨论，视角多元且技术细节扎实，适合关注AI安全与能力边界的读者。",
-            "summary": "Dwarkesh Podcast本期邀请Xyphra CTO Beren Millidge、Thinking Machines首席科学家John Schulman、Base10训练负责人Charlie O'Neill，围绕AI距离递归自我改进（RSI）还有多远展开辩论。核心分歧不在于AI能否继续变强，而在于它能否自主定义目标、设计实验并在长跨度内修正认知。三位嘉宾从强化学习有效性、sim-to-real迁移、模型蒸馏、数据瓶颈等角度提出不同判断，并探讨了远程员工级AI到ASI的时间线可能性。",
-            "quote": "RSI 最大的难题可能不是能力，而是目标",
-            "points": [
-              "RSI的核心瓶颈可能不在能力，而在AI能否自主定义目标并判断其正确性",
-              "sim-to-real迁移能力决定AI能否从仿真环境走向真实世界复杂任务",
-              "模型在基准测试表现强劲，但现实任务仍受限于非平稳分布和长时间跨度泛化"
-            ],
-            "tags": [
-              "AI研究",
-              "递归自我改进"
-            ],
-            "translated": false
+            "id": 583473,
+            "title": "公司里面号池的 Ccmax 直转 key.有余",
+            "url": "https://www.v2ex.com/t/1241736#reply0",
+            "source": "V2EX · 技术",
+            "published_at": "2026-09-13T20:50:25.000Z",
+            "score": null,
+            "summary": "公司里面的 ccmax 直转 key 全模型，防封，0 注入。有需要的可以交流。每天都几万刀的额度。可以关注交流",
+            "cover": null
           },
           {
-            "id": 405776,
-            "title": "欧洲央行官员：若油价持续站上100美元，将继续加息",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NTA5MjkyNQ==&mid=2248586361&idx=1&sn=e428ceaefd44a36acc1dfb1818e51dbd",
-            "source": "每日经济新闻",
-            "source_name": "每日经济新闻",
-            "published_at": "2026-09-12T15:24:00.000Z",
-            "totalScore": 62,
-            "score": 62,
-            "scores": {
-              "选题": 7,
-              "内容": 7,
-              "深度": 5,
-              "实用": 6,
-              "创新": 4,
-              "表达": 7
-            },
-            "reason": "地缘冲突叠加能源冲击下的央行政策预警，对判断欧元区加息路径及通胀预期有参考价值",
-            "summary": "欧洲央行11日加息25个基点至2.5%，奥地利央行行长Kocher警告称，若油价年底持续维持100美元附近，通胀风险将进一步加速上行，明年通胀或升至3.2%，连续两年难达2%目标。央行模型显示，若最恶劣情景兑现，需继续加息；若油价回落至90美元，通胀或于明年年底回归目标水平。10月底下次会议前暂不讨论政策立场。",
-            "quote": "如果石油和天然气价格进一步向不利情景演变，那么货币政策就必须将这些变化纳入考量。",
-            "points": [
-              "欧洲央行本周加息25个基点，三大利率升至2.50%/2.65%/2.90%",
-              "官员警告若油价年底前持续维持在100美元附近，通胀风险将进一步加速上行",
-              "最恶劣情景下明年通胀或达3.2%，连续两年无法实现2%中期目标"
-            ],
-            "tags": [
-              "欧洲央行",
-              "能源价格"
-            ],
-            "translated": false
+            "id": 599827,
+            "title": "I Built 15 SLOs for an AI Agent. Here's What OpenTelemetry Could Measure",
+            "url": "https://medium.com/data-science-collective/i-built-15-slos-for-an-ai-agent-heres-what-opentelemetry-could-measure-dcbacf4c3e9e",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-13T20:24:56.000Z",
+            "score": null,
+            "summary": "Article URL: https://medium.com/data-science-collective/i-built-15-slos-for-an-ai-agent-heres-what-opentelemetry-could-measure-dcbacf4c3e9e",
+            "cover": null
           },
           {
-            "id": 386675,
-            "title": "GPT-6 Astra needs less babysitting",
-            "url": "https://www.youtube.com/shorts/SiJGdlmdUms",
-            "source": "OpenAI",
-            "source_name": "OpenAI",
-            "published_at": "2026-09-12T15:00:30.000Z",
-            "totalScore": 52,
-            "score": 52,
-            "scores": {
-              "选题": 7,
-              "内容": 4,
-              "深度": 4,
-              "实用": 5,
-              "创新": 5,
-              "表达": 6
-            },
-            "reason": "OpenAI GPT-6模型动态的选题有价值，但正文缺失无法评估内容深度与信息量。",
-            "summary": "OpenAI官方发布关于GPT-6 Astra模型的消息，标题暗示该模型在稳定性或自动化方面有所提升，需要更少的人工干预。但因正文内容缺失，无法提供详细摘要。",
-            "quote": "（原文缺失）",
-            "points": [
-              "GPT-6 Astra为OpenAI新一代模型",
-              "模型可能需要更少的人工监控与干预",
-              "官方来源发布，具有较高可信度"
-            ],
-            "tags": [
-              "OpenAI",
-              "GPT-6",
-              "AI模型"
-            ],
-            "translated": false
+            "id": 599828,
+            "title": "Show HN: ClientCoded – QA Platform for AI Agents",
+            "url": "https://clientcoded.com/environments",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-13T20:22:29.000Z",
+            "score": null,
+            "summary": "Hi HN. We built a QA platform for AI agents.My cofounder spent 6 years at Veeva Systems building QA frameworks for regulated software. I spent 5 years in sales helping AI-native startups with their gr",
+            "cover": null
           },
           {
-            "id": 380360,
-            "title": "Your App Crashed. Now AI Gets to Work.",
-            "url": "https://www.youtube.com/shorts/JP9_clebjDE",
-            "source": "NetworkChuck",
-            "source_name": "NetworkChuck",
-            "published_at": "2026-09-12T14:00:11.000Z",
-            "totalScore": 63,
-            "score": 63,
-            "scores": {
-              "选题": 7,
-              "内容": 5,
-              "深度": 6,
-              "实用": 7,
-              "创新": 7,
-              "表达": 6
-            },
-            "reason": "AI自动修复应用崩溃是开发者关注的前沿话题，NetworkChuck风格实用性强",
-            "summary": "文章探讨AI技术如何自动检测和修复应用崩溃，涉及AI在软件工程中的新兴应用。由于正文内容缺失，无法获取具体技术方案和案例分析。",
-            "quote": "正文未提供",
-            "points": [
-              "AI正在介入应用崩溃的自动修复流程",
-              "开发者体验可能因此改变",
-              "具体技术方案待补充"
-            ],
-            "tags": [
-              "AI",
-              "软件工程",
-              "自动化修复"
-            ],
-            "translated": false
+            "id": 567309,
+            "title": "MENDEL: todas vamos a morir (?) - Estoy construyendo un agente de investigación llamado MENDEL y una de las pruebas terminó exponiendo un problema que creo que aparece mucho en sistemas de búsqueda + RAG + agentes",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wfifp0/mendel_todas_vamos_a_morir_estoy_construyendo_un/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-13T20:15:46.000Z",
+            "score": null,
+            "summary": "Estoy construyendo un agente de investigación llamado MENDEL y una de las pruebas terminó exponiendo un problema que creo que aparece mucho en sistemas de búsqueda + RAG + agentes:",
+            "cover": null
+          },
+          {
+            "id": 564846,
+            "title": "Over 10,000 GitHub stars\r\n\r\nMy most starred repo isn’t code 🤔",
+            "url": "https://x.com/shl/status/2099208492217221351",
+            "source": "Sahil Lavingia(@shl)",
+            "published_at": "2026-09-13T18:48:00.000Z",
+            "score": null,
+            "summary": "Over 10,000 GitHub starsMy most starred repo isn’t code 🤔Sahil Lavingia@shlI turned The Minimalist Entrepreneur into 9 Claude Code skills./find-community — find your people/validate-idea — test befor",
+            "cover": "https://pbs.twimg.com/profile_images/1885323625542127616/-8EVOv3W_normal.jpg"
+          },
+          {
+            "id": 567331,
+            "title": "Claude wouldn't read a Garmin forum page because of robots.txt, so I gave it a real browser. Free, self-hosted, and it nearly let my whole Wi-Fi drive it.",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wfd622/claude_wouldnt_read_a_garmin_forum_page_because/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-13T17:00:45.000Z",
+            "score": null,
+            "summary": "Claude&#39;s built-in web fetch has two limits I kept hitting: it honours robots.txt even when I&#39;m asking for one specific page, and it can&#39;t run JavaScript, so a lot of the modern web comes b",
+            "cover": null
+          },
+          {
+            "id": 538085,
+            "title": "Migration from Claude Code to a private local harness. Questions.",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wfcewd/migration_from_claude_code_to_a_private_local/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-13T16:32:34.000Z",
+            "score": null,
+            "summary": "I&#39;ll start by saying I&#39;m not talking about the models themselves, I&#39;m aware that I can&#39;t come close to something like Fable&#39;s intelligence locally. Just wanted to get that out of t",
+            "cover": null
+          },
+          {
+            "id": 535160,
+            "title": "当具身智能走到十字路口｜对谈苏度、蚂蚁灵波、自变量、破壳：四种一线判断",
+            "url": "https://www.xiaoyuzhoufm.com/episode/6aa67b319d32647781685e95",
+            "source": "十字路口Crossing",
+            "published_at": "2026-09-13T16:00:00.000Z",
+            "score": null,
+            "summary": "2026 年的具身智能，已经不缺热度。缺的是有人把分歧摆上台面。数据从哪儿来？模型怎么做？落地在哪里？",
+            "cover": "https://image.xyzcdn.net/Fl43nDAyiSGCYGMsnzPNEdYkg7t8.png"
+          },
+          {
+            "id": 538197,
+            "title": "Rate Your Agent's Memory",
+            "url": "https://news.ycombinator.com/item?id=49685398",
+            "source": "Ask HN",
+            "published_at": "2026-09-13T15:56:30.000Z",
+            "score": null,
+            "summary": "Hey Hackernews. I am Luv. I have been experimenting with AI agents, and I’m researching how people feel about agent memory. Can you tell me one or more things you like and dislike about your current m",
+            "cover": null
+          },
+          {
+            "id": 557995,
+            "title": "马斯克、奥尔特曼都回应了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDk1NzQzMQ==&mid=2654153321&idx=2&sn=fef9a434a38634878c48a1daa876b66f",
+            "source": "环球时报",
+            "published_at": "2026-09-13T15:50:00.000Z",
+            "score": null,
+            "summary": "人工智能公司Anthropic的首席执行官达里奥·阿莫迪表示，人类可能会失去对人工智能（AI）的控制，应当放缓模型开发速度，并对其实施严密监管。对此，创立了xAI的埃隆·马斯克发帖表示支持。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1a7fbd12&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fz8icaWS616QX3jX18BUrdRD5RdzALSNicOzvN1tjMcSribtgC1BTB8nWC1ehrbqzuAV6diaRITVPpdJFLIV5ysbxA50ibgsWvNFft9QzUm5iaq3f8%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 539707,
+            "title": "Tinder to get things done. \r\n\r\nAgent pitches you what it wants to do. You allow / skip. \r\n\r\nDon't be lim...",
+            "url": "https://x.com/browser_use/status/2099158244329726219",
+            "source": "Browser Use(@browser_use)",
+            "published_at": "2026-09-13T15:28:20.000Z",
+            "score": null,
+            "summary": "Tinder to get things done. Agent pitches you what it wants to do. You allow / skip. Don&#39;t be limited by your prompts.Magnus Müller@mamagnus00Introducing Agency. Never prompt again. AI prompts you ",
+            "cover": "https://pbs.twimg.com/profile_images/1996363430337605632/D13x-XWx_normal.jpg"
+          },
+          {
+            "id": 528887,
+            "title": "阿莫迪、奥特曼、马斯克都喊放缓，难道他们真的看到AI在......",
+            "url": "https://www.huxiu.com/article/4890837.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-09-13T15:10:50.000Z",
+            "score": null,
+            "summary": "发出警告的人，已经不只是实验室外的活动家，而是曾经亲手训练这些模型的人。OpenAI的奥特曼、Anthropic的阿莫迪，以及SpaceX的马斯克，都开始公开支持放缓前沿AI的发展。",
+            "cover": "https://img.huxiucdn.com/article/content/26-09-13/32478702-754e-4433-b317-d50a28ab441f.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
+          },
+          {
+            "id": 531448,
+            "title": "做了一个免费的 macOS 下载软件： Torrid",
+            "url": "https://www.v2ex.com/t/1241715#reply0",
+            "source": "V2EX · 创意",
+            "published_at": "2026-09-13T14:24:03.000Z",
+            "score": null,
+            "summary": "下载链接： https://github.com/cobaltdisco/torrid-releases/releases之前下载软件得用 Folx 、Transmission 、Downie 来干不同的事情，而且 Transmission 还不支持 RSS ，觉得太麻烦。于是和 Claude 定下状态机和 MVP 功能，几个“长任务”加上“实机测试”，直接 Vibe 出了一个多种功能合一的下载工",
+            "cover": "https://i.imgur.com/XH4xLH1.png"
+          },
+          {
+            "id": 526138,
+            "title": "模型厂商呼吁踩刹车这事，历史上发生过类似情况，当年的香烟电视广告。",
+            "url": "https://x.com/lijigang/status/2099140932428009514",
+            "source": "李继刚(@lijigang_com)",
+            "published_at": "2026-09-13T14:19:33.000Z",
+            "score": null,
+            "summary": "模型厂商呼吁踩刹车这事，历史上发生过类似情况，当年的香烟电视广告。💬1🔄3❤️7👀2029📊4⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HSGljABaIAAxy1y.jpg"
+          },
+          {
+            "id": 538917,
+            "title": "《Deep Agents实战》项目正式发布，一起走向生产级Agent！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIyNjM2MzQyNg==&mid=2247727237&idx=1&sn=c8f6e3313a893c058a3128a041deba7c",
+            "source": "Datawhale",
+            "published_at": "2026-09-13T14:19:00.000Z",
+            "score": null,
+            "summary": "随着 Agent 逐步进入真实业务场景，开发者开始面对更多工程问题。长流程任务如何组织、上下文如何管理、多个 Agent 如何协作，这些都需要在具体项目中反复实践。构建生产级 Agent，也因此成为越来越多学习者希望深入的方向。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=14a5e858&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FzW6S9vt0cSibicy296VlKgK2c76JIhmMatThxKW5S1ciar1CO7fqbHXswVMXdwwjCicdzQFA7b6T9ibmxZpXKWUwc2HLEZfgoanOcLaADicic3nzoQ%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -613,270 +347,114 @@
         "desc": "",
         "items": [
           {
-            "id": 388989,
-            "title": "你怎么绿了？核周报 9.12",
-            "url": "https://www.gcores.com/radios/219272",
-            "source": "机核",
-            "source_name": "机核",
-            "published_at": "2026-09-12T15:00:00.000Z",
-            "totalScore": 68,
+            "id": 518287,
+            "title": "一个运动APP，把美国的军事基地给曝光了？",
+            "url": "https://www.huxiu.com/article/4890834.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-09-13T14:10:46.000Z",
             "score": 68,
-            "scores": {
-              "选题": 8,
-              "内容": 6,
-              "深度": 3,
-              "实用": 4,
-              "创新": 5,
-              "表达": 7
-            },
-            "reason": "涵盖塞尔达40周年、DLSS 5等重磅资讯，但正文纯摘要无展开，缺乏分析深度与细节支撑。",
-            "summary": "机核核周报报道塞尔达40周年《时之笛》重制版官宣11月发售、PS终止与小岛工作室《PHYSINT》合作改由Xbox发行、DLSS 5 3D引导神经渲染登陆NBA 2K27等游戏圈要闻。",
-            "quote": "PlayStation Studios 终止与小岛工作室在《PHYSINT》项目上的合作，改由 Xbox 负责发行",
-            "points": [
-              "塞尔达40周年《时之笛》重制版将于11月5日发售",
-              "PS Studios终止与小岛工作室合作，Xbox接手发行",
-              "NVIDIA DLSS 5采用3D引导神经渲染技术"
-            ],
-            "tags": [
-              "游戏资讯",
-              "硬件技术"
-            ],
-            "translated": false
+            "summary": "士兵用运动APP公开自己跑步路线这事儿又翻车了。英国媒体Sky新闻前一阵挖了一个大瓜，说是挖出了超过1300名Strava用户在美军基地内公开上传自己的运动轨迹。而这些公开数据，理论上可能成为伊朗的情报，被拿来炸美军基地。",
+            "cover": "https://img.huxiucdn.com/article/content/26-09-13/d10f9d1b-72fd-4416-a9fc-6a120436e39e.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 431698,
-            "title": "习近平会见印度总理莫迪",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAwMjU0MjIyNw==&mid=2651542264&idx=1&sn=d47ce195cb70dbb8f19d6cdf2a94b47d",
-            "source": "网信中国",
-            "source_name": "网信中国",
-            "published_at": "2026-09-12T15:45:00.000Z",
-            "totalScore": 65,
-            "score": 65,
-            "scores": {
-              "选题": 9,
-              "内容": 7,
-              "深度": 5,
-              "实用": 4,
-              "创新": 5,
-              "表达": 8
-            },
-            "reason": "重大时政外交新闻，中印关系最新动态，信息权威准确，适合关注国际关系的读者了解高层交往进展。",
-            "summary": "9月12日，习近平在金砖会晤期间会见印度总理莫迪，双方就推动中印关系行稳致远达成重要共识。习近平提出四点建议：以战略认知校准方向、以合作共赢相互成就、以互尊互谅排除干扰、以多边协作兼济天下。莫迪表示愿同中方做伙伴而非对手，坚持一个中国立场，不支持反华活动，并支持中国明年担任金砖主席国。",
-            "quote": "中印两国是合作伙伴而不是对手，互为发展机遇而不是威胁。这是基于两国所处发展阶段和国际环境作出的战略判断，符合两国和两国人民共同利益。",
-            "points": [
-              "习近平提出推动中印关系行稳致远的四点看法，强调战略认知、合作共赢、互尊互谅、多边协作",
-              "莫迪明确表示印方将彼此发展视为机遇而非挑战，坚持独立自主外交政策不受第三方影响",
-              "印方重申在台湾、涉藏问题上的立场未变，不允许任何势力在印度从事反华活动"
-            ],
-            "tags": [
-              "中印关系",
-              "大国外交"
-            ],
-            "translated": false
+            "id": 600614,
+            "title": "体检查出肺结节，95%以上是良性？注意，结节尺寸越小未必越安全，可惜很多人不知道",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595998&idx=1&sn=8d94306a099a69c14263ce06b91b511c",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-13T22:00:00.000Z",
+            "score": null,
+            "summary": "先给大家吃颗定心丸：95%以上的肺结节都是良性，真正属于恶性肿瘤的比例不到5%。通俗说就是100个人里不到5个，绝大多数人都是虚惊一场。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7ac0e06e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgdmU6ayVhk8bbvlKbTHTfhbh3kZu06c9c7Fa6aic4EicgJJcSlzficks12YTLYL3E6RDtx3JGw6BtPYARuvPjexxBcfgM65PP1FUE%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 397851,
-            "title": "“公职人员醉驾致一对夫妻身亡”，警方通报",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDU1Mzg3Mw==&mid=2651753520&idx=1&sn=58bbb4e91b37f7805eaeff9e81abc1a0",
-            "source": "中国新闻周刊",
-            "source_name": "中国新闻周刊",
-            "published_at": "2026-09-12T15:59:00.000Z",
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 7,
-              "内容": 8,
-              "深度": 5,
-              "实用": 4,
-              "创新": 4,
-              "表达": 7
-            },
-            "reason": "公职人员醉驾致死案，数据详实、警方通报权威，责任认定争议引发公众关注，具公共安全警示价值。",
-            "summary": "山西蒲县一镇政府公职人员杜某某醉驾（酒精含量147.01mg/100ml）、超速且未开灯，撞死推着人力车的夫妻二人。事故原认定死者承担次要责任，家属申请复核。警方通报称已刑拘杜某某，复核程序启动，强调公职人员违法犯罪不袒护不降格。",
-            "quote": "公职人员涉嫌违法犯罪的，不袒护、不降格、不拖延。",
-            "points": [
-              "杜某某酒精含量147.01mg/100ml，属严重醉驾，且超速、夜间未开灯，过错明显",
-              "原事故认定死者夫妻承担次要责任，家属不认可并提交复核申请",
-              "警方明确态度：复核程序已启动，结论将依法公开，刑案与复核同步推进"
-            ],
-            "tags": [
-              "交通事故",
-              "公职人员违法"
-            ],
-            "translated": false
+            "id": 600615,
+            "title": "人老腿先老？常练2个动作，减缓大腿肌肉流失，降低摔倒风险",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595998&idx=2&sn=90d6c440e35268a6ae2d59abcc0d1866",
+            "source": "CCTV生活圈",
+            "published_at": "2026-09-13T22:00:00.000Z",
+            "score": null,
+            "summary": "随着年龄增长，大腿、臀部肌肉会逐步流失，下肢力量和身体稳定性随之下降，跌倒风险有所增加。分享2个居家训练动作，有助于减缓大腿肌肉流失。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c2c8a983&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgdIypt3D0ogObeOicUVFzjrtdtOwJibSsmhXIVsEquMx76TlCUa8jIiaIa6E3teN5ibSyRlz5NfGsrXSGrjrk8iaZBdxdPyDBYcefJ4%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 419734,
-            "title": "卢卡申科喊话美国：先还钱",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDk1NzQzMQ==&mid=2654153013&idx=4&sn=1b9a00c3342d9b7bb90df586bf314661",
-            "source": "环球时报",
-            "source_name": "环球时报",
-            "published_at": "2026-09-12T15:54:00.000Z",
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 5,
-              "内容": 5,
-              "深度": 4,
-              "实用": 3,
-              "创新": 3,
-              "表达": 6
-            },
-            "reason": "常规国际政治经济新闻，信息点清晰但缺乏深度分析和独家视角，适合作为资讯速览。",
-            "summary": "白俄罗斯总统卢卡申科就钾肥供应问题向美国喊话，要求美方归还滞留在花旗银行的4300万至4400万美元资金。目前已有货轮准备装运钾肥赴美，但白方强调必须先解决欠款问题。此事与美国此前解除对白俄罗斯钾肥制裁、白俄罗斯赦免123名在押人员的相关背景有关。",
-            "quote": "有钱还回来！这对美国来说是种耻辱。之后我们才能讨论更重要的问题。",
-            "points": [
-              "白俄罗斯正有一艘钾肥货轮准备发往美国，但要求美方先偿还欠款",
-              "约4300万至4400万美元资金被滞留在花旗银行",
-              "此事与美国解除对白俄罗斯钾肥制裁及人员赦免背景相关"
-            ],
-            "tags": [
-              "国际新闻",
-              "地缘政治"
-            ],
-            "translated": false
+            "id": 610711,
+            "title": "Why are IMAX cameras so notoriously loud?",
+            "url": "https://www.engadget.com/2252857/why-are-imax-cameras-so-loud-explained/",
+            "source": "Engadget",
+            "published_at": "2026-09-13T22:00:00.000Z",
+            "score": null,
+            "summary": "Shooting a movie on IMAX 15/70 cameras can produce incredible film, but one of the major tradeoffs for filmmakers is how loud they can get when rolling.",
+            "cover": "https://www.engadget.com/img/gallery/why-are-imax-cameras-so-notoriously-loud/intro-1788864045.jpg"
           },
           {
-            "id": 439053,
-            "title": "6家券商，同日吃罚单！经纪业务成“重灾区”",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3NjM5MjIwOQ==&mid=2652280270&idx=2&sn=29f7fa7affe778cf624c35d2ecbdde95",
-            "source": "券商中国",
-            "source_name": "券商中国",
-            "published_at": "2026-09-12T14:42:00.000Z",
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 6,
-              "内容": 7,
-              "深度": 5,
-              "实用": 6,
-              "创新": 4,
-              "表达": 7
-            },
-            "reason": "6家券商同日被罚，经纪业务合规问题集中暴露，对从业者有直接警示价值",
-            "summary": "9月11日，6家券商及分支机构、相关负责人收到监管罚单。广发证券、浙商证券、中金财富因经纪业务违规被重点处罚，涉及客户招揽利益输送、适当性管理失当、廉洁从业风险等问题。同时国投证券、东方财富证券因违反反洗钱法被罚。",
-            "quote": "营销人员主动推介风险等级高于客户承受能力的产品，甚至指导客户调高风险承受能力",
-            "points": [
-              "经纪业务成为本轮监管处罚\"重灾区\"，问题集中于客户招揽、考核激励、廉洁从业环节",
-              "广发证券浙江分公司存在管理混同、展业不规范、合规独立性缺失等多重问题",
-              "浙商证券高管及营业部负责人因输送/谋取不正当利益被监管谈话"
-            ],
-            "tags": [
-              "券商合规",
-              "监管处罚"
-            ],
-            "translated": false
+            "id": 583467,
+            "title": "[推广] QuietDog API｜ CCMax、Kiro 号池中转，倍率分别为 0.5 / 0.25",
+            "url": "https://www.v2ex.com/t/1241738#reply0",
+            "source": "V2EX · 技术",
+            "published_at": "2026-09-13T21:59:08.000Z",
+            "score": null,
+            "summary": "各位 V 友好，发个广子，介绍一下自己的 API 中转站：QuietDog API。",
+            "cover": null
           },
           {
-            "id": 405774,
-            "title": "造船巨头，启动A股IPO辅导",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NTA5MjkyNQ==&mid=2248586370&idx=1&sn=1706f57b2638b076825fe8381ea4d4c2",
-            "source": "每日经济新闻",
-            "source_name": "每日经济新闻",
-            "published_at": "2026-09-12T15:48:00.000Z",
-            "totalScore": 56,
-            "score": 56,
-            "scores": {
-              "选题": 6,
-              "内容": 7,
-              "深度": 5,
-              "实用": 5,
-              "创新": 3,
-              "表达": 7
-            },
-            "reason": "央企造船龙头IPO消息，有行业代表性但缺乏独家视角和深度分析",
-            "summary": "中远海运重工获上市辅导备案，拟A股IPO。公司船舶制造能力全国第二，修理规模世界领先，2024年营收近400亿元，研发投入强度8.87%高于行业平均。",
-            "quote": "船舶制造能力现居全国第二，修理规模、改装能力位列世界第一，海洋工程装备建造实力国内领先。",
-            "points": [
-              "央企改革持续推进，中远海运集团唯一股东100%持股",
-              "2025年营收同比增22%，测算接近500亿元",
-              "研发投入近35亿元，强度高于行业平均1.35个百分点"
-            ],
-            "tags": [
-              "央企改革",
-              "造船行业",
-              "IPO"
-            ],
-            "translated": false
+            "id": 594656,
+            "title": "Manchester City wrongly awarded Haaland goal by VAR at United: Refs’ body",
+            "url": "https://www.aljazeera.com/sports/2026/9/13/manchester-city-wrongly-awarded-haaland-goal-by-var-at-united-refs-body?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-13T21:58:17.000Z",
+            "score": null,
+            "summary": "Erling Haaland&#039;s derby winner against Manchester United should not have stood, Premier League referees&#039; body admits.",
+            "cover": null
           },
           {
-            "id": 391858,
-            "title": "15.83亿元！全国首单，获批→",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658277173&idx=2&sn=ab2c6c9f136c4dd9ec198828abc2e760",
-            "source": "央视财经",
-            "source_name": "央视财经",
-            "published_at": "2026-09-12T15:17:00.000Z",
-            "totalScore": 55,
-            "score": 55,
-            "scores": {
-              "选题": 7,
-              "内容": 5,
-              "深度": 4,
-              "实用": 4,
-              "创新": 6,
-              "表达": 7
-            },
-            "reason": "全国首单水利REITs获批，属基础设施融资创新，对金融从业者有参考价值，但报道较简略。",
-            "summary": "水利部批准全国首单水利设施发电REITs，发行规模15.83亿元。广东以飞来峡水利枢纽、潮州供水枢纽电站存量资产为基础，募资用于支持清远黄茅峡水库工程建设，探索基础设施盘活存量、反哺新增的路径。",
-            "quote": "近日全国首单水利设施发电不动产投资信托基金获批，产品发行规模预计15.83亿元。",
-            "points": [
-              "全国首单水利发电REITs获批，标志基础设施REITs试点扩围至水利领域",
-              "底层资产为广东两处水利枢纽电站存量资产，规模15.83亿元",
-              "募集资金专项用于清远黄茅峡水库工程建设，实现存量盘活与增量投资闭环"
-            ],
-            "tags": [
-              "REITs",
-              "基础设施"
-            ],
-            "translated": false
+            "id": 598417,
+            "title": "OpenCalc update: bugfixes, now with financial mode support!",
+            "url": "https://www.reddit.com/r/linux/comments/1wfkzei/opencalc_update_bugfixes_now_with_financial_mode/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-13T21:57:01.000Z",
+            "score": null,
+            "summary": "As you must be aware, recently I have released OpenCalc, a project to reverse engineer the Windows 95 calculator.",
+            "cover": null
           },
           {
-            "id": 404473,
-            "title": "飞哥对安东内利“下手”！诺里斯超神一圈摘杆！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE4NTk4MA==&mid=2651003919&idx=1&sn=522a03a42f29dc8f56d565fd9fa38401",
-            "source": "五星体育",
-            "source_name": "五星体育",
-            "published_at": "2026-09-12T15:13:00.000Z",
-            "totalScore": 52,
-            "score": 52,
-            "scores": {
-              "选题": 5,
-              "内容": 7,
-              "深度": 3,
-              "实用": 4,
-              "创新": 3,
-              "表达": 6
-            },
-            "reason": "F1马德里站排位赛资讯，数据详实但缺乏深度分析，适合赛车爱好者快速获取赛事结果。",
-            "summary": "2026赛季F1马德里大奖赛排位赛战报：诺里斯以1:31.824摘得杆位，安东内利紧随第二，维斯塔潘第三，汉密尔顿第四。文章记录了Q1至Q3完整进程及轮胎策略信息，多位车手被淘汰名单。",
-            "quote": "诺里斯在最后时刻绝地反超！1:31.824拿到杆位！",
-            "points": [
-              "诺里斯凭借第一计时段超神发挥夺得杆位",
-              "安东内利排位赛表现亮眼，仅次于诺里斯",
-              "Q1遭遇大量冷门，两位西班牙车手斯特罗尔和塞恩斯双双淘汰"
-            ],
-            "tags": [
-              "F1赛车",
-              "体育赛事"
-            ],
-            "translated": false
+            "id": 590535,
+            "title": "Unvaccinated Pennsylvania woman died of measles complications, coroner says",
+            "url": "https://arstechnica.com/health/2026/09/unvaccinated-pennsylvania-woman-died-of-measles-complications-coroner-says/",
+            "source": "Ars Technica",
+            "published_at": "2026-09-13T21:56:52.000Z",
+            "score": null,
+            "summary": "A 40-year-old woman in Jefferson County, Pennsylvania has died of complications from measles, according to the county's coroner.",
+            "cover": null
+          },
+          {
+            "id": 599821,
+            "title": "Mees AI Journal and Chat",
+            "url": "https://play.google.com/store/apps/details?id=chat.meesai.net&hl=en_US",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-13T21:53:27.000Z",
+            "score": null,
+            "summary": "Article URL: https://play.google.com/store/apps/details?id=chat.meesai.net&hl=en_US",
+            "cover": null
+          },
+          {
+            "id": 594657,
+            "title": "Tehran and Muscat delay talks, citing regional consensus need",
+            "url": "https://www.aljazeera.com/news/2026/9/13/tehran-and-muscat-delay-talks-citing-regional-consensus-need?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-13T21:50:50.000Z",
+            "score": null,
+            "summary": "Tehran and Muscat agree to delay dialogue to prioritise regional consensus amid tensions in the Strait of Hormuz.",
+            "cover": null
           }
         ]
       }
     ],
     "stats": {
-      "schemaVersion": 2,
-      "theme": "2。",
-      "degraded": false,
-      "filterStats": {
-        "candidates": 500,
-        "passed": 254,
-        "analyzed": 43
-      },
-      "sections": 3,
-      "totalItems": 27,
-      "elapsedMin": 9.1
+      "candidates": 500,
+      "articles": 500,
+      "sections": 4,
+      "totalItems": 42
     }
   },
-  "generated_at": "2026-09-13T06:29:22.445Z"
+  "generated_at": "2026-09-14T06:39:28.108Z"
 }
