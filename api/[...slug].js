@@ -332,8 +332,9 @@ async function handleHot(req) {
     ? 'CAST(a.score AS REAL) DESC, a.published_at DESC, a.id DESC'
     : 'a.published_at DESC, a.id DESC';
   const rows = await qAll(
-    `SELECT a.id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary,
-            CASE WHEN a.summary IS NULL OR trim(a.summary)='' THEN substr(a.content_html, 1, 500) ELSE NULL END AS content_fallback,
+    `SELECT a.id, a.title, a.translated_title, a.url, a.author, a.cover, substr(a.summary,1,300) AS summary,
+            CASE WHEN a.translated_content IS NOT NULL AND a.translated_content != '' THEN substr(a.translated_content,1,300) END AS zh_digest,
+            CASE WHEN a.summary IS NULL OR trim(a.summary)='' THEN substr(a.content_html,1,500) ELSE NULL END AS content_fallback,
             a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
      LEFT JOIN groups g ON g.id = s.group_id
@@ -361,8 +362,11 @@ async function handleHot(req) {
     .replace(/\s+/g, ' ')
     .trim();
   const items = rows.map(r => {
-    const sum = String(r.summary || '').trim() || plainText(r.content_fallback);
-    const { content_fallback, ...rest } = r;
+    const rawSum = String(r.summary || '').trim();
+    // 中文摘要直接用；纯英文摘要且有译文则换中文（2026-09-14：英文报道给中文摘要）
+    const sum = (rawSum && hasCJK(rawSum)) ? rawSum
+      : (String(r.zh_digest || '').trim() || rawSum || plainText(r.content_fallback));
+    const { content_fallback, zh_digest, ...rest } = r;
     return {
       ...rest,
       title: r.translated_title || r.title,
@@ -432,6 +436,15 @@ const EVENTS_SIM_THRESHOLD = 0.4;
 let _eventsCache = { at: 0, events: null };
 const EVENTS_CACHE_MS = 10 * 60e3; // 10 分钟缓存
 
+// 2026-09-14：英文报道给中文摘要——摘要含 CJK 直接用；纯英文摘要且有译文（translated_content 前 300 字）则换译文
+const hasCJK = (s) => /[\u4e00-\u9fff]/.test(String(s || ''));
+function pickZhDigest(summary, zhDigest) {
+  const s = String(summary || '').trim();
+  if (s && hasCJK(s)) return s;
+  const z = String(zhDigest || '').trim();
+  return z || s;
+}
+
 function titleTokens(title) {
   const set = new Set();
   const t = String(title || '').toLowerCase();
@@ -470,7 +483,10 @@ async function handleHotEvents(req) {
     const nowMs = Date.now();
     const cutoff = new Date(nowMs - EVENTS_WINDOW_H * 3600e3).toISOString();
     const rows = await qAll(
-      `SELECT a.id, a.title, a.translated_title, a.url, a.summary, a.cover, a.published_at, a.score,
+      // 摘要/译文摘要 SQL 侧截断（2026-09-14 加载慢根因：3000 行全量 summary 走 libsql HTTP，单响应 MB 级）
+      `SELECT a.id, a.title, a.translated_title, a.url, substr(a.summary,1,300) AS summary,
+              CASE WHEN a.translated_content IS NOT NULL AND a.translated_content != '' THEN substr(a.translated_content,1,300) END AS zh_digest,
+              a.cover, a.published_at, a.score,
               a.category, a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
        FROM (
          SELECT * FROM (
@@ -586,7 +602,7 @@ async function handleHotEvents(req) {
             id: i.id, title: i.translated_title || i.title,
             original_title: i.translated_title ? i.title : undefined,
             url: i.url,
-            summary: (i.summary || '').slice(0, 200),
+            summary: pickZhDigest(i.summary, i.zh_digest).slice(0, 200),
             cover: i.cover, published_at: i.published_at,
             score: i.score, scoreFormatted: formatHeat(i.score),
             source_name: i.source_name, source_type: i.source_type,
@@ -615,7 +631,7 @@ async function handleHotEvents(req) {
         firstAt: i.published_at,
         latestAt: i.published_at,
         status: '精选',
-        items: [{ id: i.id, title: i.translated_title || i.title, original_title: i.translated_title ? i.title : undefined, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type, source_group: soloGroup }],
+        items: [{ id: i.id, title: i.translated_title || i.title, original_title: i.translated_title ? i.title : undefined, url: i.url, summary: pickZhDigest(i.summary, i.zh_digest).slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type, source_group: soloGroup }],
       });
     }
     if (solo.length) console.log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);
