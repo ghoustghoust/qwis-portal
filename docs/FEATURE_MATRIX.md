@@ -71,7 +71,7 @@
 | 抖音 | ✅ | ❌ 永不 | Playwright 登录态，架构决策 |
 | 全文补抓 / AIHOT enrich | ✅ | ❌ 待移植 | |
 | 报警引擎（7 渠道） | ✅ | ✅ 2026-09-12 | api/_alerts.js 全量移植（含熔断汇总/AI失败/停滞检测/可诊断文案） |
-| 触发可靠性 | 进程常驻 | GH schedule（会丢）+ cron-job.org 外置触发（主力） | 双保险 2026-09-11 落地 |
+| 触发可靠性 | 进程常驻 | GH schedule（会丢）+ cron-job.org 外置触发（主力） | 双保险 2026-09-11 落地。cron-job 任务 **8430047**：每 15min POST workflow_dispatch 叫醒 collect job（dispatch 只跑采集，日报/快照不会被 15min 刷）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 HANDOVER §1.5；任务内嵌 GitHub PAT，PAT 轮换须同步；2026-09-14 API 实测 enabled、全绿准点 |
 
 ---
 

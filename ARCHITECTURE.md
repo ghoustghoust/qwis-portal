@@ -138,6 +138,7 @@ server/services/
 | Turso | `.env` 的 TURSO_DATABASE_URL/TURSO_AUTH_TOKEN;Vercel 项目环境变量(production) |
 | COLLECT_KEY | Vercel env + GitHub repo Secrets(Actions) + 本地 .env —— **三处必须同步**(坑 #20) |
 | GitHub PAT(管理 Secrets/查日志) | `docs/HANDOVER.md` §1.5(该文件已 gitignore,勿提交;稳定后轮换) |
+| cron-job.org API Key | `docs/HANDOVER.md` §1.5；外置触发器 jobId 8430047 的管理 Key（该触发器是采集**主力**：每 15min POST workflow_dispatch，GH schedule 仅备份）；任务配置内嵌上方 GitHub PAT，PAT 轮换时须同步更新 cron-job，控制台 <https://console.cron-job.org/dashboard> |
 | 云端管理口令 | Turso settings `admin.passwordHash`(首次访问设置) |
 | 报警渠道 | settings `alerts`(本地) / Turso settings(云端);支持钉钉/企微/飞书/Server酱/Bark/TG/自定义 webhook |
 | ~~微信读书 Cookie / we-mp-rss SECRET_KEY~~ | **已随 we-mp-rss 退役作废**(2026-09-04);credentials 表 weread 行可不再维护 |

@@ -2,7 +2,7 @@
 
 > **这份文档的目的**：让任何接手的 Agent 在改代码之前，先理解"网页数据为什么会自动更新"，
 > 避免改功能时把采集/调度链路碰断而又不自知（本系统已经因此静默停摆过 2 天）。
-> 最后更新：2026-09-11（方案A 落地日）
+> 最后更新：2026-09-14（调度图对齐 collect.yml 真实值 15min + 补 cron-job.org 触发器注解与不变量 9）
 
 ---
 
@@ -25,12 +25,15 @@
 ┌─────────────────────────────────────────────────────────────┐
 │ GitHub Actions（.github/workflows/collect.yml）              │
 │                                                             │
-│  每 30min :07/:37 ──► collect-turso.js collect（采集）       │
-│                    └─► collect-turso.js translate（AI 翻译） │
-│  每天 09:03        ──► collect-turso.js daily（日报）        │
-│  每天 09:33        ──► generate-snapshots.js（快照）         │
-│  每天 04:13        ──► collect-turso.js cleanup（清理）      │
+│  每 15min :07/:22/:37/:52 ──► collect-turso.js collect（采集）│
+│                             └─► translate（AI 翻译）         │
+│  每天 09:03 日报 daily ｜ 每天 00:32 daily-ai（兜底补跑）      │
+│  每天 21:30 晚间生成主批（daily-ai + mybrief，rolling24h）     │
+│  周五 18:03 周刊 weekly ｜ 每天 09:33 快照 ｜ 04:13 清理       │
 │                          （时间均为北京时间）                  │
+│  触发双保险：cron-job.org（jobId 8430047）每 15min POST        │
+│  workflow_dispatch 叫醒 collect job——GH schedule 会丢任务，    │
+│  此为实际主力触发器（不变量 9；Key 见 HANDOVER §1.5）          │
 └──────────────────────────┬──────────────────────────────────┘
                            │ @libsql/client 直写（不经任何 Vercel 函数）
                            ▼
@@ -67,6 +70,13 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    （Windows 上触发 libuv UV_HANDLE_CLOSING 断言 → exit 127）。
 8. **本地代理**：`HTTPS_PROXY` 存在时必须用 undici 包自带的 `fetch` + `ProxyAgent`
    配套使用，不能把外部 undici 的 Agent 喂给 Node 内置 fetch（符号不兼容，全部 fetch failed）。
+9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
+   **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
+   dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份
+   （2026-09-11 高负载曾连丢五轮且无告警）。该任务配置内嵌 GitHub PAT 做鉴权
+   （值见 `docs/HANDOVER.md` §1.5）——**PAT 轮换/失效时必须同步更新 cron-job 配置**，
+   否则主力触发静默停摆，只剩会丢任务的备份。控制台 <https://console.cron-job.org/dashboard>，
+   管理用 API Key 同见 HANDOVER §1.5。
 
 ## 3. 改代码时的检查清单
 
@@ -107,6 +117,12 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 
 # ④ 手动触发一轮完整管线
 #    GitHub → Actions → collect → Run workflow（四个 job 全跑）
+
+# ⑤ 看 cron-job.org 外置触发器（主力）是否在准点敲门
+#    控制台 https://console.cron-job.org/dashboard → job 8430047 执行历史
+#    或 API：curl -H "Authorization: Bearer <CRONJOB_API_KEY>" \
+#      "https://api.cron-job.org/jobs/8430047/history"（Key 见 HANDOVER §1.5）
+#    近轮 httpStatus=204 且间隔 15min = 正常；GH 侧应对应为 workflow_dispatch 事件
 ```
 
 ## 5. 故障决策树
@@ -157,3 +173,4 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | `api/[...slug].js` | 读 API（含日报 getOrGenerate 兜底） |
 | `tools/generate-snapshots.js` | 静态快照导出（首屏兜底 public/data/） |
 | `vercel.json` | 仅 rewrites/headers/functions，**无 crons** |
+| cron-job.org 任务 8430047（非仓库文件） | **采集主力触发器**：每 15min POST workflow_dispatch 叫醒 collect job（GH schedule 为备份）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 `docs/HANDOVER.md` §1.5 |
