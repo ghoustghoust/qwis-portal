@@ -502,9 +502,30 @@ async function runCollect() {
   const sec = ((Date.now() - t0) / 1000).toFixed(1);
 
   log(`采集完成: 成功 ${stats.success} / 失败 ${stats.failed} / 跳过 ${stats.skipped} / 新增 ${stats.articles} 篇 / 耗时 ${sec}s`);
+  await runHotEventsCache(); // 热搜事件预聚合（云端读层主路径；失败不阻断采集退出码）
   await writeHeartbeat('collect', stats);
   await postRunAlerts(stats); // 15-cloud-alerts：批次尾部报警（失败隔离，绝不影响退出码）
   return stats;
+}
+
+// 2026-09-14：热搜事件预聚合写 settings['hot.eventsCache']
+// 起因：云端 serverless 内联聚合（3000 行窗口查询 + Jaccard 聚类）冷启动超 30s 上限 504，用户实测事件榜长时间「加载中」
+// 架构：聚合逻辑在 lib/hot-events.js（与 api/[...slug].js 兜底共用同一份纯函数）；云端读层直接读本缓存
+async function runHotEventsCache() {
+  try {
+    const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H } = require('../lib/hot-events');
+    const t0 = Date.now();
+    const cutoff = new Date(Date.now() - EVENTS_WINDOW_H * 3600e3).toISOString();
+    const rows = await qAll(EVENTS_SAMPLE_SQL, [cutoff]);
+    const events = aggregateEventRows(rows);
+    await getDb().execute({
+      sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('hot.eventsCache', ?)",
+      args: [JSON.stringify({ at: Date.now(), events })],
+    });
+    log(`热搜事件预聚合完成: ${events.length} 事件（采样 ${rows.length} 条，耗时 ${((Date.now() - t0) / 1000).toFixed(1)}s）`);
+  } catch (e) {
+    log(`热搜事件预聚合失败（不阻断采集）: ${e.message}`);
+  }
 }
 
 // 15-cloud-alerts：批次尾部报警检测（源失败/熔断/停滞）
