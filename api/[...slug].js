@@ -367,7 +367,7 @@ async function handleHotSources(req) {
 }
 
 // ─── 事件聚合引擎（从 server/services/events.js 移植） ───
-const EVENTS_WINDOW_H = 72;
+const EVENTS_WINDOW_H = 168; // 2026-09-14：从 72h 拉到 7 天（自有源高分内容需覆盖范围；用户验收实测近 48h 为 0）
 const EVENTS_HALF_LIFE_H = 24;
 const EVENTS_SIM_THRESHOLD = 0.4;
 let _eventsCache = { at: 0, events: null };
@@ -413,12 +413,16 @@ async function handleHotEvents(req) {
     const rows = await qAll(
       `SELECT a.id, a.title, a.url, a.summary, a.cover, a.published_at, a.score,
               a.category, a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
-       FROM articles a
+       FROM (
+         SELECT * FROM (
+           SELECT *, ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY COALESCE(published_at, created_at) DESC) rn
+           FROM articles WHERE published_at >= ?
+         ) WHERE rn <= 10
+       ) a
        JOIN sources s ON s.id = a.source_id AND s.enabled = 1
        LEFT JOIN groups g ON g.id = s.group_id
-       WHERE a.published_at >= ?
        ORDER BY a.published_at DESC
-       LIMIT 500`,
+       LIMIT 2000`, // T5-14：全源采样（每源≤10，不再 500 条压头部）
       [cutoff]
     );
     const items = rows.filter(r => (r.title || '').trim().length >= 6);
@@ -488,6 +492,7 @@ async function handleHotEvents(req) {
         latestAt: new Date(latestAt).toISOString(),
         status,
         items: c.items
+          .slice()
           .sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))
           .map(i => ({
             id: i.id, title: i.title, url: i.url,
@@ -504,7 +509,7 @@ async function handleHotEvents(req) {
     // T5-14 二-2：未成簇的自有源高分条目 → 单条型事件并入（热点从 1500 源里挑；
     // 排序权重的可作用对象——否则自有源内容因"不成簇"整体缺席本榜）
     const solo = items
-      .filter((i) => !clusteredIds.has(i.id) && i.source_type !== 'hotlist' && (Number(i.score) || 0) >= 60)
+      .filter((i) => !clusteredIds.has(i.id) && i.source_type !== 'hotlist' && (Number(i.score) || 0) >= 55) // 2026-09-14：评分覆盖初期降到 55，随积累提升可回 60
       .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
       .slice(0, 10);
     for (const i of solo) {
