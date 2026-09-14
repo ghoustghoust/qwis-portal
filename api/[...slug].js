@@ -255,6 +255,7 @@ async function handleVideos(req) {
   // 播客侧条件（音频 enclosure 落 cover 的历史形态，lib/media.js 同口径）
   const pConds = ["s.enabled=1", "(a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%.opus%' OR a.cover LIKE '%media.xyzcdn.net%')"];
   const pArgs = [];
+  if (q.source_id) { pConds.push('a.source_id=?'); pArgs.push(Number(q.source_id)); }
   if (q.group_id) { pConds.push('s.group_id=?'); pArgs.push(Number(q.group_id)); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { pConds.push('COALESCE(a.published_at, a.created_at) >= ?'); pArgs.push(`${q.from}T00:00:00.000Z`); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { pConds.push('COALESCE(a.published_at, a.created_at) <= ?'); pArgs.push(`${q.to}T23:59:59.999Z`); }
