@@ -332,7 +332,9 @@ async function handleHot(req) {
     ? 'CAST(a.score AS REAL) DESC, a.published_at DESC, a.id DESC'
     : 'a.published_at DESC, a.id DESC';
   const rows = await qAll(
-    `SELECT a.id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary, a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
+    `SELECT a.id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary,
+            CASE WHEN a.summary IS NULL OR trim(a.summary)='' THEN substr(a.content_html, 1, 500) ELSE NULL END AS content_fallback,
+            a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
      LEFT JOIN groups g ON g.id = s.group_id
      ${where}${cursorCond}
@@ -348,14 +350,27 @@ async function handleHot(req) {
     nextCursor = `${last.published_at || ''}|${last.id}`;
   }
 
-  // 格式化热度值；标题优先译文（2026-09-14：实时流英文标题有阅读障碍）；摘要截断 300（热榜源摘要曾混入正文全文）
-  const items = rows.map(r => ({
-    ...r,
-    title: r.translated_title || r.title,
-    original_title: r.translated_title ? r.title : undefined,
-    summary: String(r.summary || '').slice(0, 300),
-    scoreFormatted: formatHeat(r.score),
-  }));
+  // 格式化热度值；标题优先译文（2026-09-14：实时流英文标题有阅读障碍）；摘要截断 300；
+  // 摘要兜底（2026-09-14：热榜源采集不带摘要，卡片曾只剩标题）——取正文片段剥标签
+  const plainText = (h) => String(h || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-zA-Z#0-9]+;/g, ' ')
+    .replace(/<[^>]*$/g, '') // substr 截断产生的半标签
+    .replace(/\s+/g, ' ')
+    .trim();
+  const items = rows.map(r => {
+    const sum = String(r.summary || '').trim() || plainText(r.content_fallback);
+    const { content_fallback, ...rest } = r;
+    return {
+      ...rest,
+      title: r.translated_title || r.title,
+      original_title: r.translated_title ? r.title : undefined,
+      summary: sum.slice(0, 300),
+      scoreFormatted: formatHeat(r.score),
+    };
+  });
   return jsonOk({ items, nextCursor });
 }
 

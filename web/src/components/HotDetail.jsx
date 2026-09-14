@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, relativeTime, parseTags, sourceLabel } from '../util';
+import { copyText, formatDateTime, relativeTime, parseTags, sourceLabel, imgUrl } from '../util';
 import Stars from './ui/Stars.jsx';
 import TagPills from './ui/TagPills.jsx';
 import { safeHtml } from '../sanitize';
@@ -95,7 +95,9 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
     }
   };
 
-  const zhHtml = article?.content_html || item.content_html || '';
+  // 中文正文优先 AI 译文（栏目标签即「AI 翻译」，有译文时不该继续显示英文原文）
+  const zhHtml = article?.translated_content || article?.content_html || item.content_html || '';
+  const cover = article?.cover || item.cover || '';
   const openUrl =
     article?.original_url || item.original_url || orig?.sourceUrl || article?.url || item.url;
   const laterActive = !!item.later;
@@ -156,8 +158,18 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
           </div>
         </div>
 
-        {/* 滚动区：AI 导读 / 推荐理由 / 标签 / 正文（双语切换） */}
+        {/* 滚动区：封面图 / AI 导读 / 推荐理由 / 标签 / 正文（双语切换） */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
+          {/* 封面图（2026-09-14：用户验收——有图片的文章点开应能看到图；imgUrl 走防盗链代理） */}
+          {cover && (
+            <img
+              src={imgUrl(cover)}
+              alt=""
+              loading="lazy"
+              className="mb-4 w-full max-h-[300px] object-cover rounded-xl"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          )}
           {summary && (
             <Section title="AI 导读">
               <p className="text-[14px] leading-relaxed t-text whitespace-pre-line">{summary}</p>
@@ -181,7 +193,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
           <div className="mt-6 pt-4 border-t t-border">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-[12px] t-muted">
-                正文 · {lang === 'zh' ? 'AI 翻译' : '原文'}
+                正文 · {lang === 'zh' ? (article?.translated_content ? 'AI 翻译' : '原文') : '原文'}
               </span>
               <span className="flex-1" />
               {/* 2026-09-05 视觉精修：中文/原文切换收敛为 .pill/.pill.on */}
