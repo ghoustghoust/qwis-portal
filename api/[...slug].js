@@ -311,6 +311,8 @@ async function handleHot(req) {
     const kwArgs = [];
     conds.push(`(${AI_GROUP_COND} OR ${aiTitleConds('a.title', kwArgs)})`);
     args.push(...kwArgs);
+    // 噪声源排除：GitHub 提交聚合源（每条 commit 一篇，刷屏信息流；实测占首屏 20%）
+    conds.push("s.name NOT LIKE 'Recent Commits to %'");
   }
 
   // 真实分类过滤（T5-1）：分类映射到 tags 关键词组（实际词表为 模型发布/论文/研究/大佬观点 等复合词）
