@@ -3,6 +3,7 @@ import { api, qs } from '../api';
 import { formatDuration, relativeTime, imgUrl } from '../util';
 import DateFilter from './DateFilter.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修：UP 主头像统一走共享组件
+import PodcastCover from './ui/PodcastCover.jsx'; // 2026-09-14：播客音频封面（波形+渐变，替代 emoji 占位）
 import { SkeletonCards } from './Skeleton.jsx';
 
 // 视频网格（F8）：多列卡片，封面+时长角标、两行标题、UP主头像+名称+N天前
@@ -142,22 +143,45 @@ export default function VideoGrid({ filter, onDateChange, onSelect, onMeta, relo
             // 2026-09-14：播客并入（kind=podcast，🎧 角标）；onSelect 传整条目（播客 id 带 'a' 前缀，详情侧分流）
             <div key={v.id} className="cursor-pointer group card card-lift overflow-hidden" onClick={() => onSelect(v)}>
               <div className="relative t-surface2">
-                {v.cover ? (
+                {v.kind === 'podcast' ? (
+                  // 播客卡：有头像 → 头像底+暗化+播客徽章；无头像 → 波形渐变音频封面
+                  v.cover ? (
+                    <div className="relative w-full aspect-video">
+                      <img referrerPolicy="no-referrer"
+                        src={imgUrl(v.cover)}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                      <span className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
+                      <span
+                        className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] leading-4"
+                        style={{ background: 'rgba(0,0,0,0.55)', color: '#fff' }}
+                      >
+                        🎧 播客
+                      </span>
+                      <span
+                        className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full flex items-center justify-center"
+                        style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                      </span>
+                    </div>
+                  ) : (
+                    <PodcastCover className="w-full aspect-video" />
+                  )
+                ) : v.cover ? (
                   <img referrerPolicy="no-referrer"
                     src={imgUrl(v.cover)}
                     alt=""
                     loading="lazy"
-                    className={`w-full aspect-video object-cover group-hover:scale-[1.02] transition-transform ${v.kind === 'podcast' ? 'opacity-80' : ''}`}
+                    className="w-full aspect-video object-cover group-hover:scale-[1.02] transition-transform"
                   />
                 ) : (
                   <div className="w-full aspect-video flex items-center justify-center t-muted text-2xl">
-                    {v.kind === 'podcast' ? '🎧' : '▶'}
+                    ▶
                   </div>
-                )}
-                {v.kind === 'podcast' && (
-                  <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] leading-none text-white bg-black/60">
-                    🎧 播客
-                  </span>
                 )}
                 {formatDuration(v.duration) && (
                   <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[11px] leading-none text-white bg-black/70 tabular-nums">

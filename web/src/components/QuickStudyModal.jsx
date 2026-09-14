@@ -3,6 +3,7 @@ import { api } from '../api';
 import { toast } from '../toast';
 import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
 import { safeHtml } from '../sanitize';
+import PodcastCover from './ui/PodcastCover.jsx';
 
 // 快速学习弹窗（F17/F20）：类型标签 + 标题 + 来源时间 + 收藏/复制链接/打开原文 + 内容简介 + 正文
 // 2026-09-05 视觉精修：meta 行补字数/阅读时长，统一 .meta token
@@ -216,7 +217,7 @@ export default function QuickStudyModal({ item, onClose }) {
               {audioImg ? (
                 <img src={imgUrl(audioImg)} alt="" className="w-16 h-16 rounded-lg object-cover flex-none" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               ) : (
-                <span className="w-16 h-16 rounded-lg t-accent-soft flex-none flex items-center justify-center text-2xl">🎧</span>
+                <PodcastCover mini className="w-16 h-16 rounded-lg flex-none" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="text-[11px] t-muted mb-1.5">🎧 播客音频</div>

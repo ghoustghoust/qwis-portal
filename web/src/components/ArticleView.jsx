@@ -4,6 +4,7 @@ import { toast } from '../toast';
 import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
 import { safeHtml } from '../sanitize';
 import { RadarLogo } from './icons.jsx';
+import PodcastCover from './ui/PodcastCover.jsx';
 import { useI18n } from '../i18n.jsx';
 
 // 文章阅读栏（F5~F7）：完整渲染 content_html + 顶部工具条
@@ -279,7 +280,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
-                  <span className="w-16 h-16 rounded-lg t-accent-soft flex-none flex items-center justify-center text-2xl">🎧</span>
+                  <PodcastCover mini className="w-16 h-16 rounded-lg flex-none" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] t-muted mb-1.5">🎧 播客音频 · 点击播放</div>

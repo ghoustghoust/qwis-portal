@@ -3,6 +3,7 @@ import { api } from '../api';
 import { toast } from '../toast';
 import { formatDateTime, imgUrl } from '../util';
 import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修
+import PodcastCover from './ui/PodcastCover.jsx';
 
 // 播客详情视图（2026-09-14：播客并入视频板块后的点击落点；图片+声音播放器）
 function PodcastDetail({ articleId, onBack }) {
@@ -51,7 +52,7 @@ function PodcastDetail({ articleId, onBack }) {
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
-                  <span className="w-20 h-20 rounded-lg t-accent-soft flex-none flex items-center justify-center text-3xl">🎧</span>
+                  <PodcastCover mini className="w-20 h-20 rounded-lg flex-none" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] t-muted mb-1.5">点击播放</div>
