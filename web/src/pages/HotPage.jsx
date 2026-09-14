@@ -16,7 +16,6 @@ import { SkeletonList } from '../components/Skeleton.jsx';
 // 接口未就绪或字段缺失时优雅降级（N3：无评分不显示星级）
 // 2026-09-05 视觉精修：Tab/分类收敛为 pill 样式；卡片统一 card-lift；parseTags/sourceLabel 改共享引用
 
-const DEFAULT_CATEGORIES = ['模型', '产品', '行业', '论文', '教程', '观点'];
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 
 // 本地日期分组键 + 展示文案
@@ -147,12 +146,11 @@ function TimelineRow({ time, children }) {
 export default function HotPage() {
   const { t } = useI18n();
   const [tab, setTab] = useState('featured'); // featured | all | events
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
-  const [allGroups, setAllGroups] = useState([]); // T5-14 H-D：分类对齐阅读器分组
-  const [category, setCategory] = useState(''); // '' = 全部
+  const [allGroups, setAllGroups] = useState([]); // 分类 pills：当前 tab 下有内容的分组（/api/hot/groups）
+  const [category, setCategory] = useState(''); // '' = 全部，否则为分组名（gname）
   const [q, setQ] = useState('');
   const [qDebounced, setQDebounced] = useState('');
-  const [source, setSource] = useState(''); // 全部动态 Tab 来源筛选（按 author）
+  const [source, setSource] = useState(''); // 实时流 Tab 来源筛选（按源名）
   const [sources, setSources] = useState([]); // /api/hot/sources 聚合计数
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(null);
@@ -165,26 +163,18 @@ export default function HotPage() {
   const boxRef = useRef(null);
   const loadingRef = useRef(false);
 
-  // 分类清单（失败回退六类默认值）
+  // 分类 pills（2026-09-14 重做）：读 /api/hot/groups?tab= —— 按分组名去重合并、只含有内容的组，
+  // 不再出现重名 pills（人工智能×2）和「点进去为空」；前 7 个平铺，其余收进「更多分类」下拉（不做横向滚动）
   useEffect(() => {
+    if (tab === 'events') return;
     api
-      .get('/api/hot/categories')
-      .then((d) => {
-        if (Array.isArray(d?.categories) && d.categories.length) setCategories(d.categories);
-      })
-      .catch(() => {});
-  }, []);
-
-  // T5-14 H-D 接线（2026-09-14 修复：此前 allGroups 从未拉取，分类行只剩「全部」）
-  useEffect(() => {
-    api
-      .get('/api/groups')
+      .get(`/api/hot/groups${qs({ tab })}`)
       .then((d) => {
         const list = Array.isArray(d) ? d : d?.groups || d?.items || [];
-        setAllGroups(list.filter((g) => g && g.id != null && g.name && (g.enabled_count == null || g.enabled_count > 0)));
+        setAllGroups(list.filter((g) => g && g.name && (g.count ?? 1) > 0));
       })
       .catch(() => setAllGroups([]));
-  }, []);
+  }, [tab]);
 
   // 全部动态 Tab：来源聚合计数（接口未就绪时静默降级为仅「全部」）
   useEffect(() => {
@@ -226,8 +216,7 @@ export default function HotPage() {
         const data = await api.get(
           `/api/hot${qs({
             tab,
-            category: category || undefined, // T5-1：featured/all 都支持真实分类过滤
-            group_id: category && /^\d+$/.test(category) ? category : undefined,
+            gname: category || undefined, // 2026-09-14：分类=分组名（重名分组合并）
             q: qDebounced || undefined, // T5-1：featured/all 都支持搜索
             source: tab === 'all' ? source || undefined : undefined,
             cursor: cur || undefined,
@@ -331,7 +320,7 @@ export default function HotPage() {
               ].map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setTab(item.id)}
+                  onClick={() => { setTab(item.id); setCategory(''); setSource(''); }}
                   className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === item.id ? 'on' : ''}`}
                 >
                   {item.label}
@@ -392,7 +381,7 @@ export default function HotPage() {
                     </span>
                     <span className="flex-1 min-w-0 truncate t-text">{ev.title}</span>
                     <span className="flex-none text-[11px] t-muted tabular-nums">
-                      {ev.heatFormatted || formatHeat(ev.heat)} {t('hot.heat')}
+                      {formatHeat(ev.heat)} {t('hot.heat')}
                     </span>
                   </button>
                 ))}
@@ -401,25 +390,42 @@ export default function HotPage() {
           </div>
         )}
 
-        {/* T5-14 H-D：分类对齐阅读器分组——pills 读分组（groups），过滤 group_id；featured/all 常驻 */}
+        {/* 分类行（2026-09-14 重做）：有内容的分组按量排序，前 7 个平铺 + 其余收进下拉，不横向滚动 */}
         {tab !== 'events' && (
           <div className="flex-none t-surface border-b t-border px-6 py-2.5">
-            <div className="max-w-[860px] mx-auto flex gap-1.5 overflow-x-auto">
+            <div className="max-w-[860px] mx-auto flex items-center gap-1.5 flex-wrap">
               <button
                 onClick={() => setCategory('')}
                 className={`pill cursor-pointer flex-none ${category === '' ? 'on' : ''}`}
               >
                 {t('sidebar.all')}
               </button>
-              {(allGroups || []).map((g) => (
+              {(allGroups || []).slice(0, 7).map((g) => (
                 <button
-                  key={g.id}
-                  onClick={() => setCategory(String(g.id))}
-                  className={`pill cursor-pointer flex-none ${category === String(g.id) ? 'on' : ''}`}
+                  key={g.name}
+                  onClick={() => setCategory(g.name)}
+                  className={`pill cursor-pointer flex-none ${category === g.name ? 'on' : ''}`}
                 >
                   {g.name}
+                  {g.count != null && <span className="opacity-60 ml-0.5 tabular-nums">{g.count}</span>}
                 </button>
               ))}
+              {(allGroups || []).length > 7 && (
+                <select
+                  className="input !w-36 !py-1 !text-xs flex-none"
+                  value={(allGroups || []).slice(7).some((g) => g.name === category) ? category : ''}
+                  onChange={(e) => setCategory(e.target.value)}
+                  title="更多分类"
+                >
+                  <option value="">更多分类…</option>
+                  {(allGroups || []).slice(7).map((g) => (
+                    <option key={g.name} value={g.name}>
+                      {g.name}
+                      {g.count != null ? `（${g.count}）` : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
         )}

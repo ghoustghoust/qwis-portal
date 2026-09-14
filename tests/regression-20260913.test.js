@@ -140,6 +140,18 @@ test('F1-2 热点榜全部动态分页：游标可翻页', async () => {
   assert.ok(p2.items.every((a) => !ids1.has(a.id)), '热点榜两页不得重复');
 });
 
+// 2026-09-14 三阶段修正：精选=自有源六维≥60 且 AI 相关；热榜源不再混入（热度百万级越过旧门槛 10000 的量纲失误）
+test('F3 热点榜精选：全部为六维≥60 的自有源条目', async () => {
+  const p1 = await call('/api/hot?tab=featured');
+  assert.strictEqual(p1.ok, true);
+  assert.ok(Array.isArray(p1.items), '精选必须返回数组');
+  if (!p1.items.length) return; // 评分覆盖初期允许空，但一旦有内容必须满足口径
+  for (const it of p1.items) {
+    const sc = Number(it.score);
+    assert.ok(Number.isFinite(sc) && sc >= 60 && sc <= 100, `精选条目必须是六维分 60-100，实际 ${it.score}（${String(it.title).slice(0, 30)}）`);
+  }
+});
+
 after(() => {
   try { require('../server/db').db.close?.(); } catch { /* ignore */ }
 });

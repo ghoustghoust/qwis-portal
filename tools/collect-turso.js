@@ -1547,14 +1547,19 @@ function _collectIdsDeep(obj, out) {
 
 async function translatePriorityMap() {
   const pri = new Map(); // articleId -> 1|2|3|4
-  // P1 热点榜精选：与 /api/hot tab=featured 同口径（自有源六维≥60 / 热榜热度>10000，7 天窗）
+  // P1 热点榜精选：与 /api/hot tab=featured 同口径（自有源六维≥60 且 AI 相关，7 天窗；热榜源不入精选）
+  // AI 词表与云端读层共享 lib/ai-relevance.js（同一份，勿分叉）
   try {
+    const { aiRelevanceCond } = require('../lib/ai-relevance');
+    const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
+    const aiCond = aiRelevanceCond(args);
     const rows = await qAll(
       `SELECT a.id FROM articles a JOIN sources s ON s.id=a.source_id
-       WHERE ((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60)
-              OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))
-         AND a.published_at >= ?`,
-      [new Date(Date.now() - 7 * 86400e3).toISOString()]
+       LEFT JOIN groups g ON g.id = s.group_id
+       WHERE a.published_at >= ?
+         AND s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60
+         AND ${aiCond}`,
+      args
     );
     for (const r of rows) if (!pri.has(r.id)) pri.set(r.id, 1);
   } catch (e) { log(`  翻译优先级 P1 热点榜查询失败（按无优先级继续）: ${e.message}`); }

@@ -26,7 +26,7 @@ function collectItems() {
   const cutoff = new Date(Date.now() - WINDOW_H * 3600e3).toISOString();
   return db
     .prepare(
-      `SELECT a.id, a.title, a.url, a.summary, a.cover, a.published_at, a.score, a.category,
+      `SELECT a.id, a.title, a.translated_title, a.url, a.summary, a.cover, a.published_at, a.score, a.category,
               a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
        FROM articles a
        JOIN sources s ON s.id = a.source_id AND s.enabled = 1
@@ -107,7 +107,7 @@ function aggregate() {
       trend = buckets;
     }
     const ev = {
-      title: rep.title,
+      title: rep.translated_title || rep.title, // 展示标题优先译文（2026-09-14）
       domain,
       heat: Math.round(heat * 10) / 10,
       sourceCount: c.sourceIds.size,
@@ -120,7 +120,7 @@ function aggregate() {
         .slice()
         .sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))
         .map((i) => ({
-          id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200),
+          id: i.id, title: i.translated_title || i.title, url: i.url, summary: (i.summary || '').slice(0, 200),
           cover: i.cover, published_at: i.published_at, score: i.score,
           source_name: i.source_name, source_type: i.source_type,
           source_group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),

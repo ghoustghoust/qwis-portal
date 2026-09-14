@@ -87,7 +87,7 @@ const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/settings', '/api/settings/daily',
   '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/weekly',
-  '/api/hot/events', '/api/hot/categories', '/api/hot/sources',
+  '/api/hot/events', '/api/hot/categories', '/api/hot/sources', '/api/hot/groups',
   '/api/opml/export',
 ]);
 
@@ -243,51 +243,13 @@ async function handleVideos(req) {
   return jsonOk({ items: rows });
 }
 
-// ─── AI 相关性词表（2026-09-14：实时流=AI 信息实时流，从全源只挑 AI 相关内容） ───
-// 口径：AI 主题分组源全收；其余源按标题命中词表。
-// LIKE（大小写不敏感）只放无歧义长词；短缩写走 GLOB（大小写敏感）防误伤——RAG 不匹配 garage；
-// 裸「AI」走词边界 GLOB，防匹配 SAID/CHAIR/EMAIL 等。
-const AI_GROUP_COND = "(UPPER(COALESCE(g.name,'')) LIKE '%AI%' OR g.name LIKE '%人工智能%')";
-const AI_KW_LIKE = [
-  // 中文主题词
-  '人工智能', '大模型', '大语言模型', '智能体', '具身智能', '机器学习', '深度学习', '神经网络',
-  '多模态', '文生图', '文生视频', '图生视频', '提示词', '推理模型', '开源模型', '预训练', '扩散模型',
-  '世界模型', '强化学习', '数字人', '蒸馏', '算力',
-  // AI+场景复合词（AI 开头的中文复合词无歧义）
-  'AI编程', 'AI 编程', 'AI应用', 'AI 应用', 'AI助手', 'AI 助手', 'AI搜索', 'AI视频', 'AI 视频',
-  'AI绘画', 'AI生成', 'AI智能', 'AI时代', 'AI创业', 'AI产品', 'AI公司', 'AI芯片', 'AI眼镜',
-  'AI玩具', 'AI短剧', 'AI音乐', 'AI医疗', 'AI教育', 'AI安全', 'AI治理', 'AI落地', 'AI爆发',
-  // 品牌/产品/人物（Distinctive，子串误伤≈0）
-  'OpenAI', 'ChatGPT', 'Claude', 'Anthropic', 'Gemini', 'DeepSeek', 'Qwen', '通义', 'Llama',
-  'Mistral', 'Copilot', 'Midjourney', 'Suno', 'Runway', 'Pika', 'Kling', '可灵', '即梦', '豆包',
-  '文心', '混元', '智谱', 'Kimi', '月之暗面', 'Grok', 'Perplexity', 'Hugging Face', 'HuggingFace',
-  'Codex', 'Cursor', 'Manus', 'Windsurf', '商汤', '讯飞', 'Ollama', 'LangChain', 'Transformer',
-  'ComfyUI', 'SGLang', 'Veo', 'Imagen', 'ElevenLabs', 'HeyGen', '阶跃星辰', 'MiniMax', '面壁智能',
-  '百川智能', '零一万物', 'Cohere', 'Altman', '黄仁勋', 'Karpathy', '李飞飞', 'Hassabis',
-  'Sutskever', '吴恩达', '何恺明', 'Jim Fan', '杨植麟',
-];
-const AI_KW_GLOB = ['GPT', 'LLM', 'RAG', 'MCP', 'AGI', 'AIGC', 'VLM', 'LoRA', 'RLHF', 'MoE', 'Sora', 'vLLM'];
-// 裸 AI 边界形态：句首/句尾/两侧空白/常见中英标点
-const AI_BARE_GLOB = ['AI *', '* AI', '* AI *', '*AI:*', '*AI：*', '*AI、*', '*AI·*', '*AI-*', '*-AI *', '*「AI*', '*AI」*'];
-// SQLite 表达式树深度上限 100：上百个 OR 连成左深链会爆（SQLITE_UNKNOWN: Expression tree is too large）
-// → 平衡二叉树拼接，深度 ≈ log2(N)+2
-function orTree(parts) {
-  if (!parts.length) return '1=0';
-  if (parts.length === 1) return parts[0];
-  const mid = parts.length >> 1;
-  return `(${orTree(parts.slice(0, mid))} OR ${orTree(parts.slice(mid))})`;
-}
-function aiTitleConds(field, args) {
-  const parts = [];
-  for (const kw of AI_KW_LIKE) { parts.push(`${field} LIKE ?`); args.push(`%${kw}%`); }
-  for (const kw of AI_KW_GLOB) { parts.push(`${field} GLOB ?`); args.push(`*${kw}*`); }
-  for (const p of AI_BARE_GLOB) { parts.push(`${field} GLOB ?`); args.push(p); }
-  return orTree(parts);
-}
+// ─── AI 相关性词表：已抽为共享模块 lib/ai-relevance.js（本文件与 tools/collect-turso.js 同用一份） ───
+// 坑 #31：OR 链必须平衡二叉树拼接（SQLite 表达式树深度上限 100，实测超长 OR 链报 Expression tree is too large）
+const { aiRelevanceCond, aiTitleConds } = require('../lib/ai-relevance');
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
-// tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(精选=六维≥60 + 热榜高热度) | hotlist(纯热搜子视图)
-// 分类=tags 子串匹配；q/source/cursor 沿用；时间窗默认 7 天（days 可调，上限 30）
+// tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
+// 分类=gname(分组名，重名分组合并) / category(六类关键词) / q / source / cursor；时间窗默认 7 天（days 可调，上限 30）
 async function handleHot(req) {
   const q = req.query;
   const tab = q.tab || 'all';
@@ -301,16 +263,15 @@ async function handleHot(req) {
   const args = [];
 
   if (tab === 'featured') {
-    // 精选：自有源六维高分 + 热榜高热度（热度值量级与六维分不同，分开设门槛）
-    // CAST 防御：库中存在 score='null' 文本行（TEXT 与数字比较按类型序恒真，坑 #25 同族）
-    conds.push("((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60) OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))");
+    // AI 精选（2026-09-14 三阶段修正）：自有源六维≥60 且 AI 相关。
+    // 此前「热榜热度>10000」量纲失误——热榜热度百万级，全部越过门槛，精选被知乎/酷安热榜淹没；已剔除热榜源。
+    conds.push("s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60");
+    conds.push(aiRelevanceCond(args));
   } else if (tab === 'hotlist') {
     conds.push("s.type='hotlist'");
   } else if (tab === 'all') {
     // AI 信息实时流（2026-09-14）：从全源只挑 AI 相关内容——AI 主题分组源全收，其余源按标题命中 AI 词表
-    const kwArgs = [];
-    conds.push(`(${AI_GROUP_COND} OR ${aiTitleConds('a.title', kwArgs)})`);
-    args.push(...kwArgs);
+    conds.push(aiRelevanceCond(args));
     // 噪声源排除：GitHub 提交聚合源（每条 commit 一篇，刷屏信息流；实测占首屏 20%）
     conds.push("s.name NOT LIKE 'Recent Commits to %'");
   }
@@ -342,6 +303,11 @@ async function handleHot(req) {
     conds.push('s.group_id=?');
     args.push(Number(q.group_id));
   }
+  // 2026-09-14：gname 按分组名过滤（重名分组「人工智能」×2 等自动合并，前端 pills 按名去重）
+  if (q.gname) {
+    conds.push('g.name=?');
+    args.push(String(q.gname));
+  }
 
   // 时间窗口：默认 7 天（覆盖回溯，G5；参数化命中 idx_articles_pubco）
   conds.push('a.published_at >= ?');
@@ -360,13 +326,13 @@ async function handleHot(req) {
     }
   }
 
-  // 排序：精选=自有源高分优先（热榜热度百万量级会压制六维分，分列排序）+ 时间序；
-  //       全部动态按全局时间序（2026-09-11 修复：原来按 score 排导致同源成块）
+  // 排序：精选=六维分高优先（2026-09-14：热榜已不入精选，无需分列）+ 时间序；
+  //       实时流按全局时间序（2026-09-11 修复：原来按 score 排导致同源成块）
   const orderBy = tab === 'featured'
-    ? "(s.type='hotlist') ASC, CAST(a.score AS REAL) DESC NULLS LAST, a.published_at DESC, a.id DESC"
+    ? 'CAST(a.score AS REAL) DESC, a.published_at DESC, a.id DESC'
     : 'a.published_at DESC, a.id DESC';
   const rows = await qAll(
-    `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
+    `SELECT a.id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary, a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
      LEFT JOIN groups g ON g.id = s.group_id
      ${where}${cursorCond}
@@ -382,9 +348,39 @@ async function handleHot(req) {
     nextCursor = `${last.published_at || ''}|${last.id}`;
   }
 
-  // 格式化热度值
-  const items = rows.map(r => ({ ...r, scoreFormatted: formatHeat(r.score) }));
+  // 格式化热度值；标题优先译文（2026-09-14：实时流英文标题有阅读障碍）；摘要截断 300（热榜源摘要曾混入正文全文）
+  const items = rows.map(r => ({
+    ...r,
+    title: r.translated_title || r.title,
+    original_title: r.translated_title ? r.title : undefined,
+    summary: String(r.summary || '').slice(0, 300),
+    scoreFormatted: formatHeat(r.score),
+  }));
   return jsonOk({ items, nextCursor });
+}
+
+// GET /api/hot/groups?tab= — 当前 tab 下有内容的分组计数（2026-09-14：分类 pills 数据源；
+// 按分组名聚合自动合并重名分组，只返回有内容的组，前端不再出现「点进去为空」的分类）
+async function handleHotGroups(req) {
+  const tab = req.query.tab || 'all';
+  const conds = ['a.published_at >= ?'];
+  const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
+  if (tab === 'featured') {
+    conds.push("s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60");
+    conds.push(aiRelevanceCond(args));
+  } else if (tab === 'all') {
+    conds.push(aiRelevanceCond(args));
+    conds.push("s.name NOT LIKE 'Recent Commits to %'");
+  }
+  const rows = await qAll(
+    `SELECT g.name AS name, COUNT(*) AS count
+     FROM articles a JOIN sources s ON s.id=a.source_id
+     LEFT JOIN groups g ON g.id = s.group_id
+     WHERE ${conds.join(' AND ')} AND g.name IS NOT NULL AND g.name != ''
+     GROUP BY g.name ORDER BY count DESC`,
+    args
+  );
+  return jsonOk({ groups: rows });
 }
 
 // GET /api/hot/categories — 分类清单
@@ -398,21 +394,20 @@ async function handleHotCategories(req) {
   return jsonOk({ categories: CATEGORIES });
 }
 
-// GET /api/hot/sources — 聚合源计数
+// GET /api/hot/sources — 实时流来源下拉（2026-09-14：改为全量源计数，此前只查聚合热榜源，下拉里全是「xx热榜」）
+// 与实时流同口径（AI 相关 + 7 天窗 + 噪声源排除），保证选中的源一定有内容
 async function handleHotSources(req) {
+  const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
+  const aiCond = aiRelevanceCond(args);
   const rows = await qAll(
-    `SELECT a.author, COUNT(*) AS count
+    `SELECT s.name AS name, COUNT(*) AS count
      FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1
-     GROUP BY a.author ORDER BY count DESC`
+     LEFT JOIN groups g ON g.id = s.group_id
+     WHERE a.published_at >= ? AND ${aiCond} AND s.name NOT LIKE 'Recent Commits to %'
+     GROUP BY s.name ORDER BY count DESC LIMIT 200`,
+    args
   );
-  const sources = rows.map(r => {
-    const s = String(r.author || '').trim();
-    const m = s.match(/\(([^()]*)\)\s*$/);
-    const feedName = m ? m[1].trim() : s;
-    return { author: r.author, feedName, count: r.count };
-  });
-  return jsonOk({ sources });
+  return jsonOk({ sources: rows });
 }
 
 // ─── 事件聚合引擎（从 server/services/events.js 移植） ───
@@ -460,7 +455,7 @@ async function handleHotEvents(req) {
     const nowMs = Date.now();
     const cutoff = new Date(nowMs - EVENTS_WINDOW_H * 3600e3).toISOString();
     const rows = await qAll(
-      `SELECT a.id, a.title, a.url, a.summary, a.cover, a.published_at, a.score,
+      `SELECT a.id, a.title, a.translated_title, a.url, a.summary, a.cover, a.published_at, a.score,
               a.category, a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
        FROM (
          SELECT * FROM (
@@ -529,6 +524,8 @@ async function handleHotEvents(req) {
 
       const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
       for (const i of c.items) clusteredIds.add(i.id);
+      // 展示标题优先译文（2026-09-14：英文事件直接给中文标题，消除阅读障碍）；聚类仍用原标题
+      const repTitle = rep.translated_title || rep.title;
       // 信源清单（2026-09-14：事件卡展示「分组·信源名」，如 公众号·数字生命卡兹克 / 新闻媒体·澎湃新闻）
       const srcSeen = new Map();
       for (const i of c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))) {
@@ -551,12 +548,15 @@ async function handleHotEvents(req) {
         }
         trend = buckets;
       }
+      // 热度统一口径（2026-09-14）：显示热度 = 簇热度 + 簇内自有源最高六维分
+      // ——此前排序用隐藏加权（分×50+热度）但显示原值，榜单不是从高到低（2 分排在 77 分前），用户验收指出
+      const selfMaxVal = Math.max(0, ...c.items.filter(i => i.source_type !== 'hotlist').map(i => Number(i.score) || 0));
+      const displayHeat = Math.round((heat + selfMaxVal) * 10) / 10;
       events.push({
-        title: rep.title,
-        _scores: c.items.filter(i => i.source_type !== 'hotlist').map(i => Number(i.score) || 0),
+        title: repTitle,
         domain: evDomain,
-        heat: Math.round(heat * 10) / 10,
-        heatFormatted: formatHeat(Math.round(heat * 10) / 10),
+        heat: displayHeat,
+        heatFormatted: formatHeat(displayHeat),
         sourceCount: c.sourceIds.size,
         reportCount: c.items.length,
         sourceList: [...srcSeen.values()],
@@ -568,7 +568,9 @@ async function handleHotEvents(req) {
           .slice()
           .sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))
           .map(i => ({
-            id: i.id, title: i.title, url: i.url,
+            id: i.id, title: i.translated_title || i.title,
+            original_title: i.translated_title ? i.title : undefined,
+            url: i.url,
             summary: (i.summary || '').slice(0, 200),
             cover: i.cover, published_at: i.published_at,
             score: i.score, scoreFormatted: formatHeat(i.score),
@@ -577,11 +579,8 @@ async function handleHotEvents(req) {
           })),
       });
     }
-    // T5-14 二-2：热点从 1500 源挑——排序加权 = 热度衰减 + 自有源六维最高分×大权重
-    //（热榜同题簇热度天然高会刷屏；自有源高分事件（AI 评分内容聚成的簇）应置顶）
-    const selfMax = (e) => Math.max(0, ...(e._scores || []));
-    // T5-14 二-2：未成簇的自有源高分条目 → 单条型事件并入（热点从 1500 源里挑；
-    // 排序权重的可作用对象——否则自有源内容因"不成簇"整体缺席本榜）
+    // T5-14 二-2：未成簇的自有源高分条目 → 单条型事件并入（否则自有源内容因"不成簇"整体缺席本榜）
+    // 2026-09-14：单条事件的显示热度即六维分；全榜按显示热度严格降序（排序值=显示值，不再隐藏加权）
     const solo = items
       .filter((i) => !clusteredIds.has(i.id) && i.source_type !== 'hotlist' && (Number(i.score) || 0) >= 55) // 2026-09-14：评分覆盖初期降到 55，随积累提升可回 60
       .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
@@ -590,8 +589,7 @@ async function handleHotEvents(req) {
       const sc = Number(i.score) || 0;
       const soloGroup = i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它');
       events.push({
-        title: i.title,
-        _scores: [sc],
+        title: i.translated_title || i.title,
         domain: i.domain || i.category || i.source_name || '其它',
         heat: sc,
         heatFormatted: `AI 评分 ${Math.round(sc)}/100`,
@@ -602,11 +600,12 @@ async function handleHotEvents(req) {
         firstAt: i.published_at,
         latestAt: i.published_at,
         status: '精选',
-        items: [{ id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type, source_group: soloGroup }],
+        items: [{ id: i.id, title: i.translated_title || i.title, original_title: i.translated_title ? i.title : undefined, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type, source_group: soloGroup }],
       });
     }
     if (solo.length) console.log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);
-    events.sort((a, b) => (selfMax(b) * 50 + b.heat) - (selfMax(a) * 50 + a.heat));
+    // 按显示热度严格降序（簇热度已含自有源最高分加成，榜单从高到低，所见即所排）
+    events.sort((a, b) => b.heat - a.heat);
     // 添加 rank
     events.forEach((ev, idx) => { ev.rank = idx + 1; });
     _eventsCache = { at: Date.now(), events };
@@ -2627,6 +2626,7 @@ async function dispatch(req) {
     if (path === '/api/hot/events') return handleHotEvents(req);
     if (path === '/api/hot/categories') return handleHotCategories(req);
     if (path === '/api/hot/sources') return handleHotSources(req);
+    if (path === '/api/hot/groups') return handleHotGroups(req);
     // GET /api/hot/events/:rank
     const hotEventRankMatch = path.match(/^\/api\/hot\/events\/(\d+)$/);
     if (hotEventRankMatch) return handleHotEventDetail(req, Number(hotEventRankMatch[1]));

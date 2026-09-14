@@ -69,7 +69,7 @@ const DICT = {
   'hot.loadMore':          { zh: '加载更多',           en: 'Load More' },
   'hot.notReady':          { zh: '热点榜服务尚未就绪（后端接口施工中），请稍后再试', en: 'Hot list service not ready yet, please try later' },
   'hot.noMatch':           { zh: '没有匹配的动态',     en: 'No matching items' },
-  'hot.categoryEmpty':     { zh: '该分类近期待抓取内容为空', en: 'No recent content in this category' },
+  'hot.categoryEmpty':     { zh: '该分类近期暂无符合内容', en: 'No matching content in this category recently' },
   'hot.empty':             { zh: '暂无热点内容，等待 AIHOT 抓取', en: 'No trending content yet' },
   'hot.items':             { zh: '条',                 en: 'items' },
   'hot.featuredBadge':     { zh: '✦ 精选',            en: '✦ Featured' },
