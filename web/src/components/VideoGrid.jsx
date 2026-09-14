@@ -139,19 +139,25 @@ export default function VideoGrid({ filter, onDateChange, onSelect, onMeta, relo
           {topPad > 0 && <div style={{ gridColumn: '1 / -1', height: topPad }} aria-hidden="true" />}
           {slice.map((v) => (
             // 2026-09-05 视觉精修：视频卡统一 card card-lift，封面圆角由卡片 overflow-hidden 收敛（12px）
-            <div key={v.id} className="cursor-pointer group card card-lift overflow-hidden" onClick={() => onSelect(v.id)}>
+            // 2026-09-14：播客并入（kind=podcast，🎧 角标）；onSelect 传整条目（播客 id 带 'a' 前缀，详情侧分流）
+            <div key={v.id} className="cursor-pointer group card card-lift overflow-hidden" onClick={() => onSelect(v)}>
               <div className="relative t-surface2">
                 {v.cover ? (
                   <img referrerPolicy="no-referrer"
                     src={imgUrl(v.cover)}
                     alt=""
                     loading="lazy"
-                    className="w-full aspect-video object-cover group-hover:scale-[1.02] transition-transform"
+                    className={`w-full aspect-video object-cover group-hover:scale-[1.02] transition-transform ${v.kind === 'podcast' ? 'opacity-80' : ''}`}
                   />
                 ) : (
                   <div className="w-full aspect-video flex items-center justify-center t-muted text-2xl">
-                    ▶
+                    {v.kind === 'podcast' ? '🎧' : '▶'}
                   </div>
+                )}
+                {v.kind === 'podcast' && (
+                  <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] leading-none text-white bg-black/60">
+                    🎧 播客
+                  </span>
                 )}
                 {formatDuration(v.duration) && (
                   <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[11px] leading-none text-white bg-black/70 tabular-nums">

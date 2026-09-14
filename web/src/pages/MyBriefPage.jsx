@@ -105,6 +105,8 @@ export default function MyBriefPage() {
 
               <BriefSection title="头条推荐" items={report.sections?.top} kind="top" type={type} onOpen={setStudyItem} />
               <BriefSection title="精选内容" items={report.sections?.featured} kind="featured" type={type} onOpen={setStudyItem} />
+              {/* 2026-09-14：视频与播客栏（窗口内新媒体，点开即可播放/收听） */}
+              <BriefSection title="视频与播客" items={report.sections?.media} kind="rest" type={type} onOpen={setStudyItem} />
               <BriefSection title="补充阅读" items={report.sections?.rest} kind="rest" type={type} onOpen={setStudyItem} />
             </>
           )}
@@ -137,7 +139,7 @@ export default function MyBriefPage() {
 }
 
 function BriefSection({ title, items, kind, type, onOpen }) {
-  const list = (items || []).filter((it) => type === 'all' || (type === 'article' && it.kind !== 'video') || (type === 'video' && it.kind === 'video'));
+  const list = (items || []).filter((it) => type === 'all' || (type === 'article' && it.kind !== 'video' && it.kind !== 'podcast') || (type === 'video' && (it.kind === 'video' || it.kind === 'podcast')));
   if (!list.length) return null;
   return (
     <section className="mt-8">

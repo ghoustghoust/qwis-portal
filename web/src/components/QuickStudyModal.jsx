@@ -18,6 +18,23 @@ export default function QuickStudyModal({ item, onClose }) {
   const articleId = item?.ref_id || item?.id;
   const hasTranslation = !!(detail?.translated_title || detail?.translated_content);
   const isEnglishTitle = !!item?.title && (item.title.replace(/[^ -~]/g, '').length / item.title.length) > 0.7;
+  // 2026-09-14：视频条目弹窗内嵌播放（用户验收：早报里的视频要能正常播放）
+  const [playUrl, setPlayUrl] = useState('');
+  const [playExternal, setPlayExternal] = useState('');
+  useEffect(() => {
+    if (!isVideo || !item?.ref_id) return;
+    let cancelled = false;
+    api
+      .get(`/api/videos/${item.ref_id}/play`)
+      .then((d) => {
+        if (cancelled) return;
+        if (d?.mode === 'external') setPlayExternal(d.url || '');
+        else setPlayUrl(d?.url || d?.embed_url || '');
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.ref_id, isVideo]);
 
   // 入队后轮询，译文出现即切换
   useEffect(() => {
@@ -178,6 +195,20 @@ export default function QuickStudyModal({ item, onClose }) {
               </button>
             </div>
           </div>
+
+          {/* 视频内嵌播放（2026-09-14：早报里的视频点开即可看） */}
+          {isVideo && playUrl && (
+            <div className="mt-5 rounded-xl overflow-hidden border t-border bg-black aspect-video">
+              <iframe src={playUrl} className="w-full h-full" allowFullScreen title="视频播放" />
+            </div>
+          )}
+          {isVideo && !playUrl && playExternal && (
+            <div className="mt-5">
+              <a className="btn-primary inline-block" href={playExternal} target="_blank" rel="noopener noreferrer">
+                ▶ 到原平台观看 ↗
+              </a>
+            </div>
+          )}
 
           {/* 播客播放器（图片+声音，2026-09-14） */}
           {audioUrl && (

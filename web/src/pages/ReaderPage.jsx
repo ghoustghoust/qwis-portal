@@ -151,7 +151,7 @@ export default function ReaderPage() {
           onChanged={refreshSidebar}
         />
       ) : (
-        <VideoGrid filter={filter} onDateChange={onDateChange} onSelect={setSelectedVideoId} onMeta={onMeta} reloadKey={listKey} />
+        <VideoGrid filter={filter} onDateChange={onDateChange} onSelect={(v) => setSelectedVideoId(typeof v === 'object' && v ? v.id : v)} onMeta={onMeta} reloadKey={listKey} />
       )}
     </div>
   );

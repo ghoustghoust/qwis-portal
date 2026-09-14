@@ -174,6 +174,33 @@ async function fetchRss(source) {
   const xml = await res.text();
   const feed = await rssParser.parseString(xml);
 
+  // YouTube 频道 feed → videos 表（2026-09-14 修：runner 的 fetchRss 此前只产 articles，
+  // 又被 B6 的 YouTube 链接过滤全部丢弃——视频板块自 09-07 起断更。语义移植自本地
+  // server/services/collectors/rss/index.js 的 mapYoutubeItem；三份采集实现同步义务见坑 #9）
+  const isYtFeed = source.type === 'youtube'
+    || /youtube\.com\/feeds\/videos\.xml/i.test(url)
+    || (feed.items || []).some((it) => String(it.id || '').startsWith('yt:video:'));
+  if (isYtFeed) {
+    const videos = (feed.items || []).slice(0, 30).map((item) => {
+      const m = String(item.id || '').match(/yt:video:([\w-]+)/);
+      const vid = m ? m[1] : (String(item.link || '').match(/[?&]v=([\w-]+)/) || [])[1];
+      if (!vid) return null;
+      const authorRaw = typeof item.author === 'string' ? item.author : (item.author && item.author.name) || '';
+      return {
+        platform: 'youtube',
+        title: (item.title || '').trim(),
+        url: `https://www.youtube.com/watch?v=${vid}`,
+        vid,
+        cover: `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
+        duration: null,
+        author: authorRaw || String(source.name || '').trim(),
+        intro: String(item.contentSnippet || item.content || '').slice(0, 500),
+        published_at: item.isoDate || (item.pubDate ? new Date(item.pubDate).toISOString() : null),
+      };
+    }).filter((v) => v && v.title);
+    return { videos, etag, lastModified };
+  }
+
   const articles = (feed.items || []).slice(0, 30).map(item => {
     const contentRaw = item['content:encoded'] || item['content'] || item.content || '';
     const content = cleanContent(contentRaw);
@@ -342,9 +369,11 @@ async function saveVideos(sourceId, videos) {
   const db = getDb();
   const now = nowIso();
   const stmts = videos.map((v) => ({
-    sql: `INSERT OR IGNORE INTO videos(source_id, title, url, vid, cover, duration, author, intro, published_at, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    args: [sourceId, v.title || '', v.url, v.vid || '', v.cover || null, v.duration || null,
+    // 2026-09-14 修：补 platform 列（此前丢列，云端产生 11 行 platform=NULL；播放路由按 platform 分流）
+    sql: `INSERT OR IGNORE INTO videos(source_id, platform, title, url, vid, cover, duration, author, intro, published_at, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [sourceId, v.platform || (String(v.vid || '').startsWith('BV') ? 'bilibili' : null),
+      v.title || '', v.url, v.vid || '', v.cover || null, v.duration || null,
       v.author || '', v.intro || '', v.published_at || null, now],
   }));
   const results = await db.batch(stmts, 'write');
@@ -1116,6 +1145,35 @@ async function runDailyAi() {
       n += sec.items.length;
     }
   }
+  // 2026-09-14：日报纳入「视频与播客」栏（窗口内新视频 + 播客音频条目；免 AI 直接列，点开可播放收听）
+  try {
+    const mediaItems = [];
+    const mediaVids = await qAll(
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, s.name AS source_name
+       FROM videos v JOIN sources s ON s.id=v.source_id
+       WHERE v.published_at >= ? AND v.published_at < ? AND s.enabled = 1
+       ORDER BY v.published_at DESC LIMIT 6`,
+      [startUtc, endUtc]
+    );
+    for (const v of mediaVids) {
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover });
+    }
+    const mediaPods = await qAll(
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
+       FROM articles a JOIN sources s ON s.id=a.source_id
+       WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
+         AND (a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%media.xyzcdn.net%')
+       ORDER BY a.published_at DESC LIMIT 4`,
+      [startUtc, endUtc]
+    );
+    for (const a of mediaPods) {
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null });
+    }
+    if (mediaItems.length) {
+      sections.push({ column: '视频与播客', desc: '窗口内新视频/播客，点开即可播放收听', items: mediaItems });
+      log(`日报媒体栏: 视频 ${mediaVids.length} + 播客 ${mediaPods.length}`);
+    }
+  } catch (e) { log(`日报媒体栏失败（不阻断）: ${e.message}`); }
 
   // 主题导语
   const allItems = sections.flatMap((s) => s.items);
@@ -1293,6 +1351,32 @@ async function runMyBrief(analyzed) {
     featured: mine.slice(3, 10).map(fmt),
     rest: restBase,
   };
+  // 2026-09-14：我的早报纳入「视频与播客」（窗口内新视频+播客，免 AI 直接列；用户拍板三类早报都要可播放媒体）
+  try {
+    const mediaItems = [];
+    const mediaVids = await qAll(
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, s.name AS source_name
+       FROM videos v JOIN sources s ON s.id=v.source_id
+       WHERE v.published_at >= ? AND v.published_at < ? AND s.enabled = 1
+       ORDER BY v.published_at DESC LIMIT 6`,
+      [startUtc, endUtc]
+    );
+    for (const v of mediaVids) {
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover });
+    }
+    const mediaPods = await qAll(
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
+       FROM articles a JOIN sources s ON s.id=a.source_id
+       WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
+         AND (a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%media.xyzcdn.net%')
+       ORDER BY a.published_at DESC LIMIT 4`,
+      [startUtc, endUtc]
+    );
+    for (const a of mediaPods) {
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null });
+    }
+    if (mediaItems.length) sections.media = mediaItems;
+  } catch (e) { log(`mybrief 媒体栏失败（不阻断）: ${e.message}`); }
   // 编辑导语 + 关键词标签行
   const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch(() => null);
   const tagFreq = {};

@@ -4,8 +4,89 @@ import { toast } from '../toast';
 import { formatDateTime, imgUrl } from '../util';
 import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修
 
+// 播客详情视图（2026-09-14：播客并入视频板块后的点击落点；图片+声音播放器）
+function PodcastDetail({ articleId, onBack }) {
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    api
+      .get(`/api/articles/${articleId}`)
+      .then((d) => { if (!cancelled) setItem(d?.item || d?.article || d); })
+      .catch((e) => toast(e.message))
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
+  }, [articleId]);
+  return (
+    <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
+      <div className="px-5 h-12 flex items-center flex-none border-b t-border t-surface">
+        <button className="btn-ghost !py-1 !px-2.5 text-xs inline-flex items-center gap-1" onClick={onBack}>
+          ← 返回视频列表
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-[720px] mx-auto px-6 py-6">
+          {loading && <div className="py-10 text-center text-sm t-muted">加载中…</div>}
+          {item && (
+            <>
+              <span className="badge-green">🎧 播客</span>
+              <h1 className="mt-3 text-xl font-bold leading-snug t-text">{item.translated_title || item.title}</h1>
+              {item.translated_title && item.title !== item.translated_title && (
+                <div className="mt-1 text-[12px] t-muted">{item.title}</div>
+              )}
+              <div className="meta mt-2">
+                <SourceAvatar name={item.source_name || item.author} avatar={item.source_avatar} size={18} />
+                <span className="t-text truncate">{item.source_name || item.author || ''}</span>
+                <span className="sep">·</span>
+                <span className="flex-none">{formatDateTime(item.published_at)}</span>
+              </div>
+              {/* 图片+声音播放器 */}
+              <div className="mt-5 rounded-xl border t-border p-4 flex items-center gap-4">
+                {(item.cover || item.source_avatar) ? (
+                  <img
+                    src={imgUrl(item.cover || item.source_avatar)}
+                    alt=""
+                    className="w-20 h-20 rounded-lg object-cover flex-none"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : (
+                  <span className="w-20 h-20 rounded-lg t-accent-soft flex-none flex items-center justify-center text-3xl">🎧</span>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] t-muted mb-1.5">点击播放</div>
+                  <audio controls preload="none" src={item.audio_url} className="w-full h-10" />
+                </div>
+              </div>
+              {item.summary && (
+                <p className="mt-4 text-[13px] leading-relaxed t-muted whitespace-pre-wrap">{item.summary}</p>
+              )}
+              <div className="mt-6 border-t t-border pt-4">
+                <button
+                  className="btn-primary"
+                  onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
+                >
+                  打开原始页面 ↗
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // 视频详情页（F9）：HTML5 播放器（默认 direct 直链，可切官方 embed）+ 收藏/原平台打开
 export default function VideoDetail({ videoId, onBack, onChanged }) {
+  // 播客分流（id 'a<数字>' 前缀 = articles 表的播客单集）
+  if (typeof videoId === 'string' && /^a\d+$/.test(videoId)) {
+    return <PodcastDetail articleId={Number(videoId.slice(1))} onBack={onBack} />;
+  }
+  return <VideoDetailInner videoId={videoId} onBack={onBack} onChanged={onChanged} />;
+}
+
+function VideoDetailInner({ videoId, onBack, onChanged }) {
   const [video, setVideo] = useState(null);
   const [play, setPlay] = useState(null); // { mode, url }
   const [loading, setLoading] = useState(false);
