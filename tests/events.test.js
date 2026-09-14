@@ -37,6 +37,18 @@ test('同事件跨源聚类 + 热度 > 单篇 + 排序正确', () => {
   assert.ok(ev.items[0].published_at >= ev.items[1].published_at, '报道时间线按时间倒序');
 });
 
+test('事件带信源清单（分组·名称）与 24 桶趋势折线（2026-09-14）', () => {
+  const events = require('../server/services/events');
+  events.invalidate();
+  const ev = events.getEvents('all')[0];
+  assert.ok(Array.isArray(ev.sourceList) && ev.sourceList.length === 3, '信源清单按 source_id 去重');
+  const hotSrc = ev.sourceList.find((s) => s.name === '微博热搜');
+  assert.equal(hotSrc.group, '热榜', 'hotlist 源无分组时兜底「热榜」');
+  assert.ok(Array.isArray(ev.trend) && ev.trend.length === 24, '趋势为 24 桶');
+  assert.equal(ev.trend.reduce((a, b) => a + b, 0), 3, '趋势桶计数总和=报道数');
+  assert.ok(ev.items.every((i) => i.source_group), '报道时间线条目带 source_group');
+});
+
 test('单源多篇同主题也聚类(信源数=1 加成不生效)', () => {
   const { db } = require('../server/db');
   const now = Date.now();

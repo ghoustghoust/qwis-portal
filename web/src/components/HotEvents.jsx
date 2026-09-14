@@ -5,15 +5,16 @@ import { formatDateTime, formatHeat, relativeTime } from '../util';
 import { FlameIcon } from './icons.jsx';
 
 // 跨域事件热点榜（九期 M4）：GET /api/hot/events?domain= 列表 + GET /api/hot/events/:rank 详情
-// 领域筛选按钮组；事件行 = 排名 + 标题 + 状态标 + 信源数 + 热度 + 领域
-// 点击行 → 详情视图：大标题 + 统计行 + 报道时间线（点击标题新窗口打开 url）
+// 2026-09-14 对齐样图精修：事件卡 = 大排名号 + 状态标/标题 + 报道摘要（2 行）+ 信源胶囊（分组·名称）
+// + 右侧大热度值与真·趋势折线（24 桶报道密度，暂无可比趋势时空态）；详情含信源清单 + 报道时间线
 
-// 状态标配色：新=绿 / 爆=红 / 发酵中=黄 / 收尾=灰
+// 状态标配色：新=绿 / 爆=红 / 发酵中=黄 / 收尾=灰 / 精选=主题色
 const STATUS_STYLE = {
   新: 'var(--green)',
   爆: 'var(--red)',
   发酵中: '#b8860b',
   收尾: 'var(--muted)',
+  精选: 'var(--accent)',
 };
 
 function StatusBadge({ status }) {
@@ -29,7 +30,53 @@ function pad2(n) {
   return String(n).padStart(2, '0');
 }
 
-// 事件详情视图：统计行 + 报道时间线
+// 趋势折线（样图：∿—○ 形态）：24 桶计数 → SVG polyline + 末端圆点 + 淡色面积
+function Sparkline({ data, w = 76, h = 26 }) {
+  if (!Array.isArray(data) || data.length < 2) return null;
+  const max = Math.max(...data, 1);
+  const stepX = w / (data.length - 1);
+  const pts = data.map((v, i) => [
+    Number((i * stepX).toFixed(1)),
+    Number((h - 3 - (v / max) * (h - 7)).toFixed(1)),
+  ]);
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+  const area = `${line} L${w},${h} L0,${h} Z`;
+  const last = pts[pts.length - 1];
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden className="block">
+      <path d={area} fill="var(--accent)" opacity="0.10" />
+      <path d={line} fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={last[0]} cy={last[1]} r="2.2" fill="var(--accent)" stroke="var(--bg)" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// 信源胶囊行：「分组·名称」最多 3 个 + 「+N 源」（完整名单在详情）
+function SourceChips({ list, sourceCount }) {
+  const sources = Array.isArray(list) ? list : [];
+  if (!sources.length) return null;
+  const show = sources.slice(0, 3);
+  const rest = (sourceCount || sources.length) - show.length;
+  return (
+    <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      {show.map((s, i) => (
+        <span
+          key={`${s.group}-${s.name}-${i}`}
+          className="inline-flex items-center rounded-full px-2 py-0.5 text-[10.5px] leading-4 t-muted"
+          style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}
+          title={`${s.group} · ${s.name}`}
+        >
+          <span className="t-accent">{s.group}</span>
+          <span className="mx-0.5 opacity-60">·</span>
+          <span className="max-w-[120px] truncate">{s.name}</span>
+        </span>
+      ))}
+      {rest > 0 && <span className="text-[10.5px] t-muted tabular-nums">+{rest} 源</span>}
+    </span>
+  );
+}
+
+// 事件详情视图：统计行 + 信源清单 + 报道时间线
 function EventDetail({ ev, onBack }) {
   const items = [...(ev.items || [])].sort(
     (a, b) => (b.published_at || '').localeCompare(a.published_at || '')
@@ -41,12 +88,12 @@ function EventDetail({ ev, onBack }) {
       </button>
       <div className="card mt-4 p-5">
         <div className="flex items-center gap-2 text-[11px] t-muted">
-          <span className="tabular-nums">#{pad2(ev.rank)}</span>
+          <span className="serif text-[15px] font-bold tabular-nums t-accent">#{pad2(ev.rank)}</span>
           <span>{ev.domain}</span>
           <StatusBadge status={ev.status} />
           <span className="flex-1" />
           <span className="t-accent font-bold tabular-nums text-[13px] inline-flex items-center gap-1">
-            <FlameIcon size={14} /> {formatHeat(ev.heat)}
+            <FlameIcon size={14} /> {ev.heatFormatted || formatHeat(ev.heat)}
           </span>
         </div>
         <h2 className="mt-2 text-lg font-bold leading-snug t-text">{ev.title}</h2>
@@ -57,6 +104,12 @@ function EventDetail({ ev, onBack }) {
           <span>· 首发 {formatDateTime(ev.firstAt)}</span>
           <span>· 最新 {formatDateTime(ev.latestAt)}</span>
         </div>
+        {/* 信源清单：分组·名称 全量 */}
+        {Array.isArray(ev.sourceList) && ev.sourceList.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-dashed t-border">
+            <SourceChipsFull list={ev.sourceList} />
+          </div>
+        )}
       </div>
 
       {/* 报道时间线（时间倒序） */}
@@ -75,8 +128,10 @@ function EventDetail({ ev, onBack }) {
               />
               <div className="flex items-center gap-2 text-[11px] t-muted tabular-nums">
                 <span>{formatDateTime(it.published_at)}</span>
-                <span className="uppercase tracking-wide truncate">{it.source_name || '未知信源'}</span>
-                {it.score != null && <span className="t-accent">· {formatHeat(it.score)}</span>}
+                <span className="uppercase tracking-wide truncate">
+                  {it.source_group ? `${it.source_group} · ` : ''}{it.source_name || '未知信源'}
+                </span>
+                {it.score > 0 && <span className="t-accent">· {formatHeat(it.score)}</span>}
               </div>
               <a
                 className="mt-0.5 block text-[14px] font-medium leading-snug t-text hover:underline"
@@ -97,6 +152,25 @@ function EventDetail({ ev, onBack }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// 详情页信源全量清单（不换行截断，全量展示）
+function SourceChipsFull({ list }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {list.map((s, i) => (
+        <span
+          key={`${s.group}-${s.name}-${i}`}
+          className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] leading-4 t-muted"
+          style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}
+        >
+          <span className="t-accent">{s.group}</span>
+          <span className="mx-0.5 opacity-60">·</span>
+          <span>{s.name}</span>
+        </span>
+      ))}
     </div>
   );
 }
@@ -161,42 +235,47 @@ export default function HotEvents() {
         ))}
       </div>
 
-      {/* 事件列表（2026-09-05 视觉精修：统一 card card-lift 语言，热度数字用 stat-num 缩小版） */}
-      <div className="mt-4 space-y-2.5">
+      {/* 事件列表（2026-09-14 对齐样图：左排名号 / 中标题+摘要+信源 / 右大热度+趋势折线） */}
+      <div className="mt-4 space-y-3">
         {events.map((ev) => (
           <button
             key={ev.rank}
-            className="card card-lift w-full text-left px-4 py-3 flex items-center gap-3"
+            className="card card-lift w-full text-left p-4 flex items-start gap-4"
             onClick={() => openDetail(ev)}
           >
-            <span className="flex-none w-7 text-right text-[15px] font-bold tabular-nums t-accent">
+            <span className="serif flex-none w-8 pt-0.5 text-center text-[17px] font-bold tabular-nums t-accent">
               {pad2(ev.rank)}
             </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <StatusBadge status={ev.status} />
-                <span className="text-[14px] font-medium leading-snug t-text truncate">
-                  {ev.title}
-                </span>
+                <span className="text-[14.5px] font-bold leading-snug t-text">{ev.title}</span>
               </div>
-              {/* 报道摘要（样图：标题下摘要 2 行截断） */}
+              {/* 报道摘要（样图：标题下摘要 2 行截断，行首「报道摘要」小标） */}
               {ev.items?.[0]?.summary && (
-                <p className="mt-1 text-[12px] leading-relaxed t-muted line-clamp-2">{ev.items[0].summary}</p>
+                <p className="mt-1.5 text-[12px] leading-relaxed t-muted line-clamp-2">
+                  <span className="t-accent font-medium">报道摘要　</span>
+                  {ev.items[0].summary}
+                </p>
               )}
-              <div className="mt-1 flex items-center gap-2 text-[11px] t-muted tabular-nums">
-                <span className="t-accent">{ev.sourceCount} 个源</span>
-                <span>· {relativeTime(ev.latestAt)}</span>
-                <span>· {ev.domain}</span>
+              {/* 信源胶囊（分组·名称）+ 元信息行 */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] t-muted tabular-nums">
+                <SourceChips list={ev.sourceList} sourceCount={ev.sourceCount} />
+                <span className="flex-none">· {ev.reportCount} 篇报道</span>
+                <span className="flex-none">· {relativeTime(ev.latestAt)}更新</span>
+                <span className="flex-none">· {ev.domain}</span>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-1 flex-none">
-              <span className="stat-num !text-[15px] t-accent inline-flex items-center gap-1" title="热度值">
-                <FlameIcon size={14} /> {formatHeat(ev.heat)}
+            <div className="flex flex-col items-end gap-1.5 flex-none pt-0.5">
+              <span className="inline-flex items-baseline gap-1" title={ev.heatFormatted || `热度 ${ev.heat}`}>
+                <span className="stat-num !text-[20px] t-accent">{formatHeat(ev.heat)}</span>
+                <span className="text-[10px] t-muted">热度</span>
               </span>
-              {/* 热度条（样图趋势条近似）：占最大热度比例 */}
-              <span className="h-1 rounded-full t-surface2 w-16 overflow-hidden" aria-hidden>
-                <span className="block h-full" style={{ width: `${Math.min(100, Math.round((ev.heat / (events[0]?.heat || 1)) * 100))}%`, background: 'var(--accent)' }} />
-              </span>
+              {Array.isArray(ev.trend) && ev.trend.length >= 2 ? (
+                <Sparkline data={ev.trend} />
+              ) : (
+                <span className="text-[10px] t-muted whitespace-nowrap">暂无可比趋势</span>
+              )}
             </div>
           </button>
         ))}

@@ -6,6 +6,7 @@ import { parseTags, sourceLabel, formatHeat } from '../util.js';
 import TagPills from '../components/ui/TagPills.jsx';
 import HotDetail from '../components/HotDetail.jsx';
 import HotEvents from '../components/HotEvents.jsx';
+import { FlameIcon } from '../components/icons.jsx';
 import { useI18n } from '../i18n.jsx';
 import { SkeletonList } from '../components/Skeleton.jsx';
 
@@ -95,7 +96,13 @@ function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
         <p className="mt-1.5 text-[12.5px] leading-relaxed t-muted line-clamp-3">{it.summary}</p>
       )}
       {showReason && (
-        <p className="mt-2.5 pt-2.5 border-t border-dashed t-border text-[12px] leading-relaxed t-muted">
+        <p
+          className="mt-2.5 rounded-r-md px-3 py-2 text-[12px] leading-relaxed t-muted"
+          style={{
+            background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
+            borderLeft: '3px solid var(--accent)',
+          }}
+        >
           <span className="t-accent font-medium">{t('hot.reason')}</span>
           {it.reason}
         </p>
@@ -166,6 +173,17 @@ export default function HotPage() {
         if (Array.isArray(d?.categories) && d.categories.length) setCategories(d.categories);
       })
       .catch(() => {});
+  }, []);
+
+  // T5-14 H-D 接线（2026-09-14 修复：此前 allGroups 从未拉取，分类行只剩「全部」）
+  useEffect(() => {
+    api
+      .get('/api/groups')
+      .then((d) => {
+        const list = Array.isArray(d) ? d : d?.groups || d?.items || [];
+        setAllGroups(list.filter((g) => g && g.id != null && g.name && (g.enabled_count == null || g.enabled_count > 0)));
+      })
+      .catch(() => setAllGroups([]));
   }, []);
 
   // 全部动态 Tab：来源聚合计数（接口未就绪时静默降级为仅「全部」）
@@ -298,97 +316,111 @@ export default function HotPage() {
     <div className="flex h-screen t-bg t-text overflow-hidden">
       <IconRail />
       <div className="flex-1 flex flex-col min-w-0">
-        {/* 页头：标题 + Tab（2026-09-05 视觉精修：Tab 收敛为 pill 样式） */}
+        {/* 页头：标题 + Tab（2026-09-14：与内容同栏宽居中，视觉对齐） */}
         <header className="flex-none border-b t-border t-surface px-6 pt-4 pb-3">
-          <h1 className="serif text-lg font-bold t-text">{t('hot.title')}</h1>
-          <div className="mt-3 flex items-center gap-1.5">
-            {[
-              { id: 'featured', label: t('hot.featured') },
-              { id: 'all', label: t('hot.all') },
-              { id: 'events', label: t('hot.events') },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setTab(item.id)}
-                className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === item.id ? 'on' : ''}`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <div className="flex-1" />
-            {tab === 'all' && (
-              <select
-                className="input !w-44"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                title={t('hot.sourceFilter')}
-              >
-                <option value="">{t('hot.sourceAll')}</option>
-                {sources.map((s) => (
-                  <option key={s.name} value={s.name}>
-                    {s.name}
-                    {s.count != null ? `（${s.count}）` : ''}
-                  </option>
-                ))}
-              </select>
-            )}
-            {tab !== 'events' && (
-              <input
-                className="input !w-56"
-                placeholder={t('hot.searchPlaceholder')}
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-            )}
+          <div className="max-w-[860px] mx-auto">
+            <div className="flex items-baseline gap-3">
+              <h1 className="serif text-lg font-bold t-text">{t('hot.title')}</h1>
+              <span className="text-[11px] t-muted">全源聚合 · 只呈现 AI 相关动态</span>
+            </div>
+            <div className="mt-3 flex items-center gap-1.5">
+              {[
+                { id: 'featured', label: t('hot.featured') },
+                { id: 'all', label: t('hot.all') },
+                { id: 'events', label: t('hot.events') },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setTab(item.id)}
+                  className={`pill !text-xs !px-3.5 !py-1.5 cursor-pointer ${tab === item.id ? 'on' : ''}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <div className="flex-1" />
+              {tab === 'all' && (
+                <select
+                  className="input !w-44"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  title={t('hot.sourceFilter')}
+                >
+                  <option value="">{t('hot.sourceAll')}</option>
+                  {sources.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.name}
+                      {s.count != null ? `（${s.count}）` : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {tab !== 'events' && (
+                <input
+                  className="input !w-56"
+                  placeholder={t('hot.searchPlaceholder')}
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                />
+              )}
+            </div>
           </div>
         </header>
 
-        {/* 当前热点 Top5（T5-1 样图：页首排名卡，点击进完整榜单） */}
+        {/* 当前热点 Top5（2026-09-14：对齐样图——名次 + 标题 + 右侧热度值；Top3 名次主题色） */}
         {tab !== 'events' && topEvents.length > 0 && (
           <div className="flex-none t-surface border-b t-border px-6 py-3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-medium t-text">当前热点</span>
-              <span className="flex-1" />
-              <button className="text-xs t-muted hover:t-text hover:underline" onClick={() => setTab('events')}>
-                完整榜单 →
-              </button>
-            </div>
-            <div className="space-y-1">
-              {topEvents.map((ev, i) => (
-                <button
-                  key={ev.rank ?? i}
-                  className="w-full text-left flex items-center gap-2.5 text-[13px] px-2 py-1.5 rounded hover:t-surface2"
-                  onClick={() => setTab('events')}
-                >
-                  <span className="flex-none w-5 text-right font-bold tabular-nums t-accent">{i + 1}</span>
-                  <span className="flex-1 min-w-0 truncate t-text">{ev.title}</span>
-                  {(ev.count ?? ev.sources) != null && (
-                    <span className="flex-none text-[11px] t-muted tabular-nums">{ev.count ?? ev.sources} 源</span>
-                  )}
+            <div className="max-w-[860px] mx-auto">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="t-accent inline-flex items-center"><FlameIcon size={14} /></span>
+                <span className="text-[13px] font-semibold t-text">当前热点</span>
+                <span className="flex-1" />
+                <button className="text-xs t-muted hover:t-text hover:underline" onClick={() => setTab('events')}>
+                  完整榜单 →
                 </button>
-              ))}
+              </div>
+              <div>
+                {topEvents.map((ev, i) => (
+                  <button
+                    key={ev.rank ?? i}
+                    className="w-full text-left flex items-center gap-3 text-[13px] px-2 py-[7px] rounded-md transition-colors hover:t-surface2"
+                    onClick={() => setTab('events')}
+                  >
+                    <span
+                      className={`flex-none w-5 text-right font-bold tabular-nums ${i < 3 ? 't-accent' : 't-muted'}`}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="flex-1 min-w-0 truncate t-text">{ev.title}</span>
+                    <span className="flex-none text-[11px] t-muted tabular-nums">
+                      {ev.heatFormatted || formatHeat(ev.heat)} {t('hot.heat')}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* T5-14 H-D：分类对齐阅读器——pills 读分组（groups），过滤 group_id；featured/all 常驻 */}
+        {/* T5-14 H-D：分类对齐阅读器分组——pills 读分组（groups），过滤 group_id；featured/all 常驻 */}
         {tab !== 'events' && (
-          <div className="flex-none t-surface border-b t-border px-6 py-2.5 flex gap-1.5 overflow-x-auto">
-            <button
-              onClick={() => setCategory('')}
-              className={`pill cursor-pointer flex-none ${category === '' ? 'on' : ''}`}
-            >
-              {t('sidebar.all')}
-            </button>
-            {(allGroups || []).map((g) => (
+          <div className="flex-none t-surface border-b t-border px-6 py-2.5">
+            <div className="max-w-[860px] mx-auto flex gap-1.5 overflow-x-auto">
               <button
-                key={g.id}
-                onClick={() => setCategory(String(g.id))}
-                className={`pill cursor-pointer flex-none ${category === String(g.id) ? 'on' : ''}`}
+                onClick={() => setCategory('')}
+                className={`pill cursor-pointer flex-none ${category === '' ? 'on' : ''}`}
               >
-                {g.name}
+                {t('sidebar.all')}
               </button>
-            ))}
+              {(allGroups || []).map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => setCategory(String(g.id))}
+                  className={`pill cursor-pointer flex-none ${category === String(g.id) ? 'on' : ''}`}
+                >
+                  {g.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

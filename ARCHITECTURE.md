@@ -123,7 +123,7 @@ server/services/
 | 域 | 文件 | 坑编号 | 一句话核心 |
 |---|---|---|---|
 | 采集与信源 | `docs/pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 | 三份实现同步改；浏览器 UA；反爬熔断是常态；大查询禁携全文 |
-| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 | 游标同型；无索引大查询云端必炸；focus 双语义 |
+| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 | 游标同型；无索引大查询云端必炸；focus 双语义；超长 OR 链必须平衡二叉树（表达式树深度上限 100） |
 | AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #A1 | settings 覆盖 env 先查残留；推理模型输出三层清洗 |
 | 前端 | `docs/pitfalls/frontend.md` | #1 #2 #16 #F1 | 防盗链；hook 必须在早退 return 前 |
 | 部署与运维 | `docs/pitfalls/deployment.md` | #5 #20 #21 #22 #D1 | 密钥三处同步；vercel.json 无 crons；push 后验远端 SHA |

@@ -60,7 +60,7 @@ const DICT = {
   // 热点榜（HotPage）
   'hot.title':             { zh: '🔥 热点榜',          en: '🔥 Trending' },
   'hot.featured':          { zh: 'AI 精选',            en: 'AI Picks' },
-  'hot.all':               { zh: '实时流',             en: 'Live Stream' },
+  'hot.all':               { zh: 'AI 信息实时流',      en: 'AI Live Feed' },
   'hot.events':            { zh: '热搜事件',           en: 'Hot Events' },
   'hot.sourceAll':         { zh: '来源：全部',         en: 'Source: All' },
   'hot.sourceFilter':      { zh: '按来源筛选',         en: 'Filter by source' },

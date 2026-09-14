@@ -85,12 +85,35 @@ function aggregate() {
     heat *= Math.pow(1.5, c.sourceIds.size - 1); // 信源多样性加成
     // 标题取簇内最新条目(信息最新)
     const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
+    // 信源清单（2026-09-14：事件卡展示「分组·信源名」，如 公众号·数字生命卡兹克）
+    const srcSeen = new Map();
+    for (const i of c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))) {
+      if (srcSeen.has(i.source_id)) continue;
+      srcSeen.set(i.source_id, {
+        name: i.source_name || '未知信源',
+        group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
+      });
+    }
+    // 热度趋势折线：firstAt→latestAt（跨度不足 6h 按 6h 计）24 桶报道计数；单时刻 → null
+    let trend = null;
+    if (times.length >= 2) {
+      const span = Math.max(latestAt - firstAt, 6 * 3600e3);
+      const t0 = latestAt - span;
+      const buckets = new Array(24).fill(0);
+      for (const t of times) {
+        const idx = Math.min(23, Math.max(0, Math.floor(((t - t0) / span) * 24)));
+        buckets[idx]++;
+      }
+      trend = buckets;
+    }
     const ev = {
       title: rep.title,
       domain,
       heat: Math.round(heat * 10) / 10,
       sourceCount: c.sourceIds.size,
       reportCount: c.items.length,
+      sourceList: [...srcSeen.values()],
+      trend,
       firstAt: new Date(firstAt).toISOString(),
       latestAt: new Date(latestAt).toISOString(),
       items: c.items
@@ -100,6 +123,7 @@ function aggregate() {
           id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200),
           cover: i.cover, published_at: i.published_at, score: i.score,
           source_name: i.source_name, source_type: i.source_type,
+          source_group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
         })),
     };
     ev.status = statusOf({ firstAt, latestAt, sources: [...c.sourceIds] }, nowMs);

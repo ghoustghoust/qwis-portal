@@ -243,8 +243,50 @@ async function handleVideos(req) {
   return jsonOk({ items: rows });
 }
 
+// ─── AI 相关性词表（2026-09-14：实时流=AI 信息实时流，从全源只挑 AI 相关内容） ───
+// 口径：AI 主题分组源全收；其余源按标题命中词表。
+// LIKE（大小写不敏感）只放无歧义长词；短缩写走 GLOB（大小写敏感）防误伤——RAG 不匹配 garage；
+// 裸「AI」走词边界 GLOB，防匹配 SAID/CHAIR/EMAIL 等。
+const AI_GROUP_COND = "(UPPER(COALESCE(g.name,'')) LIKE '%AI%' OR g.name LIKE '%人工智能%')";
+const AI_KW_LIKE = [
+  // 中文主题词
+  '人工智能', '大模型', '大语言模型', '智能体', '具身智能', '机器学习', '深度学习', '神经网络',
+  '多模态', '文生图', '文生视频', '图生视频', '提示词', '推理模型', '开源模型', '预训练', '扩散模型',
+  '世界模型', '强化学习', '数字人', '蒸馏', '算力',
+  // AI+场景复合词（AI 开头的中文复合词无歧义）
+  'AI编程', 'AI 编程', 'AI应用', 'AI 应用', 'AI助手', 'AI 助手', 'AI搜索', 'AI视频', 'AI 视频',
+  'AI绘画', 'AI生成', 'AI智能', 'AI时代', 'AI创业', 'AI产品', 'AI公司', 'AI芯片', 'AI眼镜',
+  'AI玩具', 'AI短剧', 'AI音乐', 'AI医疗', 'AI教育', 'AI安全', 'AI治理', 'AI落地', 'AI爆发',
+  // 品牌/产品/人物（Distinctive，子串误伤≈0）
+  'OpenAI', 'ChatGPT', 'Claude', 'Anthropic', 'Gemini', 'DeepSeek', 'Qwen', '通义', 'Llama',
+  'Mistral', 'Copilot', 'Midjourney', 'Suno', 'Runway', 'Pika', 'Kling', '可灵', '即梦', '豆包',
+  '文心', '混元', '智谱', 'Kimi', '月之暗面', 'Grok', 'Perplexity', 'Hugging Face', 'HuggingFace',
+  'Codex', 'Cursor', 'Manus', 'Windsurf', '商汤', '讯飞', 'Ollama', 'LangChain', 'Transformer',
+  'ComfyUI', 'SGLang', 'Veo', 'Imagen', 'ElevenLabs', 'HeyGen', '阶跃星辰', 'MiniMax', '面壁智能',
+  '百川智能', '零一万物', 'Cohere', 'Altman', '黄仁勋', 'Karpathy', '李飞飞', 'Hassabis',
+  'Sutskever', '吴恩达', '何恺明', 'Jim Fan', '杨植麟',
+];
+const AI_KW_GLOB = ['GPT', 'LLM', 'RAG', 'MCP', 'AGI', 'AIGC', 'VLM', 'LoRA', 'RLHF', 'MoE', 'Sora', 'vLLM'];
+// 裸 AI 边界形态：句首/句尾/两侧空白/常见中英标点
+const AI_BARE_GLOB = ['AI *', '* AI', '* AI *', '*AI:*', '*AI：*', '*AI、*', '*AI·*', '*AI-*', '*-AI *', '*「AI*', '*AI」*'];
+// SQLite 表达式树深度上限 100：上百个 OR 连成左深链会爆（SQLITE_UNKNOWN: Expression tree is too large）
+// → 平衡二叉树拼接，深度 ≈ log2(N)+2
+function orTree(parts) {
+  if (!parts.length) return '1=0';
+  if (parts.length === 1) return parts[0];
+  const mid = parts.length >> 1;
+  return `(${orTree(parts.slice(0, mid))} OR ${orTree(parts.slice(mid))})`;
+}
+function aiTitleConds(field, args) {
+  const parts = [];
+  for (const kw of AI_KW_LIKE) { parts.push(`${field} LIKE ?`); args.push(`%${kw}%`); }
+  for (const kw of AI_KW_GLOB) { parts.push(`${field} GLOB ?`); args.push(`*${kw}*`); }
+  for (const p of AI_BARE_GLOB) { parts.push(`${field} GLOB ?`); args.push(p); }
+  return orTree(parts);
+}
+
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
-// tab: all(全部动态=自有源+热榜全量) | featured(精选=六维≥70 + 热榜高热度) | hotlist(纯热搜子视图)
+// tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(精选=六维≥60 + 热榜高热度) | hotlist(纯热搜子视图)
 // 分类=tags 子串匹配；q/source/cursor 沿用；时间窗默认 7 天（days 可调，上限 30）
 async function handleHot(req) {
   const q = req.query;
@@ -264,8 +306,12 @@ async function handleHot(req) {
     conds.push("((s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60) OR (s.type='hotlist' AND CAST(a.score AS REAL) > 10000))");
   } else if (tab === 'hotlist') {
     conds.push("s.type='hotlist'");
+  } else if (tab === 'all') {
+    // AI 信息实时流（2026-09-14）：从全源只挑 AI 相关内容——AI 主题分组源全收，其余源按标题命中 AI 词表
+    const kwArgs = [];
+    conds.push(`(${AI_GROUP_COND} OR ${aiTitleConds('a.title', kwArgs)})`);
+    args.push(...kwArgs);
   }
-  // tab=all：全部源全部内容，无类型限制
 
   // 真实分类过滤（T5-1）：分类映射到 tags 关键词组（实际词表为 模型发布/论文/研究/大佬观点 等复合词）
   const CATEGORY_KWS = {
@@ -320,6 +366,7 @@ async function handleHot(req) {
   const rows = await qAll(
     `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score, a.reason, a.published_at, a.category, a.later, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
+     LEFT JOIN groups g ON g.id = s.group_id
      ${where}${cursorCond}
      ORDER BY ${orderBy} LIMIT ?`,
     [...args, ...cursorArgs, PAGE_SIZE + 1]
@@ -480,6 +527,28 @@ async function handleHotEvents(req) {
 
       const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
       for (const i of c.items) clusteredIds.add(i.id);
+      // 信源清单（2026-09-14：事件卡展示「分组·信源名」，如 公众号·数字生命卡兹克 / 新闻媒体·澎湃新闻）
+      const srcSeen = new Map();
+      for (const i of c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))) {
+        if (srcSeen.has(i.source_id)) continue;
+        srcSeen.set(i.source_id, {
+          name: i.source_name || '未知信源',
+          group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
+        });
+      }
+      // 热度趋势折线：firstAt→latestAt（跨度不足 6h 按 6h 计）24 桶报道计数；单篇/单时刻 → null（前端显示暂无可比趋势）
+      let trend = null;
+      const trendTimes = c.items.map(i => Date.parse(String(i.published_at || ''))).filter(t => Number.isFinite(t) && t > 0);
+      if (trendTimes.length >= 2) {
+        const span = Math.max(latestAt - firstAt, 6 * 3600e3);
+        const t0 = latestAt - span;
+        const buckets = new Array(24).fill(0);
+        for (const t of trendTimes) {
+          const idx = Math.min(23, Math.max(0, Math.floor(((t - t0) / span) * 24)));
+          buckets[idx]++;
+        }
+        trend = buckets;
+      }
       events.push({
         title: rep.title,
         _scores: c.items.filter(i => i.source_type !== 'hotlist').map(i => Number(i.score) || 0),
@@ -488,6 +557,8 @@ async function handleHotEvents(req) {
         heatFormatted: formatHeat(Math.round(heat * 10) / 10),
         sourceCount: c.sourceIds.size,
         reportCount: c.items.length,
+        sourceList: [...srcSeen.values()],
+        trend,
         firstAt: new Date(firstAt).toISOString(),
         latestAt: new Date(latestAt).toISOString(),
         status,
@@ -500,6 +571,7 @@ async function handleHotEvents(req) {
             cover: i.cover, published_at: i.published_at,
             score: i.score, scoreFormatted: formatHeat(i.score),
             source_name: i.source_name, source_type: i.source_type,
+            source_group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
           })),
       });
     }
@@ -514,6 +586,7 @@ async function handleHotEvents(req) {
       .slice(0, 10);
     for (const i of solo) {
       const sc = Number(i.score) || 0;
+      const soloGroup = i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它');
       events.push({
         title: i.title,
         _scores: [sc],
@@ -522,10 +595,12 @@ async function handleHotEvents(req) {
         heatFormatted: `AI 评分 ${Math.round(sc)}/100`,
         sourceCount: 1,
         reportCount: 1,
+        sourceList: [{ name: i.source_name || '未知信源', group: soloGroup }],
+        trend: null, // 单篇无可比趋势
         firstAt: i.published_at,
         latestAt: i.published_at,
         status: '精选',
-        items: [{ id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type }],
+        items: [{ id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type, source_group: soloGroup }],
       });
     }
     if (solo.length) console.log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);

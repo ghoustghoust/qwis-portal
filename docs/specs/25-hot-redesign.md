@@ -54,3 +54,14 @@
 | 二-4 UI 对齐样图 | 整体布局未完全按样图重排 | 按样图精修：Top5 卡（排名+热度+完整榜单→）、时间线卡（精选徽章/评分右置/推荐理由块）、搜索框样式、日期分组折叠样式——全部对齐 `archive/样图/热点榜/` 三图 |
 
 > 一阶段已落地：自有源+热榜混合时间流（7 天）/ 分类关键词过滤 / 搜索 / 精选=AI 评分内容流（score≥60）/ Top5 卡雏形 / CAST 防御（score 文本 'null' 数据清洗 19780 行）。
+
+## 三阶段（2026-09-14 用户验收新增，当日已落地）
+
+| # | 需求 | 落地 |
+|---|---|---|
+| 三-1 实时流更名+AI 过滤 | 「实时流」→「**AI 信息实时流**」（i18n `hot.all`）；tab=all 只出 AI 相关内容：AI 主题分组源全收（分组名含 AI/人工智能）+ 其余源标题命中 AI 词表（`api/[...slug].js` `AI_KW_LIKE/GLOB/AI_BARE_GLOB`；短缩写走 GLOB 防 RAG→garage 误伤；裸 AI 走词边界 GLOB 防 SAID/CHAIR 误伤；**OR 链必须平衡二叉树拼接——SQLite 表达式树深度上限 100，实测超长 OR 链报 Expression tree is too large**） |
+| 三-2 事件信源完整名 | 事件卡/详情信源展示「分组·名称」（如 公众号·数字生命卡兹克 / 新闻媒体·澎湃新闻）：handleHotEvents 新增 `sourceList`（按 source_id 去重，hotlist 无分组兜底「热榜」）+ 条目级 `source_group` |
+| 三-3 趋势折线 | 事件卡右侧热度条 → 真·折线 sparkline：24 桶报道密度（firstAt→latestAt，跨度不足 6h 按 6h），单篇/单时刻事件 trend=null 前端显示「暂无可比趋势」（对齐样图） |
+| 三-4 排版精修 | 页头/Top5/分类行/内容统一 860px 居中栏；Top5 名次 Top3 主题色 + 右侧热度值；推荐理由改为左侧色条引用块；事件卡三栏（排名号/标题摘要信源/大热度+折线） |
+| 三-5 分类行接线修复 | T5-14 H-D 的 allGroups 此前从未拉取（分类行只剩「全部」）——已接 GET /api/groups |
+| 三-6 翻译板块优先级 | runner 自动翻译出队顺序：热点榜精选（同 /api/hot featured 口径 SQL）> 我的早报（mybrief.latest 报告 id）> 周报（weekly.latest 报告 id）> 每日早报（daily_reports 最新一期 id）> 阅读器兜底（P7，同优先级内新到旧）；手动入队仍最优先 |

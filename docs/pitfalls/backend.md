@@ -35,3 +35,9 @@
 - 症状：阅读器 30 条后滑不动；热点榜翻页恒空。
 - 根因：`published_at` 存 ISO 文本，游标发 epoch 秒数——SQLite TEXT 与数字串比较按类型序恒假，第二页恒 0 行。
 - 规则：游标一律发**排序键的原生列值**（ISO 文本）；排序键为数值表达式（smart）时绑定 `Number(cursorVal)`。云端 handleArticles/handleHot 与本地 server/routes/articles.js 三处已同步；新列表接口必守。
+
+### #31 SQLite 表达式树深度上限 100，超长 OR 链必炸（2026-09-14）
+- 症状：实时流 AI 词表过滤（约 110 个 `LIKE/GLOB` 用 OR 连成链）在 Turso 报 `SQLITE_UNKNOWN: Expression tree is too large (maximum depth 100)`，`/api/hot?tab=all` 恒 500。
+- 根因：扁平 `a OR b OR c …` 是左深树，深度=条件数，过 100 即拒。
+- 规则：动态拼 OR 条件一律用**平衡二叉树**拼接（`orTree()`，深度 ≈ log2N）；本地 better-sqlite3 同样受限，别以为只有云端炸。
+
