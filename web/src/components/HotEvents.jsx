@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, qs } from '../api';
 import { toast } from '../toast';
-import { formatDateTime, formatHeat } from '../util';
+import { formatDateTime, formatHeat, relativeTime } from '../util';
 import { FlameIcon } from './icons.jsx';
 
 // 跨域事件热点榜（九期 M4）：GET /api/hot/events?domain= 列表 + GET /api/hot/events/:rank 详情
@@ -179,20 +179,25 @@ export default function HotEvents() {
                   {ev.title}
                 </span>
               </div>
+              {/* 报道摘要（样图：标题下摘要 2 行截断） */}
+              {ev.items?.[0]?.summary && (
+                <p className="mt-1 text-[12px] leading-relaxed t-muted line-clamp-2">{ev.items[0].summary}</p>
+              )}
               <div className="mt-1 flex items-center gap-2 text-[11px] t-muted tabular-nums">
-                <span>
-                  {ev.sourceCount} 源 · {ev.reportCount} 篇
-                </span>
+                <span className="t-accent">{ev.sourceCount} 个源</span>
+                <span>· {relativeTime(ev.latestAt)}</span>
                 <span>· {ev.domain}</span>
-                <span>· {formatDateTime(ev.latestAt)}</span>
               </div>
             </div>
-            <span
-              className="stat-num flex-none !text-[15px] t-accent inline-flex items-center gap-1"
-              title="热度值"
-            >
-              <FlameIcon size={14} /> {formatHeat(ev.heat)}
-            </span>
+            <div className="flex flex-col items-end gap-1 flex-none">
+              <span className="stat-num !text-[15px] t-accent inline-flex items-center gap-1" title="热度值">
+                <FlameIcon size={14} /> {formatHeat(ev.heat)}
+              </span>
+              {/* 热度条（样图趋势条近似）：占最大热度比例 */}
+              <span className="h-1 rounded-full t-surface2 w-16 overflow-hidden" aria-hidden>
+                <span className="block h-full" style={{ width: `${Math.min(100, Math.round((ev.heat / (events[0]?.heat || 1)) * 100))}%`, background: 'var(--accent)' }} />
+              </span>
+            </div>
           </button>
         ))}
       </div>
