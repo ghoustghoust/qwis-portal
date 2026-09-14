@@ -31,9 +31,11 @@
 | 保存视图 / 分组管理 / 拖拽移动 | ✅ | ✅ 2026-09-12 | 13+14 两项完成 |
 | 单源手动刷新 | ✅ | ❌ 404 | 云端替代：`POST /api/rss/refresh`（标记到期，runner ≤15min 补抓） |
 | 视频列表 | ✅ | ✅ | |
-| 视频详情/收藏/播放直链解析 | ✅ | ❌ 404 | 播放依赖 B站 Cookie+wbi，架构上只能本地 |
+| 视频详情/收藏/播放 | ✅ | ✅ 2026-09-14 | 云端补齐 `videos/:id`、`/play`（YouTube/B站官方 embed）、`/favorite`；直链解析仍本地专属（B站 Cookie+wbi） |
 | 热榜/事件榜（全局时间序） | ✅ | ✅ | 2026-09-11 修复同源成块；2026-09-14：「实时流」更名「AI 信息实时流」并只出 AI 相关内容；精选=自有源六维≥60 且 AI 相关（热榜源不入精选）；事件卡带「分组·信源名」胶囊 + 24 桶趋势折线 + 译文标题优先 + 显示热度严格降序；分类 pills 读 /api/hot/groups（去重、只含有内容的组）；AI 词表共享模块 `lib/ai-relevance.js`；事件榜 runner 预聚合写 settings['hot.eventsCache'] 云端直读（聚合唯一实现 `lib/hot-events.js`，内联 504 治理） |
 | 热榜英文原文抓取 `/api/hot/original` | ✅ | ❌ 404 | 依赖 jsdom+Readability，可移植（Pro 时长更稳） |
+| 播客音频播放 | ✅ | ✅ 2026-09-14 | 采集历史把 enclosure 音频落进 cover；读层 `lib/media.js` 归位 audio_url，列表 🎧 + 阅读器/日报弹窗播放器（图+声音） |
+| 日报中英对照 | — | ✅ 2026-09-14 | 读层实时回填译文标题 + original_title 对照；弹窗修「未知来源」（字段名 source↔source_name）与「打开原文」url 兜底 |
 
 ### 1.2 每日情报（/daily/）
 
