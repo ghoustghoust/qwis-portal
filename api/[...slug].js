@@ -174,6 +174,8 @@ async function handleArticles(req) {
   )).map((r) => {
     const m = mapAudioFields(r); // 播客音频识别（cover 里的 enclosure 音频 → audio_url）
     if (m.translated_title) m.translated_title = cleanTranslatedTitle(m.translated_title);
+    if (m.cover === 'null') m.cover = null;
+    if (m.source_avatar === 'null') m.source_avatar = null;
     return m;
   });
 
@@ -233,6 +235,9 @@ async function handleArticleById(req, id) {
   if (item.translated_title) item.translated_title = cleanTranslatedTitle(item.translated_title);
   return jsonOk({ item });
 }
+
+// libsql 空值可能回字符串 'null'（P1-5 同族）——展示层图片字段统一归一，否则渲染 src="null" 破图
+const cleanNull = (v) => (v && v !== 'null' ? v : null);
 
 // GET /api/videos — 视频+播客列表（2026-09-14 v2）
 // 修：①此前无游标，永远只有首屏 30 条（用户：「源不少但未能全部展现」）
@@ -296,7 +301,12 @@ async function handleVideos(req) {
     nextCursor = `${last.sort_key || ''}|${last.kind}|${last.id}`;
   }
   // 播客条目 id 加 'a' 前缀防与 videos 主键混淆（前端按此前缀路由到音频详情）
-  const items = rows.map((r) => (r.kind === 'podcast' ? { ...r, id: `a${r.id}`, cover: r.source_avatar || null } : r));
+  const items = rows.map((r) => {
+    const base = { ...r, cover: cleanNull(r.cover), source_avatar: cleanNull(r.source_avatar) };
+    return r.kind === 'podcast'
+      ? { ...base, id: `a${r.id}`, cover: base.source_avatar || null, audio_url: cleanNull(r.audio_url) }
+      : base;
+  });
   return jsonOk({ items, nextCursor });
 }
 
@@ -466,6 +476,7 @@ async function handleHot(req) {
     const { content_fallback, zh_digest, ...rest } = r;
     return mapAudioFields({
       ...rest,
+      cover: cleanNull(rest.cover),
       title: cleanTranslatedTitle(r.translated_title) || r.title,
       original_title: r.translated_title ? r.title : undefined,
       summary: sum.slice(0, 300),
