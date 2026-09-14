@@ -422,7 +422,7 @@ async function handleHotEvents(req) {
        JOIN sources s ON s.id = a.source_id AND s.enabled = 1
        LEFT JOIN groups g ON g.id = s.group_id
        ORDER BY a.published_at DESC
-       LIMIT 2000`, // T5-14：全源采样（每源≤10，不再 500 条压头部）
+       LIMIT 3000`, // T5-14：全源采样（每源≤10，不再 500 条压头部）
       [cutoff]
     );
     const items = rows.filter(r => (r.title || '').trim().length >= 6);
@@ -528,7 +528,7 @@ async function handleHotEvents(req) {
         items: [{ id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200), cover: i.cover, published_at: i.published_at, score: i.score, scoreFormatted: `${Math.round(sc)}/100`, source_name: i.source_name, source_type: i.source_type }],
       });
     }
-    if (solo.length) log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);
+    if (solo.length) console.log(`热搜事件: 并入自有源高分单条 ${solo.length} 条`);
     events.sort((a, b) => (selfMax(b) * 50 + b.heat) - (selfMax(a) * 50 + a.heat));
     // 添加 rank
     events.forEach((ev, idx) => { ev.rank = idx + 1; });
