@@ -14,7 +14,7 @@ after(cleanup);
 function mkItem(over) {
   return {
     kind: 'article', ref_id: 1, source_id: 1, title: '', source_name: '', url: '',
-    published_at: '2026-08-15T08:00:00.000Z', focus: false, aggregator: false, text: '', ...over,
+    published_at: '2026-08-15T08:00:00.000Z', spotlight: false, aggregator: false, text: '', ...over,
   };
 }
 
@@ -110,7 +110,7 @@ test('generate: 同主题跨源合并且 related 落库；同源同栏限流 3 �
   const now = Date.now();
   const iso = (h) => new Date(now - h * 3600e3).toISOString();
   const insSource = db.prepare(
-    "INSERT INTO sources(type, name, url, focus, enabled, status, extra, created_at) VALUES(?,?,?,0,1,'ok',?,?)"
+    "INSERT INTO sources(type, name, url, spotlight, enabled, status, extra, created_at) VALUES(?,?,?,0,1,'ok',?,?)"
   );
   const aggSrc = insSource.run('rss', 'AIHOT 热榜', 'https://aihot.example.com/feed', JSON.stringify({ aggregator: 1 }), iso(0)).lastInsertRowid;
   const orgSrc = insSource.run('wechat', '某官博', 'https://rss.example.com/org', '{}', iso(0)).lastInsertRowid;

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, qs } from '../api';
 import { toast } from '../toast';
 import {
-  DocIcon, HeartIcon, ClockIcon, PlayIcon, StarIcon,
+  HeartIcon, ClockIcon, PlayIcon, StarIcon, SunIcon, SearchIcon,
 } from './icons.jsx';
 import SidebarGroups from './SidebarGroups.jsx';
 import { useI18n } from '../i18n.jsx';
@@ -69,11 +69,13 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
 
   const unreadOf = (s) => s.unread_count ?? s.unread ?? s.video_count ?? s.count ?? 0;
   const derivedAll = sources.reduce((n, s) => n + (s.unread ?? 0), 0);
-  const navCount = (tab) => (tab === 'all' ? derivedAll : counts?.[tab]);
+  // 27-reader-today：今日计数走后端 counts.today（近 24h）；「检索」显示近 3 天未读总和（口径收敛后不再是焦虑数字）
+  const navCount = (tab) => (tab === 'today' ? counts?.today : tab === 'all' ? derivedAll : counts?.[tab]);
 
   const navItems = kind === 'article'
     ? [
-        { tab: 'all', Icon: DocIcon, label: t('sidebar.all') },
+        { tab: 'today', Icon: SunIcon, label: t('sidebar.today') },
+        { tab: 'all', Icon: SearchIcon, label: t('sidebar.all') },
         { tab: 'later', Icon: HeartIcon, label: t('sidebar.later') },
         { tab: 'history', Icon: ClockIcon, label: t('sidebar.history') },
       ]

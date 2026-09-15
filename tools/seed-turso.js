@@ -11,6 +11,10 @@ const cdb = require('../server/cloud/db'); // 云端(TURSO_* env)
 
 async function main() {
   await cdb.ensureSchema();
+  // 27b：cloud/db.js 为冻结旧 schema（无四轴列），灌库前幂等补列
+  for (const alter of require('../lib/source-axes').AXES_ALTERS) {
+    try { await cdb.dbRun(alter); } catch { /* 列已存在 */ }
+  }
   // groups
   const groups = db.prepare('SELECT * FROM groups').all();
   for (const g of groups) {
@@ -19,15 +23,15 @@ async function main() {
       g.id, g.kind, g.name, g.sort
     );
   }
-  // sources
+  // sources（27b：四轴列一并灌入；focus 已退役但保留同步以兼容旧副本）
   const sources = db.prepare('SELECT * FROM sources').all();
   let n = 0;
   for (const s of sources) {
     await cdb.dbRun(
-      `INSERT INTO sources(id,type,name,url,avatar,uid,group_id,focus,enabled,status,last_fetched_at,next_fetch_at,extra,created_at)
-       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-       ON CONFLICT(id) DO UPDATE SET name=excluded.name, group_id=excluded.group_id, focus=excluded.focus, enabled=excluded.enabled, extra=excluded.extra`,
-      s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.focus, s.enabled, s.status,
+      `INSERT INTO sources(id,type,name,url,avatar,uid,group_id,focus,spotlight,muted,reader_visible,enabled,status,last_fetched_at,next_fetch_at,extra,created_at)
+       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       ON CONFLICT(id) DO UPDATE SET name=excluded.name, group_id=excluded.group_id, spotlight=excluded.spotlight, muted=excluded.muted, reader_visible=excluded.reader_visible, enabled=excluded.enabled, extra=excluded.extra`,
+      s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.focus ?? 0, s.spotlight ?? 0, s.muted ?? 0, s.reader_visible ?? 1, s.enabled, s.status,
       s.last_fetched_at, s.next_fetch_at, s.extra, s.created_at
     );
     n++;

@@ -178,7 +178,7 @@ export default function BriefCenterTab() {
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs t-muted">订阅源在「源库」标记 ☆ 特别关注（当前订阅集即我的早报内容范围）；探索位按 MMR 多样性选源（specs/23 L6）；行为画像与 Domain 篇数配额在 T4-2 后提供。</p>
+        <p className="mt-2 text-xs t-muted">订阅源在「源库」组合视图/批量条中加入订阅（27b 订阅轴，与重点轴独立）；探索位按 MMR 多样性选源（specs/23 L6）；行为画像与 Domain 篇数配额见下方区块。</p>
       </section>
 
       {/* 行为画像 + Domain 篇数配额（T3-1 R5） */}

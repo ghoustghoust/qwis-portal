@@ -56,7 +56,8 @@ export function IconRail() {
   }, []);
 
   return (
-    <nav className="flex flex-col items-center w-12 flex-none border-r t-border t-surface py-3 gap-1.5">
+    // T5-8/spec30（2026-09-15）：图标下方常驻文字标签——纯图标导航用户难辨功能
+    <nav className="flex flex-col items-center w-16 flex-none border-r t-border t-surface py-3 gap-1">
       <div
         className="logo-radar w-8 h-8 mb-2 t-accent flex items-center justify-center rounded-lg transition-colors hover:t-accent-soft"
         title="全网情报系统"
@@ -68,13 +69,14 @@ export function IconRail() {
           key={it.href}
           href={it.href}
           title={it.label}
-          className={`icon-btn transition-colors ${
+          className={`rail-btn w-full transition-colors ${
             it.active ? 't-accent-soft t-accent' : 'hover:t-accent'
           }`}
           onClick={(e) => { e.preventDefault(); navigate(it.href); }}
           onMouseEnter={() => onPrefetch(it.href)}
         >
           <it.Icon />
+          <span className="rail-label">{it.label}</span>
         </a>
       ))}
       <div className="mt-auto flex flex-col items-center gap-1.5">

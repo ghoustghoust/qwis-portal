@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS sources (
   avatar TEXT,
   uid TEXT,                       -- B站 uid / 抖音 sec_uid
   group_id INTEGER,
-  focus INTEGER DEFAULT 0,        -- 重点关照(F18)
+  focus INTEGER DEFAULT 0,        -- ⚠️ 已退役 2026-09-15（27b 四轴迁移）：语义由 spotlight 接管，列仅备份兼容保留
+  spotlight INTEGER DEFAULT 0,    -- 重点轴：每日早报「重点更新」栏 + smart 排序 +3d 加权
+  muted INTEGER DEFAULT 0,        -- 屏蔽轴：热点榜/阅读器排除
+  reader_visible INTEGER DEFAULT 1, -- 收录轴：内容是否进阅读器列表
   enabled INTEGER DEFAULT 1,
   status TEXT DEFAULT 'ok',       -- ok|error|pending
   last_fetched_at TEXT,
@@ -136,6 +139,10 @@ db.exec('CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(publ
 try { db.exec('ALTER TABLE articles ADD COLUMN category TEXT'); } catch { /* 列已存在 */ }
 // 增量列迁移（T48）：sources.fail_count 记录连续抓取失败次数（连失 3 次自动暂停）
 try { db.exec('ALTER TABLE sources ADD COLUMN fail_count INTEGER DEFAULT 0'); } catch { /* 列已存在 */ }
+// 27b 源四轴（2026-09-15）：spotlight/muted/reader_visible
+for (const alter of require('../lib/source-axes').AXES_ALTERS) {
+  try { db.exec(alter); } catch { /* 列已存在 */ }
+}
 // 2026-09-05：articles.word_count 正文纯文本字数（写入时剥 HTML 计算；替代 LENGTH(content_html) 的虚高估算）
 try { db.exec('ALTER TABLE articles ADD COLUMN word_count INTEGER'); } catch { /* 已存在 */ }
 // AI 翻译列：translated_title（翻译标题）、translated_content（翻译正文 HTML）
@@ -219,5 +226,18 @@ function setSetting(key, val) {
   ).run(key, JSON.stringify(val));
   invalidateQueryCache(`setting:${key}`);
 }
+
+// 27b 四轴一次性迁移（2026-09-15）：focus=1 → spotlight=1 + subscription.ids 初始化
+// 幂等闸 = settings axes.migrated；失败不阻断启动（下次启动重试）
+try {
+  if (!getSetting('axes.migrated', 0)) {
+    db.exec('UPDATE sources SET spotlight=1 WHERE COALESCE(focus,0)=1 AND COALESCE(spotlight,0)=0');
+    if (!Array.isArray(getSetting('subscription.ids', null))) {
+      const ids = db.prepare('SELECT id FROM sources WHERE COALESCE(spotlight,0)=1').all().map((r) => r.id);
+      setSetting('subscription.ids', ids);
+    }
+    setSetting('axes.migrated', 1);
+  }
+} catch { /* 迁移失败不阻断启动 */ }
 
 module.exports = { db, getSetting, setSetting, DATA_DIR, cachedQuery, invalidateQueryCache };

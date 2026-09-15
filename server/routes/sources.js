@@ -43,9 +43,12 @@ router.get('/', (req, res) => {
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const rows = db.prepare(`SELECT * FROM sources ${where} ORDER BY id`).all(...args);
   // 1.1 性能优化：批量聚合未读计数，消除 N+1 查询（原逐源查询在源数量增长后线性退化）
+  // 27-reader-today（2026-09-15）：未读口径收敛为「近 3 天」——历史未读自动视为归档（L4），
+  // 不再制造「未读 25096」式焦虑数字；数据本身不变，仅计数口径。
+  const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
   const articleUnreadRows = db.prepare(
-    'SELECT source_id, COUNT(*) as c FROM articles WHERE read_at IS NULL GROUP BY source_id'
-  ).all();
+    'SELECT source_id, COUNT(*) as c FROM articles WHERE read_at IS NULL AND COALESCE(published_at, created_at) >= ? GROUP BY source_id'
+  ).all(threeDaysAgo);
   const videoCountRows = db.prepare(
     'SELECT source_id, COUNT(*) as c FROM videos GROUP BY source_id'
   ).all();

@@ -18,7 +18,8 @@ const DICT = {
   // 侧栏（Sidebar）
   'sidebar.article':   { zh: '文章',       en: 'Articles' },
   'sidebar.video':     { zh: '视频',       en: 'Videos' },
-  'sidebar.all':       { zh: '全部',       en: 'All' },
+  'sidebar.today':     { zh: '今日',       en: 'Today' },
+  'sidebar.all':       { zh: '检索',       en: 'Search' },
   'sidebar.later':     { zh: '稍后阅读',   en: 'Read Later' },
   'sidebar.history':   { zh: '历史存档',   en: 'History' },
   'sidebar.allVideo':  { zh: '全部视频',   en: 'All Videos' },

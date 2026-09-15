@@ -70,10 +70,11 @@ async function genArticles(d) {
   const rows = await d.all(
     `SELECT a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary,
      a.published_at, a.read_at, a.later, a.created_at, a.score, a.tags, a.word_count,
-     s.name AS source_name, s.focus AS source_focus
+     s.name AS source_name, s.spotlight AS source_spotlight
      FROM articles a JOIN sources s ON s.id=a.source_id
      WHERE s.type != 'hotlist'
        AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
+       AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1
      ORDER BY COALESCE(a.published_at, a.created_at) DESC LIMIT 200`
   );
   write('articles.json', { items: rows, generated_at: new Date().toISOString() });
@@ -118,7 +119,7 @@ async function genDaily(d) {
 
 async function genSources(d) {
   const rows = await d.all(
-    `SELECT id, type, name, url, avatar, group_id, focus, enabled, status, fail_count
+    `SELECT id, type, name, url, avatar, group_id, spotlight, muted, reader_visible, enabled, status, fail_count
      FROM sources WHERE enabled=1 ORDER BY name`
   );
   write('sources.json', { sources: rows, generated_at: new Date().toISOString() });

@@ -41,13 +41,13 @@ router.post('/regenerate', async (req, res) => {
 
 function sourceList(types, selectedIds) {
   const rows = db
-    .prepare(`SELECT id, type, name, focus FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`)
+    .prepare(`SELECT id, type, name, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`)
     .all(...types);
   return rows.map((s) => ({
     id: s.id,
     type: s.type,
     name: s.name,
-    focus: !!s.focus,
+    spotlight: !!s.spotlight, // 27b：原 focus 字段，语义=重点轴
     selected: selectedIds ? selectedIds.includes(s.id) : true, // 未配置=全选
   }));
 }
@@ -68,18 +68,20 @@ settingsRouter.get('/', (req, res) => {
   });
 });
 
-// 校验/规整栏目数组：名称必填；无 id 自动生成；special 仅认 focus/fallback
+// 校验/规整栏目数组：名称必填；无 id 自动生成；special 仅认 spotlight/fallback
+// 27b：special 'focus' 为 2026-09-15 前旧配置的兼容值，读入即归一为 'spotlight'
 // 3.3 增强：keywords 支持 AND 组合 —— 每项可以是字符串（OR）或字符串数组（AND）
 function sanitizeColumns(cols) {
   if (!Array.isArray(cols) || !cols.length) throw new Error('columns 必须是非空数组');
   return cols.map((c, i) => {
     const out = {
-      id: c.id || `c${Date.now()}_${i}`,
+      id: c.id === 'focus' ? 'spotlight' : (c.id || `c${Date.now()}_${i}`),
       name: String(c.name || '').trim(),
     };
     if (!out.name) throw new Error('栏目名称不能为空');
-    if (c.special === 'focus' || c.special === 'fallback') {
-      out.special = c.special;
+    const special = c.special === 'focus' ? 'spotlight' : c.special;
+    if (special === 'spotlight' || special === 'fallback') {
+      out.special = special;
     } else {
       if (c.desc !== undefined) out.desc = String(c.desc);
       out.keywords = Array.isArray(c.keywords)
@@ -122,15 +124,21 @@ settingsRouter.put('/', (req, res) => {
   }
   setSetting('daily', next);
 
-  // focus 开关 → sources.focus（两种写法：focus={id:bool} 局部更新；focusSourceIds=[..] 全量替换）
-  if (body.focusSourceIds !== undefined) {
-    if (!Array.isArray(body.focusSourceIds)) return res.json({ ok: false, error: 'focusSourceIds 必须是数组' });
-    const ids = new Set(body.focusSourceIds.map(Number));
-    db.prepare('UPDATE sources SET focus = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END')
+  // 重点轴开关 → sources.spotlight（两种写法：spotlightSourceIds=[..] 全量替换；spotlight/focus={id:bool} 局部增量）
+  // 27b：旧键 focusSourceIds/focus 兼容接收，落 spotlight 列
+  const fullIds = body.spotlightSourceIds !== undefined ? body.spotlightSourceIds : body.focusSourceIds;
+  if (fullIds !== undefined) {
+    if (!Array.isArray(fullIds)) return res.json({ ok: false, error: 'spotlightSourceIds 必须是数组' });
+    const ids = new Set(fullIds.map(Number));
+    db.prepare('UPDATE sources SET spotlight = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END')
       .run(JSON.stringify([...ids]));
-  } else if (body.focus && typeof body.focus === 'object') {
-    const stmt = db.prepare('UPDATE sources SET focus=? WHERE id=?');
-    for (const [id, v] of Object.entries(body.focus)) stmt.run(v ? 1 : 0, Number(id));
+  } else {
+    const inc = (body.spotlight && typeof body.spotlight === 'object') ? body.spotlight
+      : (body.focus && typeof body.focus === 'object') ? body.focus : null;
+    if (inc) {
+      const stmt = db.prepare('UPDATE sources SET spotlight=? WHERE id=?');
+      for (const [id, v] of Object.entries(inc)) stmt.run(v ? 1 : 0, Number(id));
+    }
   }
 
   // 栏目管理：restoreDefaultColumns 恢复默认四栏目；否则 columns 全量替换
@@ -148,7 +156,7 @@ settingsRouter.put('/', (req, res) => {
 
   // 生成时间/窗口等变更后重排调度（重建日报 cron）
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }
-  audit.record('daily.settings', { detail: { keys: Object.keys(body).filter(k => ['windowHours','time','articleSourceIds','videoSourceIds','columns','focusSourceIds'].includes(k)) }, ip: req.ip });
+  audit.record('daily.settings', { detail: { keys: Object.keys(body).filter(k => ['windowHours','time','articleSourceIds','videoSourceIds','columns','spotlightSourceIds','focusSourceIds'].includes(k)) }, ip: req.ip });
   res.json({ ok: true });
 });
 

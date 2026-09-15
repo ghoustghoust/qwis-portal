@@ -125,7 +125,7 @@ test('P6-5: 重构后文档体系完整', () => {
     'docs/INDEX.md',
     'docs/FEATURE_MATRIX.md',
     'docs/RUNBOOK.md',
-    'docs/REFACTOR_GUIDE.md',
+    'docs/deprecated/REFACTOR_GUIDE.md', // 2026-09-14 文档大清洗（10a9556）：REFACTOR_GUIDE 入 deprecated
     'docs/CLOUD_PIPELINE_GUIDE.md',
     'docs/features/collectors.md',
     'docs/features/scheduler.md',

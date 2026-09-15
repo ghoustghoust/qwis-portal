@@ -131,8 +131,9 @@ async function handleArticles(req) {
   const conds = [];
   const args = [];
 
-  // 阅读器降噪：排除热榜/聚合源
-  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  // 阅读器降噪：排除热榜/聚合源；27b（2026-09-15）：屏蔽(muted)/未收录(reader_visible=0)源同口径排除
+  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1" +
+    ' AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1';
 
   if (tab === 'later') conds.push('a.later=1');
   else if (tab === 'history') conds.push('a.read_at IS NOT NULL');
@@ -144,10 +145,12 @@ async function handleArticles(req) {
   if (q.q) { conds.push('(a.title LIKE ? OR a.content_html LIKE ?)'); args.push(`%${q.q}%`, `%${q.q}%`); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(`${q.from}T00:00:00.000Z`); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { conds.push('COALESCE(a.published_at, a.created_at) <= ?'); args.push(`${q.to}T23:59:59.999Z`); }
+  // 27-reader-today：since=<ISO datetime> 精确时刻下限（「今日」滚动 24h 窗口）
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(q.since || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(String(q.since)); }
 
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const orderExpr = sort === 'smart'
-    ? '(unixepoch(COALESCE(a.published_at,a.created_at)) + COALESCE(s.focus,0)*259200)'
+    ? '(unixepoch(COALESCE(a.published_at,a.created_at)) + COALESCE(s.spotlight,0)*259200)'
     : 'COALESCE(a.published_at, a.created_at)';
 
   // 游标分页
@@ -166,7 +169,7 @@ async function handleArticles(req) {
 
   const fields = `a.id, a.source_id, a.title, a.translated_title, a.url, a.author, a.cover, a.summary,
     a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
-    s.focus AS source_focus, s.avatar AS source_avatar, a.score, a.tags, a.reason, a.word_count`;
+    s.spotlight AS source_spotlight, s.avatar AS source_avatar, a.score, a.tags, a.reason, a.word_count`;
 
   const rows = (await qAll(
     `SELECT ${fields} FROM articles a JOIN sources s ON s.id=a.source_id ${where}${cursorCond} ORDER BY ${orderExpr} ${dir}, a.id ${dir} LIMIT ?`,
@@ -186,7 +189,7 @@ async function handleArticles(req) {
     // 游标发排序键的原生列值（ISO 文本），与 cursorCond 的文本比较同型（2026-09-13 F1：
     // 原 epoch 秒数值与 ISO 文本列字典序比较恒假 → 第二页恒空 → 阅读器 30 条后无法下滑）
     if (sort === 'smart') {
-      const sortVal = Math.floor(new Date(last.published_at || last.created_at).getTime() / 1000) + (last.source_focus || 0) * 259200;
+      const sortVal = Math.floor(new Date(last.published_at || last.created_at).getTime() / 1000) + (last.source_spotlight || 0) * 259200;
       nextCursor = `${sortVal}|${last.id}`;
     } else {
       nextCursor = `${last.published_at || last.created_at}|${last.id}`;
@@ -194,17 +197,21 @@ async function handleArticles(req) {
   }
 
   // 计数（轻量级：只查 later/history 总数，不做 NOT EXISTS 子查询）
+  // 27-reader-today：补 today（近 24h 条数，「今日」视图导航计数；24h 窗口走 idx_articles_pubco 很便宜）
+  const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
+  const todayCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE COALESCE(published_at, created_at) >= ?', [dayAgo])).c;
   const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
   const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
 
-  return jsonOk({ items: rows, nextCursor, counts: { later: laterCount, history: historyCount } });
+  return jsonOk({ items: rows, nextCursor, counts: { today: todayCount, later: laterCount, history: historyCount } });
 }
 
 // GET /api/articles/since?ts=<ISO> — 增量计数（无感刷新轮询专用，返回极小）
 // ts 为空 = 建立基线（只回当前最新 sortKey，不计数）
 async function handleArticlesSince(req) {
   const q = req.query;
-  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1" +
+    ' AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1';
   const conds = [];
   const args = [];
   const ts = String(q.ts || '');
@@ -224,7 +231,7 @@ async function handleArticlesSince(req) {
 // GET /api/articles/:id — 单篇文章详情（含 content_html）
 async function handleArticleById(req, id) {
   const row = await qOne(
-    `SELECT a.*, s.name AS source_name, s.focus AS source_focus, s.avatar AS source_avatar
+    `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight, s.avatar AS source_avatar
      FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.id=?`,
     [id]
   );
@@ -250,6 +257,7 @@ async function handleVideos(req) {
   const vConds = [];
   const vArgs = [];
   if (q.source_id) { vConds.push('v.source_id=?'); vArgs.push(Number(q.source_id)); }
+  else vConds.push('COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1'); // 27b：屏蔽/未收录源豁免显式 source_id
   if (q.platform) { vConds.push('v.platform=?'); vArgs.push(q.platform); }
   if (q.group_id) { vConds.push('s.group_id=?'); vArgs.push(Number(q.group_id)); }
   if (q.tab === 'favorite') vConds.push('v.favorite=1');
@@ -259,6 +267,7 @@ async function handleVideos(req) {
 
   // 播客侧条件（音频 enclosure 落 cover 的历史形态，lib/media.js 同口径）
   const pConds = ["s.enabled=1", "(a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%.opus%' OR a.cover LIKE '%media.xyzcdn.net%')"];
+  if (!q.source_id) pConds.push('COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1'); // 27b 同视频侧口径
   const pArgs = [];
   if (q.source_id) { pConds.push('a.source_id=?'); pArgs.push(Number(q.source_id)); }
   if (q.group_id) { pConds.push('s.group_id=?'); pArgs.push(Number(q.group_id)); }
@@ -348,6 +357,8 @@ async function handleVideoFavorite(req, id) {
 // ─── AI 相关性词表：已抽为共享模块 lib/ai-relevance.js（本文件与 tools/collect-turso.js 同用一份） ───
 // 坑 #31：OR 链必须平衡二叉树拼接（SQLite 表达式树深度上限 100，实测超长 OR 链报 Expression tree is too large）
 const { aiRelevanceCond, aiTitleConds } = require('../lib/ai-relevance');
+// ─── 源四轴（27b，2026-09-15）：订阅集合/轴 action/组级 SQL 与 runner、本地路由共用 ───
+const axes = require('../lib/source-axes');
 // ─── 热搜事件聚合：共享纯函数 lib/hot-events.js（runner 预聚合写 settings，云端读缓存优先） ───
 const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, hasCJK } = require('../lib/hot-events');
 // 播客音频识别（cover 里的音频 enclosure → audio_url）
@@ -368,6 +379,9 @@ async function handleHot(req) {
 
   const conds = [];
   const args = [];
+
+  // 27b：屏蔽(muted)源从热点榜全部视图排除（L2 脉搏层的反对面）
+  conds.push('COALESCE(s.muted,0)=0');
 
   if (tab === 'featured') {
     // AI 精选（2026-09-14 三阶段修正）：自有源六维≥60 且 AI 相关。
@@ -600,7 +614,7 @@ async function handleHotEventDetail(req, rank) {
 // ─── 日报生成核心（供 handleDaily getOrGenerate 复用） ───
 const DAILY_COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
   { id: 'fallback', name: '其它重要', special: 'fallback' },
 ];
@@ -644,7 +658,7 @@ async function generateDailyInline() {
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
-  let sql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus
+  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${DAILY_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -667,8 +681,9 @@ async function generateDailyInline() {
   const used = new Set();
   for (const col of columns) {
     const items = [];
-    if (col.special === 'focus') {
-      for (const a of valid) { if (!used.has(a.id) && a.source_focus) { items.push(dailyFormatItem(a)); used.add(a.id); } }
+    // 27b：special 兼容旧值 'focus'（daily.columns 存量配置未迁移时仍能工作）
+    if (col.special === 'spotlight' || col.special === 'focus') {
+      for (const a of valid) { if (!used.has(a.id) && a.source_spotlight) { items.push(dailyFormatItem(a)); used.add(a.id); } }
     } else if (col.special === 'fallback') {
       const remaining = valid.filter(a => !used.has(a.id)).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 10);
       for (const a of remaining) { items.push(dailyFormatItem(a)); used.add(a.id); }
@@ -815,14 +830,33 @@ async function handleGroups(req) {
   return jsonOk({ groups: rows });
 }
 
-// GET /api/sources
+// GET /api/sources（27b：透出四轴列；未读口径=近 3 天，与本地 sources.js 一致；尊重 ?type=&enabled= 过滤）
 async function handleSources(req) {
+  const conds = [];
+  const args = [];
+  if (req.query.type) { conds.push('type=?'); args.push(req.query.type); }
+  if (req.query.enabled !== undefined) { conds.push('enabled=?'); args.push(Number(req.query.enabled)); }
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const rows = await qAll(
-    `SELECT id, type, name, url, avatar, uid, group_id, focus, enabled, status,
+    `SELECT id, type, name, url, avatar, uid, group_id, spotlight, muted, reader_visible, enabled, status,
      last_fetched_at, next_fetch_at, fail_count, created_at
-     FROM sources ORDER BY enabled DESC, name`
+     FROM sources ${where} ORDER BY enabled DESC, name`, args
   );
-  return jsonOk({ sources: rows });
+  // 未读=近 3 天（27-reader-today：历史未读自动归档，焦虑数字消失）；视频源保持总条数
+  const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
+  const unreadRows = await qAll(
+    'SELECT source_id, COUNT(*) c FROM articles WHERE read_at IS NULL AND COALESCE(published_at, created_at) >= ? GROUP BY source_id',
+    [threeDaysAgo]
+  );
+  const videoRows = await qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id');
+  const unreadMap = new Map(unreadRows.map((r) => [r.source_id, r.c]));
+  const videoMap = new Map(videoRows.map((r) => [r.source_id, r.c]));
+  const VIDEO_TYPES = new Set(['bilibili', 'douyin', 'youtube']);
+  const items = rows.map((r) => ({
+    ...r,
+    unread: VIDEO_TYPES.has(r.type) ? (videoMap.get(r.id) || 0) : (unreadMap.get(r.id) || 0),
+  }));
+  return jsonOk({ sources: items });
 }
 
 // GET /api/status（带 30s 进程内缓存）
@@ -848,13 +882,15 @@ async function handleStatus(req) {
 
   let overview;
   {
+    // 27-reader-today：未读只统计近 3 天（与 GET /api/sources 同口径）
+    const threeDaysAgo = new Date(now - 3 * 86400e3).toISOString();
     const row = await qOne(`
       SELECT
-        SUM(CASE WHEN a.read_at IS NULL THEN 1 ELSE 0 END) AS unread,
+        SUM(CASE WHEN a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ? THEN 1 ELSE 0 END) AS unread,
         SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS todayNew,
         SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS weekNew
       FROM articles a ${notNoiseJoin}
-    `, [dayStart.toISOString(), weekAgo]);
+    `, [threeDaysAgo, dayStart.toISOString(), weekAgo]);
     overview = {
       unreadArticles: row?.unread || 0,
       todayNew: row?.todayNew || 0,
@@ -921,7 +957,10 @@ async function handleSettings(req) {
   // queue.token 脱敏：只回是否已配置（与本地 maskSection 一致）
   const queueOut = { intervalMin: 10, enabled: false, ...queue };
   if ('token' in queueOut) { queueOut.tokenConfigured = !!queueOut.token; delete queueOut.token; }
+  // 27b：订阅轴透出（早报中心对照卡「订阅源数」用）
+  const subIds = await getSetting('subscription.ids', []);
   return jsonOk({
+    subscription: { ids: Array.isArray(subIds) ? subIds : [], count: Array.isArray(subIds) ? subIds.length : 0 },
     intervals: { opml: 12, rss: 0.5, bilibili: 60, douyin: 360, queue: 10, ...intervals },
     opml: { url: await getSetting('opml.url', ''), enabled: await getSetting('opml.enabled', true) },
     queue: queueOut,
@@ -1995,7 +2034,7 @@ const SETTINGS_BLOCKLIST = ['auth.secret', 'admin.passwordHash', 'backup.latest'
 
 const DAILY_DEFAULT_COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
   { id: 'fallback', name: '其它重要', special: 'fallback' },
 ];
@@ -2030,13 +2069,15 @@ function validateDailyPatch(patch) {
 }
 
 // 与本地 routes/daily.js sanitizeColumns 同语义（keywords 支持 AND 数组组合）
+// 27b：special/id 的旧值 'focus' 读入即归一为 'spotlight'
 function sanitizeColumns(cols) {
   if (!Array.isArray(cols) || !cols.length) throw new Error('columns 必须是非空数组');
   return cols.map((c, i) => {
-    const out = { id: c.id || `c${Date.now()}_${i}`, name: String(c.name || '').trim() };
+    const out = { id: c.id === 'focus' ? 'spotlight' : (c.id || `c${Date.now()}_${i}`), name: String(c.name || '').trim() };
     if (!out.name) throw new Error('栏目名称不能为空');
-    if (c.special === 'focus' || c.special === 'fallback') {
-      out.special = c.special;
+    const special = c.special === 'focus' ? 'spotlight' : c.special;
+    if (special === 'spotlight' || special === 'fallback') {
+      out.special = special;
     } else {
       if (c.desc !== undefined) out.desc = String(c.desc);
       out.keywords = Array.isArray(c.keywords)
@@ -2125,9 +2166,9 @@ async function handleDailySettingsGet(req) {
   const columns = (await getSetting('daily.columns', null)) || DAILY_DEFAULT_COLUMNS;
   const sourceList = async (types, selectedIds) => {
     const rows = await qAll(
-      `SELECT id, type, name, focus FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
+      `SELECT id, type, name, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
     return rows.map((s) => ({
-      id: s.id, type: s.type, name: s.name, focus: !!s.focus,
+      id: s.id, type: s.type, name: s.name, spotlight: !!s.spotlight, // 27b：原 focus 字段
       selected: selectedIds ? selectedIds.includes(s.id) : true,
     }));
   };
@@ -2145,7 +2186,7 @@ async function handleDailySettingsGet(req) {
   });
 }
 
-// PUT /api/settings/daily — 窗口/时间/来源勾选/focus/栏目
+// PUT /api/settings/daily — 窗口/时间/来源勾选/spotlight/栏目
 async function handleDailySettingsPut(req) {
   const body = req.body || {};
   // 预校验（零写入）
@@ -2171,19 +2212,24 @@ async function handleDailySettingsPut(req) {
   if (body.articleSourceIds !== undefined) patch.articleSourceIds = body.articleSourceIds.map(Number);
   if (body.videoSourceIds !== undefined) patch.videoSourceIds = body.videoSourceIds.map(Number);
   if (Object.keys(patch).length) await mergeSetting('daily', patch);
-  // focus 两种写法（与本地一致：focusSourceIds 全量替换；focus 对象局部增量）
-  if (body.focusSourceIds !== undefined) {
-    if (!Array.isArray(body.focusSourceIds)) return { status: 400, body: jsonErr('focusSourceIds 必须是数组') };
-    const ids = body.focusSourceIds.map(Number);
+  // spotlight 两种写法（27b：spotlightSourceIds 全量替换 / spotlight 对象局部增量；旧键 focusSourceIds/focus 兼容落 spotlight）
+  const fullIds = body.spotlightSourceIds !== undefined ? body.spotlightSourceIds : body.focusSourceIds;
+  if (fullIds !== undefined) {
+    if (!Array.isArray(fullIds)) return { status: 400, body: jsonErr('spotlightSourceIds 必须是数组') };
+    const ids = fullIds.map(Number);
     await qRun(
-      'UPDATE sources SET focus = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
+      'UPDATE sources SET spotlight = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
       [JSON.stringify(ids)]
     );
-  } else if (body.focus && typeof body.focus === 'object') {
-    const stmts = Object.entries(body.focus).map(([id, v]) => ({
-      sql: 'UPDATE sources SET focus=? WHERE id=?', args: [v ? 1 : 0, Number(id)],
-    }));
-    if (stmts.length) await getDb().batch(stmts, 'write');
+  } else {
+    const inc = (body.spotlight && typeof body.spotlight === 'object') ? body.spotlight
+      : (body.focus && typeof body.focus === 'object') ? body.focus : null;
+    if (inc) {
+      const stmts = Object.entries(inc).map(([id, v]) => ({
+        sql: 'UPDATE sources SET spotlight=? WHERE id=?', args: [v ? 1 : 0, Number(id)],
+      }));
+      if (stmts.length) await getDb().batch(stmts, 'write');
+    }
   }
   // 栏目管理
   if (body.restoreDefaultColumns) await setSetting('daily.columns', DAILY_DEFAULT_COLUMNS);
@@ -2331,12 +2377,46 @@ async function handleSourceInterval(req, id) {
 }
 
 // POST /api/sources/batch — F6
+// 27b（2026-09-15）：四轴 action（spotlight/mute/visible/subscribe…）+ 组级 groupScopeId（单条 SQL 防 serverless 超时）
 async function handleSourcesBatch(req) {
-  const { ids, action, groupId } = req.body || {};
-  if (!Array.isArray(ids) || !ids.length) return { status: 400, body: jsonErr('缺少 ids') };
-  const validActions = ['enable', 'disable', 'focus', 'unfocus', 'move'];
+  const { ids, action, groupId, groupScopeId, intervalMin, failoverGroup } = req.body || {};
+  const validActions = axes.AXIS_ALL_ACTIONS;
   if (!validActions.includes(action)) return { status: 400, body: jsonErr(`action 须为 ${validActions.join('|')}`) };
   if (action === 'move' && groupId === undefined) return { status: 400, body: jsonErr('move 需要 groupId') };
+
+  // ── 组级快路径：整组成员单条 SQL ──
+  if (groupScopeId !== undefined && groupScopeId !== null) {
+    const gid = Number(groupScopeId);
+    if (!Number.isFinite(gid)) return { status: 400, body: jsonErr('groupScopeId 无效') };
+    const g = await qOne('SELECT * FROM groups WHERE id=?', [gid]);
+    if (!g) return { status: 404, body: jsonErr('分组不存在') };
+    try {
+      if (action === 'subscribe' || action === 'unsubscribe') {
+        const members = (await qAll('SELECT id FROM sources WHERE group_id=?', [gid])).map((r) => r.id);
+        const total = await axes.setSubscribed({ getSetting, setSetting }, members, action === 'subscribe');
+        await auditRecord('source.batch', { detail: { action, group: g.name, succeeded: members.length } });
+        return jsonOk({ succeeded: members.length, failed: 0, group: g.name, subscriptionTotal: total });
+      }
+      if (action === 'move') return { status: 400, body: jsonErr('组级操作不支持 move（请用 ids 逐个移动）') };
+      const stmt = axes.groupAxisStmt(action, gid, { intervalMin, failoverGroup });
+      if (!stmt) return { status: 400, body: jsonErr(`组级不支持 action=${action}`) };
+      const r = await qRun(stmt.sql, stmt.args);
+      await auditRecord('source.batch', { detail: { action, group: g.name, succeeded: r.changes } });
+      return jsonOk({ succeeded: r.changes, failed: 0, group: g.name });
+    } catch (err) {
+      return { status: 400, body: jsonErr(err.message) };
+    }
+  }
+
+  if (!Array.isArray(ids) || !ids.length) return { status: 400, body: jsonErr('缺少 ids') };
+
+  // 订阅轴（读改写 settings 一次）
+  if (action === 'subscribe' || action === 'unsubscribe') {
+    const total = await axes.setSubscribed({ getSetting, setSetting }, ids, action === 'subscribe');
+    await auditRecord('source.batch', { detail: { action, succeeded: ids.length } });
+    return jsonOk({ succeeded: ids.length, failed: 0, subscriptionTotal: total });
+  }
+
   const truncated = ids.length > 200;
   const workIds = ids.slice(0, 200);
 
@@ -2358,10 +2438,21 @@ async function handleSourcesBatch(req) {
           [JSON.stringify(extra), next, sid]);
       } else if (action === 'disable') {
         await qRun('UPDATE sources SET enabled=0 WHERE id=?', [sid]);
-      } else if (action === 'focus') {
-        await qRun('UPDATE sources SET focus=1 WHERE id=?', [sid]);
-      } else if (action === 'unfocus') {
-        await qRun('UPDATE sources SET focus=0 WHERE id=?', [sid]);
+      } else if (axes.AXIS_COL_ACTIONS[action]) {
+        const [col, val] = axes.AXIS_COL_ACTIONS[action];
+        await qRun(`UPDATE sources SET ${col}=? WHERE id=?`, [val, sid]);
+      } else if (action === 'interval') {
+        if (intervalMin === null || intervalMin === undefined) {
+          await qRun("UPDATE sources SET extra=json_remove(COALESCE(extra,'{}'),'$.intervalMin') WHERE id=?", [sid]);
+        } else {
+          const n = Number(intervalMin);
+          if (!Number.isFinite(n) || n <= 0) { errors.push({ id: sid, error: 'intervalMin 必须是正数分钟数或 null' }); continue; }
+          await qRun("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.intervalMin', ?) WHERE id=?", [n, sid]);
+        }
+      } else if (action === 'failover') {
+        const fg = String(failoverGroup || '').trim();
+        if (fg) await qRun("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.failoverGroup', ?) WHERE id=?", [fg, sid]);
+        else await qRun("UPDATE sources SET extra=json_remove(COALESCE(extra,'{}'),'$.failoverGroup') WHERE id=?", [sid]);
       } else if (action === 'move') {
         if (groupId !== null) {
           const g = await qOne('SELECT * FROM groups WHERE id=?', [groupId]);
@@ -2498,8 +2589,9 @@ async function handleArticleTranslate(req, id) {
 
 // GET /api/mybrief — 我的早报（19-my-brief；公开读，三态响应）
 async function handleMyBrief(req) {
-  const subs = await qAll('SELECT id FROM sources WHERE focus=1 AND enabled=1');
-  if (!subs.length) return jsonOk({ empty: 'no-subscription' });
+  // 27b：订阅集合 = settings subscription.ids（原 focus=1 语义已迁移；键缺失时兜底 spotlight 集合）
+  const subIds = await axes.resolveSubscriptionIds({ qAll, getSetting });
+  if (!subIds.length) return jsonOk({ empty: 'no-subscription' });
   const report = await getSetting('mybrief.latest', null);
   if (!report) return jsonOk({ empty: 'no-content' });
   // T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键）

@@ -8,19 +8,24 @@ const PAGE_SIZE = 30;
 
 const LIST_FIELDS = `a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary,
   a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
-  s.focus AS source_focus, a.score, a.tags, a.reason, a.word_count,
+  s.spotlight AS source_spotlight, a.score, a.tags, a.reason, a.word_count,
   a.translated_title, a.translated_content`;
 
 // 2026-09-05 阅读器降噪：热榜(type=hotlist)与聚合源(extra.aggregator，如 AIHOT)的条目不进阅读器文章流——
 // 它们的归宿是热点榜页（/hot/），混进阅读器会产生数万条永远读不完的未读。显式 source_id 或 include_hot=1 时豁免。
+// 2026-09-15（27b 四轴）：屏蔽(muted)/未收录(reader_visible=0)源同口径排除，显式 source_id 同样豁免。
 const NOISE_SOURCE_COND =
-  "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1" +
+  ' AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1';
 
-// C28:侧栏导航计数契约——列表响应统一带 counts(稍后读/历史存档)
-// 计数与列表同口径：排除热榜/聚合源（否则列表已排除、计数仍含噪音，数字对不上）
+// C28:侧栏导航计数契约——列表响应统一带 counts(今日/稍后读/历史存档)
+// 计数与列表同口径：排除热榜/聚合源/屏蔽/未收录（否则列表已排除、计数仍含噪音，数字对不上）
+// today（27-reader-today）：近 24h 内容条数（今日视图导航计数）
 function articleCounts() {
-  const noise = `NOT EXISTS (SELECT 1 FROM sources s2 WHERE s2.id=articles.source_id AND (s2.type='hotlist' OR COALESCE(json_extract(COALESCE(s2.extra,'{}'),'$.aggregator'),0)=1))`;
+  const noise = `NOT EXISTS (SELECT 1 FROM sources s2 WHERE s2.id=articles.source_id AND (s2.type='hotlist' OR COALESCE(json_extract(COALESCE(s2.extra,'{}'),'$.aggregator'),0)=1 OR COALESCE(s2.muted,0)=1 OR COALESCE(s2.reader_visible,1)=0))`;
+  const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
   return {
+    today: db.prepare(`SELECT COUNT(*) c FROM articles WHERE COALESCE(published_at, created_at) >= ? AND ${noise}`).get(dayAgo).c,
     later: db.prepare(`SELECT COUNT(*) c FROM articles WHERE later=1 AND ${noise}`).get().c,
     history: db.prepare(`SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL AND ${noise}`).get().c,
   };
@@ -50,6 +55,11 @@ function buildWhere(query) {
     conds.push('COALESCE(a.published_at, a.created_at) <= ?');
     args.push(`${query.to}T23:59:59.999Z`);
   }
+  // 27-reader-today：since=<ISO datetime> 精确时刻下限（「今日」视图的滚动 24h 窗口用，比 from 日期粒度细）
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(query.since || '')) {
+    conds.push('COALESCE(a.published_at, a.created_at) >= ?');
+    args.push(String(query.since));
+  }
   // 十一期：评分筛选（仅对有评分条目生效，无评分条目自然隐藏）
   if (query.score_min === '80' || query.score_min === '90') {
     conds.push('a.score IS NOT NULL AND a.score >= ?');
@@ -72,9 +82,9 @@ router.get('/', (req, res) => {
   const { where, args } = buildWhere(req.query);
   const sortMode = req.query.sort; // new|old|smart
   const dir = sortMode === 'old' ? 'ASC' : 'DESC';
-  // 十一期：smart 排序——focus 源获 3 天（259200s）时间加成
+  // 十一期：smart 排序——重点(spotlight)源获 3 天（259200s）时间加成（27b：focus 已退役改 spotlight）
   const keyExpr = sortMode === 'smart'
-    ? '(unixepoch(COALESCE(a.published_at,a.created_at)) + COALESCE(s.focus,0)*259200)'
+    ? '(unixepoch(COALESCE(a.published_at,a.created_at)) + COALESCE(s.spotlight,0)*259200)'
     : 'COALESCE(a.published_at, a.created_at)';
 
   // 十一期：lang 启发式过滤（与 dedup 互斥，dedup 优先）

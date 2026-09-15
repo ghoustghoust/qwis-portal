@@ -130,27 +130,27 @@ test('8. queue.token 留空不覆盖（test 键模拟）', async () => {
   else await db.execute("DELETE FROM settings WHERE key='queue'");
 });
 
-test('9. focusSourceIds 全量替换生效', async () => {
+test('9. spotlightSourceIds 全量替换生效（27b：focus 列已退役，落 spotlight）', async () => {
   // 取两个真实源 id
   const srcs = await db.execute('SELECT id FROM sources LIMIT 2');
   if (srcs.rows.length < 2) return; // 数据不足跳过
   const [a, b] = srcs.rows.map(r => r.id);
-  // ⚠️ 全量替换语义会写整表 focus（不在名单内的全部清零）——必须先快照全部 focus=1 源，
+  // ⚠️ 全量替换语义会写整表 spotlight（不在名单内的全部清零）——必须先快照全部 spotlight=1 源，
   // 测后精确还原。2026-09-13 事故：旧"恢复"只复位 2 个测试 id，曾把线上用户标记的
-  // 8 个 focus 订阅源全部清零（ARCHITECTURE 坑 #17 的测试侧翻版）。
-  const before = await db.execute('SELECT id FROM sources WHERE focus=1');
-  const focusIds = before.rows.map(r => r.id);
+  // 8 个订阅源全部清零（ARCHITECTURE 坑 #17 的测试侧翻版）。
+  const before = await db.execute('SELECT id FROM sources WHERE spotlight=1');
+  const spotIds = before.rows.map(r => r.id);
   try {
-    const r = await call('PUT', '/api/settings/daily', { focusSourceIds: [a] });
+    const r = await call('PUT', '/api/settings/daily', { spotlightSourceIds: [a] });
     assert.equal(r.status, 200, JSON.stringify(r.body));
-    const fa = await db.execute('SELECT focus FROM sources WHERE id=?', [a]);
-    const fb = await db.execute('SELECT focus FROM sources WHERE id=?', [b]);
-    assert.equal(fa.rows[0].focus, 1);
-    assert.equal(fb.rows[0].focus, 0);
+    const fa = await db.execute('SELECT spotlight FROM sources WHERE id=?', [a]);
+    const fb = await db.execute('SELECT spotlight FROM sources WHERE id=?', [b]);
+    assert.equal(fa.rows[0].spotlight, 1);
+    assert.equal(fb.rows[0].spotlight, 0);
   } finally {
     await db.execute(
-      'UPDATE sources SET focus = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
-      [JSON.stringify(focusIds)]
+      'UPDATE sources SET spotlight = CASE WHEN id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END',
+      [JSON.stringify(spotIds)]
     );
   }
 });

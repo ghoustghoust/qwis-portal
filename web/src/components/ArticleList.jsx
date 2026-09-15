@@ -10,6 +10,24 @@ import Stars from './ui/Stars.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 import NewArticlesBanner from './NewArticlesBanner.jsx';
 import { SkeletonList } from './Skeleton.jsx';
+import DailyBriefCard from './DailyBriefCard.jsx';
+import { SearchIcon } from './icons.jsx';
+
+// 27-reader-today（2026-09-15）：检索模式门槛——「全部」视图降级为按需检索，
+// 必须带至少一个筛选条件（源/分组/关键词/时间范围/评分/语言），否则显示引导空态不发请求
+function hasSearchCriteria(filter, q) {
+  return !!(
+    filter.sourceId || filter.groupId ||
+    filter.from || filter.to ||
+    (filter.keyword || '').trim() || (q || '').trim() ||
+    (filter.scoreMin > 0) || (filter.lang && filter.lang !== 'all')
+  );
+}
+
+// 「今日」视图 → 请求参数：tab=all + since=滚动 24h + smart 排序（重点源优先）
+function todayParams() {
+  return { since: new Date(Date.now() - 24 * 3600e3).toISOString() };
+}
 
 const DEDUP_KEY = 'qwis.dedup'; // 「合并同事件」开关记忆（缺省 '1' 开启）
 
@@ -51,6 +69,14 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
   const fetchPage = useCallback(
     async (cur, replace) => {
       if (loadingRef.current) return;
+      // 检索模式门槛：无筛选条件的「全部」不请求（27-reader-today 验收③）
+      if (filter.tab === 'all' && !hasSearchCriteria(filter, q)) {
+        setItems([]);
+        setCursor(null);
+        setDone(true);
+        setSpan(null);
+        return;
+      }
       loadingRef.current = true;
       setLoading(true);
       try {
@@ -58,15 +84,17 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
         // 2026-09-05：常驻搜索框——任何 tab 都透传 q（原来仅 history 生效）
         const keyword = (filter.keyword || '').trim();
         const qParam = keyword || (q || '').trim() || undefined;
+        const isToday = filter.tab === 'today';
         const data = await api.get(
           `/api/articles${qs({
-            tab: filter.tab,
+            tab: isToday ? 'all' : filter.tab,
             source_id: filter.sourceId,
             group_id: filter.groupId,
             q: qParam,
-            sort: filter.sort || 'new',
+            sort: filter.sort || 'smart',
             from: filter.from || undefined,
             to: filter.to || undefined,
+            ...(isToday && !filter.from ? todayParams() : {}),
             dedup: dedup ? 1 : undefined,
             score_min: filter.scoreMin || undefined,
             lang: (filter.lang && filter.lang !== 'all') ? filter.lang : undefined,
@@ -147,8 +175,13 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
   const titleOf = () => {
     if (filter.sourceId) return '订阅源文章';
     if (filter.groupId) return '分组文章';
-    return { all: '全部文章', later: '稍后阅读', history: '历史存档' }[filter.tab] || '文章';
+    return { today: '今日', all: '检索模式', later: '稍后阅读', history: '历史存档' }[filter.tab] || '文章';
   };
+
+  // 检索模式门槛（27-reader-today ③）：tab=all 且无任何筛选 → 引导空态
+  const searchGated = filter.tab === 'all' && !filter.sourceId && !filter.groupId && !hasSearchCriteria(filter, q);
+  // 早报摘要卡：仅「今日」默认视图（无筛选）顶部展示（验收①）
+  const showBriefCard = filter.tab === 'today' && !filter.sourceId && !filter.groupId && !q.trim() && !(filter.keyword || '').trim();
 
   return (
     <section className="w-[400px] flex-none border-r t-border flex flex-col h-full t-surface">
@@ -183,13 +216,26 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
         {/* 2026-09-05：常驻搜索框——任何视图（全部/文件夹/单源/稍后读/历史）都可直接搜当前范围 */}
         <input
           className="input mt-2 !py-1.5 text-xs"
-          placeholder={filter.tab === 'history' ? '搜索历史标题和内容' : '搜索当前列表…'}
+          placeholder={filter.tab === 'history' ? '搜索历史标题和内容' : filter.tab === 'all' ? '输入关键词即进入检索…' : '搜索当前列表…'}
           value={q}
           onChange={(e) => onSearch(e.target.value)}
         />
       </div>
+      {/* 27-reader-today ①：今日早报摘要卡（今日视图顶部主入口） */}
+      {showBriefCard && <DailyBriefCard />}
       {/* 2026-09-05 视觉精修：行 → 卡片（meta 行 / 标题 / 摘要 / 标签+评分底行，右侧 88px 缩略图） */}
       <div ref={boxRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-2 space-y-2">
+        {searchGated ? (
+          <div className="py-12 px-6 text-center">
+            <SearchIcon width={28} height={28} className="mx-auto t-muted opacity-60" />
+            <div className="mt-3 text-[13px] t-text font-medium">检索模式</div>
+            <div className="mt-1.5 text-xs t-muted leading-relaxed">
+              全部内容不默认铺开（信息量太大）。<br />
+              输入关键词、选择分组/来源，或用「筛选」设定时间与评分后才开始检索。
+            </div>
+          </div>
+        ) : (
+        <>
         {/* SSE 实时推送：新文章提示条 */}
         <NewArticlesBanner newCount={newCount} lastEvent={lastEvent} onRefresh={onBannerRefresh} />
         {items.map((a) => {
@@ -298,13 +344,15 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
         {loading && <SkeletonList n={5} />}
         {!loading && items.length === 0 && (
           <div className="py-10 text-center text-xs t-muted">
-            {filter.tab === 'history' ? '暂无历史存档' : filter.tab === 'later' ? '暂无稍后阅读' : '暂无文章'}
+            {filter.tab === 'history' ? '暂无历史存档' : filter.tab === 'later' ? '暂无稍后阅读' : filter.tab === 'today' ? '今日暂无新内容——去「检索」查更早的，或等下一轮采集' : '暂无文章'}
           </div>
         )}
         {!done && !loading && items.length > 0 && (
           <button className="w-full py-3 text-xs t-muted hover:t-accent" onClick={() => fetchPage(cursor, false)}>
             加载更多
           </button>
+        )}
+        </>
         )}
       </div>
     </section>

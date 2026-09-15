@@ -155,6 +155,25 @@ body {
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--text); }
 
+/* IconRail 带文字标签的导航项（T5-8/spec30：纯图标难辨功能 → 图标+常驻文字） */
+.rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 2px 6px;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.rail-btn:hover { background: var(--surface-2); color: var(--text); }
+.rail-btn .rail-label {
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
 /* 雷达 logo：悬停时扫描线缓慢扫过（logo-radar 容器 + RadarLogo 内 .radar-sweep） */
 .logo-radar .radar-sweep {
   transform-box: view-box;

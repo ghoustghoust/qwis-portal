@@ -45,7 +45,7 @@ export default function MyBriefPage() {
               <SunIcon className="mx-auto t-accent" />
               <div className="serif mt-4 text-xl font-bold t-text">我的早报需要你的订阅</div>
               <p className="mt-3 text-[13px] t-muted leading-relaxed">
-                去管理后台「源库」把你关心的源标记为特别关注（focus），
+                去管理后台「源库」把你关心的源加入订阅（27b 四轴之订阅轴，独立于重点标记），
                 <br />我的早报将每天只为你策展这些源的内容。
               </p>
               <a href="/admin/" className="btn-primary mt-6 inline-block" style={{ background: 'var(--green)' }}>

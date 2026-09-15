@@ -126,18 +126,18 @@ test('batch enable(真实路由): 解冻语义 + 6h 错峰', async () => {
   assert.notEqual(rows[0].next_fetch_at, rows[1].next_fetch_at, '两源首刷时间应被打散');
 });
 
-test('batch focus(真实路由): 增量更新不清他人(AC12)', async () => {
+test('batch focus(真实路由): 增量更新不清他人(AC12)——27b 兼容别名落 spotlight', async () => {
   const a = createSource('rss', '焦点A');
   const b = createSource('rss', '焦点B');
-  db.prepare('UPDATE sources SET focus=1 WHERE id=?').run(a.lastInsertRowid); // 模拟日报设置页已勾选 A
+  db.prepare('UPDATE sources SET spotlight=1 WHERE id=?').run(a.lastInsertRowid); // 模拟日报设置页已勾选 A
   const r = await req('POST', '/api/sources/batch', { ids: [b.lastInsertRowid], action: 'focus' });
   assert.equal(r.status, 200);
-  assert.equal(db.prepare('SELECT focus FROM sources WHERE id=?').get(a.lastInsertRowid).focus, 1, 'A 的 focus 不被清除');
-  assert.equal(db.prepare('SELECT focus FROM sources WHERE id=?').get(b.lastInsertRowid).focus, 1);
+  assert.equal(db.prepare('SELECT spotlight FROM sources WHERE id=?').get(a.lastInsertRowid).spotlight, 1, 'A 的 spotlight 不被清除');
+  assert.equal(db.prepare('SELECT spotlight FROM sources WHERE id=?').get(b.lastInsertRowid).spotlight, 1);
 });
 
 test('batch(真实路由): 空 ids / 非法 action 返回 400', async () => {
-  const r1 = await req('POST', '/api/sources/batch', { ids: [], action: 'focus' });
+  const r1 = await req('POST', '/api/sources/batch', { ids: [], action: 'spotlight' });
   assert.equal(r1.status, 400);
   const r2 = await req('POST', '/api/sources/batch', { ids: [1], action: 'nuke' });
   assert.equal(r2.status, 400);

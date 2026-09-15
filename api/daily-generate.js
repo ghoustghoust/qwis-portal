@@ -41,10 +41,10 @@ async function getSetting(key, def = null) {
   try { return JSON.parse(row.value); } catch { return def; }
 }
 
-// ─── 默认栏目配置 ───
+// ─── 默认栏目配置（27b：special 'focus' 更名 'spotlight'，引擎兼容旧值） ───
 const DEFAULT_COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
   { id: 'fallback', name: '其它重要', special: 'fallback' },
 ];
@@ -107,7 +107,7 @@ async function generateDaily(windowHours) {
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
   // 取候选文章
-  let sql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus
+  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -132,11 +132,11 @@ async function generateDaily(windowHours) {
   for (const col of columns) {
     const items = [];
 
-    if (col.special === 'focus') {
-      // 重点源（focus=1）的全部候选
+    if (col.special === 'spotlight' || col.special === 'focus') {
+      // 重点源（spotlight=1）的全部候选
       for (const a of valid) {
         if (used.has(a.id)) continue;
-        if (a.source_focus) {
+        if (a.source_spotlight) {
           items.push(formatItem(a));
           used.add(a.id);
         }

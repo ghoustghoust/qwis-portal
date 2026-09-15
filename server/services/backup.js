@@ -57,12 +57,16 @@ function restore() {
     db.prepare('DELETE FROM sources').run();
     db.prepare('DELETE FROM groups').run();
     db.prepare('DELETE FROM settings').run();
-    const insSource = db.prepare(`INSERT INTO sources(id, type, name, url, avatar, uid, group_id, focus, enabled, status, last_fetched_at, next_fetch_at, extra, created_at)
-      VALUES (@id, @type, @name, @url, @avatar, @uid, @group_id, @focus, @enabled, @status, @last_fetched_at, @next_fetch_at, @extra, @created_at)`);
+    const insSource = db.prepare(`INSERT INTO sources(id, type, name, url, avatar, uid, group_id, focus, spotlight, muted, reader_visible, enabled, status, last_fetched_at, next_fetch_at, extra, created_at)
+      VALUES (@id, @type, @name, @url, @avatar, @uid, @group_id, @focus, @spotlight, @muted, @reader_visible, @enabled, @status, @last_fetched_at, @next_fetch_at, @extra, @created_at)`);
     for (const s of data.sources || []) {
       insSource.run({
         id: s.id, type: s.type, name: s.name, url: s.url ?? null, avatar: s.avatar ?? null,
-        uid: s.uid ?? null, group_id: s.group_id ?? null, focus: s.focus ?? 0, enabled: s.enabled ?? 1,
+        uid: s.uid ?? null, group_id: s.group_id ?? null,
+        // 27b：focus 已退役——旧备份只有 focus 时回填 spotlight；新备份直读三轴列
+        focus: s.focus ?? 0, spotlight: s.spotlight ?? s.focus ?? 0,
+        muted: s.muted ?? 0, reader_visible: s.reader_visible ?? 1,
+        enabled: s.enabled ?? 1,
         status: s.status ?? 'ok', last_fetched_at: s.last_fetched_at ?? null,
         next_fetch_at: s.next_fetch_at ?? null, extra: s.extra ?? null, created_at: s.created_at ?? null,
       });

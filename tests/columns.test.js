@@ -1,5 +1,5 @@
 // T46 - 日报栏目规则单测（T26 / F15，N7 降级）
-// 覆盖：focus 优先全收 / 关键词命中首个栏目 / fallback 兜底 / 空栏保留 / 无 AI 降级
+// 覆盖：spotlight 优先全收 / 关键词命中首个栏目 / fallback 兜底 / 空栏保留 / 无 AI 降级（27b：focus 已退役为 spotlight）
 // 全部使用独立临时 DB（tests/helpers.js），不触碰 data/app.db
 require('./helpers');
 const { test, after } = require('node:test');
@@ -14,22 +14,22 @@ after(cleanup);
 // ---------- 纯规则引擎：classify / keywordHits ----------
 const COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程类', keywords: ['课程', '训练营'] },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   { id: 'c2', name: 'AI技术', desc: 'AI 动向', keywords: ['Claude', 'Agent'] },
   { id: 'fallback', name: '其它重要', special: 'fallback' },
 ];
 
 function mkItem(over) {
-  return { kind: 'article', ref_id: 1, title: '', text: '', published_at: '', focus: false, ...over };
+  return { kind: 'article', ref_id: 1, title: '', text: '', published_at: '', spotlight: false, ...over };
 }
 
-test('classify: focus 源内容全部进「重点更新」，即使命中关键词也不进关键词栏目', () => {
+test('classify: spotlight 源内容全部进「重点更新」，即使命中关键词也不进关键词栏目', () => {
   const items = [
-    mkItem({ ref_id: 1, focus: true, text: 'Claude 新课程发布' }), // focus + 命中 c2/c1 关键词
-    mkItem({ ref_id: 2, focus: true, text: '完全无关键词的日常更新' }),
+    mkItem({ ref_id: 1, spotlight: true, text: 'Claude 新课程发布' }), // spotlight + 命中 c2/c1 关键词
+    mkItem({ ref_id: 2, spotlight: true, text: '完全无关键词的日常更新' }),
   ];
   const buckets = daily.classify(items, COLUMNS);
-  assert.equal(buckets.get('focus').length, 2);
+  assert.equal(buckets.get('spotlight').length, 2);
   assert.equal(buckets.get('c1').length, 0);
   assert.equal(buckets.get('c2').length, 0);
   assert.equal(buckets.get('fallback').length, 0);
@@ -64,9 +64,9 @@ test('keywordHits: 大小写不敏感、计数命中关键词个数', () => {
 function seed() {
   const now = Date.now();
   const insSource = db.prepare(
-    "INSERT INTO sources(type, name, url, focus, enabled, status, created_at) VALUES(?,?,?,?,1,'ok',?)"
+    "INSERT INTO sources(type, name, url, spotlight, enabled, status, created_at) VALUES(?,?,?,?,1,'ok',?)"
   );
-  // 1 个 focus 公众号源 + 1 个普通公众号源 + 1 个 B站源
+  // 1 个 spotlight 公众号源 + 1 个普通公众号源 + 1 个 B站源
   const focusSrc = insSource.run('wechat', '重点公众号', 'https://rss.example.com/focus', 1, new Date(now).toISOString()).lastInsertRowid;
   const normalSrc = insSource.run('wechat', '普通公众号', 'https://rss.example.com/normal', 0, new Date(now).toISOString()).lastInsertRowid;
   const videoSrc = insSource.run('bilibili', '某UP主', 'https://space.bilibili.com/1', 0, new Date(now).toISOString()).lastInsertRowid;
@@ -75,7 +75,7 @@ function seed() {
     'INSERT INTO articles(source_id, title, url, summary, content_html, published_at, created_at) VALUES(?,?,?,?,?,?,?)'
   );
   const iso = (h) => new Date(now - h * 3600e3).toISOString();
-  // focus 源两条（其中一条带关键词，验证 focus 优先）
+  // spotlight 源两条（其中一条带关键词，验证 spotlight 优先）
   insArticle.run(focusSrc, 'Claude 课程重磅发布', 'https://a.example.com/f1', '', '', iso(1), iso(1));
   insArticle.run(focusSrc, '无关键词的重点更新', 'https://a.example.com/f2', '', '', iso(2), iso(2));
   // 普通源：一条命中「AI技术」、一条命中「培训课程发布」、一条都不命中
@@ -91,7 +91,7 @@ function seed() {
   return { focusSrc, normalSrc, videoSrc };
 }
 
-test('generate: 分栏正确（focus 全收时间倒序/关键词命中/fallback 兜底/空栏保留/stats 正确），无 AI 降级', async () => {
+test('generate: 分栏正确（spotlight 全收时间倒序/关键词命中/fallback 兜底/空栏保留/stats 正确），无 AI 降级', async () => {
   seed();
   setSetting('daily', { windowHours: 48, aiEnabled: false }); // AI 关闭
   const report = await daily.generate(48);
@@ -108,7 +108,7 @@ test('generate: 分栏正确（focus 全收时间倒序/关键词命中/fallback
   const byName = Object.fromEntries(report.sections.map((s) => [s.column, s.items]));
   // 培训课程发布：只有「新训练营招募启动」
   assert.deepEqual(byName['培训课程发布'].map((i) => i.title), ['新训练营招募启动']);
-  // 重点更新：focus 源两条全收（含带关键词的那条），时间倒序
+  // 重点更新：spotlight 源两条全收（含带关键词的那条），时间倒序
   assert.deepEqual(byName['重点更新'].map((i) => i.title), ['Claude 课程重磅发布', '无关键词的重点更新']);
   // AI技术：普通源关键词命中 + 视频关键词命中（MCP）
   assert.deepEqual(

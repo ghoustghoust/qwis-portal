@@ -63,7 +63,8 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
 
   const visibleRows = expanded ? rows : rows.slice(0, ROW_BATCH);
   const hiddenCount = rows.length - visibleRows.length;
-  const isFocus = section?.col_id === 'focus' || section?.special === 'focus';
+  // 27b：spotlight 为新机制栏目 id（'focus' 为 2026-09-15 前存量日报的兼容值）
+  const isFocus = ['spotlight', 'focus'].includes(section?.col_id) || ['spotlight', 'focus'].includes(section?.special);
 
   return (
     <section id={`dailycol-${section?.col_id || section?.column}`} className="cv-auto scroll-mt-24">

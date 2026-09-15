@@ -8,6 +8,7 @@ const log = require('../../util/log');
 const { htmlToText } = require('./summary');
 
 // 默认四栏目（plan.md「栏目配置」，F15/F18）
+// 27b（2026-09-15）：special 'focus' 更名 'spotlight'（focus 列退役）；引擎读入时兼容旧值
 const DEFAULT_COLUMNS = [
   {
     id: 'c1',
@@ -15,7 +16,7 @@ const DEFAULT_COLUMNS = [
     desc: '课程/训练营/社群招募/项目培训/技术培训发布或预告',
     keywords: ['课程', '训练营', '社群', '招募', '培训'],
   },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   {
     id: 'c2',
     name: 'AI技术',
@@ -67,7 +68,7 @@ function collectCandidates(windowHours, cfg) {
   const cutoff = new Date(Date.now() - windowHours * 3600e3).toISOString();
   const items = [];
 
-  let aSql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus,
+  let aSql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight,
                      json_extract(COALESCE(s.extra,'{}'),'$.aggregator') AS source_aggregator
               FROM articles a LEFT JOIN sources s ON s.id = a.source_id
               WHERE a.published_at >= ? AND s.enabled = 1
@@ -82,7 +83,7 @@ function collectCandidates(windowHours, cfg) {
       kind: 'article', ref_id: r.id, source_id: r.source_id,
       title: r.translated_title || r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
-      focus: !!r.source_focus, aggregator: !!r.source_aggregator,
+      spotlight: !!r.source_spotlight, aggregator: !!r.source_aggregator,
       // 2026-09-05 视觉精修：透传 AI 评分/标签，供日报条目卡展示（纯增量字段）
       score: r.score ?? null, tags: r.tags || '',
       // 翻译内容优先用于关键词匹配和摘要
@@ -90,7 +91,7 @@ function collectCandidates(windowHours, cfg) {
     });
   }
 
-  let vSql = `SELECT v.*, s.name AS source_name, s.focus AS source_focus,
+  let vSql = `SELECT v.*, s.name AS source_name, s.spotlight AS source_spotlight,
                      json_extract(COALESCE(s.extra,'{}'),'$.aggregator') AS source_aggregator
               FROM videos v LEFT JOIN sources s ON s.id = v.source_id
               WHERE v.published_at >= ? AND s.enabled = 1
@@ -104,7 +105,7 @@ function collectCandidates(windowHours, cfg) {
     items.push({
       kind: 'video', ref_id: r.id, source_id: r.source_id, title: r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
-      focus: !!r.source_focus, aggregator: !!r.source_aggregator,
+      spotlight: !!r.source_spotlight, aggregator: !!r.source_aggregator,
       // 2026-09-05 视觉精修：视频表暂无评分/标签列，字段占位对齐文章条目
       score: r.score ?? null, tags: r.tags || '',
       text: `${r.title || ''} ${htmlToText(r.intro)}`,
@@ -134,15 +135,16 @@ function keywordHits(item, keywords) {
   return hits;
 }
 
-// 栏目规则引擎：focus 源全收（时间倒序）→ 关键词命中（命中多栏时归配置顺序最先命中的栏目）→ fallback 兜底
+// 栏目规则引擎：spotlight 源全收（时间倒序）→ 关键词命中（命中多栏时归配置顺序最先命中的栏目）→ fallback 兜底
+// 27b：special 兼容旧值 'focus'（daily.columns 存量配置未迁移时仍能工作）
 function classify(items, columns) {
-  const focusCol = columns.find((c) => c.special === 'focus');
+  const focusCol = columns.find((c) => c.special === 'spotlight' || c.special === 'focus');
   const fallbackCol = columns.find((c) => c.special === 'fallback');
   const kwCols = columns.filter((c) => !c.special);
   const buckets = new Map(columns.map((c) => [c.id, []]));
 
   for (const item of items) {
-    if (item.focus && focusCol) {
+    if (item.spotlight && focusCol) {
       buckets.get(focusCol.id).push(item);
       continue;
     }
@@ -283,10 +285,10 @@ async function generate(windowHours) {
         related: item.related || [],
       });
     }
-    // 排序：focus 栏固定时间倒序；AI 模式按重要度降序；否则按关键词命中数→时间
+    // 排序：spotlight 栏固定时间倒序；AI 模式按重要度降序；否则按关键词命中数→时间
     const hitsOf = new Map(list.map((i) => [`${i.kind}:${i.ref_id}`, i._hits || 0]));
     const byTime = (a, b) => (b.published_at || '').localeCompare(a.published_at || '');
-    if (col.special === 'focus') {
+    if (col.special === 'spotlight' || col.special === 'focus') {
       outItems.sort(byTime);
     } else if (aiEnabled && aiResults) {
       // AI 模式：按重要度降序 → 时间降序

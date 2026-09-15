@@ -96,15 +96,15 @@ test('6. refresh-all?type=rss → 返回受影响数', async () => {
   assert.ok(r.body.affected >= 0 && r.body.deferred === true);
 });
 
-test('7. batch focus/unfocus 增量语义', async () => {
+test('7. batch spotlight/unspotlight 增量语义（27b：focus 别名落 spotlight 列）', async () => {
   let r = await call('POST', '/api/sources/batch', { ids: [testSourceId], action: 'focus' });
   assert.equal(r.body.succeeded, 1);
-  let s = await db.execute('SELECT focus FROM sources WHERE id=?', [testSourceId]);
-  assert.equal(s.rows[0].focus, 1);
+  let s = await db.execute('SELECT spotlight FROM sources WHERE id=?', [testSourceId]);
+  assert.equal(s.rows[0].spotlight, 1);
   r = await call('POST', '/api/sources/batch', { ids: [testSourceId], action: 'unfocus' });
   assert.equal(r.body.succeeded, 1);
-  s = await db.execute('SELECT focus FROM sources WHERE id=?', [testSourceId]);
-  assert.equal(s.rows[0].focus, 0);
+  s = await db.execute('SELECT spotlight FROM sources WHERE id=?', [testSourceId]);
+  assert.equal(s.rows[0].spotlight, 0);
 });
 
 test('8. batch move kind 不匹配 → 该项报错（部分成功语义）', async () => {

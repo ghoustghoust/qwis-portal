@@ -44,9 +44,11 @@ router.get('/', (req, res) => {
   const now = Date.now();
   const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
   const weekAgo = new Date(now - 7 * 86400e3).toISOString();
+  // 27-reader-today：未读只统计近 3 天（历史自动归档，口径与 GET /api/sources 未读一致）
+  const threeDaysAgo = new Date(now - 3 * 86400e3).toISOString();
   const overview = {
     enabledSources: count(`SELECT COUNT(*) c FROM sources s WHERE s.enabled=1 AND NOT ${NOISE}`),
-    unreadArticles: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND NOT ${NOISE}`),
+    unreadArticles: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ? AND NOT ${NOISE}`, threeDaysAgo),
     todayNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, dayStart.toISOString()),
     weekNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, weekAgo),
     dailyItemCount: 0,

@@ -61,7 +61,8 @@ function feedNameOf(author) {
 // source 按 author 精确筛选（七期 F3 来源下拉）；排序键游标与文章列表一致（sort_key|id 复合，时间倒序）
 // 七期 F3/F4：返回富字段 score/reason/tags/featured/original_url/has_original
 function query({ category, q, source, cursor } = {}) {
-  const conds = ["json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1"];
+  // 27b：屏蔽(muted)源从热点榜排除（与云端 handleHot 同口径）
+  const conds = ["json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1", 'COALESCE(s.muted,0)=0'];
   const args = [];
   if (q) {
     conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');

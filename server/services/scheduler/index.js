@@ -76,7 +76,7 @@ async function scanAndEnqueue() {
     for (const s of due) {
       if (QUEUE_ENABLED) {
         taskQueue.enqueue('fetch_source', { sourceId: s.id }, {
-          priority: s.focus ? 100 : 50,
+          priority: s.spotlight ? 100 : 50, // 27b：重点轴源优先出队（原 focus）
           sourceId: s.id,
         });
       } else {

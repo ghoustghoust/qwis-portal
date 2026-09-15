@@ -42,8 +42,8 @@ export default function DailySettingsTab() {
         articleSourceIds: d.articleSourceIds ?? aSrc.filter((x) => x.selected !== false).map((x) => x.id),
         videoSourceIds: d.videoSourceIds ?? vSrc.filter((x) => x.selected !== false).map((x) => x.id),
       });
-      setFocusA(aSrc.filter((x) => x.focus).map((x) => x.id));
-      setFocusV(vSrc.filter((x) => x.focus).map((x) => x.id));
+      setFocusA(aSrc.filter((x) => x.spotlight || x.focus).map((x) => x.id));
+      setFocusV(vSrc.filter((x) => x.spotlight || x.focus).map((x) => x.id));
       setColumns(
         (d.columns || []).map((c) => ({
           ...c,
@@ -93,7 +93,7 @@ export default function DailySettingsTab() {
         time: form.time || '08:00',
         articleSourceIds: form.articleSourceIds,
         videoSourceIds: form.videoSourceIds,
-        focusSourceIds: [...focusA, ...focusV],
+        spotlightSourceIds: [...focusA, ...focusV],
         columns: columns.map((c) => {
           const base = { id: c.id, name: c.name.trim(), desc: (c.desc || '').trim() };
           if (c.special) return { ...base, special: c.special };
@@ -143,12 +143,12 @@ export default function DailySettingsTab() {
                 <span className="text-[13px] t-text truncate">{s.name || s.url}</span>
               </label>
               {focused && (
-                <span className="badge-red flex-none">已重点关照</span>
+                <span className="badge-red flex-none">重点</span>
               )}
               <button
                 className={`switch ${focused ? 'on' : ''}`}
                 style={focused ? { background: 'var(--red)' } : undefined}
-                title="重点关照：该来源内容全部进入「重点更新」栏"
+                title="重点：该来源内容全部进入每日早报「重点更新」栏，并在阅读器智能排序中优先"
                 onClick={() => setFocusIds(toggleIn(focusIds, s.id))}
               />
             </div>
@@ -194,7 +194,7 @@ export default function DailySettingsTab() {
       <section>
         <div className="text-base font-bold t-text mb-1">公众号文章来源</div>
         <div className="text-[11px] t-muted mb-3">
-          勾选纳入日报统计的来源；「重点关照」来源的内容全部进入「重点更新」栏。
+          勾选纳入日报统计的来源；「重点」来源的内容全部进入「重点更新」栏。
         </div>
         {renderSourceList(articleSources, 'articleSourceIds', focusA, setFocusA)}
       </section>
@@ -246,8 +246,8 @@ export default function DailySettingsTab() {
               </div>
               {c.special ? (
                 <div className="mt-2 text-[11px] t-muted">
-                  {c.special === 'focus'
-                    ? '机制栏目：重点关照来源的内容全部进入此栏，按时间倒序，不限数量。'
+                  {c.special === 'spotlight' || c.special === 'focus'
+                    ? '机制栏目：重点来源的内容全部进入此栏，按时间倒序，不限数量。'
                     : '机制栏目：未命中任何栏目的入选内容进入此栏兜底。'}
                 </div>
               ) : (

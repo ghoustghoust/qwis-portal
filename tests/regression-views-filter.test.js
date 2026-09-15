@@ -12,8 +12,8 @@ after(() => cleanup());
 // ── 辅助：建源 + 建文章 ──
 function createSource(type, name, opts = {}) {
   return db.prepare(
-    "INSERT INTO sources(type, name, url, avatar, uid, extra, enabled, status, focus, created_at) VALUES(?,?,?,?,?,?,1,'ok',?,?)"
-  ).run(type, name, `http://test/${name}`, null, null, '{}', opts.focus ? 1 : 0, nowIso());
+    "INSERT INTO sources(type, name, url, avatar, uid, extra, enabled, status, spotlight, created_at) VALUES(?,?,?,?,?,?,1,'ok',?,?)"
+  ).run(type, name, `http://test/${name}`, null, null, '{}', opts.spotlight ? 1 : 0, nowIso());
 }
 function createArticle(sourceId, title, opts = {}) {
   const pub = opts.published_at || nowIso();
@@ -49,9 +49,9 @@ function req(method, path, body, withAuth = true) {
     .then(async (r) => ({ status: r.status, body: await r.json() }));
 }
 
-// ── T1: sort=smart — focus 源优先 ──
-test('sort=smart: focus 源文章排在同时间窗非 focus 源之前', async () => {
-  const focusSrc = createSource('rss', '焦点源', { focus: true });
+// ── T1: sort=smart — spotlight 源优先（27b：focus 已退役） ──
+test('sort=smart: spotlight 源文章排在同时间窗非 spotlight 源之前', async () => {
+  const focusSrc = createSource('rss', '焦点源', { spotlight: true });
   const normalSrc = createSource('rss', '普通源');
   // 同一时间发布
   const sameTime = '2026-09-05T10:00:00.000Z';
@@ -64,11 +64,11 @@ test('sort=smart: focus 源文章排在同时间窗非 focus 源之前', async (
   const focusIdx = items.findIndex((a) => a.title === '焦点文章');
   const normalIdx = items.findIndex((a) => a.title === '普通文章');
   assert.ok(focusIdx >= 0 && normalIdx >= 0, '两篇文章都应出现');
-  assert.ok(focusIdx < normalIdx, 'focus 源文章应排在非 focus 源之前');
+  assert.ok(focusIdx < normalIdx, 'spotlight 源文章应排在非 spotlight 源之前');
 });
 
-test('sort=smart: 3天前的 focus 源排在刚发布的非 focus 之前', async () => {
-  const focusSrc2 = createSource('rss', '焦点源2', { focus: true });
+test('sort=smart: 3天前的 spotlight 源排在刚发布的非 spotlight 之前', async () => {
+  const focusSrc2 = createSource('rss', '焦点源2', { spotlight: true });
   const normalSrc2 = createSource('rss', '普通源2');
   const threeDaysAgo = new Date(Date.now() - 2 * 86400 * 1000).toISOString(); // 2 天前（在 3d 窗口内）
   const justNow = nowIso();
@@ -79,7 +79,7 @@ test('sort=smart: 3天前的 focus 源排在刚发布的非 focus 之前', async
   const focusIdx = items.findIndex((a) => a.title === '焦点旧文');
   const normalIdx = items.findIndex((a) => a.title === '普通新文');
   assert.ok(focusIdx >= 0 && normalIdx >= 0);
-  assert.ok(focusIdx < normalIdx, '2天前的 focus 源（在 3d 加成窗口内）应排在刚发布的非 focus 之前');
+  assert.ok(focusIdx < normalIdx, '2天前的 spotlight 源（在 3d 加成窗口内）应排在刚发布的非 spotlight 之前');
 });
 
 // ── T2: score_min ──
@@ -186,7 +186,7 @@ test('缺省新参数: 响应契约与现状一致（字段/分页）', async ()
   // LIST_FIELDS 增量字段存在（不破坏旧字段）
   if (r.body.items.length > 0) {
     const item = r.body.items[0];
-    assert.ok('source_focus' in item, 'source_focus 字段应存在');
+    assert.ok('source_spotlight' in item, 'source_spotlight 字段应存在（27b 更名）');
     assert.ok('score' in item, 'score 字段应存在');
     assert.ok('source_name' in item, '原有 source_name 字段不应丢失');
   }

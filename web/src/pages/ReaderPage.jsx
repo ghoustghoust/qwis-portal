@@ -14,7 +14,8 @@ import { toast } from '../toast';
 const SORT_KEY = 'qwis.sort'; // 排序选择记忆
 
 function readSort() {
-  try { return localStorage.getItem(SORT_KEY) || 'new'; } catch { return 'new'; }
+  // 27-reader-today：默认排序改 smart（重点源 +3d 加权），用户选过则尊重记忆
+  try { return localStorage.getItem(SORT_KEY) || 'smart'; } catch { return 'smart'; }
 }
 
 const EMPTY_FILTER = {
@@ -24,11 +25,13 @@ const EMPTY_FILTER = {
 
 // 阅读器页（/reader/）：三栏布局 + 文章/视频双 Tab 共用 Sidebar（T16）
 // T12/F4：文章与视频的筛选（含日期 from/to）各自独立记住
+// 27-reader-today（2026-09-15）：文章默认 tab='today'——「今日」滚动 24h 视图（四层金字塔 L3 默认只出今日，
+// 「全部」降级为检索模式，见 ArticleList 的 searchGated）
 export default function ReaderPage() {
   const { settings, refresh: refreshStore } = useStore();
   const [mode, setMode] = useState('article'); // article | video
   const [filters, setFilters] = useState({
-    article: { ...EMPTY_FILTER, sort: readSort() },
+    article: { ...EMPTY_FILTER, tab: 'today', sort: readSort() },
     video: { ...EMPTY_FILTER },
   });
   // 无感刷新：轮询 /api/articles/since，跟随当前 tab/组/源筛选

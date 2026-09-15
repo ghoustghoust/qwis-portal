@@ -993,7 +993,7 @@ async function runDailyAi() {
   // 候选（沿用关键词版排除规则）
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
-  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.focus AS source_focus
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
                AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1`;
@@ -1042,7 +1042,7 @@ async function runDailyAi() {
   // id 加 v 前缀防与文章 id 冲突（report 条目 kind='video'，前端点开走外链）
   try {
     const videoRows = await qAll(
-      `SELECT v.id, v.source_id, v.title, v.url, v.intro, v.cover, v.published_at, s.name AS source_name, s.focus AS source_focus
+      `SELECT v.id, v.source_id, v.title, v.url, v.intro, v.cover, v.published_at, s.name AS source_name, s.spotlight AS source_spotlight
        FROM videos v LEFT JOIN sources s ON s.id = v.source_id
        WHERE v.created_at >= ? AND v.created_at < ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 20`,
@@ -1099,7 +1099,7 @@ async function runDailyAi() {
     if (protectedItems.length) log(`L5b 低曝光保护位: ${protectedItems.map((p) => p.source_name).join('/')}`);
   } catch (e) { log(`L5b 保护位失败（不阻断）: ${e.message}`); }
 
-  // 栏目组装（沿用 columns 语义：focus 优先 → 关键词 → fallback 按总分）
+  // 栏目组装（沿用 columns 语义：spotlight 优先 → 关键词 → fallback 按总分；27b 兼容旧 special 值 'focus'）
   // L3 单源配额：同源单日入报 ≤3（跨栏计数，防单源刷屏）；全局总条数 ≤36
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const used = new Set();
@@ -1122,10 +1122,10 @@ async function runDailyAi() {
   };
   for (const col of columns) {
     const items = [];
-    if (col.special === 'focus') {
+    if (col.special === 'spotlight' || col.special === 'focus') {
       for (const a of analyzed) {
         if (used.has(a.id)) continue;
-        if (a.source_focus && take(a)) items.push(fmt(a));
+        if (a.source_spotlight && take(a)) items.push(fmt(a));
       }
     } else if (col.special === 'fallback') {
       const rest = analyzed.filter((a) => !used.has(a.id)).sort((x, y) => y.totalScore - x.totalScore).slice(0, 10);
@@ -1252,11 +1252,12 @@ async function buildInterestProfile() {
 
 async function runMyBrief(analyzed) {
   const _ai = require('../api/_ai');
-  // v1 订阅集合 = focus 特别关注（P2-1 订阅模型上线后切换取值）
-  const subs = await qAll('SELECT id FROM sources WHERE focus=1 AND enabled=1');
+  // 27b（2026-09-15）：订阅集合 = settings subscription.ids（源四轴之「订阅」轴；键缺失时兜底 spotlight 集合）
+  const subIdsArr = await require('../lib/source-axes').resolveSubscriptionIds({ qAll, getSetting });
+  const subs = subIdsArr.map((id) => ({ id }));
   if (!subs.length) {
     await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify({ empty: 'no-subscription', date: nowIso().slice(0, 10) })] });
-    log('mybrief: 无订阅源（focus=0），写引导态');
+    log('mybrief: 无订阅源（subscription.ids 为空），写引导态');
     return { empty: 'no-subscription' };
   }
   const subIds = new Set(subs.map((s) => s.id));
@@ -1420,7 +1421,7 @@ async function runMyBrief(analyzed) {
 // ─── 模式：daily（日报生成，逻辑与 api/daily-generate.js 对齐） ───
 const DEFAULT_COLUMNS = [
   { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'focus', name: '重点更新', special: 'focus' },
+  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
   { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
   { id: 'fallback', name: '其它重要', special: 'fallback' },
 ];
@@ -1430,6 +1431,10 @@ async function getSetting(key, def = null) {
   const rows = await qAll('SELECT value FROM settings WHERE key = ?', [key]);
   if (!rows[0]) return def;
   try { return JSON.parse(rows[0].value); } catch { return def; }
+}
+
+async function putSetting(key, val) {
+  await getDb().execute({ sql: 'INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)', args: [key, JSON.stringify(val)] });
 }
 
 function hasMojibake(text) {
@@ -1497,7 +1502,7 @@ async function runDaily() {
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
-  let sql = `SELECT a.*, s.name AS source_name, s.focus AS source_focus
+  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -1516,10 +1521,10 @@ async function runDaily() {
   const used = new Set();
   for (const col of columns) {
     const items = [];
-    if (col.special === 'focus') {
+    if (col.special === 'spotlight' || col.special === 'focus') {
       for (const a of valid) {
         if (used.has(a.id)) continue;
-        if (a.source_focus) { items.push(formatItem(a)); used.add(a.id); }
+        if (a.source_spotlight) { items.push(formatItem(a)); used.add(a.id); }
       }
     } else if (col.special === 'fallback') {
       const remaining = valid
@@ -1858,6 +1863,14 @@ async function runTranslate() {
     'CREATE INDEX IF NOT EXISTS idx_articles_later_sk ON articles(later, COALESCE(published_at, created_at) DESC, id DESC)',
     'CREATE INDEX IF NOT EXISTS idx_videos_fav_sk ON videos(favorite, published_at DESC, id DESC)',
   ]) { try { await getDb().execute(ddl); } catch { /* 已存在 */ } }
+  // 27b 源四轴（2026-09-15）：补列 + 一次性迁移（focus→spotlight + subscription.ids）
+  // runner 也要跑：Vercel ensureSchema 只在读层首请求触发，runner 若先跑会因缺列/未迁移读空
+  const axes = require('../lib/source-axes');
+  for (const alter of axes.AXES_ALTERS) { try { await getDb().execute(alter); } catch { /* 已存在 */ } }
+  try {
+    const migrated = await axes.migrateAxes({ qAll, qRun, getSetting, setSetting: putSetting });
+    if (migrated) log('四轴迁移完成：focus→spotlight + subscription.ids 初始化');
+  } catch (e) { log(`四轴迁移失败（不阻断采集）: ${e.message}`); }
   try {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();

@@ -17,6 +17,7 @@ function buildWhere(query) {
   if (tab === 'favorite') conds.push('v.favorite=1');
   else if (tab === 'history') conds.push('v.watched_at IS NOT NULL');
   if (query.source_id) { conds.push('v.source_id=?'); args.push(Number(query.source_id)); }
+  else conds.push('COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1'); // 27b：屏蔽/未收录源不进阅读器视频流（显式 source_id 豁免）
   if (query.group_id) { conds.push('s.group_id=?'); args.push(Number(query.group_id)); }
   // F4：日期范围筛选（YYYY-MM-DD，按 UTC 日期边界；to 含当天全天）
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.from || '')) {
