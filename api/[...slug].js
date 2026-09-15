@@ -2592,6 +2592,39 @@ async function handleArticleTranslate(req, id) {
   return jsonOk({ queued: true, etaMin: 20, message: '已加入翻译队列，runner 每 15 分钟处理' });
 }
 
+// 读层译文标题回填（与 daily 的 enrichDailyTranslated 同机制）：早报/周刊报告是生成时快照，
+// 生成后才翻好的标题应实时换中文（2026-09-16：「评论：0」快照污染暴露此缺口——快照要等 21:30 重生成才刷新）
+async function enrichBriefTitles(report) {
+  if (!report || typeof report !== 'object') return report;
+  const buckets = [];
+  if (report.sections) for (const k of ['top', 'featured', 'rest']) {
+    if (Array.isArray(report.sections[k])) buckets.push(report.sections[k]);
+  }
+  if (Array.isArray(report.storylines)) for (const sl of report.storylines) {
+    if (sl && Array.isArray(sl.items)) buckets.push(sl.items);
+  }
+  const ids = [];
+  for (const arr of buckets) for (const it of arr) {
+    if (it && Number.isFinite(Number(it.id)) && !String(it.id).startsWith('v')) ids.push(Number(it.id));
+  }
+  if (!ids.length) return report;
+  const map = new Map();
+  for (let i = 0; i < ids.length; i += 500) {
+    const batchIds = ids.slice(i, i + 500);
+    const rows = await qAll(
+      `SELECT id, translated_title FROM articles WHERE id IN (${batchIds.map(() => '?').join(',')}) AND translated_title IS NOT NULL AND translated_title != ''`,
+      batchIds
+    );
+    for (const r of rows) map.set(r.id, cleanTranslatedTitle(r.translated_title));
+  }
+  if (!map.size) return report;
+  for (const arr of buckets) for (const it of arr) {
+    const t = it && map.get(Number(it.id));
+    if (t && t !== it.title) { it.original_title = it.title; it.title = t; }
+  }
+  return report;
+}
+
 // GET /api/mybrief — 我的早报（19-my-brief；公开读，三态响应）
 async function handleMyBrief(req) {
   // 27b：订阅集合 = settings subscription.ids（原 focus=1 语义已迁移；键缺失时兜底 spotlight 集合）
@@ -2601,7 +2634,7 @@ async function handleMyBrief(req) {
   if (!report) return jsonOk({ empty: 'no-content' });
   // T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键）
   const digest = await getSetting('reading.digest', null);
-  return jsonOk({ report, ...(digest ? { digest } : {}) });
+  return jsonOk({ report: await enrichBriefTitles(report), ...(digest ? { digest } : {}) });
 }
 
 
@@ -2624,12 +2657,12 @@ async function handleWeekly(req) {
     const archive = (await getSetting('weekly.archive', [])) || [];
     const hit = archive.find((a) => a.issue === issue);
     if (!hit) return { status: 404, body: jsonErr('期号不存在') };
-    return jsonOk({ report: hit.report });
+    return jsonOk({ report: await enrichBriefTitles(hit.report) });
   }
   const report = await getSetting('weekly.latest', null);
   if (!report) return jsonOk({ empty: 'no-content' });
   const archive = (await getSetting('weekly.archive', [])) || [];
-  return jsonOk({ report, archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
+  return jsonOk({ report: await enrichBriefTitles(report), archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
 }
 
 // GET /api/sources/bilibili-diagnose — B站 Cookie/wbi/登录态诊断（21-bilibili-runner）
