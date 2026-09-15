@@ -2611,16 +2611,17 @@ async function enrichBriefTitles(report) {
   const map = new Map();
   for (let i = 0; i < ids.length; i += 500) {
     const batchIds = ids.slice(i, i + 500);
+    // original_title 取库里真正的原文标题，而非快照值（快照可能是污染译文——2026-09-16「评论：0」事故）
     const rows = await qAll(
-      `SELECT id, translated_title FROM articles WHERE id IN (${batchIds.map(() => '?').join(',')}) AND translated_title IS NOT NULL AND translated_title != ''`,
+      `SELECT id, title, translated_title FROM articles WHERE id IN (${batchIds.map(() => '?').join(',')}) AND translated_title IS NOT NULL AND translated_title != ''`,
       batchIds
     );
-    for (const r of rows) map.set(r.id, cleanTranslatedTitle(r.translated_title));
+    for (const r of rows) map.set(r.id, { zh: cleanTranslatedTitle(r.translated_title), orig: r.title });
   }
   if (!map.size) return report;
   for (const arr of buckets) for (const it of arr) {
-    const t = it && map.get(Number(it.id));
-    if (t && t !== it.title) { it.original_title = it.title; it.title = t; }
+    const hit = it && map.get(Number(it.id));
+    if (hit && hit.zh !== it.title) { it.original_title = hit.orig || it.title; it.title = hit.zh; }
   }
   return report;
 }
