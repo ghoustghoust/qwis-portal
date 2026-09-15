@@ -5,21 +5,21 @@
       "kind": "article",
       "name": "科技博客",
       "sort": 0,
-      "source_count": 260
+      "source_count": 254
     },
     {
       "id": 64,
       "kind": "article",
       "name": "X·AI推主",
       "sort": 0,
-      "source_count": 127
+      "source_count": 126
     },
     {
       "id": 65,
       "kind": "article",
       "name": "Top200 精选",
       "sort": 0,
-      "source_count": 155
+      "source_count": 152
     },
     {
       "id": 66,
@@ -166,7 +166,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 31
+      "source_count": 6
     },
     {
       "id": 17,
@@ -236,21 +236,21 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 9
+      "source_count": 4
     },
     {
       "id": 27,
       "kind": "video",
       "name": "编程技术",
       "sort": 27,
-      "source_count": 1
+      "source_count": 0
     },
     {
       "id": 28,
       "kind": "video",
       "name": "产品",
       "sort": 28,
-      "source_count": 1
+      "source_count": 2
     },
     {
       "id": 29,
@@ -260,5 +260,5 @@
       "source_count": 1
     }
   ],
-  "generated_at": "2026-09-14T06:39:28.510Z"
+  "generated_at": "2026-09-15T06:22:51.726Z"
 }

@@ -1,187 +1,161 @@
 {
   "report": {
-    "id": 87,
-    "generated_at": "2026-09-14T05:57:15.702Z",
+    "id": 90,
+    "generated_at": "2026-09-15T05:58:50.564Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
-        "items": [
-          {
-            "id": 534318,
-            "title": "北交所公募产品矩阵“上新”，部分三个月持有期基金14日开售",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661806452&idx=2&sn=9afc4604a65b6fa13883c3bdb0060cd5",
-            "source": "第一财经",
-            "published_at": "2026-09-13T15:50:00.000Z",
-            "score": null,
-            "summary": "据证监会官网，易方达基金近期披露了“易方达北交所优选3个月持有混合”基金的招募说明书、托管协议、基金合同等多份文件。其中显示，该基金首次募集规模上限为5亿元，公开发售时间为9月14日至9月24日‌。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9552c63e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCLhjHxCibtAbUA09jiavr1QJzXV8wW21ibsrPHZ6HEI7QOofLgyGfE1VNFSQU5Kdb26M5WqghYLKRdaEWKVBYmPe0KBnFufz6xK9M%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 569978,
-            "title": "“安全健康教育网”培训？多地官方辟谣",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzI5NTU3MQ==&mid=2652568674&idx=1&sn=5a59934075cca6368f36618e378e0320",
-            "source": "澎湃新闻",
-            "published_at": "2026-09-13T15:11:00.000Z",
-            "score": null,
-            "summary": "2026年9月10日，内蒙古自治区兴安盟卫生健康委员会发布辟谣声明，提醒各单位警惕一家名为“安全健康教育网”的机构假借安全健康教育名义开展培训。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f38024ef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibIciaJ2dfKYes4TehVvVNYYAoiaKHbJ2Dwjdr3RQ118jdrmdIFyINCFU3ibqSmo5Bic3l5icicicdmBBWA509XYRhWrVuWBOYgiahLLQNOFdu164hkc%2F0%3Fwx_fmt%3Djpeg"
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 599921,
-            "title": "Registration without a phone number on Signal will use zero-knowledge proofs",
-            "url": "https://community.signalusers.org/t/registration-without-a-phone-number/2222?page=10",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T21:47:04.000Z",
-            "score": null,
-            "summary": "Article URL: https://community.signalusers.org/t/registration-without-a-phone-number/2222?page=10",
-            "cover": null
-          },
-          {
-            "id": 601014,
-            "title": "早知天下事〔2026.09.14〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650237766&idx=1&sn=6d4a3e4c5f3948e819119644ad5fbf5e",
+            "id": 820581,
+            "title": "早知天下事〔2026.09.15〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650238068&idx=1&sn=2ea493243d0c78adc300345ba0c139ac",
             "source": "新华社",
-            "published_at": "2026-09-13T21:30:00.000Z",
+            "published_at": "2026-09-14T21:30:00.000Z",
             "score": null,
-            "summary": "习近平出席金砖国家领导人第十八次会晤第二阶段会议并发表重要讲话。详情&gt;&gt;",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=da4e0104&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOITkZuO9Chicic4MNgH7Bib8DoPmqnPxYWIhL9ZZ1bZGhjO7LRyjtE1fcyRicmoDc1UQhsLAhmyLfIgG0oMOhHzOCGO5ueiceKPfdZU0%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "中共中央办公厅、国务院办公厅、中央军委办公厅印发《退役军人服务和保障“十五五”规划》，对“十五五”时期做好退役军人工作作出部署安排。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=66900e48&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOISvL8mgb4ZF2ibYeKFpHJb8ZnQjVWCed6fXVYAoiccuJRefpziatc5C9SX6AiaEESt3YQIFg35n8eqcDrYHSjpEGzOsjraPP7XQpCc%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 599922,
-            "title": "Why is privacy so hard?",
-            "url": "https://cacm.acm.org/blogcacm/why-is-privacy-so-hard/",
+            "id": 822284,
+            "title": "Charts built for Chat",
+            "url": "https://dbtcharts.com/blog/charts-built-for-chat/",
             "source": "Hacker News 首页",
-            "published_at": "2026-09-13T21:13:43.000Z",
+            "published_at": "2026-09-14T21:22:54.000Z",
             "score": null,
-            "summary": "Article URL: https://cacm.acm.org/blogcacm/why-is-privacy-so-hard/",
+            "summary": "Article URL: https://dbtcharts.com/blog/charts-built-for-chat/",
             "cover": null
           },
           {
-            "id": 588945,
-            "title": "Ask HN: In The Matrix, the bad guys are the 'agents'. Coincidence? Clairvoyance?",
-            "url": "https://news.ycombinator.com/item?id=49688761",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T21:13:13.000Z",
-            "score": null,
-            "summary": "My buddy, Dario, says agents are getting more aggressive and will soon kill everybody, and I feel like I've seen this movie before.",
-            "cover": null
-          },
-          {
-            "id": 588946,
-            "title": "Fable 5.1 Solves the Cyphral Distich, a 370-year-old cipher",
-            "url": "https://www.vals.ai/blogs/fable-solves-cyphral-distich",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T21:06:13.000Z",
-            "score": null,
-            "summary": "Article URL: https://www.vals.ai/blogs/fable-solves-cyphral-distich",
-            "cover": null
-          },
-          {
-            "id": 577969,
-            "title": "Flawed Routers Flood University of Wisconsin Internet Time Server (2003)",
-            "url": "https://pages.cs.wisc.edu/~plonka/netgear-sntp/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T20:33:18.000Z",
-            "score": null,
-            "summary": "Article URL: https://pages.cs.wisc.edu/~plonka/netgear-sntp/",
-            "cover": null
-          },
-          {
-            "id": 590140,
-            "title": "阿曼外交部：原定于14日举行的地区会议延期",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247849293&idx=1&sn=65e5aca95c049887cc7ad004020a15eb",
-            "source": "财联社",
-            "published_at": "2026-09-13T20:12:00.000Z",
-            "score": null,
-            "summary": "据央视新闻，当地时间13日晚，阿曼外交部宣布，原定于14日在阿曼南部港口城市塞拉莱举行的地区会议将推迟。日期另行确定。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=05b37118&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaT753WpeTSHGH1QY4XtticUp0tTen5mf6fo9yVJbZEiaOF6COxU5WqdA4NhJhTFEfLAnicmc74vDhk6WIGR2G4X20ZvMGCoKeic5bI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 567981,
-            "title": "Mark Zuckerberg: \"Cambridge Analytica\" (2017)",
-            "url": "https://twitter.com/TechEmails/status/2099214399840059428",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T20:08:45.000Z",
-            "score": null,
-            "summary": "Article URL: https://twitter.com/TechEmails/status/2099214399840059428",
-            "cover": null
-          },
-          {
-            "id": 570098,
-            "title": "Trump and Mike Johnson think the AI industry is overreacting",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/994441/trump-mike-johnson-ai-industry-overreacting",
+            "id": 809895,
+            "title": "What execs and politicians are saying about slowing down AI development",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/995141/ai-executives-politicians-safety-regulation-anthropic-dario-amodei",
             "source": "The Verge",
-            "published_at": "2026-09-13T19:41:48.000Z",
-            "score": null,
-            "summary": "Yesterday, Anthropic CEO Dario Amodei published a lengthy open letter saying it was time to \"pace the frontier\" and slow down AI development. OpenAI's Sam Altman and Elon Musk both agreed, publicly vo",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/STK466_ELECTION_2024_CVirginia_E.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+            "published_at": "2026-09-14T21:21:42.000Z",
+            "score": 62,
+            "summary": "Dario Amodei kicked off a flood of statements over the past few days about AI safety by publishing a long essay titled \"We Must Pace the Frontier\" detailing why AI development should be slowed down. O",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/03/STK202_DARIO_AMODEI_CVIRGINIA_D.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           },
           {
-            "id": 567982,
-            "title": "There Is No AI (It's Just People) with Jaron Lanier",
-            "url": "https://singjupost.com/startalk-there-is-no-ai-really-its-just-people-w-jaron-lanier-transcript/",
+            "id": 811465,
+            "title": "A single firm is behind OpenAI, Anthropic, and Meta hacking scandals",
+            "url": "https://www.effort.news/irregular",
             "source": "Hacker News 首页",
-            "published_at": "2026-09-13T19:41:06.000Z",
-            "score": null,
-            "summary": "Article URL: https://singjupost.com/startalk-there-is-no-ai-really-its-just-people-w-jaron-lanier-transcript/",
+            "published_at": "2026-09-14T21:15:01.000Z",
+            "score": 70,
+            "summary": "Article URL: https://www.effort.news/irregular",
             "cover": null
           },
           {
-            "id": 567983,
-            "title": "AI recursive self-improvement might not come so quickly after all (August 2026)",
-            "url": "https://www.technologyreview.com/2026/08/18/1142188/ai-recursive-self-improvement/",
+            "id": 811466,
+            "title": "Amazon vs. Perplexity – U.S. Court of Appeals for the Ninth Circuit",
+            "url": "https://law.justia.com/cases/federal/appellate-courts/ca9/26-1444/26-1444-2026-08-04.html",
             "source": "Hacker News 首页",
-            "published_at": "2026-09-13T18:49:44.000Z",
-            "score": null,
-            "summary": "Article URL: https://www.technologyreview.com/2026/08/18/1142188/ai-recursive-self-improvement/",
+            "published_at": "2026-09-14T21:05:22.000Z",
+            "score": 73,
+            "summary": "Article URL: https://law.justia.com/cases/federal/appellate-courts/ca9/26-1444/26-1444-2026-08-04.html",
             "cover": null
           },
           {
-            "id": 559083,
-            "title": "Apple is reportedly working on iPhone game controllers",
-            "url": "https://www.theverge.com/tech/994426/apple-iphone-game-controllers",
+            "id": 822286,
+            "title": "US coal 'biggest contributor by far' to rise in global emissions",
+            "url": "https://www.thechemicalengineer.com/news/us-coal-biggest-contributor-by-far-to-rise-in-global-emissions/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-14T21:04:53.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.thechemicalengineer.com/news/us-coal-biggest-contributor-by-far-to-rise-in-global-emissions/",
+            "cover": null
+          },
+          {
+            "id": 798350,
+            "title": "Trump throws out power plant climate pollution rules",
+            "url": "https://www.theverge.com/news/995051/epa-power-plant-climate-pollution-rollback-ai-data-centers",
             "source": "The Verge",
-            "published_at": "2026-09-13T18:30:16.000Z",
+            "published_at": "2026-09-14T20:45:00.000Z",
             "score": null,
-            "summary": "Bloomberg's Mark Gurman says Apple is developing two game controllers for the iPhone and will likely sell them under the Beats brand. Rumors that Apple might enter the game controller business have ci",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24522825/4._Ultimate_2.4_Whit___iPhone.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+            "summary": "The Environmental Protection Agency announced its plans today to kill any remaining standards on how much greenhouse gas pollution power plants are allowed to emit in the US. The move will only make e",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25824781/STK438_CLIMATE_CHANGE_C.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           },
           {
-            "id": 557029,
-            "title": "I'm being cyberattacked by Tesla, Inc",
-            "url": "https://dreamstation.systems/personal/tesla.html",
+            "id": 799625,
+            "title": "A Beginning for Mathematics",
+            "url": "https://proofsandprompts.com/2026/09/14/a-beginning-for-mathematics/",
             "source": "Hacker News 首页",
-            "published_at": "2026-09-13T18:03:09.000Z",
+            "published_at": "2026-09-14T20:14:45.000Z",
             "score": null,
-            "summary": "Article URL: https://dreamstation.systems/personal/tesla.html",
+            "summary": "Article URL: https://proofsandprompts.com/2026/09/14/a-beginning-for-mathematics/",
             "cover": null
           },
           {
-            "id": 557030,
-            "title": "Global Shortage Has Led to Motor Oil Rationing at Costco",
-            "url": "https://guessingheadlights.com/global-shortage-has-led-to-motor-oil-rationing-at-costco/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T17:57:59.000Z",
+            "id": 798351,
+            "title": "Jensen Huang puts Trump on speakerphone onstage to announce robots won’t take over the world",
+            "url": "https://www.theverge.com/tech/995079/president-donald-trump-calls-nvidia-ceo-jensen-huang-all-in-summit",
+            "source": "The Verge",
+            "published_at": "2026-09-14T20:03:37.000Z",
             "score": null,
-            "summary": "Article URL: https://guessingheadlights.com/global-shortage-has-led-to-motor-oil-rationing-at-costco/",
+            "summary": "Nvidia CEO Jensen Huang took a call from President Trump on Monday while onstage at the All-In Podcast's All-In Summit. It's not the first time Huang has taken a call from the president during work, b",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2292612804.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+          },
+          {
+            "id": 799626,
+            "title": "GPT-5.6 Luna vs. GPT-6 Astra: Is a $1.20 Model Good Enough for Code Review?",
+            "url": "https://entelligence.ai/blogs/gpt-5.6-luna-vs-gpt-6-astra-is-a-1.20-model-good-enough-for-code-review",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-14T19:56:20.000Z",
+            "score": 67,
+            "summary": "Article URL: https://entelligence.ai/blogs/gpt-5.6-luna-vs-gpt-6-astra-is-a-1.20-model-good-enough-for-code-review",
             "cover": null
           },
           {
-            "id": 557031,
-            "title": "Device Drivers lab exercise – COSC562",
-            "url": "https://web.eecs.utk.edu/~smarz1/courses/cosc562/drivers.html",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-13T17:41:50.000Z",
+            "id": 798352,
+            "title": "Valve&#8217;s virtual reality plans hit actual reality",
+            "url": "https://www.theverge.com/tech/995055/valve-steam-frame-price-ram-impact",
+            "source": "The Verge",
+            "published_at": "2026-09-14T19:48:06.000Z",
             "score": null,
-            "summary": "Article URL: https://web.eecs.utk.edu/~smarz1/courses/cosc562/drivers.html",
+            "summary": "The Steam Frame headset is here, and it may not surprise you: it was supposed to cost less than $1,059. \"We set out to come out with a device that would have been far more affordable, but the global R",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/268694_Steam_Frame_KMcClellan_0028.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+          },
+          {
+            "id": 787253,
+            "title": "The best deals from Nintendo’s ‘customer appreciation’ sale",
+            "url": "https://www.theverge.com/gadgets/994892/nintendo-customer-appreciation-tariff-refund-deal-sale",
+            "source": "The Verge",
+            "published_at": "2026-09-14T19:30:58.000Z",
+            "score": null,
+            "summary": "As promised, Nintendo has marked down a wide variety of Switch games and accessories at Amazon, Best Buy, and Walmart, as well as its own digital storefront. Its “Customer Appreciation” sale is happen",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/Super-Mario-Odyssey.webp?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+          },
+          {
+            "id": 799627,
+            "title": "Oracle's Cold 6AM Layoff Emails Hit Staff Amid New Wave of Cuts",
+            "url": "https://www.techtimes.co.uk/oracle-new-layoffs-restructuring-costs-2-8-billion-1808676",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-14T19:05:15.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.techtimes.co.uk/oracle-new-layoffs-restructuring-costs-2-8-billion-1808676",
+            "cover": null
+          },
+          {
+            "id": 811468,
+            "title": "Backprop Alternative: Augmented Lagrangian Predictive Coding",
+            "url": "https://pub.sakana.ai/pc-alm/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-14T18:03:12.000Z",
+            "score": null,
+            "summary": "Article URL: https://pub.sakana.ai/pc-alm/",
+            "cover": null
+          },
+          {
+            "id": 776733,
+            "title": "Iranian banks' SSL certificates are being revoked due to OFAC sanctions",
+            "url": "https://digiato.global/report/iran-banks-ssl-certificates-domain-changes/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-14T17:58:00.000Z",
+            "score": 53,
+            "summary": "Article URL: https://digiato.global/report/iran-banks-ssl-certificates-domain-changes/",
             "cover": null
           }
         ]
@@ -191,154 +165,154 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 583473,
-            "title": "公司里面号池的 Ccmax 直转 key.有余",
-            "url": "https://www.v2ex.com/t/1241736#reply0",
-            "source": "V2EX · 技术",
-            "published_at": "2026-09-13T20:50:25.000Z",
-            "score": null,
-            "summary": "公司里面的 ccmax 直转 key 全模型，防封，0 注入。有需要的可以交流。每天都几万刀的额度。可以关注交流",
-            "cover": null
-          },
-          {
-            "id": 599827,
-            "title": "I Built 15 SLOs for an AI Agent. Here's What OpenTelemetry Could Measure",
-            "url": "https://medium.com/data-science-collective/i-built-15-slos-for-an-ai-agent-heres-what-opentelemetry-could-measure-dcbacf4c3e9e",
+            "id": 813549,
+            "title": "Want to stop AI from destroying the world? Make it Open Source",
+            "url": "https://news.ycombinator.com/item?id=49704558",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-13T20:24:56.000Z",
-            "score": null,
-            "summary": "Article URL: https://medium.com/data-science-collective/i-built-15-slos-for-an-ai-agent-heres-what-opentelemetry-could-measure-dcbacf4c3e9e",
+            "published_at": "2026-09-14T21:45:09.000Z",
+            "score": 35,
+            "summary": "Make Claude and Chat GPT open source. Give everyone the ability to build advanced AI systems. Don't take all the guns, give them all away, so no one has a monopoly on power.",
             "cover": null
           },
           {
-            "id": 599828,
-            "title": "Show HN: ClientCoded – QA Platform for AI Agents",
-            "url": "https://clientcoded.com/environments",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-13T20:22:29.000Z",
-            "score": null,
-            "summary": "Hi HN. We built a QA platform for AI agents.My cofounder spent 6 years at Veeva Systems building QA frameworks for regulated software. I spent 5 years in sales helping AI-native startups with their gr",
+            "id": 825275,
+            "title": "Siri AI Will Have Deep Integration With ChatGPT and Claude Models, Leaked Build Shows",
+            "url": "https://www.cnet.com/tech/services-and-software/siri-ai-will-have-deep-integration-with-chatgpt-and-claude-models-leaked-build-shows/",
+            "source": "News – CNET",
+            "published_at": "2026-09-14T21:35:52.000Z",
+            "score": 52,
+            "summary": "",
             "cover": null
           },
           {
-            "id": 567309,
-            "title": "MENDEL: todas vamos a morir (?) - Estoy construyendo un agente de investigación llamado MENDEL y una de las pruebas terminó exponiendo un problema que creo que aparece mucho en sistemas de búsqueda + RAG + agentes",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wfifp0/mendel_todas_vamos_a_morir_estoy_construyendo_un/",
+            "id": 802135,
+            "title": "Abnormal AI: Amazon Bedrock AgentCore for agentic email security at scale",
+            "url": "https://aws.amazon.com/blogs/machine-learning/abnormal-ai-amazon-bedrock-agentcore-for-agentic-email-security-at-scale/",
+            "source": "AWS Machine Learning Blog",
+            "published_at": "2026-09-14T21:22:45.000Z",
+            "score": 65,
+            "summary": "AI agents now run in production at a scale of billions of operations a day, and a recurring architectural pattern has surfaced: agents need a compute scratch pad. Not only for coding tasks, but for da",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/11/ML-21301-1.png"
+          },
+          {
+            "id": 815278,
+            "title": "Show HN: DevRecap – reconstruct what you worked on from Codex and Git",
+            "url": "https://github.com/jquinteiroo/devrecap",
+            "source": "Show HN",
+            "published_at": "2026-09-14T21:19:13.000Z",
+            "score": 48,
+            "summary": "Article URL: https://github.com/jquinteiroo/devrecap",
+            "cover": null
+          },
+          {
+            "id": 813126,
+            "title": "Check out the full Agent Arena leaderboard and Pareto frontier at: https://t.co/Nb8opa5Kkw",
+            "url": "https://x.com/arena/status/2099606883808203247",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-14T21:11:04.000Z",
+            "score": null,
+            "summary": "Check out the full Agent Arena leaderboard and Pareto frontier at: arena.ai/leaderboard/ag…💬0🔄0❤️2👀847📊1⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 813127,
+            "title": "DeepSeek-V4.1-Flash (Max) is a breakthrough in performance to cost efficiency. With +4.87% net impro...",
+            "url": "https://x.com/arena/status/2099606881845321841",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-14T21:11:04.000Z",
+            "score": 68,
+            "summary": "DeepSeek-V4.1-Flash (Max) is a breakthrough in performance to cost efficiency. With +4.87% net improvement at $0.07 cost per median task, it’s reshaped the Pareto frontier for Agent Arena!Among the to",
+            "cover": "https://pbs.twimg.com/profile_images/2017015061454438400/iNKfXZ_I_normal.jpg"
+          },
+          {
+            "id": 802136,
+            "title": "Manage end-user OAuth consent for AI agents with Amazon Bedrock AgentCore",
+            "url": "https://aws.amazon.com/blogs/machine-learning/manage-end-user-oauth-consent-for-ai-agents-with-amazon-bedrock-agentcore/",
+            "source": "AWS Machine Learning Blog",
+            "published_at": "2026-09-14T20:35:45.000Z",
+            "score": 64,
+            "summary": "AI agents often need to access services such as GitHub and Slack on a user’s behalf. Before an agent can act, the user must authenticate with the provider and explicitly approve the requested access. ",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/14/ML-21874-1.png"
+          },
+          {
+            "id": 791274,
+            "title": "Let Routines monitor production data for you, on a schedule. Then Agent can investigate anomalies th...",
+            "url": "https://x.com/Replit/status/2099574311245828378",
+            "source": "Replit ⠕(@Replit)",
+            "published_at": "2026-09-14T19:01:38.000Z",
+            "score": null,
+            "summary": "Let Routines monitor production data for you, on a schedule. Then Agent can investigate anomalies that require reasoning.More insights, fewer tokens.Try Routines: replit.com/routines💬1🔄2❤️13👀2631📊",
+            "cover": "https://pbs.twimg.com/media/HSMvtVjW0AEkf9N.jpg"
+          },
+          {
+            "id": 785486,
+            "title": "Show HN: Taskuary – turn your inbox into tasks for Claude Code, Codex, or Gemini",
+            "url": "https://github.com/ldbumble/taskuary",
+            "source": "Show HN",
+            "published_at": "2026-09-14T17:55:23.000Z",
+            "score": 40,
+            "summary": "Article URL: https://github.com/ldbumble/taskuary",
+            "cover": null
+          },
+          {
+            "id": 779150,
+            "title": "output_schema + atateless + code mode is going to drive a MCP comeback.",
+            "url": "https://x.com/_philschmid/status/2099557632033832987",
+            "source": "Philipp Schmid(@_philschmid)",
+            "published_at": "2026-09-14T17:55:22.000Z",
+            "score": 20,
+            "summary": "output_schema + atateless + code mode is going to drive a MCP comeback.💬4🔄0❤️6👀1377📊4⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 769619,
+            "title": "世界上再多一个 DeepSeek Harness 通知插件",
+            "url": "https://www.wsh233.cn/post/世界上再多一个-deepseek-harness-通知插件",
+            "source": "WSH",
+            "published_at": "2026-09-14T17:53:28.000Z",
+            "score": 43,
+            "summary": "最近更多用DeepSeek 官方推出的Harness（简称DSH）工具来进行基础编码工作，发现其并未自带权限通知插件。 Claude Code（简称CC），通过借助各种hook可以实现个性化通知效果，例如权限请求，任务完成等等，我想将...",
+            "cover": null
+          },
+          {
+            "id": 785488,
+            "title": "Show HN: CostClaw, a local audit of your Claude Code logs",
+            "url": "https://www.costclaw.io/",
+            "source": "Show HN",
+            "published_at": "2026-09-14T17:44:14.000Z",
+            "score": 42,
+            "summary": "Comments URL: https://news.ycombinator.com/item?id=49700895",
+            "cover": null
+          },
+          {
+            "id": 784654,
+            "title": "I made a thing - Pinchtube for Pinchflat",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wga33r/i_made_a_thing_pinchtube_for_pinchflat/",
             "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-13T20:15:46.000Z",
+            "published_at": "2026-09-14T17:32:45.000Z",
             "score": null,
-            "summary": "Estoy construyendo un agente de investigación llamado MENDEL y una de las pruebas terminó exponiendo un problema que creo que aparece mucho en sistemas de búsqueda + RAG + agentes:",
-            "cover": null
+            "summary": "Hello all, I apologise in advance as this is a docker container which I used Claude to help create and as of now I don&#39;t have any plans to share it. (I&#39;d want to properly review the code/secur",
+            "cover": "https://preview.redd.it/2y0igyonmiph1.png?width=640&crop=smart&auto=webp&s=866dbfce7949cd58242087316dc3666eb067b6d4"
           },
           {
-            "id": 564846,
-            "title": "Over 10,000 GitHub stars\r\n\r\nMy most starred repo isn’t code 🤔",
-            "url": "https://x.com/shl/status/2099208492217221351",
-            "source": "Sahil Lavingia(@shl)",
-            "published_at": "2026-09-13T18:48:00.000Z",
-            "score": null,
-            "summary": "Over 10,000 GitHub starsMy most starred repo isn’t code 🤔Sahil Lavingia@shlI turned The Minimalist Entrepreneur into 9 Claude Code skills./find-community — find your people/validate-idea — test befor",
-            "cover": "https://pbs.twimg.com/profile_images/1885323625542127616/-8EVOv3W_normal.jpg"
+            "id": 779654,
+            "title": "At $0.07 median cost per task and +4.87% net improvement, DeepSeek-V4.1-Flash (Max) lands on the Par...",
+            "url": "https://x.com/arena/status/2099549110735196513",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-14T17:21:30.000Z",
+            "score": 47,
+            "summary": "At $0.07 median cost per task and +4.87% net improvement, DeepSeek-V4.1-Flash (Max) lands on the Pareto frontier!Check out the full Agent Arena leaderboard and Pareto frontier at: arena.ai/leaderboard",
+            "cover": "https://pbs.twimg.com/media/HSMYOtBasAAUMLz.jpg"
           },
           {
-            "id": 567331,
-            "title": "Claude wouldn't read a Garmin forum page because of robots.txt, so I gave it a real browser. Free, self-hosted, and it nearly let my whole Wi-Fi drive it.",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wfd622/claude_wouldnt_read_a_garmin_forum_page_because/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-13T17:00:45.000Z",
-            "score": null,
-            "summary": "Claude&#39;s built-in web fetch has two limits I kept hitting: it honours robots.txt even when I&#39;m asking for one specific page, and it can&#39;t run JavaScript, so a lot of the modern web comes b",
-            "cover": null
-          },
-          {
-            "id": 538085,
-            "title": "Migration from Claude Code to a private local harness. Questions.",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wfcewd/migration_from_claude_code_to_a_private_local/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-13T16:32:34.000Z",
-            "score": null,
-            "summary": "I&#39;ll start by saying I&#39;m not talking about the models themselves, I&#39;m aware that I can&#39;t come close to something like Fable&#39;s intelligence locally. Just wanted to get that out of t",
-            "cover": null
-          },
-          {
-            "id": 535160,
-            "title": "当具身智能走到十字路口｜对谈苏度、蚂蚁灵波、自变量、破壳：四种一线判断",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6aa67b319d32647781685e95",
-            "source": "十字路口Crossing",
-            "published_at": "2026-09-13T16:00:00.000Z",
-            "score": null,
-            "summary": "2026 年的具身智能，已经不缺热度。缺的是有人把分歧摆上台面。数据从哪儿来？模型怎么做？落地在哪里？",
-            "cover": "https://image.xyzcdn.net/Fl43nDAyiSGCYGMsnzPNEdYkg7t8.png"
-          },
-          {
-            "id": 538197,
-            "title": "Rate Your Agent's Memory",
-            "url": "https://news.ycombinator.com/item?id=49685398",
-            "source": "Ask HN",
-            "published_at": "2026-09-13T15:56:30.000Z",
-            "score": null,
-            "summary": "Hey Hackernews. I am Luv. I have been experimenting with AI agents, and I’m researching how people feel about agent memory. Can you tell me one or more things you like and dislike about your current m",
-            "cover": null
-          },
-          {
-            "id": 557995,
-            "title": "马斯克、奥尔特曼都回应了",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDk1NzQzMQ==&mid=2654153321&idx=2&sn=fef9a434a38634878c48a1daa876b66f",
-            "source": "环球时报",
-            "published_at": "2026-09-13T15:50:00.000Z",
-            "score": null,
-            "summary": "人工智能公司Anthropic的首席执行官达里奥·阿莫迪表示，人类可能会失去对人工智能（AI）的控制，应当放缓模型开发速度，并对其实施严密监管。对此，创立了xAI的埃隆·马斯克发帖表示支持。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1a7fbd12&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fz8icaWS616QX3jX18BUrdRD5RdzALSNicOzvN1tjMcSribtgC1BTB8nWC1ehrbqzuAV6diaRITVPpdJFLIV5ysbxA50ibgsWvNFft9QzUm5iaq3f8%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 539707,
-            "title": "Tinder to get things done. \r\n\r\nAgent pitches you what it wants to do. You allow / skip. \r\n\r\nDon't be lim...",
-            "url": "https://x.com/browser_use/status/2099158244329726219",
-            "source": "Browser Use(@browser_use)",
-            "published_at": "2026-09-13T15:28:20.000Z",
-            "score": null,
-            "summary": "Tinder to get things done. Agent pitches you what it wants to do. You allow / skip. Don&#39;t be limited by your prompts.Magnus Müller@mamagnus00Introducing Agency. Never prompt again. AI prompts you ",
-            "cover": "https://pbs.twimg.com/profile_images/1996363430337605632/D13x-XWx_normal.jpg"
-          },
-          {
-            "id": 528887,
-            "title": "阿莫迪、奥特曼、马斯克都喊放缓，难道他们真的看到AI在......",
-            "url": "https://www.huxiu.com/article/4890837.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-09-13T15:10:50.000Z",
-            "score": null,
-            "summary": "发出警告的人，已经不只是实验室外的活动家，而是曾经亲手训练这些模型的人。OpenAI的奥特曼、Anthropic的阿莫迪，以及SpaceX的马斯克，都开始公开支持放缓前沿AI的发展。",
-            "cover": "https://img.huxiucdn.com/article/content/26-09-13/32478702-754e-4433-b317-d50a28ab441f.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
-          },
-          {
-            "id": 531448,
-            "title": "做了一个免费的 macOS 下载软件： Torrid",
-            "url": "https://www.v2ex.com/t/1241715#reply0",
-            "source": "V2EX · 创意",
-            "published_at": "2026-09-13T14:24:03.000Z",
-            "score": null,
-            "summary": "下载链接： https://github.com/cobaltdisco/torrid-releases/releases之前下载软件得用 Folx 、Transmission 、Downie 来干不同的事情，而且 Transmission 还不支持 RSS ，觉得太麻烦。于是和 Claude 定下状态机和 MVP 功能，几个“长任务”加上“实机测试”，直接 Vibe 出了一个多种功能合一的下载工",
-            "cover": "https://i.imgur.com/XH4xLH1.png"
-          },
-          {
-            "id": 526138,
-            "title": "模型厂商呼吁踩刹车这事，历史上发生过类似情况，当年的香烟电视广告。",
-            "url": "https://x.com/lijigang/status/2099140932428009514",
-            "source": "李继刚(@lijigang_com)",
-            "published_at": "2026-09-13T14:19:33.000Z",
-            "score": null,
-            "summary": "模型厂商呼吁踩刹车这事，历史上发生过类似情况，当年的香烟电视广告。💬1🔄3❤️7👀2029📊4⚡ Powered by xgo.ing",
-            "cover": "https://pbs.twimg.com/media/HSGljABaIAAxy1y.jpg"
-          },
-          {
-            "id": 538917,
-            "title": "《Deep Agents实战》项目正式发布，一起走向生产级Agent！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIyNjM2MzQyNg==&mid=2247727237&idx=1&sn=c8f6e3313a893c058a3128a041deba7c",
-            "source": "Datawhale",
-            "published_at": "2026-09-13T14:19:00.000Z",
-            "score": null,
-            "summary": "随着 Agent 逐步进入真实业务场景，开发者开始面对更多工程问题。长流程任务如何组织、上下文如何管理、多个 Agent 如何协作，这些都需要在具体项目中反复实践。构建生产级 Agent，也因此成为越来越多学习者希望深入的方向。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=14a5e858&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FzW6S9vt0cSibicy296VlKgK2c76JIhmMatThxKW5S1ciar1CO7fqbHXswVMXdwwjCicdzQFA7b6T9ibmxZpXKWUwc2HLEZfgoanOcLaADicic3nzoQ%2F0%3Fwx_fmt%3Djpeg"
+            "id": 779655,
+            "title": "Exciting news: DeepSeek-V4.1-Flash (Max) by @deepseek_ai just landed in Agent Arena at #3 among open...",
+            "url": "https://x.com/arena/status/2099549108013006958",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-14T17:21:29.000Z",
+            "score": 52,
+            "summary": "Exciting news: DeepSeek-V4.1-Flash (Max) by @deepseek_ai just landed in Agent Arena at #3 among open models! With +4.87% net improvement and a median cost per task of $0.07 it reshaped the Pareto fron",
+            "cover": "https://pbs.twimg.com/media/HSMX3v4aMAAMP82.jpg"
           }
         ]
       },
@@ -347,103 +321,103 @@
         "desc": "",
         "items": [
           {
-            "id": 518287,
-            "title": "一个运动APP，把美国的军事基地给曝光了？",
-            "url": "https://www.huxiu.com/article/4890834.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-09-13T14:10:46.000Z",
-            "score": 68,
-            "summary": "士兵用运动APP公开自己跑步路线这事儿又翻车了。英国媒体Sky新闻前一阵挖了一个大瓜，说是挖出了超过1300名Strava用户在美军基地内公开上传自己的运动轨迹。而这些公开数据，理论上可能成为伊朗的情报，被拿来炸美军基地。",
-            "cover": "https://img.huxiucdn.com/article/content/26-09-13/d10f9d1b-72fd-4416-a9fc-6a120436e39e.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
-          },
-          {
-            "id": 600614,
-            "title": "体检查出肺结节，95%以上是良性？注意，结节尺寸越小未必越安全，可惜很多人不知道",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595998&idx=1&sn=8d94306a099a69c14263ce06b91b511c",
-            "source": "CCTV生活圈",
-            "published_at": "2026-09-13T22:00:00.000Z",
-            "score": null,
-            "summary": "先给大家吃颗定心丸：95%以上的肺结节都是良性，真正属于恶性肿瘤的比例不到5%。通俗说就是100个人里不到5个，绝大多数人都是虚惊一场。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7ac0e06e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgdmU6ayVhk8bbvlKbTHTfhbh3kZu06c9c7Fa6aic4EicgJJcSlzficks12YTLYL3E6RDtx3JGw6BtPYARuvPjexxBcfgM65PP1FUE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 600615,
-            "title": "人老腿先老？常练2个动作，减缓大腿肌肉流失，降低摔倒风险",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654595998&idx=2&sn=90d6c440e35268a6ae2d59abcc0d1866",
-            "source": "CCTV生活圈",
-            "published_at": "2026-09-13T22:00:00.000Z",
-            "score": null,
-            "summary": "随着年龄增长，大腿、臀部肌肉会逐步流失，下肢力量和身体稳定性随之下降，跌倒风险有所增加。分享2个居家训练动作，有助于减缓大腿肌肉流失。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c2c8a983&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgdIypt3D0ogObeOicUVFzjrtdtOwJibSsmhXIVsEquMx76TlCUa8jIiaIa6E3teN5ibSyRlz5NfGsrXSGrjrk8iaZBdxdPyDBYcefJ4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 610711,
-            "title": "Why are IMAX cameras so notoriously loud?",
-            "url": "https://www.engadget.com/2252857/why-are-imax-cameras-so-loud-explained/",
-            "source": "Engadget",
-            "published_at": "2026-09-13T22:00:00.000Z",
-            "score": null,
-            "summary": "Shooting a movie on IMAX 15/70 cameras can produce incredible film, but one of the major tradeoffs for filmmakers is how loud they can get when rolling.",
-            "cover": "https://www.engadget.com/img/gallery/why-are-imax-cameras-so-notoriously-loud/intro-1788864045.jpg"
-          },
-          {
-            "id": 583467,
-            "title": "[推广] QuietDog API｜ CCMax、Kiro 号池中转，倍率分别为 0.5 / 0.25",
-            "url": "https://www.v2ex.com/t/1241738#reply0",
-            "source": "V2EX · 技术",
-            "published_at": "2026-09-13T21:59:08.000Z",
-            "score": null,
-            "summary": "各位 V 友好，发个广子，介绍一下自己的 API 中转站：QuietDog API。",
+            "id": 775973,
+            "title": "The AI industry has taken a doomer turn. What now?",
+            "url": "https://www.technologyreview.com/2026/09/14/1144048/the-ai-industry-has-taken-a-doomer-turn-what-now/",
+            "source": "MIT Technology Review",
+            "published_at": "2026-09-14T17:54:22.000Z",
+            "score": 82,
+            "summary": "This story appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first, sign up here.",
             "cover": null
           },
           {
-            "id": 594656,
-            "title": "Manchester City wrongly awarded Haaland goal by VAR at United: Refs’ body",
-            "url": "https://www.aljazeera.com/sports/2026/9/13/manchester-city-wrongly-awarded-haaland-goal-by-var-at-united-refs-body?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-13T21:58:17.000Z",
-            "score": null,
-            "summary": "Erling Haaland&#039;s derby winner against Manchester United should not have stood, Premier League referees&#039; body admits.",
-            "cover": null
-          },
-          {
-            "id": 598417,
-            "title": "OpenCalc update: bugfixes, now with financial mode support!",
-            "url": "https://www.reddit.com/r/linux/comments/1wfkzei/opencalc_update_bugfixes_now_with_financial_mode/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-13T21:57:01.000Z",
-            "score": null,
-            "summary": "As you must be aware, recently I have released OpenCalc, a project to reverse engineer the Windows 95 calculator.",
-            "cover": null
-          },
-          {
-            "id": 590535,
-            "title": "Unvaccinated Pennsylvania woman died of measles complications, coroner says",
-            "url": "https://arstechnica.com/health/2026/09/unvaccinated-pennsylvania-woman-died-of-measles-complications-coroner-says/",
-            "source": "Ars Technica",
-            "published_at": "2026-09-13T21:56:52.000Z",
-            "score": null,
-            "summary": "A 40-year-old woman in Jefferson County, Pennsylvania has died of complications from measles, according to the county's coroner.",
-            "cover": null
-          },
-          {
-            "id": 599821,
-            "title": "Mees AI Journal and Chat",
-            "url": "https://play.google.com/store/apps/details?id=chat.meesai.net&hl=en_US",
+            "id": 813557,
+            "title": "We grew AI usage 52x, then cut our costs 90%",
+            "url": "https://www.prosus.com/news-insights/2026/we-grew-ai-usage-52x-then-cut-our-costs-90-percent-heres-how",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-13T21:53:27.000Z",
-            "score": null,
-            "summary": "Article URL: https://play.google.com/store/apps/details?id=chat.meesai.net&hl=en_US",
+            "published_at": "2026-09-14T21:00:51.000Z",
+            "score": 76,
+            "summary": "Article URL: https://www.prosus.com/news-insights/2026/we-grew-ai-usage-52x-then-cut-our-costs-90-percent-heres-how",
             "cover": null
           },
           {
-            "id": 594657,
-            "title": "Tehran and Muscat delay talks, citing regional consensus need",
-            "url": "https://www.aljazeera.com/news/2026/9/13/tehran-and-muscat-delay-talks-citing-regional-consensus-need?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-13T21:50:50.000Z",
-            "score": null,
-            "summary": "Tehran and Muscat agree to delay dialogue to prioritise regional consensus amid tensions in the Strait of Hormuz.",
+            "id": 778755,
+            "title": "Series of reactions reveals how complex carbon chemistry can begin in frigid space",
+            "url": "https://phys.org/news/2026-09-series-reactions-reveals-complex-carbon.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-14T18:00:10.000Z",
+            "score": 72,
+            "summary": "Before there was Earth, there was chemistry. In the unimaginable cold, dark clouds where stars and planets are born, carbon molecules assemble into more complex forms—starting a chemical journey that ",
+            "cover": null
+          },
+          {
+            "id": 808665,
+            "title": "ENISA: Frontier AI Is Changing the Speed of Cyberattacks. Europe Needs to Catch Up",
+            "url": "https://securityaffairs.com/199063/ai/enisa-frontier-ai-is-changing-the-speed-of-cyberattacks-europe-needs-to-catch-up.html",
+            "source": "Security Affairs",
+            "published_at": "2026-09-14T20:35:42.000Z",
+            "score": 70,
+            "summary": "Cybersecurity has always been a race between attackers and defenders. ENISA&#8217;s latest assessment suggests that frontier AI is changing the speed of that race, and the gap between discovering a vu",
+            "cover": null
+          },
+          {
+            "id": 813554,
+            "title": "SWE-Bench Multimodal: Do AI Systems Generalize to Visual Software Domains?",
+            "url": "https://www.swebench.com/multimodal.html",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-14T21:09:16.000Z",
+            "score": 68,
+            "summary": "Article URL: https://www.swebench.com/multimodal.html",
+            "cover": null
+          },
+          {
+            "id": 793422,
+            "title": "Greg Brockman on the next year at OpenAI and what he spends his time thinking about:\r\n\r\n\"The business ...",
+            "url": "https://x.com/a16z/status/2099592813059182793",
+            "source": "a16z(@a16z)",
+            "published_at": "2026-09-14T20:15:09.000Z",
+            "score": 68,
+            "summary": "Greg Brockman on the next year at OpenAI and what he spends his time thinking about:&quot;The business is a huge area that we&#39;re not done yet with really up-leveling every part of execution. But I",
+            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
+          },
+          {
+            "id": 782517,
+            "title": "Palantir, Nvidia curb AI model use over data fears",
+            "url": "https://www.reuters.com/business/palantir-nvidia-curb-ai-model-use-over-data-fears-information-reports-2026-09-14/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-14T18:28:05.000Z",
+            "score": 68,
+            "summary": "Article URL: https://www.reuters.com/business/palantir-nvidia-curb-ai-model-use-over-data-fears-information-reports-2026-09-14/",
+            "cover": null
+          },
+          {
+            "id": 778692,
+            "title": "Live now: our Harness Engineering Track from AI Engineer World's Fair 2026.\r\n\r\nPorts, proofs, kill swi...",
+            "url": "https://x.com/aiDotEngineer/status/2099551501613986198",
+            "source": "AI Engineer(@aiDotEngineer)",
+            "published_at": "2026-09-14T17:31:00.000Z",
+            "score": 67,
+            "summary": "Live now: our Harness Engineering Track from AI Engineer World&#39;s Fair 2026.Ports, proofs, kill switches, and what is left of an agent when you remove the model.Thesis: when an agent breaks in prod",
+            "cover": "https://pbs.twimg.com/media/HSLi_LNWcAAJNJi.jpg"
+          },
+          {
+            "id": 782514,
+            "title": "Large-Scale Qualitative Research with AI",
+            "url": "https://arxiv.org/abs/2608.29751",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-14T18:48:14.000Z",
+            "score": 66,
+            "summary": "Article URL: https://arxiv.org/abs/2608.29751",
+            "cover": null
+          },
+          {
+            "id": 812176,
+            "title": "AI models enable cross-species mapping of cell biology",
+            "url": "https://phys.org/news/2026-09-ai-enable-species-cell-biology.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-14T21:30:02.000Z",
+            "score": 65,
+            "summary": "Researchers at Stanford Medicine have developed two new artificial intelligence models of the biological cell. The first, called universal cell embedding, paved the way for a second-generation model c",
             "cover": null
           }
         ]
@@ -452,9 +426,9 @@
     "stats": {
       "candidates": 500,
       "articles": 500,
-      "sections": 4,
-      "totalItems": 42
+      "sections": 3,
+      "totalItems": 40
     }
   },
-  "generated_at": "2026-09-14T06:39:28.108Z"
+  "generated_at": "2026-09-15T06:22:51.253Z"
 }
