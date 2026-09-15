@@ -1862,6 +1862,10 @@ async function runTranslate() {
     'CREATE INDEX IF NOT EXISTS idx_articles_read_sk ON articles(read_at, COALESCE(published_at, created_at) DESC, id DESC)',
     'CREATE INDEX IF NOT EXISTS idx_articles_later_sk ON articles(later, COALESCE(published_at, created_at) DESC, id DESC)',
     'CREATE INDEX IF NOT EXISTS idx_videos_fav_sk ON videos(favorite, published_at DESC, id DESC)',
+    // 27b 对抗审查补齐：列表排序/计数表达式索引（生产库 09-11 已外带执行，此处保 fresh 环境 parity）
+    'CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(published_at, created_at))',
+    'CREATE INDEX IF NOT EXISTS idx_articles_created ON articles(created_at)',
+    'CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)',
   ]) { try { await getDb().execute(ddl); } catch { /* 已存在 */ } }
   // 27b 源四轴（2026-09-15）：补列 + 一次性迁移（focus→spotlight + subscription.ids）
   // runner 也要跑：Vercel ensureSchema 只在读层首请求触发，runner 若先跑会因缺列/未迁移读空

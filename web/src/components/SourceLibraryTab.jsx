@@ -314,7 +314,12 @@ export default function SourceLibraryTab() {
                 <span className="sep">·</span>
                 <span>{c.intervalText}</span>
               </div>
-              {/* 四轴现状（27b：一轴一控件只管一件事，点按=全组设置/取消） */}
+              {/* 四轴现状（27b：一轴一控件只管一件事，点按=全组设置/取消）
+                  未分组卡（gid=null）无组级操作目标——后端 groupScopeId 需非空 id，禁用并引导去检索视图（对抗审查 P1-1） */}
+              {c.gid === null ? (
+                <div className="mt-2.5 text-[11px] t-muted">未分组源请「进入」后在检索视图按 ids 批量操作</div>
+              ) : (
+              <>
               <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[11px]">
                 <button
                   className={`pill cursor-pointer ${c.allSpotlight ? 'on' : ''}`}
@@ -364,6 +369,8 @@ export default function SourceLibraryTab() {
                   }}
                 >failover</button>
               </div>
+              </>
+              )}
             </div>
           ))}
         </div>

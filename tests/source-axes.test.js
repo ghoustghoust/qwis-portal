@@ -39,6 +39,8 @@ before(async () => {
   app.use(express.json());
   app.use('/api', authMiddleware);
   app.use('/api/sources', require('../server/routes/sourcelib'));
+  app.use('/api/sources', require('../server/routes/sources'));
+  app.use('/api/articles', require('../server/routes/articles'));
   server = app.listen(0, '127.0.0.1');
   await new Promise((r) => server.once('listening', r));
   base = `http://127.0.0.1:${server.address().port}`;
@@ -167,4 +169,73 @@ test('batch: focus/unfocus 兼容别名落 spotlight 列', async () => {
   assert.equal(db.prepare('SELECT spotlight FROM sources WHERE id=?').get(id).spotlight, 1);
   await req('POST', '/api/sources/batch', { ids: [id], action: 'unfocus' });
   assert.equal(db.prepare('SELECT spotlight FROM sources WHERE id=?').get(id).spotlight, 0);
+});
+
+// ═══ 对抗审查（2026-09-15 commit f338ac1）发现问题的回归锁 ═══
+
+// P1-1：groupScopeId=null（未分组卡）不得静默成功——跌进 per-ids 路径报 400（前端已禁用入口，锁后端行为）
+test('P1-1: groupScopeId=null 返回 400 缺少 ids（不静默作用于全表）', async () => {
+  const r = await req('POST', '/api/sources/batch', { groupScopeId: null, action: 'spotlight' });
+  assert.equal(r.status, 400);
+  assert.match(r.body.error, /缺少 ids/);
+});
+
+// 四轴核心语义：muted/reader_visible 源被 /api/articles 排除，显式 source_id 豁免
+test('轴语义: muted / reader_visible=0 源被文章流排除，显式 source_id 豁免', async () => {
+  const a = createSource('rss', '正常源X');
+  const m = createSource('rss', '屏蔽源X', { muted: 1 });
+  const v = createSource('rss', '未收录源X', { reader_visible: 0 });
+  const pub = nowIso();
+  for (const [sid, t] of [[a, '正常文X'], [m, '屏蔽文X'], [v, '未收录文X']]) {
+    db.prepare('INSERT INTO articles(source_id, title, url, published_at, created_at) VALUES(?,?,?,?,?)')
+      .run(sid, t, `http://test/${t}`, pub, pub);
+  }
+  const r = await req('GET', '/api/articles?sort=new', undefined);
+  const titles = r.body.items.map((x) => x.title);
+  assert.ok(titles.includes('正常文X'));
+  assert.ok(!titles.includes('屏蔽文X'), 'muted 源不进文章流');
+  assert.ok(!titles.includes('未收录文X'), 'reader_visible=0 不进文章流');
+  // 显式 source_id 豁免（检索层可回看任何源——specs/26：采集全量、选择只过滤消费端）
+  const r2 = await req('GET', `/api/articles?source_id=${m}`, undefined);
+  assert.ok(r2.body.items.map((x) => x.title).includes('屏蔽文X'), '显式 source_id 可回看屏蔽源');
+});
+
+// 27-reader-today：since 精确时刻下限 + smart 游标翻页（新代码路径回归锁）
+test('since 参数: 只回窗口内条目；smart 排序游标翻页不丢不重', async () => {
+  const s = createSource('rss', 'since源');
+  const old = new Date(Date.now() - 48 * 3600e3).toISOString();
+  db.prepare('INSERT INTO articles(source_id, title, url, published_at, created_at) VALUES(?,?,?,?,?)')
+    .run(s, 'since旧文', 'http://test/since-old', old, old);
+  const fresh = nowIso();
+  db.prepare('INSERT INTO articles(source_id, title, url, published_at, created_at) VALUES(?,?,?,?,?)')
+    .run(s, 'since新文', 'http://test/since-new', fresh, fresh);
+  const since = new Date(Date.now() - 24 * 3600e3).toISOString();
+  const r = await req('GET', `/api/articles?since=${encodeURIComponent(since)}&sort=new`, undefined);
+  const titles = r.body.items.map((x) => x.title);
+  assert.ok(titles.includes('since新文'));
+  assert.ok(!titles.includes('since旧文'), 'since 之前的条目不出现');
+  assert.ok(r.body.counts && typeof r.body.counts.today === 'number', 'counts.today 透出');
+  // smart 游标：用 last.sort_key 翻第二页（同型数值）
+  const r1 = await req('GET', `/api/articles?since=${encodeURIComponent(since)}&sort=smart`, undefined);
+  if (r1.body.nextCursor) {
+    const r2 = await req('GET', `/api/articles?since=${encodeURIComponent(since)}&sort=smart&cursor=${encodeURIComponent(r1.body.nextCursor)}`, undefined);
+    assert.equal(r2.status, 200);
+    const ids1 = new Set(r1.body.items.map((x) => x.id));
+    for (const it of r2.body.items) assert.ok(!ids1.has(it.id), '翻页不重复');
+  }
+});
+
+// 27-reader-today：未读近 3 天口径（/api/sources unread 不计 3 天前的未读）
+test('未读口径: /api/sources unread 只计近 3 天', async () => {
+  const s = createSource('rss', '未读口径源');
+  const old = new Date(Date.now() - 5 * 86400e3).toISOString();
+  const fresh = nowIso();
+  db.prepare('INSERT INTO articles(source_id, title, url, published_at, created_at) VALUES(?,?,?,?,?)')
+    .run(s, '旧未读', 'http://test/old-unread', old, old);
+  db.prepare('INSERT INTO articles(source_id, title, url, published_at, created_at) VALUES(?,?,?,?,?)')
+    .run(s, '新未读', 'http://test/new-unread', fresh, fresh);
+  const r = await req('GET', '/api/sources'); // 公开 GET（带 token 也无妨）
+  const row = (r.body.items || []).find((x) => x.id === s);
+  assert.ok(row, '源在列表中');
+  assert.equal(row.unread, 1, '只有近 3 天未读被计入');
 });

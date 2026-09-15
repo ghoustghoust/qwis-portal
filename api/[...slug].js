@@ -189,7 +189,8 @@ async function handleArticles(req) {
     // 游标发排序键的原生列值（ISO 文本），与 cursorCond 的文本比较同型（2026-09-13 F1：
     // 原 epoch 秒数值与 ISO 文本列字典序比较恒假 → 第二页恒空 → 阅读器 30 条后无法下滑）
     if (sort === 'smart') {
-      const sortVal = Math.floor(new Date(last.published_at || last.created_at).getTime() / 1000) + (last.source_spotlight || 0) * 259200;
+      // Number() 防御：libsql 空值可能回字符串 'null'（P1-5 同族），NaN 游标会让第二页恒空
+      const sortVal = Math.floor(new Date(last.published_at || last.created_at).getTime() / 1000) + (Number(last.source_spotlight) || 0) * 259200;
       nextCursor = `${sortVal}|${last.id}`;
     } else {
       nextCursor = `${last.published_at || last.created_at}|${last.id}`;
@@ -197,9 +198,13 @@ async function handleArticles(req) {
   }
 
   // 计数（轻量级：只查 later/history 总数，不做 NOT EXISTS 子查询）
-  // 27-reader-today：补 today（近 24h 条数，「今日」视图导航计数；24h 窗口走 idx_articles_pubco 很便宜）
+  // 27-reader-today：补 today（近 24h 条数，「今日」视图导航计数）
+  // 对抗审查 P2-1 修：today 与本地 articleCounts 同口径（排噪），否则云端数字显著虚高
   const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
-  const todayCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE COALESCE(published_at, created_at) >= ?', [dayAgo])).c;
+  const todayCount = (await qOne(
+    `SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id
+     WHERE COALESCE(a.published_at, a.created_at) >= ? AND ${NOISE}`,
+    [dayAgo])).c;
   const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
   const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
 
@@ -1457,7 +1462,7 @@ async function handleAiChat(req) {
 }
 
 // ─── P1-1: GET /api/sources/library — 源库列表（含 itemCount + contentKind + extra 脱敏） ───
-const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'categoryLocked', 'origin'];
+const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'categoryLocked', 'origin', 'failoverGroup'];
 const VIDEO_TYPES_SET = new Set(['bilibili', 'douyin', 'youtube']);
 
 async function handleSourcesLibrary(req) {

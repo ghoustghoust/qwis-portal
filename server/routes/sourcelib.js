@@ -29,7 +29,7 @@ router.get('/library', (req, res) => {
     let extra = {};
     try { extra = JSON.parse(s.extra || '{}'); } catch { /* ignore */ }
     const safeExtra = {};
-    const PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'categoryLocked', 'origin'];
+    const PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'categoryLocked', 'origin', 'failoverGroup'];
     for (const k of PUBLIC_KEYS) {
       if (extra[k] !== undefined) safeExtra[k] = extra[k];
     }

@@ -13,7 +13,7 @@ const router = express.Router();
 // 解析 extra，把源级间隔 intervalMin 提到顶层（无覆盖则不输出该字段）
 // 2026-09-05b A3 修复：本接口公开免鉴权，原样透传 extra 原串会泄露未脱敏 lastError/平台参数；
 // 改为白名单重建（前端消费点已核实：SourceTable 用 lastError/lastErrorAt，Sidebar 用 marksFeatured）
-const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified'];
+const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'failoverGroup'];
 // 公开接口的 lastError：敏感键值打码 + URL 整段抹除（错误信息里的内网地址/带参 URL 不外泄）
 function sanitizeError(v) {
   return log.mask(String(v)).replace(/https?:\/\/[^\s"']+/g, '[url]');

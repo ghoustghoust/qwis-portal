@@ -94,7 +94,7 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
             sort: filter.sort || 'smart',
             from: filter.from || undefined,
             to: filter.to || undefined,
-            ...(isToday && !filter.from ? todayParams() : {}),
+            ...(isToday && !filter.from && !filter.to ? todayParams() : {}),
             dedup: dedup ? 1 : undefined,
             score_min: filter.scoreMin || undefined,
             lang: (filter.lang && filter.lang !== 'all') ? filter.lang : undefined,

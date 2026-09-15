@@ -29,7 +29,7 @@ function collectItems() {
       `SELECT a.id, a.title, a.translated_title, a.url, a.summary, a.cover, a.published_at, a.score, a.category,
               a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
        FROM articles a
-       JOIN sources s ON s.id = a.source_id AND s.enabled = 1
+       JOIN sources s ON s.id = a.source_id AND s.enabled = 1 AND COALESCE(s.muted,0)=0
        LEFT JOIN groups g ON g.id = s.group_id
        WHERE a.published_at >= ?
        ORDER BY a.published_at DESC`
