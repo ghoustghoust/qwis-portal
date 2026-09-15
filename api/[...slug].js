@@ -2593,7 +2593,7 @@ async function handleArticleTranslate(req, id) {
 }
 
 // 读层译文标题回填（与 daily 的 enrichDailyTranslated 同机制）：早报/周刊报告是生成时快照，
-// 生成后才翻好的标题应实时换中文（2026-09-16：「评论：0」快照污染暴露此缺口——快照要等 21:30 重生成才刷新）
+// 生成后才翻好的标题应实时换中文（2026-09-15：「评论：0」快照污染暴露此缺口——快照要等 21:30 重生成才刷新）
 async function enrichBriefTitles(report) {
   if (!report || typeof report !== 'object') return report;
   const buckets = [];
@@ -2611,7 +2611,7 @@ async function enrichBriefTitles(report) {
   const map = new Map();
   for (let i = 0; i < ids.length; i += 500) {
     const batchIds = ids.slice(i, i + 500);
-    // original_title 取库里真正的原文标题，而非快照值（快照可能是污染译文——2026-09-16「评论：0」事故）
+    // original_title 取库里真正的原文标题，而非快照值（快照可能是污染译文——2026-09-15「评论：0」事故）
     const rows = await qAll(
       `SELECT id, title, translated_title FROM articles WHERE id IN (${batchIds.map(() => '?').join(',')}) AND translated_title IS NOT NULL AND translated_title != ''`,
       batchIds

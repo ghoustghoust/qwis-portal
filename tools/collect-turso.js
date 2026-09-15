@@ -1657,7 +1657,7 @@ async function translatePipeline(article) {
     .slice(0, 6000);
   if (!plainText && !title) return null;
 
-  // 2026-09-16 阻塞修复：薄正文（<400 字符纯文本，桥接源如 hnrss 只有 Article/Comments 链接列表）
+  // 2026-09-15 阻塞修复：薄正文（<400 字符纯文本，桥接源如 hnrss 只有 Article/Comments 链接列表）
   // 走「仅标题」通道——单轮直译标题，不进多轮精翻/术语生长。
   // 根因：薄正文 + 推理模型多轮精翻 = 复述指令（"用户要求我作为术语校对专家…"25 篇）/胡编标题（"评论：0"）入库。
   if (title && plainText.length < 400) {
@@ -1730,7 +1730,7 @@ function inGenerationGuard() {
   return false;
 }
 
-// ─── 翻译优先级（2026-09-16 用户口径修正）：每日早报 P1 > 我的早报 P2 > 精选周刊 P3 > 热点榜 P4 > 阅读器（兜底 P7） ───
+// ─── 翻译优先级（2026-09-15 用户口径修正）：每日早报 P1 > 我的早报 P2 > 精选周刊 P3 > 热点榜 P4 > 阅读器（兜底 P7） ───
 // （2026-09-14 初版把热点榜放 P1——用户口径是"优先翻译每日早报、我的早报和精选周刊"，策展内容优先于热搜）
 // 会员面内容先翻：早报/周刊从已生成报告提取文章 id（精确命中用户所见）；热点榜按 /api/hot featured 同口径 SQL
 // 手动队列（POST /api/articles/:id/translate）仍最优先，不受此排序影响
@@ -1745,7 +1745,7 @@ function _collectIdsDeep(obj, out) {
 
 async function translatePriorityMap() {
   const pri = new Map(); // articleId -> 1|2|3|4
-  // P1 每日早报：daily_reports 最新一期 sections（用户口径 2026-09-16：早报类最先翻）
+  // P1 每日早报：daily_reports 最新一期 sections（用户口径 2026-09-15：早报类最先翻）
   try {
     const rows = await qAll('SELECT sections FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
     const ids = new Set();
@@ -1824,10 +1824,10 @@ async function runTranslate() {
        AND content_html IS NOT NULL AND content_html != ''
      ORDER BY created_at DESC LIMIT 5000`
   );
-  // 2026-09-16：板块优先级排序（每日早报>我的早报>精选周刊>热点榜>阅读器兜底，用户口径修正）；
+  // 2026-09-15：板块优先级排序（每日早报>我的早报>精选周刊>热点榜>阅读器兜底，用户口径修正）；
   // titleRows 已按 created_at DESC，sort 稳定 → 同优先级内仍是新到旧
   const priMap = await translatePriorityMap();
-  // 2026-09-16 阻塞修复：优先级条目必须直接补入候选池——日报条目可能已跌出「最近 5000 条」扫描窗
+  // 2026-09-15 阻塞修复：优先级条目必须直接补入候选池——日报条目可能已跌出「最近 5000 条」扫描窗
   // （实测：日报 40 条 id 全在扫描窗外 → P1=0，优先级排序形同虚设，用户口径"早报优先"未真正生效）
   const scannedIds = new Set(titleRows.map((r) => r.id));
   const missingPri = [...priMap.keys()].filter((id) => !scannedIds.has(id));

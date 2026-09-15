@@ -57,7 +57,7 @@ test('F3-6 正常英文开头的译文不被误伤', () => {
   assert.strictEqual(_ai.sanitizeTranslationReply(legit, '草稿'), legit);
 });
 
-// ─── 2026-09-16 翻译污染事故回归锁（生产实测 25 篇元评论标题 + 「评论：0」胡编标题） ───
+// ─── 2026-09-15 翻译污染事故回归锁（生产实测 25 篇元评论标题 + 「评论：0」胡编标题） ───
 test('F3-7 术语校对轮复述指令起手式（用户要求我…）被识别并回退草稿', () => {
   const meta = '用户要求我作为术语校对专家，检查初翻草稿中的术语翻译是否与对照表一致。只修正术语不一致的地方，其余内容一字不动。';
   assert.strictEqual(_ai.isThinkingLikeReply(meta), true);
