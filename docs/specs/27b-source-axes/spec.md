@@ -1,7 +1,6 @@
 # 源四轴语义迁移（27b-source-axes）
 
-> **状态：草案（未开工）**——总 spec 见 `../26-platform-ia-refactor.md`（四层信息金字塔/源四轴模型）。
-> 确认后按 mew-spec 四件套（spec/plan/task/checklist）补全再实施。
+> **状态：✅ 已完成 2026-09-15**（commit `f338ac1`+`83db503`）——四轴列 spotlight/muted/reader_visible + settings subscription.ids；生产 Turso schema-first 迁移（8 个 focus 源行为不变）；focus 列物理保留、代码引用清零（验收③达成）；tests/source-axes.test.js 锁四轴互不影响（验收④）。
 
 ## 开发什么
 

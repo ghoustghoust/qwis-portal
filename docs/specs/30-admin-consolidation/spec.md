@@ -1,7 +1,6 @@
 # 后台收敛与对照式管理（30-admin-consolidation）
 
-> **状态：草案（未开工）**——总 spec 见 `../26-platform-ia-refactor.md`（四层信息金字塔/源四轴模型）。
-> 确认后按 mew-spec 四件套（spec/plan/task/checklist）补全再实施。
+> **状态：✅ 已完成 2026-09-15**（commit `f338ac1`+`83db503`）——12→5 Tab（公众号RSS/B站并入源库「平台接入」，日报设置并入早报中心，翻译并入 AI 能力，数据/监控/报警并入系统）；每 Tab 前台对照卡（C1+C2 section 级作用对象标注）；抖音下架；IconRail 文字标签；C3「保存后前台数字预览」未做（对照卡静态摘要替代，后续如需再立小 spec）。
 
 ## 开发什么
 

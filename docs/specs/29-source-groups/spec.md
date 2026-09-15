@@ -1,7 +1,6 @@
 # 源库三视图与组级操作（29-source-groups）
 
-> **状态：草案（未开工）**——总 spec 见 `../26-platform-ia-refactor.md`（四层信息金字塔/源四轴模型）。
-> 确认后按 mew-spec 四件套（spec/plan/task/checklist）补全再实施。
+> **状态：✅ 已完成 2026-09-15**（commit `f338ac1`+`83db503`）——组合（默认，问题组排前）/问题源/检索三视图 + 组级操作（暂停/恢复/调频/failover/四轴一键，groupScopeId 单条 SQL）；未分组卡无组级操作（前端禁用，后端 400 有回归锁）。
 
 ## 开发什么
 

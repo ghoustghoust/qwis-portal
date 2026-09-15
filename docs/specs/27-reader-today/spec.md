@@ -1,7 +1,7 @@
 # 阅读器「今日」默认视图（27-reader-today）
 
-> **状态：草案（未开工）**——总 spec 见 `../26-platform-ia-refactor.md`（四层信息金字塔/源四轴模型）。
-> 确认后按 mew-spec 四件套（spec/plan/task/checklist）补全再实施。
+> **状态：✅ 已完成 2026-09-15**（commit `f338ac1`+`83db503`；278 测试全绿 + 云端冒烟实测通过）——总 spec 见 `../26-platform-ia-refactor.md`。
+> 落地注记：今日视图排序=smart（spotlight 源 +3d 加权），未叠加六维分数系数（控制游标/排序风险，后续如需再评）；早报摘要卡数据走 GET /api/daily（导语 theme + 跨栏目前 3 条）。
 
 ## 开发什么
 

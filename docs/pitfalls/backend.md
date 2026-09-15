@@ -23,6 +23,9 @@
 - 规则：改设置先 stop 旧句柄；长任务禁同步执行（门户同步曾 execSync 阻塞数分钟，改 spawn detached + in-flight 守卫）。
 
 ### #17 focus 有两种写法，选错互踩
+> ✅ **已由 27b 解决（2026-09-15）**：focus 列退役，语义拆为 spotlight（重点）+ subscription.ids（订阅）两轴；
+> `focusSourceIds` 全量替换与 batch focus 增量并存的双写法问题随之消失（全量=PUT settings/daily spotlightSourceIds，增量=batch spotlight，落同一列）。
+> 下文为历史记录保留。
 - 日报设置页 `focusSourceIds`=全量替换（不在名单的源 focus 清零）；源库 batch focus=增量。
 - 规则：**新代码一律增量**；全量替换只保留日报设置页一个入口；手动锁定统一走 `extra.categoryLocked`（写入点只有 POST /api/groups/move 与 batch move）。
 - ⚠️ 测试侧翻版见 testing.md #27——全量替换语义测试曾把线上订阅清零。
