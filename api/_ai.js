@@ -299,7 +299,9 @@ async function loadPrompt(name) {
 // 策略：先试「译文/最终稿」标记提取；思维链式回复拒收（轮2/3回退上一轮草稿，轮1触发机翻降级）。
 const TRANSLATE_MARKER_RE = /(?:^|\n)\s*(?:#{1,3}\s*)?(?:最终译文|最终稿|译文|翻译如下|Translation)\s*[:：]\s*\n?/g;
 // 思维链/分析性回复特征（只收"元任务"话术，避免误伤以"首先"等开头的正常译文）
-const THINKING_START_RE = /^(?:here'?s?(?:\s+a)?\s+thinking|thinking process|okay[,.]|alright[,.]|sure[,!]?\s+(?:here|below)|hmm+|let me|i need|i'll|the user|analyzing|reviewing|用户提供|让我|我来|我需要|我将|好的[，,]下面|以下是我|分析如下|先分析)/i;
+// 2026-09-16 加固：agnes 在术语校对轮（薄正文输入）会复述任务指令起手——
+// 「用户要求我作为术语校对专家…」「我已收到您的翻译请求…」曾作为 translated_title 入库（25 篇）
+const THINKING_START_RE = /^(?:here'?s?(?:\s+a)?\s+thinking|thinking process|okay[,.]|alright[,.]|sure[,!]?\s+(?:here|below)|hmm+|let me|i need|i'll|the user|analyzing|reviewing|用户提供|用户要求|我已收到|我已完成|让我仔细|我检查了|我已检查|收到您|让我|我来|我需要|我将|好的[，,]下面|以下是我|分析如下|先分析)/i;
 const THINKING_STRUCT_RE = /^\s*\d+\.\s*\*\*/m; // 「1. **Analyze User Input:**」编号加粗分析结构
 const THINKING_FIELD_RE = /\*\*(?:Role|Task|Goal|Steps|Input|Output)\*\*/;
 function isThinkingLikeReply(text) {
@@ -344,6 +346,10 @@ async function refinePass(original, draft) {
 // ═══ 早报深析（18-daily-ai-v2） ═══
 const DAILY_DIMS = ['选题', '内容', '深度', '实用', '创新', '表达'];
 
+// 2026-09-16：薄正文（桥接源只有链接列表）深析时模型会产出占位金句——
+// 「原文引用待提取」「（原文未提供正文内容，无法提取金句）」「待原文确认后补充」曾原样进我的早报
+const QUOTE_PLACEHOLDER_RE = /待提取|待原文|待补充|未提供正文|未提供.*内容|暂无原文|无法提取|无法提供|原文缺失|未见正文/;
+
 async function analyzeArticle(article) {
   const tpl = await loadPrompt('daily-analyze');
   const text = String(article.content_html || '')
@@ -357,13 +363,19 @@ async function analyzeArticle(article) {
     const j = JSON.parse(m[0]);
     const scores = {};
     for (const d of DAILY_DIMS) scores[d] = Math.max(0, Math.min(10, Number(j.scores?.[d]) || 0));
+    // 占位金句/要点清洗：命中占位话术 → 置空（前端 quote 为空不渲染 blockquote）
+    const quoteRaw = String(j.quote || '').slice(0, 200);
+    const quote = QUOTE_PLACEHOLDER_RE.test(quoteRaw) ? '' : quoteRaw;
+    const points = Array.isArray(j.points)
+      ? j.points.slice(0, 3).map((p) => String(p).slice(0, 100)).filter((p) => p && !QUOTE_PLACEHOLDER_RE.test(p))
+      : [];
     return {
       scores,
       totalScore: Math.max(0, Math.min(100, Number(j.totalScore) || 0)),
       reason: String(j.reason || '').slice(0, 100),
       summary: String(j.summary || '').slice(0, 300),
-      quote: String(j.quote || '').slice(0, 200),
-      points: Array.isArray(j.points) ? j.points.slice(0, 3).map((p) => String(p).slice(0, 100)) : [],
+      quote,
+      points,
       tags: Array.isArray(j.tags) ? j.tags.slice(0, 4).map((t) => String(t).slice(0, 20)) : [],
     };
   } catch { return null; }

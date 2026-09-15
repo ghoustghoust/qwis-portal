@@ -1657,6 +1657,22 @@ async function translatePipeline(article) {
     .slice(0, 6000);
   if (!plainText && !title) return null;
 
+  // 2026-09-16 阻塞修复：薄正文（<400 字符纯文本，桥接源如 hnrss 只有 Article/Comments 链接列表）
+  // 走「仅标题」通道——单轮直译标题，不进多轮精翻/术语生长。
+  // 根因：薄正文 + 推理模型多轮精翻 = 复述指令（"用户要求我作为术语校对专家…"25 篇）/胡编标题（"评论：0"）入库。
+  if (title && plainText.length < 400) {
+    const r = await _ai.translateText(title, { kind: 'translate' });
+    if (!r.ok) throw new Error(r.error || '标题翻译失败');
+    let t = _ai.sanitizeTranslationReply(r.text, '').split('\n')[0].trim();
+    t = require('../lib/text-clean').cleanTranslatedTitle(t);
+    // 入库前终极闸：思维链起手式/超长/空 一律拒收（下轮重试）
+    if (!t || t.length > 120 || _ai.isThinkingLikeReply(t)) {
+      log(`  ✗ 标题译文被拒收（污染防御）：${String(t).slice(0, 50)}`);
+      return null;
+    }
+    return { title: t, content: null, provider: r.provider, rounds: 1, titleOnly: true };
+  }
+
   const input = title ? `Title: ${title}\n\nArticle:\n${plainText}` : plainText;
   // 轮 1：初翻（含降级链）
   const r = await _ai.translateText(input, { kind: 'translate' });
@@ -1714,8 +1730,9 @@ function inGenerationGuard() {
   return false;
 }
 
-// ─── 翻译优先级（2026-09-14 用户定）：热点榜 > 我的早报 > 周报 > 每日早报 > 阅读器（兜底 P7） ───
-// 会员面内容先翻：热点榜按 /api/hot featured 同口径 SQL；早报/周报从已生成报告提取文章 id（精确命中用户所见）
+// ─── 翻译优先级（2026-09-16 用户口径修正）：每日早报 P1 > 我的早报 P2 > 精选周刊 P3 > 热点榜 P4 > 阅读器（兜底 P7） ───
+// （2026-09-14 初版把热点榜放 P1——用户口径是"优先翻译每日早报、我的早报和精选周刊"，策展内容优先于热搜）
+// 会员面内容先翻：早报/周刊从已生成报告提取文章 id（精确命中用户所见）；热点榜按 /api/hot featured 同口径 SQL
 // 手动队列（POST /api/articles/:id/translate）仍最优先，不受此排序影响
 function _collectIdsDeep(obj, out) {
   if (!obj || typeof obj !== 'object') return;
@@ -1728,7 +1745,23 @@ function _collectIdsDeep(obj, out) {
 
 async function translatePriorityMap() {
   const pri = new Map(); // articleId -> 1|2|3|4
-  // P1 热点榜精选：与 /api/hot tab=featured 同口径（自有源六维≥60 且 AI 相关，7 天窗；热榜源不入精选）
+  // P1 每日早报：daily_reports 最新一期 sections（用户口径 2026-09-16：早报类最先翻）
+  try {
+    const rows = await qAll('SELECT sections FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
+    const ids = new Set();
+    if (rows[0]) _collectIdsDeep(JSON.parse(rows[0].sections || '[]'), ids);
+    for (const id of ids) if (!pri.has(id)) pri.set(id, 1);
+  } catch { /* 读不到按无优先级继续 */ }
+  // P2 我的早报 / P3 精选周刊：读已生成报告的文章 id
+  for (const [key, p] of [['mybrief.latest', 2], ['weekly.latest', 3]]) {
+    try {
+      const report = await getSetting(key, null);
+      const ids = new Set();
+      _collectIdsDeep(report, ids);
+      for (const id of ids) if (!pri.has(id)) pri.set(id, p);
+    } catch { /* 读不到按无优先级继续 */ }
+  }
+  // P4 热点榜精选：与 /api/hot tab=featured 同口径（自有源六维≥60 且 AI 相关，7 天窗；热榜源不入精选）
   // AI 词表与云端读层共享 lib/ai-relevance.js（同一份，勿分叉）
   try {
     const { aiRelevanceCond } = require('../lib/ai-relevance');
@@ -1742,24 +1775,8 @@ async function translatePriorityMap() {
          AND ${aiCond}`,
       args
     );
-    for (const r of rows) if (!pri.has(r.id)) pri.set(r.id, 1);
-  } catch (e) { log(`  翻译优先级 P1 热点榜查询失败（按无优先级继续）: ${e.message}`); }
-  // P2 我的早报 / P3 周报：读已生成报告的文章 id
-  for (const [key, p] of [['mybrief.latest', 2], ['weekly.latest', 3]]) {
-    try {
-      const report = await getSetting(key, null);
-      const ids = new Set();
-      _collectIdsDeep(report, ids);
-      for (const id of ids) if (!pri.has(id)) pri.set(id, p);
-    } catch { /* 读不到按无优先级继续 */ }
-  }
-  // P4 每日早报：daily_reports 最新一期 sections
-  try {
-    const rows = await qAll('SELECT sections FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
-    const ids = new Set();
-    if (rows[0]) _collectIdsDeep(JSON.parse(rows[0].sections || '[]'), ids);
-    for (const id of ids) if (!pri.has(id)) pri.set(id, 4);
-  } catch { /* 读不到按无优先级继续 */ }
+    for (const r of rows) if (!pri.has(r.id)) pri.set(r.id, 4);
+  } catch (e) { log(`  翻译优先级 P4 热点榜查询失败（按无优先级继续）: ${e.message}`); }
   return pri;
 }
 
@@ -1807,9 +1824,24 @@ async function runTranslate() {
        AND content_html IS NOT NULL AND content_html != ''
      ORDER BY created_at DESC LIMIT 5000`
   );
-  // 2026-09-14：板块优先级排序（热点榜>我的早报>周报>每日早报>阅读器兜底）；
+  // 2026-09-16：板块优先级排序（每日早报>我的早报>精选周刊>热点榜>阅读器兜底，用户口径修正）；
   // titleRows 已按 created_at DESC，sort 稳定 → 同优先级内仍是新到旧
   const priMap = await translatePriorityMap();
+  // 2026-09-16 阻塞修复：优先级条目必须直接补入候选池——日报条目可能已跌出「最近 5000 条」扫描窗
+  // （实测：日报 40 条 id 全在扫描窗外 → P1=0，优先级排序形同虚设，用户口径"早报优先"未真正生效）
+  const scannedIds = new Set(titleRows.map((r) => r.id));
+  const missingPri = [...priMap.keys()].filter((id) => !scannedIds.has(id));
+  if (missingPri.length) {
+    const extra = await qAll(
+      `SELECT id, title FROM articles
+       WHERE id IN (${missingPri.map(() => '?').join(',')})
+         AND translated_title IS NULL AND translated_content IS NULL
+         AND content_html IS NOT NULL AND content_html != ''`,
+      missingPri
+    );
+    if (extra.length) titleRows.push(...extra);
+    log(`优先级补扫：${extra.length}/${missingPri.length} 条早报/周刊/热点条目在 5000 扫描窗外，已直接补入候选池`);
+  }
   const priCount = { 1: 0, 2: 0, 3: 0, 4: 0, 7: 0 };
   const sorted = titleRows
     .filter(a => isEnglish(a.title))
@@ -1817,7 +1849,7 @@ async function runTranslate() {
     .sort((a, b) => a._p - b._p);
   for (const c of sorted) priCount[c._p]++;
   const candidates = sorted.slice(0, limit);
-  log(`英文候选池 ${sorted.length} 篇（扫描最近 ${titleRows.length} 条标题）；优先级分布 热点榜P1=${priCount[1]} 我的早报P2=${priCount[2]} 周报P3=${priCount[3]} 每日早报P4=${priCount[4]} 阅读器P7=${priCount[7]}，本轮取前 ${candidates.length} 篇`);
+  log(`英文候选池 ${sorted.length} 篇（扫描最近 ${titleRows.length} 条标题）；优先级分布 每日早报P1=${priCount[1]} 我的早报P2=${priCount[2]} 精选周刊P3=${priCount[3]} 热点榜P4=${priCount[4]} 阅读器P7=${priCount[7]}，本轮取前 ${candidates.length} 篇`);
 
   stats.total += candidates.length;
   for (const c of candidates) {

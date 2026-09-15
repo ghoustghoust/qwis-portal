@@ -57,6 +57,28 @@ test('F3-6 正常英文开头的译文不被误伤', () => {
   assert.strictEqual(_ai.sanitizeTranslationReply(legit, '草稿'), legit);
 });
 
+// ─── 2026-09-16 翻译污染事故回归锁（生产实测 25 篇元评论标题 + 「评论：0」胡编标题） ───
+test('F3-7 术语校对轮复述指令起手式（用户要求我…）被识别并回退草稿', () => {
+  const meta = '用户要求我作为术语校对专家，检查初翻草稿中的术语翻译是否与对照表一致。只修正术语不一致的地方，其余内容一字不动。';
+  assert.strictEqual(_ai.isThinkingLikeReply(meta), true);
+  assert.strictEqual(_ai.sanitizeTranslationReply(meta, '干净草稿'), '干净草稿');
+  const meta2 = '我已收到您的翻译请求，但您只提供了文章标题和元数据（URL、评分等），没有提供需要翻译的正文内容。';
+  assert.strictEqual(_ai.isThinkingLikeReply(meta2), true);
+  assert.strictEqual(_ai.sanitizeTranslationReply(meta2, '干净草稿'), '干净草稿');
+  const meta3 = '让我仔细比对：译文与术语表……';
+  assert.strictEqual(_ai.isThinkingLikeReply(meta3), true);
+});
+
+test('F3-8 深析占位金句被清洗（薄正文桥接源不再产「原文引用待提取」）', () => {
+  // analyzeArticle 的清洗是纯输出侧逻辑——直接测 QUOTE_PLACEHOLDER_RE 等效行为（经模块内 analyzeArticle 无法离线调 AI，改为锁定清洗正则的判定面）
+  const re = /待提取|待原文|待补充|未提供正文|未提供.*内容|暂无原文|无法提取|无法提供|原文缺失|未见正文/;
+  assert.ok(re.test('（原文未提供正文内容，无法提取金句）'));
+  assert.ok(re.test('原文引用待提取'));
+  assert.ok(re.test('待原文确认后补充'));
+  assert.ok(re.test('暂无原文引用（未提供正文）'));
+  assert.ok(!re.test('真正的金句：软件供应链攻击日益频发'));
+});
+
 // ─── F2：未来时间 pubDate 钳制（本地隔离库，真实 repo 落库） ───
 const { db } = require('../server/db');
 const repo = require('../server/services/collectors/repo');
