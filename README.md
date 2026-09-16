@@ -102,13 +102,19 @@ AI 策展周度精选 + 主题全景四视角 + 补充阅读
 
 ![精选周刊](docs/screenshots/10-weekly-page.png)
 
-### 热点榜 (`/hot/`)
+### 热点榜 · AI 精选 (`/hot/`)
 
-AI 精选 / AI 信息实时流 / 热搜事件三 Tab + 七分类胶囊 + 事件卡带趋势折线
+自有源六维 ≥60 且 AI 相关 + 七分类胶囊（AI·前沿 / Top200 / 国际科技 / X推主 / 科技博客 / 公众号 / 中文科技）
 
-![热点榜](docs/screenshots/03-hot-page.png)
+![AI 精选](docs/screenshots/03-hot-page.png)
 
-### 热搜事件榜
+### 热点榜 · AI 信息实时流
+
+只出 AI 相关内容 + 60s 无感刷新 + 分类筛选
+
+![AI 信息实时流](docs/screenshots/03b-hot-realtime.png)
+
+### 热点榜 · 热搜事件
 
 72h 全域聚类 + 24 桶趋势折线 + 分组信源胶囊 + 热度降序
 
