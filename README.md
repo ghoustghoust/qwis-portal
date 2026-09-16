@@ -2,13 +2,13 @@
 
 > **Q**uan**W**ang **I**ntel **S**ystem — 私人 AI 情报阅读器
 >
-> 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报，支持 AI 辅助分析与多端推送报警。
+> 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报与个性化早报，支持 AI 辅助分析、翻译、精选周刊和多端推送报警。
 >
-> **生产地址**：<https://qwis-intel.vercel.app>（阅读器 `/reader/`、日报 `/daily/`、热点榜 `/hot/`、管理后台 `/admin/`）
+> **生产地址**：<https://qwis-intel.vercel.app>
 
 [![License](https://img.shields.io/badge/license-Private-blue)](#)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)](#)
-[![Tests](https://img.shields.io/badge/tests-%E8%A7%81ISSUES-orange)](docs/ISSUES.md)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://qwis-intel.vercel.app)
 
 ---
 
@@ -25,18 +25,23 @@
 | **热榜聚合** | newsnow API | 微博/知乎/百度/头条/抖音/B站/贴吧/澎湃/凤凰等 29 个热榜源 |
 | **YouTube** | 官方频道 RSS | 需代理可达 |
 | **X / Twitter** | RSSHub | 依赖第三方 RSS 服务将时间线转为 RSS |
+| **播客音频** | RSS enclosure | 音频直链 + 封面归位，阅读器内嵌播放器 |
 
-### 📰 每日情报日报
+### 📰 每日情报日报 & 早报体系
 
-- **四栏目布局**：培训课程 / 重点更新 / AI 技术 / 其它重要
+- **每日早报**：四栏目布局（培训课程 / 重点更新 / AI 技术 / 其它重要），每日 08:00 + 晚间 21:30 双批次生成
+- **我的早报**：个性化订阅源 + 智能推荐，基于用户关注分组加权
+- **精选周刊**：AI 策展周度精选，主题全景四视角
 - **智能生成流程**：候选收集 → 关键词分类 → Jaccard ≥0.5 去重 + 同源限流 → 出库安检（乱码/风控错误页过滤）
 - **破茧栏**：事件聚合引擎，与用户常读分组交集最小的 Top5 事件
-- **定时 + 补跑**：默认每天 08:00 生成，启动时自动补跑错过的日报，前端打开时 stale 即自动补
+- **AI 增强**：摘要/评分/标签/翻译（多轮精翻管线 + 中英对照）
 
-### 🔥 热点榜
+### 🔥 AI 热点榜
 
-- **AIHOT 聚合源**：分类映射六胶囊（模型 / 产品 / 行业 / 论文 / 教程 / 观点）
-- **事件榜**：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度 = Σ权重 × 24h 半衰 × 1.5^(信源数-1)
+- **AI 精选**：自有源六维 ≥60 且 AI 相关，热榜源不入精选
+- **AI 信息实时流**：只出 AI 相关内容，60s 无感刷新
+- **热搜事件**：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度 = Σ权重 × 24h 半衰 × 1.5^(信源数-1)，24 桶趋势折线
+- **分类胶囊**：AI·前沿 / Top200 精选 / 国际科技 / X·AI推主 / 科技博客 / 公众号 / 中文科技 等
 - **enrich 管线**：pending_items → 串行详情页解析 → 富字段入库
 
 ### 🚨 报警系统
@@ -45,10 +50,11 @@
 - **4 事件类型**：源熔断 / 采集停滞 / 队列异常 / 系统错误
 - **防骚扰**：120min 冷却期 + 代理失败直连重试
 
-### 📋 源库管理与自动分类
+### 📋 源库管理与源四轴模型
 
-- 全类型源统一列表，四筛选（类型/文件夹/状态）+ 搜索 + 本地分页
-- 批量启用/停用/特别关注/移动
+- **四轴语义**：上架（enabled）→ 收录（reader_visible）→ 订阅（subscription）→ 重点（spotlight）/ 屏蔽（muted）
+- 全类型源统一列表，三视图（组合卡片 / 问题源 / 检索）+ 平台接入 + 搜索 + 本地分页
+- 批量操作：启用/停用/特别关注/移动/屏蔽/收录（组级单条 SQL，云端 serverless 友好）
 - **自动分类**：内置 8 类目录（中英别名归一 + 关键词兜底），新源三挂接点自动入组
 - 存量回填 dryRun 预览 → 勾选确认 → apply
 
@@ -59,7 +65,7 @@
 - 云端（Vercel）已支持 `POST /api/queue/sync` 直接触发同步
 - 支持 B站视频、抖音视频、公众号文章三队列
 
-###  鉴权与数据安全
+### 🛡 鉴权与数据安全
 
 - **JWT 鉴权**：读者只读 GET 公开，写操作与管理接口需 Bearer Token（7d 有效）
 - **整库快照备份**：WAL 安全 backup → `data/backups/app-*.db`
@@ -68,37 +74,69 @@
 
 ---
 
-##  页面预览
+## 🖥 页面预览
 
-### 阅读器首页 (`/reader/`)
+> 以下截图均来自线上生产环境 <https://qwis-intel.vercel.app>（2026-09-16 截取）。
 
-文章/视频双 Tab + 分组导航 + 未读计数 + 源级状态显示
+### 阅读器 (`/reader/`)
+
+文章/视频双 Tab + 分组导航 + 今日早报摘要卡 + 「今日」滚动 24h 视图 + 未读计数
 
 ![阅读器首页](docs/screenshots/01-reader-page.png)
 
-### 每日情报页 (`/daily/`)
+### 每日早报 (`/daily/`)
 
-四栏目布局（培训课程/重点更新/AI技术/其它）+ 统计卡片 + 破茧栏
+四栏目布局（培训课程 / 重点更新 / AI 技术 / 其它）+ 统计卡片 + 破茧栏 + AI 评分/摘要 + 中英对照
 
-![每日情报](docs/screenshots/02-daily-page.png)
+![每日早报](docs/screenshots/02-daily-page.png)
 
-### 热点榜页 (`/hot/`)
+### 我的早报 (`/mybrief/`)
 
-精选/全部动态/热点榜三 Tab + 六分类胶囊（模型/产品/行业/论文/教程/观点）+ 时间线
+个性化订阅源 + 智能推荐 + 主题导语 + 阅读足迹回顾
+
+![我的早报](docs/screenshots/09-mybrief-page.png)
+
+### 精选周刊 (`/weekly/`)
+
+AI 策展周度精选 + 主题全景四视角 + 补充阅读
+
+![精选周刊](docs/screenshots/10-weekly-page.png)
+
+### 热点榜 (`/hot/`)
+
+AI 精选 / AI 信息实时流 / 热搜事件三 Tab + 七分类胶囊 + 事件卡带趋势折线
 
 ![热点榜](docs/screenshots/03-hot-page.png)
 
+### 热搜事件榜
+
+72h 全域聚类 + 24 桶趋势折线 + 分组信源胶囊 + 热度降序
+
+![热搜事件](docs/screenshots/11-hot-events.png)
+
+### 我的阅读 (`/reading/`)
+
+阅读沉淀 + 批量管理 + 导出 + 阅读足迹
+
+![我的阅读](docs/screenshots/12-reading-page.png)
+
 ### 管理后台 (`/admin/`)
 
-7 Tab（公众号 RSS / B站 / 抖音 / 日报设置 / 数据 / 报警管理 / 热点榜）
+5 Tab 收敛：源库（组合/问题源/检索/平台接入）/ 早报中心 / 热点榜策展 / AI 能力 / 系统
 
 ![管理后台](docs/screenshots/04-admin-page.png)
 
-### 队列配置面板
+### 管理后台 · 早报中心
 
-嵌入 B站/抖音/公众号 Tab 内 — 云端队列 API 地址 + Token + 轮询间隔 + 同步按钮
+生成历史 + 订阅源配置 + 日报栏目/时间设置 + 晚间主批配置
 
-![队列配置面板](docs/screenshots/05-queue-panel.png)
+![早报中心](docs/screenshots/07-admin-brief-center.png)
+
+### 管理后台 · 系统
+
+数据/监控/报警分区 + 整库快照 + 健康状态
+
+![系统管理](docs/screenshots/08-admin-system.png)
 
 ---
 
@@ -133,10 +171,13 @@ npm start              # 生产模式
 npm run dev            # 开发模式（nodemon 热重载）
 
 # 6. 访问
-# 阅读器:  http://localhost:3000/reader/
-# 每日情报: http://localhost:3000/daily/
-# 热点榜:   http://localhost:3000/hot/
-# 管理后台: http://localhost:3000/admin/
+# 阅读器:    http://localhost:3000/reader/
+# 每日早报:  http://localhost:3000/daily/
+# 我的早报:  http://localhost:3000/mybrief/
+# 精选周刊:  http://localhost:3000/weekly/
+# 热点榜:    http://localhost:3000/hot/
+# 我的阅读:  http://localhost:3000/reading/
+# 管理后台:  http://localhost:3000/admin/
 ```
 
 ### 宝塔 / 服务器部署（PM2）
@@ -163,7 +204,7 @@ pm2 startup   # 开机自启
 ### 测试
 
 ```bash
-npm test              # 回归测试（数量见 docs/ISSUES.md）
+npm test              # 回归测试
 node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 ```
 
@@ -176,8 +217,9 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 | **后端** | Node.js 20+ / Express 4 / better-sqlite3 (WAL) |
 | **前端** | React 18 / Vite 5 / Tailwind CSS 3 |
 | **采集** | rss-parser / Playwright (抖音) / undici (HTTP) |
-| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso + cron-job.org 外置触发器双保险（云端主链路，2026-09-11 方案A） |
-| **云端** | Vercel Serverless (读层+管理台) / Turso (libSQL) / GH Actions runner (采集) / PHP 队列 |
+| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso + cron-job.org 外置触发器双保险（云端主链路） |
+| **AI** | Agnes 云端（日报增强/评分/翻译/摘要）；多轮精翻管线 + 薄正文仅标题通道 |
+| **云端** | Vercel Serverless (读层+管理台) / Turso (libSQL, 东京) / GH Actions runner (采集) / PHP 队列 |
 | **部署** | Vercel (生产读层) + GH Actions (定时采集) / PM2 (本地开发/灾备) |
 
 ---
@@ -196,31 +238,31 @@ qwis-portal/
 │   └── index.js          # 入口（代理初始化 → 建表 → 路由 → 鉴权 → 调度器）
 ├── web/                  # 主前端（Vite + React + Tailwind）
 │   ├── src/
-│   │   ├── pages/        # ReaderPage / DailyPage / HotPage / AdminPage / MyReadingPage
-│   │   ├── components/   # Sidebar / ArticleList / SourceLibraryTab / FilterPanel 等
+│   │   ├── pages/        # ReaderPage / DailyPage / HotPage / AdminPage / MyBriefPage / WeeklyPage / ReadingPage
+│   │   ├── components/   # Sidebar / ArticleList / SourceLibraryTab / FilterPanel / PodcastCover 等
 │   │   ├── ui/           # 共享 UI 组件（TagPills / Stars / SourceAvatar / StatCard）
 │   │   ├── api.js        # API 客户端（自动注入 Bearer token）
 │   │   └── main.jsx      # 入口（IconRail 导航 + pathname 路由）
 │   ├── index.html        # 读者入口
 │   └── admin.html        # 管理后台入口（独立 bundle）
-├── api/                  # Vercel 读层 API（采集/日报端点保留为手动备份）
+├── lib/                  # 共用模块（AI 相关性 / 热榜事件 / 源四轴 / 媒体 / 文本清洗）
+├── api/                  # Vercel 读层 API
 │   ├── [...slug].js      # 主 API（catch-all 路由）
-│   ├── collect.js        # 采集函数（手动备份；主链路在 GH Actions runner）
+│   ├── collect.js        # 采集函数（手动备份）
 │   └── daily-generate.js # 日报生成（手动备份）
-├── portal/               # 原 Vercel 项目（已合并到根项目）
 ├── cloud/                # PHP 队列（Token 鉴权 + flock 原子操作）
 ├── config/               # customer-config.json（客户化配置）
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
-├── tools/                # 运维脚本
-├── tests/                # 回归测试（node:test，数量见 docs/ISSUES.md）
-├── docs/                 # 文档（RUNBOOK / 截图等）
+├── tools/                # 运维脚本（collect-turso.js = 云端采集主链路）
+├── tests/                # 回归测试（node:test）
+├── docs/                 # 文档（RUNBOOK / 截图 / specs / pitfalls 等）
 ├── archive/              # 历史资产（报告 / 规格 / 分析）
 └── trash/                # 退役代码（we-mp-rss 等）
 ```
 
 ---
 
-## ️ 配置说明
+## ⚙️ 配置说明
 
 ### `.env` 环境变量
 
@@ -264,10 +306,11 @@ qwis-portal/
 
 | 端点 | 说明 |
 |------|------|
-| `GET /api/articles` | 文章列表（默认排除热榜/聚合源） |
+| `GET /api/articles` | 文章列表（默认排除热榜/聚合源，支持 `since` 增量 + `smart` 排序） |
 | `GET /api/articles/since` | 文章增量（前端 60s 无感刷新轮询用） |
-| `GET /api/videos` | 视频列表 |
+| `GET /api/videos` | 视频列表（游标分页 + 播客并入） |
 | `GET /api/hot` | 热点榜（精选/全部动态/事件榜） |
+| `GET /api/hot/groups` | 热点分类列表（去重、只含有内容的组） |
 | `GET /api/daily` | 每日情报 |
 | `GET /api/groups` | 分组列表 |
 | `GET /api/sources` | 源列表 |
@@ -282,11 +325,12 @@ qwis-portal/
 | `/api/auth/login` | POST | 获取 JWT Token |
 | `/api/sources` | POST/PUT/DELETE | 源管理 |
 | `/api/sources/library` | GET | 源库列表（含 itemCount/contentKind） |
-| `/api/sources/batch` | POST | 批量操作（启用/停用/关注/移动） |
+| `/api/sources/batch` | POST | 批量操作（enable/spotlight/mute/visible/subscribe/interval/failover + groupScopeId） |
 | `/api/sources/autoclassify` | POST | 自动分类（dryRun/apply） |
 | `/api/groups` | POST/PUT/DELETE | 分组管理 |
 | `/api/daily` | POST | 手动生成日报 |
 | `/api/settings` | GET/PUT | 系统设置 |
+| `/api/settings/daily` | GET/PUT | 日报设置 |
 | `/api/alerts` | GET/POST/DELETE | 报警管理 |
 | `/api/backup` | POST | 整库快照备份 |
 | `/api/data/upload` | POST | 数据库上传导入 |
@@ -295,7 +339,7 @@ qwis-portal/
 | `/api/reading` | POST/PUT | 阅读记录写入 |
 | `/api/audit` | GET | 审计日志 |
 
-> 管理端点（restore-all / health / queue / opml / rss-refresh / backup / data / audit 等）全表见 [docs/HANDOVER.md](docs/HANDOVER.md) §3.4
+> 管理端点全表见 [docs/HANDOVER.md](docs/HANDOVER.md) §3.4
 
 ---
 
@@ -315,24 +359,24 @@ qwis-portal/
 
 ### Q: 如何添加新的 RSS 源？
 
-1. 打开管理后台 `/admin/` → 「公众号 RSS」Tab
+1. 打开管理后台 `/admin/` → 「源库」Tab → 「平台接入」
 2. 粘贴 RSS Feed URL，填写显示名称
-3. 保存后系统自动加入调度队列
+3. 保存后系统自动加入调度队列并尝试自动分类
 
 ### Q: 海外源（YouTube/X）抓不到内容？
 
-在 `.env` 中配置 `HTTPS_PROXY` 指向本地代理（如 Clash 默认 `http://127.0.0.1:7890`）。国内服务（云端队列/DeepSeek）会自动通过 `NO_PROXY` 绕过代理。
+在 `.env` 中配置 `HTTPS_PROXY` 指向本地代理。国内服务（云端队列/DeepSeek）会自动通过 `NO_PROXY` 绕过代理。
 
 ### Q: 日报没有自动生成？
 
-- 云端（Vercel）：每天北京时间 09:03 由 GH Actions runner 生成；排查先看 Turso settings `cloud.collect` 心跳，再看 GitHub Actions 运行记录
-- 本地：检查调度器 `npm run pm2:logs`；手动触发：管理后台 → 「日报设置」Tab → 「重新生成」；前端打开 `/daily/` 时 stale 会自动补跑
+- 云端（Vercel）：每天北京时间 08:00 + 21:30 由 GH Actions runner 生成；排查先看 Turso settings `cloud.collect` 心跳，再看 GitHub Actions 运行记录
+- 本地：检查调度器 `npm run pm2:logs`；手动触发：管理后台 → 「早报中心」→ 「重新生成」
 
 ### Q: 如何备份和恢复数据？
 
-- **备份**：管理后台 → 「数据」Tab → 「整库快照」，或调用 `POST /api/backup`
-- **恢复**：管理后台 → 「数据」Tab → 上传 `.db` 文件（文件名白名单 + SQLite 头校验）
-- **云端语义**：配置备份存 Turso `settings` 表；文件型整库快照（`.db`）在云端（Vercel）不支持（501），需整库迁移请用 `tools/migrate-to-turso.js`
+- **备份**：管理后台 → 「系统」Tab → 「整库快照」，或调用 `POST /api/backup`
+- **恢复**：管理后台 → 「系统」Tab → 上传 `.db` 文件（文件名白名单 + SQLite 头校验）
+- **云端语义**：配置备份存 Turso `settings` 表；文件型整库快照在云端不支持（501），需整库迁移请用 `tools/migrate-to-turso.js`
 
 ---
 
@@ -343,34 +387,32 @@ qwis-portal/
 | `npm start` | 启动服务（生产模式） |
 | `npm run dev` | 开发模式（nodemon 热重载） |
 | `npm run build` | 构建前端 |
-| `npm test` | 运行回归测试（数量见 docs/ISSUES.md） |
+| `npm test` | 运行回归测试 |
 | `npm run pm2:start` | PM2 启动守护进程 |
 | `npm run pm2:restart` | PM2 重启 |
 | `npm run pm2:logs` | PM2 查看日志 |
 | `node smoke-test.js` | 冒烟测试（零副作用） |
-| `node tools/collect-turso.js collect` | 手动直采云端 Turso（读 .env 的 TURSO_*，主链路同款脚本） |
+| `node tools/collect-turso.js collect` | 手动直采云端 Turso（主链路同款脚本） |
 | `node tools/audit-cloud.js` | 云端 19 项健康检查 |
-| `node tools/sync-portal.js` | 手动同步门户快照 |
 
 ---
 
-##  文档索引
+## 📖 文档索引
 
 | 文档 | 说明 |
 |------|------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 架构文档（系统全景、数据通路、已知坑、协作规则） |
-| [docs/changes/2026-09-11-runner-direct-collect.md](docs/changes/2026-09-11-runner-direct-collect.md) | **方案A 变更记录**（云端采集移入 runner 直写 Turso，根治网页不自动更新） |
+| [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | 功能矩阵（功能/端点状态唯一权威） |
+| [docs/CLOUD_PIPELINE_GUIDE.md](docs/CLOUD_PIPELINE_GUIDE.md) | 云端定时管线指南 |
 | [docs/HANDOVER.md](docs/HANDOVER.md) | 交接/对接文档（Vercel 配置、凭据速查、API 列表）⚠️ 含敏感凭据，已 gitignore |
 | [docs/DEV_GUIDE.md](docs/DEV_GUIDE.md) | 开发者上手指南 |
 | [docs/DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) | 开发规范与验收标准 |
-| [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
 | [docs/RUNBOOK.md](docs/RUNBOOK.md) | 运维手册 |
-| [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | 功能矩阵（功能/端点状态唯一权威） |
-| [docs/CLOUD_PIPELINE_GUIDE.md](docs/CLOUD_PIPELINE_GUIDE.md) | 云端定时管线指南 |
+| [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
 | [docs/DELIVERY_VERIFICATION.md](docs/DELIVERY_VERIFICATION.md) | 交付验证清单 |
-| [docs/INDEX.md](docs/INDEX.md) | 文档索引 |
-| [docs/ANDROID_SUBMIT_GUIDE.md](docs/ANDROID_SUBMIT_GUIDE.md) | 安卓端提交客户端指南 |
-| [docs/X_SETUP_GUIDE.md](docs/X_SETUP_GUIDE.md) | X/Twitter RSSHub 设置指南 |
+| [docs/NEXT-DEV-REQS.md](docs/NEXT-DEV-REQS.md) | 待开发需求 |
+| [docs/pitfalls/](docs/pitfalls/) | 踩坑库（采集/后端/AI/前端/部署/测试 六域 30+ 条） |
+| [docs/specs/](docs/specs/) | 功能规格文档库 |
 
 ---
 
@@ -381,9 +423,10 @@ qwis-portal/
 - **bat 文件必须 GBK 编码**：用 `tools/gen_bat.py` 生成，不要手改
 - **better-sqlite3 单进程锁**：不可 cluster 多实例，PM2 配置 `instances: 1`
 - **Vercel 为读层主部署**：`api/` 目录为读 API 代码；采集/日报主链路在 GH Actions runner（`tools/collect-turso.js` 直写 Turso），本地 Express 为开发/灾备
+- **凭据三处同步**：`COLLECT_KEY` / `TURSO_*` 等改值时必须同时改 本地 `.env` + Vercel env + GitHub Secrets
 
 ---
 
-##  License
+## 📄 License
 
 Private — 个人项目，保留所有权利。
