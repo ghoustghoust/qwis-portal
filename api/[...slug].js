@@ -559,30 +559,45 @@ async function handleHotSources(req) {
 // ─── 事件聚合引擎：逻辑在 lib/hot-events.js（纯函数，runner/云端共用） ───
 // 2026-09-14 加载慢根因治理：内联聚合（3000 行窗口查询 + Jaccard 聚类）在 serverless 冷启动超 30s 上限会 504，
 // 改为「runner 每 15min 预聚合写 settings['hot.eventsCache']，云端读缓存优先；缓存缺失/超 45min 才内联兜底」
-let _eventsCache = { at: 0, events: null };
+// 2026-09-16 兜底策略修复：缓存过期时不再做内联聚合（SQL 太重必然超时），改为返回旧缓存 + stale 标记
+let _eventsCache = { at: 0, events: null, stale: false };
 const EVENTS_CACHE_MS = 90 * 1000; // 进程内 90s（settings 读的缓存）
-const EVENTS_SETTINGS_MAX_AGE = 45 * 60e3; // runner 每 15min 写一次；超 45min 视为 runner 异常走兜底
+const EVENTS_SETTINGS_MAX_AGE = 45 * 60e3; // runner 每 15min 写一次；超 45min 视为 runner 异常
 
 // GET /api/hot/events — 跨源事件聚合
 async function handleHotEvents(req) {
   const domain = req.query.domain || 'all';
   if (!_eventsCache.events || Date.now() - _eventsCache.at > EVENTS_CACHE_MS) {
     let events = null;
+    let stale = false;
     try {
       const cached = await getSetting('hot.eventsCache', null);
-      if (cached && Array.isArray(cached.events) && Date.now() - Number(cached.at || 0) < EVENTS_SETTINGS_MAX_AGE) {
-        events = cached.events;
+      if (cached && Array.isArray(cached.events) && cached.events.length > 0) {
+        const age = Date.now() - Number(cached.at || 0);
+        if (age < EVENTS_SETTINGS_MAX_AGE) {
+          events = cached.events;
+        } else {
+          // 2026-09-16: 缓存过期仍返回旧数据（好过 504 超时白屏），标记 stale 让前端提示
+          events = cached.events;
+          stale = true;
+        }
       }
     } catch { /* 读不到走兜底 */ }
     if (!events) {
-      const cutoff = new Date(Date.now() - EVENTS_WINDOW_H * 3600e3).toISOString();
-      const rows = await qAll(EVENTS_SAMPLE_SQL, [cutoff]);
-      events = aggregateEventRows(rows);
+      // 完全无缓存时才尝试内联聚合（极小窗口，避免超时）
+      try {
+        const cutoff = new Date(Date.now() - 24 * 3600e3).toISOString(); // 仅 24h 兜底
+        const rows = await qAll(EVENTS_SAMPLE_SQL, [cutoff]);
+        events = aggregateEventRows(rows);
+        stale = true;
+      } catch {
+        events = [];
+      }
     }
-    _eventsCache = { at: Date.now(), events };
+    _eventsCache = { at: Date.now(), events, stale };
   }
 
-  let result = _eventsCache.events;
+  let result = _eventsCache.events || [];
   if (domain && domain !== 'all') {
     result = result.filter(e => e.domain === domain);
     // 重新编号
@@ -590,11 +605,11 @@ async function handleHotEvents(req) {
   }
 
   // 领域清单（从全量事件提取）
-  const domains = [...new Set(_eventsCache.events.map(e => e.domain))].filter(Boolean).sort();
+  const domains = [...new Set((_eventsCache.events || []).map(e => e.domain))].filter(Boolean).sort();
   // 列表瘦身（2026-09-14：全量 items 曾使列表响应 246KB、页面长时间「加载中」）——
   // 列表只带报道摘要 digest + 信源/趋势，明细留给 /api/hot/events/:rank
   const list = result.map(({ items, ...e }) => ({ ...e, digest: (items?.[0]?.summary || '').slice(0, 200) }));
-  return jsonOk({ events: list, domains });
+  return jsonOk({ events: list, domains, stale: _eventsCache.stale || false });
 }
 
 // GET /api/hot/events/:rank — 事件详情
