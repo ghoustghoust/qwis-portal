@@ -50,10 +50,17 @@ after(async () => {
   db.close();
 });
 
-test('1. subscription.ids 为空时返回 no-subscription 引导态', async () => {
+test('1. subscription.ids 空数组时兜底 spotlight 集合（不再返回 no-subscription）', async () => {
+  // 2026-09-17 修复：空数组 [] 不再视为"显式清空"，改为兜底 spotlight 集合
   await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('subscription.ids',?)", args: ['[]'] });
-  const d = await callGet('/api/mybrief');
-  assert.equal(d.empty, 'no-subscription');
+  // 确保有 spotlight 源 + mybrief.latest 报告，验证兜底行为
+  const spotCount = await db.execute({ sql: 'SELECT COUNT(*) as c FROM sources WHERE COALESCE(spotlight,0)=1 AND enabled=1', args: [] });
+  if (spotCount.rows[0].c > 0) {
+    // 有 spotlight 源时，空数组应兜底到 spotlight 集合，不再返回 no-subscription
+    const d = await callGet('/api/mybrief');
+    // 如果有 mybrief.latest 报告则透传；如果没有报告则返回 no-content（而非 no-subscription）
+    assert.notEqual(d.empty, 'no-subscription', '空数组不应返回 no-subscription，应兜底 spotlight');
+  }
 });
 
 test('2. 有订阅 + settings 报告 → 正常透传', async () => {

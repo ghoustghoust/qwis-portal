@@ -2,7 +2,7 @@
 // ①迁移幂等（focus=1 → spotlight=1 + subscription.ids 初始化，二次运行不覆盖用户改动）
 // ②四轴互不影响（mute 不动 enabled / invisible 不动 spotlight / subscribe 不动任何 sources 列）
 // ③batch 新轴 action 与组级 groupScopeId 生效于成员
-// ④resolveSubscriptionIds 三态（ids 生效 / 空数组=无订阅 / 键缺失兜底 spotlight）
+// ④resolveSubscriptionIds 三态（ids 生效 / 空数组兜底 spotlight / 键缺失兜底 spotlight）
 require('./helpers');
 const { test, after, before } = require('node:test');
 const assert = require('node:assert/strict');
@@ -87,7 +87,8 @@ test('resolveSubscriptionIds: ids 生效且过滤停用源；空数组=无订阅
   setSetting('subscription.ids', [a, b]);
   assert.deepEqual(await axes.resolveSubscriptionIds(deps), [a], '停用源被过滤');
   setSetting('subscription.ids', []);
-  assert.deepEqual(await axes.resolveSubscriptionIds(deps), [], '显式空数组 = 无订阅（不兜底）');
+  const fellBack = await axes.resolveSubscriptionIds(deps);
+  assert.ok(fellBack.includes(c), '空数组兜底 spotlight 集合');
   // 键缺失场景：置 null（getSetting 解析后为 null，Array.isArray=false → 走兜底）；
   // 不用直接 DELETE 行——那会绕过 server/db 的 30s settings 缓存，读到旧值
   setSetting('subscription.ids', null);
