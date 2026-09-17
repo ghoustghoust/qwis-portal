@@ -7,6 +7,7 @@ import { IconRail } from '../main.jsx';
 import { imgUrl, relativeTime } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
+import MdText from '../components/ui/MdText.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
@@ -75,8 +76,11 @@ export default function MyBriefPage() {
                 </h1>
                 {report.theme && (
                   <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted">
-                    今日聚焦：{report.theme}
+                    今日聚焦：<MdText text={report.theme} />
                   </p>
+                )}
+                {report.degraded && (
+                  <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
                 )}
                 {Array.isArray(report.keywords) && report.keywords.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -110,29 +114,30 @@ export default function MyBriefPage() {
               <BriefSection title="补充阅读" items={report.sections?.rest} kind="rest" type={type} onOpen={setStudyItem} />
             </>
           )}
+
+          {/* T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键） */}
+          {digest && (
+            <section className="mt-8 card p-4 sm:p-5">
+              <div className="text-[11px] tracking-widest t-accent font-medium">阅读足迹 · {digest.date}</div>
+              <div className="mt-2 text-[13px] t-text">
+                过去 24 小时读了 <b className="t-accent">{digest.readCount}</b> 篇 · 稍后读 {digest.laterCount} 条
+              </div>
+              {digest.topSources?.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                  {digest.topSources.map((src) => (
+                    <span key={src.name} className="flex items-center gap-1.5 text-[12px] t-muted">
+                      <SourceAvatar name={src.name} avatar={src.avatar} size={16} />
+                      {src.name} · {src.count}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
           <div className="h-16" />
         </div>
       </main>
-      {digest && (
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 pb-8 w-full">
-          <section className="card p-4 sm:p-5">
-            <div className="text-[11px] tracking-widest t-accent font-medium">阅读足迹 · {digest.date}</div>
-            <div className="mt-2 text-[13px] t-text">
-              过去 24 小时读了 <b className="t-accent">{digest.readCount}</b> 篇 · 稍后读 {digest.laterCount} 条
-            </div>
-            {digest.topSources?.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-                {digest.topSources.map((src) => (
-                  <span key={src.name} className="flex items-center gap-1.5 text-[12px] t-muted">
-                    <SourceAvatar name={src.name} avatar={src.avatar} size={16} />
-                    {src.name} · {src.count}
-                  </span>
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
-      )}
       {studyItem && <QuickStudyModal item={studyItem} onClose={() => setStudyItem(null)} />}
     </div>
   );
@@ -174,7 +179,15 @@ function BriefCard({ item, rank, onOpen }) {
             <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />
           </div>
           <h3 className="mt-2 text-[15px] font-bold leading-snug t-text line-clamp-2">{item.title}</h3>
-          {item.summary && <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-4">{item.summary}</p>}
+          {item.original_title && (
+            <div className="mt-0.5 text-[11px] t-muted leading-snug truncate" title={item.original_title}>
+              {item.original_title}
+            </div>
+          )}
+          {item.summary && <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-4 whitespace-pre-line"><MdText text={item.summary} /></p>}
+          {item.reason && (
+            <p className="mt-2 text-[12px] leading-relaxed t-accent">推荐：<MdText text={item.reason} /></p>
+          )}
           {Array.isArray(item.points) && item.points.length > 0 && (
             <ul className="mt-2 space-y-1">
               {item.points.map((p, i) => (
@@ -186,7 +199,7 @@ function BriefCard({ item, rank, onOpen }) {
           )}
           {item.quote && (
             <blockquote className="mt-2 pl-3 border-l-2 text-[12px] italic leading-relaxed t-muted" style={{ borderColor: 'var(--accent)' }}>
-              {item.quote}
+              <MdText text={item.quote} />
             </blockquote>
           )}
           <div className="mt-2.5 flex items-center gap-2">
@@ -210,9 +223,14 @@ function RestRow({ item, index, onOpen }) {
   return (
     <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 4}</span>
-      <span className="flex-1 min-w-0 truncate text-[13px] t-text">{item.title}</span>
+      <span className="flex-1 min-w-0">
+        <span className="block truncate text-[13px] t-text">{item.title}</span>
+        {item.original_title && (
+          <span className="block truncate text-[11px] t-muted mt-0.5" title={item.original_title}>{item.original_title}</span>
+        )}
+      </span>
       {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}
-      {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate">{item.reason}</span>}
+      {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>{item.reason}</span>}
       <span className="flex-none text-[11px] t-muted whitespace-nowrap">{item.source}</span>
     </div>
   );
