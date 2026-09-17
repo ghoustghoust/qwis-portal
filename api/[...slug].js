@@ -2618,6 +2618,8 @@ async function enrichBriefTitles(report) {
   if (Array.isArray(report.storylines)) for (const sl of report.storylines) {
     if (sl && Array.isArray(sl.items)) buckets.push(sl.items);
   }
+  // 2026-09-17 审查补漏：周刊结构是 report.items（非 sections）
+  if (Array.isArray(report.items)) buckets.push(report.items);
   const ids = [];
   for (const arr of buckets) for (const it of arr) {
     if (it && Number.isFinite(Number(it.id)) && !String(it.id).startsWith('v')) ids.push(Number(it.id));
