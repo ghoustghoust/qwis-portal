@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 93,
-    "generated_at": "2026-09-16T05:48:25.962Z",
+    "id": 97,
+    "generated_at": "2026-09-17T05:54:39.299Z",
     "window_hours": 30,
     "sections": [
       {
@@ -9,154 +9,154 @@
         "desc": "",
         "items": [
           {
-            "id": 1036914,
-            "title": "早知天下事〔2026.09.16〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650238469&idx=1&sn=d9822b4d5c4ea91e74563a3eb6f97ceb",
+            "id": 1265740,
+            "title": "Need a sanity check/questions for SSO migration (Authentik very likely candidate)",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wiaylg/need_a_sanity_checkquestions_for_sso_migration/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:49:00.000Z",
+            "score": null,
+            "summary": "With some recent stuff that I read and upcoming big projects with our homelab I started to plan out bumping up security and QOL with the big thing being Domain/Active Directory (the other sysadmin hal",
+            "cover": null
+          },
+          {
+            "id": 1257366,
+            "title": "Manchester United lose 3-2 to Brighton, crash out of League Cup",
+            "url": "https://www.aljazeera.com/sports/2026/9/16/manchester-united-lose-3-2-to-brighton-crash-out-of-league-cup?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-16T21:41:36.000Z",
+            "score": null,
+            "summary": "Brighton come from two goals down to win 3-2 at Old Trafford, to shock Manchester United as slow start continues.",
+            "cover": null
+          },
+          {
+            "id": 1294643,
+            "title": "A hidden 180-day key expiry blacked out DNS on every device I own — my Pi-hole + Tailscale setup and what broke",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wianpd/a_hidden_180day_key_expiry_blacked_out_dns_on/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:36:58.000Z",
+            "score": null,
+            "summary": "Six months ago I moved my ad-blocking off my home network and into the cloud: Pi-hole + Tailscale on an Oracle &quot;Always Free&quot; VM. It worked perfectly... Until last week, when every device I o",
+            "cover": null
+          },
+          {
+            "id": 1265741,
+            "title": "GoHarddrive RMA experience",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wiai28/goharddrive_rma_experience/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:30:52.000Z",
+            "score": null,
+            "summary": "Just wanted to share a good experience I had with goHardDrive since I know we tend to hear a lot more about the bad experiences than the good ones.",
+            "cover": null
+          },
+          {
+            "id": 1277638,
+            "title": "早知天下事〔2026.09.17〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650238764&idx=1&sn=87ab082a8d459c14908f7be7234a719f",
             "source": "新华社",
-            "published_at": "2026-09-15T21:30:00.000Z",
+            "published_at": "2026-09-16T21:30:00.000Z",
             "score": null,
-            "summary": "习近平给福建省“漳州110”全体队员回信强调，坚守为民初心，矢志担当奉献，做党和人民的忠诚卫士。详情&gt;&gt;",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7112d7e0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOITAhUoomxA4b62vECoT6qjGiaPicJo0NIpOfktESickbITTtwGzxeQTh4CBlskSA8xK6wfBoCcfyMd5pbVWUyRK37qtibVaAwdK6Vg%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "中共中央总书记、国家主席、中央军委主席习近平16日致信祝贺吉林大学建校80周年，向全体师生员工和广大校友致以祝贺。详情&gt;&gt;",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=717ac124&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIT3mOoARcicRkAPJQPbRwjXyeviaIGfeQicB1Okr9maiaFy4iaD1p6IjUByg5ECRZK8uXmjsuLqvUsBfmGhUZQia2mXmk2ficnhicOv2zs%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 1025588,
-            "title": "German Rheinmetall open-sources its Battlesuite connected weapon system protcol",
-            "url": "https://rheinmetall.github.io/onboardapi-documentation/9.10.0/index.html",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T21:07:47.000Z",
+            "id": 1265742,
+            "title": "Qwen3.8-Flash-Next on the official SGLang NVFP4 image: 35 s → 22 s first token at 254K on one RTX PRO 6000, then I run 7 tests",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wiag69/qwen38flashnext_on_the_official_sglang_nvfp4/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:28:53.000Z",
+            "score": 71,
+            "summary": "Last week I compared Qwen3.8-Flash-Next across SGLang, llama.cpp and FreeToken using patched builds because engine support was still arriving. SGLang now has an official NVFP4 image for this model for",
+            "cover": "https://external-preview.redd.it/FgobmgDfRVAb5xSpne21PsMdi_JB0KNWh6nhR-EY8DY.png?width=140&height=70&auto=webp&s=bd1b1d7ad4fd400e2d64d15f08464f98a9bfbb17"
+          },
+          {
+            "id": 1265743,
+            "title": "Question about Homarr",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wiafuw/question_about_homarr/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:28:31.000Z",
             "score": null,
-            "summary": "Article URL: https://rheinmetall.github.io/onboardapi-documentation/9.10.0/index.html",
+            "summary": "I have Homarr configured in the layout I want. I want to change the date/time widget to show the day and date on one line, the month/year on the second line, but everything I try in the custom date fo",
             "cover": null
           },
           {
-            "id": 1025589,
-            "title": "Jean-Pierre Serre is 100 years old today",
-            "url": "https://mathshistory.st-andrews.ac.uk/Biographies/Serre/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T20:57:18.000Z",
+            "id": 1265744,
+            "title": "Question about TMLR [D]",
+            "url": "https://www.reddit.com/r/MachineLearning/comments/1wiadm9/question_about_tmlr_d/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:26:05.000Z",
             "score": null,
-            "summary": "Article URL: https://mathshistory.st-andrews.ac.uk/Biographies/Serre/",
+            "summary": "I have a submission under review in TMLR. Less than a month after submission, I have already received 2 reviews. However, a month has passed since those two reviews, and I still haven&#39;t received t",
             "cover": null
           },
           {
-            "id": 1025728,
-            "title": "Microsoft announces Windows and Surface event for October 7th",
-            "url": "https://www.theverge.com/news/994714/microsoft-windows-surface-event-october-7-san-francisco",
+            "id": 1249989,
+            "title": "Watch: Leaked photos reveal extensive damage at US bases in Gulf",
+            "url": "https://www.bbc.co.uk/news/videos/c9dr7e1lr265o?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-09-16T21:24:24.000Z",
+            "score": null,
+            "summary": "The photos, provided by active military personnel, show a severed radar jet, flattened trailers and severely damaged buildings as a result of Iranian strikes.",
+            "cover": null
+          },
+          {
+            "id": 1247584,
+            "title": "Australian politics live: Labor to reveal new immigration rules; PM hails narrowing of gender gap",
+            "url": "https://www.theguardian.com/australia-news/live/2026/sep/17/labor-immigration-policy-tony-burke-anthony-albanese-one-nation-ntwnfb",
+            "source": "World news | The Guardian",
+            "published_at": "2026-09-16T21:21:19.000Z",
+            "score": null,
+            "summary": "Get our breaking news email, free app or daily news podcast",
+            "cover": null
+          },
+          {
+            "id": 1246316,
+            "title": "Top Trump military adviser says US must prepare to fight around moon",
+            "url": "https://www.theguardian.com/science/2026/sep/16/us-space-moon-military-combagt",
+            "source": "Space | The Guardian",
+            "published_at": "2026-09-16T21:19:04.000Z",
+            "score": null,
+            "summary": "Gen Dan Caine comments at Washington summit come after US revealed it has deployed weapons in space",
+            "cover": null
+          },
+          {
+            "id": 1246271,
+            "title": "Rescue workers search for survivors after Gaza building collapse",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/16/rescue-workers-search-for-survivors-after-gaza-building-collapse?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-16T21:15:42.000Z",
+            "score": null,
+            "summary": "Rescue workers search for survivors after Gaza building collapse",
+            "cover": null
+          },
+          {
+            "id": 1265745,
+            "title": "NextExplorer for iOS, an iOS app companion for your self-hosted NextExplorer instance",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wi9s0v/nextexplorer_for_ios_an_ios_app_companion_for/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-16T21:03:19.000Z",
+            "score": null,
+            "summary": "https://preview.redd.it/9pr3ayhj4yph1.png?width=1026&amp;format=png&amp;auto=webp&amp;s=87e537301a263f0e8958f361a77ef7456e373c21",
+            "cover": "https://external-preview.redd.it/fm-Dxm3k-hruoyQ-TzhKiajekl77FZUlcWlaBHDFJ7A.png?width=140&height=140&auto=webp&s=9adc9924426a13504a92ef1e93e43dd1248e6a8a"
+          },
+          {
+            "id": 1249966,
+            "title": "US interest rates raised for first time in three years",
+            "url": "https://www.bbc.co.uk/news/articles/cw4gmlyvj422o?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-09-16T21:02:11.000Z",
+            "score": null,
+            "summary": "The Federal Reserve unanimously voted to increase interest rates to 3.75%-4% from 3.5%-3.75% on Wednesday.",
+            "cover": null
+          },
+          {
+            "id": 1253328,
+            "title": "The 2.5-hour AI-generated Odyssey movie is 2.5 hours too long",
+            "url": "https://www.theverge.com/entertainment/996499/ai-odyssey-movie-review",
             "source": "The Verge",
-            "published_at": "2026-09-15T20:36:59.000Z",
-            "score": null,
-            "summary": "It's been more than two years since the last major Windows event, so Microsoft is heading to San Francisco next month to outline the future of Windows and Surface devices. At an event on October 7th, ",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/08/STK109_WINDOWS_A.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
-          },
-          {
-            "id": 1014928,
-            "title": "What if social media isn’t hurting kids?",
-            "url": "https://www.theverge.com/policy/995704/peter-gray-restoring-childhood-jonathan-haidt",
-            "source": "The Verge",
-            "published_at": "2026-09-15T20:13:30.000Z",
-            "score": null,
-            "summary": "Two years ago, social psychologist Jonathan Haidt released his New York Times bestseller The Anxious Generation. The book posits that the rise of social media and smartphone use is largely to blame fo",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/02/STKS526_SOCIAL_MEDIA_TRIAL_CVIRGINIA_C.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
-          },
-          {
-            "id": 1014818,
-            "title": "How much oil-market buffer is left?",
-            "url": "https://www.depletion.org",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T19:56:56.000Z",
-            "score": null,
-            "summary": "Comments URL: https://news.ycombinator.com/item?id=49718025",
-            "cover": null
-          },
-          {
-            "id": 1025591,
-            "title": "Building a Linux GPU Driver for the M4 Mac Mini in One Month",
-            "url": "https://codyho.dev/blog/gpu-driver/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T19:30:03.000Z",
-            "score": null,
-            "summary": "Article URL: https://codyho.dev/blog/gpu-driver/",
-            "cover": null
-          },
-          {
-            "id": 1014819,
-            "title": "WangNet – 1.8 MB, zero-dependency Numberwang adjudication in 11 languages",
-            "url": "https://github.com/GraafHenk/numberwang",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T19:27:35.000Z",
-            "score": null,
-            "summary": "Article URL: https://github.com/GraafHenk/numberwang",
-            "cover": null
-          },
-          {
-            "id": 1014820,
-            "title": "Jev: New frontier model 40-400x cheaper and 20-200x faster",
-            "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T19:25:03.000Z",
-            "score": null,
-            "summary": "Article URL: https://typesafe.ai/blog/introducing-system-one-models-and-jev",
-            "cover": null
-          },
-          {
-            "id": 1014821,
-            "title": "Chop Up Your Books",
-            "url": "https://attainablefelicity.mattkirkland.com/20260915/cut-up-your-books.html",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T18:45:31.000Z",
-            "score": null,
-            "summary": "Article URL: https://attainablefelicity.mattkirkland.com/20260915/cut-up-your-books.html",
-            "cover": null
-          },
-          {
-            "id": 1014929,
-            "title": "Kia’s electric van lineup is getting more interesting with reveal of PV7",
-            "url": "https://www.theverge.com/transportation/995608/kia-pv7-electric-van-specs-sale",
-            "source": "The Verge",
-            "published_at": "2026-09-15T18:39:44.000Z",
-            "score": null,
-            "summary": "You may not know it, but minivans are making a comeback in the US. Look around, and you'll start to notice an uptick in these breadboxes on wheels. Sales were up 21 percent in 2025, suggesting that th",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/The-Kia-PV7-Cargo-and-Passenger.jpg?quality=90&#038;strip=all&#038;crop=0,0,100,100"
-          },
-          {
-            "id": 998323,
-            "title": "How AI tool calling works (40 lines of vanilla JavaScript)",
-            "url": "https://buttercup.sh/lessons/2026-09-15-lesson-2-tool-calling.html",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T18:27:24.000Z",
-            "score": 70,
-            "summary": "Article URL: https://buttercup.sh/lessons/2026-09-15-lesson-2-tool-calling.html",
-            "cover": null
-          },
-          {
-            "id": 998324,
-            "title": "We got admin access to Baseten's production GitHub in 25 minutes",
-            "url": "https://www.strix.ai/blog/baseten-harbor-github-pat-takeover",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T18:11:24.000Z",
-            "score": 72,
-            "summary": "Article URL: https://www.strix.ai/blog/baseten-harbor-github-pat-takeover",
-            "cover": null
-          },
-          {
-            "id": 1003601,
-            "title": "One of the best 3D printers for beginners is almost $100 off",
-            "url": "https://www.theverge.com/gadgets/995518/elegoo-3d-printer-switch-joy-con-deal-sale",
-            "source": "The Verge",
-            "published_at": "2026-09-15T18:02:30.000Z",
-            "score": null,
-            "summary": "If the high price tag of premium 3D printers have kept you from exploring the hobby, this deal is a great entry point. Elegoo has its Centauri Carbon 2 Combo on sale for $369, almost $100 off its usua",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/Elegoo-Centauri-Carbon-2-roundup.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
-          },
-          {
-            "id": 998325,
-            "title": "An Update on Wayback Machine Access",
-            "url": "https://blog.archive.org/2026/09/15/an-update-on-wayback-machine-access/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-15T17:52:18.000Z",
-            "score": 58,
-            "summary": "Article URL: https://blog.archive.org/2026/09/15/an-update-on-wayback-machine-access/",
-            "cover": null
+            "published_at": "2026-09-16T20:59:13.000Z",
+            "score": 62,
+            "summary": "Christopher Nolan's engrossing take on The Odyssey dominated at the box office and spurred a newfound interest in classic literature among filmgoers. But a new retelling of the story made entirely wit",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/Screenshot-2026-09-16-at-4.19.06-PM.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
           }
         ]
       },
@@ -165,154 +165,154 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 1029072,
-            "title": "AWS agents will suggest your new flights, but code decides what gets booked.",
-            "url": "https://thenewstack.io/aws-agents-deterministic-validation/",
-            "source": "The New Stack",
-            "published_at": "2026-09-15T21:27:21.000Z",
-            "score": null,
-            "summary": "AWS published a new Step Functions pattern this week that gives AI agents a role in airline rebooking while keeping reservation changes and payments under code&rsquo;s control. Amazon Bedrock AgentCor",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/4e3ffff2-matthew-smith-oiithc8wf68-unsplash-1024x683.jpg"
+            "id": 1256805,
+            "title": "What Happens After You Tell an AI Agent It’s Wrong?",
+            "url": "https://www.turingpost.com/p/what-happens-after-you-tell-an-ai-agent-it-s-wrong",
+            "source": "Turing Post",
+            "published_at": "2026-09-16T22:00:00.000Z",
+            "score": 63,
+            "summary": "TL;DR: Practitioners can use enterprise methods to improve an agent: define its data and rules, record failures, test changes on new cases, measure the full cost, and keep previous versions available.",
+            "cover": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/asset/file/0232a68c-ae44-4bf0-8396-4ae6136d6ecf/Screenshot_2026-09-16_at_2.44.51_PM.jpg?t=1789584317"
           },
           {
-            "id": 1034021,
-            "title": "I agree. MCP is clearly better than CLI for most integrations. It felt that way early on, and it sti...",
-            "url": "https://x.com/omarsar0/status/2099970990935867485",
-            "source": "elvis(@omarsar0)",
-            "published_at": "2026-09-15T21:17:54.000Z",
-            "score": 48,
-            "summary": "I agree. MCP is clearly better than CLI for most integrations. It felt that way early on, and it still does now. And frontier models keep getting better at it. If you build custom harnesses, use MCP t",
-            "cover": "https://pbs.twimg.com/profile_images/1976939058741039104/r3GgzqRh_normal.jpg"
-          },
-          {
-            "id": 1025750,
-            "title": "AI Agent Whistleblower Hotline – Ryan Greenblatt",
-            "url": "https://hotline.ryan-g.ai/",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-15T20:49:23.000Z",
-            "score": 38,
-            "summary": "Comments URL: https://news.ycombinator.com/item?id=49718720",
-            "cover": null
-          },
-          {
-            "id": 1021871,
-            "title": "It has a MCP integration so basically any coding agent will be able to use it (Cursor, Cordex, Antig...",
-            "url": "https://x.com/itsPaulAi/status/2099960565095391612",
-            "source": "Paul Couvert(@itsPaulAi)",
-            "published_at": "2026-09-15T20:36:28.000Z",
-            "score": 35,
-            "summary": "It has a MCP integration so basically any coding agent will be able to use it (Cursor, Cordex, Antigravity, Claude Code, etc.)Here&#39;s the GitHub repo: github.com/google/artemis💬0🔄0❤️2👀266📊1⚡ Po",
-            "cover": null
-          },
-          {
-            "id": 1021872,
-            "title": "Wow so Google has just open sourced a tool to automate ANY task on mobile\r\n\r\nARTEMIS turns prompts int...",
-            "url": "https://x.com/itsPaulAi/status/2099960192125325488",
-            "source": "Paul Couvert(@itsPaulAi)",
-            "published_at": "2026-09-15T20:34:59.000Z",
-            "score": null,
-            "summary": "Wow so Google has just open sourced a tool to automate ANY task on mobileARTEMIS turns prompts into automation:- 99%+ success rate (!!)- Integrates w/ Codex, Claude Code, Antigravity- Automates workfl",
-            "cover": null
-          },
-          {
-            "id": 1041779,
-            "title": "Release v0.60.0",
-            "url": "https://github.com/google-gemini/gemini-cli/releases/tag/v0.60.0",
-            "source": "Release notes from gemini-cli",
-            "published_at": "2026-09-15T20:31:02.000Z",
-            "score": null,
-            "summary": "What's Changed fix(core): improve destination validation and connection routing in web fetch utilities by @diegogodinezr in #29120 fix(core): enforce RFC 9207 issuer identification in MCP OAuth flow b",
-            "cover": null
-          },
-          {
-            "id": 1040938,
-            "title": "Kash Patel defends removing bestiality as automatic disqualifier for FBI applicants - CNN",
-            "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBaNXZaejk1SnR6YTNMVmhZajBxTnVDcng1em1uRjh5Q3dKcGwzM1l5V0xTRU8wdHZwSzVYSVB6dFhRWnkyZTFaRDhOdmp0TFc3aTZiRFdKZTBiYlVFSURLV3FMc2VwREU3Wno1SE90UFdCUm5rSXQ0?oc=5",
-            "source": "Top stories - Google News",
-            "published_at": "2026-09-15T20:26:40.000Z",
-            "score": null,
-            "summary": "Kash Patel defends removing bestiality as automatic disqualifier for FBI applicants&nbsp;&nbsp;CNNKash Patel Suggests FBI Agents Could Go to Election Polling Sites&nbsp;&nbsp;The New York TimesKash Pa",
-            "cover": null
-          },
-          {
-            "id": 1041157,
-            "title": "[酷工作] 技术负责人（包括客户端、服务端和 Agent 团队）-北京/深圳",
-            "url": "https://www.v2ex.com/t/1242283#reply0",
-            "source": "V2EX",
-            "published_at": "2026-09-15T20:13:51.000Z",
-            "score": null,
-            "summary": "技术负责人岗位职责：1. 负责公司整体技术方向、架构设计及技术团队管理。2. 统筹客户端、服务端和 Agent 团队，推动跨团队高效协作。3. 负责核心产品的技术方案、研发进度、交付质量及上线稳定性。任职要求：1. 具备客户端、服务端或 AI Agent 相关技术背景，对整体技术架构有较强判断力。2. 有技术团队管理经验，能够同时协调多个技术方向。3. 具备较强的产品意识和业务理解能力，能够推动需",
-            "cover": null
-          },
-          {
-            "id": 1014838,
-            "title": "Meta now lets AI agents handle the boring parts of WhatsApp Business setup",
-            "url": "https://techcrunch.com/2026/09/15/meta-now-lets-ai-agents-handle-the-boring-parts-of-whatsapp-business-setup/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-15T20:12:53.000Z",
-            "score": 55,
-            "summary": "A new WhatsApp Business MCP server lets developers use AI coding agents like Claude, Cursor, Codex, and ChatGPT to handle setup, messaging templates, testing, and troubleshooting.",
-            "cover": null
-          },
-          {
-            "id": 1021797,
-            "title": "On October 14, it's time to say farewell to GPT-5.5 in ChatGPT, ChatGPT Work, and Codex across all p...",
-            "url": "https://x.com/ChatGPT/status/2099954190600876533",
-            "source": "ChatGPT(@ChatGPTapp)",
-            "published_at": "2026-09-15T20:11:08.000Z",
-            "score": 38,
-            "summary": "On October 14, it&#39;s time to say farewell to GPT-5.5 in ChatGPT, ChatGPT Work, and Codex across all plans.If you use GPT-5.5 in Codex, switch to GPT-5.6 Sol or GPT-6 Astra.Thanks for everything, 5.",
-            "cover": null
-          },
-          {
-            "id": 1025506,
-            "title": "Show HN: Inkling – ask Claude Code for a doc, get HTML instead of Markdown",
-            "url": "https://github.com/MeetVys/inkling",
-            "source": "Show HN",
-            "published_at": "2026-09-15T19:59:54.000Z",
+            "id": 1256516,
+            "title": "Ask HN: How would you anthropomorphize the Anthropic Claude logo?",
+            "url": "https://news.ycombinator.com/item?id=49732721",
+            "source": "Ask HN",
+            "published_at": "2026-09-16T20:42:28.000Z",
             "score": 18,
-            "summary": "Article URL: https://github.com/MeetVys/inkling",
+            "summary": "Comments URL: https://news.ycombinator.com/item?id=49732721",
             "cover": null
           },
           {
-            "id": 1025512,
-            "title": "Show HN: Uplink – Software for Agents",
-            "url": "https://uplink.spot/",
+            "id": 1248479,
+            "title": "In the Code Arena: WebDev, @OpenAI's  GPT-6 Astra (Max) is ranked #1 (1800 pts), and Claude Fable 5....",
+            "url": "https://x.com/arena/status/2100321600679928152",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-16T20:31:06.000Z",
+            "score": 59,
+            "summary": "In the Code Arena: WebDev, @OpenAI&#39;s GPT-6 Astra (Max) is ranked #1 (1800 pts), and Claude Fable 5.1 (Max) is ranked #2 (1758 pts). Here is a look at win rates for these models.Win rate measures h",
+            "cover": "https://pbs.twimg.com/media/HSXXH_zacAAaHKP.jpg"
+          },
+          {
+            "id": 1252563,
+            "title": "A quick TL;DR on our Paid Media Agent:\r\n\r\n✅ A Deep Agent that lives in Slack.\r\n✅ Reads spend, clicks, a...",
+            "url": "https://x.com/LangChain/status/2100320915456233909",
+            "source": "LangChain(@LangChainAI)",
+            "published_at": "2026-09-16T20:28:22.000Z",
+            "score": null,
+            "summary": "A quick TL;DR on our Paid Media Agent:✅ A Deep Agent that lives in Slack.✅ Reads spend, clicks, and conversions across 6 ad platforms + our data warehouse every Monday.✅ Tells our team what changed an",
+            "cover": null
+          },
+          {
+            "id": 1248328,
+            "title": "Underwriting Superintelligence: AIUC-1, Agent Audits, Insurance, & the Watchdogs of AGI https://t.co...",
+            "url": "https://x.com/latentspacepod/status/2100313776113451389",
+            "source": "Latent.Space(@latentspacepod)",
+            "published_at": "2026-09-16T20:00:00.000Z",
+            "score": 68,
+            "summary": "Underwriting Superintelligence: AIUC-1, Agent Audits, Insurance, &amp; the Watchdogs of AGI latent.space/p/aiucAI Underwriting Company cofounder @RuneKvist explains why risk and trust may become the r",
+            "cover": null
+          },
+          {
+            "id": 1237201,
+            "title": "Dive into Agent Arena for more details: https://t.co/sE9q4FSYAt",
+            "url": "https://x.com/arena/status/2100302186215583834",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-16T19:13:57.000Z",
+            "score": null,
+            "summary": "Dive into Agent Arena for more details: arena.ai/leaderboard/ag…💬0🔄0❤️6👀1409📊1⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 1237202,
+            "title": "We compared the top model from each family by net improvement score and median cost per task. Family...",
+            "url": "https://x.com/arena/status/2100302182822416681",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-16T19:13:56.000Z",
+            "score": null,
+            "summary": "We compared the top model from each family by net improvement score and median cost per task. Family is defined as variants within the same model base name.GPT-6 Astra and Claude Fable 5.1 stand out: ",
+            "cover": "https://pbs.twimg.com/media/HSXFknkbUAAvq25.jpg"
+          },
+          {
+            "id": 1230628,
+            "title": "Proactive agents remain an unsolved problem. \r\n\r\nAgents are much more useful when they can act on thei...",
+            "url": "https://x.com/omarsar0/status/2100298017664623088",
+            "source": "elvis(@omarsar0)",
+            "published_at": "2026-09-16T18:57:23.000Z",
+            "score": null,
+            "summary": "Proactive agents remain an unsolved problem. Agents are much more useful when they can act on their own.Delos gives each AI worker its own email, phone number, and Microsoft or Google account. Your te",
+            "cover": "https://pbs.twimg.com/profile_images/1992851692862242816/iMUSk-sC_normal.jpg"
+          },
+          {
+            "id": 1234044,
+            "title": "Show HN: Friday – Self-hosted persistent memory for AI coding agents (MCP)",
+            "url": "https://github.com/itskie/friday",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T18:55:09.000Z",
+            "score": 42,
+            "summary": "Article URL: https://github.com/itskie/friday",
+            "cover": null
+          },
+          {
+            "id": 1234092,
+            "title": "Show HN: Deiko – point at your screen, talk, and hand the brief to your agent",
+            "url": "https://deiko.app/",
             "source": "Show HN",
-            "published_at": "2026-09-15T19:34:31.000Z",
+            "published_at": "2026-09-16T18:34:33.000Z",
             "score": null,
-            "summary": "Comments URL: https://news.ycombinator.com/item?id=49717707",
+            "summary": "macOS, 0.4.5, free to try: curl -fsSL https://deiko.app/install.sh | shI kept losing time explaining my own screen to Claude Code. Screenshot, crop, paste, then type three paragraphs describing which ",
             "cover": null
           },
           {
-            "id": 1016828,
-            "title": "LAST CALL FOR ENROLLMENT: Build with Claude Code",
-            "url": "https://blog.bytebytego.com/p/last-call-for-enrollment-build-with-d63",
-            "source": "ByteByteGo Newsletter",
-            "published_at": "2026-09-15T19:31:01.000Z",
-            "score": 47,
-            "summary": "We&#8217;re relaunching Build with Claude Code, a 2-day intensive cohort-based course taught by John Kim, who has trained hundreds of engineers at Meta to use Claude Code in real production workflows.",
-            "cover": "https://substackcdn.com/image/fetch/$s_!tzYe!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F929fecbd-66bd-4085-a741-98c1889f805a_1488x1714.png"
-          },
-          {
-            "id": 1011581,
-            "title": "fix: honor foreground node command timeouts in Codex (#149267)",
-            "url": "https://github.com/openclaw/openclaw/commit/6872be8c264da8225aad84ab9a4361caacf7d8e1",
+            "id": 1221905,
+            "title": "test(ui): settle MCP app imports before message fixture teardown (#15…",
+            "url": "https://github.com/openclaw/openclaw/commit/bf9a9ac70e77e0c50b61de4ab8c93c5d66f6219d",
             "source": "Recent Commits to openclaw:main",
-            "published_at": "2026-09-15T19:22:20.000Z",
-            "score": 10,
-            "summary": "fix: honor foreground node command timeouts in Codex (#149267) * fix: honor foreground node command timeouts in Codex * test: separate foreground node timeout coverage * test: keep live node cleanup r",
+            "published_at": "2026-09-16T18:14:46.000Z",
+            "score": 9,
+            "summary": "test(ui): settle MCP app imports before message fixture teardown (#150206)",
             "cover": null
           },
           {
-            "id": 1018469,
-            "title": "People tell a voice agent more than they'll type into a form.\r\n\r\n@mati with @davidsenra on why we run ...",
-            "url": "https://x.com/ElevenLabs/status/2099935119184195721",
-            "source": "ElevenLabs(@elevenlabsio)",
-            "published_at": "2026-09-15T18:55:21.000Z",
+            "id": 1222949,
+            "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
+            "url": "https://www.latent.space/p/aiuc",
+            "source": "Latent Space",
+            "published_at": "2026-09-16T18:07:45.000Z",
             "score": null,
-            "summary": "People tell a voice agent more than they&#39;ll type into a form.@mati with @davidsenra on why we run our own inbound with an AI SDR built with ElevenAgents:Your browser does not support the video tag",
-            "cover": "https://pbs.twimg.com/profile_images/2047043946807754752/7xmvtysh_normal.png"
+            "summary": "AIUC first got our attention with the NFDG backing, and have just announced a $40M series A today, with the most impressive industry advisor list we may have ever seen for an early startup behind AIUC",
+            "cover": "https://substackcdn.com/image/fetch/$s_!czja!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe6acff64-a3ea-43f5-b5bb-aaeecd163bdb_2120x1896.png"
+          },
+          {
+            "id": 1244999,
+            "title": "[人工智能] Union Alpha",
+            "url": "https://www.v2ex.com/t/1242554#reply0",
+            "source": "V2EX",
+            "published_at": "2026-09-16T18:04:01.000Z",
+            "score": 32,
+            "summary": "新免费匿名模型 Union Alpha https://openrouter.ai/stealth/union-alphaCline 也有提供，称“Astra/Fable 级别性能，1/18 「预计」价格” https://x.com/i/status/2100265266026590322其他相关信息：速度极慢，约 7 tkps ，而且很容易 timeout 。思维链现在是隐藏的。鹈鹕骑车测试表",
+            "cover": null
+          },
+          {
+            "id": 1219507,
+            "title": "于是转身向具身走去｜对话王家伟：24 岁的具身智能首席科学家",
+            "url": "https://www.xiaoyuzhoufm.com/episode/6aaa9f039d326477816a3488",
+            "source": "十字路口Crossing",
+            "published_at": "2026-09-16T18:00:00.000Z",
+            "score": 74,
+            "summary": "➤ 本周「十字路口」的嘉宾王家伟是 24 岁的深朴智能（Simple AI）首席科学家。中科大少年班、MSRA、DeepSeek、字节 Seed——**这条路直通大模型的最前沿，但毕业时，他却转身向具身走去。**为什么呢？",
+            "cover": "https://image.xyzcdn.net/Fl43nDAyiSGCYGMsnzPNEdYkg7t8.png"
+          },
+          {
+            "id": 1225907,
+            "title": "Do models need their native harness for coding?\r\nAwesome work from our intern @melissapan  on this. S...",
+            "url": "https://x.com/arena/status/2100280949661667413",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-16T17:49:34.000Z",
+            "score": null,
+            "summary": "Do models need their native harness for coding?Awesome work from our intern @melissapan on this. She dug into whether the harness (Claude Code vs Codex CLI vs Pi) actually moves the needle for coding ",
+            "cover": "https://pbs.twimg.com/profile_images/1873217404987133952/lk4l_593_normal.jpg"
           }
         ]
       },
@@ -321,103 +321,103 @@
         "desc": "",
         "items": [
           {
-            "id": 1025756,
-            "title": "How OpenAI Used Its Own LLMs to Design Its AI Chip",
-            "url": "https://spectrum.ieee.org/llms-for-chip-design",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-15T20:11:19.000Z",
-            "score": 83,
-            "summary": "Article URL: https://spectrum.ieee.org/llms-for-chip-design",
-            "cover": null
+            "id": 1224114,
+            "title": "Improving HCLS AI reasoning with open-source agent skills",
+            "url": "https://aws.amazon.com/blogs/machine-learning/improving-hcls-ai-reasoning-with-open-source-agent-skills/",
+            "source": "AWS Machine Learning Blog",
+            "published_at": "2026-09-16T19:00:00.000Z",
+            "score": 82,
+            "summary": "AI agents built on foundation models (FMs) often misapply healthcare and life sciences (HCLS) decision frameworks, even when they’ve seen the guidelines in training and in the system prompt. Ask an ag",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/11/ML-21213-2.png"
           },
           {
-            "id": 1012840,
-            "title": "Many assume that agent spend goes toward output tokens.\r\n\r\nWhen we ran DeepSWE on Astra vs. DeepSeek V...",
-            "url": "https://x.com/FireworksAI_HQ/status/2099940744861720581",
-            "source": "Fireworks AI(@FireworksAI_HQ)",
-            "published_at": "2026-09-15T19:17:43.000Z",
-            "score": 76,
-            "summary": "Many assume that agent spend goes toward output tokens.When we ran DeepSWE on Astra vs. DeepSeek V4.1-Flash, input tokens outnumbered output 174 to 1. 99.6% were cache hits. Those hits are 60% of the ",
-            "cover": null
-          },
-          {
-            "id": 996261,
-            "title": "Gemini 3.8 Live and 3.8 Live Extended Thinking are here. Following 3.5 Transcribe last month, this c...",
-            "url": "https://x.com/_philschmid/status/2099908172899357093",
-            "source": "Philipp Schmid(@_philschmid)",
-            "published_at": "2026-09-15T17:08:17.000Z",
+            "id": 1257743,
+            "title": "Perplexity’s AI agents helped build a database. They weren’t allowed to run it.",
+            "url": "https://thenewstack.io/perplexity-cobbledb-ai-database/",
+            "source": "The New Stack",
+            "published_at": "2026-09-16T21:51:15.000Z",
             "score": 75,
-            "summary": "Gemini 3.8 Live and 3.8 Live Extended Thinking are here. Following 3.5 Transcribe last month, this continues our focus on real-time voice agents. 🐸🐸- 82.6 (#1) on Artificial Analysis Quality Index- ",
+            "summary": "Perplexity decided it was paying too much for DynamoDB and wasn&#8217;t getting the control it wanted over read performance. So it built its own database: CobbleDB.",
+            "cover": "https://cdn.thenewstack.io/media/2026/09/a40fa69a-nat-fleming-dp_aefaztle-unsplash-1024x683.jpg"
+          },
+          {
+            "id": 1234036,
+            "title": "Reid Hoffman – AI for All Americans",
+            "url": "https://reidhoffman.substack.com/p/ai-dual-mandate",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T19:46:33.000Z",
+            "score": 73,
+            "summary": "Article URL: https://reidhoffman.substack.com/p/ai-dual-mandate",
             "cover": null
           },
           {
-            "id": 1029927,
-            "title": "NVFP4 Qwen3.8 27b - AMD R9700's running @ 5,809 tok/s Prefill and 276 tok/s decode. Leveraging my MXFP4 fast path.",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1whcik4/nvfp4_qwen38_27b_amd_r9700s_running_5809_toks/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-15T20:51:08.000Z",
+            "id": 1265484,
+            "title": "Characterizing ~375 GB Kimi K2.5 on a 128 GB Ryzen AI MAX+ 395 PC",
+            "url": "https://zenodo.org/records/22755791",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T21:52:46.000Z",
             "score": 72,
-            "summary": "Hey all! I am back again and this time I think this is one of the biggest enhancements I have done since creating the MXFP4 vLLM build on top of Radiance image.",
-            "cover": "https://preview.redd.it/if995w1wvqph1.png?width=140&height=78&auto=webp&s=61e5820937c8bc16b7aba49cef8a9b6cfe0a8107"
+            "summary": "Article URL: https://zenodo.org/records/22755791",
+            "cover": null
           },
           {
-            "id": 1025513,
-            "title": "Show HN: I solved a 12yr math problem using AI (formalized; awaiting review) [pdf]",
-            "url": "https://raw.githubusercontent.com/kbr-/math-research/3979e0cc0a75dde9b845df7ec8869d033dfcd8d4/publications/bit-php-resolution-over-parities/whitepaper.pdf",
-            "source": "Show HN",
-            "published_at": "2026-09-15T19:24:06.000Z",
+            "id": 1234037,
+            "title": "One of China's Most Powerful AI Models Has Also Escaped Containment",
+            "url": "https://www.wired.com/story/moonshot-kimi-k3-ai-model-escape-sandbox/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T19:44:21.000Z",
             "score": 72,
-            "summary": "Article URL: https://raw.githubusercontent.com/kbr-/math-research/3979e0cc0a75dde9b845df7ec8869d033dfcd8d4/publications/bit-php-resolution-over-parities/whitepaper.pdf",
+            "summary": "Article URL: https://www.wired.com/story/moonshot-kimi-k3-ai-model-escape-sandbox/",
             "cover": null
           },
           {
-            "id": 988594,
-            "title": "Introducing Gateway.\r\n\r\nYour agent needs to check a payment. You hand it a key that can also refund it...",
-            "url": "https://x.com/mem0ai/status/2099898611337474354",
-            "source": "mem0(@mem0ai)",
-            "published_at": "2026-09-15T16:30:17.000Z",
-            "score": 72,
-            "summary": "Introducing Gateway.Your agent needs to check a payment. You hand it a key that can also refund it.It needs to draft a page. That key can archive every page.Not anymore.Gateway gives every agent one k",
+            "id": 1265485,
+            "title": "AI is creating ghostwriting jobs on LinkedIn",
+            "url": "https://www.ft.com/content/7a5e15e4-799a-4476-ba9f-018b1d82c76f",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T21:35:19.000Z",
+            "score": 68,
+            "summary": "Article URL: https://www.ft.com/content/7a5e15e4-799a-4476-ba9f-018b1d82c76f",
             "cover": null
           },
           {
-            "id": 1001246,
-            "title": "Introducing our most advanced Gemini Audio models yet 🗣\r\n\r\nGemini 3.8 Live and 3.8 Live Extended Thin...",
-            "url": "https://x.com/GoogleAI/status/2099908000924193124",
-            "source": "Google AI(@GoogleAI)",
-            "published_at": "2026-09-15T17:07:36.000Z",
-            "score": 71,
-            "summary": "Introducing our most advanced Gemini Audio models yet 🗣Gemini 3.8 Live and 3.8 Live Extended Thinking let you speak, collaborate, and execute tasks seamlessly, meaning conversing with AI just got a l",
+            "id": 1265489,
+            "title": "Mozilla and Mistral partner to expand AI competition and preserve user choice",
+            "url": "https://blog.mozilla.org/en/firefox/mozilla-mistral-partnership/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-16T20:27:23.000Z",
+            "score": 68,
+            "summary": "Article URL: https://blog.mozilla.org/en/firefox/mozilla-mistral-partnership/",
             "cover": null
           },
           {
-            "id": 988494,
-            "title": "The future is multi-model. Trying to hide the choice confuses and hurts customers, who can't partici...",
-            "url": "https://x.com/rauchg/status/2099905740505055680",
-            "source": "Guillermo Rauch(@rauchg)",
-            "published_at": "2026-09-15T16:58:37.000Z",
-            "score": 70,
-            "summary": "The future is multi-model. Trying to hide the choice confuses and hurts customers, who can&#39;t participate in the upside of the most exciting market competition of our times, nor master the best too",
-            "cover": "https://pbs.twimg.com/profile_images/1955397769138667520/XoWT5Huy_normal.jpg"
+            "id": 1236777,
+            "title": "Use Grok Voice in fal to build intelligent, low-latency agents that resolve real customer issues",
+            "url": "https://x.com/SpaceXAI/status/2100310550127464682",
+            "source": "xAI(@xai)",
+            "published_at": "2026-09-16T19:47:11.000Z",
+            "score": 68,
+            "summary": "Use Grok Voice in fal to build intelligent, low-latency agents that resolve real customer issuesfal@falGrok Voice is live on fal.The latest speech model from @SpaceXAI that answers in 0.70 seconds and",
+            "cover": "https://pbs.twimg.com/profile_images/1836456388937285632/OFsq77aX_normal.jpg"
           },
           {
-            "id": 985725,
-            "title": "How energy teams turn theft detection into governed action with Genie and AI business processes",
-            "url": "https://www.databricks.com/blog/how-energy-teams-turn-theft-detection-governed-action-genie-and-ai-business-processes",
-            "source": "Databricks",
-            "published_at": "2026-09-15T16:50:00.000Z",
-            "score": 70,
-            "summary": "Energy theft is the deliberate use of gas or electricity without paying for it, typically...",
-            "cover": null
+            "id": 1215075,
+            "title": "Anthropic Commits to Independent AI Evaluators, Wants Slower Development. Nvidia's CEO Wants It 'As Fast as You Can'",
+            "url": "https://slashdot.org/story/26/09/16/0619212/anthropic-commits-to-independent-ai-evaluators-wants-slower-development-nvidias-ceo-wants-it-as-fast-as-you-can?utm_source=rss1.0mainlinkanon&utm_medium=feed",
+            "source": "Slashdot",
+            "published_at": "2026-09-16T17:34:00.000Z",
+            "score": 68,
+            "summary": "\"Anthropic's CEO took the stage at a conference in San Francisco on Tuesday to reiterate his call for a slowdown of AI development,\" reports the Guardian, \" while Nvidia's CEO argued against slowing i",
+            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
           },
           {
-            "id": 1031217,
-            "title": "Pocock says Labor easing copyright protections for AI datacentre investment would throw creatives ‘under the bus’",
-            "url": "https://www.theguardian.com/australia-news/2026/sep/16/pocock-says-labor-easing-copyright-protections-for-ai-datacentre-investment-would-throw-creatives-under-the-bus",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-15T21:29:11.000Z",
-            "score": 69,
-            "summary": "Proposals revealed as senior personnel from OpenAI, the creator of ChatGPT, met with Albanese ministers",
+            "id": 1257305,
+            "title": "AI struggles to decipher 'animal language' because sound doesn't equal meaning, experts say",
+            "url": "https://phys.org/news/2026-09-ai-struggles-decipher-animal-language.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-16T21:40:05.000Z",
+            "score": 63,
+            "summary": "In recent years, numerous attempts have been made to use artificial intelligence to decipher the communication of bats, whales, birds and other animals. However, a new study led by a team of researche",
             "cover": null
           }
         ]
@@ -430,5 +430,5 @@
       "totalItems": 40
     }
   },
-  "generated_at": "2026-09-16T06:20:47.012Z"
+  "generated_at": "2026-09-17T06:22:13.949Z"
 }
