@@ -25,7 +25,7 @@
 | 41-4 | 白盒一致性检查：三端常量 diff + 不变量断言（档位优先读、settings/env 优先级、熔断阈值与冷却、`'null'` 序列化陷阱这类"曾经踩过"的形态） | 工具 | M |
 | 41-5 | 覆盖矩阵与空洞清单生成：解析 FEATURE_MATRIX 格子 × 剧本清单 → 未覆盖格子进 ISSUES；接进 `npm run lint:docs` 同级门禁 | 工具 | S |
 | 41-6 | 验收口径落文档：AGENTS §3 增加「npm test + build:vercel + 云端实测 + `lint:docs` + **端到端/白盒/内容质量三层评测**」；`DELIVERY_VERIFICATION.md` 增章节；pitfalls↔tests 门禁 | 治理 | S |
-| **41-7** | **过程性二值检查器**（EVAL_GUIDE §3.6）：`check_screenshot_taken(events)`、`check_report_generated(artifacts)`、`check_assertions_executed`、`check_no_stub_text`、`check_evidence_paths_resolve`；任一不过判 `fail_env`；接进 41-2 的退出码与报告 | 工具（防"没真跑却算通过"） | S |
+| **41-7** | **过程性二值检查器**（小 spec 已出：`41-7-process-binary-checks.md`；要求正文 `docs/EVAL_GUIDE.md` §3.6）：`check_screenshot_taken(events)`、`check_report_generated(artifacts)`、`check_assertions_executed`、`check_no_stub_text`、`check_evidence_paths_resolve`；任一不过判 `fail_env`；接进 41-2 的退出码与报告。**本轮实测追加两项**：`check_exit_code_honest`（`cmd \| tail` 吞退出码真发生过）、`check_probe_params_sourced`（把 `type=` 当 `tab=` 打真发生过） | 工具（防"没真跑却算通过"） | S |
 | **41-8** | **内容质量评测 harness**（EVAL_GUIDE §5）：`agentscope.evaluate` 自建体系（`Task`/`MetricBase`/`MetricResult`/`MetricType`/`SolutionOutput`）+ 五维 judge（clarity / factual_correctness / consistency / redundancy / readability，1~5 分，可选 overall/feedback）+ `norm(v)=(v-1)/4` 按 `axis_weights` 加权成单一 0~1 分数 + golden set 冻结与时间戳 + 人工对齐抽检一致率 + 趋势落盘；Python 侧独立工具，`npm run eval:content` 转发 | 新工具 | M |
 
 ## 四、边界
