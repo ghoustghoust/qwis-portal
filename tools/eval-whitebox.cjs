@@ -150,6 +150,44 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   ok('W2b', bypass.length === 0, `读层绕过档位守卫直接取最新（坑 #32 复发）：${JSON.stringify(bypass)}`);
 }
 
+// ── W10 重复 SQL 判定：同一个「按文本特征分类」的判定抄多份 = 三端漂移的成因 ──
+// B60/B61 实测：「这是不是播客」在 6 处各写一遍 LIKE 链，其中 4 份漏 .opus →
+// opus 单集进不了日报、播客计数恒 0 而列表有 143 条。副本之间还各有增减，所以按
+// 「LIKE 模式集合的重叠度」判重，不按字面量全等——否则正好漏掉这类漂移。
+{
+  const candFiles = ['api', 'server', 'lib', 'tools']
+    .filter(exists).flatMap((d) => walk(d))
+    .filter((p) => !path.basename(p).startsWith('_') && !/\.test\.js$/.test(p));
+  const patToFiles = new Map(); // 文本特征模式 -> Set<file>
+  const filePats = new Map();
+  for (const p of candFiles) {
+    const pats = new Set([...read(p).matchAll(/LIKE\s+'(%[^']+)'/g)].map((m) => m[1]));
+    if (!pats.size) continue;
+    filePats.set(p, pats);
+    for (const x of pats) {
+      if (!patToFiles.has(x)) patToFiles.set(x, new Set());
+      patToFiles.get(x).add(p);
+    }
+  }
+  const knownW10 = BASELINE.w10_duplicated_predicates || [];
+  const isKnown = (a, b) => knownW10.some((k) => Array.isArray(k.files) && k.files.includes(a) && k.files.includes(b));
+  const pairs = [];
+  const files = [...filePats.keys()];
+  for (let i = 0; i < files.length; i++) {
+    for (let j = i + 1; j < files.length; j++) {
+      const [a, b] = [files[i], files[j]];
+      const shared = [...filePats.get(a)].filter((x) => filePats.get(b).has(x));
+      // 共享 ≥3 个同一形态的模式 → 判定被抄了两份（哪怕其中一份少了扩展名）
+      if (shared.length >= 3 && !isKnown(a, b)) pairs.push({ a, b, n: shared.length, sample: shared.slice(0, 3) });
+    }
+  }
+  pairs.sort((x, y) => y.n - x.n);
+  ok('W10', pairs.length === 0,
+    '同一 SQL 判定被抄成多份，须收敛到 lib/ 单一实现（见 B60/B61）：' +
+    pairs.slice(0, 8).map((d) => `\n      · ${d.a} ↔ ${d.b}（${d.n} 个共享模式，如 ${d.sample.join(',')}）`).join(''));
+  if (knownW10.length) notes.push(`  i W10：${knownW10.length} 组重复判定已在基线（逐步清）`);
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

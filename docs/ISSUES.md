@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺修复（含新发现 B59）+ 41-1/41-4 评测工具落地；活跃 B8~B59、观察 W1~W8、挂案 H1~H17）
+> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B61、观察 W1~W8、挂案 H1~H17）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -44,6 +44,8 @@
 | B27 | 「未知日期」：云端 `/api/reading` 快路径漏 `AS date` 别名（`api/[...slug].js:1134-1141`），前端把字符串 `'unknown'` 按降序排到最前 |
 | B28 | 文章/播客/视频筛选无效：`tabCond` 未加括号被 OR 吞（`:1173`）；同一响应 counts 走另一条 SQL → 数字与列表互相打脸；本地实现正确＝三端漂移 |
 | B29 | 类型口径三处错：播客=`s.type='douyin'`（云端 0 篇）、文章类型表用死值 `'wechat'` 漏掉 881 篇 `wemp`、视频只认 `favorite=1`（线上 0）→ 恒空 |
+| **B60** | B29 的同类判定全库共 **6 份手写副本**（本地列表/本地计数/云端列表/云端计数/runner 日报/runner 周刊）→ 实测 `type=podcast` 列表 30 行但 `counts.all=0`；`type=article` 计数 6413 vs 真实 7282（869 篇公众号不进计数） |
+| **B61** | runner 与日报那份播客判定比读层**少一个 `.opus`** → opus 播客单集永远进不了日报/周刊「视频与播客」栏 |
 | B30 | 云端无任何 `UPDATE videos SET watched_at` 路径 → 视频/播客观看足迹永久丢失（只有本地 `server/routes/videos.js:81` 有） |
 | B31 | 阅读器卡顿：`sort=smart` 表达式无索引（实测 11.4/13.6/15.3s）+ 列表无虚拟化、`web/src` 零 `memo()` + 每点开一篇文章重拉 545KB sources 重渲侧栏 |
 | B32 | 「已读」口径：`GET /api/articles/:id` 即置 `read_at`（点开＝读完），且详情缓存命中不发请求 → 足迹不可信 |
@@ -160,7 +162,7 @@
 | BL1 测试基线 4 红 | 锚点从已独立成仓的 `portal/*` 迁到根树真文件；A9 改判"AdminPage 每个懒加载组件必须存在"（正好锁住 B13 那类"引用了但没入库"）；A10 改判"api/ 函数面必须等于白名单" | 301 项 0 红（结果见本轮 `npm test`） |
 | B27 未知日期 | 云端 `/api/reading` 快路径补 `COALESCE(published_at,created_at) AS date` | 回归锁 B27 |
 | B28 类型筛选被 OR 吞 | `WHERE (${tabCond})${aExtra}` 加括号 | 回归锁 B28 |
-| B29 类型口径 | 文章含 `wemp`（881 篇不再隐身）；播客改按音频 enclosure 判（原 `s.type='douyin'` 云端 0 篇） | 回归锁 B29 |
+| B29 类型口径 | 文章含 `wemp`（881 篇不再隐身）；播客改按音频 enclosure 判（原 `s.type='douyin'` 云端 0 篇）。**⚠️ 更正：当时只改了云端列表，本地列表 + 两端计数没动 → 由 B60 接续修完** | 回归锁 B29（弱，见 B60-7 强锁） |
 | B22 成功率颜色 | 三主题各补 `--warn` 令牌 + 定义 `.t-success/.t-warn/.t-danger`（不新造用法层硬编码色） | 回归锁 B22 |
 | B47 任务队列恒 0 | `MonitorTab` 改读 `queueStats.overall`（线上真实 pending=177 此前显示 0） | 回归锁 B47 |
 | B48 报警日志转义串 | JSX 文本转义改表达式 `{'（'}{rr.error}{'）'}` | 回归锁 B48 |
@@ -170,6 +172,21 @@
 | 坑 #36 根因 | `migrate-to-turso.js` 序列化先判 `v === null`（**只修根因，已污染的 2.5 万行数据订正仍按 BL10 等授权**） | 回归锁 坑#36 |
 
 **同轮新增工具**：`tools/eval-preflight.cjs`（41-1，环境前置 + BL7/BL8/BL9 配置告警）、`tools/eval-whitebox.cjs`（41-4，W1~W9 不变量 + `docs/eval/whitebox-baseline.json` 棘轮基线），已接 `npm run eval:preflight` / `npm run eval:whitebox`。白盒首跑即抓出 B28、B52、B59 三个真缺陷与 3 处 W4 误报（已收紧判据）。
+
+#### 第二批（同日晚，云端实测逼出来的）
+
+推上去后按 `DELIVERY_VERIFICATION` 打真线上端点，**第一次实测还误用了参数名**（把 `type` 当 `tab`）——
+教训已进 EVAL_GUIDE §3.3：断言必须来自"读过的真实契约"，不能猜。实测坐实 B27 ✅、SSRF 三种内网地址全 400 ✅、
+`/api/auth/me` 401 ✅，但暴露 B29 只修了半截 → 顺出 B60/B61：
+
+| 缺陷 | 修法 | 证据（F2P） |
+|---|---|---|
+| B60 六份判定副本 | 新建 `lib/reading-filters.js`（type 口径唯一实现）+ `lib/media.js#audioCoverSql`（音频判定唯一实现），本地 `server/routes/reading.js` 与云端 `api/[...slug].js` 的**列表、计数、视频侧开关、搜索是否绑定**四处全部改引用；播客计数 0→143、article 计数 6413→7282（真 Turso 复测） | `tests/regression-20260919c.test.js` 8 条，修前 B60-3/B60-4 红（点名本地端未接入），修后 8/8 绿 |
+| B61 副本少 `.opus` | 四处 runner/日报/阅读器/读层判定统一由 `audioCoverSql` 生成；顺带把 `tools/collect-turso.js` 日报+周刊两处也接上 | 回归锁 B61（全库扫，只许 `lib/media.js` 持有特征字面量） |
+| 同类问题要能自动发现 | 白盒新增 **W10**：按 **LIKE 模式集合重叠度**判"同一判定抄多份"（≥3 个共享模式即红）。不按字面量全等——本例副本间正是"差一个扩展名"，全等检测器会完全漏掉 | 负向验证：塞两份差一个扩展名的副本 → W10 红；删掉 → 绿 |
+| JS 与 SQL 两份实现会漂 | 回归锁 B60-5：同一批 10 个封面 URL，`detectAudioUrl()` 与 `audioCoverSql()` 判定必须逐条相同 | B60-5（改坏任一边即红） |
+
+顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 
 ### 需用户拍板（不拍板无法排期，均属"改变行为或加列"的决策）
 

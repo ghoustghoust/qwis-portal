@@ -1215,7 +1215,7 @@ async function runDailyAi() {
       `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
-         AND (a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%media.xyzcdn.net%')
+         AND ${require('../lib/media').audioCoverSql('a.cover')}
        ORDER BY a.published_at DESC LIMIT 4`,
       [startUtc, endUtc]
     );
@@ -1423,7 +1423,7 @@ async function runMyBrief(analyzed) {
       `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
-         AND (a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%media.xyzcdn.net%')
+         AND ${require('../lib/media').audioCoverSql('a.cover')}
        ORDER BY a.published_at DESC LIMIT 4`,
       [startUtc, endUtc]
     );

@@ -25,12 +25,16 @@ test('B28: 云端 /api/reading 的 tabCond 必须被括号包住，否则类型�
 });
 
 // ── B29 类型口径：文章含 wemp、播客按音频 enclosure ──
-test('B29: 阅读页类型筛选口径不得再引用死值 wechat 或 douyin', () => {
-  const src = read('api/[...slug].js');
-  const article = src.match(/if \(type === 'article'\) aConds\.push\("([^"]+)"\)/);
-  const podcast = src.match(/else if \(type === 'podcast'\) aConds\.push\("([^"]+)"\)/);
-  assert.ok(article && /'wemp'/.test(article[1]), `文章类型必须含 wemp（线上 881 篇），实测 ${article && article[1]}`);
-  assert.ok(podcast && /\.m4a|mp3/.test(podcast[1]), '播客口径必须是音频 enclosure，不是 s.type=douyin（云端 douyin 文章数=0）');
+// 2026-09-19 重锚：原断言锁的是 `if (type === 'article') aConds.push("...")` 这个**代码形状**，
+// B60 把四处副本收敛成 lib/reading-filters.js 一份后形状变了（形状锁 = 自证式断言，EVAL_GUIDE §7）。
+// 现在锁行为：口径必须真的含 wemp、播客必须是音频判定而不是 s.type='douyin'。
+test('B29: 阅读页类型口径必须含 wemp，且播客不再按 douyin 判定', () => {
+  const { readingTypeFilter } = require('../lib/reading-filters');
+  const article = readingTypeFilter('article').articleCond;
+  const podcast = readingTypeFilter('podcast').articleCond;
+  assert.match(article, /'wemp'/, `文章类型必须含 wemp（线上 869 篇已读公众号此前隐身），实测 ${article}`);
+  assert.ok(!/douyin/.test(podcast), '播客口径必须是音频特征，不是 s.type=douyin（云端 douyin 文章数=0）');
+  assert.match(podcast, /LIKE/, '播客必须由封面/enclosure 特征判定');
 });
 
 // ── B22 三主题必须定义分档色 ──

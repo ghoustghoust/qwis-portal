@@ -270,8 +270,8 @@ async function handleVideos(req) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { vConds.push('COALESCE(v.published_at, v.created_at) >= ?'); vArgs.push(`${q.from}T00:00:00.000Z`); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { vConds.push('COALESCE(v.published_at, v.created_at) <= ?'); vArgs.push(`${q.to}T23:59:59.999Z`); }
 
-  // 播客侧条件（音频 enclosure 落 cover 的历史形态，lib/media.js 同口径）
-  const pConds = ["s.enabled=1", "(a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%.opus%' OR a.cover LIKE '%media.xyzcdn.net%')"];
+  // 播客侧条件（音频 enclosure 落 cover 的历史形态）——口径唯一来源 lib/media.js#audioCoverSql
+  const pConds = ['s.enabled=1', audioCoverSql('a.cover')];
   if (!q.source_id) pConds.push('COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1'); // 27b 同视频侧口径
   const pArgs = [];
   if (q.source_id) { pConds.push('a.source_id=?'); pArgs.push(Number(q.source_id)); }
@@ -366,11 +366,13 @@ const { aiRelevanceCond, aiTitleConds } = require('../lib/ai-relevance');
 const axes = require('../lib/source-axes');
 // ─── 热搜事件聚合：共享纯函数 lib/hot-events.js（runner 预聚合写 settings，云端读缓存优先） ───
 const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, hasCJK } = require('../lib/hot-events');
-// 播客音频识别（cover 里的音频 enclosure → audio_url）
-const { mapAudioFields } = require('../lib/media');
+// 播客音频识别（cover 里的音频 enclosure → audio_url）；audioCoverSql 是其 SQL 镜像，全库唯一口径
+const { mapAudioFields, audioCoverSql } = require('../lib/media');
 const { cleanTranslatedTitle } = require('../lib/text-clean');
 // 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
 const briefGuards = require('../lib/brief-guards');
+// B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
+const { readingTypeFilter, readingTypeCondSql } = require('../lib/reading-filters');
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
@@ -732,11 +734,12 @@ async function generateDailyInline() {
     for (const v of mediaVids) {
       mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null });
     }
+    // B61：这里曾是第四份「音频封面」判定，且比别处少一个 .opus —— opus 单集进不了日报「视频与播客」栏
     const mediaPods = await qAll(
       `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
-         AND (a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%media.xyzcdn.net%')
+         AND ${audioCoverSql('a.cover')}
        ORDER BY a.published_at DESC LIMIT 4`,
       [cutoff, cutoffEnd]
     );
@@ -1031,8 +1034,9 @@ async function handleReading(req) {
   if (tab === 'all') aTabOr = 'a.read_at IS NOT NULL OR a.later = 1';
   else if (tab === 'favorited') aConds.push('a.later = 1');
   else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
-  if (type === 'article') aConds.push("s.type IN ('wemp','wechat','rss','x')");
-  else if (type === 'podcast') aConds.push("(a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%.opus%' OR a.cover LIKE '%media.xyzcdn.net%')");
+  // B60：type 口径与计数、与本地端同源（此前四处各写一份 → 公众号不计入、播客计数恒 0）
+  const T = readingTypeFilter(type);
+  if (T.articleCond) aConds.push(T.articleCond);
   if (searchQ) {
     aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
     aArgs.push(`%${searchQ}%`, `%${searchQ}%`);
@@ -1043,8 +1047,8 @@ async function handleReading(req) {
   const vArgs = [];
   if (tab === 'all') vConds.push('v.favorite = 1');
   else if (tab === 'favorited') vConds.push('v.favorite = 1');
-  if (type === 'article' || type === 'podcast') vConds.push('0');
-  if (searchQ && type !== 'article' && type !== 'podcast') {
+  if (!T.includeVideos) vConds.push('0');
+  if (searchQ && T.includeVideos) {
     vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
     vArgs.push(`%${searchQ}%`, `%${searchQ}%`);
   }
@@ -1056,11 +1060,8 @@ async function handleReading(req) {
   const counts = { all: 0, favorited: 0, read: 0 };
   const qLike = searchQ ? `%${searchQ}%` : null;
 
-  // 文章侧计数
-  const aTypeCond = type === 'article' ? "AND s.type IN ('wechat','rss','x')"
-    : type === 'podcast' ? "AND s.type = 'douyin'"
-    : type === 'video' ? 'AND 0'
-    : '';
+  // 文章侧计数（B60：与列表同一个表达式，此前这里是手写的第二份副本）
+  const aTypeCond = readingTypeCondSql(type);
   const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
   if (aTypeCond !== 'AND 0') {
     const countArgs = qLike ? [qLike, qLike] : [];
@@ -1092,7 +1093,7 @@ async function handleReading(req) {
   }
 
   // 视频侧计数
-  if (type === 'all' || type === 'video') {
+  if (T.includeVideos) {
     const vQCond = qLike ? ' AND (v.title LIKE ? OR s.name LIKE ?)' : '';
     const vCountArgs = qLike ? [qLike, qLike] : [];
     const vRow = await qOne(`
@@ -1162,7 +1163,7 @@ async function handleReading(req) {
   // 带筛选（type/q）：回退单条宽查询（低频路径，可接受）
   // 对抗性审查修正：①type=video 强制无文章分支；②OR 拆分的每个分支必须重复绑定自己的 LIKE 参数
   //（libsql 参数数不匹配直接抛错——曾致 q=AI 搜索返回空）
-  const includeArticles = type !== 'video';
+  const includeArticles = T.includeArticles;
   const aBranch = (tabCond) => `
       SELECT
         a.id, 'article' AS item_type, a.title, a.url, a.cover, a.summary,

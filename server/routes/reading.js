@@ -5,14 +5,10 @@
 const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
+const { readingTypeFilter, readingTypeCondSql } = require('../../lib/reading-filters');
 
 const router = express.Router();
 const PAGE_SIZE = 30;
-
-// 类型口径（与十期源库一致）
-const ARTICLE_TYPES = new Set(['article', 'podcast']);
-const VIDEO_TYPES = new Set(['video']);
-const ALL_TYPES = new Set([...ARTICLE_TYPES, ...VIDEO_TYPES]);
 
 // ---- 辅助：构造 UNION ALL 子查询的 WHERE + args ----
 function buildFilters(query) {
@@ -26,9 +22,9 @@ function buildFilters(query) {
   if (tab === 'all') aConds.push('(a.read_at IS NOT NULL OR a.later = 1)');
   else if (tab === 'favorited') aConds.push('a.later = 1');
   else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
-  if (type === 'article') aConds.push("s.type IN ('wechat','rss','x')");
-  else if (type === 'podcast') aConds.push("s.type = 'douyin'");
-  else if (type === 'video') return null; // 视频 tab 下文章侧返回空
+  const T = readingTypeFilter(type);
+  if (!T.includeArticles) return null; // 视频 tab 下文章侧返回空
+  if (T.articleCond) aConds.push(T.articleCond);
   if (q) {
     aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
     aArgs.push(`%${q}%`, `%${q}%`);
@@ -40,7 +36,7 @@ function buildFilters(query) {
   if (tab === 'all') vConds.push('v.favorite = 1');
   else if (tab === 'favorited') vConds.push('v.favorite = 1');
   else if (tab === 'read') return null; // 已读 tab 下视频侧返回空
-  if (type === 'article' || type === 'podcast') return null; // 文章/播客 tab 下视频侧返回空
+  if (!T.includeVideos) return null; // 文章/播客 tab 下视频侧返回空
   if (q) {
     vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
     vArgs.push(`%${q}%`, `%${q}%`);
@@ -54,11 +50,8 @@ function calcCounts(type, q) {
   const counts = { all: 0, favorited: 0, read: 0 };
   const qLike = q ? `%${q}%` : null;
 
-  // 文章侧计数
-  const aTypeCond = type === 'article' ? "AND s.type IN ('wechat','rss','x')"
-    : type === 'podcast' ? "AND s.type = 'douyin'"
-    : type === 'video' ? 'AND 0'
-    : '';
+  // 文章侧计数（B60：表达式与列表同源，见 lib/reading-filters）
+  const aTypeCond = readingTypeCondSql(type);
   const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
 
   if (aTypeCond !== 'AND 0') {
@@ -80,8 +73,8 @@ function calcCounts(type, q) {
     } catch { /* 表不存在等异常 */ }
   }
 
-  // 视频侧计数（仅 type=all/video 时有贡献）
-  if (type === 'all' || type === 'video') {
+  // 视频侧计数（B60：是否贡献计数同样由共享口径决定，不再手写第二份 type 判断）
+  if (readingTypeFilter(type).includeVideos) {
     const vQCond = qLike ? ' AND (v.title LIKE ? OR s.name LIKE ?)' : '';
     try {
       const args = qLike ? [qLike, qLike] : [];
