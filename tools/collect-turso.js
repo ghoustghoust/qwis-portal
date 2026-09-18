@@ -1103,6 +1103,23 @@ async function runDailyAi() {
     if (authMap.size) log(`L5 权威加权: ${authMap.size} 源有系数`);
   } catch (e) { log(`L5 权威加权失败（不阻断）: ${e.message}`); }
 
+  // ─── 分析后质量门槛（2026-09-18，坑 #34）───
+  // 此前深析完全没有否决权：analyzeArticle 的返回契约里没有 ignore/veto 字段，模型只能把
+  // 「不适合收录」写进 reason 散文，而组装阶段从不读 reason。线上实测 score=10 的二手硬件交易帖
+  // 坐进最显眼的「重点更新」栏（该栏只看"源"有没有被标 spotlight，完全不看分），score=22 的
+  // 志愿者招募提醒进「培训课程发布」头条位。门槛放在 L5 加权之后，保证"用户看到的星数"
+  // 就是"被判定过的那个分"，不会出现加权前 31→加权后 26 还留在报里的错位。
+  try {
+    const guards = require('../lib/brief-guards');
+    const aiCfg = await getSetting('ai', {});
+    const minScore = Number(aiCfg?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
+    const kept = analyzed.filter((a) => guards.passesDailyQualityGate(a, minScore));
+    const dropped = analyzed.length - kept.length;
+    if (dropped) log(`分析后门槛(六维 ≥${minScore} 分): 剔除 ${dropped} 条低质内容，保留 ${kept.length} 条`);
+    analyzed.length = 0;
+    analyzed.push(...kept);
+  } catch (e) { log(`分析后门槛失败（不阻断）: ${e.message}`); }
+
   // L5b 低曝光保护位：近 14 天从未入报且六维 ≥75 的源，保底 2 个名额（防小众行业级内容被淹没）
   let protectedItems = [];
   try {

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { relativeTime, imgUrl } from '../util';
 import Stars from './ui/Stars.jsx';
 import TagPills from './ui/TagPills.jsx';
+import MdText from './ui/MdText.jsx';
 
 // 日报栏目区（2026-09-05b 混合式重写）：栏首封面卡(≤3) + 其余紧凑列表行
 // 支持：折叠/展开、排序（默认/最新/最热）、关键词高亮、渐进渲染（性能）
@@ -148,7 +149,7 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
   return (
     <article
       className="card card-lift overflow-hidden cursor-pointer"
-      onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}
+      onClick={() => onOpen?.(item)}
     >
       {item.cover ? (
         <img
@@ -187,13 +188,13 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
         )}
         {item.summary ? (
           <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-5 whitespace-pre-line">
-            {item.summary}
+            <MdText text={item.summary} />
           </p>
         ) : null}
         {/* 18-daily-ai-v2：AI 推荐理由 + 金句 + 关键观点 */}
         {item.reason ? (
           <p className="mt-2 text-[12px] leading-relaxed t-accent">
-            推荐：{item.reason}
+            推荐：<MdText text={item.reason} />
           </p>
         ) : null}
         {item.quote ? (
@@ -229,12 +230,14 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
   return (
     <div
       className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)]"
-      onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}
+      onClick={() => onOpen?.(item)}
       style={{ borderColor: 'var(--border)' }}
     >
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 1}</span>
       <span className="flex-1 min-w-0">
-        <span className="block truncate text-[13px] t-text">
+        {/* 原先单行 truncate：长标题（如「出售 AI 工作站——有人有兴趣到意大利北部提货吗？」）
+            右边还要让位给推荐理由/星级/标签，一行根本显示不完 → 改两行折行 */}
+        <span className="block text-[13px] t-text leading-snug line-clamp-2">
           {highlightTitle(item.title, keywords, highlight)}
         </span>
         {/* 中英对照：已译条目附英文原标题（2026-09-14） */}

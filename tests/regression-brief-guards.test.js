@@ -3,7 +3,8 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
 const {
-  pickDailyReport, isAiDailyReport, canPublishWeekly, DAILY_AI_MAX_AGE_HOURS,
+  pickDailyReport, isAiDailyReport, canPublishWeekly, passesDailyQualityGate,
+  DAILY_AI_MAX_AGE_HOURS, DAILY_MIN_SCORE,
 } = require('../lib/brief-guards.js');
 
 // 线上真实数据（/api/brief/history 2026-09-18）：
@@ -62,4 +63,30 @@ test('7. canPublishWeekly：达到 4 条才发布（与周刊杂志化门槛同�
   const four = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
   assert.equal(canPublishWeekly(four), true);
   assert.equal(canPublishWeekly(Array.from({ length: 25 }, (_, i) => ({ id: i }))), true);
+});
+
+test('8. 每日早报分析后质量门槛：AI 判「不适合收录」的低分条目不得入报（线上实锤 score 22 / 10 上榜）', () => {
+  // 实测 /api/daily：「最后召集：Disrupt志愿者申请」score=22、「出售 AI 工作站」score=10（reason 明写"不适合收录至早报"），
+  // 后者还进了最显眼的「重点更新」——该栏按"源是否被标重点"全收，分数完全没被看过。
+  const mk = (s, extra) => ({ totalScore: s, ...extra });
+  assert.equal(passesDailyQualityGate(mk(10)), false, '10 分（1 星）应被剔除');
+  assert.equal(passesDailyQualityGate(mk(22)), false, '22 分（用户标注那条）应被剔除');
+  assert.equal(passesDailyQualityGate(mk(29)), false);
+  assert.equal(passesDailyQualityGate(mk(30)), true, '门槛取 30，与 ai.filterThreshold 默认值同口径');
+  assert.equal(passesDailyQualityGate(mk(63)), true);
+  assert.equal(passesDailyQualityGate(mk(0)), false, '0 分不是"没评分"，是判了零分');
+});
+
+test('9. 无 AI 评分的条目不许被分数门槛误杀', () => {
+  // ① 视频/播客：videos 表实测根本没有 score 列，一律无分；② 降级关键词版：没有 totalScore。
+  assert.equal(passesDailyQualityGate({ kind: 'video', title: 'v' }), true, '视频无评分也须保留');
+  assert.equal(passesDailyQualityGate({ kind: 'podcast', title: 'p' }), true, '播客无评分也须保留');
+  assert.equal(passesDailyQualityGate({ title: '降级版条目' }), true, '未评分（降级/关键词版）不误杀');
+  assert.equal(passesDailyQualityGate({ totalScore: null }), true);
+});
+
+test('10. 门槛可配置：ai.dailyMinScore 覆盖默认 30', () => {
+  assert.equal(passesDailyQualityGate({ totalScore: 45 }, 50), false, '抬到 50 时 45 分应被剔除');
+  assert.equal(passesDailyQualityGate({ totalScore: 45 }, 40), true);
+  assert.equal(passesDailyQualityGate({ totalScore: 45 }), true, '不传参走默认 30');
 });

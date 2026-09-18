@@ -241,7 +241,7 @@ function MediaRow({ item, onOpen }) {
 
 function BriefCard({ item, rank, onOpen }) {
   return (
-    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
+    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
       <div className="flex gap-4 p-3 sm:p-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ function BriefCard({ item, rank, onOpen }) {
 
 function RestRow({ item, onOpen }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
+    <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
       {/* 原先硬编码 index+4 当序号：top3+featured7 之后 rest 实际从 11 开始，显示的是错号。
           补充阅读不是排名列表，去掉序号而不是补一个更复杂的偏移。 */}
       <span className="flex-1 min-w-0">

@@ -40,3 +40,22 @@
 - 实现：守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`，runner 与读层共用）。接入点：`api/[...slug].js handleDaily`、`server/services/ai/daily.js getLatest`、`tools/collect-turso.js saveWeekly`（+ runWeekly 前置省 AI 配额）。
 - 回归锁：`tests/regression-brief-guards.test.js`（含用线上真实 id99/100 时间戳构造的事故复现用例）。
 - 顺带排掉的假线索：`settings.ai.features.{classify,analyze}` 在后台 `AiSettingsTab` 有 4 个复选框和「x/4 完成度」，但 `api/_ai.js` 与 `collect-turso.js` **零引用**——纯装饰开关，线上回显 `classify:false / analyze:false` 极易被误判成「AI 被关了」。见 `docs/ISSUES.md` 挂案。
+
+### #34 深析没有否决权：AI 把「不适合收录」写进 reason，组装阶段从不读它（2026-09-18 用户标注抓出）
+- 症状：每日早报大量 1～2 星条目，用户直接问「一两颗星是不是含金量不高」。线上 `/api/daily` 实锤两条：
+  `score=22`「最后召集：Disrupt 志愿者申请即将截止」（reason 自陈"信息量少，内容仅为一句话重复"）、
+  `score=10`「出售 AI 工作站——有人有兴趣到意大利北部提货吗？」（reason 明写**"不适合收录至早报"**）。
+- 根因（三个叠加点，缺一不可）：
+  ① `analyzeArticle` 的返回契约是 `{scores,totalScore,reason,summary,quote,points,tags}`——**没有 `ignore`/`veto` 字段**，深析在结构上没有否决权；
+  ② `runDailyAi` 只在初筛 `:1035` 用 `f.ignore`，深析后 `:1056 analyzed.push({...a, ...r})` 无条件收录；
+  ③ 「重点更新」栏的判据是 `a.source_spotlight`（**源**有没有被标重点），完全不看分，且排在最前、还走大卡——于是最显眼的栏反而是**门槛最低**的栏。
+- 反直觉数据：当次 46 条里分数中位数只有 **38**、最高 **72**，`≥40` 会砍掉 26 条。所以**不能**凭感觉拍一个高门槛，否则早报直接空掉。
+- 规则：
+  ① **门槛取 30，不取新数**——与初筛 `ai.filterThreshold` 默认值同口径，消除"初筛说 30 分以下不收、深析打完分还能塞回来"的自相矛盾；可配 `ai.dailyMinScore`。
+  ② 门槛必须放在 **L5 权威加权之后**判定，保证"用户看到的星数"就是"被判定过的那个分"（加权系数 0.8–1.2，前后差最多 20 分）。
+  ③ 无 AI 评分的条目（视频/播客——`videos` 表实测根本没有 `score` 列；以及降级关键词版）**必须豁免**，否则整栏消失。
+  ④ 长期解不是继续调绝对分，而是**给模型一个说"不"的合法出口**：`analyzeArticle` 加 `veto` 字段 + `prompts/daily-analyze.md` 写清什么情况该 veto。绝对分在推理模型上不稳（本批中位 38），相对判定才可靠。
+- 实现：`lib/brief-guards.js passesDailyQualityGate()`；接入 `tools/collect-turso.js runDailyAi` L5 之后。
+- 回归锁：`tests/regression-brief-guards.test.js` 8/9/10（用线上真实 22/10 分构造）。
+- 契约核对：`tests/columns.test.js:111`「spotlight 源两条全收」**没有被本次推翻**——它跑的是本地 `server/services/ai/daily.js` 的无 AI 降级路径，条目 `score` 为 `undefined`，正好落在门槛的「未评分豁免」分支里（实测该用例仍绿）。
+- **门槛没有同步到本地 `daily.js`，是刻意的，不是漏掉**：本地 `server/services/ai/daily-ai.js` 的 `analyzeBatch` 返回契约只有 `{summary, importance, tags}`（`:38`），**压根没有六维分**，加门槛就是个永不生效的空操作。真正的缺口是本地灾备与 runner 深析契约早已分叉（见 ISSUES B20），要同步得先让本地也产出六维分。

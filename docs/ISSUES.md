@@ -23,6 +23,8 @@
 | B17 | 周刊初筛预算结构性不足：本轮 2015 条候选 × `ai.minIntervalMs=4000` 串行 ≈ 2.2 小时，而 `runWeekly` 的初筛窗只有 `BUDGET_MS*0.4`=24 分钟 → 日志必出现「初筛预算截断」，周刊实际只策展了 `published_at DESC` 前缀，**不是全周内容** | 待决策：提高初筛配额 / 改为批量初筛 / 预筛降量（六维分门槛） | 需拍板 |
 | B18 | 视频/播客条目的「置信度评分」与「标题翻译」无法呈现：`videos` 表实测**既无 `score` 也无 `translated_title` 列**（列清单：id,source_id,platform,title,url,vid,cover,duration,author,intro,published_at,favorite,created_at,watched_at,play_uri）。`enrichBriefTitles` 也因此结构性跳过视频（id 是 `'v'+id`，查 `articles` 永不命中） | 需决策：给 videos 建列并把视频接进翻译/深析管线（涉 schema + 三端采集语义同步 + AI 配额），或放弃这两个诉求 | 需拍板 |
 | B19 | 我的早报「今日总结」线上常空：`generateTheme` 判污染后返回 null（宁缺毋滥，方向是对的），根因是 Agnes 推理模型间歇只吐 reasoning 不吐正文——与坑 #26 同源 | 已断掉"reasoning 冒充正文"（无正文即抛错）；额度/模型侧波动归 W6 继续观察 | 观察中 |
+| B20 | 每日早报**完全没有分析后质量门槛**（用户标注「一两颗星是不是含金量不高」抓出）：深析契约无 `veto`，`runDailyAi` 只在初筛用 `ignore`，「重点更新」栏判据是 `source_spotlight`（看源不看分）→ 实测 `score=10`「出售 AI 工作站」reason 自陈"不适合收录至早报"仍坐最显眼大卡。另：本地灾备 `daily-ai.js analyzeBatch` 只返回 `{summary,importance,tags}` **无六维分**，与 runner 深析契约已分叉，门槛无法同口径同步 | 门槛已加（`passesDailyQualityGate`，默认 ≥30 与 `ai.filterThreshold` 同口径，可配 `ai.dailyMinScore`）；**待下一批 daily-ai 跑批生效**。长期需给模型 `veto` 出口 + 本地补六维分 | 本轮（待验证） |
+| B21 | 每日早报缺「本期索引」（周刊页 T5-6 已有右侧条目索引可复用），且从别的页签切回 `/daily/` 有卡顿；期号方面 `daily_reports` 有自增 `id`（线上 `report.id=100`）但直接当"第 N 期"无意义（含非 AI 批次插入），仍应与我的早报一起走归档设计 | 索引/卡顿待查（卡顿需先定位是 chunk 冷加载还是 46 卡 + 封面重排）；期号并入 H13 一起定 | 待办 |
 
 ## 🟡 观察中（有明确验证时间点）
 
