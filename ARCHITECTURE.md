@@ -119,14 +119,14 @@ server/services/
 
 ## 5. 已知坑（血泪史 → 已迁至 docs/pitfalls/ 踩坑库）
 
-> 全部 30 条坑已按域拆分到 **`docs/pitfalls/`** 单独文件（2026-09-13 重构），每条含症状/根因/规则/案例，换手必读。
-> 本节只留索引，编号全局通用（历史文档引用的坑 #N 不变）：
+> 全部坑已按域拆分到 **`docs/pitfalls/`** 单独文件（2026-09-13 重构），每条含症状/根因/规则/案例，换手必读。
+> 本节只留索引，编号全局通用（历史文档引用的坑 #N 不变）：**条数以 pitfalls/ 为准，本表不写死数字**（AGENTS.md §2.5 单一事实源）。
 
 | 域 | 文件 | 坑编号 | 一句话核心 |
 |---|---|---|---|
 | 采集与信源 | `docs/pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 | 三份实现同步改；浏览器 UA；反爬熔断是常态；大查询禁携全文 |
 | 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 | 游标同型；无索引大查询云端必炸；focus 双语义；超长 OR 链必须平衡二叉树（表达式树深度上限 100） |
-| AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #A1 | settings 覆盖 env 先查残留；推理模型输出三层清洗 |
+| AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #32 #A1 #A2 | settings 覆盖 env 先查残留；推理模型输出三层清洗；**多写者产物表读取按档位不按时间** |
 | 前端 | `docs/pitfalls/frontend.md` | #1 #2 #16 #F1 | 防盗链；hook 必须在早退 return 前 |
 | 部署与运维 | `docs/pitfalls/deployment.md` | #5 #20 #21 #22 #D1 | 密钥三处同步；vercel.json 无 crons；push 后验远端 SHA |
 | 测试 | `docs/pitfalls/testing.md` | #13 #18 #27 #T1 | 云端测试直打生产库；全量替换语义必须快照还原 |

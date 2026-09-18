@@ -361,7 +361,10 @@ async function generate(windowHours) {
 
 // 最新一份日报（无则 null）
 function getLatest() {
-  const row = db.prepare('SELECT * FROM daily_reports ORDER BY id DESC LIMIT 1').get();
+  // 2026-09-18：与云端 handleDaily 同口径——AI 增强版优先于「更新的裸报告」，
+  // 守卫实现唯一在 lib/brief-guards.js（勿在此重写规则）
+  const rows = db.prepare('SELECT * FROM daily_reports ORDER BY id DESC LIMIT 20').all();
+  const row = require('../../../lib/brief-guards').pickDailyReport(rows);
   if (!row) return null;
   let stats = {};
   let sections = [];

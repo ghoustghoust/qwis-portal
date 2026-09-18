@@ -816,8 +816,8 @@ async function runWeekly() {
           .sort((x, y) => (y.score || 0) - (x.score || 0))
           .slice(0, 20)
           .map((a, i) => ({ rank: i + 1, id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, cover: a.cover || null, totalScore: null, weeklyTheme: classifyWeeklyTheme(a) }));
-        await saveWeekly(null, degraded, true, t0);
-        return { degraded: true, count: degraded.length };
+        const pubDegraded = await saveWeekly(null, degraded, true, t0);
+        return { degraded: true, count: degraded.length, published: !!pubDegraded };
       }
       continue;
     }
@@ -844,19 +844,33 @@ async function runWeekly() {
     .slice(0, 20)
     .map((it, i) => ({ ...it, rank: i + 1 }));
 
-  const theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch(() => null);
-  // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
-  const weeklySummary = items.length ? await _ai.generateWeeklySummary(items).catch(() => null) : null;
-  // 周刊 v2 杂志结构（specs/24）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
-  let magazine = null;
-  if (items.length >= 4) {
-    try { magazine = await _ai.generateWeeklyMagazine(items); } catch (e) { log(`周刊杂志结构失败（回退旧版）: ${e.message}`); }
+  // 2026-09-18：条数不足先放弃——别为一期注定不发布的内容花导语/周总结/杂志结构三笔 AI 开销。
+  // 落库守卫在 saveWeekly 里（同一份 lib/brief-guards 口径），这里只是前置省配额。
+  let theme = null; let weeklySummary = null; let magazine = null;
+  if (require('../lib/brief-guards').canPublishWeekly(items)) {
+    theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch((e) => { log(`周刊导语生成失败: ${e.message}`); return null; });
+    // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
+    weeklySummary = await _ai.generateWeeklySummary(items).catch((e) => { log(`周刊周总结失败: ${e.message}`); return null; });
+    // 周刊 v2 杂志结构（specs/24）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
+    if (items.length >= 4) {
+      try { magazine = await _ai.generateWeeklyMagazine(items); } catch (e) { log(`周刊杂志结构失败（回退旧版）: ${e.message}`); }
+    }
   }
-  await saveWeekly(theme, items, false, t0, weeklySummary, magazine);
-  return { count: items.length, theme, weeklySummary, magazine: !!magazine };
+  const published = await saveWeekly(theme, items, false, t0, weeklySummary, magazine);
+  return { count: items.length, theme, weeklySummary, magazine: !!magazine, published };
 }
 
 async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, magazine = null) {
+  // 2026-09-18 发布守卫：条目不足一律不写库。saveWeekly 是无条件 INSERT OR REPLACE，
+  // 一次候选为 0 / AI 全灭的跑批会把上一期好内容整体抹掉（线上实测当前唯一一期即 09-17 手工降级产物），
+  // 且降级分支只在深析连败时触发，items=[] 时连 degraded 都写 false → 空白周刊且无任何报警。
+  const guards = require('../lib/brief-guards');
+  if (!guards.canPublishWeekly(items)) {
+    const n = Array.isArray(items) ? items.length : 0;
+    log(`周刊放弃发布：本期仅 ${n} 条（< ${guards.WEEKLY_MIN_ITEMS}），保留上一期 weekly.latest 不被覆盖`);
+    await writeHeartbeat('weekly', { published: false, count: n, reason: 'below-min-items', degraded: !!degraded });
+    return false;
+  }
   // 对抗性审查补丁（2026-09-13）：周报引用的文章打 featured=1——cleanup 的保留清理豁免 featured，
   // 否则大清理会把「周刊永久归档」引用的文章删掉（详情断链，违背周刊长久存储决策）
   const itemIds = (items || []).map((it) => Number(it.id)).filter(Number.isFinite);
@@ -879,7 +893,8 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
   archive.push({ issue, dateStart, dateEnd, theme, count: items.length, report });
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.archive', ?)", args: [JSON.stringify(archive)] });
   log(`周刊第 ${issue} 期生成完成: ${items.length} 条${degraded ? '（降级）' : ''}, 主题: ${theme || '(无)'}`);
-  await writeHeartbeat('weekly', { issue, count: items.length, degraded });
+  await writeHeartbeat('weekly', { issue, count: items.length, degraded, published: true });
+  return true;
 }
 
 // ─── T3-1 R0c 主题全景（2026-09-13）───
@@ -1192,7 +1207,7 @@ async function runDailyAi() {
 
   // 主题导语
   const allItems = sections.flatMap((s) => s.items);
-  const theme = await _ai.generateTheme(allItems).catch(() => null);
+  const theme = await _ai.generateTheme(allItems).catch((e) => { log(`每日早报导语生成失败（本期无导语）: ${e.message}`); return null; });
 
   // 统计卡契约（B2 修复）：StatCards 读 candidates/articles/videos——daily-ai 候选全是文章，
   // 视频数取窗口内 videos 表新增（T4-3 视频入报后此处口径随之升级）
@@ -1394,13 +1409,18 @@ async function runMyBrief(analyzed) {
     if (mediaItems.length) sections.media = mediaItems;
   } catch (e) { log(`mybrief 媒体栏失败（不阻断）: ${e.message}`); }
   // 编辑导语 + 关键词标签行
-  const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch(() => null);
+  const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch((e) => { log(`我的早报导语生成失败（本期无今日聚焦）: ${e.message}`); return null; });
   const tagFreq = {};
   for (const m of mine) for (const t of m.tags || []) tagFreq[t] = (tagFreq[t] || 0) + 1;
   const keywords = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
   // 主题全景（订阅视角）：与 daily-ai 同管线，簇取自 mine
   let themes = [];
-  try { themes = await buildThemePanorama(mine); } catch { /* 不阻断 */ }
+  try {
+    themes = await buildThemePanorama(mine);
+    // 2026-09-18：此处原先是空 catch——主题全景线上长期为空却无任何归因日志。
+    // 空簇（Jaccard≥0.45 的 ≥2 条簇不足）与 AI 命名失败是两种不同病因，必须能区分。
+    if (!themes.length) log(`我的早报主题全景: 0 簇（候选 ${mine.length} 条，标题相似度聚不到 ≥2 条的簇或 AI 命名全失败）`);
+  } catch (e) { log(`我的早报主题全景失败（不阻断）: ${e.message}`); }
   const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections, themes };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
   log(`mybrief 生成完成: top ${sections.top.length} / featured ${sections.featured.length} / rest ${sections.rest.length}, 主题: ${theme || '(无)'}`);
@@ -1913,14 +1933,23 @@ async function runTranslate() {
     else if (MODE === 'daily') await runDaily();
     else if (MODE === 'daily-ai') await runDailyAi();
     else if (MODE === 'weekly') await runWeekly();
-    else if (MODE === 'mybrief') await runMyBrief([]); // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）
+    else if (MODE === 'mybrief') {
+      // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）
+      await runMyBrief([]);
+      // 2026-09-18：阅读足迹此前只挂在 daily-ai 分支（runDailyAi 尾部），单独跑 mybrief 时
+      // reading.digest 永不刷新 → 我的早报「阅读足迹」卡整块消失（线上实测该键根本不存在）。
+      // 独立 try/catch：足迹是附属卡，失败不该让早报重生成算失败。
+      try { await buildReadingDigest(); } catch (e) { log(`阅读足迹失败（已隔离）: ${e.message}`); }
+    }
     else if (MODE === 'translate') await runTranslate();
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {
     console.error(`Fatal: ${err.message}`);
-    // 15-cloud-alerts：daily 失败发报警后再退出
-    if (MODE === 'daily') {
-      try { await require('../api/_alerts').dailyFailed(err.message); } catch { /* 隔离 */ }
+    // 15-cloud-alerts：早报/周刊批次失败发报警后再退出。
+    // 2026-09-18 扩覆盖面：此前只认 'daily'（非 AI 兜底批），真正产 AI 内容的
+    // daily-ai 与 weekly 跑批失败时一条报警都没有——周刊整周静默断更就是这么来的。
+    if (MODE === 'daily' || MODE === 'daily-ai' || MODE === 'weekly' || MODE === 'mybrief') {
+      try { await require('../api/_alerts').dailyFailed(`${MODE}: ${err.message}`); } catch { /* 隔离 */ }
     }
     process.exit(1);
   }

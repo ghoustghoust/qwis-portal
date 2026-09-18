@@ -24,12 +24,19 @@ const TYPES = [
 
 export default function MyBriefPage() {
   const [data, setData] = useState(undefined);
+  const [err, setErr] = useState(null);
   const [type, setType] = useState('all');
   const [studyItem, setStudyItem] = useState(null);
 
-  useEffect(() => {
-    api.get('/api/mybrief').then(setData).catch(() => setData(null));
-  }, []);
+  const load = () => {
+    setErr(null);
+    setData(undefined);
+    // 2026-09-18：原先 .catch(()=>setData(null)) 把任何接口失败（401/500/504）都变成 data=null，
+    // 而下方所有分支都以 data 存在为前提 → 整页一个字都不剩，用户与排障者都无从判断是"没内容"还是"挂了"。
+    api.get('/api/mybrief').then(setData).catch((e) => setErr(String(e?.message || e)));
+  };
+
+  useEffect(() => { load(); }, []);
 
   const report = data?.report;
   const digest = data?.digest;
@@ -40,6 +47,15 @@ export default function MyBriefPage() {
       <IconRail />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+          {err && (
+            <div className="card px-6 py-16 text-center">
+              <SunIcon className="mx-auto t-accent" />
+              <div className="serif mt-4 text-xl font-bold t-text">我的早报加载失败</div>
+              <p className="mt-3 text-[13px] t-muted break-all">{err}</p>
+              <button type="button" className="btn-primary mt-6" onClick={load}>重试</button>
+            </div>
+          )}
+
           {/* 引导态：无订阅 */}
           {empty === 'no-subscription' && (
             <div className="card px-6 py-16 text-center">
@@ -63,7 +79,7 @@ export default function MyBriefPage() {
             </div>
           )}
 
-          {data === undefined && <div className="space-y-4"><SkeletonCards n={3} /></div>}
+          {data === undefined && !err && <div className="space-y-4"><SkeletonCards n={3} /></div>}
 
           {/* 正常态 */}
           {report && !empty && (

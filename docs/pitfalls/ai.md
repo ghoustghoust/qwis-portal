@@ -24,3 +24,13 @@
 - 根因：①桥接源（hnrss 等）正文只有 Article/Comments 链接列表（~300 字符纯文本）——多轮精翻在这种输入上让推理模型复述任务指令或幻觉标题，sanitizeTranslationReply 的中文起手式表没覆盖「用户要求/我已收到」；②深析 analyzeArticle 对薄正文产出占位金句且原样入库；③翻译优先级的 id 表只用于排序、候选拔牙在「最近 5000 条」扫描窗——日报条目跌出窗口后 P1=0，「早报优先」形同虚设。
 - 规则：纯文本 <400 字符走仅标题单轮通道（不进多轮精翻/术语生长）；入库前终极闸（起手式/超长/空拒收）；深析占位话术清洗置空；**优先级 id 必须直接补入候选池**（不依赖扫描窗命中）。
 - 回归锁：tests/regression-20260913.test.js F3-7/F3-8。
+
+### #32 后写的降级/兜底产物覆盖先写的 AI 产物——落库要守卫、读取要按档位而非按时间（2026-09-18）
+- 症状：每日早报只剩「栏目+标题+RSS 摘要」，六维评分/推荐理由/要点/金句/主题全景全体消失；精选周刊整页空白（`weekly.latest` 25 条裸 item、`degraded:true`、`theme:null`）。用户报「AI 功能被删了」——**实际没有任何代码删除 AI 功能，AI 平台也一直正常**（`POST /api/ai/ping` 实测回 `连通成功`）。
+- 真根因（两条独立链，同一形态）：
+  ① **每日早报被遮蔽**：`collect.yml` 有三个 job 写 `daily_reports`——`daily-ai-evening`（北京 21:30，`schemaVersion:2`）、`daily-ai`（00:32 备跑）、`daily-report`（北京 09:03，**非 AI**，`window_hours:30`，无 theme/themes/六维）。读层 `handleDaily` 是 `ORDER BY generated_at DESC LIMIT 1` → **最后写的非 AI 批必赢**，每天早上读者拿到的都是裸报。线上 `/api/brief/history` 实锤：id99（AI，theme 有值）被次日 id100（裸，`elapsedMin:null`）顶掉。读层 `getOrGenerate` 内联兜底是第二个裸写入者。
+  ② **周刊空覆盖**：`saveWeekly` 无条件 `INSERT OR REPLACE weekly.latest`，无最小条数守卫；`weekly` job 每周只此一次且 `if: github.event.schedule` **排除 workflow_dispatch**（掉一次 run 就整周断更且无法补跑）；失败报警条件只认 `MODE==='daily'`，`daily-ai`/`weekly` 全灭时**一条报警都没有**。
+- 规则：**凡「多写者 + 单读者取最新」的产物表，落库必须带质量档位（schemaVersion），读层必须按档位优先而非按时间优先**；生成器落库前必须有最小内容量守卫（宁可不发布，也不用空/降级产物覆盖上一期好内容）；低频一次性批次（周刊）必须同时具备 ①dispatch 补跑口 ②失败报警，否则等于没有兜底。
+- 实现：守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`，runner 与读层共用）。接入点：`api/[...slug].js handleDaily`、`server/services/ai/daily.js getLatest`、`tools/collect-turso.js saveWeekly`（+ runWeekly 前置省 AI 配额）。
+- 回归锁：`tests/regression-brief-guards.test.js`（含用线上真实 id99/100 时间戳构造的事故复现用例）。
+- 顺带排掉的假线索：`settings.ai.features.{classify,analyze}` 在后台 `AiSettingsTab` 有 4 个复选框和「x/4 完成度」，但 `api/_ai.js` 与 `collect-turso.js` **零引用**——纯装饰开关，线上回显 `classify:false / analyze:false` 极易被误判成「AI 被关了」。见 `docs/ISSUES.md` 挂案。

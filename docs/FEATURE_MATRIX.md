@@ -64,7 +64,8 @@
 | 报警管理（已并入系统） | ✅ | ✅ 2026-09-12 | 配置写/测试/清冷却已上云；触发引擎在 runner 批次尾部（15-cloud-alerts） |
 | 热点榜设置 | ✅ | ⚠️ | AIHOT backfill/enrich 控制缺 |
 | 监控（已并入系统） | ✅ | ⚠️ 近似值 | 无 job_queue 历史，数值为当前状态近似 |
-| 早报/我的早报/周刊 管理页 | ❌ | ✅ 2026-09-13 | T3-2 早报中心（生成历史/推送/周刊归档/画像配额） |
+| 早报/我的早报/周刊 管理页 | ❌ | ✅ 2026-09-13 | T3-2 早报中心（生成历史/推送/周刊归档/画像配额）。「周刊归档删除」端点 2026-09-18 才真正可达（此前被误写进 GET 分支，恒 404）；历史表对 mybrief/足迹只能显示 1 行（读单个 `*.latest` 键，非 7 天序列）；「手动生成命令」目前只是文本提示 |
+| 早报/周刊 AI 落库守卫 | ✅ | ✅ 2026-09-18 | 唯一实现 `lib/brief-guards.js`（读层按 `schemaVersion` 档位优先取日报，runner 周刊 <4 条不发布）——见不变量 12 / 坑 #32。本地 `server/services/ai/daily.js getLatest()` 同口径 |
 
 ### 1.4 采集与调度
 
@@ -76,7 +77,7 @@
 | 抖音 | ✅ | ❌ 永不 | Playwright 登录态，架构决策 |
 | 全文补抓 / AIHOT enrich | ✅ | ❌ 待移植 | |
 | 报警引擎（7 渠道） | ✅ | ✅ 2026-09-12 | api/_alerts.js 全量移植（含熔断汇总/AI失败/停滞检测/可诊断文案） |
-| 触发可靠性 | 进程常驻 | GH schedule（会丢）+ cron-job.org 外置触发（主力） | 双保险 2026-09-11 落地。cron-job 任务 **8430047**：每 15min POST workflow_dispatch 叫醒 collect job（dispatch 只跑采集，日报/快照不会被 15min 刷）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 HANDOVER §1.5；任务内嵌 GitHub PAT，PAT 轮换须同步；2026-09-14 API 实测 enabled、全绿准点 |
+| 触发可靠性 | 进程常驻 | GH schedule（会丢）+ cron-job.org 外置触发（主力） | 双保险 2026-09-11 落地。cron-job 任务 **8430047**：每 15min POST workflow_dispatch 叫醒 collect job（dispatch 只跑采集，日报/快照不会被 15min 刷）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 HANDOVER §1.5；任务内嵌 GitHub PAT，PAT 轮换须同步；2026-09-14 API 实测 enabled、全绿准点。**2026-09-18 追加**：`workflow_dispatch` 带 `inputs.mode`（choice，默认 `collect`；cron-job 不传 inputs → 取默认，语义完全不变），人工可选 `daily-ai`/`daily-ai-evening`/`mybrief`/`weekly` 单独补跑——周刊此前每周只有周五一次 schedule 且无任何补跑口，是 09-17 那周断更的直接成因；cron 具体值以 `collect.yml` 为唯一事实源 |
 
 ---
 

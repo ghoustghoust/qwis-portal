@@ -369,6 +369,8 @@ const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, ha
 // 播客音频识别（cover 里的音频 enclosure → audio_url）
 const { mapAudioFields } = require('../lib/media');
 const { cleanTranslatedTitle } = require('../lib/text-clean');
+// 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
+const briefGuards = require('../lib/brief-guards');
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
@@ -785,14 +787,20 @@ async function enrichDailyTranslated(sections) {
 }
 
 async function handleDaily(req) {
-  const row = await qOne('SELECT * FROM daily_reports ORDER BY generated_at DESC LIMIT 1');
+  // 2026-09-18 修复：不再只取最新一行。collect.yml 的 daily-report（非 AI，09:03 北京）与下面的
+  // 内联兜底都会插入 window_hours=30、无 theme/themes/六维 的裸报告，一旦它比 daily-ai 产物更晚，
+  // `ORDER BY generated_at DESC LIMIT 1` 就让每日早报整天退化成裸版（线上实测 id100 遮蔽 id99）。
+  const rows = await qAll('SELECT * FROM daily_reports ORDER BY generated_at DESC LIMIT 20');
+  const row = briefGuards.pickDailyReport(rows);
 
   // 检查是否需要自动生成
   if (row) {
     const genDate = new Date(row.generated_at);
     const now = new Date();
-    // 同一天（UTC）则直接返回
-    if (genDate.toDateString() === now.toDateString()) {
+    // 同一天（UTC）则直接返回；30h 内的 AI 增强版同样视同当日有效（否则会被次日裸报告顶掉）
+    const freshAi = briefGuards.isAiDailyReport(row)
+      && briefGuards.ageHours(row, Date.now()) <= briefGuards.DAILY_AI_MAX_AGE_HOURS;
+    if (genDate.toDateString() === now.toDateString() || freshAi) {
       let sections = [];
       try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
       let stats = {};
@@ -2764,6 +2772,13 @@ async function dispatch(req) {
   if (path === '/api/alerts/test' && method === 'POST') return handleAlertsTest(req);
   if (path === '/api/alerts/clear-cooldowns' && method === 'POST') return handleAlertsClearCooldowns(req);
 
+  // DELETE /api/weekly/archive/:issue（T3-2 R1）
+  // 2026-09-18 修复：这条原先被误写在下方 `if (method === 'GET')` 块内，块内 method==='DELETE'
+  // 恒不成立 → 请求一路掉到末尾 404 Not Found，「归档删除」从未真正上线（后台按钮必 404）。
+  // 写路由与上面 POST 族同区，勿再放回 GET 块。
+  const weeklyDelMatch = path.match(/^\/api\/weekly\/archive\/(\d+)$/);
+  if (weeklyDelMatch && method === 'DELETE') return handleWeeklyArchiveDelete(req, Number(weeklyDelMatch[1]));
+
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
   if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
@@ -2811,8 +2826,6 @@ async function dispatch(req) {
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
-    const weeklyDelMatch = path.match(/^\/api\/weekly\/archive\/(\d+)$/);
-    if (weeklyDelMatch && method === 'DELETE') return handleWeeklyArchiveDelete(req, Number(weeklyDelMatch[1]));
     if (path === '/api/weekly/archive' && method === 'GET') return jsonOk({ archive: (await getSetting('weekly.archive', [])) || [] });
     if (path === '/api/weekly') return handleWeekly(req);
     if (path === '/api/sources/bilibili-diagnose') return handleBilibiliDiagnose(req);

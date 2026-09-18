@@ -74,10 +74,12 @@ test('2. 有订阅 + settings 报告 → 正常透传', async () => {
   };
   await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('mybrief.latest',?)", args: [JSON.stringify(fake)] });
   // subscription.ids 经 getSetting 读取且 slug 有 30s 进程内缓存（test 1 刚把 [] 缓存住）——轮询等缓存过期
+  // 必须等「本轮写入的假报告」出现才算命中：缓存里可能还是线上真实的 mybrief.latest（theme 为 null），
+  // 只判 d.report 非空会立刻拿真实报告破环 → 断言假阳性失败（2026-09-18 修，同 regression-weekly:98 口径）
   let d = null;
   for (let i = 0; i < 10; i++) {
     d = await callGet('/api/mybrief');
-    if (d.report) break;
+    if (d.report && d.report.theme === '测试导语') break;
     await new Promise((r) => setTimeout(r, 5000));
   }
   assert.ok(d.report, '订阅生效后应透传报告');

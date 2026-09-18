@@ -90,13 +90,24 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 # GH Actions 定时任务（北京时间）
 # 采集：每 15 分钟（UTC :07/:22/:37/:52）+ cron-job.org 双保险（jobId 8430047，每 15min POST workflow_dispatch）
 #                          node tools/collect-turso.js collect
-# 日报：09:03                 node tools/collect-turso.js daily
-# 快照：09:33                 node tools/generate-snapshots.js（push 回仓库）
+# 日报：09:03                 node tools/collect-turso.js daily          ← 非 AI 兜底批（坑 #32 / 不变量 12）
+# AI 早报：21:30 主批 / 00:32 备跑   node tools/collect-turso.js daily-ai [--rolling24]
+# 周刊：周五 18:03             node tools/collect-turso.js weekly
+#                          node tools/generate-snapshots.js（push 回仓库）
 # 清理：04:13                 node tools/collect-turso.js cleanup
+# （cron 表达式以 .github/workflows/collect.yml 为唯一事实源，本段只标北京时刻）
 
-# 手动触发：GitHub → Actions → collect → Run workflow（四个 job 全跑）
+# 手动触发：GitHub → Actions → collect → Run workflow → 选 mode
+#   ⚠️ 更正（2026-09-18）：原先写「四个 job 全跑」是错的——不带 mode 的 dispatch 只跑 collect。
+#   现在 mode 可选：collect（默认）/ daily-ai-evening / daily-ai / mybrief / weekly。
+#   cron-job.org 每 15min 的不带 inputs dispatch 会取默认 collect，行为不变（不变量 9）。
 # 本地手动直采（读本地 .env 的 TURSO_* / HTTPS_PROXY）
 node tools/collect-turso.js collect
+
+# ⚠️ push 之后必须验部署，否则「代码修了但线上还是旧 bundle」（2026-09-18 实测连续 4 次 Error 无人发现）
+git push origin main
+npx vercel ls | head -6          # 最新一条必须是 ● Ready，不是 ● Error
+npx vercel inspect <部署地址> --logs | grep -iE "error|Could not resolve"
 
 # 备份端点（Vercel 函数仍可用，仅手动救急；Hobby 10s 单次仅 2 源）
 curl -X POST "https://qwis-intel.vercel.app/api/collect?key=$COLLECT_KEY"

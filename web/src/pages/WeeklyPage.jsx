@@ -22,13 +22,19 @@ const THEME_COLOR = {
 
 export default function WeeklyPage() {
   const [data, setData] = useState(undefined);
+  const [err, setErr] = useState(null);
   const [issue, setIssue] = useState(0); // 0=最新
   const [studyItem, setStudyItem] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
+    setErr(null);
+    setData(undefined);
     const url = issue > 0 ? `/api/weekly?issue=${issue}` : '/api/weekly';
-    api.get(url).then(setData).catch(() => setData(null));
-  }, [issue]);
+    // 2026-09-18：原先 .catch(()=>setData(null)) 让任何接口失败都渲染成完全空白页
+    // （刊头/分组/归档全落空），"周报没有文章"因此在数据故障与渲染故障之间无法区分。
+    api.get(url).then(setData).catch((e) => setErr(String(e?.message || e)));
+  };
+  useEffect(() => { load(); }, [issue]);
 
   const report = data?.report;
   const archive = data?.archive || [];
@@ -80,7 +86,15 @@ export default function WeeklyPage() {
             </aside>
           )}
           <div className="flex-1 min-w-0 max-w-3xl">
-          {data === undefined && <div className="py-20 text-center text-sm t-muted">加载中…</div>}
+          {err && (
+            <div className="card px-6 py-16 text-center">
+              <DocIcon className="mx-auto t-accent" />
+              <div className="serif mt-4 text-xl font-bold t-text">精选周刊加载失败</div>
+              <p className="mt-3 text-[13px] t-muted break-all">{err}</p>
+              <button type="button" className="btn-primary mt-6" onClick={load}>重试</button>
+            </div>
+          )}
+          {data === undefined && !err && <div className="py-20 text-center text-sm t-muted">加载中…</div>}
 
           {data?.empty === 'no-content' && (
             <div className="card px-6 py-16 text-center">
@@ -242,9 +256,12 @@ function WeeklyCard({ item, onOpen }) {
             <span className="flex-none text-[10px] font-bold px-1.5 py-0.5 rounded t-accent-soft t-accent">
               #{item.rank}
             </span>
-            <span className="flex-none text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'color-mix(in srgb, var(--green) 12%, transparent)', color: 'var(--green)' }}>
-              {item.weeklyTheme}
-            </span>
+            {/* 降级/裸产物没有 weeklyTheme，原先无条件渲染会在每条上挂一个空绿胶囊 */}
+            {item.weeklyTheme && (
+              <span className="flex-none text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'color-mix(in srgb, var(--green) 12%, transparent)', color: 'var(--green)' }}>
+                {item.weeklyTheme}
+              </span>
+            )}
             <span className="text-[11px] t-muted truncate">{item.source}</span>
             {item.totalScore != null && <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />}
           </div>

@@ -81,6 +81,13 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    预聚合写 `settings['hot.eventsCache']`（15min 刷新），云端读层直读缓存（>45min 视为 runner 异常才内联兜底）。
    聚合逻辑唯一实现：`lib/hot-events.js`（纯函数，runner 与云端兜底共用，勿再写第三份）。
 
+12. **早报/周刊落库守卫（2026-09-18 事故后新增，详见坑 #32）**：`daily_reports` 有三个写入者
+    ——`daily-ai-evening`（北京 21:30，AI）、`daily-ai`（00:32 备跑，AI）、`daily-report`（09:03，**非 AI**），
+    外加读层 `getOrGenerate` 内联兜底。读层**必须按 `schemaVersion` 档位优先，不能按 `generated_at` 最新优先**，
+    否则 09:03 的裸报每天把 AI 增强版整体遮蔽（线上实测 id99 被 id100 顶掉）。
+    守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`），runner 与云端读层共用——
+    **任何一端都不许重写这条规则**。周刊不足 4 条一律不发布（宁缺毋滥，不得用空/降级产物覆盖上一期）。
+
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
    dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份
@@ -88,6 +95,11 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    （值见 `docs/HANDOVER.md` §1.5）——**PAT 轮换/失效时必须同步更新 cron-job 配置**，
    否则主力触发静默停摆，只剩会丢任务的备份。控制台 <https://console.cron-job.org/dashboard>，
    管理用 API Key 同见 HANDOVER §1.5。
+   **2026-09-18 追加**：`workflow_dispatch` 现在带 `inputs.mode`（choice，默认 `collect`）。
+   cron-job.org 不传 inputs → 取默认 `collect` → **仍然只跑 collect job，本不变量不被破坏**。
+   AI 批次 job 的 `if` 都要求 mode 精确等于各自名字才会触发，取值缺失/为空时恒不成立（fail-safe）。
+   人工「Run workflow」选 `daily-ai` / `daily-ai-evening` / `mybrief` / `weekly` 即可单独补跑
+   ——周刊此前每周只有周五那一次 schedule 且完全不可补跑，是本周断更的直接成因。
 
 ## 3. 改代码时的检查清单
 
@@ -95,7 +107,8 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
       `server/services/collectors/*`（本地）、`api/collect.js`（Vercel 备份）、
       `tools/collect-turso.js`（云端主链路）。三者是独立实现，会漂移。
 - [ ] 改了日报逻辑？→ 同步检查 `server/services/ai/daily.js`、
-      `api/daily-generate.js`、`tools/collect-turso.js` 的 `runDaily()`、`api/[...slug].js` 的 getOrGenerate 兜底。
+      `api/daily-generate.js`、`tools/collect-turso.js` 的 `runDaily()`、`api/[...slug].js` 的 getOrGenerate 兜底；
+      **读取侧档位守卫在 `lib/brief-guards.js`（不变量 12），四个写入者共用，勿在任一端重写**。
 - [ ] 改了 Turso schema？→ 四处采集实现 + `tools/generate-snapshots.js` + `api/[...slug].js` 全部要对齐。
 - [ ] 改了 workflow 的 cron？→ 注意 GH Actions 是 **UTC**，且整点拥挤，用错峰分钟（:07/:37 风格）。
 - [ ] 改完必须跑：`npm test`（278 项全绿为基线，2026-09-15 起；不许新增失败）。
