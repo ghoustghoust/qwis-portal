@@ -105,6 +105,8 @@ function collectCandidates(windowHours, cfg) {
     items.push({
       kind: 'video', ref_id: r.id, source_id: r.source_id, title: r.title || '', cover: r.cover || '',
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
+      // v.* 已查出 intro，此前没映射到 summary → 视频卡只有一行光标题（与云端 collect-turso 同口径补齐）
+      summary: r.intro || undefined, duration: r.duration || null,
       spotlight: !!r.source_spotlight, aggregator: !!r.source_aggregator,
       // 2026-09-05 视觉精修：视频表暂无评分/标签列，字段占位对齐文章条目
       score: r.score ?? null, tags: r.tags || '',

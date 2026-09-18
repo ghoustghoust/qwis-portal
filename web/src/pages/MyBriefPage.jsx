@@ -18,8 +18,10 @@ const TYPES = [
   { key: 'all', label: '全部' },
   { key: 'article', label: '文章' },
   { key: 'video', label: '视频' },
-  { key: 'podcast', label: '播客', disabled: true },
-  { key: 'tweet', label: '推文', disabled: true },
+  { key: 'podcast', label: '播客' },
+  // 推文保持禁用：X 源在采集侧走通用 RSS 适配器、落库为普通 article，
+  // 生成器从不产出 kind:'tweet'，开这个页签必然是空列表（不是"即将上线"，是"数据面还没有"）
+  { key: 'tweet', label: '推文', disabled: true, hint: 'X/推特内容目前以文章形式收录，暂无独立推文条目' },
 ];
 
 export default function MyBriefPage() {
@@ -90,20 +92,21 @@ export default function MyBriefPage() {
                 <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
                   {Number(report.date.slice(5, 7))}月{Number(report.date.slice(8, 10))}日
                 </h1>
-                {report.theme && (
-                  <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted">
-                    今日聚焦：<MdText text={report.theme} />
-                  </p>
-                )}
-                {report.degraded && (
-                  <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
-                )}
                 {Array.isArray(report.keywords) && report.keywords.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {report.keywords.map((k) => (
                       <span key={k} className="pill on !cursor-default text-[11px]">{k}</span>
                     ))}
                   </div>
+                )}
+                {/* 今日总结（AI）：放在关键词之后——先给"今天都在围绕什么"，再给一段人话概括 */}
+                {report.theme && (
+                  <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted">
+                    今日总结：<MdText text={report.theme} />
+                  </p>
+                )}
+                {report.degraded && (
+                  <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
                 )}
               </header>
               <ThemePanorama themes={report.themes} />
@@ -116,7 +119,7 @@ export default function MyBriefPage() {
                     disabled={tp.disabled}
                     className={`pill ${type === tp.key ? 'on' : ''} ${tp.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
                     onClick={() => !tp.disabled && setType(tp.key)}
-                    title={tp.disabled ? '该类型源即将上线' : ''}
+                    title={tp.disabled ? (tp.hint || '该类型暂不可选') : ''}
                   >
                     {tp.label}
                   </button>
@@ -126,7 +129,7 @@ export default function MyBriefPage() {
               <BriefSection title="头条推荐" items={report.sections?.top} kind="top" type={type} onOpen={setStudyItem} />
               <BriefSection title="精选内容" items={report.sections?.featured} kind="featured" type={type} onOpen={setStudyItem} />
               {/* 2026-09-14：视频与播客栏（窗口内新媒体，点开即可播放/收听） */}
-              <BriefSection title="视频与播客" items={report.sections?.media} kind="rest" type={type} onOpen={setStudyItem} />
+              <BriefSection title="视频与播客" items={report.sections?.media} kind="media" type={type} onOpen={setStudyItem} />
               <BriefSection title="补充阅读" items={report.sections?.rest} kind="rest" type={type} onOpen={setStudyItem} />
             </>
           )}
@@ -160,7 +163,16 @@ export default function MyBriefPage() {
 }
 
 function BriefSection({ title, items, kind, type, onOpen }) {
-  const list = (items || []).filter((it) => type === 'all' || (type === 'article' && it.kind !== 'video' && it.kind !== 'podcast') || (type === 'video' && (it.kind === 'video' || it.kind === 'podcast')));
+  // 类型筛选必须与 TYPES 一一对应：此前只有 all/article/video 三个分支，
+  // 播客被 video 吞掉、推文根本没有分支（点开即空列表 → 整个 section 返回 null，页面塌成只剩刊头）。
+  const list = (items || []).filter((it) => {
+    if (type === 'all') return true;
+    if (type === 'article') return it.kind !== 'video' && it.kind !== 'podcast' && it.kind !== 'tweet';
+    if (type === 'video') return it.kind === 'video';
+    if (type === 'podcast') return it.kind === 'podcast';
+    if (type === 'tweet') return it.kind === 'tweet';
+    return true;
+  });
   if (!list.length) return null;
   return (
     <section className="mt-8">
@@ -171,11 +183,59 @@ function BriefSection({ title, items, kind, type, onOpen }) {
         <span className="flex-1 border-t hairline" />
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {list.map((it, i) => kind === 'rest'
-          ? <RestRow key={it.id} item={it} index={i} onOpen={onOpen} />
-          : <BriefCard key={it.id} item={it} rank={kind === 'top' ? i + 1 : null} onOpen={onOpen} />)}
+        {list.map((it, i) => kind === 'media'
+          ? <MediaRow key={it.id} item={it} onOpen={onOpen} />
+          : kind === 'rest'
+            ? <RestRow key={it.id} item={it} onOpen={onOpen} />
+            : <BriefCard key={it.id} item={it} rank={kind === 'top' ? i + 1 : null} onOpen={onOpen} />)}
       </div>
     </section>
+  );
+}
+
+// 视频/播客专用卡：封面 + 播放态徽章 + 中英标题 + 来源 + 时长。
+// 此前这一栏以 kind="rest" 挂载，走 RestRow 纯文本行——生成端其实给视频带了 cover，
+// 但纯文本行不渲染图片，也没有播放入口，等于把已有的封面和可播放性全丢了。
+function MediaRow({ item, onOpen }) {
+  const isPod = item.kind === 'podcast';
+  return (
+    <article className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
+      {item.cover
+        ? (
+          <div className="relative flex-none w-32 sm:w-40">
+            <img
+              referrerPolicy="no-referrer" src={imgUrl(item.cover)} alt="" loading="lazy"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <span className="absolute inset-0 grid place-items-center">
+              <span className="w-9 h-9 grid place-items-center rounded-full text-[13px]" style={{ background: 'rgba(0,0,0,.55)', color: '#fff' }}>
+                {isPod ? '🎧' : '▶'}
+              </span>
+            </span>
+          </div>
+        )
+        : (
+          <div className="flex-none w-14 grid place-items-center text-[18px]" style={{ background: 'var(--surface-2)' }}>
+            {isPod ? '🎧' : '▶'}
+          </div>
+        )}
+      <div className="flex-1 min-w-0 p-3 sm:p-4">
+        <div className="flex items-center gap-2">
+          <span className="flex-none text-[10px] font-bold px-1.5 py-0.5 rounded t-accent-soft t-accent">
+            {isPod ? '播客' : '视频'}
+          </span>
+          <span className="text-[11px] t-muted truncate">{item.source_name || item.source}</span>
+          <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />
+        </div>
+        <h3 className="mt-2 text-[14px] font-bold leading-snug t-text line-clamp-2">{item.title}</h3>
+        {item.original_title && (
+          <div className="mt-0.5 text-[11px] t-muted leading-snug truncate" title={item.original_title}>{item.original_title}</div>
+        )}
+        {item.summary && <p className="mt-1.5 text-[12.5px] leading-relaxed t-muted line-clamp-2"><MdText text={item.summary} /></p>}
+        <div className="mt-2 text-[11px] t-muted">{relativeTime(item.published_at)}</div>
+      </div>
+    </article>
   );
 }
 
@@ -235,10 +295,11 @@ function BriefCard({ item, rank, onOpen }) {
   );
 }
 
-function RestRow({ item, index, onOpen }) {
+function RestRow({ item, onOpen }) {
   return (
     <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => { if (item.kind === 'video') { window.open(item.url, '_blank', 'noopener'); return; } onOpen?.(item); }}>
-      <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 4}</span>
+      {/* 原先硬编码 index+4 当序号：top3+featured7 之后 rest 实际从 11 开始，显示的是错号。
+          补充阅读不是排名列表，去掉序号而不是补一个更复杂的偏移。 */}
       <span className="flex-1 min-w-0">
         <span className="block truncate text-[13px] t-text">{item.title}</span>
         {item.original_title && (

@@ -723,14 +723,14 @@ async function generateDailyInline() {
   try {
     const mediaItems = [];
     const mediaVids = await qAll(
-      `SELECT v.id, v.title, v.url, v.cover, v.published_at, s.name AS source_name
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name
        FROM videos v JOIN sources s ON s.id=v.source_id
        WHERE v.published_at >= ? AND v.published_at <= ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`,
       [cutoff, cutoffEnd]
     );
     for (const v of mediaVids) {
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover });
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null });
     }
     const mediaPods = await qAll(
       `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name

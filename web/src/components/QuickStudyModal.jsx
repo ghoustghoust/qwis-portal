@@ -7,6 +7,14 @@ import PodcastCover from './ui/PodcastCover.jsx';
 
 // 快速学习弹窗（F17/F20）：类型标签 + 标题 + 来源时间 + 收藏/复制链接/打开原文 + 内容简介 + 正文
 // 2026-09-05 视觉精修：meta 行补字数/阅读时长，统一 .meta token
+// 详情进程内缓存（按 API path）。弹窗每次打开都重挂载，无缓存则同一篇反复走网络 + 闪加载态。
+// 上限 40 条：正文可能很大，不做无界增长；手动翻译时按 path 失效。
+const detailCache = new Map();
+function cacheDetail(path, detail) {
+  if (detailCache.size >= 40 && !detailCache.has(path)) detailCache.delete(detailCache.keys().next().value);
+  detailCache.set(path, detail);
+}
+
 export default function QuickStudyModal({ item, onClose }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +52,7 @@ export default function QuickStudyModal({ item, onClose }) {
       api.get(`/api/articles/${articleId}`).then((data) => {
         const d = data?.item || data?.article || data;
         if (d && (d.translated_title || d.translated_content)) {
+          cacheDetail(`/api/articles/${articleId}`, d);   // 译文到手要回写缓存，否则下次点开还是旧的
           setDetail(d);
           setTranslating(false);
           setShowTranslated(true);
@@ -57,6 +66,7 @@ export default function QuickStudyModal({ item, onClose }) {
   const requestTranslate = async () => {
     try {
       const r = await api.post(`/api/articles/${articleId}/translate`);
+      detailCache.delete(`/api/articles/${articleId}`);   // 手动翻译后旧详情作废，轮询到译文再回填
       if (r?.already) { toast('已有翻译'); return; }
       setTranslating(true);
       toast('已加入翻译队列，约 20 分钟内完成');
@@ -70,11 +80,21 @@ export default function QuickStudyModal({ item, onClose }) {
     setFav(false);
     setLoading(true);
     const path = isVideo ? `/api/videos/${item.ref_id}` : `/api/articles/${item.ref_id || item.id}`;
+    // 详情缓存：弹窗由父组件按 item 重挂载，此前每次点开都重新拉全文并闪一次「加载中…」，
+    // 同一篇文章反复打开就是反复走网络（api.js 的 GET 缓存只有 5s，救不了隔一会儿再看的情况）。
+    if (detailCache.has(path)) {
+      const hit = detailCache.get(path);
+      setDetail(hit);
+      setFav(!!(hit?.favorite ?? hit?.later));
+      setLoading(false);
+      return;
+    }
     api
       .get(path)
       .then((data) => {
         if (cancelled) return;
         const d = data?.item || data?.video || data?.article || data;
+        cacheDetail(path, d);
         setDetail(d);
         setFav(!!(d?.favorite ?? d?.later));
       })
