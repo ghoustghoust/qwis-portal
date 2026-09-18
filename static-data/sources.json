@@ -109,8 +109,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 220,
@@ -281,20 +281,6 @@
       "fail_count": 0
     },
     {
-      "id": 509,
-      "type": "youtube",
-      "name": "AI Engineer",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLKPca3kwwd-B59HNr-_lvA",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 883,
       "type": "x",
       "name": "AI Engineer(@aiDotEngineer)",
@@ -319,8 +305,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 908,
@@ -335,6 +321,34 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 512,
+      "type": "youtube",
+      "name": "AI Search",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 513,
+      "type": "youtube",
+      "name": "AI Video School",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUb7KwmlVSSCnPu5KEhym8A",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 5
     },
     {
       "id": 961,
@@ -767,8 +781,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 3
     },
     {
       "id": 973,
@@ -841,34 +855,6 @@
       "fail_count": 0
     },
     {
-      "id": 551,
-      "type": "youtube",
-      "name": "Alex Kantrowitz",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCye1YedIypHffYb8k6Gp9wg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
-      "id": 611,
-      "type": "youtube",
-      "name": "Ali Abdaal",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCoOae5nYA7VqaXzerajD0lg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 5
-    },
-    {
       "id": 1500,
       "type": "rss",
       "name": "All Top News -- ScienceDaily",
@@ -881,20 +867,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 552,
-      "type": "youtube",
-      "name": "All-In Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCESLZhusAkFfsNsApnjF_Cg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
     },
     {
       "id": 1188,
@@ -953,6 +925,20 @@
       "fail_count": 0
     },
     {
+      "id": 515,
+      "type": "youtube",
+      "name": "Andrej Karpathy",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXUPKJO5MZQN11PqgIvyuvQ",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 837,
       "type": "x",
       "name": "Andrej Karpathy(@karpathy)",
@@ -977,8 +963,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 847,
@@ -1015,20 +1001,6 @@
       "url": "https://anotherdayu.com/feed/",
       "avatar": "https://anotherdayu.com/favicon.ico",
       "group_id": 65,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 612,
-      "type": "youtube",
-      "name": "Anthony Vicino",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCpTupIxGdmt3sTpOHjegwxQ",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1233,20 +1205,6 @@
       "fail_count": 0
     },
     {
-      "id": 517,
-      "type": "youtube",
-      "name": "AssemblyAI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCtatfZMf-8EkIwASXM4ts0A",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 944,
       "type": "x",
       "name": "Augment Code(@augmentcode)",
@@ -1387,6 +1345,20 @@
       "fail_count": 0
     },
     {
+      "id": 618,
+      "type": "youtube",
+      "name": "Beyond Coding",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdMz6KKEDW_1Qqas-ya7S6w",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 7
+    },
+    {
       "id": 860,
       "type": "x",
       "name": "Binyuan Hui(@huybery)",
@@ -1429,20 +1401,6 @@
       "fail_count": 0
     },
     {
-      "id": 1505,
-      "type": "youtube",
-      "name": "Bloomberg Originals",
-      "url": "https://www.youtube.com/feeds/videos.xml?user=Bloomberg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 11,
       "type": "douyin",
       "name": "Bob同学",
@@ -1471,20 +1429,6 @@
       "fail_count": 0
     },
     {
-      "id": 554,
-      "type": "youtube",
-      "name": "Branch Education",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdp4_l1vPmpN-gDbUwhaRUQ",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 960,
       "type": "x",
       "name": "Browser Use(@browser_use)",
@@ -1499,10 +1443,10 @@
       "fail_count": 0
     },
     {
-      "id": 555,
+      "id": 1506,
       "type": "youtube",
       "name": "Business Insider",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcyq283he07B7_KUX07mmtA",
+      "url": "https://www.youtube.com/feeds/videos.xml?user=businessinsider",
       "avatar": null,
       "group_id": 16,
       "spotlight": 0,
@@ -1524,7 +1468,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 6
+      "fail_count": 7
     },
     {
       "id": 775,
@@ -1695,6 +1639,20 @@
       "fail_count": 0
     },
     {
+      "id": 518,
+      "type": "youtube",
+      "name": "Claude",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCV03SRZXJEz-hchIAogeJOg",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 978,
       "type": "x",
       "name": "Claude(@claudeai)",
@@ -1761,8 +1719,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 6
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1458,
@@ -1785,20 +1743,6 @@
       "url": "https://conge.github.io/feed.xml",
       "avatar": "https://conge.github.io/favicon.ico",
       "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 557,
-      "type": "youtube",
-      "name": "Core Memory Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2ohDbbkpfngjaeV7TBHRcg",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1835,20 +1779,6 @@
       "fail_count": 0
     },
     {
-      "id": 559,
-      "type": "youtube",
-      "name": "Curious Refuge",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UClnFtyUEaxQOCd1s5NKYGFA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1201,
       "type": "rss",
       "name": "DGideas' Blog",
@@ -1861,20 +1791,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 830,
-      "type": "x",
-      "name": "Dario Amodei(@DarioAmodei)",
-      "url": "https://api.xgo.ing/rss/user/49666ce6fe3e4cb786c6574684542ec5",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
     },
     {
       "id": 1146,
@@ -2227,34 +2143,6 @@
       "fail_count": 0
     },
     {
-      "id": 560,
-      "type": "youtube",
-      "name": "Dwarkesh Patel",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXl4i9dYBrFOabk0xGmbkRA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 561,
-      "type": "youtube",
-      "name": "EO",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UClWTCPVi-AU9TeCN6FkGARg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 475,
       "type": "rss",
       "name": "ETF进化论",
@@ -2409,20 +2297,6 @@
       "fail_count": 0
     },
     {
-      "id": 521,
-      "type": "youtube",
-      "name": "Every",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCjIMtrzxYc0lblGhmOgC_CA",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 73,
       "type": "rss",
       "name": "FT中文网",
@@ -2541,6 +2415,20 @@
       "url": "https://api.xgo.ing/rss/user/c04abb206bbf4f91b22795024d6c0614",
       "avatar": "https://pbs.twimg.com/profile_images/2034360486867951616/pa7H6cYB_normal.png",
       "group_id": 64,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 621,
+      "type": "youtube",
+      "name": "Fireship",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2871,20 +2759,6 @@
       "fail_count": 0
     },
     {
-      "id": 562,
-      "type": "youtube",
-      "name": "Google",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCK8sQmJBp8GCxrOtXWBpyEA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 927,
       "type": "x",
       "name": "Google AI Developers(@googleaidevs)",
@@ -2927,12 +2801,12 @@
       "fail_count": 0
     },
     {
-      "id": 780,
-      "type": "rss",
-      "name": "Google DeepMind Blog",
-      "url": "https://deepmind.com/blog/feed/basic/",
-      "avatar": "https://deepmind.com/favicon.ico",
-      "group_id": 63,
+      "id": 523,
+      "type": "youtube",
+      "name": "Google DeepMind",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCP7jMXSY2xbc3KCAE0MHQ-A",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2941,12 +2815,12 @@
       "fail_count": 0
     },
     {
-      "id": 861,
-      "type": "x",
-      "name": "Google DeepMind(@GoogleDeepMind)",
-      "url": "https://api.xgo.ing/rss/user/a99538443a484fcc846bdcc8f50745ec",
-      "avatar": "https://pbs.twimg.com/profile_images/1695024885070737408/-M-HSH5P_normal.jpg",
-      "group_id": 64,
+      "id": 780,
+      "type": "rss",
+      "name": "Google DeepMind Blog",
+      "url": "https://deepmind.com/blog/feed/basic/",
+      "avatar": "https://deepmind.com/favicon.ico",
+      "group_id": 63,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2989,20 +2863,6 @@
       "url": "https://api.bestblogs.dev/feed/groqBlog",
       "avatar": "https://groq.com/favicon.ico",
       "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 864,
-      "type": "x",
-      "name": "Groq Inc(@GroqInc)",
-      "url": "https://api.xgo.ing/rss/user/771b32075fe54a83bdb6966de9647b4f",
-      "avatar": null,
-      "group_id": 64,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3235,20 +3095,6 @@
       "fail_count": 0
     },
     {
-      "id": 925,
-      "type": "x",
-      "name": "Hunyuan(@TXhunyuan)",
-      "url": "https://api.xgo.ing/rss/user/6e8e7b42cb434818810f87bcf77d86fb",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1214,
       "type": "rss",
       "name": "I'm OWenT",
@@ -3456,7 +3302,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 5
+      "fail_count": 1
     },
     {
       "id": 1148,
@@ -3627,20 +3473,6 @@
       "fail_count": 0
     },
     {
-      "id": 878,
-      "type": "x",
-      "name": "Jina AI(@JinaAI_)",
-      "url": "https://api.xgo.ing/rss/user/f510f6e7eecf456ca7e2895a46752888",
-      "avatar": "https://pbs.twimg.com/profile_images/1684472754597142529/tyM92sRA_normal.jpg",
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1224,
       "type": "rss",
       "name": "Josherich’s Blog",
@@ -3660,20 +3492,6 @@
       "name": "Julien Chaumond(@julien_c)",
       "url": "https://api.xgo.ing/rss/user/44d9fa384087448a94d3c8595f8d535e",
       "avatar": "https://pbs.twimg.com/profile_images/1108502565925326850/zPsBf2BI_normal.png",
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 858,
-      "type": "x",
-      "name": "Junyang Lin(@JustinLin610)",
-      "url": "https://api.xgo.ing/rss/user/082097117b4543e9a741cd2580f936d3",
-      "avatar": null,
       "group_id": 64,
       "spotlight": 0,
       "muted": 0,
@@ -3833,8 +3651,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 1399,
@@ -3877,20 +3695,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 526,
-      "type": "youtube",
-      "name": "LangChain",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
     },
     {
       "id": 891,
@@ -3991,6 +3795,20 @@
       "fail_count": 0
     },
     {
+      "id": 604,
+      "type": "youtube",
+      "name": "Lenny&apos;s Podcast",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6t1O76G0jYXOAoYCm153dA",
+      "avatar": null,
+      "group_id": 28,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 2
+    },
+    {
       "id": 1229,
       "type": "rss",
       "name": "Lex Blog",
@@ -4011,20 +3829,6 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA",
       "avatar": null,
       "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 851,
-      "type": "x",
-      "name": "Lex Fridman(@lexfridman)",
-      "url": "https://api.xgo.ing/rss/user/adf65931519340f795e2336910b4cd15",
-      "avatar": null,
-      "group_id": 64,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4087,6 +3891,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 1508,
+      "type": "youtube",
+      "name": "Linus Tech Tips",
+      "url": "https://www.youtube.com/feeds/videos.xml?user=LinusTechTips",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 7
     },
     {
       "id": 1231,
@@ -4187,34 +4005,6 @@
       "fail_count": 0
     },
     {
-      "id": 841,
-      "type": "x",
-      "name": "Lovable(@lovable_dev)",
-      "url": "https://api.xgo.ing/rss/user/639cd13d44284e10ac89fbd1c5399767",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 567,
-      "type": "youtube",
-      "name": "Luma",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC45T0I4p7A3dI0XvhivafZQ",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
-    },
-    {
       "id": 237,
       "type": "rss",
       "name": "L先生说",
@@ -4313,6 +4103,20 @@
       "fail_count": 0
     },
     {
+      "id": 529,
+      "type": "youtube",
+      "name": "Machine Learning Street Talk",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMLtBahI5DMrt0NPvDSoIRQ",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 7
+    },
+    {
       "id": 1105,
       "type": "rss",
       "name": "Macin",
@@ -4369,25 +4173,25 @@
       "fail_count": 0
     },
     {
+      "id": 1510,
+      "type": "youtube",
+      "name": "Marie Forleo",
+      "url": "https://www.youtube.com/feeds/videos.xml?user=marieforleo",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 8
+    },
+    {
       "id": 1401,
       "type": "rss",
       "name": "Markon Review",
       "url": "https://markonreview.com/rss/",
       "avatar": "https://markonreview.com/favicon.png",
-      "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 781,
-      "type": "rss",
-      "name": "Martin Fowler",
-      "url": "https://martinfowler.com/feed.atom",
-      "avatar": "https://martinfowler.com/favicon.ico",
       "group_id": 63,
       "spotlight": 0,
       "muted": 0,
@@ -4403,6 +4207,34 @@
       "url": "https://api.xgo.ing/rss/user/55d2d3f3eaaf4357b3230e0b01a464d7",
       "avatar": "https://pbs.twimg.com/profile_images/79787739/mf-tg-sq_normal.jpg",
       "group_id": 64,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 530,
+      "type": "youtube",
+      "name": "Matt Wolfe",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UChpleBmo18P08aKCIgti38g",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
+      "id": 532,
+      "type": "youtube",
+      "name": "Matthew Berman",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCawZsQWqfGSbCI5yjkdVkTA",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4431,6 +4263,20 @@
       "url": "https://mengke.me/feed.xml",
       "avatar": null,
       "group_id": 63,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 22,
+      "type": "rss",
+      "name": "Meta AI",
+      "url": "https://openrss.org/feed/ai.meta.com/blog/",
+      "avatar": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.2365-6/384127954_1010009116964035_2906046058102555347_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=e280be&_nc_ohc=sJopLRMdwgAQ7kNvwEQ_-5d&_nc_oc=AdqoD9BAc2vmMjhEMrU2iT1-5EUWXobwN23JoiIrpmtZ9GvrgdvyZK9SDQCHxJhbQx0&_nc_zt=14&_nc_ht=scontent-xxc1-1.xx&_nc_gid=BJ3SKn5kZAQ4Gn_4zJNwWQ&_nc_ss=7f289&oh=00_AQEuSYkepN6G7QlCMhFXLUxfwAb0LYsua5ke7TM4U__UXQ&oe=6A993945",
+      "group_id": 1,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4579,25 +4425,25 @@
       "fail_count": 0
     },
     {
+      "id": 624,
+      "type": "youtube",
+      "name": "Modern Software Engineering",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCCfqyGl3nq_V0bo64CjZh8g",
+      "avatar": null,
+      "group_id": 27,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 9
+    },
+    {
       "id": 1241,
       "type": "rss",
       "name": "Mokeyjay's Blog - 超能小紫",
       "url": "https://www.mokeyjay.com/feed",
       "avatar": "https://www.mokeyjay.com/favicon.ico",
-      "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 795,
-      "type": "rss",
-      "name": "MongoDB Blog",
-      "url": "https://www.mongodb.com/blog/rss",
-      "avatar": "https://www.mongodb.com/favicon.ico",
       "group_id": 63,
       "spotlight": 0,
       "muted": 0,
@@ -4659,20 +4505,6 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 6
-    },
-    {
-      "id": 856,
-      "type": "x",
-      "name": "Mustafa Suleyman(@mustafasuleyman)",
-      "url": "https://api.xgo.ing/rss/user/394acfaff8c44e09936f5bc0b8504f2c",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
       "status": "ok",
       "fail_count": 0
     },
@@ -4689,20 +4521,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 568,
-      "type": "youtube",
-      "name": "My First Million",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
     },
     {
       "id": 1080,
@@ -4831,20 +4649,6 @@
       "fail_count": 0
     },
     {
-      "id": 591,
-      "type": "youtube",
-      "name": "National Geographic",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1081,
       "type": "rss",
       "name": "Nature",
@@ -4857,34 +4661,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 1511,
-      "type": "youtube",
-      "name": "Nature on PBS",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcBp_9YPyma4c3HTadmRJ3Q",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 569,
-      "type": "youtube",
-      "name": "Naval",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCh_dVD10YuSghle8g6yjePg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
     },
     {
       "id": 940,
@@ -4915,6 +4691,20 @@
       "fail_count": 0
     },
     {
+      "id": 533,
+      "type": "youtube",
+      "name": "NetworkChuck",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9x0AN7BWHpCDHSm9NiJFJQ",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 966,
       "type": "x",
       "name": "Nick St. Pierre(@nickfloats)",
@@ -4935,20 +4725,6 @@
       "url": "https://nicksxs.me/atom.xml",
       "avatar": null,
       "group_id": 65,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 570,
-      "type": "youtube",
-      "name": "Nikhil Kamath",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCnC8SAZzQiBGYVSKZ_S3y4Q",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4999,20 +4775,6 @@
       "fail_count": 0
     },
     {
-      "id": 933,
-      "type": "x",
-      "name": "Notion(@NotionHQ)",
-      "url": "https://api.xgo.ing/rss/user/f97a26863aec4425b021720d4f8e4ede",
-      "avatar": "https://pbs.twimg.com/profile_images/1903224093476077568/OCclsw4c_normal.jpg",
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1009,
       "type": "rss",
       "name": "OneV's Den",
@@ -5047,6 +4809,20 @@
       "url": "https://openrss.org/feed/openai.com/news/rss.xml",
       "avatar": "https://openai.com/apple-icon.png",
       "group_id": 1,
+      "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 536,
+      "type": "youtube",
+      "name": "OpenAI",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXZCJLdBC09xxGZ6gcdrc6A",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
@@ -5237,20 +5013,6 @@
       "fail_count": 0
     },
     {
-      "id": 955,
-      "type": "x",
-      "name": "Paul Graham(@paulg)",
-      "url": "https://api.xgo.ing/rss/user/900549ddadf04e839d3f7a17ebaba3fc",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1254,
       "type": "rss",
       "name": "Peng's Blog",
@@ -5345,8 +5107,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1470,
@@ -5417,20 +5179,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 607,
-      "type": "youtube",
-      "name": "Product School",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6hlQ0x6kPbAGjYkoz53cvA",
-      "avatar": null,
-      "group_id": 28,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
     },
     {
       "id": 1472,
@@ -5965,6 +5713,20 @@
       "fail_count": 0
     },
     {
+      "id": 538,
+      "type": "youtube",
+      "name": "Riley Brown",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMcoud_ZW7cfxeIugBflSBw",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1168,
       "type": "rss",
       "name": "Rokcso's Blog",
@@ -6098,20 +5860,6 @@
       "avatar": "https://pbs.twimg.com/profile_images/1885323625542127616/-8EVOv3W_normal.jpg",
       "group_id": 64,
       "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 828,
-      "type": "x",
-      "name": "Sam Altman(@sama)",
-      "url": "https://api.xgo.ing/rss/user/e30d4cd223f44bed9d404807105c8927",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -6259,20 +6007,6 @@
       "fail_count": 0
     },
     {
-      "id": 1267,
-      "type": "rss",
-      "name": "Shanwer's Blog",
-      "url": "https://blog.shanwer.top/feed/",
-      "avatar": null,
-      "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1140,
       "type": "rss",
       "name": "ShineKid",
@@ -6293,34 +6027,6 @@
       "url": "https://hnrss.org/show",
       "avatar": "https://hnrss.org/favicon.ico",
       "group_id": 68,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 572,
-      "type": "youtube",
-      "name": "Silicon Valley Girl",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCiq1FIgtEK7LRAOB1JXTPig",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
-    },
-    {
-      "id": 959,
-      "type": "x",
-      "name": "Simon Willison(@simonw)",
-      "url": "https://api.xgo.ing/rss/user/30ad80be93c84e44acc37d5ddf31db57",
-      "avatar": null,
-      "group_id": 64,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6395,8 +6101,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 3
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 788,
@@ -6434,6 +6140,20 @@
       "avatar": "https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png",
       "group_id": 65,
       "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1513,
+      "type": "youtube",
+      "name": "SpaceX",
+      "url": "https://www.youtube.com/feeds/videos.xml?user=spacexchannel",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -6483,6 +6203,20 @@
       "fail_count": 0
     },
     {
+      "id": 627,
+      "type": "youtube",
+      "name": "Spring I/O",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLMPXsvSrhNPN3i9h-u8PYg",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 802,
       "type": "rss",
       "name": "Stack Overflow Blog",
@@ -6523,20 +6257,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 573,
-      "type": "youtube",
-      "name": "StatQuest with Josh Starmer",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCtYLUTtgS3k1Fg4y5tAhLbw",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
     },
     {
       "id": 1270,
@@ -6763,20 +6483,6 @@
       "fail_count": 0
     },
     {
-      "id": 597,
-      "type": "youtube",
-      "name": "TED",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1530,
       "type": "rss",
       "name": "TED Talks Daily",
@@ -6917,18 +6623,18 @@
       "fail_count": 0
     },
     {
-      "id": 608,
+      "id": 985,
       "type": "youtube",
-      "name": "The Futur",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-b3c7kxa5vU-bnmaROgvog",
+      "name": "The Diary Of A CEO Clips",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCnjgxChqYYnyoqO4k_Q1d6Q",
       "avatar": null,
-      "group_id": 28,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 8
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 792,
@@ -7001,20 +6707,6 @@
       "fail_count": 0
     },
     {
-      "id": 576,
-      "type": "youtube",
-      "name": "The Knowledge Project Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1486,
       "type": "rss",
       "name": "The Loop",
@@ -7035,6 +6727,20 @@
       "url": "https://thenewstack.io/feed/",
       "avatar": "https://cdn.thenewstack.io/media/2026/03/b2fc1b22-cropped-89b6d319-download-32x32.png",
       "group_id": 65,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 577,
+      "type": "youtube",
+      "name": "The PrimeTime",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUyeluBRhGPCW4rPe_UvBZQ",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7085,6 +6791,20 @@
       "fail_count": 0
     },
     {
+      "id": 1514,
+      "type": "youtube",
+      "name": "The Verge — Video",
+      "url": "https://www.youtube.com/feeds/videos.xml?user=TheVerge",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 6
+    },
+    {
       "id": 1524,
       "type": "rss",
       "name": "The Vergecast",
@@ -7113,10 +6833,10 @@
       "fail_count": 0
     },
     {
-      "id": 578,
+      "id": 629,
       "type": "youtube",
-      "name": "Theoretically Media",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9Ryt3XOGYBoAJVsBHNGDzA",
+      "name": "Theo - t3․gg",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA",
       "avatar": null,
       "group_id": 16,
       "spotlight": 0,
@@ -7133,20 +6853,6 @@
       "url": "https://this-week-in-rust.org/atom.xml",
       "avatar": null,
       "group_id": 65,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 579,
-      "type": "youtube",
-      "name": "This Week in Startups",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkkhmBWfS7pILYIk0izkc3A",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7189,6 +6895,20 @@
       "url": "https://tianheg.co/index.xml",
       "avatar": "https://tianheg.co/favicon.ico",
       "group_id": 65,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 543,
+      "type": "youtube",
+      "name": "Tina Huang",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2UXDak6o7rBm23k3Vv5dww",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7259,6 +6979,20 @@
       "url": "https://api.xgo.ing/rss/user/665fc88440fd4436acbc2e630d824926",
       "avatar": "https://pbs.twimg.com/profile_images/1960753219115868169/EOxKSK4w_normal.jpg",
       "group_id": 64,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 544,
+      "type": "youtube",
+      "name": "Two Minute Papers",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7491,20 +7225,6 @@
       "fail_count": 0
     },
     {
-      "id": 594,
-      "type": "youtube",
-      "name": "White Cube YouTube",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC488ANgGUANDqqhlr_eF9JQ",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 911,
       "type": "x",
       "name": "Windsurf(@windsurf_ai)",
@@ -7631,20 +7351,6 @@
       "fail_count": 0
     },
     {
-      "id": 581,
-      "type": "youtube",
-      "name": "Y Combinator",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcefcZRL2oaA_uBNeo5UOWg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 953,
       "type": "x",
       "name": "Y Combinator(@ycombinator)",
@@ -7692,20 +7398,6 @@
       "name": "Yangyi(@Yangyixxxx)",
       "url": "https://api.xgo.ing/rss/user/66c40de71a9842fda4853b7d9d1d20da",
       "avatar": "https://pbs.twimg.com/profile_images/2006199964930879488/FCF1YJ0u_normal.jpg",
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 839,
-      "type": "x",
-      "name": "Yann LeCun(@ylecun)",
-      "url": "https://api.xgo.ing/rss/user/f5f4f928dede472ea55053672ad27ab6",
-      "avatar": null,
       "group_id": 64,
       "spotlight": 0,
       "muted": 0,
@@ -7897,40 +7589,12 @@
       "fail_count": 0
     },
     {
-      "id": 845,
-      "type": "x",
-      "name": "clem &#129303;(@ClementDelangue)",
-      "url": "https://api.xgo.ing/rss/user/5dbd038a8f5140938d0877511571797b",
-      "avatar": null,
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 881,
       "type": "x",
       "name": "cohere(@cohere)",
       "url": "https://api.xgo.ing/rss/user/462aa134ed914f98b3491680ad9b36ed",
       "avatar": "https://pbs.twimg.com/profile_images/1650250832909152260/760DZ0cv_normal.png",
       "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 583,
-      "type": "youtube",
-      "name": "companyman",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCb4xHi3i7upzKMaLrauVFtg",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -8113,6 +7777,20 @@
       "url": "https://blog.forecho.com/atom.xml",
       "avatar": null,
       "group_id": 63,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 632,
+      "type": "youtube",
+      "name": "freeCodeCamp.org",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8butISFwT-Wl7EV0hUK0BQ",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -8345,6 +8023,20 @@
       "fail_count": 0
     },
     {
+      "id": 548,
+      "type": "youtube",
+      "name": "leerob",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZMli3czZnd1uoc1ShTouQw",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 950,
       "type": "x",
       "name": "lmarena.ai(@lmarena_ai)",
@@ -8387,20 +8079,6 @@
       "fail_count": 0
     },
     {
-      "id": 969,
-      "type": "x",
-      "name": "meng shao(@shao__meng)",
-      "url": "https://api.xgo.ing/rss/user/48aae530e0bf413aa7d44380f418e2e3",
-      "avatar": "https://pbs.twimg.com/profile_images/2009826888072736772/faZAxCvC_normal.jpg",
-      "group_id": 64,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1239,
       "type": "rss",
       "name": "mephisto.cc",
@@ -8415,18 +8093,18 @@
       "fail_count": 0
     },
     {
-      "id": 584,
+      "id": 615,
       "type": "youtube",
-      "name": "mrblock 區塊先生",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCN2hSM8fBcvZBa8OOKc24eg",
+      "name": "minutephysics",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUHW94eEFW7hkUMVaZz4eDg",
       "avatar": null,
       "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1008,
@@ -8565,8 +8243,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 4
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1405,
@@ -8695,6 +8373,20 @@
       "fail_count": 0
     },
     {
+      "id": 609,
+      "type": "youtube",
+      "name": "yobi321",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCB_DbqNN9w30tnyWJSrIwyA",
+      "avatar": null,
+      "group_id": 28,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 6
+    },
+    {
       "id": 1288,
       "type": "rss",
       "name": "ypingcn",
@@ -8765,20 +8457,6 @@
       "fail_count": 0
     },
     {
-      "id": 595,
-      "type": "youtube",
-      "name": "一席",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 692,
       "type": "rss",
       "name": "一席",
@@ -8819,20 +8497,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 596,
-      "type": "youtube",
-      "name": "一条",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCulFhrW_YCwkq_BP16C82mA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 9
     },
     {
       "id": 333,
@@ -11501,20 +11165,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/57bdb3ca8c26dd738f78e44985b1030c4d38ddbf.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM5bFbicjbVmDTHDJaIoopGGLB4rraC6NTI5sZfx9g0agZw/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 942,
-      "type": "x",
-      "name": "小互(@imxiaohu)",
-      "url": "https://api.xgo.ing/rss/user/74e542992cf7441390c708f5601071d4",
-      "avatar": "https://pbs.twimg.com/profile_images/1765404718959095808/BX7VN1hS_normal.jpg",
-      "group_id": 64,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -14729,20 +14379,6 @@
       "fail_count": 0
     },
     {
-      "id": 1355,
-      "type": "rss",
-      "name": "白宦成",
-      "url": "https://www.ixiqin.com/feed/",
-      "avatar": "https://files.ixiqin.com/2022/01/06054844/97f338097179ed8dfa16056386fb4472-32x32.jpeg",
-      "group_id": 63,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1356,
       "type": "rss",
       "name": "白菜",
@@ -17683,5 +17319,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-17T06:22:14.208Z"
+  "generated_at": "2026-09-18T06:13:42.798Z"
 }
