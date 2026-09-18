@@ -13,9 +13,10 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 after(() => helpers.cleanup());
 
-// ---------- B15/B18：portal 冻结期安全项 ----------
+// ---------- B15/B18：云端安全项（2026-09-19 重新锚定：portal 已独立成仓，锚点一律指向根树真实文件）----------
 test('B18: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限），双端同语义', () => {
-  for (const f of ['server/util/safeimg.js', 'portal/api/_safeimg.js']) {
+  // 三端一致约束（EVAL_GUIDE §4 W1）：本地与云端两份实现必须同等防护
+  for (const f of ['server/util/safeimg.js', 'api/_safeimg.js']) {
     const src = read(f);
     assert.match(src, /dns\.lookup/, `${f} 必须做 DNS 解析后校验`);
     assert.match(src, /redirect: 'manual'/, `${f} 必须手动跟随重定向并逐跳校验`);
@@ -23,29 +24,35 @@ test('B18: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限
     assert.match(src, /total > MAX_BYTES/, `${f} 必须流式累计字节上限`);
   }
   assert.match(read('server/routes/img.js'), /fetchImageSafe/);
-  assert.match(read('portal/api/[...slug].js'), /_safeimg/);
+  assert.match(read('api/[...slug].js'), /_safeimg/, '云端 /api/img 必须走 safeimg（H3/P2-5 收口）');
 });
 
-test('B18(动态): isPrivateIp 覆盖全部绕过变体', () => {
-  const { isPrivateIp } = require('../server/util/safeimg');
-  for (const bad of ['127.0.0.1', '10.0.0.5', '192.168.1.1', '172.16.0.1', '172.31.255.255',
-    '169.254.1.1', '0.0.0.0', '::1', '::ffff:127.0.0.1', '::ffff:7f00:1', '[::1]',
-    'fe80::1', 'fc00::1', 'fd12::1', '224.0.0.1', '255.255.255.255']) {
-    assert.ok(isPrivateIp(bad), `${bad} 应判为内网/保留地址`);
-  }
-  for (const good of ['8.8.8.8', '1.1.1.1', '172.32.0.1', 'example.com']) {
-    assert.ok(!isPrivateIp(good), `${good} 是公网/域名,不应拦截`);
+test('B18(动态): isPrivateIp 覆盖全部绕过变体（本地与云端两份实现同结论）', () => {
+  const impls = [require('../server/util/safeimg'), require('../api/_safeimg')];
+  for (const { isPrivateIp } of impls) {
+    for (const bad of ['127.0.0.1', '10.0.0.5', '192.168.1.1', '172.16.0.1', '172.31.255.255',
+      '169.254.1.1', '0.0.0.0', '::1', '::ffff:127.0.0.1', '::ffff:7f00:1', '[::1]',
+      'fe80::1', 'fc00::1', 'fd12::1', '224.0.0.1', '255.255.255.255']) {
+      assert.ok(isPrivateIp(bad), `${bad} 应判为内网/保留地址`);
+    }
+    for (const good of ['8.8.8.8', '1.1.1.1', '172.32.0.1', 'example.com']) {
+      assert.ok(!isPrivateIp(good), `${good} 是公网/域名,不应拦截`);
+    }
   }
 });
 
-test('B15: 云端 read-all 与 daily/regenerate 需管理员口令', () => {
-  const src = read('portal/api/_handlers.js');
-  const readAllIdx = src.indexOf("b === 'read-all'");
-  const regenIdx = src.indexOf("b === 'regenerate'");
-  assert.ok(readAllIdx > -1 && regenIdx > -1);
-  // 两个入口附近必须有 isAuthed 鉴权
-  assert.match(src.slice(readAllIdx - 300, readAllIdx + 300), /isAuthed/, 'read-all 必须鉴权');
-  assert.match(src.slice(regenIdx - 300, regenIdx + 300), /isAuthed/, 'daily/regenerate 必须鉴权');
+test('B15: 云端危险写接口收鉴权——入口全局门先于路由分发', () => {
+  const src = read('api/[...slug].js');
+  const gateIdx = src.indexOf('const authErr = requireAuth(req)');
+  const dispatchIdx = src.indexOf('const result = await dispatch(req)');
+  assert.ok(gateIdx > -1, '云端入口必须调用 requireAuth');
+  assert.ok(dispatchIdx > -1, '云端入口必须经 dispatch 分发');
+  assert.ok(gateIdx < dispatchIdx, '鉴权门必须先于路由分发（否则 POST 写接口绕过鉴权）');
+  // 两个危险写接口必须是 POST（受全局写鉴权覆盖），且 requireAuth 拒绝未鉴权写
+  assert.match(src, /'\/api\/articles\/read-all' && method === 'POST'/);
+  assert.match(src, /'\/api\/daily\/regenerate' && method === 'POST'/);
+  const gate = src.slice(src.indexOf('function requireAuth'), src.indexOf('function requireAuth') + 1200);
+  assert.match(gate, /method === 'POST'|WRITE_METHODS|POST/, 'requireAuth 必须按写方法判定');
 });
 
 // ---------- C21：WempTab（已随 we-mp-rss 退役，2026-09-04） ----------

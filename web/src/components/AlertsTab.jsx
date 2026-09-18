@@ -588,7 +588,7 @@ export default function AlertsTab() {
                         title={rr.ok ? rr.channel : `${rr.channel}：${rr.error || '发送失败'}`}
                       >
                         {rr.ok ? '\u2713' : '\u2717'} {rr.channel}
-                        {!rr.ok && rr.error && <span className="ml-1 opacity-80">\uff08{rr.error}\uff09</span>}
+                        {!rr.ok && rr.error && <span className="ml-1 opacity-80">{'（'}{rr.error}{'）'}</span>}
                       </span>
                     ))}
                   </div>

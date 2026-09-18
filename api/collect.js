@@ -360,7 +360,7 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType) {
     args: [JSON.stringify(extra), sourceId],
   });
   // YouTube 对数据中心 IP 反爬返回假 404/500，阈值放宽到 10 防误杀（与 tools/collect-turso.js 对齐）
-  const threshold = sourceType === 'youtube' ? 10 : 3;
+  const threshold = require('../lib/source-breaker').breakerThreshold(sourceType);
   // 连失 N 次自动暂停
   const row = await db.execute({ sql: 'SELECT fail_count, enabled FROM sources WHERE id=?', args: [sourceId] });
   const r = Array.from(row.rows)[0];

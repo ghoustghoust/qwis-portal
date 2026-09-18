@@ -29,7 +29,7 @@
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
 | **37-1** | **P0 止血**：从本地恢复真渠道（`tools/sync-alerts-config.js --force`）；把 `regression-cloud-alerts.test.js` 改为隔离 settings 快照/还原并断言恢复；给 `PUT /api/settings/alerts` 加"测试指纹禁止写入"守卫 | 事故修复 | S，需授权写生产 |
-| 37-2 | 事件模型统一：三端事件表（本地多 `source_slow`）对齐为一份 `lib/alert-events.js`；`eventMeta` 落库并驱动 UI（前端不再硬编码） | 三端收敛 | M |
+| 37-2 | 事件模型统一：三端事件表（本地多 `source_slow`）对齐为一份 `lib/alert-events.js`（拟建，本 spec 交付后存在）；`eventMeta` 落库并驱动 UI（前端不再硬编码） | 三端收敛 | M | <!-- doc-lint:ignore -->
 | 37-3 | 结构化 payload：`{event, sourceId?, runId?, mode, errKind, errParam, codeRef, suggestion, selfHealState}`；`audit_log` 换成独立 `alert_events` 表（50 条上限的 `recentLog` 只作缓存） | 数据模型 | M |
 | 37-4 | 覆盖面扩展：翻译缺失/摘要缺失/深析失败/早报周刊我的早报降级/AI 配额与限速（读 `ai.stats`）/渠道投递失败，各出一个检测点 + 事件 | 能力补齐 | L |
 | 37-5 | CI 可观测：runner 内用默认 `GITHUB_TOKEN` 抓本仓 `actions/runs`+jobs 摘要，发 `ci_failed`（含 job 名、run 链接、失败步骤、日志尾 200 行）；Vercel 侧只读展示 | 新对接 | M |
@@ -44,7 +44,7 @@
 ## 验收标准
 
 - AC1（37-1）：线上 `settings.alerts.channels` 恢复为真渠道且 `url` 非空；跑一次 `POST /api/alerts/test` 收到飞书消息；`npm test` 全跑完后再次读取该键**仍为真渠道**（测试隔离生效）。
-- AC2（37-2）：后台 4 个事件勾选框对应的事件名与 `lib/alert-events.js` 一致，勾选后重启读层仍生效（落库回读）。
+- AC2（37-2）：后台 4 个事件勾选框对应的事件名与 `lib/alert-events.js`（拟建）一致，勾选后重启读层仍生效（落库回读）。 <!-- doc-lint:ignore -->
 - AC3（37-3）：任选一条 `source_paused` 事件，能在报警详情里看到源 id、URL、错误类别、上次成功距今、建议动作、系统是否已自动重试过（≥1 条真实样本，不是构造数据）。
 - AC4（37-4）：人为制造一次"翻译批次全失败"与一次"周刊降级"，两者都在 15 分钟内产生事件并可查。
 - AC5（37-5）：故意让 runner 一个 job 失败，`ci_failed` 事件带 run/job 链接与失败步骤名。

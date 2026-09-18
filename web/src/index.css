@@ -17,6 +17,7 @@ html[data-theme='warm-paper'] {
   --purple: #7c5cd6;        /* 稍后阅读/AI 激活色 */
   --green: #3f7d54;
   --red: #b4453a;
+  --warn: #a8742a;          /* 中间档（B22：rateColor 的 warn 档此前无对应变量） */
   --blue-dot: #3b82f6;
   --shadow: 0 1px 3px rgba(70, 55, 30, 0.08);
 }
@@ -34,6 +35,7 @@ html[data-theme='blue-white'] {
   --purple: #7c5cd6;
   --green: #1f8a52;
   --red: #c2413a;
+  --warn: #b5730f;
   --blue-dot: #3b82f6;
   --shadow: 0 1px 3px rgba(30, 60, 120, 0.08);
 }
@@ -51,6 +53,7 @@ html[data-theme='dark'] {
   --purple: #9d86e8;
   --green: #5aa77a;
   --red: #d06a5e;
+  --warn: #d9a441;
   --blue-dot: #5b9cf6;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
@@ -77,6 +80,10 @@ body {
 .t-muted { color: var(--muted); }
 .t-border { border-color: var(--border); }
 .t-accent { color: var(--accent); }
+/* B22：MonitorTab.rateColor / 源健康度分档一直引用这三个类，但类从未定义 → 颜色全不生效 */
+.t-success { color: var(--green); }
+.t-warn { color: var(--warn); }
+.t-danger { color: var(--red); }
 .t-accent-bg { background: var(--accent); }
 .t-accent-soft { background: var(--accent-soft); }
 .t-purple { color: var(--purple); }
@@ -154,6 +161,21 @@ body {
   transition: background 0.15s ease, color 0.15s ease;
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--text); }
+
+/* spec 32 markdown 内联渲染（重点标记/行内代码，三主题变量） */
+.md-mark {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.md-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  background: var(--surface-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
 
 /* IconRail 带文字标签的导航项（T5-8/spec30：纯图标难辨功能 → 图标+常驻文字） */
 .rail-btn {

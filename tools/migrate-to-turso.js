@@ -247,7 +247,10 @@ async function batchInsert(cloud, table, rows) {
     const steps = chunk.map(row => {
       const values = columns.map(col => {
         const v = row[col];
-        if (v === undefined) return null;
+        // 2026-09-19 修（坑 #36）：typeof null === 'object'，旧写法把 NULL 写成字符串 'null'，
+        // 毒害云端一切「IS NOT NULL」口径（未读角标 / 保留清理豁免 / 阅读足迹），
+        // 且 'null' > ISO 时间串为真，使「最近 N 天」统计出现假象。
+        if (v === undefined || v === null) return null;
         if (typeof v === 'object') return JSON.stringify(v);
         return v;
       });

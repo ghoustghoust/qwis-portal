@@ -47,7 +47,8 @@ export default function MonitorTab() {
   }, [load]);
 
   const srcItems = sourceStats?.items || [];
-  const qs = queueStats || {};
+  // B47：后端返回 {overall:{...}, byType:{...}}，前端曾读顶层 qs.pending → 恒 undefined→0（线上真实 pending=177 显示为 0）
+  const qs = queueStats?.overall || queueStats || {};
 
   return (
     <div className="space-y-6">

@@ -411,8 +411,9 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType) {
   const rows = await qAll('SELECT fail_count, enabled FROM sources WHERE id=?', [sourceId]);
   const r = rows[0];
   // YouTube 对数据中心 IP 反爬会返回假 404/500（间歇性、按 IP 掷骰），
-  // 熔断阈值放宽到 10，避免把活源误杀；真死频道 10 连跪后也照停。
-  const threshold = sourceType === 'youtube' ? 10 : 3;
+  // 阈值放宽到 10，避免把活源误杀；真死频道 10 连跪后也照停。
+  // 阈值唯一实现在 lib/source-breaker.js（三端一致，坑 #35 / ISSUES H14）
+  const threshold = require('../lib/source-breaker').breakerThreshold(sourceType);
   if (r && r.fail_count >= threshold && r.enabled !== 0) {
     // Q7 自动恢复依赖：熔断时刻落 frozenAt（历史冻结源由 cleanup 用 lastErrorAt 兜底）
     if (!extra.frozenAt) extra.frozenAt = nowIso();

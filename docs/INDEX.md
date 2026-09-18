@@ -95,6 +95,11 @@
 
 `01-reader-page` `02-daily-page` `03-hot-page` `03b-hot-realtime` `04-admin-page` `05-queue-panel` `05-videos-page` `06-reader-full` `07-admin-brief-center` `08-admin-system` `09-mybrief-page` `10-weekly-page` `11-hot-events` `12-reading-page`（.png）
 
+## 评测产物（docs/eval/）
+
+`whitebox-baseline.json` —— 白盒检查的**棘轮基线**：登记已挂账的历史缺口（云端缺路由、无测试锁的旧坑），
+`npm run eval:whitebox` 只对新增项判红；清除一条即代表该缺陷真修好，必须同步 `ISSUES.md`。
+
 ## 归档层
 
 - **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md`；`feature/` `optimization/` `integration/` `credentials/` 待用

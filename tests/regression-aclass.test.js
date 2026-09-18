@@ -158,20 +158,36 @@ test('A8(附带): clearCooldowns 清的是真正生效的 alerts.cooldowns 键',
   assert.deepEqual(getSetting('alerts.cooldowns'), {}, '冷却记录必须真正清空');
 });
 
-// ---------- A9：portal src-admin ----------
-test('A9: portal src-admin 无重复声明，WereadTab 正名，无误放组件', () => {
-  const src = read('portal/src-admin/App.jsx');
-  assert.equal((src.match(/function SourcesTab\(/g) || []).length, 1, 'SourcesTab 只能声明一次');
-  assert.equal((src.match(/function WereadTab\(/g) || []).length, 1, 'WereadTab 必须有定义');
-  assert.ok(!src.includes('HotSettingsTab'), '云端无热点榜后端，不得引入 HotSettingsTab');
-  assert.ok(!fs.existsSync(path.join(ROOT, 'portal/src-admin/components/HotSettingsTab.jsx')));
+// ---------- A9：管理后台组件引用完整性（2026-09-19 重新锚定到根树；原锚点 portal/src-admin 已随 portal 独立成仓而失效）
+// 这条守的是 B13 那类事故：组件被引用但从未入库 → rollup 解析失败 → 线上一直跑旧 bundle
+test('A9: AdminPage 的每个懒加载组件文件都存在，且无重名声明', () => {
+  const src = read('web/src/pages/AdminPage.jsx');
+  const imports = [...src.matchAll(/lazy\(\(\) => import\('([^']+)'\)\)/g)].map((m) => m[1]);
+  assert.ok(imports.length >= 5, `AdminPage 应有多个懒加载 Tab（实测 ${imports.length}）`);
+  const seen = new Set();
+  for (const rel of imports) {
+    const abs = path.resolve(path.join(ROOT, 'web', 'src', 'pages'), rel);
+    assert.ok(fs.existsSync(abs), `懒加载引用不存在，构建必失败：web/src/pages/${rel}`);
+  }
+  const consts = [...src.matchAll(/const (\w+) = lazy\(/g)].map((m) => m[1]);
+  for (const c of consts) {
+    assert.ok(!seen.has(c), `组件名重复声明：${c}`);
+    seen.add(c);
+  }
 });
 
-// ---------- A10：portal backfill ----------
-test('A10: backfill 已改为 _backfill.js（不再是独立 serverless 函数）', () => {
-  assert.ok(!fs.existsSync(path.join(ROOT, 'portal/api/backfill.js')), 'api/ 下非下划线文件会被 Vercel 当函数');
-  assert.ok(fs.existsSync(path.join(ROOT, 'portal/api/_backfill.js')));
-  assert.match(read('portal/api/_handlers.js'), /require\('\.\/_backfill'\)\.backfill\(\)/);
+// ---------- A10：云端函数面收敛（原锚点 portal/api/backfill.js 已随 portal 独立成仓而失效）
+// Vercel 会把 api/ 下每个非下划线 .js 当成独立 serverless 函数（Hobby 限 12 个），
+// 因此函数面必须是显式白名单；内部共享模块一律下划线前缀。
+test('A10: api/ 下的 serverless 函数面必须等于白名单，其余文件必须下划线前缀', () => {
+  const ROUTED = new Set(['[...slug].js', 'collect.js', 'daily-generate.js']);
+  const files = fs.readdirSync(path.join(ROOT, 'api')).filter((f) => f.endsWith('.js'));
+  assert.ok(files.length > 0, 'api/ 不得为空');
+  for (const f of files) {
+    if (ROUTED.has(f)) continue;
+    assert.ok(f.startsWith('_'), `api/${f} 会被 Vercel 当成独立函数；共享模块必须下划线前缀或进白名单`);
+  }
+  assert.ok(!files.includes('backfill.js'), '回填不得做成独立函数（无鉴权 + 10s 必超时）');
 });
 
 // ---------- A11：解冻脚本保留 extra ----------

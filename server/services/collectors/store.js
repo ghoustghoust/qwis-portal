@@ -31,7 +31,9 @@ function markSourceError(source, errMsg, opts = {}) {
   const row = db.prepare('SELECT fail_count, enabled FROM sources WHERE id=?').get(source.id);
   const failCount = row ? row.fail_count : 1;
   let autoPaused = false;
-  if (failCount >= 3 && row.enabled !== 0) {
+  // 阈值走三端唯一实现（lib/source-breaker.js）：此前本地固定 3、云端 YouTube 10，
+  // 同一个源在两端行为不同（docs/ISSUES.md H14、坑 #35）
+  if (require('../../../lib/source-breaker').shouldPauseOnFail(source.type, failCount) && row.enabled !== 0) {
     db.prepare('UPDATE sources SET enabled=0 WHERE id=?').run(source.id);
     autoPaused = true;
   }

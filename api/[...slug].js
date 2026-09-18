@@ -1031,8 +1031,8 @@ async function handleReading(req) {
   if (tab === 'all') aTabOr = 'a.read_at IS NOT NULL OR a.later = 1';
   else if (tab === 'favorited') aConds.push('a.later = 1');
   else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
-  if (type === 'article') aConds.push("s.type IN ('wechat','rss','x')");
-  else if (type === 'podcast') aConds.push("s.type = 'douyin'");
+  if (type === 'article') aConds.push("s.type IN ('wemp','wechat','rss','x')");
+  else if (type === 'podcast') aConds.push("(a.cover LIKE '%.m4a%' OR a.cover LIKE '%.mp3%' OR a.cover LIKE '%.aac%' OR a.cover LIKE '%.ogg%' OR a.cover LIKE '%.opus%' OR a.cover LIKE '%media.xyzcdn.net%')");
   if (searchQ) {
     aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
     aArgs.push(`%${searchQ}%`, `%${searchQ}%`);
@@ -1133,6 +1133,7 @@ async function handleReading(req) {
     if (aIds.length) {
       const artRows = await qAll(`
         SELECT a.id, a.title, a.url, a.cover, a.summary, a.published_at, a.created_at,
+               COALESCE(a.published_at, a.created_at) AS date,
                a.read_at, a.later, a.tags,
                s.name AS source_name, s.type AS source_type, s.avatar AS source_avatar
         FROM articles a LEFT JOIN sources s ON s.id = a.source_id
@@ -1170,7 +1171,7 @@ async function handleReading(req) {
         a.read_at, a.later, 0 AS favorite, a.tags,
         COALESCE(a.published_at, a.created_at) AS sort_key
       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
-      WHERE ${tabCond}${aExtra}`;
+      WHERE (${tabCond})${aExtra}`;
   const aBranchDefs = [];
   if (includeArticles) {
     if (aTabOr) {
@@ -1564,16 +1565,15 @@ async function handleImg(req) {
   const url = req.query.u || req.query.url;
   if (!url) return { status: 400, body: jsonErr('Missing url') };
   try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) return { status: res.status, body: jsonErr(`Upstream ${res.status}`) };
-    const buf = Buffer.from(await res.arrayBuffer());
-    const ct = res.headers.get('content-type') || 'image/jpeg';
-    return { raw: true, body: buf, headers: { 'Content-Type': ct, 'Cache-Control': 'public, max-age=86400' } };
+    // H3/P2-5 收口（2026-09-19）：云端此前直接 fetch 任意 URL，无 SSRF 防护。
+    // 现与本地 server/util/safeimg.js 同语义：DNS 解析后校验、逐跳校验重定向目标、
+    // 只允许 image/*、流式累计字节上限（api/_safeimg.js）。
+    const { contentType, body } = await require('./_safeimg').fetchImageSafe(url);
+    return { raw: true, body, headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=86400' } };
   } catch (err) {
-    return { status: 502, body: jsonErr(err.message) };
+    const msg = String(err.message || '');
+    if (/forbidden host|bad url|not an image/.test(msg)) return { status: 400, body: jsonErr(msg) };
+    return { status: 502, body: jsonErr(msg || 'image proxy failed') };
   }
 }
 
@@ -2704,6 +2704,14 @@ async function dispatch(req) {
 
   // POST /api/auth/login
   if (path === '/api/auth/login' && method === 'POST') return handleLogin(req);
+
+  // GET /api/auth/me —— 会话回显（B59：本地 server/routes/auth.js 早有此路由，云端漏移植，
+  // 前端 checkAuth() 恒拿 404 → 带有效 token 也被判为未登录，管理台门槛反复要求重登）
+  if (path === '/api/auth/me' && method === 'GET') {
+    const user = verifyAuth(req);
+    if (!user) return { status: 401, body: jsonErr('Unauthorized') };
+    return jsonOk({ ok: true, user: user.name || 'admin', exp: user.exp || null });
+  }
 
   // POST /api/articles/read-all（必须在 /:id 之前匹配）
   if (path === '/api/articles/read-all' && method === 'POST') return handleArticlesReadAll(req);

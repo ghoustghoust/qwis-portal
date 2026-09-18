@@ -1,0 +1,10 @@
+{
+  "_comment": "白盒评测基线（棘轮）：这里登记的是「已知且已挂账」的历史缺口，eval-whitebox 只对**新增**项判红。清除一条 = 该缺陷真修好了，必须同时更新 docs/ISSUES.md。",
+  "w7_missing_cloud_routes": [
+    { "path": "/api/ai/translate/config", "issue": "B52", "note": "云端未实现；UI 已改为显式报错（39-6 落地后清除）" },
+    { "path": "/api/ai/translate/batch", "issue": "B52", "note": "同上" },
+    { "path": "/api/auth/douyin/status", "issue": "T5-10", "note": "抖音永不云端化决策，仅本地端可用；DouyinTab 已下架但组件仍在" },
+    { "path": "/api/auth/douyin/start", "issue": "T5-10", "note": "同上" }
+  ],
+  "w9_pitfalls_without_test_lock": ["4", "5", "6", "7", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
+}

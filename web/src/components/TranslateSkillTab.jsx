@@ -9,6 +9,9 @@ export default function TranslateSkillTab() {
   const [saving, setSaving] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [message, setMessage] = useState('');
+  // B52：此块从上线起恒「加载中...」——云端无 /api/ai/translate/* 路由，404 被 catch 成 message，
+  // 而 `if (!config) return 加载中` 挡在渲染前，错误文案永不可达。现在必须把失败显式化。
+  const [loadError, setLoadError] = useState('');
 
   const loadConfig = useCallback(async () => {
     try {
@@ -16,6 +19,7 @@ export default function TranslateSkillTab() {
       setConfig(data);
       setPrompt(data.prompt || data.defaultPrompt || '');
     } catch (err) {
+      setLoadError(String(err?.message || err));
       setMessage('加载配置失败: ' + err.message);
     }
   }, []);
@@ -87,7 +91,16 @@ export default function TranslateSkillTab() {
   };
 
   if (!config) {
-    return <div className="py-8 text-center text-sm t-muted">加载中...</div>;
+    if (!loadError) return <div className="py-8 text-center text-sm t-muted">加载中...</div>;
+    return (
+      <div className="py-8 text-center text-sm space-y-2">
+        <div className="t-danger">翻译配置端点不可用：{loadError}</div>
+        <div className="t-muted text-xs">
+          <code>/api/ai/translate/*</code> 目前只由本地 Express（<code>server/routes/ai.js</code>）提供，云端读层未实现该路由；
+          在本地端打开本 Tab 才能编辑提示词。云端化改造见 <code>docs/specs/39-ai-console/spec.md</code> 的 39-6。
+        </div>
+      </div>
+    );
   }
 
   return (

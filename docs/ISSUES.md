@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-19（20 条页面批注全量实测：活跃 B8~B58、观察 W1~W7、挂案 H1~H17；**三条 P0 见 BL7~BL9**）
+> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺修复（含新发现 B59）+ 41-1/41-4 评测工具落地；活跃 B8~B59、观察 W1~W8、挂案 H1~H17）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -110,6 +110,7 @@
 | W5 | 翻译管线系统性修复（09-15：薄正文仅标题通道/清洗器补起手式/占位金句清洗/优先级=早报>我的早报>周刊>热点榜+id 直接补候选池；34+2 篇污染回炉重翻） | 今晚 21:30 主批+后续 translate 轮次：早报类条目中文标题无元评论/无胡编标题/金句无占位符 |
 | W6 | 2026-09-18 早报/周刊 AI 守卫（`lib/brief-guards.js` 不变量 12 + 周刊 <4 条不发布 + mybrief 补刷 reading.digest + 报警覆盖面扩 daily-ai/weekly/mybrief + dispatch `inputs.mode` 补跑口） | **①已实测通过（09-18 23:00）**：线上 `GET /api/daily` 返回 `report.id=99`、`generated_at 2026-09-17T21:14Z`（AI 批），北京 09:03 的裸报 id100 不再遮蔽；2.9s 响应正常。②③④（mybrief 带 digest / 周刊不足 4 条保留上期 / 21:30 晚间批产出）仍待验证 |
 | W7 | B20 每日早报质量门槛（`passesDailyQualityGate`，已推 `7764ccf`）+ B14 `qOne` 修复（runner 侧）——**两者都只是"已提交"，都还没有跑批证据** | 下一批 `daily-ai`（北京 21:30 / 00:32）：①`/api/daily` 不再出现 `score<30` 条目（实测 09-18 那批有 score=10/22 各一条）；②`reading.digest` 生成、`stats.videos` 不再恒 0、collect「少量失败」分支的停滞检测不再被跳过 |
+| W8 | 2026-09-19 自主轮 11 项修复（B22/B27/B28/B29/B47/B48/B52/B59 + BL1 + 坑#35/#36 根因）——**已推但云端实测未做** | 部署 Ready 后逐项实测：①`/api/reading?tab=read&type=podcast` 与 `type=all` 集合必须不同且 counts 与列表自洽；②`type=article` 能看到 wemp 条目；③`/api/auth/me` 带有效 token 返回 200；④后台监控页成功率表颜色分档可见、任务队列不再恒 0；⑤报警日志无 `\uff08` 字面串；⑥`npm run eval:whitebox` 与 `eval:preflight` 全绿 |
 
 ## 🟢 挂案（外部依赖/低优先，保持跟踪）
 
@@ -117,7 +118,7 @@
 |---|------|------|
 | H1 | YouTube 对数据中心 IP 反爬假 404 → 熔断反复（139 源 41 启用；熔断源由 cleanup 批次自动恢复） | 挂案：彻底解需住宅代理；现状可接受 |
 | H2 | 日报引擎双份实现（api/daily-generate.js 仅兜底 vs [...slug].js 内联） | 挂案：主链路在 runner，T3 系重构时收敛 |
-| H3 | P2-4 AUTH_SECRET 回退 'dev-secret' / P2-5 /api/img 无 SSRF 防护 / P2-6 LIKE '%%' 慢查询 / P2-7 handleDaily UTC 日期比较 | 低危挂案（Vercel 网络隔离+量级小） |
+| H3 | ~~P2-5 /api/img 无 SSRF 防护~~ **已闭合（2026-09-19）**：新增 `api/_safeimg.js`（与 `server/util/safeimg.js` 同语义：DNS 解析后校验、逐跳校验重定向、只允许 image/*、流式字节上限），云端 `handleImg` 改走它；白盒 W7/B18 双端同语义锁已加。余：P2-4 AUTH_SECRET 回退 'dev-secret' / P2-6 LIKE '%%' 慢查询 / P2-7 handleDaily UTC 日期比较 | 低危挂案（Vercel 网络隔离+量级小）；SSRF 面已收 |
 | H6 | B站采集"更好的方案"调研（Cookie 主链 vs 现匿名降级） | 用户提出，待调研 |
 | H7 | 云端 /api/articles 无 dedup=1 分支（本地有，pre-existing 漂移）：今日视图成默认落地路径后，双端「合并同事件」行为差异被放大 | 挂案：T5 剩余重构时收敛（2026-09-15 对抗审查记录） |
 | H8 | spec30 C3「保存后前台关键数字实时预览」未做（对照卡为生效配置静态摘要，验收②只要求对照卡）；subscription.ids 跨 serverless 实例 30s 缓存窗口（人工点击速度下不可达） | 挂案：后续小 spec（2026-09-15 对抗审查 P3） |
@@ -137,7 +138,7 @@
 
 | # | 阻塞 | 为什么阻塞 | 清法 |
 |---|---|---|---|
-| BL1 | B12 测试基线 4 项红（`npm test` 实测 297/301 绿，红的是 regression-bc 的 A9/A10/B15/B18，锚点指向已删除的 `portal/api/_safeimg.js`、`_handlers.js`）<!-- doc-lint:ignore：刻意引用已删路径 --> | 自愈要改三端语义，基线红着就没有"新增失败"的判据；且 B18 一红没人盯云端 `/api/img` 的 SSRF | 小 spec：重新锚定到 `api/[...slug].js` 真实云端读路径（**违反 AGENTS §3，属最高优先的"清障"活**） |
+| ~~BL1~~ | **已闭合（2026-09-19）**：4 项红是测试锚点指向已独立成仓的 `portal/*`；重锚到根树真文件后 `npm test` 301 项 0 红 | 基线已绿，后续改动有"是不是我改坏的"判据了 | ✅ 完成（详见下方「本轮已修」） |
 | BL2 | B14 `qOne()` 修复只提交了 `1d135f4`，**没有一个真实 runner 批次产出证据** | 35A 的恢复判定要读源状态行，同族静默 ReferenceError 未闭环 | 等 W7 观察期，看下一批 collect/daily-ai 日志 |
 | BL3 | 采集尝试流水不存在（B23 假成功率 + B24 心跳只 25h 且无正样本） | 「每源成功抓取概率」现在**物理上算不出来**，35C 只能继续显示假数字 | 35B（滚动窗口，不建新表） |
 | BL4 | H9 portal gitlink 无 `.gitmodules` | 三端语义收敛时极易误改 `portal/` 副本；Vercel 构建已报 submodule 警告 | 拍板：补 `.gitmodules` or 停 portal 部署/收编为普通目录 |
@@ -148,6 +149,27 @@
 | **BL9** | **P0 `settings.ai` 仍可被后台写回**（B50），与旧 env-only 声明冲突 | 09-11 全链路 401 停摆 2 天的合法复发通道 | **已裁决（2026-09-19）：保留可写 + 强制审计 + 变更告警 + 写后连通探测失败即回滚**；不变量表述已在 `CLOUD_PIPELINE_GUIDE.md` §6.1 作废落档。实施在 39-1/39-3 |
 | BL10 | `'null'` 字符串污染 2.5 万行（B15 订正） | 毒害保留清理豁免、未读角标、阅读足迹三处口径；不先清则任何"未读/已读"统计与自动回收都不可信 | 延后（同 BL7/BL8）：一行修根因 + 一次性 `UPDATE`，与 40-8 脏数据订正合并做，需授权 |
 | BL11 | 端到端/白盒评测流程尚未建立 | 用户新增验收要求；没有它，32 个新缺陷的修复无法自证"真的修好了" | 见 `docs/specs/41-e2e-whitebox-eval/spec.md` |
+
+### ✅ 本轮已修（2026-09-19 自主轮，全部有"改前红/改后绿"双证据，待云端实测）
+
+按 `docs/NEXT-DEV-REQS.md` T6「第 1 步 当天可修小刺」执行，`docs/EVAL_GUIDE.md` §6 口径验收：
+**回归锁 `tests/regression-20260919b.test.js` 10 条在修复前 HEAD 的独立 worktree 上 10/10 全红，修复后 10/10 全绿。**
+
+| 缺陷 | 修法 | 证据 |
+|---|---|---|
+| BL1 测试基线 4 红 | 锚点从已独立成仓的 `portal/*` 迁到根树真文件；A9 改判"AdminPage 每个懒加载组件必须存在"（正好锁住 B13 那类"引用了但没入库"）；A10 改判"api/ 函数面必须等于白名单" | 301 项 0 红（结果见本轮 `npm test`） |
+| B27 未知日期 | 云端 `/api/reading` 快路径补 `COALESCE(published_at,created_at) AS date` | 回归锁 B27 |
+| B28 类型筛选被 OR 吞 | `WHERE (${tabCond})${aExtra}` 加括号 | 回归锁 B28 |
+| B29 类型口径 | 文章含 `wemp`（881 篇不再隐身）；播客改按音频 enclosure 判（原 `s.type='douyin'` 云端 0 篇） | 回归锁 B29 |
+| B22 成功率颜色 | 三主题各补 `--warn` 令牌 + 定义 `.t-success/.t-warn/.t-danger`（不新造用法层硬编码色） | 回归锁 B22 |
+| B47 任务队列恒 0 | `MonitorTab` 改读 `queueStats.overall`（线上真实 pending=177 此前显示 0） | 回归锁 B47 |
+| B48 报警日志转义串 | JSX 文本转义改表达式 `{'（'}{rr.error}{'）'}` | 回归锁 B48 |
+| B52 翻译 Skill 恒加载中 | 云端缺路由时显式报错并指向 39-6，不再停在占位文案 | 回归锁 B52 |
+| **B59（新发现）** | 云端缺 `/api/auth/me`（本地 `server/routes/auth.js` 早有）→ `checkAuth()` 恒 404，**带有效 token 也被判未登录**，管理台反复要求重登。云端补路由并复用 `verifyAuth` | 回归锁 B59 |
+| 坑 #35 阈值分叉 | 新建 `lib/source-breaker.js` 作三端唯一实现，`store.js`/`lib/collectors/fetcher.js`/`api/collect.js`/`tools/collect-turso.js` 全部改引用（此前本地固定 3、云端 YouTube 10） | 回归锁 坑#35 + 白盒 W1a/W1b2/W1c |
+| 坑 #36 根因 | `migrate-to-turso.js` 序列化先判 `v === null`（**只修根因，已污染的 2.5 万行数据订正仍按 BL10 等授权**） | 回归锁 坑#36 |
+
+**同轮新增工具**：`tools/eval-preflight.cjs`（41-1，环境前置 + BL7/BL8/BL9 配置告警）、`tools/eval-whitebox.cjs`（41-4，W1~W9 不变量 + `docs/eval/whitebox-baseline.json` 棘轮基线），已接 `npm run eval:preflight` / `npm run eval:whitebox`。白盒首跑即抓出 B28、B52、B59 三个真缺陷与 3 处 W4 误报（已收紧判据）。
 
 ### 需用户拍板（不拍板无法排期，均属"改变行为或加列"的决策）
 
