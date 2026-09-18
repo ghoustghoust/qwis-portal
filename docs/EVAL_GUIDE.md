@@ -39,7 +39,7 @@
 | 检查 | 判据 | 不通过时的分类 |
 |---|---|---|
 | 代理可达 | `GET https://github.com` 经 `http://127.0.0.1:12000` 返回 2xx/3xx | `fail_env`（不是产品缺陷） |
-| 远端已部署 | `origin/main` HEAD == Vercel 生产部署 commit | `fail_env`（部署未完成/未推送） |
+| 远端已部署 | `origin/main` HEAD == Vercel 生产部署 commit | `fail_env`（部署未完成/未推送）。**09-19 才真正落地**：本行一直是纸面要求，而 `eval:preflight` 只比了 `HEAD == origin/main`（验的是 GitHub，不是正在服务的那份代码），当天就因此差点把"测旧代码"当成验收。现由 `/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA` 供比对；**线上没带这个字段本身就等于"改动没生效"** |
 | 凭据三处一致 | `.env` / Vercel env / GH Secrets 的 `COLLECT_KEY`、`TURSO_*` 指纹一致 | `fail_env` + 立即报警 |
 | Turso 可读 | `SELECT 1` 通过 | `fail_env` |
 | 测试隔离就绪 | `APP_DATA_DIR` 指向副本而非生产；`settings.alerts` 未被写路径污染 | **`fail_env` 且拒绝继续**（防 B44 重演） |
