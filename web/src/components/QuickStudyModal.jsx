@@ -33,12 +33,19 @@ export default function QuickStudyModal({ item, onClose }) {
   useEffect(() => {
     if (!isVideo || !item?.ref_id) return;
     let cancelled = false;
+    const playPath = `/api/videos/${item.ref_id}/play`;
+    const applyPlay = (d) => {
+      if (d?.mode === 'external') setPlayExternal(d.url || '');
+      else setPlayUrl(d?.url || d?.embed_url || '');
+    };
+    // 直链也走同一份缓存：弹窗每次重挂都重拉一次，是"反复打开反复加载"的另一半
+    if (detailCache.has(playPath)) { applyPlay(detailCache.get(playPath)); return; }
     api
-      .get(`/api/videos/${item.ref_id}/play`)
+      .get(playPath)
       .then((d) => {
         if (cancelled) return;
-        if (d?.mode === 'external') setPlayExternal(d.url || '');
-        else setPlayUrl(d?.url || d?.embed_url || '');
+        cacheDetail(playPath, d);
+        applyPlay(d);
       })
       .catch(() => {});
     return () => { cancelled = true; };
