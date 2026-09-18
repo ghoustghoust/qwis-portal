@@ -71,3 +71,24 @@ test('4. qOne 语义：单行对象、无结果返回 null（.c 类调用点依�
     'qOne 应与 qAll/qRun 同区定义（三个查询助手不许分两处）',
   );
 });
+
+test('5. _rawChat 不得把 reasoning_content 当作回复返回（周刊杂志/导语污染的共同根因）', () => {
+  // 线上实锤（本轮 mode=weekly 日志）：
+  //   [weekly] 杂志结构放弃：回复里没有 JSON 对象（前 80 字：The user wants me to organize 20 items…）
+  // 那段英文是 reasoning_content。旧代码 `msg.content || msg.reasoning_content` 在模型
+  // 只出思考不出正文时，把思维链直接当成"AI 的回答"交给下游——generateTheme 于是收到
+  // 「我需要找到贯穿这些文章的核心主线。」「19-20: 日本加息对全球资金影响。」这类自述/大纲碎片。
+  // 清洗器在下游捞不如上游断：必须抛错让 aiChat 记为调用失败。
+  const src = fs.readFileSync(path.join(__dirname, '..', 'api', '_ai.js'), 'utf8');
+  const fn = /async function _rawChat[\s\S]*?\n}/.exec(src);
+  assert.ok(fn, '_rawChat 必须存在');
+  assert.ok(
+    !/msg\.content\s*\|\|\s*msg\.reasoning_content/.test(fn[0]),
+    '禁止 `msg.content || msg.reasoning_content`——思维链不得冒充正文',
+  );
+  assert.match(fn[0], /reasoning_content/, 'reasoning_content 仍需被识别（用于报错信息）');
+  assert.ok(
+    /throw new Error\([^)]*仅含/.test(fn[0]),
+    '只有 reasoning 没有 content 时必须抛错，而不是静默采纳',
+  );
+});

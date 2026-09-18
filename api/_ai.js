@@ -77,8 +77,16 @@ async function _rawChat(p, messages, opts) {
   }
   const data = await resp.json();
   const msg = data?.choices?.[0]?.message || {};
-  const content = (msg.content || msg.reasoning_content || '').trim();
-  if (!content) throw new Error(`${p.name} 返回空内容(finish=${data?.choices?.[0]?.finish_reason || '?'})`);
+  const content = String(msg.content || '').trim();
+  if (!content) {
+    // 旧写法把正文与 reasoning_content 用「或」串联返回：推理模型偶尔只吐思考不吐正文时，
+    // 思维链会被当成"AI 的回答"交给下游——generateTheme 收到「我需要找到贯穿这些文章的核心主线。」
+    // 和大纲碎片、generateWeeklyMagazine 收到 "The user wants me to organize 20 items…"（线上日志实锤）。
+    // 那属于调用失败，必须抛错让 aiChat 记 ok:false，而不是让清洗器在下游捞。
+    const reasoning = String(msg.reasoning_content || '').trim();
+    const finish = data?.choices?.[0]?.finish_reason || '?';
+    throw new Error(`${p.name} 仅含 reasoning 无 content(finish=${finish}${reasoning ? `, head=${reasoning.slice(0, 60)}` : ''})`);
+  }
   return content;
 }
 
