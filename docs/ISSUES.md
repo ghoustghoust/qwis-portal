@@ -65,7 +65,7 @@
 
 | # | 症状 |
 |---|---|
-| B39 | 生成历史标题写「近 7 天」实为 `ORDER BY id DESC LIMIT 7`（27 行真窗只露 7 行）；不投影 `schemaVersion`、类型列硬编码「每日早报」→ 裸关键词版也显示绿色「正常」 |
+| B39 | 生成历史标题写「近 7 天」实为 `ORDER BY id DESC LIMIT 7`；**09-19 复测订正**：线上 94 行日报里近 7 天实有 **59 行**（旧记的 27 行是错的），只露 7 行 → 列表最旧停在 09-16，承诺 7 天实际 3 天；且不投影档位 → 近 7 天里 **42 行是无 `schemaVersion` 的裸关键词版**，UI 上一律显示绿色「正常」，看不出哪期真有 AI |
 | B40 | 周刊归档 107,918B/5 期只投影 6 字段（`coverTheme`/`storylines`/`editorNote` 全丢，最新最好两期反而显示「—」）；期号=`archive.length+1` → 同窗口重跑即算新期（4 期共用同一日期范围） |
 | B41 | 我的早报「订阅」名不副实：线上 `subscription.ids=[]`，实际靠 54 个 ☆ 重点源兜底（`lib/source-axes.js:46-48`） |
 | B42 | Domain 篇数配额只裁订阅池，探索位完全绕过（`collect-turso.js:1377`）；且键是主标签不是域名 → 命名误导 |
@@ -183,6 +183,7 @@
 |---|---|---|
 | B60 六份判定副本 | 新建 `lib/reading-filters.js`（type 口径唯一实现）+ `lib/media.js#audioCoverSql`（音频判定唯一实现），本地 `server/routes/reading.js` 与云端 `api/[...slug].js` 的**列表、计数、视频侧开关、搜索是否绑定**四处全部改引用；播客计数 0→143、article 计数 6413→7282（真 Turso 复测） | `tests/regression-20260919c.test.js` 8 条，修前 B60-3/B60-4 红（点名本地端未接入），修后 8/8 绿 |
 | B61 副本少 `.opus` | 四处 runner/日报/阅读器/读层判定统一由 `audioCoverSql` 生成；顺带把 `tools/collect-turso.js` 日报+周刊两处也接上 | 回归锁 B61（全库扫，只许 `lib/media.js` 持有特征字面量） |
+| B39 生成历史假窗口 | 窗口 SQL 收进 `lib/brief-guards.js`（`DAILY_HISTORY_SQL` + `historySinceIso`，59 行/7 天全露，安全上限 200），并投影 `tier`（ai/keyword/degraded）与 `windowDays/dailyCount/dailyAiCount`；前端标题改由接口回传，裸关键词版从绿色「正常」改为 warn 徽章「无 AI」并带 tips，降级徽章 gray→red。**顺带订正旧记录**：本条原写"27 行真窗"，复测真值是 59 行 | 回归锁 B39-1/2/3（`tests/regression-20260919d.test.js`，修前 3/3 红 → 修后 3/3 绿；B39-2 是真库跑真 SQL，不是字符串断言） |
 | 同类问题要能自动发现 | 白盒新增 **W10**：按 **LIKE 模式集合重叠度**判"同一判定抄多份"（≥3 个共享模式即红）。不按字面量全等——本例副本间正是"差一个扩展名"，全等检测器会完全漏掉 | 负向验证：塞两份差一个扩展名的副本 → W10 红；删掉 → 绿 |
 | JS 与 SQL 两份实现会漂 | 回归锁 B60-5：同一批 10 个封面 URL，`detectAudioUrl()` 与 `audioCoverSql()` 判定必须逐条相同 | B60-5（改坏任一边即红） |
 

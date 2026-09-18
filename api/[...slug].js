@@ -1667,13 +1667,17 @@ async function handleCollectHistory(req) {
 }
 
 // GET /api/brief/history — 早报中心生成历史（T3-2 R1）
+// B39：原来 `ORDER BY id DESC LIMIT 7` 冒充「近 7 天」——线上近 7 天实有 59 行，只露 7 行，
+// 且 42 行是无 schemaVersion 的裸关键词版，UI 上跟 AI 增强版长得一样，看不出哪期能用。
 async function handleBriefHistory(req) {
-  const reports = await qAll('SELECT id, generated_at, window_hours, stats FROM daily_reports ORDER BY id DESC LIMIT 7');
+  const reports = await qAll(briefGuards.DAILY_HISTORY_SQL, [briefGuards.historySinceIso()]);
   const daily = reports.map((r) => {
     let st = {};
     try { st = JSON.parse(r.stats || '{}'); } catch { /* 坏行 */ }
+    const ai = briefGuards.isAiDailyReport(r);
     return { id: r.id, generatedAt: r.generated_at, windowHours: r.window_hours,
-             theme: st.theme || null, degraded: !!st.degraded, totalItems: st.totalItems || 0, elapsedMin: st.elapsedMin || null };
+             theme: st.theme || null, degraded: !!st.degraded, totalItems: st.totalItems || 0, elapsedMin: st.elapsedMin || null,
+             aiEnhanced: ai, tier: st.degraded ? 'degraded' : (ai ? 'ai' : 'keyword') };
   });
   const archive = (await getSetting('weekly.archive', [])) || [];
   const weekly = archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme || null, count: a.count, degraded: !!(a.report && a.report.degraded) })).reverse();
@@ -1681,6 +1685,9 @@ async function handleBriefHistory(req) {
   const digest = await getSetting('reading.digest', null);
   const profile = await getSetting('mybrief.interestProfile', null);
   return jsonOk({
+    windowDays: briefGuards.HISTORY_WINDOW_DAYS,
+    dailyCount: daily.length,
+    dailyAiCount: daily.filter((d) => d.aiEnhanced).length,
     daily,
     weekly,
     mybrief: mb ? { date: mb.date || null, generatedAt: mb.generatedAt || null, empty: mb.empty || null,

@@ -70,7 +70,10 @@ export default function BriefCenterTab() {
     <div className="space-y-5">
       {/* 生成历史 */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">生成历史（近 7 天）</h3>
+        <h3 className="text-sm font-semibold t-text">
+          {'生成历史（近 '}{hist.windowDays || 7}{' 天，共 '}{hist.dailyCount || 0}{' 次'}
+          {hist.dailyCount ? `，其中 ${hist.dailyAiCount || 0} 次为 AI 增强版` : ''}）
+        </h3>
         <div className="mt-3 overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead>
@@ -84,10 +87,18 @@ export default function BriefCenterTab() {
             <tbody>
               {hist.daily.map((r) => (
                 <tr key={'d' + r.id} className="border-t t-border">
-                  <td className="px-3 py-2">每日早报</td>
+                  <td className="px-3 py-2">
+                    {r.tier === 'ai' ? '每日早报 · AI 增强' : r.tier === 'degraded' ? '每日早报 · 降级' : '每日早报 · 裸关键词版'}
+                  </td>
                   <td className="px-3 py-2 t-muted tabular-nums">{relativeTime(r.generatedAt)}</td>
                   <td className="px-3 py-2 tabular-nums">{r.totalItems} 条{r.theme ? ` · ${String(r.theme).slice(0, 16)}` : ''}</td>
-                  <td className="px-3 py-2">{r.degraded ? <span className="badge-gray">降级</span> : <span className="badge-green">正常</span>}</td>
+                  <td className="px-3 py-2">
+                    {r.degraded
+                      ? <span className="badge-red">降级</span>
+                      : r.tier === 'keyword'
+                        ? <span className="badge-warn" title="该期没有六维评分/导语/主题全景，AI 未参与或已失效">无 AI</span>
+                        : <span className="badge-green">正常</span>}
+                  </td>
                 </tr>
               ))}
               {mb && !mb.empty && (

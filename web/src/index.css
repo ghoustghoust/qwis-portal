@@ -139,16 +139,16 @@ body {
   box-shadow: var(--shadow);
 }
 
-.badge-green {
+/* 状态徽章四态：形状只写一份，分档只给颜色（B39 补 warn 档；色彩收敛归 35C） */
+.badge-green, .badge-red, .badge-gray, .badge-warn {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
   padding: 0.1rem 0.55rem;
   font-size: 0.7rem;
-  color: var(--green);
-  border: 1px solid var(--green);
   background: transparent;
 }
+.badge-green { color: var(--green); border: 1px solid var(--green); }
 
 .icon-btn {
   display: inline-flex;
@@ -402,27 +402,10 @@ html[data-theme='blue-white'] .card-lift:hover { box-shadow: 0 4px 14px rgba(30,
 .stars .star-off { color: var(--border); }
 .stars-num { font-size: 0.7rem; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
 
-/* 状态徽章三态收敛（管理台/侧栏统一） */
-.badge-red {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  padding: 0.1rem 0.55rem;
-  font-size: 0.7rem;
-  color: var(--red);
-  border: 1px solid var(--red);
-  background: transparent;
-}
-.badge-gray {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  padding: 0.1rem 0.55rem;
-  font-size: 0.7rem;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  background: transparent;
-}
+/* 状态徽章：形状见上方共用规则，这里只给颜色 */
+.badge-red { color: var(--red); border: 1px solid var(--red); }
+.badge-gray { color: var(--muted); border: 1px solid var(--border); }
+.badge-warn { color: var(--warn); border: 1px solid var(--warn); }
 
 /* 源头像兜底圆块（SourceAvatar） */
 .avatar-fallback {
