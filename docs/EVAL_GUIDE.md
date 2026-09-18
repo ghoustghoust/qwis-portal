@@ -22,11 +22,12 @@
 
 | 层 | 命令 | 证什么 | 现状 |
 |---|---|---|---|
-| L1 单元/回归 | `npm test` | 函数行为、历史 bug 不复发 | 已有（基线 4 红 = B12，须先清） |
+| L1 单元/回归 | `npm test` | 函数行为、历史 bug 不复发 | 已有（BL1 已闭合：09-19 把 4 条指向已独立成仓 `portal/*` 的锚点重锚到根树真文件，现 344 项 0 红） |
 | L2 构建 | `npm run build:vercel` | 前端可构建、静态资源齐 | 已有 |
 | L3 云端实测 | `docs/DELIVERY_VERIFICATION.md` 流程 | 端点活着、SHA 已上线 | 已有（人工） |
 | **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，待建 |
-| **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，待建 |
+| **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，W1~W10 已落地 |
+| **L4b' 过程检查** | `npm run eval:process` | **这次运行到底可不可信**（截图/报告/断言数/占位文案/证据路径/退出码/参数出处） | 本文 §3.6，`tools/eval-process-checks.cjs` 已落地 |
 | **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，待建 |
 | L5 文档门禁 | `npm run lint:docs` | 文档不腐烂、无悬空、无明文密钥 | 已有 |
 
@@ -200,7 +201,7 @@
 
 ## 9. 产物与门禁
 
-- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3）、`npm run eval:whitebox`（§4）、`npm run eval:content`（§5）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:content`（§5，待建）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。

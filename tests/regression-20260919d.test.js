@@ -285,3 +285,29 @@ test('F6-3 runner 真的用这条判据决定不熔断（不是只有函数没�
   assert.match(runner, /\(stats\.outcomes \|\| \(stats\.outcomes = \[\]\)\)\.push\(\{ ok: true \}\)/,
     '成功侧也必须记 outcome，否则失败率分母里没有成功');
 });
+
+// ── 41-7 过程性二值检查器：工具自身的锁（评测器不自检 = 假门禁）──
+test('41-7 过程检查器自检必须 7/7 通过（每项都要"坏样本会红、好样本会绿"）', () => {
+  const { execFileSync } = require('node:child_process');
+  const out = execFileSync(process.execPath, ['tools/eval-process-checks.cjs', '--self-test'],
+    { cwd: ROOT, encoding: 'utf8' });
+  const m = out.match(/自检：(\d+)\/(\d+) 通过/);
+  assert.ok(m, '自检没输出计数，等于没跑：' + out.slice(0, 200));
+  assert.equal(m[1], m[2], `有检查器没通过自检（未通过的一律视为假门禁）：\n${out}`);
+  assert.equal(Number(m[2]), 7, '检查器数量变了，EVAL_GUIDE §3.6 与小 spec 41-7 要同步');
+});
+
+test('41-7 检查器要求参数出处与退出码诚实（本轮真踩过的两个坑，判据不许退化）', () => {
+  const t = require('../tools/eval-process-checks.cjs');
+  const names = Object.keys(t.CHECKS);
+  for (const n of ['check_probe_params_sourced', 'check_exit_code_honest', 'check_no_stub_text', 'check_assertions_executed']) {
+    assert.ok(names.includes(n), `缺检查 ${n}`);
+  }
+  // 猜参数（无 source）必须红；带 file:line 必须绿
+  const bad = t.CHECKS.check_probe_params_sourced({ cases: [{ id: 'x', requests: [{ params: { tab: { value: 'article' } } }] }] });
+  assert.equal(bad.ok, false, '无出处的探针参数必须判不过');
+  const good = t.CHECKS.check_probe_params_sourced({ cases: [{ id: 'x', requests: [{ params: { type: { value: 'article', source: 'api/[...slug].js:1021' } } }] }] });
+  assert.equal(good.ok, true, '带 file:line 出处的参数该过：' + good.why);
+  // `cmd | tail` 吞退出码必须红（真发生过）
+  assert.equal(t.CHECKS.check_exit_code_honest({ commands: [{ cmd: 'npm test | tail' }] }).ok, false);
+});
