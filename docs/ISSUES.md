@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-18（早报/周刊 AI 守卫 + 生产构建中断修复；新增活跃 B12/B13、观察 W6、挂案 H9~H12）
+> 最后更新：2026-09-18 晚（AI 守卫 + 构建中断修复 + 周刊杂志版还原 + 用户 6 条页面标注；活跃 B12~B19、挂案 H9~H13）
 
 ---
 
@@ -21,6 +21,8 @@
 | B15 | `articles.read_at` 疑似被批量写入：24h 内 `read_at >= 24h前` 命中 **24855 行**（占库存绝大多数），修复 B14 后「阅读足迹」会直出「过去 24 小时读了 24855 篇」这种荒谬数字 | 待查：定位是哪条链路在自动标已读（疑热榜/聚合源的 read 回写），digest 口径需按真实用户行为收敛 | 需单独确认 |
 | B16 | 周刊导语污染第四次复现（坑 #26）：第 2 期 `theme` 入库为「我需要找到贯穿这些文章的核心主线。」并同步进 `weekly.archive` 标签；且 `generateWeeklyMagazine` 五条 `return null` 全不出声 → coverTheme/storylines 整体为空无从判断 | 清洗器已修（句首第一人称一票否决 + 反向保护用例）+ 放弃原因已打日志；**脏数据需重跑一期周刊覆盖** | 本轮 |
 | B17 | 周刊初筛预算结构性不足：本轮 2015 条候选 × `ai.minIntervalMs=4000` 串行 ≈ 2.2 小时，而 `runWeekly` 的初筛窗只有 `BUDGET_MS*0.4`=24 分钟 → 日志必出现「初筛预算截断」，周刊实际只策展了 `published_at DESC` 前缀，**不是全周内容** | 待决策：提高初筛配额 / 改为批量初筛 / 预筛降量（六维分门槛） | 需拍板 |
+| B18 | 视频/播客条目的「置信度评分」与「标题翻译」无法呈现：`videos` 表实测**既无 `score` 也无 `translated_title` 列**（列清单：id,source_id,platform,title,url,vid,cover,duration,author,intro,published_at,favorite,created_at,watched_at,play_uri）。`enrichBriefTitles` 也因此结构性跳过视频（id 是 `'v'+id`，查 `articles` 永不命中） | 需决策：给 videos 建列并把视频接进翻译/深析管线（涉 schema + 三端采集语义同步 + AI 配额），或放弃这两个诉求 | 需拍板 |
+| B19 | 我的早报「今日总结」线上常空：`generateTheme` 判污染后返回 null（宁缺毋滥，方向是对的），根因是 Agnes 推理模型间歇只吐 reasoning 不吐正文——与坑 #26 同源 | 已断掉"reasoning 冒充正文"（无正文即抛错）；额度/模型侧波动归 W6 继续观察 | 观察中 |
 
 ## 🟡 观察中（有明确验证时间点）
 
@@ -47,6 +49,7 @@
 | H10 | `settings.ai.features`（translate/summary/classify/analyze）是**假开关**：`AiSettingsTab` 有 4 个复选框 +「x/4 完成度」，`api/_ai.js` 与 `collect-turso.js` 零引用。线上回显 `classify:false/analyze:false` 会被误判成「AI 被关了」 | 挂案：要么接进生成链路，要么从 UI 摘除（2026-09-18 排查中踩到） |
 | H11 | `weekly.archive` 每期内嵌完整 report、items 又在 `storylines[].items` 重复一份，`:878` 明确不截断；`handleWeekly` 每次请求全量解析后只投影 5 个字段，而 `[...slug]` 函数预算只有 30s | 挂案：慢性 504 面，需加投影/截断策略 |
 | H12 | `settings['weekly']` 在后台可编辑（`/api/settings` merge + 周刊设置卡片），但 `runWeekly` 从不读它——窗口/条数全硬编码（`collect-turso.js:765-766`、`:844`） | 挂案：改了无效，需接配置或撤 UI |
+| H13 | 我的早报**没有期号也没有归档**：`runMyBrief` 落库的 `mybrief.latest` 只有 `date/generatedAt/theme/keywords/sections/themes/degraded`，无 `issue`，且全库不存在 `mybrief.archive`（单键覆盖写，历史期直接丢失）。用户 2026-09-18 标注「我的早报也该有期号」。周刊有期号是因为 `saveWeekly` 从 `weekly.archive` 末位 +1 | 挂案：要期号必须先有归档（否则期号会随覆盖写重置）；属功能设计，需单独立项 |
 
 ## 已关闭挂案（本轮核销）
 
