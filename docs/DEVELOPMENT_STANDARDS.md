@@ -173,7 +173,7 @@ type 可选：
 | `COLLECT_KEY` | 采集触发密钥 | **三处同步**：本地 .env + Vercel Env + GitHub Secrets |
 | `ADMIN_USER` | 管理员用户名 | Vercel Env + .env |
 | `ADMIN_PASSWORD` | 管理员密码 | Vercel Env + .env |
-| `AGNES_API_KEY` | Agencs AI API Key | Vercel Env + .env |
+| `AGNES_API_KEY` | Agnes AI API Key | Vercel Env + .env |
 | `DEEPSEEK_API_KEY` | DeepSeek API Key（云端 AI 待启用：Agnes key 绑 IP 在云端 401，用 DeepSeek 回退） | Vercel Env + GitHub Secrets + .env |
 
 ### 7.2 安全红线

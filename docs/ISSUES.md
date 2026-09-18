@@ -186,6 +186,8 @@
 | B39 生成历史假窗口 | 窗口 SQL 收进 `lib/brief-guards.js`（`DAILY_HISTORY_SQL` + `historySinceIso`，59 行/7 天全露，安全上限 200），并投影 `tier`（ai/keyword/degraded）与 `windowDays/dailyCount/dailyAiCount`；前端标题改由接口回传，裸关键词版从绿色「正常」改为 warn 徽章「无 AI」并带 tips，降级徽章 gray→red。**顺带订正旧记录**：本条原写"27 行真窗"，复测真值是 59 行 | 回归锁 B39-1/2/3（`tests/regression-20260919d.test.js`，修前 3/3 红 → 修后 3/3 绿；B39-2 是真库跑真 SQL，不是字符串断言） |
 | 同类问题要能自动发现 | 白盒新增 **W10**：按 **LIKE 模式集合重叠度**判"同一判定抄多份"（≥3 个共享模式即红）。不按字面量全等——本例副本间正是"差一个扩展名"，全等检测器会完全漏掉 | 负向验证：塞两份差一个扩展名的副本 → W10 红；删掉 → 绿 |
 | JS 与 SQL 两份实现会漂 | 回归锁 B60-5：同一批 10 个封面 URL，`detectAudioUrl()` 与 `audioCoverSql()` 判定必须逐条相同 | B60-5（改坏任一边即红） |
+| 断言自己也会假绿（新踩坑） | B53 第一版截断检测正则永不命中 → 坏代码在场仍显示绿。规则补进 `EVAL_GUIDE.md` §4.1：**禁止型断言必须配一条正向探针**（把已知坏写法喂给同一正则，断言它命中），已落 `B53-0` | B53-0（写不出探针的断言按 §7 删） |
+| B53 死码与错字（归属 39-2） | 删 `tools/collect-turso.js` 里定义后全仓零调用的 `llmChat()`（53 行，含一份与 `api/_ai.js` 并行的 AI 供应商降级链——留着等于骗后来人"runner 有统一 AI 通道"）；`AiSettingsTab` 去掉 `.slice(0,20)`（API 地址此前显示成 `apihub.agnes-ai.com/`，容器本身已有 `truncate`）；「Agencs→Agnes」错字清 3 处（含 `docs/DEVELOPMENT_STANDARDS.md:176`） | 回归锁 B53-1/2/3，修前 3/3 红 → 修后 7/7 绿 |
 
 顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 

@@ -1,4 +1,4 @@
-// AI 设置管理 Tab（Agencs AI 平台集成）
+// AI 设置管理 Tab（Agnes AI 平台集成）
 // 功能：AI 提供商配置、功能开关、连通性测试、操作流程说明
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
@@ -109,7 +109,7 @@ export default function AiSettingsTab() {
         </div>
         <div>
           <h2 className="text-lg font-bold t-text">AI 能力管理</h2>
-          <p className="text-sm t-muted">Agencs AI 平台配置 · 功能开关 · 操作流程</p>
+          <p className="text-sm t-muted">Agnes AI 平台配置 · 功能开关 · 操作流程</p>
         </div>
       </div>
 
@@ -249,7 +249,7 @@ export default function AiSettingsTab() {
             <div className="text-xs t-muted">API Key</div>
           </div>
           <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/30">
-            <div className="text-sm font-mono t-text truncate" title={config.apiBase}>{config.apiBase?.replace(/^https?:\/\//, '').slice(0, 20)}</div>
+            <div className="text-sm font-mono t-text truncate" title={config.apiBase}>{config.apiBase?.replace(/^https?:\/\//, '')}</div>
             <div className="text-xs t-muted">API 地址</div>
           </div>
           <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/30">

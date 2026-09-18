@@ -54,3 +54,51 @@ test('B39-3 档位投影：AI 增强 / 裸关键词必须由 brief-guards 单一
   assert.ok(!/生成历史（近 7 天）/.test(ui), '前端标题不得把窗口写死，必须由接口回传的 windowDays 决定');
   assert.match(ui, /windowDays|window_days/, '前端应读接口回传的窗口天数');
 });
+
+// ── B53 零碎死码与错字（归属 39-2，见 docs/specs/38-admin-ia-refactor/spec.md 头部订正）──
+// 实测：AiSettingsTab.jsx:252 把 API 地址 .slice(0,20) 截成 "apihub.agnes-ai.com/"（看着像坏了）；
+//       「Agencs」错字散在标题与根规范文档；tools/collect-turso.js:1637 llmChat() 定义后全仓零调用。
+
+// 负向自证：本条断言若写成"匹配不到就算过"，就会在坏代码存在时也绿（第一版就是这样，
+// 正则要求 apiBase 与 .slice 之间没有右括号，而真实代码中间隔着 replace(...)）。
+// 所以先用一条"必须命中已知坏形态"的探针，确认检测器真的能看见它。
+const APIBASE_TRUNCATION = /apiBase[\s\S]{0,80}?\.slice\(\s*0\s*,\s*20\s*\)/;
+test('B53-0 检测器自检：截断探针必须能看见已知的坏写法', () => {
+  const knownBad = '<div title={c.apiBase}>{c.apiBase?.replace(/^https?:\\/\\//, \'\').slice(0, 20)}</div>';
+  assert.ok(APIBASE_TRUNCATION.test(knownBad), '探针失效——下面那条 B53-1 会是假绿');
+});
+
+test('B53-1 AI 设置页不得截断 API 地址（容器已有 truncate，再 slice 只剩半个域名）', () => {
+  const ui = read('web/src/components/AiSettingsTab.jsx');
+  assert.ok(!APIBASE_TRUNCATION.test(ui), 'API 地址展示仍在 .slice(0,20)，会被截成 "apihub.agnes-ai.com/"');
+});
+
+test('B53-2 面向用户与规范的文本不得出现「Agencs」错字（真实平台名是 Agnes）', () => {
+  // 只扫"会被读到"的两种文本：界面字符串、根规范文档。
+  // docs/deprecated 与记录该错字本身的行不算（历史账不涂改，见 DOC_GOVERNANCE §4）。
+  const hits = [];
+  const walk = (dir) => {
+    for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+      if (['node_modules', '.git', 'dist'].includes(e.name)) continue;
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) { walk(p); continue; }
+      if (!/\.jsx?$/.test(e.name)) continue;
+      if (read(p).includes('Agencs')) hits.push(p);
+    }
+  };
+  walk('web/src');
+  if (fs.existsSync(path.join(ROOT, 'docs/DEVELOPMENT_STANDARDS.md')) && read('docs/DEVELOPMENT_STANDARDS.md').includes('Agencs')) {
+    hits.push('docs/DEVELOPMENT_STANDARDS.md');
+  }
+  assert.deepEqual(hits, [], `仍有 Agencs 错字：${hits.join(', ')}`);
+});
+
+// spec 39-2 AC2 的机器化：定义了没人调 = 下一次改 AI 链路时骗人以为有统一通道
+test('B53-3 runner 里不得留 llmChat() 这种"定义了没人调"的 AI 通道', () => {
+  const runner = read('tools/collect-turso.js');
+  const defs = (runner.match(/(?:async\s+)?function\s+llmChat\b/g) || []).length;
+  const calls = (runner.match(/\bllmChat\s*\(/g) || []).length - defs;
+  assert.equal(defs, 0, 'tools/collect-turso.js 仍定义 llmChat()');
+  assert.ok(calls <= 0, `llmChat 有 ${calls} 个调用点，删除前先确认不是死码判断错了`);
+  assert.ok(!/function\s+llmChat\b/.test(read('api/_ai.js')), 'api/_ai.js 不得有第二份 llmChat');
+});
