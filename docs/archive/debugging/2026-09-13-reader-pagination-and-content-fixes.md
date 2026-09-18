@@ -1,8 +1,12 @@
 # 变更记录：阅读器分页/翻译污染/未来时间/UI 修复（2026-09-13）
 
+> 类别：调试 | 归档自：docs/changes/2026-09-13-reader-pagination-and-content-fixes.md（2026-09-18 文档清洁轮）
+> 关联代码：`api/[...slug].js`（游标分页/since）、`api/_ai.js`（译文清洗）| 关联坑：`docs/pitfalls/ai.md` #26、`backend.md` #31 | 关联 spec：`docs/specs/27-reader-today/spec.md`
+> 取代：现役状态看 `docs/ISSUES.md` | 状态：已验收——只读历史，不再维护
+
 > 来源：用户实测反馈 5 项问题 → 浏览器云端实测 + Turso 直查逐一定性。
 > 所有结论均有 API 实测/Turso 查询证据，非凭代码推断。
-> 关联：`docs/DELIVERY-2026-09-13.md`（当日上一轮紧急修复）、`docs/AUDIT-2026-09-12.md` §5
+> 关联：`docs/changes/archive/2026-09-13-delivery-emergency-fixes.md`（当日上一轮紧急修复）、`docs/deprecated/AUDIT-2026-09-12.md` §5
 
 ---
 

@@ -1,5 +1,6 @@
 # 交付验证手册 —— Vercel 生产环境验证流程
 
+> 最后更新：2026-09-18（代理端口统一 12000（旧 7890 已失效））
 > 适用对象：任何接手本项目的 Agent / 开发者。
 > 目的：在**无法直连线上环境**（GFW）或**只有本地代码**的情况下，依然能对
 > `https://qwis-intel.vercel.app` 生产环境做有效验证，保证线上线下一致性。
@@ -45,8 +46,8 @@ git config user.email "ghoustghoust@users.noreply.github.com"   # 仅仓库级�
 
 ```bash
 # ❌ 直接 push 会报 "Recv failure: Connection was reset"
-git -c http.proxy=http://127.0.0.1:7890 pull --rebase origin main
-git -c http.proxy=http://127.0.0.1:7890 push origin main
+git -c http.proxy=http://127.0.0.1:12000 pull --rebase origin main
+git -c http.proxy=http://127.0.0.1:12000 push origin main
 ```
 
 - **pull --rebase 是必须的**：snapshot job（每日 09:33）会自动提交快照 commit，远端经常领先本地。
@@ -126,7 +127,7 @@ cd /c/Users/17619/.cache/qwis-diag/sec && node set-secrets.js <PAT>
 
 ```bash
 # vercel.app 被 GFW 阻断，必须走代理：
-export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:12000 http_proxy=http://127.0.0.1:12000
 # Windows Git Bash 的 curl(schannel) 走代理时必报 CRYPT_E_REVOCATION_OFFLINE，
 # 必须加 --ssl-no-revoke：
 curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status"
@@ -193,9 +194,9 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 
 | # | 现象 | 根因 | 解法 |
 |---|---|---|---|
-| 5.1 | `curl vercel.app` 连接超时 | GFW 阻断 | `export https_proxy=http://127.0.0.1:7890` |
+| 5.1 | `curl vercel.app` 连接超时 | GFW 阻断 | `export https_proxy=http://127.0.0.1:12000` |
 | 5.2 | 走代理后报 `CRYPT_E_REVOCATION_OFFLINE` | Windows schannel 吊销检查 | curl 加 `--ssl-no-revoke` |
-| 5.3 | `git push` 报 Connection reset | GFW 干扰 git HTTPS | `git -c http.proxy=http://127.0.0.1:7890 push` |
+| 5.3 | `git push` 报 Connection reset | GFW 干扰 git HTTPS | `git -c http.proxy=http://127.0.0.1:12000 push` |
 | 5.4 | GH Actions schedule 整批缺失 | GitHub 高负载丢定时任务（无告警） | 调度加密到 15min 对冲 + 每日人工/Agent 抽查 §2.1；彻底方案是 cron-job.org 等外部触发器 POST dispatch API（§2.3） |
 | 5.5 | GH API 拉日志 403 "admin rights" | 日志接口必须鉴权 | 带 PAT（§2.2） |
 | 5.6 | Node 脚本 exit 127 + libuv 断言 `UV_HANDLE_CLOSING` | 连接未关时 `process.exit()` | 先 `db.close()` 再 `process.exitCode=0` 自然退出 |

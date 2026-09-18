@@ -1,5 +1,6 @@
 # X（Twitter）订阅搭建指南：RSSHub + 小号 Cookie
 
+> 最后更新：2026-09-18（RSSHub 容器代理端口订正 12000）
 > 目标：订阅各 AI 实验室官推（@OpenAI、@AnthropicAI、@GoogleDeepMind…）与行业 KOL 个人号。
 > 原理：自建 RSSHub 实例，用你的 X 小号登录态（authToken cookie）读取公开时间线，转成 RSS 供本系统订阅。
 > 成本：免费。维护：cookie 几个月过期一次，按第 3 步重新取一次即可。
@@ -59,4 +60,4 @@ node -e "const {setSetting}=require('D:/全网情报系统/server/db.js'); setSe
 - **feed 返回 401/403**：cookie 过期或填错，重新按第 2 步取 `auth_token`，重启 RSSHub 容器
 - **feed 返回 429**：抓取太频繁，把该源刷新间隔调大（设置页 RSS 刷新间隔，默认 8h 已很温和）
 - **小号被锁**：换新小号重新取 cookie；避免短时间内大量添加账号
-- **本机 RSSHub 需要代理吗**：RSSHub 访问 x.com 需要能连通外网。本机 Docker 需给容器配代理（`-e HTTPS_PROXY=http://host.docker.internal:7890`）；宝塔服务器若在境外则直连
+- **本机 RSSHub 需要代理吗**：RSSHub 访问 x.com 需要能连通外网。本机 Docker 需给容器配代理（`-e HTTPS_PROXY=http://host.docker.internal:12000`，Clash 实际端口；旧 7890 已失效）；宝塔服务器若在境外则直连

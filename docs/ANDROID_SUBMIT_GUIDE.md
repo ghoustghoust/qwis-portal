@@ -1,5 +1,7 @@
 # 安卓快捷提交配置指南（HTTP Shortcuts）
 
+> 最后更新：2026-09-05（安卓 HTTP Shortcuts 对接手册（现役，无内容变更））
+
 在手机（安卓）上把 B站 / 抖音 / 公众号链接一键提交到本系统的云端订阅队列。
 本机 `npm run setup:customer` 会自动生成导入配置文件 `data/http-shortcuts.json`
 （Token 与域名已按你的部署渲染好，无需手填）。

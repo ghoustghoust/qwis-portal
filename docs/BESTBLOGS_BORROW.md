@@ -1,5 +1,6 @@
 # BestBlogs 调研与功能借鉴清单（2026-09-11）
 
+> 最后更新：2026-09-18（提示词目录订正为根 prompts/（非 server/services/ai/prompts））
 > 调研对象：[ginobefun/BestBlogs](https://github.com/ginobefun/BestBlogs)（AI 策展阅读器，Dify 工作流 + OpenAPI + Skills）
 > 目的：为本项目（ROADMAP-2026-09）的功能开发提供已验证的实现范式。
 > 结论摘要：BestBlogs 把「AI 策展」工业化踩过的坑（成本、评分稳定性、术语一致性、可解释推荐）都留下了成熟方案，**我们的 AI 日报 v2、翻译链、推荐算法、源自选四块可以直接站在他们肩上**。
@@ -46,7 +47,7 @@ BestBlogs 的 Issue #564 决策：**初筛只传标题+元信息+200 字符摘�
 
 | 他们的实践 | 我们怎么用 |
 |---|---|
-| 提示词与流程定义分离维护（prompts/ 独立文件） | AI prompt 全部落 `server/services/ai/prompts/`，可版本管理可 A/B |
+| 提示词与流程定义分离维护（prompts/ 独立文件） | AI prompt 全部落**根目录 `prompts/`**（现 7 个：daily-analyze/daily-theme/filter/term-extract/translate-polish/translate-refine/translate），可版本管理可 A/B |
 | 废弃表达对照表（旧术语→替代，防漂移） | 我们 ARCHITECTURE 已有「决策作废标注」规则，术语层面同样适用 |
 | 降级链设计（my_brief → for_you → public 兜底） | 推荐/日报生成都设计降级链：AI 失败 → 关键词版 → 原始列表 |
 | Skill 化封装（每功能一份 SKILL.md + 稳定 JSON 契约） | 我们系统正在被 Agent 重度使用，后期可把「日报/热榜/阅读」封装成 skills |

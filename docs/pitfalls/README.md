@@ -1,5 +1,6 @@
 # 踩坑库（Pitfalls）· 使用规则
 
+> 最后更新：2026-09-18（域索引补齐 #31~#34 #A1 #A2 #F1 #D1 #D2 #T1）
 > **目的**：项目的每条坑都对应过一次线上事故。换手/换人的 Agent 在动手前必读本库，避免重蹈覆辙。
 > 本库取代 ARCHITECTURE.md §5 的长列表（该处只留索引）。
 > **新坑必须入档**：任何"排查超过 30 分钟才定位"的问题，修复后按下面的格式写入对应域文件，并在本 README 索引登记。
@@ -8,12 +9,14 @@
 
 | 文件 | 域 | 覆盖坑编号 |
 |---|---|---|
-| [collection.md](collection.md) | 采集与信源 | #4 #6 #7 #9 #19 #28 #29 #30 |
-| [backend.md](backend.md) | 后端与数据 | #10 #11 #12 #14 #15 #16b #17 #23 #25 |
-| [ai.md](ai.md) | AI 管线 | #8 #24 #26 |
-| [frontend.md](frontend.md) | 前端 | #1 #2 #16 |
-| [deployment.md](deployment.md) | 部署与运维 | #5 #20 #21 #22 |
-| [testing.md](testing.md) | 测试 | #13 #18 #27 |
+| [collection.md](collection.md) | 采集与信源 | #4 #6 #7 #9 #19 #28 #29 #30 #35 |
+| [backend.md](backend.md) | 后端与数据 | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 |
+| [ai.md](ai.md) | AI 管线 | #8 #24 #26 #32 #34 #A1 #A2 |
+| [frontend.md](frontend.md) | 前端 | #1 #2 #16 #F1 |
+| [deployment.md](deployment.md) | 部署与运维 | #5 #20 #21 #22 #D1 #D2 |
+| [testing.md](testing.md) | 测试 | #13 #18 #27 #T1 |
+
+> 本表由 `node tools/doc-lint.cjs` 与各域文件 `### #N` 实际编号对账；两处不一致以域文件为准并改本表。
 
 ## 条目格式（每条坑必须齐四段）
 

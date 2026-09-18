@@ -1,5 +1,6 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
+> 最后更新：2026-09-18（代理端口统一 12000）
 > 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南；已与当前代码核对一致，2026-09-11 复核）。
 > 架构与凭据位置看根目录 `ARCHITECTURE.md`；修复历史看 `archive/docs-deprecated/A_CLASS_FIX_REPORT.md`；历史文档在 `archive/`。
 
@@ -23,7 +24,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 
 1. 上传代码（排除 `node_modules/ data/ .env portal/ archive/`），`npm install --production`
 2. 需要抖音功能才装 Playwright：`npx playwright install chromium`（约 300MB）
-3. 配 `.env`：`PORT=3000`；海外源需 `HTTPS_PROXY=http://127.0.0.1:7890`（公众号/B站/抖音/AIHOT 国内源不需要代理）
+3. 配 `.env`：`PORT=3000`；海外源需 `HTTPS_PROXY=http://127.0.0.1:12000`（Clash 实际端口，旧 7890 已失效；公众号/B站/抖音/AIHOT 国内源不需要代理）
    > ⚠️ **宝塔部署本身不解决海外源可达性**：能不能抓 YouTube/X 取决于服务器所在地域/出站代理，不取决于面板。国内机房服务器仍需配代理（或换海外机房）；本机之所以能抓是因为本机有代理。
    > 🔐 **API 鉴权已上线（2026-09-05，本地/云端一致）**：公开 GET 无需鉴权；写操作（POST/PUT/DELETE）需 `Authorization: Bearer <JWT>`，经 `POST /api/auth/login`（ADMIN_USER/ADMIN_PASSWORD）换取，7 天有效，签名密钥 `AUTH_SECRET`。上公网仍需确认 `.env` 已配置这三个变量。
 4. `npm run build` → `npm run pm2:start` → `pm2 save` → `pm2 startup`（开机自启）

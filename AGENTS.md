@@ -1,5 +1,6 @@
 # AGENTS.md — 全网情报系统 · Agent 协作规则
 
+> 最后更新：2026-09-18（§3 验收加文档门禁；§0 必读清单加 `docs/DOC_GOVERNANCE.md`）
 > 任何 AI Agent 接手本项目前**必读**。本文件是项目级强制约束，优先级高于其它文档。
 > 原则：**文档从真实环境逆推，不是约束；线上实测是唯一验收标准。**
 
@@ -9,6 +10,7 @@
 2. `docs/FEATURE_MATRIX.md` —— 本地/云端/runner 三端功能矩阵（唯一权威，SSOT）
 3. `ARCHITECTURE.md` —— 架构决策 + 已知坑（每条坑都对应过一次线上事故）
 4. `docs/HANDOVER.md` —— 凭据速查 + API 清单（⚠️ 含密钥，本地文件，永不提交）
+5. `docs/DOC_GOVERNANCE.md` —— 文档清洁与归档规则（§2 第 3 条「同步文档」的执行标准；每轮交付末尾必做）
 
 ## 1. 三端心智模型（改代码前必须知道自己在改哪一端）
 
@@ -37,7 +39,7 @@
 - `npm test`（node:test，tests/）必须全绿；引用 server/* 的测试文件先 require tests/helpers（APP_DATA_DIR 隔离）
 - `node smoke-test.js` 冒烟（生产库副本，零副作用）
 - 每个线上修过的 bug 必须有回归测试
-- 验收 = npm test 全绿 + `npm run build:vercel` 无错 + 云端实测通过
+- 验收 = npm test 全绿 + `npm run build:vercel` 无错 + 云端实测通过 + **`npm run lint:docs` 零错**（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
 
 ## 4. 常用入口
 

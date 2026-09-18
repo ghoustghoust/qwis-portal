@@ -1,5 +1,6 @@
 # 功能矩阵 · 迁移路径 · 待开发目标 · 理想态
 
+> 最后更新：2026-09-18（GH runner 职责行补全 7 批次（09-18 清洁轮））
 > **本文档是唯一权威的功能覆盖矩阵**（SSOT）。其它文档（MODULE_STATUS 等）不再维护矩阵，一律指向本文。
 > 生成方式：**以真实环境逆向推导**——云端能力逐端点实测于 `https://qwis-intel.vercel.app`（2026-09-11），本地能力以 `server/` 代码为准。
 > 更新规则：任何端点增删改 → 先改本文，再改其它文档。每条功能改动必须云端实测后才允许把矩阵标为 ✅。
@@ -12,7 +13,7 @@
 |---|---|---|---|
 | **本地**（`server/`，localhost:3000） | Express + better-sqlite3，PM2/手动 | 全功能开发/灾备；抖音 Playwright、B站 wbi 等重依赖功能 only here | 本地 `data/app.db` |
 | **Vercel**（`api/`，qwis-intel.vercel.app） | Serverless 读层 + 管理后台 | 面向用户的阅读与管理界面 | Turso（东京） |
-| **GH runner**（`tools/collect-turso.js` + `.github/workflows/collect.yml`） | 每 15min 定时任务 | 采集 / 日报 / 清理，直写 Turso | Turso |
+| **GH runner**（`tools/collect-turso.js` + `.github/workflows/collect.yml`） | 每 15min 定时任务 | 采集 / 早报（含 AI 双档）/ 我的早报 / 周刊 / 翻译 / 快照 / 清理，直写 Turso（cron 真值见 `collect.yml:24-36`） | Turso |
 
 **数据流**：runner 采集 → Turso ⇄ Vercel API → 浏览器。本地与 Turso 之间**无自动同步**（tools/migrate-to-turso.js 为手动迁移工具）。
 

@@ -4,7 +4,8 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-18 晚（AI 守卫 + 构建中断修复 + 周刊杂志版还原 + 用户 6 条页面标注；活跃 B12~B19、挂案 H9~H13）
+> 最后更新：2026-09-18 深夜（文档清洁轮 + 自愈/健康度实测：活跃 B8~B25、观察 W1~W7、挂案 H1~H17；新增 §阻塞项与优化方向）
+> 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
 
@@ -15,7 +16,7 @@
 | B8 | 综述/文章详情无排版（加粗/重点标注丢失，纯文本渲染） | 前端渲染层（markdown 化） | T5-5 / spec 32 |
 | B10 | 每日早报 AI 版仍显示关键词版栏目注解（"Codex、Claude、豆包…"） | AI 栏目 desc 未随 v2 更新 | T5-3 一并 |
 | B11 | 后台 Tab 切换懒加载 chunk 冷启动卡顿（前台已做骨架屏，后台未覆盖） | 感知性能 | spec 33 |
-| B12 | `npm test` 基线 4 项红：regression-bc 的 A9/A10/B15/B18 断言 `portal/api/_safeimg.js`、`portal/api/_handlers.js` 等——这些文件已在 portal 自身提交 `2e81cd7`（Vercel serverless 重构）中删除，测试未跟着重新锚定。**违反 AGENTS.md §3「必须全绿」，且 B18 一红就没人再盯云端 /api/img 的 SSRF 防护**（该风险在 H3 里是已知挂案） | 测试锚点失效（非产品缺陷） | 待立小 spec：把 B18 重新指向 `api/[...slug].js` 真实云端读路径 |
+| B12 | `npm test` 基线 4 项红：regression-bc 的 A9/A10/B15/B18 断言 `portal/api/_safeimg.js`、`portal/api/_handlers.js` 等——这些文件已在 portal 自身提交 `2e81cd7`（Vercel serverless 重构）中删除，测试未跟着重新锚定。**违反 AGENTS.md §3「必须全绿」，且 B18 一红就没人再盯云端 /api/img 的 SSRF 防护**（该风险在 H3 里是已知挂案）<!-- doc-lint:ignore：本行刻意引用已删除路径 --> | 测试锚点失效（非产品缺陷） | 待立小 spec：把 B18 重新指向 `api/[...slug].js` 真实云端读路径 |
 | B13 | 生产构建自 09-17 16:38 起连续 4 次 Error：`8284f70`/`3288371` 已提交但 `web/src/components/ui/MdText.jsx` 从未入库 → rollup `Could not resolve` → **线上一直跑 09-17 之前的旧 bundle**，周刊兜底与我的早报 AI 渲染「修了但没上线」 | 已修（d7b5df4 补提交），部署已 ● Ready | 本轮 |
 | B14 | `tools/collect-turso.js` 调用**从未定义的 `qOne()`**（6 处：`:648 :655 :725 :970 :971 :1216`），每处 `ReferenceError` 被上层 `try/catch` 吞成一行 runner 日志。后果：`reading.digest` 从未生成（**阅读足迹卡自上线起就没存在过**）、`daily-ai stats.videos` 恒 0、collect「少量失败」分支下同一 try 内的 `collectStalled` 停滞检测被整体跳过 | 已修（补 `qOne` + 静态回归锁），待 runner 批次产出验证。详见坑 #33 | 本轮 |
 | B15 | `articles.read_at` 疑似被批量写入：24h 内 `read_at >= 24h前` 命中 **24855 行**（占库存绝大多数），修复 B14 后「阅读足迹」会直出「过去 24 小时读了 24855 篇」这种荒谬数字 | 待查：定位是哪条链路在自动标已读（疑热榜/聚合源的 read 回写），digest 口径需按真实用户行为收敛 | 需单独确认 |
@@ -25,6 +26,10 @@
 | B19 | 我的早报「今日总结」线上常空：`generateTheme` 判污染后返回 null（宁缺毋滥，方向是对的），根因是 Agnes 推理模型间歇只吐 reasoning 不吐正文——与坑 #26 同源 | 已断掉"reasoning 冒充正文"（无正文即抛错）；额度/模型侧波动归 W6 继续观察 | 观察中 |
 | B20 | 每日早报**完全没有分析后质量门槛**（用户标注「一两颗星是不是含金量不高」抓出）：深析契约无 `veto`，`runDailyAi` 只在初筛用 `ignore`，「重点更新」栏判据是 `source_spotlight`（看源不看分）→ 实测 `score=10`「出售 AI 工作站」reason 自陈"不适合收录至早报"仍坐最显眼大卡。另：本地灾备 `daily-ai.js analyzeBatch` 只返回 `{summary,importance,tags}` **无六维分**，与 runner 深析契约已分叉，门槛无法同口径同步 | 门槛已加（`passesDailyQualityGate`，默认 ≥30 与 `ai.filterThreshold` 同口径，可配 `ai.dailyMinScore`）；**待下一批 daily-ai 跑批生效**。长期需给模型 `veto` 出口 + 本地补六维分 | 本轮（待验证） |
 | B21 | 每日早报缺「本期索引」（周刊页 T5-6 已有右侧条目索引可复用），且从别的页签切回 `/daily/` 有卡顿；期号方面 `daily_reports` 有自增 `id`（线上 `report.id=100`）但直接当"第 N 期"无意义（含非 AI 批次插入），仍应与我的早报一起走归档设计 | 索引/卡顿待查（卡顿需先定位是 chunk 冷加载还是 46 卡 + 封面重排）；期号并入 H13 一起定 | 待办 |
+| B22 | 后台「源抓取成功率」颜色一直是坏的：`MonitorTab.jsx:8-11 rateColor()` 与 `:111-151` 表格用 `t-success/t-warn/t-danger` 三个类，而 `web/src/index.css` **从未定义它们**（只有 `t-text/t-muted/t-accent/t-purple`，`:73-82`）→ 三主题下文字色全继承，分档形同不存在 | 一行 CSS（三主题各定义）可修；但应与 35C 的色彩单一实现一起做，避免先补一版再收敛 | 待办（35C-F4） |
+| B23 | 云端 `/api/health/source-stats` 的"成功率"是**布尔伪装**：`api/[...slug].js:1693-1704` 注释自陈「云端无 job_queue 历史」→ 实现 `rate: status==='ok'?100:0`。用户要的"成功抓取概率"目前不存在，且这个假数字比没有数字更误导 | 必须先用 35B 的滚动窗口把分母补上，再改此端点；禁止继续用 100/0 冒充概率 | 待 35B |
+| B24 | 采集心跳 `settings.cloud.collect.history` 撑不起任何统计：代码注释写「7 天×24」，实测 168 条只覆盖 **25 小时**；且 `failures[]` **截断 20 条、只含失败源** → 有负样本无正样本，逐源算不出分母（`tools/collect-turso.js:489-505`） | 35B 用每源定长滚动窗口替代；顺带把注释与切片按 mode 分池订正 | 待 35B |
+| B25 | 上一轮会话中断留下**未提交在途改动 4 个文件**（B8 主题 markdown 化 `DailyPage.jsx:178` + `index.css` `.md-mark/.md-code`、B11 后台 TabLoader 骨架屏、本地 `daily-ai.js isEnabled()` 改判据）。已实测 `npm run build` 通过、`npm test` 297/301 绿（4 红即 B12 既有项，非本次引入）；但 `index.css` 那处编辑把注释收尾和选择器挤成一行 `*/.rail-btn {`（CSS 仍可解析，属破口非故障） | 补一个换行 + 决定是否提交；**未提交 = 未推 = 线上没有 B8/B11** | 待用户确认（页面标注要重做） |
 
 ## 🟡 观察中（有明确验证时间点）
 
@@ -36,6 +41,7 @@
 | W4 | 翻译插队 60 篇热点英文文章（09-14 晚入队） | 事件榜/精选英文条目陆续转中文 |
 | W5 | 翻译管线系统性修复（09-15：薄正文仅标题通道/清洗器补起手式/占位金句清洗/优先级=早报>我的早报>周刊>热点榜+id 直接补候选池；34+2 篇污染回炉重翻） | 今晚 21:30 主批+后续 translate 轮次：早报类条目中文标题无元评论/无胡编标题/金句无占位符 |
 | W6 | 2026-09-18 早报/周刊 AI 守卫（`lib/brief-guards.js` 不变量 12 + 周刊 <4 条不发布 + mybrief 补刷 reading.digest + 报警覆盖面扩 daily-ai/weekly/mybrief + dispatch `inputs.mode` 补跑口） | 部署后：①`/api/daily` 应立刻回到 `schemaVersion:2`（带 theme/stats.themes/六维）；②dispatch mode=mybrief 后 `/api/mybrief` 应带 `digest` 键；③`/api/weekly` 若不足 4 条应保留上一期而非变空；④北京 09:03 的 `daily-report` 裸报不再能遮蔽 AI 版 |
+| W7 | B20 每日早报质量门槛（`passesDailyQualityGate`，已推 `7764ccf`）+ B14 `qOne` 修复（runner 侧）——**两者都只是"已提交"，都还没有跑批证据** | 下一批 `daily-ai`（北京 21:30 / 00:32）：①`/api/daily` 不再出现 `score<30` 条目（实测 09-18 那批有 score=10/22 各一条）；②`reading.digest` 生成、`stats.videos` 不再恒 0、collect「少量失败」分支的停滞检测不再被跳过 |
 
 ## 🟢 挂案（外部依赖/低优先，保持跟踪）
 
@@ -52,6 +58,36 @@
 | H11 | `weekly.archive` 每期内嵌完整 report、items 又在 `storylines[].items` 重复一份，`:878` 明确不截断；`handleWeekly` 每次请求全量解析后只投影 5 个字段，而 `[...slug]` 函数预算只有 30s | 挂案：慢性 504 面，需加投影/截断策略 |
 | H12 | `settings['weekly']` 在后台可编辑（`/api/settings` merge + 周刊设置卡片），但 `runWeekly` 从不读它——窗口/条数全硬编码（`collect-turso.js:765-766`、`:844`） | 挂案：改了无效，需接配置或撤 UI |
 | H13 | 我的早报**没有期号也没有归档**：`runMyBrief` 落库的 `mybrief.latest` 只有 `date/generatedAt/theme/keywords/sections/themes/degraded`，无 `issue`，且全库不存在 `mybrief.archive`（单键覆盖写，历史期直接丢失）。用户 2026-09-18 标注「我的早报也该有期号」。周刊有期号是因为 `saveWeekly` 从 `weekly.archive` 末位 +1 | 挂案：要期号必须先有归档（否则期号会随覆盖写重置）；属功能设计，需单独立项 |
+| H14 | **熔断后不靠人点这件事，三端行为完全不同**（2026-09-18 应用户「你去测」做的只读实测）：本地端 `store.js:31-38` 只置 `enabled=0`，**零自动恢复路径**，实测 584 个源锁死 5~7 天（其中 458 个 `lastErrorAt` 全落在 09-13T03 同一小时、错误一律 `fetch failed`＝一次代理故障批量熔断）；云端 `collect-turso.js:697-720` 有自动恢复且真在工作（一轮 cleanup 恢复 66 个），但要等 **48h 起**（第 4 次起 7 天）而熔断只需 **45min**（3 连跪 × 15min）→ 实测 195/210 源"恢复后又坏"、间隔中位 6.2h，`frozenAt` 精确聚集在每天 cleanup 那一小时。抽样 23 个熔断源真发重试：**18 个（78%）立刻成功**（6 个 YouTube 假 404 / 3 个 xgo 桥 400 / 2 个 403 / 1 个我方解析器 bug） | 用户判断方向成立（"没坏、过一会重试就能上"＝78% 量化成立），归因需修正：云端不是"没有自愈"而是"自愈被 48h 流放 + 不看错误性质 + 本地端根本没实现"。方案见 `docs/specs/35-selfheal-admin-console/35a-selfheal-engine.md`，**待批准未动工** |
+| H15 | `restore-all`（`api/[...slug].js:1606-1627`）是**全量无差别解冻**：按 `fail_count>=3 AND enabled=0` 一把梭，不试探、不排除 `mergedInto/retired`（cleanup 反而排除，`collect-turso.js:705`），`unfreezeStmt`（`:1596-1604`）也不清 `frozenAt/resumeCount` → 死源被反复放回、活源计数被污染 | 挂案：35A-F8 里改成"按类别分批试探恢复"；期间人工批量入口仍可用，但要知道它会把真死源也放回 |
+| H16 | **系统性故障被折算成单源失败**：出口/代理/RSSHub 桥挂一次，本轮全部到期源 `fail_count++`，于是"我们的网络抖一下"变成"几百个源坏了"（H14 的 458 源批量熔断就是这么来的）。现有 `postRunAlerts` 已有"批量失败聚合报警"（`collect-turso.js:638-648`）但**只改报警形态，不改熔断判定** | 挂案：35A-F6 要求失败率超阈值即判基础设施故障、本轮不计入单源；这条优先级应排在 H14 其余项之前（它是唯一会一次性打瘫全库的） |
+| H17 | 文档治理债（本轮实测清点）：`docs/specs/` 里 10/12/27~34 共 **11 个 spec 只有 spec.md，无 plan/task/checklist**，而 `INDEX` 长期声称"四件套"；`HANDOVER.md`/`HANDOFF_PROMPT.md` 曾各自内嵌进度快照（已清，见 `DOC_GOVERNANCE` §4.5 与本次改动）；`portal/` 仍带一份过时 `docs/` 副本（关联 H9） | 已立规则未补历史：`docs/DOC_GOVERNANCE.md`（清洁 SOP + 六类归档 + 门禁）＋ `tools/doc-lint.cjs` 自检（**该脚本本轮未实现，列在阻塞项 BL6**）。历史四件套不补，只在 INDEX 如实标注"只有 spec.md" |
+
+## ⛔ 阻塞项与优化方向（2026-09-18 文档清洁轮）
+
+### 阻塞项（不先清掉，后面任何改动都无法判断"是不是我改坏的"）
+
+| # | 阻塞 | 为什么阻塞 | 清法 |
+|---|---|---|---|
+| BL1 | B12 测试基线 4 项红（`npm test` 实测 297/301 绿，红的是 regression-bc 的 A9/A10/B15/B18，锚点指向已删除的 `portal/api/_safeimg.js`、`_handlers.js`）<!-- doc-lint:ignore：刻意引用已删路径 --> | 自愈要改三端语义，基线红着就没有"新增失败"的判据；且 B18 一红没人盯云端 `/api/img` 的 SSRF | 小 spec：重新锚定到 `api/[...slug].js` 真实云端读路径（**违反 AGENTS §3，属最高优先的"清障"活**） |
+| BL2 | B14 `qOne()` 修复只提交了 `1d135f4`，**没有一个真实 runner 批次产出证据** | 35A 的恢复判定要读源状态行，同族静默 ReferenceError 未闭环 | 等 W7 观察期，看下一批 collect/daily-ai 日志 |
+| BL3 | 采集尝试流水不存在（B23 假成功率 + B24 心跳只 25h 且无正样本） | 「每源成功抓取概率」现在**物理上算不出来**，35C 只能继续显示假数字 | 35B（滚动窗口，不建新表） |
+| BL4 | H9 portal gitlink 无 `.gitmodules` | 三端语义收敛时极易误改 `portal/` 副本；Vercel 构建已报 submodule 警告 | 拍板：补 `.gitmodules` or 停 portal 部署/收编为普通目录 |
+| BL5 | B15 `articles.read_at` 被批量写（24h 内 24855 行） | 保留策略与"已读豁免删除"、未来的阅读足迹口径都被污染 | 单独定位写入方（疑热榜/聚合源 read 回写） |
+| BL6 | ~~`tools/doc-lint.cjs` 尚未实现~~ **本轮已实现**（六条门禁：头注/悬空/INDEX 登记/归档头注/超长/明文密钥；已接 `npm run lint:docs`） | 文档清洁此前只能人工核对，下次必烂回去 | 已闭合；待接进 CI 与 AGENTS §3 验收清单（下轮） |
+
+### 需用户拍板（不拍板无法排期，均属"改变行为或加列"的决策）
+
+B17 周刊初筛预算结构性不足 · B18 `videos` 表无 `score`/`translated_title` 列（视频评分与翻译二选一或都做）· H10 `settings.ai.features` 假开关（接进链路 or 摘 UI）· H12 `settings['weekly']` 改了不生效 · H13 我的早报期号+归档 · H1/B15 是否给 YouTube 上住宅代理 · `35D` 的 D1~D5 后台边界。
+
+### 优化方向（非阻塞，按性价比排序）
+
+1. **先做 H16**（系统性故障不折算成单源失败）：一条判据（本轮失败率 >30% 或错误指纹高度同源 → 本轮不计失败），挡住"一次代理挂＝全库 458 源熔断且永不恢复"。这是当前唯一能一次性打瘫全库的缺陷。
+2. **本地端补自动恢复**（H14 本地线）：纯增量，不动云端语义；顺带把历史锁死的 584 源按类别分批试探恢复一次。
+3. **冷却按错误类别分级 + 解冻前探活**（35A-F3/F4）：把 48h 流放换成分钟级退避；`parser-defect` 一律不熔断（是我们的 bug，锁源＝藏问题）。
+4. **35B 数据窗口 → 35C 彩色百分比**（顺手修 B22，把 `RateBadge` 三处调用点一次收敛）。
+5. 早报体感尾巴：B21 本期索引与页签切回卡顿、B8/B11 在途改动（B25）落定、B20 门槛跑批验证（W7）。
+6. **35D 管理后台大重构放最后**（默认最低优先级）：等 1~4 的行为与数据语义稳定后再动布局，先让用户拍板 D1~D5。
 
 ## 已关闭挂案（本轮核销）
 

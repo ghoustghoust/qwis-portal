@@ -2,7 +2,7 @@
 
 > **这份文档的目的**：让任何接手的 Agent 在改代码之前，先理解"网页数据为什么会自动更新"，
 > 避免改功能时把采集/调度链路碰断而又不自知（本系统已经因此静默停摆过 2 天）。
-> 最后更新：2026-09-14（调度图对齐 collect.yml 真实值 15min + 补 cron-job.org 触发器注解与不变量 9）
+> 最后更新：2026-09-18（文档清洁轮：测试基线不再写死数字；调度图 09-14 已对齐 collect.yml 真实值）
 
 ---
 
@@ -111,7 +111,7 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
       **读取侧档位守卫在 `lib/brief-guards.js`（不变量 12），四个写入者共用，勿在任一端重写**。
 - [ ] 改了 Turso schema？→ 四处采集实现 + `tools/generate-snapshots.js` + `api/[...slug].js` 全部要对齐。
 - [ ] 改了 workflow 的 cron？→ 注意 GH Actions 是 **UTC**，且整点拥挤，用错峰分钟（:07/:37 风格）。
-- [ ] 改完必须跑：`npm test`（278 项全绿为基线，2026-09-15 起；不许新增失败）。
+- [ ] 改完必须跑：`npm test`（**条数以命令输出为准，本档不写死**；基线状态见 `docs/ISSUES.md`，当前已知 B12 四项红）。不许新增失败。
 - [ ] 涉及云端的改动 → 部署后跑一次 `workflow_dispatch` 验证 4 个 job 全绿（见 §4）。
 
 ## 3.1 部署方式（2026-09-11 晚更新）
@@ -178,11 +178,11 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | **AI 翻译** | ✅ 已上线 | GH runner | collect-turso.js translate；Agnes 401 真根因=settings.ai 污染，已修复（2026-09-11 晚），实测近 1 小时翻译 110 篇 |
 | **AI 对话/摘要（手动触发）** | ✅ 已上线 | Vercel | /api/ai/chat 供应商链 Agnes 优先；settings.ai 已清空，env 唯一来源 |
 | YouTube/X | ⚠️ 间歇 | GH runner | 反爬掷骰，阈值已放宽 |
-| B站 | ❌ | 仅本地 | wbi 签名未移植（纯 crypto 可移植，待做） |
+| B站 | ✅ | runner | `api/_bilibili.js` 三链路（wbi 主链 + 合集 + 搜索兜底），匿名可用（2026-09-12 上云，见 FEATURE_MATRIX）；播放直链仍本地 |
 | 抖音 | ❌ | 仅本地 | 需 Playwright 登录态，永远本地 |
 | 云端队列 poller（手机提交链接） | ⚠️ 手动 | Vercel 手动 / 本地自动 | 云端已可 `POST /api/queue/sync` 手动拉取；自动轮询仍在本地调度器 |
 | OPML 源清单同步 | ⚠️ 手动 | Vercel 手动 / 本地自动 | 云端已可 `POST /api/opml/sync`；12h 自动同步仍本地 |
-| 采集停滞报警 | ❌ | 仅本地 | 心跳已埋点（settings cloud.collect），报警引擎未上云（15-cloud-alerts 待做） |
+| 采集停滞报警 | ✅ | runner + 本地 | 心跳埋点 `settings.cloud.collect`；报警引擎已上云（`api/_alerts.js`，15-cloud-alerts 09-12 交付；runner 每轮 `postRunAlerts` 调停滞/熔断/批量失败检测，见 `collect-turso.js:556`） |
 | 页面内自动刷新 | ✅ 已上线 | Vercel | 60s 增量轮询 /api/articles/since（2026-09-11 替代废弃的 SSE） |
 
 > 结论：**本地关机，信息流、日报、翻译、阅读全部正常运转**。仅 B站/抖音采集、手机提交队列、OPML 增量同步依赖本地开机。
