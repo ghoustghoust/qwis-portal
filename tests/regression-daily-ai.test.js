@@ -56,6 +56,28 @@ test('3b. generateTheme：思维链/元任务污染行全部拒绝 → 返回 nu
   _ai._setProviderOverride(null);
 }, { timeout: 30000 });
 
+test('3c. generateTheme：第一人称"写作意图句"必须拒绝（2026-09-18 周刊第 2 期线上实锤污染）', async () => {
+  // 线上实际入库值：/api/weekly report.theme === "我需要找到贯穿这些文章的核心主线。"
+  // 旧否决表只列了 我想/我觉得/我会/我来/让我… 与「需要我」（词序相反），
+  // 「我需要」两头都不沾 → 既没被 isAnalysis 拦下也没被一票否决拦下。
+  const bad = [
+    '我需要找到贯穿这些文章的核心主线。',
+    '我们必须从三个维度来组织这期周刊。',
+    '我们应该聚焦算力与治理的张力。',
+    '我们要讲的是基础设施的稀缺性。',
+    '我需要强调的是，本周的主线是安全。',
+  ];
+  for (const line of bad) {
+    _ai._setProviderOverride(async () => line);
+    assert.equal(await _ai.generateTheme([{ title: 'a', reason: 'r' }]), null, `应拒绝第一人称写作意图句: ${line}`);
+  }
+  // 反向保护：含「自我/我们」但确为内容陈述的导语不得被误杀
+  _ai._setProviderOverride(async () => '从模型开源，到算力自建，再到数据主权，判断 AI 行业的自我定位。');
+  const ok = await _ai.generateTheme([{ title: 'a', reason: 'r' }]);
+  assert.ok(ok && ok.includes('自我定位'), `内容陈述句不应被误杀，实得: ${ok}`);
+  _ai._setProviderOverride(null);
+}, { timeout: 30000 });
+
 test('4. 窗口计算：北京自然日边界', () => {
   // 复现 runDailyAi 的窗口算法
   const bjOffset = 8 * 3600e3;

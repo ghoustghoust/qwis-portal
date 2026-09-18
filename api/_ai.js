@@ -387,14 +387,17 @@ async function generateWeeklySummary(items) {
   const list = items.slice(0, 20).map((it, i) => `${i + 1}. ${it.title}（${it.reason || it.summary || ''}）`).join('\n');
   const prompt = '你是科技媒体主编。基于本周精选内容写一段 150-200 字的本周总结：概括 2-3 条主线，给出一个趋势判断。只输出总结正文，不要标题、不要列表符号、不要解释。';
   const r = await aiChat([{ role: 'user', content: `${prompt}\n\n## 本周精选\n\n${list}` }], { kind: 'theme', maxTokens: 512, timeoutMs: 60000 });
-  if (!r.ok) return null;
+  if (!r.ok) { console.warn(`[weekly] 本周总结放弃：AI 调用失败 ${r.error}`); return null; }
   const lines = String(r.reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
   const isMeta = (l) =>
     /^(用户|让我|我来|我需要|好的|以下|这是|#|\d+[.、]|[-*•])/.test(l) ||
     /^(Let me|The user|I need|Okay|Here|Sure|Based on|This week's)/i.test(l) ||
     l.length > 160;
   const body = lines.filter((l) => !isMeta(l)).join('');
-  if (!body || body.length < 60) return null; // 全被拒或过短 → 不出注脚
+  if (!body || body.length < 60) { // 全被拒或过短 → 不出注脚
+    console.warn(`[weekly] 本周总结放弃：${lines.length} 行清洗后仅剩 ${body.length} 字（<60），判为全被元文本否决`);
+    return null;
+  }
   return body.slice(0, 300);
 }
 
@@ -406,17 +409,20 @@ async function generateWeeklyMagazine(items) {
     .map((it, i) => `${i + 1}. ${it.title}｜分类：${it.weeklyTheme || '其它'}｜来源：${it.source || ''}｜摘要：${String(it.summary || it.reason || '').slice(0, 120)}`)
     .join('\n');
 
+  // 2026-09-18：本函数原先有 5 条 `return null` 全都不出声——线上周刊连续出现
+  // storylines/coverTheme 整体为空却查不到是哪一条守卫拒的。每条放弃都记原因。
+  const fail = (why) => { console.warn(`[weekly] 杂志结构放弃：${why}`); return null; };
   const r1 = await aiChat(
     [{ role: 'user', content: `你是科技周刊主编。把下面 ${items.length} 条本周精选组织成 3-5 条递进主线。只输出严格 JSON（不要解释）：\n{"coverTheme":"本期主题（4-12字完整可读短语，让读者一看就懂本周在讲什么，如：AI减速与全球震荡、可托付的智能）","storylines":[{"title":"主线标题（观点式，≤20字）","itemNumbers":[1,3,7],"narrative":"本线叙事（≤100字，说明这条线为什么重要、递进关系）"}]}\n\n每条 itemNumbers 至少 2 个、全部条目尽量被覆盖、编号不得越界。\n\n## 本周精选\n\n${list}` }],
     { kind: 'theme', maxTokens: 3200, timeoutMs: 90000 }
   );
-  if (!r1.ok) return null;
+  if (!r1.ok) return fail(`主线调用失败：${r1.error}`);
   let magazine = null;
   try {
     const m = String(r1.reply || '').match(/\{[\s\S]*\}/);
-    if (!m) return null;
+    if (!m) return fail(`回复里没有 JSON 对象（前 80 字：${String(r1.reply).slice(0, 80)}）`);
     const j = JSON.parse(m[0]);
-    if (!j.coverTheme || !Array.isArray(j.storylines)) return null;
+    if (!j.coverTheme || !Array.isArray(j.storylines)) return fail(`字段缺失 coverTheme=${JSON.stringify(j.coverTheme)} storylines 是否数组=${Array.isArray(j.storylines)}`);
     const storylines = j.storylines
       .filter((sl) => sl && sl.title && Array.isArray(sl.itemNumbers))
       .map((sl) => {
@@ -429,9 +435,12 @@ async function generateWeeklyMagazine(items) {
       })
       .filter((sl) => sl.items.length >= 2)
       .slice(0, 5);
-    if (!storylines.length) return null;
+    if (!storylines.length) return fail(`模型给的 ${j.storylines.length} 条主线全部不合格（无标题/编号越界/不足 2 条）`);
+    const covered = new Set(storylines.flatMap((sl) => sl.items.map((it) => it.id)));
+    const missed = items.filter((it) => !covered.has(it.id)).length;
+    if (missed) console.warn(`[weekly] 主线策展未覆盖 ${missed}/${items.length} 条（前端「其它精选」兜底显示，不丢内容）`);
     magazine = { coverTheme: String(j.coverTheme).slice(0, 20), storylines };
-  } catch { return null; }
+  } catch (e) { return fail(`JSON 解析异常：${e.message}`); }
 
   magazine.editorNote = await generateWeeklyEditorNote(items, magazine.storylines);
   return magazine;
@@ -475,6 +484,10 @@ async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme
     // 元任务话术：导语必须只谈内容，凡复述"角色/任务"的句子一律拒绝
     // （2026-09-13 二次实测污染："用户希望我作为科技媒体主编，从入选列表中提炼出一句话导语"）
     /(用户希望|用户要求|需要我|要求我|作为.{0,12}(主编|编辑|专家)|提炼|一句话导语|入选列表|概括(一|今日)|总结(一|今日|一下))/.test(l) ||
+    // 第一人称开头 = 在陈述"我要怎么写"，不是在陈述本周内容（2026-09-18 周刊第 2 期
+    // 把「我需要找到贯穿这些文章的核心主线。」当成主题词入库，并同步污染归档标签）。
+    // 只按句首判，避免误杀「AI 行业的自我定位」这类含"我"的内容陈述。
+    /^(我|我们|咱|本人)/.test(l) ||
     /[::：]\s*$/.test(l) || l.length > 120;
   const candidates = lines.filter((l) => !isAnalysis(l));
   // 2026-09-13：全部行都是分析文本时直接放弃（返回 null → 前端无导语展示），
@@ -486,7 +499,7 @@ async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme
     .replace(/^(导语应该是|导语|今日主题|主题导语|主题)[:：]?\s*/g, '')
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
   // 第一人称/写作过程元文本一票否决（三轮实测污染：英文思维链句/角色复述/「我想到一个更好的方式来组织这个叙事」）
-  if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到)|叙事|让我|输出|写作|这个方式/.test(picked)) return null;
+  if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到|需要|必须|应该|要|强调)|叙事|让我|输出|写作|这个方式/.test(picked)) return null;
   return picked + '。';
 }
 
