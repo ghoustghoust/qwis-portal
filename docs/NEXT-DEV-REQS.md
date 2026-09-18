@@ -272,7 +272,8 @@ B27（`AS date`）· B28（`tabCond` 加括号）· B39（生成历史真 7 天�
 
 - ✅ 已完成 15 项：B22 · B27 · B28 · B39 · B47 · B48 · B51 · B53 · B54 · B56 · B58 · 35A-F6，
   外加实测过程中新发现并一并修掉的 B60 / B61 / B62（同一分类判定全库 6+1 份副本收敛成一份）。
-  每项都有回归锁且「改前红 / 改后绿」，共 43 条锁（`tests/regression-20260919b/c/d.test.js`）；
+  每项都有回归锁且「改前红 / 改后绿」，共 43 条锁（`tests/regression-20260919b.test.js`、
+  `tests/regression-20260919c.test.js`、`tests/regression-20260919d.test.js`）；
   四门禁 + 云端实测口径见 `docs/EVAL_GUIDE.md`。
 - ⛔ 未做 3 项，各有明确原因，不是遗漏：
   - **B35 / B38** — 要改 `web/src/pages/AdminPage.jsx`，该文件有你在途未提交改动（B11 骨架屏）。
