@@ -72,6 +72,10 @@ function getDb() {
   return _db;
 }
 async function qAll(sql, args = []) { return Array.from((await getDb().execute({ sql, args })).rows); }
+// 2026-09-18：本函数此前根本不存在，却被 6 处调用（buildReadingDigest/停滞检测/逐条报警/
+// 视频计数/cleanup 计数）→ 每处都是 ReferenceError，且全部落在 try/catch 里被吞成一行日志，
+// 表现为「阅读足迹永久缺失」「collectStalled 停滞检测在少量失败分支下整体不执行」。
+async function qOne(sql, args = []) { return (await getDb().execute({ sql, args })).rows[0] || null; }
 async function qRun(sql, args = []) { const r = await getDb().execute({ sql, args }); return { changes: r.rowsAffected }; }
 
 // ─── 工具 ───

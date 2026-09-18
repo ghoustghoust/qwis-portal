@@ -44,3 +44,30 @@ test('2. GET /api/weekly 仍正常（改动未破坏公开读路径）', async (
   const r = await call('GET', '/api/weekly');
   assert.ok(r.body.ok || r.body.empty, '应返回报告或空态，而不是错误');
 });
+
+// 2026-09-18 线上对抗审查抓到的真根因：runner 里 qOne() 被调用 6 处却从未定义
+// （只定义了 qAll/qRun）→ 每次 ReferenceError 都被上层 try/catch 吞成一行日志。
+// 直接后果：① reading.digest 从未生成（我的早报「阅读足迹」永久缺失）；
+// ②daily-ai 视频计数恒 0；③collect 报警块在「少量失败」分支抛错后，
+//   同 try 内的「停滞检测 collectStalled」被整体跳过——正是"停摆无人发现"的成因。
+test('3. runner 不得调用未定义的 q* 查询助手（qOne ReferenceError 事故回归锁）', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'collect-turso.js'), 'utf8');
+  const defined = new Set([...src.matchAll(/(?:async\s+)?function\s+(q[A-Z]\w*)\s*\(/g)].map((m) => m[1]));
+  const called = new Set([...src.matchAll(/(?<![.\w])(q[A-Z]\w*)\s*\(/g)].map((m) => m[1]));
+  const missing = [...called].filter((n) => !defined.has(n));
+  assert.deepEqual(missing, [], `runner 调用了未定义的查询助手: ${missing.join(', ')}（会以 ReferenceError 被 try/catch 静默吞掉）`);
+  assert.ok(defined.has('qAll') && defined.has('qRun'), 'qAll/qRun 必须仍定义');
+});
+
+test('4. qOne 语义：单行对象、无结果返回 null（.c 类调用点依赖此契约）', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'collect-turso.js'), 'utf8');
+  const body = /async function qOne\s*\([\s\S]*?\n}/.exec(src);
+  assert.ok(body, 'qOne 必须存在');
+  assert.match(body[0], /rows\[0\]/, 'qOne 必须取首行');
+  assert.match(body[0], /\|\|\s*null/, 'qOne 空结果必须返回 null 而非 undefined');
+  assert.ok(
+    src.indexOf('async function qAll') < src.indexOf('async function qOne')
+    && src.indexOf('async function qOne') < src.indexOf('async function qRun'),
+    'qOne 应与 qAll/qRun 同区定义（三个查询助手不许分两处）',
+  );
+});

@@ -16,7 +16,9 @@
 | B10 | 每日早报 AI 版仍显示关键词版栏目注解（"Codex、Claude、豆包…"） | AI 栏目 desc 未随 v2 更新 | T5-3 一并 |
 | B11 | 后台 Tab 切换懒加载 chunk 冷启动卡顿（前台已做骨架屏，后台未覆盖） | 感知性能 | spec 33 |
 | B12 | `npm test` 基线 4 项红：regression-bc 的 A9/A10/B15/B18 断言 `portal/api/_safeimg.js`、`portal/api/_handlers.js` 等——这些文件已在 portal 自身提交 `2e81cd7`（Vercel serverless 重构）中删除，测试未跟着重新锚定。**违反 AGENTS.md §3「必须全绿」，且 B18 一红就没人再盯云端 /api/img 的 SSRF 防护**（该风险在 H3 里是已知挂案） | 测试锚点失效（非产品缺陷） | 待立小 spec：把 B18 重新指向 `api/[...slug].js` 真实云端读路径 |
-| B13 | 生产构建自 09-17 16:38 起连续 4 次 Error：`8284f70`/`3288371` 已提交但 `web/src/components/ui/MdText.jsx` 从未入库 → rollup `Could not resolve` → **线上一直跑 09-17 之前的旧 bundle**，周刊兜底与我的早报 AI 渲染「修了但没上线」 | 已修（a20b5ee 补提交），待部署验证 | 本轮 |
+| B13 | 生产构建自 09-17 16:38 起连续 4 次 Error：`8284f70`/`3288371` 已提交但 `web/src/components/ui/MdText.jsx` 从未入库 → rollup `Could not resolve` → **线上一直跑 09-17 之前的旧 bundle**，周刊兜底与我的早报 AI 渲染「修了但没上线」 | 已修（d7b5df4 补提交），部署已 ● Ready | 本轮 |
+| B14 | `tools/collect-turso.js` 调用**从未定义的 `qOne()`**（6 处：`:648 :655 :725 :970 :971 :1216`），每处 `ReferenceError` 被上层 `try/catch` 吞成一行 runner 日志。后果：`reading.digest` 从未生成（**阅读足迹卡自上线起就没存在过**）、`daily-ai stats.videos` 恒 0、collect「少量失败」分支下同一 try 内的 `collectStalled` 停滞检测被整体跳过 | 已修（补 `qOne` + 静态回归锁），待 runner 批次产出验证。详见坑 #33 | 本轮 |
+| B15 | `articles.read_at` 疑似被批量写入：24h 内 `read_at >= 24h前` 命中 **24855 行**（占库存绝大多数），修复 B14 后「阅读足迹」会直出「过去 24 小时读了 24855 篇」这种荒谬数字 | 待查：定位是哪条链路在自动标已读（疑热榜/聚合源的 read 回写），digest 口径需按真实用户行为收敛 | 需单独确认 |
 
 ## 🟡 观察中（有明确验证时间点）
 
