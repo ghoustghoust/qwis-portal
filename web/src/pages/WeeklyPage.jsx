@@ -39,6 +39,12 @@ export default function WeeklyPage() {
   const report = data?.report;
   const archive = data?.archive || [];
 
+  // 主线策展覆盖率：AI 只是被"要求"尽量覆盖（api/_ai.js:410），而越界编号、不足 2 条的主线
+  // 会被丢弃且从不回填 → 刊头写「本周必看 20 条」页面却只有被选中的那些，其余静默消失。
+  // 这里把没被任何主线覆盖的条目补成一节，保证"一条不丢"。
+  const coveredIds = new Set((report?.storylines || []).flatMap((sl) => (sl.items || []).map((it) => it.id)));
+  const uncovered = (report?.items || []).filter((it) => !coveredIds.has(it.id));
+
   // T5-6：本期文章索引（主线版按主线分组列条目；旧版按主题列）——anchor 用 rank
   const indexGroups = [];
   if (report) {
@@ -46,6 +52,7 @@ export default function WeeklyPage() {
       for (const sl of report.storylines) {
         indexGroups.push({ title: sl.title, items: sl.items.map((it) => ({ rank: it.rank, title: it.title })) });
       }
+      if (uncovered.length) indexGroups.push({ title: '其它精选', items: uncovered.map((it) => ({ rank: it.rank, title: it.title })) });
     } else {
       for (const theme of THEME_ORDER) {
         const list = (report.items || []).filter((it) => it.weeklyTheme === theme);
@@ -160,6 +167,23 @@ export default function WeeklyPage() {
                   </div>
                 </section>
               ))}
+
+              {/* 主线未覆盖到的条目补一节——刊头是 items.length，正文必须一条不丢 */}
+              {!!report.storylines?.length && uncovered.length > 0 && (
+                <section className="mt-8">
+                  <div className="flex items-center gap-3">
+                    <span className="flex-none w-[3px] h-5 rounded-full" style={{ background: THEME_COLOR['其它'] }} />
+                    <h2 className="serif text-lg sm:text-xl font-bold t-text">其它精选</h2>
+                    <span className="text-[11px] t-muted tabular-nums">{uncovered.length} 条</span>
+                    <span className="flex-1 border-t hairline" />
+                  </div>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {uncovered.map((it) => (
+                      <WeeklyCard key={it.id} item={it} onOpen={setStudyItem} />
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* 旧版分主题视图（无杂志结构的期号兼容） */}
               {!report.storylines?.length && THEME_ORDER.map((theme) => {
