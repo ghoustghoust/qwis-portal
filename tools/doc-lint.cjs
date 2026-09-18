@@ -17,6 +17,7 @@ const FOUNDATION = [
   'docs/INDEX.md', 'docs/DOC_GOVERNANCE.md', 'docs/CLOUD_PIPELINE_GUIDE.md',
   'docs/FEATURE_MATRIX.md', 'docs/ISSUES.md', 'docs/NEXT-DEV-REQS.md',
   'docs/RUNBOOK.md', 'docs/DELIVERY_VERIFICATION.md', 'docs/DEVELOPMENT_STANDARDS.md',
+  'docs/EVAL_GUIDE.md',
   'docs/DEV_GUIDE.md', 'docs/ROADMAP-2026-09.md', 'docs/HANDOFF_PROMPT.md',
   'docs/ANDROID_SUBMIT_GUIDE.md', 'docs/X_SETUP_GUIDE.md', 'docs/BESTBLOGS_BORROW.md',
   'docs/pitfalls/README.md', 'docs/HANDOVER.md',
