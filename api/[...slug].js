@@ -372,7 +372,7 @@ const { cleanTranslatedTitle } = require('../lib/text-clean');
 // 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
 const briefGuards = require('../lib/brief-guards');
 // B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
-const { readingTypeFilter, readingTypeCondSql } = require('../lib/reading-filters');
+const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../lib/reading-filters');
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
@@ -1157,7 +1157,7 @@ async function handleReading(req) {
     const items = rowsFull.slice(0, PAGE_SIZE);
     const last = narrow[narrow.length - 1];
     const nextCursor = narrow.length > PAGE_SIZE && last ? last.sort_key : null;
-    return jsonOk({ items, nextCursor, counts });
+    return jsonOk({ items: withReadingKinds(items), nextCursor, counts });
   }
 
   // 带筛选（type/q）：回退单条宽查询（低频路径，可接受）
@@ -1221,7 +1221,7 @@ ${branches}
     if (last && last.sort_key) nextCursor = last.sort_key;
   }
 
-  return jsonOk({ items, nextCursor, counts });
+  return jsonOk({ items: withReadingKinds(items), nextCursor, counts });
 }
 
 // POST /api/articles/read-all — 按当前过滤条件全部标为已读

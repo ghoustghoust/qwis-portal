@@ -17,9 +17,11 @@ const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 const PAGE_SIZE = 30;
 
 // 类型徽章标签
-function typeLabel(itemType, sourceType, t) {
-  if (itemType === 'video') return t('reading.video');
-  if (sourceType === 'douyin') return t('reading.podcast');
+// B62：类型徽章不许在前端再造一份分类判定（原来按 sourceType==='douyin' 猜播客，
+// 与后端筛选口径互相矛盾：播客 Tab 筛得出条目，每条却写「文章」）。kind 由接口出。
+function typeLabel(it, t) {
+  if (it.kind === 'video') return t('reading.video');
+  if (it.kind === 'podcast') return t('reading.podcast');
   return t('reading.article');
 }
 
@@ -357,7 +359,7 @@ export default function MyReadingPage() {
 // ---- 单条内容行 ----
 // 2026-09-05 视觉精修：统一 card card-lift p-3；复选框 + 80px 缩略图 + 标题 + meta + 摘要 2 行 + TagPills
 function ReadingRow({ it, selectMode, checked, onToggle, t }) {
-  const label = typeLabel(it.item_type, it.source_type, t);
+  const label = typeLabel(it, t);
   const date = it.date ? it.date.slice(0, 10) : '';
   const isVideo = it.item_type === 'video';
 

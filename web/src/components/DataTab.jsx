@@ -73,6 +73,7 @@ export default function DataTab() {
   const [snaps, setSnaps] = useState([]);
   const [busy, setBusy] = useState(''); // snapshot | restore:file | preview | cleanup
   const [days, setDays] = useState(7);  // F6 Bug#1: 默认 7 天而非 90（符合 spec 要求）
+  const [savedDays, setSavedDays] = useState(null); // 已落库的值，用来判断有没有未保存改动
   const [preview, setPreview] = useState(null); // 清理预览计数
   const [settings, setSettings] = useState(null); // 加载当前设置
 
@@ -93,6 +94,7 @@ export default function DataTab() {
       const retentionDays = d?.data?.retentionDays ?? 7;  // 默认 7 天
       setSettings(d);
       setDays(retentionDays);  // 用用户上次设置的值
+      setSavedDays(Number(retentionDays));
     } catch (e) {
       console.error('加载保留天数配置失败:', e);
       setDays(7);  // 降级为默认值
@@ -203,6 +205,22 @@ export default function DataTab() {
     }
   };
 
+  // B54：保留天数是"设置"，清理是"动作"。原来 PUT /api/settings 只在清理成功后发，
+  // 而按钮又要求 previewTotal>0 才可点 → 没有可删内容时改数字永远存不下来。
+  const saveRetention = async () => {
+    if (!days) return;
+    setBusy('retention');
+    try {
+      await api.put('/api/settings', { data: { retentionDays: Number(days) } });
+      setSavedDays(Number(days));
+      toast(`已保存：保留最近 ${days} 天`);
+    } catch (e) {
+      toast(e.message || '保存失败');
+    } finally {
+      setBusy('');
+    }
+  };
+
   const doPreview = async () => {
     if (busy || !days) return;
     setBusy('preview');
@@ -232,10 +250,6 @@ export default function DataTab() {
       setPreview(null);
       // F6 Bug#2: 清理成功后自动刷新统计和保存设置
       await loadStats();
-      // 同步保存新的保留天数到后端
-      await api.put('/api/settings', { 
-        data: { retentionDays: Number(days) }
-      });
     } catch (e) {
       toast(e.message || '清理失败');
     } finally {
@@ -330,6 +344,13 @@ export default function DataTab() {
             }}
           />
           <span className="t-muted">天</span>
+          <button
+            className="btn-ghost"
+            disabled={!ready || !!busy || !days || savedDays === Number(days)}
+            onClick={saveRetention}
+          >
+            {busy === 'retention' ? '保存中…' : savedDays === Number(days) ? '已保存' : '保存保留天数'}
+          </button>
           <button className="btn-ghost" disabled={!ready || !!busy || !days} onClick={doPreview}>
             {busy === 'preview' ? '统计中…' : '预览将删条数'}
           </button>

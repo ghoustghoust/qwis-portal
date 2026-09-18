@@ -102,3 +102,53 @@ test('B53-3 runner 里不得留 llmChat() 这种"定义了没人调"的 AI 通�
   assert.ok(calls <= 0, `llmChat 有 ${calls} 个调用点，删除前先确认不是死码判断错了`);
   assert.ok(!/function\s+llmChat\b/.test(read('api/_ai.js')), 'api/_ai.js 不得有第二份 llmChat');
 });
+
+// ── B62 前端播客徽章是第七份分类副本（B60 的前端尾巴）──
+// MyReadingPage.jsx:22 `sourceType === 'douyin'` 判播客，而筛选口径已改成音频特征：
+// 结果"播客 Tab 筛得出条目、每条徽章却写文章"。kind 必须由 lib/reading-filters 出，两端 + 前端共用。
+const DOUYIN_PODCAST_GUESS = /sourceType\s*===\s*'douyin'/;
+test('B62-0 检测器自检：douyin 猜播客的坏写法必须能被探针命中（EVAL_GUIDE §4.1）', () => {
+  assert.ok(DOUYIN_PODCAST_GUESS.test("if (sourceType === 'douyin') return t('reading.podcast');"), '探针失效');
+});
+
+test('B62-1 kind 由单一实现判定：视频/播客/文章三态', () => {
+  const { readingItemKind } = require('../lib/reading-filters');
+  assert.equal(readingItemKind({ item_type: 'video', cover: 'x' }), 'video');
+  assert.equal(readingItemKind({ item_type: 'article', cover: 'https://media.xyzcdn.net/a/ep.m4a' }), 'podcast');
+  assert.equal(readingItemKind({ item_type: 'article', cover: 'https://cdn.example/hero.jpg' }), 'article');
+  assert.equal(readingItemKind({ item_type: 'article', cover: null }), 'article');
+});
+
+test('B62-2 两端列表响应都必须带 kind，前端不得再自己猜', () => {
+  for (const f of ['api/[...slug].js', 'server/routes/reading.js']) {
+    assert.match(read(f), /withReadingKinds/, `${f} 未用共享 kind 标注`);
+  }
+  const ui = read('web/src/pages/MyReadingPage.jsx').replace(/^\s*(\/\/|\*).*$/gm, '');
+  assert.ok(!DOUYIN_PODCAST_GUESS.test(ui), '前端仍在用 sourceType===douyin 猜播客');
+  assert.match(ui, /\.kind/, '前端徽章必须读接口回传的 kind');
+});
+
+// ── B54 「保留天数」改了不保存 ──
+// 原实现把 PUT /api/settings 写在 doCleanup 的成功分支里（DataTab.jsx:236），
+// 而执行按钮又 disabled={previewTotal === 0}（:349）→ 没有可删内容时，改数字永远存不下来。
+const RETENTION_INSIDE_CLEANUP = /doCleanup[\s\S]{0,900}?put\(['"]\/api\/settings/;
+test('B54-0 检测器自检：必须能看见"保存写在清理里"的坏形态', () => {
+  const knownBad = 'const doCleanup = async () => { await api.post(\'/api/data/cleanup\'); await api.put(\'/api/settings\', { data: { retentionDays } }); };';
+  assert.ok(RETENTION_INSIDE_CLEANUP.test(knownBad), '探针失效，B54-1 会是假绿');
+});
+
+test('B54-1 保留天数必须有独立保存通道，且不再依赖清理成功', () => {
+  const src = read('web/src/components/DataTab.jsx');
+  assert.match(src, /saveRetention/, '缺独立保存函数');
+  assert.ok(!RETENTION_INSIDE_CLEANUP.test(src), 'PUT /api/settings 仍写在 doCleanup 成功分支里');
+  const puts = (src.match(/put\(['"]\/api\/settings['"],\s*\{\s*\n?\s*data:\s*\{\s*retentionDays/g) || []).length;
+  assert.ok(puts >= 1, 'saveRetention 必须真的 PUT data.retentionDays');
+});
+
+test('B54-2 保存入口不受"有没有可删内容"限制', () => {
+  const src = read('web/src/components/DataTab.jsx');
+  const btn = src.match(/onClick=\{saveRetention\}[\s\S]{0,200}?|disabled=\{[^}]*\}[\s\S]{0,60}?onClick=\{saveRetention\}/);
+  assert.ok(btn, '找不到保存按钮与其 disabled 的关系');
+  assert.ok(!/previewTotal\s*===\s*0/.test(src.match(/disabled=\{[^}]*\}\s*onClick=\{saveRetention\}/)?.[0] || ''),
+    '保存按钮不得被 previewTotal===0 禁掉');
+});

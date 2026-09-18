@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B61、观察 W1~W8、挂案 H1~H17）
+> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B62、观察 W1~W8、挂案 H1~H17）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -49,6 +49,7 @@
 | B30 | 云端无任何 `UPDATE videos SET watched_at` 路径 → 视频/播客观看足迹永久丢失（只有本地 `server/routes/videos.js:81` 有） |
 | B31 | 阅读器卡顿：`sort=smart` 表达式无索引（实测 11.4/13.6/15.3s）+ 列表无虚拟化、`web/src` 零 `memo()` + 每点开一篇文章重拉 545KB sources 重渲侧栏 |
 | B32 | 「已读」口径：`GET /api/articles/:id` 即置 `read_at`（点开＝读完），且详情缓存命中不发请求 → 足迹不可信 |
+| **B62** | B60 的前端尾巴：阅读页类型徽章自己再造一份分类判定（`MyReadingPage.jsx:22` 按 `sourceType==='douyin'` 猜播客），与已收敛的筛选口径互相矛盾 → 播客 Tab 筛得出条目、每条却写「文章」 |
 
 ### 域 B · 后台信息架构与功能隔离 → `docs/specs/38-admin-ia-refactor/spec.md`
 
@@ -188,6 +189,8 @@
 | JS 与 SQL 两份实现会漂 | 回归锁 B60-5：同一批 10 个封面 URL，`detectAudioUrl()` 与 `audioCoverSql()` 判定必须逐条相同 | B60-5（改坏任一边即红） |
 | 断言自己也会假绿（新踩坑） | B53 第一版截断检测正则永不命中 → 坏代码在场仍显示绿。规则补进 `EVAL_GUIDE.md` §4.1：**禁止型断言必须配一条正向探针**（把已知坏写法喂给同一正则，断言它命中），已落 `B53-0` | B53-0（写不出探针的断言按 §7 删） |
 | B53 死码与错字（归属 39-2） | 删 `tools/collect-turso.js` 里定义后全仓零调用的 `llmChat()`（53 行，含一份与 `api/_ai.js` 并行的 AI 供应商降级链——留着等于骗后来人"runner 有统一 AI 通道"）；`AiSettingsTab` 去掉 `.slice(0,20)`（API 地址此前显示成 `apihub.agnes-ai.com/`，容器本身已有 `truncate`）；「Agencs→Agnes」错字清 3 处（含 `docs/DEVELOPMENT_STANDARDS.md:176`） | 回归锁 B53-1/2/3，修前 3/3 红 → 修后 7/7 绿 |
+| B62 前端第七份分类副本 | 接口为每条阅读条目回传 `kind`（`lib/reading-filters.js#readingItemKind`，视频/播客/文章三态，播客走 `detectAudioUrl`），本地与云端两处响应出口都过 `withReadingKinds`；前端 `typeLabel` 改读 `it.kind`，删掉 douyin 猜测 | 回归锁 B62-0/1/2（B62-0 是正向探针） |
+| B54 保留天数改了不保存 | 拆出独立 `saveRetention` + 「保存保留天数」按钮（不受 `previewTotal===0` 限制，按钮态显示已保存/有未保存改动），并把原先藏在 `doCleanup` 成功分支里的 `PUT /api/settings` 摘掉——设置不该是清理的副作用 | 回归锁 B54-0/1/2，修前 2 红 → 修后 13/13 绿 |
 
 顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 

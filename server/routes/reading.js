@@ -5,7 +5,7 @@
 const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
-const { readingTypeFilter, readingTypeCondSql } = require('../../lib/reading-filters');
+const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../../lib/reading-filters');
 
 const router = express.Router();
 const PAGE_SIZE = 30;
@@ -152,7 +152,7 @@ router.get('/', (req, res) => {
   const last = items[items.length - 1];
   const nextCursor = hasMore && last ? last.sort_key : null;
 
-  res.json({ ok: true, items, nextCursor, counts });
+  res.json({ ok: true, items: withReadingKinds(items), nextCursor, counts });
 });
 
 // POST /api/reading/batch — 批量操作
