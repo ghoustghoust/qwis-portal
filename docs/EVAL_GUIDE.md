@@ -1,8 +1,8 @@
-# 全网情报系统 · 评测规范（端到端 + 白盒）
+# 全网情报系统 · 评测规范（端到端 + 白盒 + 内容质量）
 
 > **本文是验收口径的组成部分**（`AGENTS.md` §3 第 4 层）：规定"每轮改动怎样才算修好了"。
 > 它是**流程与要求的唯一事实源**；要实现哪些工具、按什么顺序建，见 `docs/specs/41-e2e-whitebox-eval/spec.md`（父：治理层）。
-> 方法论蓝本：SWE-rebench（arXiv:2505.20411v1），只借机制不搬规模——见 §7。
+> 方法论蓝本：SWE-rebench（arXiv:2505.20411v1），只借机制不搬规模——见 §8；内容质量层借 `agentscope.evaluate` 的 Task/Metric 体系与 LLM-as-a-Judge 五维指标——见 §5。
 > 最后更新：2026-09-19
 
 ---
@@ -16,9 +16,9 @@
 - **测试自己就是事故源**：回归测试直连生产 Turso 把报警渠道写坏，报警链路哑了 2 天（B44/坑 #T2）。
 - **用户可见 ≠ 代码正确**：翻译 Skill 恒「加载中」（404 被 catch 后挡在渲染前，B52）、任务队列恒 0（字段形状不匹配，B47）、成功率整屏 0%（`slice(0,50)` 只取最坏 50 个，B23）——这些在单测里全都"通过"。
 
-所以要两层新评测：**端到端**证明"用户点得到、看得见"，**白盒**证明"三端与不变量真的一致"。
+所以要在 L1~L3 之上再加三层：**端到端**证明"用户点得到、看得见"，**白盒**证明"三端与不变量真的一致"，**内容质量**证明"AI 写出来的东西值不值得读"。
 
-## 2. 四层验收金字塔（自下而上，全绿才算交付）
+## 2. 验收金字塔（自下而上，全绿才算交付）
 
 | 层 | 命令 | 证什么 | 现状 |
 |---|---|---|---|
@@ -27,6 +27,7 @@
 | L3 云端实测 | `docs/DELIVERY_VERIFICATION.md` 流程 | 端点活着、SHA 已上线 | 已有（人工） |
 | **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，待建 |
 | **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，待建 |
+| **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，待建 |
 | L5 文档门禁 | `npm run lint:docs` | 文档不腐烂、无悬空、无明文密钥 | 已有 |
 
 ## 3. 端到端评测（E2E）
@@ -72,6 +73,21 @@
 | 后台任一板块首屏 | ≤2 请求、≤60KB | 早报中心 4 请求 ≈134KB；热点页 451KB（B38） |
 | 点开一篇文章 | 不触发 >100KB 重拉 | 重拉 545KB sources（B31） |
 
+### 3.6 过程性二值检查（防"没真跑却算通过"）
+
+借论文的二值检查型指标思路（`check_screenshot_taken(events)` / `check_report_generated(artifacts)`）：
+端到端**结果**绿了不代表**过程**真发生。每次运行必须对运行器自身做机器可判的过程检查，任一不过即 `fail_env`（不算通过，也不算产品缺陷）：
+
+| 检查 | 判据 | 抓的是哪类假通过 |
+|---|---|---|
+| `check_screenshot_taken(events)` | 本次事件流里**确实存在** screenshot 调用，且落盘文件存在、字节数 > 10KB | 剧本只发了请求没渲染页面；截图是上一次的残留 |
+| `check_report_generated(artifacts)` | `docs/eval/<轮次>/` 下存在 `report.json` + `env_lock.json`，且每条剧本都有对应产物文件名（命名合规即算存在，内容另判） | 跑挂了但退出码被管道吞掉（本项目真实踩过：`npm test \| tail` 让 exit code 变成 tail 的 0） |
+| `check_assertions_executed(report)` | 每条剧本的 `assertions[]` 非空且含三类各 ≥1 | "点开了就算过"的空断言 |
+| `check_no_stub_text(report/screenshots)` | 断言目标文本不得命中占位词表（`加载中…`、`暂无数据`、`undefined`、`NaN`、`[object Object]`） | B52 恒「加载中…」、B47 恒 0 |
+| `check_evidence_paths_resolve(report)` | 报告里每条证据的截图/响应路径在磁盘上真实存在 | 证据是手写进 JSON 的 |
+
+> 原则同 §4：**过程性检查必须是二值的、可机器判定的**，不交给模型打分；模型只参与 §5 的内容质量维度。
+
 ## 4. 白盒评测（代码不变量与三端一致性）
 
 不做静态风格检查，只检查**本项目真踩过、且肉眼 review 抓不到的**结构不变量。每条都要能写成断言：
@@ -90,9 +106,52 @@
 
 白盒结果同样四分类；`fail_product` 必须给出**文件:行号 + 期望值/实际值**，否则视为检查写得不合格。
 
-## 5. F2P / P2P 双集合与「改前必红」
+## 5. 内容质量评测（LLM-as-a-Judge 五维）
 
-- **P2P（回归集）**：§3.2 全部剧本 + §4 全部不变量，每轮全跑，必须全绿。
+前三层只能证明"功能活着"，证明不了"AI 写得好不好"——而本项目的产品就是文本。这一层用
+`agentscope.evaluate` 自建评测体系（`Task` / `MetricBase` / `MetricResult` / `MetricType` / `SolutionOutput`），
+指标为 **LLM-as-a-Judge 五维度评分（1~5 分制）**，外加可选 `overall` 与 `feedback`。
+
+### 5.1 打分对象与轴映射（每轴都锚在一次真实事故上，不做空泛打分）
+
+| 轴 | 中文含义 | 本项目评什么 | 对应已知缺陷 |
+|---|---|---|---|
+| `clarity` | 表达清晰度 | 早报条目 `reason`/`summary`、周刊 `editorNote` 是否一读就知道在说什么 | T5-13 用户原话「有的文章不知道在说什么」 |
+| `factual_correctness` | 事实正确性 | 译文标题/摘要与**原文**是否一致、有无编造；`quote` 是否真出自原文 | 坑 #A2 胡编标题与占位金句、坑 #26 思维链当正文 |
+| `consistency` | 前后一致性 | 标题↔正文↔栏目↔星级是否互相自洽；`theme` 与实际条目主题是否一致；档位声明与内容是否一致 | 坑 #32（裸报遮蔽 AI 版）、B10 栏目注解错位 |
+| `redundancy` | 简洁度 | 元评论、重复导语、同义堆叠、思维链残留、"我需要找到…"类自陈句 | B16 周刊导语污染第四次复现 |
+| `readability` | 易读性 | 排版是否保住加粗/重点、行内代码、分段；纯文本糊墙即低分 | B8 综述与详情无排版（spec 32） |
+
+### 5.2 计分口径
+
+- 每轴 `v ∈ [1,5]`，归一化 **`norm(v) = (v - 1) / 4`** → `[0,1]`。
+- 单一分数：**`score = Σ axis_weights[a] · norm(v_a) / Σ axis_weights[a]`**，作为一个 `MetricResult`（`MetricType` 取数值型）输出；`overall` 若给出则只作旁证，不参与加权。
+- 默认 `axis_weights`（可调，改动必须记进 `env_lock`）：
+  `factual_correctness 0.30 · consistency 0.25 · clarity 0.20 · redundancy 0.15 · readability 0.10`
+  ——理由：本项目最怕的是**编造与自相矛盾**（曾直接导致读者看到"出售 AI 工作站"上头条），排版与简洁次之。
+- `Task` ＝ 一个待评产物片段 + **参照物**（原文正文 / 入库元数据 / 该条的六维评分与 reason）+ 期望约束；
+  `SolutionOutput` ＝ 系统实际产出的那段文本。无参照物的产物（如纯自由发挥的导语）必须显式标 `reference=null`，其 `factual_correctness` 不计入加权（分母同步扣除），避免"没依据却打事实分"。
+
+### 5.3 Judge 纪律（这一层最容易自欺，规则必须硬）
+
+1. **judge 与被评生成链路不得同构**：不同 prompt、`temperature=0`、模型版本固定并写入 `env_lock`；judge 换版本 = 分数历史不可比，必须重跑基线。
+2. **judge 分数不作唯一门禁**：论文自己的实验显示自动校验准确率有限（测试补丁正确性仅 67%）。因此：
+   §4 硬不变量不过 = **直接红**；§5 分数低于阈值 = **进 ISSUES 待人工复核**，连续 ≥3 轮同轴低分才升级为阻塞项。
+3. **阈值**（默认，可调）：单轴 `norm < 0.60` 记该轴告警；加权 `score < 0.70` 记产物级告警。
+4. **golden set 冻结 + 时间戳**：被评样本集固定（含 `issue/date`、来源端点、抓取时间），新样本进新集；
+   与 §7 去污染同源规则——**不允许用刚改完的产物当评测样本再让同一个模型评**。
+5. **对齐抽检**：每轮随机 3 条人工与 judge 同时打分，记录一致率；一致率 < 0.7 时该轮 judge 结果只作参考、不写趋势。
+6. 趋势落 `docs/eval/trend/`（按产物类型 × 轴），看走向而非单次绝对值。
+
+### 5.4 运行形态
+
+评测器是**独立 Python 侧工具**（不进应用运行时、不进 `package.json` 依赖），命令入口由 npm script 转发；
+输出仍是 `report.json`，由 Node 侧门禁与 ISSUES 空洞清单消费。前置：`python3` 可用且已装 `agentscope`
+（缺依赖属 `fail_env`，见 §3.1，不得折算成产品失败）。
+
+## 6. F2P / P2P 双集合与「改前必红」
+
+- **P2P（回归集）**：§3.2 全部剧本 + §3.6 过程检查 + §4 全部不变量 + §5 golden set 全量，每轮全跑；L4a/L4b 必须全绿，L4c 按 §5.3 的阈值与升级规则处理。
 - **F2P（本轮集）**：本轮每个被修缺陷对应一条断言。**新用例必须先证明它能抓 bug**：在不含该改动的分支/worktree 上跑，必须红；抓不到就删掉这条用例。
   ```bash
   git worktree add ../.wt-eval HEAD~1        # 或对应改动前的 commit
@@ -101,27 +160,27 @@
   ```
 - 报告里每条 F2P 必须同时给出"改前红"与"改后绿"两份证据，缺一不记为已修。
 
-## 6. 去污染：防止"实现者自己出题、只测顺手写对的路径"
+## 7. 去污染：防止"实现者自己出题、只测顺手写对的路径"
 
 论文用时间切割 + 显式标记做去污染；我们的等价污染是**自证**。四条硬规则：
 
-1. **`self_authored` 标记**：用例记录 `scenario_added_at` 与 commit；与所验实现同出处 → 报告标 `self_authored=true`，**不得单独作为验收依据**（必须配 §5 的改前必红）。
+1. **`self_authored` 标记**：用例记录 `scenario_added_at` 与 commit；与所验实现同出处 → 报告标 `self_authored=true`，**不得单独作为验收依据**（必须配 §6 的改前必红）。
 2. **覆盖分母机械化**：以 `docs/FEATURE_MATRIX.md` 的「页面 × 功能」格子为分母，未覆盖格子自动生成「已知空洞」清单进 `docs/ISSUES.md`。覆盖率是算出来的，不是感觉出来的。
 3. **题源限定**：只从 ①`ISSUES.md`/用户批注 ②`/api/health/status` 与 `audit_log` 实发故障 ③`docs/pitfalls/` 事故 出题；每轮额外随机抽 1 个未覆盖格子做异常组合（空数据、档位切换、settings 覆盖 env、熔断中恢复）。
 4. **饱和换题**：长期全绿的用例归档换题，避免剧本退化成"永远正确的仪式"。
 
-## 7. 明确不照搬论文的哪些部分
+## 8. 明确不照搬论文的哪些部分
 
 21K 任务规模、爬 GitHub Archive、TractoAI 分布式容器/buildah/tmpfs、微调 72B 模型打质量标签（其测试补丁正确性判定仅 67% 准确）、公开数据集与 leaderboard、多模型排名、统一 128K 上下文与 ReAct 模板、**pass@k 当门禁**。
 
-## 8. 产物与门禁
+## 9. 产物与门禁
 
-- 命令：`npm run eval:e2e`、`npm run eval:whitebox`、`npm run eval:preflight`（§3.1）。
-- 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3）、`npm run eval:whitebox`（§4）、`npm run eval:content`（§5）。
+- 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。
 
-## 9. 关系
+## 10. 关系
 
 - 上位：`AGENTS.md` §3（验收）、`docs/DOC_GOVERNANCE.md` §3 Step7（交付）。
 - 实现计划与板块拆分：`docs/specs/41-e2e-whitebox-eval/spec.md`。

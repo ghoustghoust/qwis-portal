@@ -10,11 +10,12 @@
 ## 一、要求在哪（不在本文件）
 
 端到端与白盒**要检什么、怎么判过、如何防自证**，全部写在 `docs/EVAL_GUIDE.md`：
-§3 端到端（环境前置 / 剧本清单 / 三类断言 / 四分类与 flaky / 性能预算）、§4 白盒（W1~W9 不变量）、
-§5 F2P-P2P 与改前必红、§6 去污染四条、§7 不照搬清单、§8 产物与门禁。
-论文机制与本项目的对应关系也在那里（§1、§7）。**本文件不重复描述要求，只拆工具。**
+§3 端到端（环境前置 / 剧本清单 / 三类断言 / 四分类与 flaky / 性能预算 / **§3.6 过程性二值检查**）、
+§4 白盒（W1~W9 不变量）、**§5 内容质量评测（LLM-as-a-Judge 五维 + 加权折算 + judge 纪律）**、
+§6 F2P-P2P 与改前必红、§7 去污染四条、§8 不照搬清单、§9 产物与门禁。
+论文机制与本项目的对应关系也在那里（§1、§8）。**本文件不重复描述要求，只拆工具。**
 
-## 二、要建的六块（每块各出 mew-spec 小 spec）
+## 二、要建的八块（每块各出 mew-spec 小 spec）
 
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
@@ -23,7 +24,9 @@
 | 41-3 | F2P/P2P 双集合与「改前必红」流程：与 git worktree/临时分支配合，未含改动的分支上先跑 F2P | 流程 | M |
 | 41-4 | 白盒一致性检查：三端常量 diff + 不变量断言（档位优先读、settings/env 优先级、熔断阈值与冷却、`'null'` 序列化陷阱这类"曾经踩过"的形态） | 工具 | M |
 | 41-5 | 覆盖矩阵与空洞清单生成：解析 FEATURE_MATRIX 格子 × 剧本清单 → 未覆盖格子进 ISSUES；接进 `npm run lint:docs` 同级门禁 | 工具 | S |
-| 41-6 | 验收口径落文档：AGENTS §3 增加「npm test + build:vercel + 云端实测 + `lint:docs` + **端到端评测 + 白盒评测**」；`DELIVERY_VERIFICATION.md` 增章节；pitfalls↔tests 门禁 | 治理 | S |
+| 41-6 | 验收口径落文档：AGENTS §3 增加「npm test + build:vercel + 云端实测 + `lint:docs` + **端到端/白盒/内容质量三层评测**」；`DELIVERY_VERIFICATION.md` 增章节；pitfalls↔tests 门禁 | 治理 | S |
+| **41-7** | **过程性二值检查器**（EVAL_GUIDE §3.6）：`check_screenshot_taken(events)`、`check_report_generated(artifacts)`、`check_assertions_executed`、`check_no_stub_text`、`check_evidence_paths_resolve`；任一不过判 `fail_env`；接进 41-2 的退出码与报告 | 工具（防"没真跑却算通过"） | S |
+| **41-8** | **内容质量评测 harness**（EVAL_GUIDE §5）：`agentscope.evaluate` 自建体系（`Task`/`MetricBase`/`MetricResult`/`MetricType`/`SolutionOutput`）+ 五维 judge（clarity / factual_correctness / consistency / redundancy / readability，1~5 分，可选 overall/feedback）+ `norm(v)=(v-1)/4` 按 `axis_weights` 加权成单一 0~1 分数 + golden set 冻结与时间戳 + 人工对齐抽检一致率 + 趋势落盘；Python 侧独立工具，`npm run eval:content` 转发 | 新工具 | M |
 
 ## 四、边界
 
@@ -37,3 +40,5 @@
 - AC4（41-4）：白盒检查能在人为制造"只改一份实现"时报警（例如把 runner 熔断阈值从 3 改成 5 而不同步另两端）。
 - AC5（41-5）：生成当前覆盖空洞清单（预期会暴露大量空白，这是目的不是失败）。
 - AC6（41-6）：AGENTS §3 与 `DELIVERY_VERIFICATION.md` 一致，且 `npm run lint:docs` 能挡住"新增坑无测试"。
+- AC7（41-7）：故意制造一次"截图没真拍、报告手写"的运行，过程检查必须把它判成 `fail_env` 而不是 pass。
+- AC8（41-8）：同一批 golden set 跑两轮，五维分与人工标注一致率 ≥0.7 才允许写趋势；judge 模型/prompt 版本变更时，旧趋势数据自动标为不可比。

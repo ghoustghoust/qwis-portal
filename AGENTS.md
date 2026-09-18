@@ -40,7 +40,7 @@
 - `node smoke-test.js` 冒烟（生产库副本，零副作用）
 - 每个线上修过的 bug 必须有回归测试
 - 验收 = npm test 全绿 + `npm run build:vercel` 无错 + 云端实测通过 + **`npm run lint:docs` 零错**（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
-  + **端到端评测与白盒评测全绿**（要求与口径见 `docs/EVAL_GUIDE.md`：环境前置检查、三类断言、F2P 必须出示"改前红/改后绿"双证据、三端常量 diff 与不变量清单）
+  + **端到端 / 白盒 / 内容质量三层评测全绿**（要求与口径见 `docs/EVAL_GUIDE.md`：环境前置检查、三类断言、过程性二值检查、F2P 必须出示"改前红/改后绿"双证据、三端常量 diff 与不变量清单、LLM-as-a-Judge 五维分只作趋势与复核触发、不作唯一门禁）
 
 ## 4. 常用入口
 

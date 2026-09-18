@@ -39,7 +39,7 @@
 | `NEXT-DEV-REQS.md` | **需求队列 SSOT**（T 系列，未开工/在途） |
 | `RUNBOOK.md` | 运维手册（本地/宝塔/云端排障） |
 | `DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 `127.0.0.1:12000`） |
-| `EVAL_GUIDE.md` | **评测规范 SSOT**：端到端（环境前置/剧本/三类断言/四分类/flaky/性能预算）+ 白盒（W1~W9 不变量）+ F2P-P2P 改前必红 + 去污染四条 + 门禁产物。AGENTS §3 第 4 层 |
+| `EVAL_GUIDE.md` | **评测规范 SSOT**：端到端（环境前置/剧本/三类断言/四分类/flaky/性能预算/**过程性二值检查**）+ 白盒（W1~W9 不变量）+ **内容质量（LLM-as-a-Judge 五维加权）** + F2P-P2P 改前必红 + 去污染四条 + 门禁产物。AGENTS §3 第 4 层 |
 | `DEVELOPMENT_STANDARDS.md` | 开发规范与验收标准 |
 | `DEV_GUIDE.md` | 开发者上手指南 |
 | `ROADMAP-2026-09.md` | 需求与愿景母文档（用户已拍板决策，只留决策） |
