@@ -311,3 +311,28 @@ test('41-7 检查器要求参数出处与退出码诚实（本轮真踩过的两
   // `cmd | tail` 吞退出码必须红（真发生过）
   assert.equal(t.CHECKS.check_exit_code_honest({ commands: [{ cmd: 'npm test | tail' }] }).ok, false);
 });
+
+// ── 41-3 F2P 取证器 ──
+// 它自己第一版就被 Windows cmd 坑过：`--base ca42cd5^` 里的 ^ 被 cmd 当转义符吃掉，
+// base 静默变成"改动本身"，于是报出"改前也全绿"→ 反过来冤枉真锁。见坑 #40。
+test('41-3 取证器：git ref 的 ^ 必须原样送到 git（不经 cmd 解释）', () => {
+  const { git } = require('../tools/eval-f2p.cjs');
+  const head = git(['rev-parse', 'HEAD']);
+  const parent = git(['rev-parse', 'HEAD^']);
+  assert.match(head, /^[0-9a-f]{40}$/, 'HEAD 没解析成 sha');
+  assert.match(parent, /^[0-9a-f]{40}$/, 'HEAD^ 没解析成 sha（^ 很可能又被 shell 吃掉了）');
+  assert.notEqual(head, parent, 'HEAD^ 必须与 HEAD 不同——相同就说明参数被 cmd 篡改了');
+  assert.notEqual(git(['rev-parse', 'HEAD^{commit}']), head + 'x');
+});
+
+test('41-3 判据本身：假锁/环境红/改后仍红 都必须判不过', () => {
+  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
+  const red = parseSummary('ℹ tests 3\nℹ pass 0\nℹ fail 3\n✖ F6-1 x (1ms)\n✖ F6-2 y (1ms)\n✖ F6-3 z (1ms)\n');
+  const green = parseSummary('ℹ tests 3\nℹ pass 3\nℹ fail 0\n');
+  assert.equal(verdict(red, green, ['F6-1']).ok, true, '真锁该判成立');
+  assert.equal(verdict(green, green, ['F6-1']).ok, false, '改前也绿 = 假锁，必须判不过');
+  const envRed = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: Cannot find module 'better-sqlite3'\n");
+  assert.equal(verdict(envRed, green, ['t']).ok, false, 'worktree 缺依赖的"环境红"不许当改前证据');
+  assert.equal(verdict(red, red, ['F6-1']).ok, false, '改后仍红 = 没修好');
+  assert.equal(parseSummary('没有汇总行'), null, '解析不到汇总必须返回 null，不能当通过');
+});

@@ -1,0 +1,33 @@
+{
+ "at": "2026-09-18T22:51:10.862Z",
+ "base": {
+  "tests": 3,
+  "pass": 0,
+  "fail": 3,
+  "failedNames": [
+   "F6-1 判据本身：只有网络/环境类的大规模同源失败才抑制",
+   "F6-2 指纹归一：同一故障换个端口/IP/数字不该被打散",
+   "F6-3 runner 真的用这条判据决定不熔断（不是只有函数没人调）"
+  ],
+  "envBroken": false
+ },
+ "head": {
+  "tests": 3,
+  "pass": 3,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false
+ },
+ "baseSha": "2e2c757d9d5e02632eb4b7a9fe057686a1c355c0",
+ "headSha": "f58337f930b6f938285a59b987ea5f27d821fb6a",
+ "files": [
+  "tests/regression-20260919d.test.js"
+ ],
+ "wantNames": [
+  "F6-1",
+  "F6-2",
+  "F6-3"
+ ],
+ "ok": true,
+ "why": "改前红 3 条（命中 3 条目标），改后 3 条全绿"
+}

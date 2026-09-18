@@ -14,6 +14,7 @@
     "eval:preflight": "node tools/eval-preflight.cjs",
     "eval:whitebox": "node tools/eval-whitebox.cjs",
     "eval:process": "node tools/eval-process-checks.cjs --self-test",
+    "eval:f2p": "node tools/eval-f2p.cjs",
     "setup:customer": "node tools/setup-customer.js",
     "migrate:turso": "node tools/migrate-to-turso.js",
     "snapshots": "node tools/generate-snapshots.js",

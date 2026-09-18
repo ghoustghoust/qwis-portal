@@ -21,7 +21,15 @@ async function withServer(app, fn) {
   const srv = await new Promise((resolve) => {
     const s = app.listen(0, '127.0.0.1', () => resolve(s));
   });
-  const base = `http://127.0.0.1:${srv.address().port}`;
+  const addr = srv.address();
+  // 整串跑（npm test）时偶发过一次 fetch "bad port"：那时 addr 为 null，
+  // base 变成 http://127.0.0.1:undefined。单跑该文件永远复现不出来 → 属于夹具问题，
+  // 所以这里显式断言拿到端口，宁可红在夹具也不要红在无关断言上（分类：fail_flaky）。
+  if (!addr || typeof addr === 'string' || !Number.isFinite(addr.port) || addr.port <= 0) {
+    await new Promise((r) => srv.close(r));
+    throw new Error(`withServer 没拿到有效端口（address=${JSON.stringify(addr)}）`);
+  }
+  const base = `http://127.0.0.1:${addr.port}`;
   try {
     await fn(base);
   } finally {

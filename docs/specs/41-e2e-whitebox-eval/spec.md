@@ -19,12 +19,12 @@
 
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
-| 41-1 | 环境前置检查器：代理可达 / Vercel 部署 SHA 与远端一致 / 三端凭据一致 / Turso 可读 / 测试隔离库就绪；不通过即中止（`fail_env`） | 工具 | S |
+| 41-1 | 环境前置检查器：代理可达 / Vercel 部署 SHA 与远端一致 / 三端凭据一致 / Turso 可读 / 测试隔离库就绪；不通过即中止（`fail_env`） | 工具 | S ✅ 已交付 `tools/eval-preflight.cjs`（本轮再加「线上 commit == origin/main」硬判据） |
 | 41-2 | 端到端剧本引擎：Playwright（已具备 MCP 与插件）跑 5 页 + 后台 5 Tab，断言渲染与关键 API；输出四分类结果 + 截图证据；同剧本跑 3 次判 flaky | 新工具 | M |
-| 41-3 | F2P/P2P 双集合与「改前必红」流程：与 git worktree/临时分支配合，未含改动的分支上先跑 F2P | 流程 | M |
-| 41-4 | 白盒一致性检查：三端常量 diff + 不变量断言（档位优先读、settings/env 优先级、熔断阈值与冷却、`'null'` 序列化陷阱这类"曾经踩过"的形态） | 工具 | M |
-| 41-5 | 覆盖矩阵与空洞清单生成：解析 FEATURE_MATRIX 格子 × 剧本清单 → 未覆盖格子进 ISSUES；接进 `npm run lint:docs` 同级门禁 | 工具 | S |
-| 41-6 | 验收口径落文档：AGENTS §3 增加「npm test + build:vercel + 云端实测 + `lint:docs` + **端到端/白盒/内容质量三层评测**」；`DELIVERY_VERIFICATION.md` 增章节；pitfalls↔tests 门禁 | 治理 | S |
+| 41-3 | F2P/P2P 双集合与「改前必红」流程：与 git worktree/临时分支配合，未含改动的分支上先跑 F2P → **✅ 已交付 `tools/eval-f2p.cjs`**（`npm run eval:f2p`）：自建 worktree、只拷新锁进旧树、两侧同用 `--cases` 过滤、自动挂 `NODE_PATH`、拒绝 `base == HEAD`，结论落盘 `docs/eval/f2p/*.json`；自检 8 项 + 回归锁 2 条（含「`HEAD^` 的脱字符必须原样送到 git」——第一版被 cmd 吃掉 `^` 导致取证方向整个反过来，见坑 #40） | 流程 | M ✅ |
+| 41-4 | 白盒一致性检查：三端常量 diff + 不变量断言（档位优先读、settings/env 优先级、熔断阈值与冷却、`'null'` 序列化陷阱这类"曾经踩过"的形态） | 工具 | M ✅ 已交付 `tools/eval-whitebox.cjs`（W1~W10；本轮新增 W3b 假开关与 W10 重复判定，两者都做过负向验证） |
+| 41-5 | 覆盖矩阵与空洞清单生成：解析 FEATURE_MATRIX 格子 × 剧本清单 → 未覆盖格子进 ISSUES；接进 `npm run lint:docs` 同级门禁 | 工具 | S ⛔ 待建（分母要等 41-2 的剧本清单） |
+| 41-6 | 验收口径落文档：AGENTS §3 增加「npm test + build:vercel + 云端实测 + `lint:docs` + **端到端/白盒/内容质量三层评测**」；`DELIVERY_VERIFICATION.md` 增章节；pitfalls↔tests 门禁 | 治理 | S ✅ 已落 `AGENTS.md` §3 |
 | **41-7** | **过程性二值检查器**（小 spec 已出：`41-7-process-binary-checks.md`；要求正文 `docs/EVAL_GUIDE.md` §3.6）：`check_screenshot_taken(events)`、`check_report_generated(artifacts)`、`check_assertions_executed`、`check_no_stub_text`、`check_evidence_paths_resolve`；任一不过判 `fail_env`；接进 41-2 的退出码与报告。**本轮实测追加两项**：`check_exit_code_honest`（`cmd \| tail` 吞退出码真发生过）、`check_probe_params_sourced`（把 `type=` 当 `tab=` 打真发生过）→ **✅ 已交付 `tools/eval-process-checks.cjs`**：7 项检查各配「坏样本会红、好样本会绿」自检（`npm run eval:process`），并由 `tests/regression-20260919d.test.js` 两条锁钉住。自检在开发当场抓到两处真 bug：证据扫描全对象乱走会把 `file:line` 参数出处误判成缺失文件；模块被 require 时设 `process.exitCode` 会污染测试进程退出码。 | 工具（防"没真跑却算通过"） | S ✅ |
 | **41-8** | **内容质量评测 harness**（EVAL_GUIDE §5）：`agentscope.evaluate` 自建体系（`Task`/`MetricBase`/`MetricResult`/`MetricType`/`SolutionOutput`）+ 五维 judge（clarity / factual_correctness / consistency / redundancy / readability，1~5 分，可选 overall/feedback）+ `norm(v)=(v-1)/4` 按 `axis_weights` 加权成单一 0~1 分数 + golden set 冻结与时间戳 + 人工对齐抽检一致率 + 趋势落盘；Python 侧独立工具，`npm run eval:content` 转发 | 新工具 | M |
 

@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B62、观察 W1~W8、挂案 H1~H17）
+> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B62、观察 W1~W9、挂案 H1~H17）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -112,6 +112,7 @@
 | W5 | 翻译管线系统性修复（09-15：薄正文仅标题通道/清洗器补起手式/占位金句清洗/优先级=早报>我的早报>周刊>热点榜+id 直接补候选池；34+2 篇污染回炉重翻） | 今晚 21:30 主批+后续 translate 轮次：早报类条目中文标题无元评论/无胡编标题/金句无占位符 |
 | W6 | 2026-09-18 早报/周刊 AI 守卫（`lib/brief-guards.js` 不变量 12 + 周刊 <4 条不发布 + mybrief 补刷 reading.digest + 报警覆盖面扩 daily-ai/weekly/mybrief + dispatch `inputs.mode` 补跑口） | **①已实测通过（09-18 23:00）**：线上 `GET /api/daily` 返回 `report.id=99`、`generated_at 2026-09-17T21:14Z`（AI 批），北京 09:03 的裸报 id100 不再遮蔽；2.9s 响应正常。②③④（mybrief 带 digest / 周刊不足 4 条保留上期 / 21:30 晚间批产出）仍待验证 |
 | W7 | B20 每日早报质量门槛（`passesDailyQualityGate`，已推 `7764ccf`）+ B14 `qOne` 修复（runner 侧）——**两者都只是"已提交"，都还没有跑批证据** | 下一批 `daily-ai`（北京 21:30 / 00:32）：①`/api/daily` 不再出现 `score<30` 条目（实测 09-18 那批有 score=10/22 各一条）；②`reading.digest` 生成、`stats.videos` 不再恒 0、collect「少量失败」分支的停滞检测不再被跳过 |
+| **W9** | 测试夹具偶发红：`regression-ui-data.test.js` 的 `withServer` 拿不到端口 → `UI-D2/UI-D3` 以 fetch `bad port` 红（分类 `fail_flaky`，不算产品缺陷） | **实测发生率 1/4**（连跑 4 次全量：3 次 348 项 0 红，1 次这两条红）；单跑该文件永远不复现，说明是并发/端口时序而非断言问题。原夹具 `srv.address().port` 在为 null 时会静默拼出 `http://127.0.0.1:undefined` —— 已改成显式校验端口并抛 `withServer 没拿到有效端口`，下次红会直接暴露真因而不是伪装成契约缺陷。**待观察**：若再出现，按 §3.4 跑 3 次定性并考虑给夹具加重试 |
 | W8 | 2026-09-19 自主轮 11 + 4 项修复的**云端实测结果**（API 侧已坐实，前端视觉项待浏览器复验） | **已实测（curl 证据）**：①`type=podcast` 列表 30 行 + `counts.all=143`（修前 0）；②`type=article` `counts.all=7282`（修前 6413）；③`type=article&q=狂踩毒蛇` 返回 `source_type=wemp` 行且 counts 与行数自洽 → 869 篇公众号文章确实能出现在列表里，此前只在本机 SQL 复现过；④`date` 四型全非空；⑤`/api/img` 对 `169.254.169.254`/`127.0.0.1`/`10.0.0.5` 三向量全 400；⑥`/api/auth/me` 返回 401 而非 404。⑦**B58/B62 随 `5e5fn55iy` 上线后复测通过**：`/api/hot/categories` 返回 `map` + `categorySource=settings`（模型含「AI 模型」，即线上真值不再被前端默认覆盖）；`/api/reading` 每条带 `kind`。**仍开放**：B22 分档色、B47 队列数字、B48 转义串属视觉断言，需浏览器截图（EVAL_GUIDE §3.3 第 1 类）；B61（opus 进日报）只到代码 + 回归锁，行为证据要等下一次 runner 自然生成，**不手推生产**；B39/B54/B56 的接口效果需登录态才能实测（`/api/brief/history`、`/api/data/list` 均 401），我不用你的口令做无人值守登录 → 留给你或授权我用测试口令 |
 
 ## 🟢 挂案（外部依赖/低优先，保持跟踪）

@@ -1,6 +1,6 @@
 # AGENTS.md — 全网情报系统 · Agent 协作规则
 
-> 最后更新：2026-09-18（§3 验收加文档门禁；§0 必读清单加 `docs/DOC_GOVERNANCE.md`）
+> 最后更新：2026-09-19（§3 验收改成 10 条可执行清单：新增 eval:preflight / eval:whitebox / eval:process / eval:f2p 四个命令与「线上 commit == origin/main 才算云端实测」的硬前置）
 > 任何 AI Agent 接手本项目前**必读**。本文件是项目级强制约束，优先级高于其它文档。
 > 原则：**文档从真实环境逆推，不是约束；线上实测是唯一验收标准。**
 
@@ -36,11 +36,18 @@
 
 ## 3. 测试约定
 
-- `npm test`（node:test，tests/）必须全绿；引用 server/* 的测试文件先 require tests/helpers（APP_DATA_DIR 隔离）
-- `node smoke-test.js` 冒烟（生产库副本，零副作用）
+- 验收 = 下面每条都跑并留证据（口径与判据见 `docs/EVAL_GUIDE.md`）：
+  1. `npm test` 全绿（346+ 项；引用 server/* 的测试文件先 require tests/helpers）
+  2. `node smoke-test.js` 冒烟（生产库副本，零副作用）
+  3. `npm run build:vercel` 无错
+  4. `npm run lint:docs` 零错（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
+  5. `npm run eval:preflight` 环境前置（代理 / **线上 commit == origin/main** / Turso / 测试隔离 / BL7-BL9 配置告警）——红则先修环境，不许跳过去跑剧本
+  6. `npm run eval:whitebox` 全过（W1~W10：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
+  7. `npm run eval:process` 全过（这次评测运行可不可信：截图/报告/断言数/占位文案/证据路径/退出码/参数出处；任一不过判 `fail_env`，不算通过也不算产品失败）
+  8. 云端实测：按 `docs/DELIVERY_VERIFICATION.md` 打真实线上端点，curl/截图才算证据；**只有在第 5 条判「线上一致」时才算数**
+  9. F2P：本轮每条修复出 `npm run eval:f2p -- --base <改动前ref> --tests <锁文件> --cases <用例名>`，证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）
+  10. `npm run eval:content`（41-8，待建）+ `npm run eval:e2e`（41-2，待建）——未就位前，AI 产物质量与"页面真的对用户生效"只能靠人工实测兜底，须如实记为未验收
 - 每个线上修过的 bug 必须有回归测试
-- 验收 = npm test 全绿 + `npm run build:vercel` 无错 + 云端实测通过 + **`npm run lint:docs` 零错**（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
-  + **端到端 / 白盒 / 内容质量三层评测全绿**（要求与口径见 `docs/EVAL_GUIDE.md`：环境前置检查、三类断言、过程性二值检查、F2P 必须出示"改前红/改后绿"双证据、三端常量 diff 与不变量清单、LLM-as-a-Judge 五维分只作趋势与复核触发、不作唯一门禁）
 
 ## 4. 常用入口
 

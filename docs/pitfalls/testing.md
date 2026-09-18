@@ -27,3 +27,9 @@
 - 根因：W3 的判据是**后端从不 getSetting**。而 `ai.features` 确实被 getSetting 读了——只是读它的那一行只是把它塞进同一个 GET 响应的属性里，供界面回显。写回 → 显示 → 没有任何行为分支消费，闭环在设置页内部。
 - 规则：①写"假开关检测"时必须同时覆盖两种形态——**无人读**与**只被自己回显**（判据：某键的每一处 `getSetting` 都长得像响应对象属性，见 `tools/eval-whitebox.cjs` W3b）；②任何新检查器上线前做**负向验证**：造一个该缺陷的最小样本（本轮造 `ai.fakeDemo`：GET 回显 + PUT 写回 + 界面含该键），确认它会红，再删掉确认变绿；没做负向验证的检查器视同不存在；③近似重复的判定要按**特征集合重叠度**判，不按字面量全等（见坑 #37 与 W10）。
 - 案例：B51；同一形态在断言层也发生过一次（B53 第一版正则永不命中 → 坏代码在场仍显示绿），规则见 `docs/EVAL_GUIDE.md` §4.1。
+
+### #40 Windows 上 execSync 走 cmd.exe：`^ | & % < >` 会吃掉命令，取证方向能被静默反转（2026-09-19 实测）
+- 症状：`tools/eval-f2p.cjs` 第一版用 `--base ca42cd5^` 取"改动前"基线，结果 base 侧 3/3 全绿、判成"这条锁是假的"。实际上它根本没回到父提交。
+- 根因：Node 的 `execSync` 在 Windows 上经 **cmd.exe** 解释整条字符串，而 `^` 是 cmd 的转义符 → `ca42cd5^` 被剥成 `ca42cd5`。git 收到的是"改动本身"，于是"改前红"永远不成立。同一类静默篡改还发生过两次：commit message 里的反引号路径被命令替换掉（内容凭空消失）、`npm test | tail` 把退出码换成 `tail` 的 0。
+- 规则：①凡是**带 ref、路径、外部输入**的子进程一律 `execFile`/`execFileSync`（数组参数，不经 shell），`execSync` 只用于完全静态的命令串；②git ref 显式写 `^{commit}` 而不是裸 `^`，并**先 `rev-parse` 成 sha 再用**，比较 `baseSha === headSha` 时直接拒绝取证；③任何"取证据"的工具都要有正向探针：本例是自检里那条「base 侧必须真的看见红」——如果 base 与 head 结果一样，判假而不是判过；④交付信息（commit message）里的路径/命令不许走 shell 插值，统一 `git commit -F <文件>`。
+- 案例：`tools/eval-f2p.cjs` 的 `gitRaw/git` 改造；修好后同一命令正确报出 `base 2e2c757 红 3/3 → head 0/3`。
