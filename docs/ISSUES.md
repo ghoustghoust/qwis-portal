@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-18 深夜（文档清洁轮 + 自愈/健康度实测：活跃 B8~B25、观察 W1~W7、挂案 H1~H17；新增 §阻塞项与优化方向）
+> 最后更新：2026-09-18 深夜（文档清洁轮 + 自愈/健康度实测 + 线上端点实测：活跃 B8~B26、观察 W1~W7、挂案 H1~H17；新增 §阻塞项与优化方向）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -30,6 +30,7 @@
 | B23 | 云端 `/api/health/source-stats` 的"成功率"是**布尔伪装**：`api/[...slug].js:1693-1704` 注释自陈「云端无 job_queue 历史」→ 实现 `rate: status==='ok'?100:0`。用户要的"成功抓取概率"目前不存在，且这个假数字比没有数字更误导 | 必须先用 35B 的滚动窗口把分母补上，再改此端点；禁止继续用 100/0 冒充概率 | 待 35B |
 | B24 | 采集心跳 `settings.cloud.collect.history` 撑不起任何统计：代码注释写「7 天×24」，实测 168 条只覆盖 **25 小时**；且 `failures[]` **截断 20 条、只含失败源** → 有负样本无正样本，逐源算不出分母（`tools/collect-turso.js:489-505`） | 35B 用每源定长滚动窗口替代；顺带把注释与切片按 mode 分池订正 | 待 35B |
 | B25 | 上一轮会话中断留下**未提交在途改动 4 个文件**（B8 主题 markdown 化 `DailyPage.jsx:178` + `index.css` `.md-mark/.md-code`、B11 后台 TabLoader 骨架屏、本地 `daily-ai.js isEnabled()` 改判据）。已实测 `npm run build` 通过、`npm test` 297/301 绿（4 红即 B12 既有项，非本次引入）；但 `index.css` 那处编辑把注释收尾和选择器挤成一行 `*/.rail-btn {`（CSS 仍可解析，属破口非故障） | 补一个换行 + 决定是否提交；**未提交 = 未推 = 线上没有 B8/B11** | 待用户确认（页面标注要重做） |
+| B26 | **`GET /api/status` 是慢性函数超时面**（2026-09-18 深夜线上实测）：第一次 `FUNCTION_INVOCATION_TIMEOUT`（部署已 ● Ready，非部署问题），重试 200 但耗时 **26.07s**，而 Hobby 读层预算只有 30s；对照组 `/api/sources?limit=5` 8.3s、`/api/daily` 2.9s。后台监控页一打开就要它 → 用户看到的"云端挂了"多半是这个 | 待查：`/api/status` 里哪些统计是逐源扫描/无索引聚合（同 H11 教训：全量解析后只用几个投影字段）；方向是拆分"页面必需的轻状态"与"重统计按需加载" | 新发现，待立小 spec |
 
 ## 🟡 观察中（有明确验证时间点）
 
@@ -40,7 +41,7 @@
 | W3 | 日报/我的早报「视频与播客」栏（09-14 加） | 今晚批次起应出现媒体栏且可播放 |
 | W4 | 翻译插队 60 篇热点英文文章（09-14 晚入队） | 事件榜/精选英文条目陆续转中文 |
 | W5 | 翻译管线系统性修复（09-15：薄正文仅标题通道/清洗器补起手式/占位金句清洗/优先级=早报>我的早报>周刊>热点榜+id 直接补候选池；34+2 篇污染回炉重翻） | 今晚 21:30 主批+后续 translate 轮次：早报类条目中文标题无元评论/无胡编标题/金句无占位符 |
-| W6 | 2026-09-18 早报/周刊 AI 守卫（`lib/brief-guards.js` 不变量 12 + 周刊 <4 条不发布 + mybrief 补刷 reading.digest + 报警覆盖面扩 daily-ai/weekly/mybrief + dispatch `inputs.mode` 补跑口） | 部署后：①`/api/daily` 应立刻回到 `schemaVersion:2`（带 theme/stats.themes/六维）；②dispatch mode=mybrief 后 `/api/mybrief` 应带 `digest` 键；③`/api/weekly` 若不足 4 条应保留上一期而非变空；④北京 09:03 的 `daily-report` 裸报不再能遮蔽 AI 版 |
+| W6 | 2026-09-18 早报/周刊 AI 守卫（`lib/brief-guards.js` 不变量 12 + 周刊 <4 条不发布 + mybrief 补刷 reading.digest + 报警覆盖面扩 daily-ai/weekly/mybrief + dispatch `inputs.mode` 补跑口） | **①已实测通过（09-18 23:00）**：线上 `GET /api/daily` 返回 `report.id=99`、`generated_at 2026-09-17T21:14Z`（AI 批），北京 09:03 的裸报 id100 不再遮蔽；2.9s 响应正常。②③④（mybrief 带 digest / 周刊不足 4 条保留上期 / 21:30 晚间批产出）仍待验证 |
 | W7 | B20 每日早报质量门槛（`passesDailyQualityGate`，已推 `7764ccf`）+ B14 `qOne` 修复（runner 侧）——**两者都只是"已提交"，都还没有跑批证据** | 下一批 `daily-ai`（北京 21:30 / 00:32）：①`/api/daily` 不再出现 `score<30` 条目（实测 09-18 那批有 score=10/22 各一条）；②`reading.digest` 生成、`stats.videos` 不再恒 0、collect「少量失败」分支的停滞检测不再被跳过 |
 
 ## 🟢 挂案（外部依赖/低优先，保持跟踪）
