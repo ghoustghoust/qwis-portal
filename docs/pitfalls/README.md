@@ -10,11 +10,11 @@
 | 文件 | 域 | 覆盖坑编号 |
 |---|---|---|
 | [collection.md](collection.md) | 采集与信源 | #4 #6 #7 #9 #19 #28 #29 #30 #35 |
-| [backend.md](backend.md) | 后端与数据 | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 |
+| [backend.md](backend.md) | 后端与数据 | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 #36 |
 | [ai.md](ai.md) | AI 管线 | #8 #24 #26 #32 #34 #A1 #A2 |
 | [frontend.md](frontend.md) | 前端 | #1 #2 #16 #F1 |
 | [deployment.md](deployment.md) | 部署与运维 | #5 #20 #21 #22 #D1 #D2 |
-| [testing.md](testing.md) | 测试 | #13 #18 #27 #T1 |
+| [testing.md](testing.md) | 测试 | #13 #18 #27 #T1 #T2 |
 
 > 本表由 `node tools/doc-lint.cjs` 与各域文件 `### #N` 实际编号对账；两处不一致以域文件为准并改本表。
 

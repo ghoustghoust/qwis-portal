@@ -15,3 +15,9 @@
 - 症状：全量跑偶发 1-2 项失败（regression-ui-data 曾现），单跑全绿。
 - 根因：node:test 并发下的端口/资源竞争。
 - 规则：npm test 用 `--test-concurrency=1`（package.json 已配）；偶发失败先单跑复现再定性，别当实现 bug 修。
+
+### #T2 云端测试覆盖写生产 `settings` 且 `after()` 静默失败：报警链路被打死 2 天（2026-09-19）
+- 症状：后台报警日志显示"已触发"，但 `audit_log` 最近三条真实事件全是 `sent:0/total:1`；线上 `settings.alerts.channels` 只剩 `{id:'test-ch',name:'TEST',url:undefined,enabled:true}`，silence 里留着 `sourceId:777777`。
+- 根因：`tests/regression-cloud-alerts.test.js` 直连生产 Turso 并 `saveConfig()`，测试数据字字对应（777777 只存在于该文件），`after()` 恢复未生效且无人断言 → 生产配置被测试写坏。这是 #13「云端测试直打生产库」的复发，这次打死的正是"告诉我们出事了"的那条链路。
+- 规则：①写生产配置的测试必须**快照 → 写入 → 还原 → 断言还原成功**，断言失败要让测试变红（不能只 catch）；②生产写路径要有"测试指纹守卫"（识别 `test-` 前缀 id、`127.0.0.1` 回调地址、777777 之类哨兵值即拒绝写入并告警）；③报警/凭据这类"自证链路"的键，任何改动后必须跑一次真实投递验证（`POST /api/alerts/test` 收到消息才算完）；④**监控显示"已触发"不等于"已送达"**，UI 必须区分 `dispatched` 与 `delivered`。
+- 案例：`docs/ISSUES.md` B44/BL7；恢复入口 `tools/sync-alerts-config.js --force`（本地 `settings.alerts.channels[].config.url` 是真值来源）。

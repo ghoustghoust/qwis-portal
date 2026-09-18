@@ -77,7 +77,14 @@
 - **单文件决策**：`03-公众号走托管RSS决策.md`、`05-任务队列选型决策.md`、`22-rss-first-collection-decision.md`、`23-information-overload-defense.md`、`24-weekly-v2-magazine.md`、`25-hot-redesign.md`、`26-platform-ia-refactor.md`、`P1-12-401-handling-fix.md`
 - **四件套齐**（spec/plan/task/checklist）：`09` `11` `13`~`21`
 - **只有 spec.md**（2026-09-18 清洁核实，别再声称四件套完成）：`10-my-reading`、`12-roadmap-2026`、`27-reader-today`、`27b-source-axes`、`28-hot-redesign`、`29-source-groups`、`30-admin-consolidation`、`31-media-playback`、`32-content-typography`、`33-misc-fixes`、`34-misc-fixes`
-- **在途/待批**：`35-selfheal-admin-console/`（管理后台自愈 + 源健康度总 spec 框架，含 35-A/B/C 小 spec；**未获用户批准，未动工**）
+- **在途/待批（2026-09-19 批注轮，全部未动工）**：
+  `35-selfheal-admin-console/`（自愈引擎 + 源健康度窗口 + 彩色百分比；其 35D 已移交 38）、
+  `36-reading-semantics/`（未知日期/类型筛选/足迹口径/阅读器性能）、
+  `37-alerts-observability/`（报警链路恢复 + 结构化事件 + CI 可观测）、
+  `38-admin-ia-refactor/`（后台信息架构与功能隔离，取代 35D）、
+  `39-ai-console/`（AI 能力台：env-only 裁决、假开关清除、模型枚举与耗时）、
+  `40-brief-center-products/`（三报统一期/档位/历史 + 归档投影 + 脏数据订正）、
+  `41-e2e-whitebox-eval/`（端到端 + 白盒评测与去污染，验收流程升级）
 
 ## 接口契约（docs/contracts/）· 读层响应形状，改 API 必须同步
 

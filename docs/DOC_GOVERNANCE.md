@@ -123,7 +123,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 3. `docs/` 下存在未被 `INDEX.md` 登记的 `.md`/`.json`（文件名或任一上级目录命中即算登记）→ 警
 4. `docs/archive/**` 缺 §2.4 头注字段 → **错**
 5. 活文档超长（ISSUES > 130 行 / ARCHITECTURE > 400 行 / NEXT-DEV-REQS > 260 行 / FEATURE_MATRIX > 200 行）→ 警，提示核销轮
-6. 明文密钥模式扫描（`ghp_…`、`sk-…`、`libsql://user:pass@`、`*.libsql.cloud`），**只扫 git 跟踪文件**（本地未跟踪的 `docs/HANDOVER.md`/`.env` 属设计内）→ **错**，禁止提交
+6. 明文密钥模式扫描（`ghp_` 前缀、`sk-` 前缀、Turso 带口令的 libsql 连接串、`*.libsql.cloud` 主机名），**只扫 git 跟踪文件**（本地未跟踪的 `docs/HANDOVER.md`/`.env` 属设计内）→ **错**，禁止提交
 
 人工复核项（脚本查不了的）：范围声明与正文是否一致、同类事实是否只剩一处、归档指针是否可达、日期是否与内容改动相称。
 

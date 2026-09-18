@@ -125,11 +125,11 @@ server/services/
 | 域 | 文件 | 坑编号 | 一句话核心 |
 |---|---|---|---|
 | 采集与信源 | `docs/pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 #35 | 三份实现同步改；浏览器 UA；反爬熔断是常态；大查询禁携全文；**熔断=45min 抖动锁源 48h，三端自愈语义不一致** |
-| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 | 游标同型；无索引大查询云端必炸；focus 双语义；超长 OR 链必须平衡二叉树（表达式树深度上限 100）；**被 catch 隔离的静默 ReferenceError** |
+| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 #36 | 游标同型；无索引大查询云端必炸；focus 双语义；超长 OR 链必须平衡二叉树（表达式树深度上限 100）；**被 catch 隔离的静默 ReferenceError**；**`typeof null==='object'` 把 NULL 写成 `'null'` 字面串** |
 | AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #32 #34 #A1 #A2 | settings 覆盖 env 先查残留；推理模型输出三层清洗；**多写者产物表读取按档位不按时间**；**深析必须有否决权/入报必须有分数门槛** |
 | 前端 | `docs/pitfalls/frontend.md` | #1 #2 #16 #F1 | 防盗链；hook 必须在早退 return 前 |
 | 部署与运维 | `docs/pitfalls/deployment.md` | #5 #20 #21 #22 #D1 #D2 | 密钥三处同步；vercel.json 无 crons；push 后验远端 SHA |
-| 测试 | `docs/pitfalls/testing.md` | #13 #18 #27 #T1 | 云端测试直打生产库；全量替换语义必须快照还原 |
+| 测试 | `docs/pitfalls/testing.md` | #13 #18 #27 #T1 #T2 | 云端测试直打生产库；全量替换语义必须快照还原；**还原必须断言，否则报警链路被写坏两天无人知** |
 
 ## 6. 凭据与配置位置
 
