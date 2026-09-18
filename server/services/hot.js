@@ -4,23 +4,12 @@ const { db, getSetting } = require('../db');
 
 const PAGE_SIZE = 30;
 
-// 六类清单（精选胶囊顺序）
-const CATEGORIES = ['模型', '产品', '行业', '论文', '教程', '观点'];
+// 六类与默认映射的唯一实现在 lib/hot-categories.js（B58）；本文件只做 re-export，不再各留一份
+const { CATEGORIES, DEFAULT_CATEGORY_MAP } = require('../../lib/hot-categories');
 
-// 默认分类映射：六类 → AIHOT feed <category> 列表（settings['hot.categories'] 可覆盖）
-// 注：同时收录 plan 假定值（模型发布/产品更新 等）与线上实际值（AI 模型/AI 产品/技巧观点 等）
-const DEFAULT_CATEGORY_MAP = {
-  '模型': ['模型发布', '评测/基准', 'AI 模型'],
-  '产品': ['产品更新', 'AI 产品'],
-  '行业': ['行业动态'],
-  '论文': ['论文'],
-  '教程': ['教程/实践', '教程'],
-  '观点': ['大佬观点', '现象/趋势', '技巧观点'],
-};
 
 function categoryMap() {
-  const m = getSetting('hot.categories', null);
-  return m && typeof m === 'object' && !Array.isArray(m) ? m : DEFAULT_CATEGORY_MAP;
+  return require('../../lib/hot-categories').categoryMapOf(getSetting('hot.categories', null)).map;
 }
 
 // 标题关键词兜底（category 缺失或未命中映射时；顺序即优先级，前类更具体）

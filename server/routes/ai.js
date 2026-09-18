@@ -28,7 +28,6 @@ router.post('/ping', async (req, res) => {
 router.get('/config', (req, res) => {
   const cfg = llm.getConfig();
   const runtimeCfg = getSetting('ai', {}) || {};
-  const features = getSetting('ai.features', { translate: true, summary: true, classify: false, analyze: false });
   res.json({
     ok: true,
     apiKeyConfigured: !!cfg.apiKey,
@@ -36,7 +35,6 @@ router.get('/config', (req, res) => {
     model: cfg.model,
     envSource: process.env.AGNES_API_KEY ? 'env' : 'settings',
     runtime: runtimeCfg,
-    features,
   });
 });
 
@@ -50,10 +48,7 @@ router.put('/config', (req, res) => {
   // apiKey 留空不覆盖（敏感字段惯例）
   if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
   setSetting('ai', next);
-  // 功能开关单独存储
-  if (body.features && typeof body.features === 'object') {
-    setSetting('ai.features', body.features);
-  }
+  // B51：假开关（写了只回显给同一个界面、无任何行为读取）已摘除，见 docs/specs/39-ai-console/spec.md 39-2
   log.info('[AI] 配置已更新');
   res.json({ ok: true });
 });

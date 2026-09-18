@@ -71,6 +71,8 @@ export default function DataTab() {
   const [ready, setReady] = useState(true); // /api/data 是否就绪
   const [stats, setStats] = useState(null);
   const [snaps, setSnaps] = useState([]);
+  const [snapshotsUnsupported, setSnapshotsUnsupported] = useState(false); // B56：本端有没有文件快照这项能力
+  const [snapNote, setSnapNote] = useState('');
   const [busy, setBusy] = useState(''); // snapshot | restore:file | preview | cleanup
   const [days, setDays] = useState(7);  // F6 Bug#1: 默认 7 天而非 90（符合 spec 要求）
   const [savedDays, setSavedDays] = useState(null); // 已落库的值，用来判断有没有未保存改动
@@ -104,6 +106,9 @@ export default function DataTab() {
   const loadSnaps = useCallback(async () => {
     try {
       const d = await api.get('/api/data/list');
+      // 能力位优先于列表长度：fileSnapshots:false 时「空列表」的意思是"这端做不到"，不是"还没做"
+      setSnapshotsUnsupported(d?.fileSnapshots === false);
+      setSnapNote(String(d?.note || ''));
       const list = Array.isArray(d) ? d : d?.backups || d?.files || d?.items || d?.snapshots || [];
       setSnaps(list);
       setReady(true);
@@ -276,16 +281,21 @@ export default function DataTab() {
           订阅源/分组/设置的「配置轻量迁移」备份在「公众号 RSS」Tab 底部，两者用途不同。
         </p>
         <div className="mt-3 flex items-center gap-3">
-          <button className="btn-primary" disabled={!ready || !!busy} onClick={doSnapshot}>
+          <button className="btn-primary" disabled={!ready || !!busy || snapshotsUnsupported} onClick={doSnapshot}>
             {busy === 'snapshot' ? '生成中…' : '生成快照'}
           </button>
-          <button className="btn-ghost" disabled={!ready || !!busy} onClick={openImportModal}>
+          <button className="btn-ghost" disabled={!ready || !!busy || snapshotsUnsupported} onClick={openImportModal}>
             导入快照
           </button>
           <span className="text-xs t-muted">恢复快照会整库回滚，需二次确认</span>
         </div>
         <div className="mt-4 card overflow-hidden">
-          {snaps.length === 0 ? (
+          {snapshotsUnsupported ? (
+            <div className="px-4 py-6 text-center text-xs t-muted">
+              {snapNote || '当前部署（云端 Turso）没有文件系统，不支持整库 .db 快照/恢复。'}
+              {'——这不是"还没有快照"，而是本部署形态不提供该能力，故按钮已禁用。'}
+            </div>
+          ) : snaps.length === 0 ? (
             <div className="px-4 py-6 text-center text-xs t-muted">
               {ready ? '暂无快照' : '快照列表不可用（接口未就绪）'}
             </div>

@@ -1,4 +1,5 @@
-// 2026-09-19 T6 第 1 步小刺打包回归锁 —— 本文件先记 B39
+// 2026-09-19 T6 第 1 步小刺打包回归锁：B39 / B53 / B62 / B51 / B58 / B54 / B56
+// 本文件同时是 docs/pitfalls/backend.md 坑 #38「能力差异只用给人看的文案表达」的回归锁。
 // 原则（EVAL_GUIDE §6/§7）：每条断言都必须"改前会红"，且不锁代码形状而锁行为/数据。
 const test = require('node:test');
 const assert = require('node:assert');
@@ -151,4 +152,95 @@ test('B54-2 保存入口不受"有没有可删内容"限制', () => {
   assert.ok(btn, '找不到保存按钮与其 disabled 的关系');
   assert.ok(!/previewTotal\s*===\s*0/.test(src.match(/disabled=\{[^}]*\}\s*onClick=\{saveRetention\}/)?.[0] || ''),
     '保存按钮不得被 previewTotal===0 禁掉');
+});
+
+// ── B51 假开关（用户已裁决：摘除。见 docs/ISSUES.md「已裁决不再待批」）──
+// 实测：ai.features 只有两处"读者"——GET 时把它回显给同一个界面、PUT 时写回去。
+// 全库没有任何行为分支读 features.translate/summary/classify/analyze。
+// 「摘要」「栏目分类」「事件关联」其实是规则实现（summarize() 截取、api/_classify.js、SQL 聚合）。
+// 所以这不是"开关没生效"，是"根本没有开关"。
+const FAKE_SWITCH_UI = /FEATURES\.map\([\s\S]{0,200}?type="checkbox"/;
+test('B51-0 检测器自检：必须能看见假开关 UI 的已知形态', () => {
+  const knownBad = '{FEATURES.map(f => (<label><input type="checkbox" checked={!!features[f.key]} /></label>))}';
+  assert.ok(FAKE_SWITCH_UI.test(knownBad), '探针失效');
+});
+
+test('B51-1 假开关、假统计、假流程折叠必须摘除', () => {
+  const src = read('web/src/components/AiSettingsTab.jsx');
+  const code = src.replace(/^\s*(\/\/|\*).*$/gm, '');
+  assert.ok(!FAKE_SWITCH_UI.test(code), '4 个假复选框仍在');
+  assert.ok(!/已启用功能/.test(code), '「x/4 已启用功能」假统计仍在');
+  assert.ok(!/操作流程说明/.test(code), '「操作流程说明」是纯文案冒充功能，按批注⑬应做成 tips');
+  assert.ok(!/\bFEATURES\b/.test(code), 'FEATURES 常量应随开关一起删除');
+});
+
+test('B51-2 两端不得再有 ai.features 的读写面（没有行为就不要有持久化）', () => {
+  for (const f of ['api/[...slug].js', 'server/routes/ai.js']) {
+    const src = read(f).replace(/^\s*(\/\/|\*).*$/gm, '');
+    assert.ok(!/setSetting\(\s*['"]ai\.features['"]/.test(src), `${f} 仍在写 ai.features`);
+    assert.ok(!/getSetting\(\s*['"]ai\.features['"]/.test(src), `${f} 仍在回显 ai.features`);
+  }
+});
+
+// ── B58 热点榜分类表显示的是前端硬编码默认，不是线上生效值 ──
+// 实测三方：线上 settings['hot.categories'] 的「模型」含 3 项（多出「AI 模型」）；
+// 前端 DEFAULT_MAP 只有 2 项且漏「AI 产品/论文/研究/技巧观点」；
+// 而云端 GET /api/hot/categories 返回 {categories:[...]}\u2014\u2014把读到的映射丢了，本地端返回 {categories, map}。
+// 结果：前端 `if (d?.map)` 永远不成立 → 表格里 6 行有 4 行是假的，且 .catch(() => {}) 让这件事完全静默。
+test('B58-0 检测器自检：必须能看见"云端丢映射"的响应形态', () => {
+  const knownBad = 'return jsonOk({ categories: Object.keys(custom) });';
+  assert.ok(/jsonOk\(\{\s*categories:/.test(knownBad), '探针失效');
+  // 反向：要求"必须含 map"的那条断言，对旧的坏响应必须不匹配——否则它就是假绿
+  assert.ok(!/jsonOk\(\{[^}]*categories[^}]*\bmap\b/.test(knownBad),
+    'B58-2 的 map 断言太松：旧的不返回映射的写法也能过');
+});
+
+test('B58-1 分类映射常量只许有一份实现（lib），前端不得再抄一份默认表', () => {
+  const lib = require('../lib/hot-categories');
+  assert.deepEqual(Object.keys(lib.DEFAULT_CATEGORY_MAP), lib.CATEGORIES, '默认表必须覆盖六类');
+  assert.ok(lib.DEFAULT_CATEGORY_MAP['模型'].includes('AI 模型'), '默认表必须含线上实际 feed 名');
+  const ui = read('web/src/components/HotSettings.jsx').replace(/^\s*(\/\/|\*).*$/gm, '');
+  assert.ok(!/const DEFAULT_MAP/.test(ui), '前端仍有第二份默认映射表');
+  const svc = read('server/services/hot.js');
+  assert.match(svc, /require\([^)]*lib\/hot-categories/, '本地服务层必须复用同一份定义');
+});
+
+test('B58-2 云端必须把生效映射与来源一起返回，前端不得静默降级', () => {
+  const api = read('api/[...slug].js');
+  assert.match(api, /jsonOk\(\{[^}]*categories[^}]*\bmap\b/, '云端 /api/hot/categories 必须同时返回 categories 与 map（简写 map, 亦可）');
+  assert.match(api, /categorySource|source:\s*['"](settings|default)['"]/, '必须说明映射来自线上设置还是内置默认');
+  const ui = read('web/src/components/HotSettings.jsx');
+  assert.ok(!/\.catch\(\(\) => \{\}\)/.test(ui), '分类表加载失败不得静默吞掉（用户会一直看到假默认）');
+});
+
+// ── B56 快照区在云端说谎 ──
+// 实测：云端 GET /api/data/list 返回 200 + {backups: [], note: '云端 Turso 不支持文件型快照…'}，
+// 前端把 note 丢掉、ready 置 true、snaps 空 → 显示「暂无快照」（暗示"有这功能但还没快照"），
+// 而三个动作按钮照常可点，只有点了才吃到 501 toast。
+const FAKE_EMPTY_STATE = /ready \? '暂无快照'/;
+test('B56-0 检测器自检：必须能看见"只凭 ready 就说暂无快照"的形态', () => {
+  assert.ok(FAKE_EMPTY_STATE.test("{ready ? '暂无快照' : '接口未就绪'}"), '探针失效');
+});
+
+test('B56-1 两端必须用布尔声明文件快照能力，不能只写给人看的 note', () => {
+  const cloud = read('api/[...slug].js');
+  assert.match(cloud, /fileSnapshots:\s*false/, '云端 /api/data/list 必须显式声明 fileSnapshots:false');
+  const local = read('server/routes/data.js');
+  assert.match(local, /fileSnapshots:\s*true/, '本地 /api/data/list 必须声明 fileSnapshots:true');
+});
+
+test('B56-2 不支持时不得再出现「暂无快照」，动作按钮必须禁用', () => {
+  const ui = read('web/src/components/DataTab.jsx');
+  const code = ui.replace(/^\s*(\/\/|\*).*$/gm, '');
+  // 「暂无快照」在本地端仍是正确文案，所以判据不是"不许出现这四个字"，
+  // 而是：空态条件链的**第一个**分支必须是能力位——否则不支持时仍会走到"暂无"。
+  const at = code.indexOf("'暂无快照'");
+  assert.ok(at > 0, '本地端仍应保留「暂无快照」文案');
+  const guard = code.indexOf('snapshotsUnsupported ?');
+  const emptyLen = code.indexOf('snaps.length === 0 ?');
+  assert.ok(guard > 0 && guard < at, '「暂无快照」之前必须先判能力位（云端不支持时会把"做不到"说成"还没做"）');
+  assert.ok(emptyLen > guard, '能力位必须是空态条件链的第一分支，排在长度判断之前');
+  assert.match(code, /snapshotsUnsupported/, '界面必须持有"本端不支持文件快照"的状态');
+  assert.ok((code.match(/disabled=\{[^}]*snapshotsUnsupported/g) || []).length >= 2,
+    '快照相关的动作按钮都要被能力位禁用（至少生成/导入两个）');
 });

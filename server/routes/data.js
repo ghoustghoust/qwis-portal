@@ -34,7 +34,7 @@ router.post('/restore', (req, res) => {
 });
 
 router.get('/list', (req, res) => {
-  res.json({ ok: true, backups: datamgr.list() });
+  res.json({ ok: true, backups: datamgr.list(), fileSnapshots: true });
 });
 
 // POST /api/data/upload?name=app-*.db —— 上传快照文件到 data/backups/（原始字节流，不立即恢复）

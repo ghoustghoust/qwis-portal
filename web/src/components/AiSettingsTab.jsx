@@ -1,14 +1,8 @@
 // AI 设置管理 Tab（Agnes AI 平台集成）
-// 功能：AI 提供商配置、功能开关、连通性测试、操作流程说明
+// 功能：AI 提供商配置、连通性测试（B51 摘除了 4 个假功能开关与"操作流程说明"）
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 
-const FEATURES = [
-  { key: 'translate', label: '翻译', desc: '英文文章自动/手动翻译为中文', icon: '🌐' },
-  { key: 'summary', label: '摘要', desc: 'AI 生成文章/视频智能摘要', icon: '📝' },
-  { key: 'classify', label: '分类', desc: 'AI 辅助日报栏目分类（补充规则引擎）', icon: '🏷️' },
-  { key: 'analyze', label: '分析', desc: 'AI 辅助事件关联分析', icon: '🔍' },
-];
 
 const FLOW_DESCRIPTIONS = {
   translate: {
@@ -36,11 +30,9 @@ const FLOW_DESCRIPTIONS = {
 export default function AiSettingsTab() {
   const [config, setConfig] = useState(null);
   const [form, setForm] = useState({ apiKey: '', apiBase: '', model: '' });
-  const [features, setFeatures] = useState({});
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [message, setMessage] = useState('');
-  const [expandedFlow, setExpandedFlow] = useState(null);
 
   const loadConfig = useCallback(async () => {
     try {
@@ -51,7 +43,6 @@ export default function AiSettingsTab() {
         apiBase: data.apiBase || 'https://apihub.agnes-ai.com/v1',
         model: data.model || 'agnes-2.5-flash',
       });
-      setFeatures(data.features || { translate: true, summary: true, classify: false, analyze: false });
     } catch (err) {
       setMessage('加载配置失败: ' + err.message);
     }
@@ -63,7 +54,7 @@ export default function AiSettingsTab() {
     setSaving(true);
     setMessage('');
     try {
-      const payload = { apiBase: form.apiBase, model: form.model, features };
+      const payload = { apiBase: form.apiBase, model: form.model };
       if (form.apiKey.trim()) payload.apiKey = form.apiKey;
       await api.put('/api/ai/config', payload);
       setMessage('✅ 配置已保存');
@@ -88,10 +79,6 @@ export default function AiSettingsTab() {
       setMessage('测试失败: ' + err.message);
     }
     setTesting(false);
-  };
-
-  const handleFeatureToggle = (key, value) => {
-    setFeatures(prev => ({ ...prev, [key]: value }));
   };
 
   if (!config) {
@@ -177,67 +164,6 @@ export default function AiSettingsTab() {
         </div>
       </div>
 
-      {/* 功能开关 */}
-      <div className="t-surface rounded-xl border t-border p-4 space-y-4">
-        <h3 className="font-semibold t-text text-sm">功能开关</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {FEATURES.map(f => (
-            <label key={f.key} className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-              <input
-                type="checkbox"
-                checked={!!features[f.key]}
-                onChange={(e) => handleFeatureToggle(f.key, e.target.checked)}
-                className="w-4 h-4 mt-0.5 rounded border-gray-300"
-              />
-              <div>
-                <div className="text-sm font-medium t-text">{f.icon} {f.label}</div>
-                <div className="text-xs t-muted">{f.desc}</div>
-              </div>
-            </label>
-          ))}
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="btn-primary !text-sm disabled:opacity-50"
-        >
-          {saving ? '保存中...' : '保存功能开关'}
-        </button>
-      </div>
-
-      {/* 操作流程说明 */}
-      <div className="t-surface rounded-xl border t-border p-4 space-y-3">
-        <h3 className="font-semibold t-text text-sm">操作流程说明</h3>
-        <div className="space-y-2">
-          {FEATURES.map(f => (
-            <div key={f.key} className="rounded-lg border t-border overflow-hidden">
-              <button
-                onClick={() => setExpandedFlow(expandedFlow === f.key ? null : f.key)}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium t-text hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
-              >
-                <span>{f.icon} {f.label}流程</span>
-                <svg className={`w-4 h-4 t-muted transition-transform ${expandedFlow === f.key ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {expandedFlow === f.key && (
-                <div className="px-4 pb-3 space-y-2 text-xs t-muted border-t t-border">
-                  <div className="pt-2">
-                    <span className="font-medium t-text">触发条件：</span>{FLOW_DESCRIPTIONS[f.key].trigger}
-                  </div>
-                  <div>
-                    <span className="font-medium t-text">处理流程：</span>{FLOW_DESCRIPTIONS[f.key].process}
-                  </div>
-                  <div>
-                    <span className="font-medium t-text">输出格式：</span>{FLOW_DESCRIPTIONS[f.key].output}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* 当前状态概览 */}
       <div className="t-surface rounded-xl border t-border p-4">
         <h3 className="font-semibold t-text text-sm mb-3">当前状态</h3>
@@ -255,10 +181,6 @@ export default function AiSettingsTab() {
           <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/30">
             <div className="text-sm font-mono t-text">{config.model}</div>
             <div className="text-xs t-muted">当前模型</div>
-          </div>
-          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/30">
-            <div className="text-sm font-bold t-text">{Object.values(features).filter(Boolean).length}/{FEATURES.length}</div>
-            <div className="text-xs t-muted">已启用功能</div>
           </div>
         </div>
       </div>

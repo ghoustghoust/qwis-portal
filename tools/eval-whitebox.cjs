@@ -63,10 +63,30 @@ const THREE = ['server/services/collectors/store.js', 'api/collect.js', 'tools/c
   // 只报「前端有对应控件、后端却从不读」——那才是 H10/H12/B51 的假开关形态；
   // 纯状态戳（前端无控件、只写不读）降级为提示，不算门禁失败。
   const uiText = uiFiles.map(read).join('\n');
+  // W3b：只用于"回显给同一个界面"的键同样是假开关（B51 就是从 W3 的缝里漏掉的——
+  // ai.features 明明被 getSetting 读了，但读的那一处只是把它塞进 GET 响应里再显示一次，
+  // 全库没有任何行为分支消费它。故：某键的**每一处**读都长得像响应对象的属性 → 判假开关。）
+  const linesOf = {};
+  for (const f of backend) linesOf[f] = read(f).split(/\r?\n/);
+  const isEchoOnly = (k) => {
+    let seen = 0;
+    for (const f of backend) {
+      const L = linesOf[f];
+      for (let i = 0; i < L.length; i++) {
+        if (!L[i].includes(`getSetting('${k}'`)) continue;
+        seen++;
+        const asProp = /^\s*[\w.]+:\s*(await\s+)?getSetting\(\s*'/.test(L[i]);
+        const inResp = L.slice(Math.max(0, i - 8), i + 3).some((x) => /jsonOk\(\{|res\.json\(\{/.test(x));
+        if (!(asProp && inResp)) return false;
+      }
+    }
+    return seen > 0;
+  };
   const fakeSwitches = [];
   const deadWrites = [];
   for (const k of written) {
-    if (backendReads.has(k) || k.startsWith('alerts.')) continue;
+    if (k.startsWith('alerts.')) continue;
+    if (backendReads.has(k) && !isEchoOnly(k)) continue;
     (uiText.includes(k) ? fakeSwitches : deadWrites).push(k);
   }
   ok('W3', fakeSwitches.length === 0, `假开关（UI 可改但后端从不读，H10/H12/B51 家族）：${JSON.stringify(fakeSwitches)}`);

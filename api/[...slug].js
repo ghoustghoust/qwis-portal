@@ -371,6 +371,8 @@ const { mapAudioFields, audioCoverSql } = require('../lib/media');
 const { cleanTranslatedTitle } = require('../lib/text-clean');
 // 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
 const briefGuards = require('../lib/brief-guards');
+// B58（2026-09-19）：热点榜六类与分类映射与本地服务层共用一份实现
+const hotCats = require('../lib/hot-categories');
 // B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
 const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../lib/reading-filters');
 
@@ -533,15 +535,12 @@ async function handleHotGroups(req) {
   return jsonOk({ groups: rows });
 }
 
-// GET /api/hot/categories — 分类清单
+// GET /api/hot/categories — 分类清单 + 生效映射（B58）
+// 原实现读到了 settings['hot.categories'] 这个映射，却只回 Object.keys(...)——
+// 映射在 API 边界就被丢掉，前端 if (d?.map) 永不成立，于是分类表一直在显示前端自带过时的默认值。
 async function handleHotCategories(req) {
-  const CATEGORIES = ['模型', '产品', '行业', '论文', '教程', '观点'];
-  // 先尝试从 settings 读自定义分类
-  const custom = await getSetting('hot.categories', null);
-  if (custom && typeof custom === 'object' && !Array.isArray(custom)) {
-    return jsonOk({ categories: Object.keys(custom) });
-  }
-  return jsonOk({ categories: CATEGORIES });
+  const { map, source } = hotCats.categoryMapOf(await getSetting('hot.categories', null));
+  return jsonOk({ categories: Object.keys(map), map, categorySource: source });
 }
 
 // GET /api/hot/sources — 实时流来源下拉（2026-09-14：改为全量源计数，此前只查聚合热榜源，下拉里全是「xx热榜」）
@@ -1424,7 +1423,6 @@ async function handleAiConfig(req) {
       apiKeyConfigured: !!apiKey,
       apiBase: cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE,
       model: cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL,
-      features: await getSetting('ai.features', { translate: true, summary: true, classify: false, analyze: false }),
     });
   }
   if (req.method === 'PUT') {
@@ -1434,9 +1432,7 @@ async function handleAiConfig(req) {
     if (body.model !== undefined) next.model = String(body.model).trim();
     if (body.apiBase !== undefined) next.apiBase = String(body.apiBase).trim();
     if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
-    if (body.features && typeof body.features === 'object') {
-      await setSetting('ai.features', body.features);
-    }
+    // B51：ai.features 曾在这里被写、又在 GET 里回显给同一个界面，全库没有任何行为读它——假开关已随 39-2 摘除
     await setSetting('ai', next);
     return jsonOk({ ok: true });
   }
@@ -1987,8 +1983,10 @@ async function handleDataStats(req) {
 
 // GET /api/data/list — 云端无文件快照，返回配置备份信息
 async function handleDataList(req) {
+  // B56：这里原本只写一句给人看的 note，前端把它丢了 → 云端显示「暂无快照」，
+  // 暗示"功能在、只是还没快照"。能力位必须是机器可读的布尔，不能靠读文案。
   const b = await getSetting('backup.latest', null);
-  return jsonOk({ backups: [], note: '云端 Turso 不支持文件型快照；配置备份见 /api/backup', configBackup: b ? { name: b.name, at: b.at } : null });
+  return jsonOk({ backups: [], fileSnapshots: false, note: '云端 Turso 不支持文件型快照；配置备份请用「配置备份/恢复」' });
 }
 
 // POST /api/data/cleanup/preview {days}

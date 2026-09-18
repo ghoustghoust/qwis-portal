@@ -5,14 +5,8 @@ import { useSettings } from '../useSettings';
 import IntervalEditor from './IntervalEditor.jsx';
 
 // 热点榜设置区（T16/F8）：AIHOT 专属刷新间隔 + 分类规则表（只读）+ 热榜页启用开关
-const DEFAULT_MAP = {
-  模型: ['模型发布', '评测/基准'],
-  产品: ['产品更新'],
-  行业: ['行业动态'],
-  论文: ['论文'],
-  教程: ['教程/实践'],
-  观点: ['大佬观点', '现象/趋势'],
-};
+// B58：这里曾有第二份 DEFAULT_MAP（且已过时）。映射的唯一实现在 lib/hot-categories.js，
+// 由 GET /api/hot/categories 连同 categorySource 一起回传，界面只负责照实渲染。
 
 function isAggregator(s) {
   if (/aihot/i.test(s?.name || '') || /aihot/i.test(s?.url || '')) return true;
@@ -27,7 +21,8 @@ function isAggregator(s) {
 export default function HotSettings() {
   const { settings, save } = useSettings();
   const [aihot, setAihot] = useState(null);
-  const [catMap, setCatMap] = useState(DEFAULT_MAP);
+  const [catMap, setCatMap] = useState({});
+  const [catSource, setCatSource] = useState('loading'); // loading | settings | default | error
   const [busy, setBusy] = useState(false);
   const [backfill, setBackfill] = useState(null); // {running,total,done,failed}
   const [backfillReady, setBackfillReady] = useState(true); // /api/hot/backfill 是否就绪
@@ -49,9 +44,14 @@ export default function HotSettings() {
     api
       .get('/api/hot/categories')
       .then((d) => {
-        if (d?.map && Object.keys(d.map).length) setCatMap(d.map);
+        if (d?.map && Object.keys(d.map).length) {
+          setCatMap(d.map);
+          setCatSource(d.categorySource === 'default' ? 'default' : 'settings');
+        } else {
+          setCatSource('error');
+        }
       })
-      .catch(() => {}); // 接口未就绪 → 展示内置默认规则表
+      .catch(() => setCatSource('error')); // 不再静默退回内置表——那会让人把过时默认当生效配置
   }, [loadAihot]);
 
   // 回填状态轮询（running 时 2s 一次）
@@ -172,7 +172,12 @@ export default function HotSettings() {
 
       {/* 分类规则表（只读） */}
       <div className="mt-4">
-        <div className="text-[13px] t-muted mb-2">分类归类规则（只读）</div>
+        <div className="text-[13px] t-muted mb-2">
+          {'分类归类规则（只读）'}
+          {catSource === 'settings' && <span className="badge-green ml-2">线上生效配置</span>}
+          {catSource === 'default' && <span className="badge-warn ml-2" title="settings 里没有 hot.categories，显示的是内置默认">内置默认</span>}
+          {catSource === 'loading' && <span className="badge-gray ml-2">读取中…</span>}
+        </div>
         <div className="card overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
@@ -182,6 +187,13 @@ export default function HotSettings() {
               </tr>
             </thead>
             <tbody>
+              {catSource === 'error' && (
+                <tr className="border-t t-border">
+                  <td colSpan={2} className="px-4 py-3 text-xs t-muted">
+                    未能读取线上分类映射（接口不可用或返回缺 map 字段）。为避免把过时默认当成生效配置，这里不再展示内置表，请刷新或按 38-H 排查。
+                  </td>
+                </tr>
+              )}
               {Object.entries(catMap).map(([cat, sources]) => (
                 <tr key={cat} className="border-t t-border">
                   <td className="px-4 py-2 t-text">

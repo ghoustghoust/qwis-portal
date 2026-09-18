@@ -100,8 +100,7 @@
 | B55 | 后台清理与 runner 清理 WHERE 口径分叉：`COALESCE(published_at,created_at)` vs 仅 `published_at` |
 | B56 | 快照区无云端分支：按钮照常可点、靠 501 toast，「暂无快照」文案误导（实为「不能有」） |
 | B57 | 热点榜回填端点只存在于本地 Express（`server/routes/hot.js:59`）→ 后台整块死；且本地回 `{ok,progress}` 而前端读 `d.status`，进度条即便本地也永不渲染 |
-| B58 | 热点榜分类表显示前端硬编码 `DEFAULT_MAP`，6 行里 4 行与线上 `settings.hot.categories` 不符；AIHOT「专属刷新间隔」只改 `find(isAggregator)` 命中的第一个源，3 个 aihot 源里 id27 永远改不到 |
-
+| B58 | 热点榜分类表显示前端硬编码 `DEFAULT_MAP`，与线上不符——**09-19 实测三方**：线上 `settings['hot.categories']` 的「模型」有 3 项（多「AI 模型」）、「产品」多「AI 产品」、「观点」多「技巧观点」，而前端那份 `DEFAULT_MAP` 全没有 → 6 行里 4 行是假的；**更根本的原因**：云端 `GET /api/hot/categories` 明明读到了映射，却只 `return {categories: Object.keys(custom)}` 把 map 丢了（本地端返回 `{categories, map}`），前端 `if (d?.map)` 永不成立 + `.catch(() => {})` 静默 → 永远显示内置过时默认 |
 ## 🟡 观察中（有明确验证时间点）
 
 | # | 事项 | 观察点 |
@@ -190,7 +189,12 @@
 | 断言自己也会假绿（新踩坑） | B53 第一版截断检测正则永不命中 → 坏代码在场仍显示绿。规则补进 `EVAL_GUIDE.md` §4.1：**禁止型断言必须配一条正向探针**（把已知坏写法喂给同一正则，断言它命中），已落 `B53-0` | B53-0（写不出探针的断言按 §7 删） |
 | B53 死码与错字（归属 39-2） | 删 `tools/collect-turso.js` 里定义后全仓零调用的 `llmChat()`（53 行，含一份与 `api/_ai.js` 并行的 AI 供应商降级链——留着等于骗后来人"runner 有统一 AI 通道"）；`AiSettingsTab` 去掉 `.slice(0,20)`（API 地址此前显示成 `apihub.agnes-ai.com/`，容器本身已有 `truncate`）；「Agencs→Agnes」错字清 3 处（含 `docs/DEVELOPMENT_STANDARDS.md:176`） | 回归锁 B53-1/2/3，修前 3/3 红 → 修后 7/7 绿 |
 | B62 前端第七份分类副本 | 接口为每条阅读条目回传 `kind`（`lib/reading-filters.js#readingItemKind`，视频/播客/文章三态，播客走 `detectAudioUrl`），本地与云端两处响应出口都过 `withReadingKinds`；前端 `typeLabel` 改读 `it.kind`，删掉 douyin 猜测 | 回归锁 B62-0/1/2（B62-0 是正向探针） |
-| B54 保留天数改了不保存 | 拆出独立 `saveRetention` + 「保存保留天数」按钮（不受 `previewTotal===0` 限制，按钮态显示已保存/有未保存改动），并把原先藏在 `doCleanup` 成功分支里的 `PUT /api/settings` 摘掉——设置不该是清理的副作用 | 回归锁 B54-0/1/2，修前 2 红 → 修后 13/13 绿 |
+| B51 假 AI 开关（用户已裁决摘除） | 摘掉 4 个复选框 + 「x/4 已启用功能」假统计 + 「操作流程说明」整块（约 3.7KB 界面代码），并**连后端的读写面一起删**：`ai.features` 此前在 GET 里回显、PUT 里写回，全库无一处行为读它。「摘要」「栏目分类」「事件关联」本就是规则实现，挂着 AI 开关是骗人 | 回归锁 B51-0/1/2（B51-0 是正向探针） |
+| 假开关检测器有缝（B51 漏网的原因） | W3 原判据是「后端从不读」，而 `ai.features` **确实被读**——只是读它的那一行只是把它塞进同一个 GET 响应再显示一次。新增 **W3b**：某 settings 键的每一处 getSetting 都长成响应对象属性 → 判假开关。已负向验证：塞一个 `ai.fakeDemo`（GET 回显 + PUT 写回 + 界面含该键）→ W3 红；删掉 → 绿 | 白盒 W3b（`npm run eval:whitebox`） |
+| B54 保留天数改了不保存 | 拆出独立 `saveRetention` + 「保存保留天数」按钮（不受 `previewTotal===0` 限制，按钮态显示已保存/有未保存改动），并把原先藏在 `doCleanup` 成功分支里的 `PUT /api/settings` 摘掉——设置不该是清理的副作用 | 回归锁 B54-0/1/2，修前 2 红 → 修后全绿 |
+| B58 分类表显示假默认 | 三方收敛：新建 `lib/hot-categories.js` 作为六类与映射的唯一实现（含线上实际 feed 名），本地 `server/services/hot.js` 改为引用它，云端 `handleHotCategories` 补回 `{categories, map, categorySource}`，前端删掉自带 `DEFAULT_MAP`、按 `categorySource` 显示「线上生效配置 / 内置默认 / 读取失败」三态徽章，`.catch(() => {})` 改为显式 error 行 | 回归锁 B58-0/1/2（B58-0 双向探针：既要求探针能看见坏形态，也要求"必须含 map"的断言对旧坏写法**不**匹配，防止断言写太松变假绿） |
+| B56 快照区把"做不到"说成"还没做" | 两端 `/api/data/list` 加**布尔能力位** `fileSnapshots`（云端 false / 本地 true），界面先判能力位再判列表长度，不支持时显示"本部署不提供该能力"并禁用生成/导入按钮；note 只当说明文字，不再是唯一载体（坑 #38） | 回归锁 B56-0/1/2（B56-2 判的是**分支顺序**：能力位必须排在长度判断之前，因为「暂无快照」在本地端是正确文案） |
+| 35A-F6 系统性故障折算成单源失败 | 待办——本轮未动（属 35A 自愈引擎，非界面小刺） | — |
 
 顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 
