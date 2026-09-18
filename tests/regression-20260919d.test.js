@@ -1,5 +1,6 @@
 // 2026-09-19 T6 第 1 步小刺打包回归锁：B39 / B53 / B62 / B51 / B58 / B54 / B56
 // 本文件同时是 docs/pitfalls/backend.md 坑 #38「能力差异只用给人看的文案表达」的回归锁。
+// F6-1/2/3 另锁 docs/pitfalls/collection.md 坑 #39「大规模失败先分环境类与源侧，分母必须含成功」。
 // 原则（EVAL_GUIDE §6/§7）：每条断言都必须"改前会红"，且不锁代码形状而锁行为/数据。
 const test = require('node:test');
 const assert = require('node:assert');
@@ -243,4 +244,44 @@ test('B56-2 不支持时不得再出现「暂无快照」，动作按钮必须�
   assert.match(code, /snapshotsUnsupported/, '界面必须持有"本端不支持文件快照"的状态');
   assert.ok((code.match(/disabled=\{[^}]*snapshotsUnsupported/g) || []).length >= 2,
     '快照相关的动作按钮都要被能力位禁用（至少生成/导入两个）');
+});
+
+// ── 35A-F6 系统性故障不折算成单源失败（spec 35A AC5；T6 第 1 步已批准那"一条判据"）──
+// 事故原型：一次代理故障把 458 个本地源集体记失败并逐个熔断（坑 #35）。
+test('F6-1 判据本身：只有网络/环境类的大规模同源失败才抑制', () => {
+  const sb = require('../lib/source-breaker');
+  const R = (o) => sb.detectSystemicFailure(o);
+  const proxyStorm = R(Array.from({ length: 50 }, (_, i) => ({ ok: false, error: 'connect ECONNREFUSED 127.0.0.1:789' + i })));
+  assert.equal(proxyStorm.systemic, true, '代理全挂必须判系统性（这正是 458 源误杀的场景）');
+  assert.equal(proxyStorm.dominantShare, 1, '端口不同不该把指纹打散');
+
+  const timeoutStorm = R([...Array.from({ length: 25 }, (_, i) => ({ ok: false, error: 'read ETIMEDOUT peer ' + i })),
+    ...Array.from({ length: 200 }, () => ({ ok: true }))]);
+  assert.equal(timeoutStorm.systemic, true, '比例不高但绝对量级已达事故且同指纹 → 仍抑制');
+
+  const real404s = R([...Array.from({ length: 30 }, (_, i) => ({ ok: false, error: 'HTTP 404 for feed ' + i })),
+    ...Array.from({ length: 100 }, () => ({ ok: true }))]);
+  assert.equal(real404s.systemic, false, '一批同源 404 是源真死了，不许借"系统性"赦免');
+
+  const scattered = R(Array.from({ length: 6 }, (_, i) => ({ ok: false, error: 'HTTP 50' + i + ' origin weird' })));
+  assert.equal(scattered.systemic, false, '指纹分散的失败要照常计入各源');
+  assert.equal(R([{ ok: false, error: 'ETIMEDOUT' }, { ok: false, error: 'ETIMEDOUT' }]).systemic, false,
+    '样本过小（2 个）不判系统性，否则 1/1 就是 100%');
+});
+
+test('F6-2 指纹归一：同一故障换个端口/IP/数字不该被打散', () => {
+  const { errorFingerprint: fp } = require('../lib/source-breaker');
+  assert.equal(fp('connect ECONNREFUSED 127.0.0.1:7890'), fp('connect ECONNREFUSED 127.0.0.1:10809'));
+  assert.equal(fp('GET https://feeds.example.com/a.xml failed'), fp('GET https://feeds.example.com/b.xml failed'));
+  assert.notEqual(fp('HTTP 404 Not Found'), fp('connect ECONNREFUSED 127.0.0.1:7890'));
+});
+
+test('F6-3 runner 真的用这条判据决定不熔断（不是只有函数没人调）', () => {
+  const runner = read('tools/collect-turso.js');
+  assert.match(runner, /detectSystemicFailure\(stats\.outcomes\)/, 'runner 未接判据');
+  assert.match(runner, /if \(systemic\) \{[\s\S]{0,240}?不累加|return \{ autoPaused: false, suppressed: true \}/,
+    'updateSourceError 在系统性时必须跳过 fail_count 与熔断');
+  // 分母必须含成功：只统计失败会让比例恒为 100%，抑制器就成了永久免死金牌
+  assert.match(runner, /\(stats\.outcomes \|\| \(stats\.outcomes = \[\]\)\)\.push\(\{ ok: true \}\)/,
+    '成功侧也必须记 outcome，否则失败率分母里没有成功');
 });

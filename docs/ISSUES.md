@@ -195,7 +195,7 @@
 | B54 保留天数改了不保存 | 拆出独立 `saveRetention` + 「保存保留天数」按钮（不受 `previewTotal===0` 限制，按钮态显示已保存/有未保存改动），并把原先藏在 `doCleanup` 成功分支里的 `PUT /api/settings` 摘掉——设置不该是清理的副作用 | 回归锁 B54-0/1/2，修前 2 红 → 修后全绿 |
 | B58 分类表显示假默认 | 三方收敛：新建 `lib/hot-categories.js` 作为六类与映射的唯一实现（含线上实际 feed 名），本地 `server/services/hot.js` 改为引用它，云端 `handleHotCategories` 补回 `{categories, map, categorySource}`，前端删掉自带 `DEFAULT_MAP`、按 `categorySource` 显示「线上生效配置 / 内置默认 / 读取失败」三态徽章，`.catch(() => {})` 改为显式 error 行 | 回归锁 B58-0/1/2（B58-0 双向探针：既要求探针能看见坏形态，也要求"必须含 map"的断言对旧坏写法**不**匹配，防止断言写太松变假绿） |
 | B56 快照区把"做不到"说成"还没做" | 两端 `/api/data/list` 加**布尔能力位** `fileSnapshots`（云端 false / 本地 true），界面先判能力位再判列表长度，不支持时显示"本部署不提供该能力"并禁用生成/导入按钮；note 只当说明文字，不再是唯一载体（坑 #38） | 回归锁 B56-0/1/2（B56-2 判的是**分支顺序**：能力位必须排在长度判断之前，因为「暂无快照」在本地端是正确文案） |
-| 35A-F6 系统性故障折算成单源失败 | 待办——本轮未动（属 35A 自愈引擎，非界面小刺） | — |
+| 35A-F6 系统性故障不再折算成单源失败 | `lib/source-breaker.js` 加 `errorFingerprint()` + `detectSystemicFailure()` 三闸门判据：量级（≥30% 或失败数 ≥20，样本 <5 不判）＋同源性（≥60% 同指纹，指纹须把 URL/IP/端口/数字打码）＋**环境类**（指纹须命中 ECONNREFUSED/ETIMEDOUT/EAI_AGAIN/TLS/代理/429/503 等）。runner 命中后仍记 `status='error'`+`lastError` 供排障，但**不累加 fail_count、不熔断**，并在批次统计里标 `systemicSuppressed`。第三道闸门是刻意加的：没有它，一批同源 404（源真死了）也会被整批赦免，抑制器就变永久免死金牌。本轮只做 F6 这一条判据（T6 第 1 步已批），F1-F5/F7-F9 仍属 35A 待批 | 回归锁 F6-1/2/3（7 个场景实测：代理风暴抑制 / 25 超时抑制 / 30 同源 404 **不**抑制 / 指纹分散不抑制 / 小样本不抑制 / 正常轮不抑制 / 429 风暴抑制）；F2P 见 HEAD worktree 三条真空红；坑 #39 |
 
 顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 

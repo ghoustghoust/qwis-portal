@@ -401,9 +401,16 @@ async function updateSourceOk(sourceId, extra, intervalMin) {
   );
 }
 
-async function updateSourceError(sourceId, extra, errMsg, sourceType) {
+async function updateSourceError(sourceId, extra, errMsg, sourceType, systemic) {
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
+  // F6 系统性故障抑制（lib/source-breaker.js 判）：一轮里大批源同时报同一个网络/环境类错误，
+  // 说明是我们出不去，不是这些源死了 → 只记 status/lastError 供排障，
+  // **不累加 fail_count、不熔断**。否则一次代理故障就把几百个活源集体关进牢房（坑 #35 的 458 源事故）。
+  if (systemic) {
+    await qRun("UPDATE sources SET status='error', extra=? WHERE id=?", [JSON.stringify(extra), sourceId]);
+    return { autoPaused: false, suppressed: true };
+  }
   await qRun(
     "UPDATE sources SET status='error', fail_count=COALESCE(fail_count,0)+1, extra=? WHERE id=?",
     [JSON.stringify(extra), sourceId]
@@ -465,12 +472,16 @@ async function collectOne(source, stats) {
     const intervalMin = Number(extra.intervalMin) || (source.type === 'hotlist' ? 30 : 60);
     await updateSourceOk(source.id, extra, intervalMin);
     stats.success++;
+    (stats.outcomes || (stats.outcomes = [])).push({ ok: true });
   } catch (err) {
-    const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);
+    (stats.outcomes || (stats.outcomes = [])).push({ ok: false, error: err.message });
+    const systemic = require('../lib/source-breaker').detectSystemicFailure(stats.outcomes).systemic;
+    const { autoPaused, suppressed } = await updateSourceError(source.id, extra, err.message, source.type, systemic);
     stats.failed++;
-    log(`  ✗ ${source.type}:${source.name} — ${err.message}${autoPaused ? ' (已自动暂停)' : ''}`);
+    if (suppressed) stats.systemicSuppressed = (stats.systemicSuppressed || 0) + 1;
+    log(`  ✗ ${source.type}:${source.name} — ${err.message}${autoPaused ? ' (已自动暂停)' : suppressed ? ' (系统性故障，本轮不熔断不计数)' : ''}`);
     // 15-cloud-alerts：收集失败源供批次尾部报警
-    stats.failures.push({ source, errMsg: err.message });
+    stats.failures.push({ source, errMsg: err.message, suppressed: !!suppressed });
   }
 }
 

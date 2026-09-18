@@ -178,6 +178,11 @@
   node tools/eval-e2e.cjs --only B28 --worktree ../.wt-eval   # 期望：红 <!-- doc-lint:ignore：该工具是 41-2 的待建交付物 -->
   git worktree remove ../.wt-eval
   ```
+- **worktree 跑测试必须先解决依赖解析**，否则红是假红：worktree 里没有 `node_modules`，
+  凡 `require('better-sqlite3')` / `require('../server/db')` 的用例会以 `Cannot find module` 失败——
+  那属 `fail_env`，不是"改前红"的证据。本轮实测踩过：同一批锁在 worktree 里 4 红，
+  其中 1 条（B39-2）其实是模块找不到，加上 `NODE_PATH=<主树>/node_modules` 后只剩 3 条真空红。
+  **报 F2P 证据前必须逐条看失败原因，把 env 红剔出去。**
 - 报告里每条 F2P 必须同时给出"改前红"与"改后绿"两份证据，缺一不记为已修。
 
 ## 7. 去污染：防止"实现者自己出题、只测顺手写对的路径"

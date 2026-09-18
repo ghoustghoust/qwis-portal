@@ -9,7 +9,7 @@
 
 | 文件 | 域 | 覆盖坑编号 |
 |---|---|---|
-| [collection.md](collection.md) | 采集与信源 | #4 #6 #7 #9 #19 #28 #29 #30 #35 |
+| [collection.md](collection.md) | 采集与信源 | #4 #6 #7 #9 #19 #28 #29 #30 #35 #39 |
 | [backend.md](backend.md) | 后端与数据 | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 #36 #37 #38 |
 | [ai.md](ai.md) | AI 管线 | #8 #24 #26 #32 #34 #A1 #A2 |
 | [frontend.md](frontend.md) | 前端 | #1 #2 #16 #F1 |
