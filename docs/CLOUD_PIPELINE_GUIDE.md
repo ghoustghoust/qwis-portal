@@ -176,7 +176,7 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | 每日日报 09:03 | ✅ | GH runner | collect-turso.js daily（仅 schedule；dispatch 只跑采集） |
 | 静态快照 | ✅ | GH runner | push 后自动部署上线（仅 schedule） |
 | **AI 翻译** | ✅ 已上线 | GH runner | collect-turso.js translate；Agnes 401 真根因=settings.ai 污染，已修复（2026-09-11 晚），实测近 1 小时翻译 110 篇 |
-| **AI 对话/摘要（手动触发）** | ✅ 已上线 | Vercel | /api/ai/chat 供应商链 Agnes 优先；settings.ai 已清空，env 唯一来源 |
+| **AI 对话/摘要（手动触发）** | ✅ 已上线 | Vercel | /api/ai/chat 供应商链 Agnes 优先；**AI 配置写入口径见下方 §5.1（2026-09-19 决策，旧「env 唯一来源」表述已作废）** |
 | YouTube/X | ⚠️ 间歇 | GH runner | 反爬掷骰，阈值已放宽 |
 | B站 | ✅ | runner | `api/_bilibili.js` 三链路（wbi 主链 + 合集 + 搜索兜底），匿名可用（2026-09-12 上云，见 FEATURE_MATRIX）；播放直链仍本地 |
 | 抖音 | ❌ | 仅本地 | 需 Playwright 登录态，永远本地 |
@@ -186,6 +186,19 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | 页面内自动刷新 | ✅ 已上线 | Vercel | 60s 增量轮询 /api/articles/since（2026-09-11 替代废弃的 SSE） |
 
 > 结论：**本地关机，信息流、日报、翻译、阅读全部正常运转**。仅 B站/抖音采集、手机提交队列、OPML 增量同步依赖本地开机。
+
+## 6.1 AI 配置写入口径（2026-09-19 决策，取代旧「env 唯一来源」表述）
+
+**已作废的旧表述**（本文与 `api/[...slug].js:2135` 注释原话）：「云端 AI 配置锁定为环境变量（AGNES_*），settings.ai 已清空」。
+作废理由：**它与实际实现不一致已 8 天**——`/api/settings` 确实拒写 `ai` 键（`:2135-2138` 返回 400），但后台 AI 能力页走的是另一个端点 `PUT /api/ai/config`（`:1428`），它直接把 `settings.ai.{enabled,apiKey,apiBase,model}` 写进库里；线上实测该键现在就存在且值与 env 同。纸面禁令挡不住真实通道，于是"不变量"退化成没人核对的假声明（记 `docs/ISSUES.md` BL9 / B50）。
+
+**现行口径（用户 2026-09-19 拍板：保留可写 + 审计 + 变更告警）**：
+
+1. 优先级不变：`settings.ai` **高于** env（坑 #24）。改 env 永远修不好 settings 覆盖问题，排查顺序仍是先 `SELECT value FROM settings WHERE key='ai'`。
+2. 允许从后台写 `model` / `apiBase` / `apiKey`，但每次写必须：①写审计记录（何时、改了哪几项、旧值指纹→新值指纹，**不落明文**）；②推一条变更告警到报警渠道；③写后立即做一次轻量连通探测，失败即回滚并在 UI 报错（防止把线上打成 401）。
+3. 读侧永不回显明文 Key，只回显指纹（前 4 后 4）。
+4. `/api/settings` 对 `ai` 键的 400 拦截**保留**（两个写入口只留一个真写入口，避免绕过审计）。
+5. 落地位置：`docs/specs/39-ai-console/spec.md` 的 39-1/39-3。**实施前该页仍是"可写但无审计"的已知风险态**；且因 B44 报警渠道当前无出口，第 ② 条要等 37-1 恢复后才真正成立。
 
 ## 7. 关键文件速查
 

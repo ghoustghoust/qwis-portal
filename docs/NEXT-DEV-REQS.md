@@ -232,12 +232,16 @@
 | 自愈 | `35-selfheal-admin-console`（上轮已立） | 熔断自愈、源健康度窗口、彩色百分比呈现 | 3 + D | P2（H16 一条判据建议提前） |
 | 后台 | `38-admin-ia-refactor` | 四轴入口收敛、布局与保存模型、侧边栏深链、功能隔离、后台首页 | 6 | **最低**（38-1/38-2 例外，可提前） |
 
-### 第 0 步：P0 止血（三条，均需你逐条授权，因为都写生产）
+### 第 0 步：P0 止血 —— **用户 2026-09-19 决定：先不写生产，等评测就位**
 
-1. **BL7 报警链路恢复**：`tools/sync-alerts-config.js --force` 从本地恢复真渠道 + 把 `regression-cloud-alerts.test.js` 改隔离并断言恢复。
-2. **BL8 限速复位**：`ai.minIntervalMs` 0 → 4000，并加"低于 1000 视为误配"下限保护。
-3. **BL9 AI 配置通道裁决**：`PUT /api/ai/config` 保留写（改文档 + 加审计告警）还是改只读（引导去 Vercel env）——**这条要你拍板，我不替你选**。
-4. （同批）**BL10 数据订正**：`migrate-to-turso.js:250` 一行修根因 + `UPDATE articles SET read_at=NULL WHERE read_at='null'`（连带 tags/reason、`videos.watched_at`）→ 2.5 万篇回到未读、保留策略与未读角标恢复可信。
+| P0 | 内容 | 现状态 |
+|---|---|---|
+| BL7 | 报警链路恢复（`tools/sync-alerts-config.js --force` 从本地 `settings.alerts.channels[].config.url` 取真值） | **延后**，与 41-2 端到端剧本一起出"改前红/改后绿"证据后执行 |
+| BL8 | `ai.minIntervalMs` 0 → 4000 + 下限保护 | **延后**（写生产）；但**不写生产的防再犯项可先行**：测试改快照+还原+断言、`settings.alerts` 写路径加测试指纹守卫 |
+| BL9 | AI 配置写入口裁决 | **已裁决：保留可写 + 审计 + 变更告警 + 写后探测失败即回滚**，落档 `CLOUD_PIPELINE_GUIDE.md` §6.1，实施在 39-1/39-3 |
+| BL10 | `'null'` 污染一行修根因 + 一次性订正 | **延后**，与 40-8 脏数据订正合并做 |
+
+> ⚠️ 代价必须写明：在 BL7 恢复之前，**系统出任何故障都不会通知你**（熔断、停滞、AI 失败、早报降级都静默）。这是本轮选择下的已知风险，不是遗漏。
 
 ### 第 1 步：当天可修小刺打包（不立 spec，一批提交）
 
