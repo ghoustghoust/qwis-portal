@@ -1408,7 +1408,15 @@ async function handleMeta(req) {
   const videos = (await qOne('SELECT COUNT(*) c FROM videos')).c;
   const sources = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=1')).c;
   const lastArticle = await qOne('SELECT MAX(created_at) t FROM articles');
-  return jsonOk({ articles, videos, sources, lastUpdated: lastArticle.t });
+  // 把"线上正跑着哪个 commit"变成一次 curl 就能查到的事实：
+  // 本项目最大的历史故障就是"以为推上去了，其实线上没变"（AGENTS §2.1），
+  // 光比对 git 与 origin 不够——还要比对 origin 与**正在服务的那个 deployment**。
+  return jsonOk({
+    articles, videos, sources, lastUpdated: lastArticle.t,
+    commit: process.env.VERCEL_GIT_COMMIT_SHA || null,
+    commitRef: process.env.VERCEL_GIT_COMMIT_REF || null,
+    deployedAt: process.env.VERCEL_READY_AT || null,
+  });
 }
 
 // ─── AI 设置路由（Vercel 端） ───

@@ -25,3 +25,9 @@
 - 症状：quickscore 挂在 collect 步尾部，runner 日志连续「未配置 AI API Key」，精选自 09-14 断更一天；21:30 晚间主批同样缺 key，深析全灭降级。
 - 根因：`AGNES_API_KEY` 只挂在 translate/daily-ai(00:32)/weekly 三个 step 的 env 里，collect 步与 daily-ai-evening 步没挂——密钥"三处同步"（坑 #20）在 workflow 内部的变体：**同一 job 内不同 step 的 env 也是独立的挂载面**。
 - 规则：runner 脚本里任何新增 AI 调用（quickscore/补分/深析），先确认它所在 step 的 env 有 AGNES_API_KEY；日志里出现「未配置 AI API Key」先查 workflow env 而不是代码。
+
+### #D3 「已推到 origin」不等于「线上在跑」——交付验收必须比服务中的 commit（2026-09-19 复发）
+- 症状：`git push` 连推 5 次全绿，`npm test` 全绿，本地读代码确认改动都在，但线上行为一点没变。真因是 Vercel 的 Git 触发在这段时间没产生新 deployment，production 还停在 36 分钟前那一份。
+- 为什么会漏：AGENTS §2.1 把"push 即触发部署"当成事实，于是所有验收都建立在"push 成功"这个代理信号上；`eval:preflight` 也只比 `HEAD == origin/main`——那验的是 GitHub，不是**正在响应请求的那个函数**。
+- 规则：①任何"我改的东西线上有没有"的判断，必须来自线上自己的回答：读层 `/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA`，`eval:preflight` 有一条 `线上 commit == origin/main` 的硬判据（不一致即红并点名"Vercel 未部署"）；②接口新增字段后，**用该字段是否出现**当部署指纹（本轮就是靠 `/api/hot/categories` 缺 `map` 反证线上没更新）；③触发器坏了不要用手动 `vercel --prod` 绕过——那只会把根因永久盖住，本项目最贵的就是"以为上线了"。
+- 案例：`docs/ISSUES.md` BL12；受影响验收：B56/B58/B62 的云端实测（B39/B53 在停摆前已上线）。

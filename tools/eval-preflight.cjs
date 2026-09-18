@@ -33,6 +33,12 @@ async function probe(url, ms = 8000) {
   const r = await uFetch(url, { dispatcher: new ProxyAgent(PROXY), signal: AbortSignal.timeout(ms), redirect: 'manual' });
   return r.status;
 }
+// 坑：undici 的 ProxyAgent 必须配 undici 自己的 fetch；用全局 fetch 会静默忽略 dispatcher 而 fetch failed
+async function probeJson(url, ms = 8000) {
+  const { ProxyAgent, fetch: uFetch } = require('undici');
+  const r = await uFetch(url, { dispatcher: new ProxyAgent(PROXY), signal: AbortSignal.timeout(ms), redirect: 'manual' });
+  return { status: r.status, body: await r.json().catch(() => null) };
+}
 
 (async () => {
   loadEnv();
@@ -55,12 +61,26 @@ async function probe(url, ms = 8000) {
     if (dirty) console.log('  i 工作区有未提交改动（不影响评测，但交付前须处理）');
   } catch (e) { add('git:HEAD 已推送', false, 'env', e.message); }
 
-  // 3) 云端站点活着 + 冷启动耗时基线
+  // 3) 云端站点活着 + 冷启动耗时基线 + **线上是否真在跑 origin/main**
   try {
     const t0 = Date.now();
     const st = await probe(`${SITE}/api/meta`);
     const ms = Date.now() - t0;
     add('cloud:/api/meta 响应', st === 200, 'env', `HTTP ${st} / ${ms}ms`);
+    // 2026-09-19 实况：连续 5 次 git push 之后 production 仍是 36 分钟前的 deployment，
+    // 而 preflight 只看"本地 HEAD 已推到 origin"——那验的是 GitHub，不是**正在服务的那一份代码**。
+    // 本项目最大历史故障就是"以为上线了其实没有"，所以这一条必须比 sha。
+    try {
+      const meta = (await probeJson(`${SITE}/api/meta`)).body || {};
+      const want = sh('git rev-parse origin/main');
+      if (!meta.commit) {
+        add('cloud:线上 commit == origin/main', false, 'env',
+          '云端 /api/meta 未回传 commit（说明读层还没带这个字段上线，本身即等于"改动没生效"）');
+      } else {
+        add('cloud:线上 commit == origin/main', meta.commit === want, 'product',
+          `线上 ${String(meta.commit).slice(0, 7)} / origin/main ${want.slice(0, 7)}${meta.commit === want ? '' : ' ← Vercel 未部署，改动在线上看不到'}`);
+      }
+    } catch (e) { add('cloud:线上 commit == origin/main', false, 'env', e.message); }
   } catch (e) { add('cloud:/api/meta 响应', false, 'env', e.message); }
 
   // 4) Turso 可读（评测只读端点，不写生产）
