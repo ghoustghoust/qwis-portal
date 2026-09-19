@@ -86,7 +86,7 @@
 
 | 命令 | 实现 | 作用 | 状态（2026-09-19） |
 |---|---|---|---|
-| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ **423** 条 / 0 红 / 0 跳过（约 115s；**B83 已收口——七份"直打生产 Turso"的回归测试全部搬到本地文件库**，不再有分钟级缓存轮询，也不再往生产数据层写东西。**本行是全库唯一写死测试条数的地方**，其它文档一律写"见 FEATURE_MATRIX §1.5"） |
+| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ **427** 条 / 0 红 / 0 跳过（约 118s；**B83 已收口——七份"直打生产 Turso"的回归测试全部搬到本地文件库**，不再有分钟级缓存轮询，也不再往生产数据层写东西。**本行是全库唯一写死测试条数的地方**，其它文档一律写"见 FEATURE_MATRIX §1.5"） |
 | `node smoke-test.js` | `smoke-test.js` | 生产库副本冒烟 + 自带对抗性段（超长 URL/特殊字符/空内容/并发/错误边界） | ✅ 20/20，零副作用 |
 | `npm run build:vercel` | Vite + `api/` | 云端构建面 | ✅ 通过 |
 | `npm run lint:docs` | `tools/doc-lint.cjs` | 文档门禁六条（头注/悬空/INDEX/归档头/超长/明文密钥） | ✅ 0 错（`docs/eval/` 机器产物不参与悬空扫描） |

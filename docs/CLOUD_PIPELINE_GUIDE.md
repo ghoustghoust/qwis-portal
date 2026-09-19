@@ -121,6 +121,16 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     后台「恢复默认栏目」**写进 `settings.daily.columns`** —— 副本一漂，脏默认值就落进生产库。
     全仓库按内容特征对账：白盒 W13；`desc` 不许复述 `keywords`：锁 I8（带历史脏值正向探针）。
 
+16. **XML 实体解码只许一份实现，且只作用于"标题类"字段**（B94，2026-09-20）：
+    唯一实现 `lib/text-clean.js#decodeXmlEntities`；标题/源名一律走 `cleanTitle`
+    （三端共 5 处构造点：`server/services/collectors/rss`、`api/collect.js`、`tools/collect-turso.js`）。
+    此前全库有 **9 处**各自解实体 —— 4 处自己抄了映射表（每张都少几个实体：wechat 适配器漏数字实体、
+    云端 `parseOpml` 漏 `&apos;`…），5 处只解 `&amp;` 给 URL 属性用。**这就是源名/标题带 `&quot;` 上屏的成因**。
+    两条硬边界：① **只解一次**（`&amp;apos;` 这类双重转义留给数据订正，不在采集层连解两次）；
+    ② **summary / content_html 故意不解** —— 那里 `&lt;b&gt;` 是"被转义的内容"，解一次就变成真标签，
+    会被 B8 的"像不像 HTML"分流判据误判成 HTML 分支（等于用一个 bug 换另一个 bug）。
+    对账锁：`tests/regression-20260920a.test.js` A1~A4（A3 不设豁免，任何 `.replace(/&实体/` 重现即红）。
+
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
    dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份

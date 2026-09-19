@@ -9,6 +9,8 @@
 
 const { createClient } = require('@libsql/client');
 const Parser = require('rss-parser');
+const { cleanTitle } = require('../lib/text-clean'); // B94：标题实体解码唯一实现
+const { decodeXmlEntities } = require('../lib/text-clean'); // B94：实体解码唯一实现（OPML/XML 属性）
 
 // ─── 配置 ───
 // [2026-09-10 修复] Vercel Hobby 10s 硬限制：冷启动 3-5s + 连接 Turso 2-3s = 仅剩 2-5s 给实际采集
@@ -52,7 +54,7 @@ function firstImg(html) {
     if (/facebook\.com\/tr|doubleclick|analytics|pixel/i.test(src)) continue;
     if (/display\s*:\s*none/i.test(tag)) continue;
     if (/width=["']?1["'\s]/i.test(tag) && /height=["']?1["'\s]/i.test(tag)) continue;
-    return src.replace(/&amp;/g, '&');
+    return decodeXmlEntities(src);
   }
   return null;
 }
@@ -182,7 +184,7 @@ async function fetchRss(source) {
     const content = cleanContent(contentRaw);
     const cover = firstImg(content) || (item.enclosure && item.enclosure.url) || null;
     return {
-      title: (item.title || '').trim(),
+      title: cleanTitle(item.title),
       url: item.link || item.guid || '',
       author: item.creator || item.author || '',
       cover,

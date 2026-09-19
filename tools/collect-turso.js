@@ -29,6 +29,8 @@ try {
 
 const { createClient } = require('@libsql/client');
 const Parser = require('rss-parser');
+const { cleanTitle } = require('../lib/text-clean'); // B94：标题/源名实体解码唯一实现（同文件的 cleanTranslatedTitle 也在这里）
+const { decodeXmlEntities } = require('../lib/text-clean'); // B94：实体解码唯一实现（OPML/XML 属性）
 
 // ─── 配置 ───
 const MODE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'collect';
@@ -94,7 +96,7 @@ function firstImg(html) {
     if (/facebook\.com\/tr|doubleclick|analytics|pixel/i.test(src)) continue;
     if (/display\s*:\s*none/i.test(tag)) continue;
     if (/width=["']?1["'\s]/i.test(tag) && /height=["']?1["'\s]/i.test(tag)) continue;
-    return src.replace(/&amp;/g, '&');
+    return decodeXmlEntities(src);
   }
   return null;
 }
@@ -199,7 +201,7 @@ async function fetchRss(source) {
       const authorRaw = typeof item.author === 'string' ? item.author : (item.author && item.author.name) || '';
       return {
         platform: 'youtube',
-        title: (item.title || '').trim(),
+        title: cleanTitle(item.title),
         url: `https://www.youtube.com/watch?v=${vid}`,
         vid,
         cover: `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
@@ -217,7 +219,7 @@ async function fetchRss(source) {
     const content = cleanContent(contentRaw);
     const cover = firstImg(content) || (item.enclosure && item.enclosure.url) || null;
     return {
-      title: (item.title || '').trim(),
+      title: cleanTitle(item.title),
       url: item.link || item.guid || '',
       author: item.creator || item.author || '',
       cover,

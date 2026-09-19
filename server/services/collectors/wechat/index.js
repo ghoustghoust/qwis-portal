@@ -4,15 +4,11 @@ const { db, setSetting } = require('../../../db');
 const { nowIso } = require('../../../util/time');
 const rssAdapter = require('../rss');
 
-function decodeEntities(s) {
-  return String(s || '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'");
-}
+// B94：实体解码收敛到 lib/text-clean 一份实现。本轮实测全库有 **9 处**各自解实体
+// ——5 处只解 `&amp;`（给 URL 属性用，语义不同，保留），另外 4 处各自抄了一张映射表
+// （本函数是其中之一，且它漏了 `&ldquo;/&mdash;/数字实体`），"同一语义四份副本"就是 B94 的成因。
+const { decodeXmlEntities } = require('../../../../lib/text-clean');
+const decodeEntities = (s) => (s == null ? '' : decodeXmlEntities(s));
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`${name}\\s*=\\s*"([^"]*)"`, 'i'))

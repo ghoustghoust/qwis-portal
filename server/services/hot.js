@@ -1,3 +1,4 @@
+const { decodeXmlEntities } = require('../../lib/text-clean'); // B94：实体解码唯一实现
 // 热点榜服务层（六期 F6/F7）：聚合源（sources.extra.aggregator=1）文章查询 + 分类映射 + 英文原文抓取缓存
 // N3：分类归类为确定性规则（category 精确映射 + 标题关键词兜底），不调 AI
 const { db, getSetting } = require('../db');
@@ -111,7 +112,7 @@ async function originalHtml(articleId) {
   if (!row) throw new Error('文章不存在');
   const m = String(row.content_html || '').match(/🔗[\s\S]{0,300}?<a[^>]+href="([^"]+)"/);
   if (!m) throw new Error('未找到原文链接');
-  const sourceUrl = m[1].replace(/&amp;/g, '&');
+  const sourceUrl = decodeXmlEntities(m[1]);
   const full = await require('./collectors/rss').fetchFulltext(sourceUrl);
   if (!full || !full.content) throw new Error('原文提取失败');
   originalCache.set(id, { html: full.content, sourceUrl, at: Date.now() });

@@ -4,6 +4,8 @@
 const Parser = require('rss-parser');
 const { httpFetch, fetchText } = require('../../../util/http');
 const log = require('../../../util/log'); // ✅ P1 修复：log.is not not defined root cause
+// B94：标题/源名里的 XML 实体会原样上屏（&quot; / &amp;），解码走 lib/text-clean 唯一实现
+const { cleanTitle, decodeXmlEntities } = require('../../../../lib/text-clean');
 
 // customFields 显式保留 content:encoded / content：
 // 部分 Atom 源（如 we-mp-rss 公众号全文源）把正文放在 <content:encoded>，
@@ -28,7 +30,7 @@ function firstImg(html) {
     if (/width=["']?1["'\s]/i.test(tag) && /height=["']?1["'\s]/i.test(tag)) continue;
     // 2026-09-05 修复：正则取的是原始 HTML 属性值，URL 里的 & 是 &amp; 实体，
     // 不解码会让 wechat2rss img-proxy 收到错误参数（amp;u），封面全挂
-    return src.replace(/&amp;/g, '&');
+    return decodeXmlEntities(src);
   }
   return null;
 }
@@ -118,7 +120,7 @@ function textOf(v) {
 // description 里「🔗 <a href>阅读原文</a>」→ 第三方原文链接（七期 F1 original_url）
 function extractOriginalUrl(rawHtml) {
   const m = String(rawHtml || '').match(/🔗[\s\S]{0,300}?<a[^>]+href="([^"]+)"/);
-  return m ? m[1].replace(/&amp;/g, '&') : null;
+  return m ? decodeXmlEntities(m[1]) : null;
 }
 
 function mapItem(item) {
@@ -134,7 +136,7 @@ function mapItem(item) {
     summary = ''; // JSON-LD 污染，留空由全文补抓阶段用新正文重建
   }
   return {
-    title: (item.title || '').trim(),
+    title: cleanTitle(item.title),
     url: item.link || '',
     author: textOf(item.creator || item.author),
     cover: (item.enclosure && item.enclosure.url) || firstImg(contentHtml) || null,
@@ -262,7 +264,7 @@ function mapYoutubeItem(item, channelName) {
   if (!vid) return null;
   return {
     platform: 'youtube',
-    title: (item.title || '').trim(),
+    title: cleanTitle(item.title),
     url: `https://www.youtube.com/watch?v=${vid}`,
     vid,
     cover: `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
@@ -297,7 +299,7 @@ module.exports = {
     if (avatar && (/%3C|%3E/i.test(avatar) || /[<>]/.test(avatar) || !/^https?:\/\//.test(avatar))) avatar = null;
     return {
       type: typeOverride || undefined, // YouTube 时为 'youtube'，否则用适配器默认 'rss'
-      name: (feed.title || input).trim(),
+      name: cleanTitle(feed.title) || input.trim(),
       url: feedUrl, // sources.url 存（可能是转换后的）RSS 链接
       uid: extra.youtubeChannelId || null,
       avatar: avatar || faviconOf(feed.link || feedUrl),

@@ -13,14 +13,9 @@ function stripTags(html) {
 }
 
 // HTML 实体反转义（RSC 还原后的正文里残留 &amp; &quot; 等）
-function unescapeHtml(s) {
-  return String(s || '')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#x27;|&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
-}
+// B94：解码统一走 lib/text-clean（原来这里也是自己抄的一张表，且比别处少几个实体）
+const { decodeXmlEntities } = require('../../../lib/text-clean');
+const unescapeHtml = (s) => (s == null ? '' : decodeXmlEntities(String(s)));
 
 // ---- RSC payload 还原 ----
 // self.__next_f.push([1,"..."]) 的字符串块逐个 JSON 反转义后拼接成完整 RSC 流

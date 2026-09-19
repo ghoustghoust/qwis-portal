@@ -368,7 +368,7 @@ const axes = require('../lib/source-axes');
 const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, hasCJK } = require('../lib/hot-events');
 // 播客音频识别（cover 里的音频 enclosure → audio_url）；audioCoverSql 是其 SQL 镜像，全库唯一口径
 const { mapAudioFields, audioCoverSql } = require('../lib/media');
-const { cleanTranslatedTitle } = require('../lib/text-clean');
+const { cleanTranslatedTitle, decodeXmlEntities } = require('../lib/text-clean');
 // 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
 const briefGuards = require('../lib/brief-guards');
 // B58（2026-09-19）：热点榜六类与分类映射与本地服务层共用一份实现
@@ -1877,7 +1877,7 @@ function parseOpml(xml) {
   let m;
   const attr = (tag, name) => {
     const mm = tag.match(new RegExp(`${name}=["']([^"']*)["']`, 'i'));
-    return mm ? mm[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>') : '';
+    return mm ? decodeXmlEntities(mm[1]) : ''; // B94：解码统一走 lib/text-clean（原来这里自己写了半张映射表，漏了 &apos;/数字实体）
   };
   while ((m = re.exec(xml))) {
     const xmlUrl = attr(m[0], 'xmlUrl');
