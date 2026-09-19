@@ -10,6 +10,17 @@
 
 实测三件事，任何一件都足以让"无人值守"变成"无人知晓"：
 
+> **⚠️ 本节 4 处写法已被当夜复核推翻/收窄**（AGENTS §2.4，只标注不静默删）：
+>
+> | 原写法 | 当夜实测 | 对本域的影响 |
+> |---|---|---|
+> | 哨兵 `sourceId:777777` "只存在于 `tests/regression-cloud-alerts.test.js:81-83`" | 行号已漂到 **`:53-54`**（该文件被 B83 隔离改造重写）。哨兵**仍在**，但**同一文件现在把 `TURSO_DATABASE_URL` 指向 `file:` 临时库并带隔离断言** → "测试直连生产写坏配置"这条通道**已经断了** | **37-1 的 T4 已由 B83 顺带做完**，T3（写守卫）仍要做但目的从"防再犯"变成"防住别的写点"；真剩下的活是**把生产那条被写坏的配置恢复**（=BL7），别再按原顺序排 |
+> | 线上渠道形状 `{id:'test-ch', url:undefined}` | 当夜复测为 `{id:'test-ch', url:'http://127.0.0.1:1', enabled:true}`（37-1 现状表已按此记） | 判据 `lib/alert-channels.js` 两种形状都要判红（已覆盖回环/内网） |
+> | "`audit_log` 最近三条 `sent:0/total:1`" | 当夜读数：`settings.alerts.recentLog` 近 50 条**零成功**，最新一条 `2026-09-19T22:20` 的 `results[].error = "fetch failed"` | 证据口径改为 `settings.alerts.recentLog`：投递记录实际落在这里。`audit_log` **表确实存在**（`lib/db.js:221` / `server/db.js:177` 两份 DDL，`server/services/audit.js` 在写），37-3 要收的是"两处并存、字段各写一半"，**不是"表不存在"** |
+> | "GH Actions 失败面零集成（**全仓无 `actions/runs` 调用**）" | 绝对说法不成立：`archive/_diag/2026-09-19-mybrief-contract/gh-actions-runs-and-jobs.cjs` 就调 `/actions/runs` 与 `/actions/runs/{id}/jobs`。**带范围的说法是对的**——`37-5` 记的"grep `api/ server/ tools/ lib/` → 0 命中"本轮复测仍为 0（`GITHUB_TOKEN` 同为 0） | 37-5 的前提改写成"**产品侧无集成**，但仓内已有一份可复用的调用形状"——那支归档脚本正好是 37-5 的起点，不用从零摸 API |
+>
+> 另：`261 条失败记录`已在 `39-4` 复核时订正（按 `calls[]` 逐条重算）；"只有 7 类事件"要读成**两份代码键集互不相同**（云端 7 / 本地 6，且本地配置里还留着 2 个已退役的幽灵键），精确表见 `docs/ISSUES.md` B109。
+
 1. **报警链路自 09-17 起没有出口**（P0）：线上 `settings.alerts.channels` 只剩 `{id:'test-ch',name:'TEST',url:undefined,enabled:true}`，silence 里还有 `sourceId:777777`——这个 777777 **只存在于 `tests/regression-cloud-alerts.test.js:81-83`**。即回归测试直连生产 Turso 覆盖写坏了配置，`after()` 恢复未生效；`audit_log` 最近三条真实事件都是 `sent:0/total:1`。这是踩坑 #13/#T1「云端测试直打生产库」的又一次成真，且这次打死了链路。
 2. **事件开关是假的**：云端 `settings.alerts.eventMeta` 实测为**空对象**，而前端渲染的 4 个事件名（`fuse/stall/queue/error`）在系统里根本不存在 → 勾选不生效、日志徽章显示原始 key。
 3. **报警信息量不足以定位**：只有 7 类事件（`_alerts.js:40-44`），payload 是"人话标题 + 一句 120 字错误摘要"；`audit_log` 的 detail 只有 `{event,title,sent,total}`——**没有源 id、没有参数、没有堆栈、没有代码位置、没有建议动作、没有自愈状态**。`ai.stats` 里实测 261 条失败记录**没有任何端点暴露**。GH Actions 失败面**零集成**（全仓无 `actions/runs` 调用）。
@@ -28,11 +39,11 @@
 
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
-| **37-1** | **P0 止血**：从本地恢复真渠道（`tools/sync-alerts-config.js --force`）；把 `regression-cloud-alerts.test.js` 改为隔离 settings 快照/还原并断言恢复；给 `PUT /api/settings/alerts` 加"测试指纹禁止写入"守卫 | 事故修复 | S，需授权写生产 |
+| **37-1** | **P0 止血**：从本地恢复真渠道（`tools/sync-alerts-config.js --force`）；~~把 `regression-cloud-alerts.test.js` 改为隔离 settings 快照/还原并断言恢复~~ **该项已随 B83 作废**（写通道被物理切断：测试改指 `file:` 临时库 + 带隔离断言，见 37-1 的 T4）；给 `PUT /api/settings/alerts` 加"测试指纹禁止写入"守卫（T3 仍要做，用途改为防别的写点） | 事故修复 | S，需授权写生产 |
 | 37-2 | 事件模型统一：**事件表实际是两份代码 + 两份落库 + 两处前端/响应硬写**（键集互不相同，详见小 spec 现状表）；收成 `lib/alert-events.js`（拟建）一份 | 三端收敛 | M ⏸ 小 spec 已出：`37-2-alert-event-model-unify.md`。**根因比 §背景 #2 更硬**：`api/[...slug].js:1575-1577` 的 `eventMeta` 是**字面量硬写**、压根不读 `cfg.eventMeta` → 落不落库都看不到真值；另本地 settings 残留 `wemp_down/wemp_cookie_expired` 两个**代码里已删除**的幽灵键（B109） | <!-- doc-lint:ignore -->
 | 37-3 | 结构化 payload + `alert_events` 表（现 `recentLog` 只 50 条、无源 id/参数/代码位置/建议/自愈状态） | 数据模型 | M ⏸ 小 spec 已出：`37-3-structured-alert-payload.md`（实测：`alert_events` 在两端 DDL 里**不存在**；线上 `recentLog=50` 条，最后一条 `2026-09-19T22:20:31` `frozen_digest` 186 源熔断 `ok:false fetch failed`） |
 | 37-4 | 覆盖面扩展：翻译/摘要**缺失型**、周刊截断、我的早报降级、AI 配额、渠道投递失败 | 能力补齐 | L ⏸ 小 spec 已出：`37-4-coverage-heartbeats.md`（实测哑点清单：`/api/ai/stats` 全仓 0 命中；B17 的初筛截断每天都在发生但只进日志；BL7 型"报警发不出去"目前没有报警） |
-| 37-5 | CI 可观测：`ci_failed` + **`scheduler_gap`（最近 24h 每种期望 mode 是否都出现过）** | 新对接 | M ⏸ 小 spec 已出：`37-5-ci-observability.md`（实测：全仓无 `actions/runs`/`GITHUB_TOKEN` 调用；216 条 scheduled run 无 20:13 那条 = B101，正是 `scheduler_gap` 该自动抓到的形态） |
+| 37-5 | CI 可观测：`ci_failed` + **`scheduler_gap`（最近 24h 每种期望 mode 是否都出现过）** | 新对接 | M ⏸ 小 spec 已出：`37-5-ci-observability.md`（实测：**产品四目录** `api/ server/ tools/ lib/` 内无 `actions/runs`/`GITHUB_TOKEN` 调用；⚠️ 不说"全仓无"——`archive/_diag/2026-09-19-mybrief-contract/gh-actions-runs-and-jobs.cjs` 里有一份现成的调用形状可直接复用；216 条 scheduled run 无 20:13 那条 = B101，正是 `scheduler_gap` 该自动抓到的形态） |
 | 37-6 | 报警台**数据契约**（过滤分页、静默加维度且必须带过期、自愈联动字段）；界面归 38-G | 前端/契约 | M ⏸ 小 spec 已出：`37-6-alerts-console-data.md` |
 | 37-7 | 监控面板纠偏打包：①队列面板 B47 已修（`MonitorTab.jsx:51` 读 `queueStats.overall`）→ **保留还是下线待拍板**；②健康概览跳转**前置 B26 未解**；③B48 已完成；④新增"启用/全量源数"口径提示 | 小刺打包 + 三项待决策 | S ⏸ 小 spec 已出：`37-7-monitor-panel-fixes.md` |
 
