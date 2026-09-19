@@ -57,7 +57,7 @@
 | E2 | 阅读器「视频」Tab | `/api/videos`：切换后必须是视频卡、文章行清零 |
 | E3 | `/daily/` 栏目 pill | `report.sections[].column` 逐列条数（B39 档位可见） |
 | E4 | `/hot/` 三视图 | featured/all 走"渲染行 ⊆ 响应"，热搜事件走"响应事件覆盖率"（两套行结构不同，实测） |
-| E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因），且都走 `assertStays`「复查不翻转」（B74 的晚到覆盖就长这样） |
+| E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因），且都走 `assertStays`「复查不翻转」（B74 的晚到覆盖就长这样）。口径的实测基线（2026-09-19 10:34 线上直取 `?tab=all`）：`type=all → counts.all=25160`、`article=7300`、`video=0`、`podcast=145`——四值互异才叫"进入计数口径"；**比较两侧必须都是有限数**，第 1 轮冷启动时 article 曾整段没带 counts，`Number(undefined) !== Number(25160)` 是恒真假绿（坑 #50），现已改成"缺数即红 + 有界重试并把等待时长记进 metrics" |
 | E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串 |
 | E7 | 客户端路由与深链 | 点导航后 **window 标记仍存活 + document 只拉过一次**（两者都是"真会翻转"的观测量；原 `performance.navigation` 计数两侧恒等属空判据，已删）+ 刷新不丢位置（38-3 前置） |
 | E8 | 7 个页面 | 无 JS `pageerror`、**无裸 i18n key 上屏**（抓到 B71）、未登录时 `/api/auth/me` 真的 401 |

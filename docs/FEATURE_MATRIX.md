@@ -86,7 +86,7 @@
 
 | 命令 | 实现 | 作用 | 状态（2026-09-19） |
 |---|---|---|---|
-| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ 381 条 / 0 红 / 3 跳过 |
+| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ 401 条 / 0 红 / 3 跳过（约 97s；B77/B83 把 my-brief 与 weekly 搬到本地文件库后，不再有分钟级缓存轮询） |
 | `node smoke-test.js` | `smoke-test.js` | 生产库副本冒烟 + 自带对抗性段（超长 URL/特殊字符/空内容/并发/错误边界） | ✅ 20/20，零副作用 |
 | `npm run build:vercel` | Vite + `api/` | 云端构建面 | ✅ 通过 |
 | `npm run lint:docs` | `tools/doc-lint.cjs` | 文档门禁六条（头注/悬空/INDEX/归档头/超长/明文密钥） | ✅ 0 错（`docs/eval/` 机器产物不参与悬空扫描） |
