@@ -1,0 +1,63 @@
+{
+ "at": "2026-09-19T01:01:06.781Z",
+ "baseRef": "f3172b2d973f568604a565d383d65f25545af62f",
+ "headRef": "HEAD",
+ "baseSha": "f3172b2d973f568604a565d383d65f25545af62f",
+ "headSha": "be539eccffad51ac30a7f3b73529d8aa46e2681f",
+ "files": [
+  "tests/regression-20260919f.test.js"
+ ],
+ "wantNames": [],
+ "lockIntros": {
+  "41-8 正向探针：npm 入口存在且转发到 tools/eval-content.cjs": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "41-8 Python 侧自检必须全绿（探针数 = 通过数，且不少于 40 项）；没 python 属 fail_env 而不是通过": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "41-8 stub 轮次绝不算一次评测：报告必须带 counts_as_judgment=false 与 warnings_advisory=true": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "41-8 跨语言单一事实源：Python 侧不许写死第二份云端域名（B64 的跨国版）": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "41-8 五轴与权重：文档 §5.1/§5.2 与 scoring.py 必须是同一份定义": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "41-8 judge 纪律落进代码：默认不打模型、打模型要记模型与 prompt 版本": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ]
+ },
+ "base": {
+  "tests": 6,
+  "pass": 1,
+  "fail": 5,
+  "failedNames": [
+   "41-8 正向探针：npm 入口存在且转发到 tools/eval-content.cjs",
+   "41-8 Python 侧自检必须全绿（探针数 = 通过数，且不少于 40 项）；没 python 属 fail_env 而不是通过",
+   "41-8 跨语言单一事实源：Python 侧不许写死第二份云端域名（B64 的跨国版）",
+   "41-8 五轴与权重：文档 §5.1/§5.2 与 scoring.py 必须是同一份定义",
+   "41-8 judge 纪律落进代码：默认不打模型、打模型要记模型与 prompt 版本"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "tools/eval-content",
+   "tools/eval-content/scoring.py",
+   "tools/eval-content/judge.py"
+  ]
+ },
+ "head": {
+  "tests": 6,
+  "pass": 6,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "ok": true,
+ "why": "改前红 5 条，改后 6 条全绿；改前缺本次修复新建的文件 tools/eval-content, tools/eval-content/scoring.py, tools/eval-content/judge.py"
+}

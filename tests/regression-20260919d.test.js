@@ -372,6 +372,20 @@ test('41-3 两种红要分开：裸包名=环境红（不算证据），相对�
   assert.match(verdict(own, green, ['B60-1']).why, /改前缺本次修复新建的文件/, '成立理由里必须写明红在"缺新文件"，别让人以为是断言打红');
 });
 
+// 同一判据要覆盖 ENOENT：本轮给 41-8 的新文件出证时，工具把"树内缺文件"报成"环境失败"，
+// 原因正是正则跨行匹配 Node 的对象 dump 造出一个假路径。见坑 #44。
+test('41-3 ENOENT 按树内/树外分类，且正则不许跨行造出假路径（坑 #44）', () => {
+  const { parseSummary } = require('../tools/eval-f2p.cjs');
+  const inside = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: ENOENT: no such file or directory, scandir 'D:\\\\.wt-9\\\\tools\\\\eval-content'\n", 'D:\\.wt-9');
+  assert.equal(inside.envBroken, false, '修复新增的目录在旧树里本就没有 = 产品红（双反斜杠形态也要认）');
+  assert.ok(inside.missingOwn.includes('tools/eval-content'), '树内路径要折成仓库相对再记账');
+  const dump = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: spawnSync python3 ENOENT\n  code: 'ENOENT',\n  syscall: 'spawn python3',\n", 'D:\\.wt-9');
+  assert.equal(dump.envPaths.length, 0, '对象 dump 里的 `code: ENOENT` 跨行匹配会造出假路径，把合法取证判成环境失败');
+  assert.equal(dump.fail, 1, '同一条红仍然要被计到');
+  assert.equal(parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nENOENT: no such file or directory, open 'C:\\Windows\\x'\n", 'D:\\.wt-9').envBroken, true,
+    '树外的 ENOENT 才是环境红');
+});
+
 // 自检项数不写死在文档里（写死就会漂）：这里只钉"必须全绿"，数量由工具自己报
 test('41-3 取证器自检必须全绿（探针数与通过数相等，且不许少于 15 项）', () => {
   const { execFileSync } = require('node:child_process');

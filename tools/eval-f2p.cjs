@@ -35,7 +35,8 @@ function isBarePackageName(spec) {
 }
 
 // 解析 node:test 的汇总行；缺任何一行都返回 null（宁可报"没跑到"也不要猜）
-function parseSummary(text) {
+// `cwd` 决定 ENOENT 的归类：路径落在这棵树里（修复新增的文件/目录）→ 产品红；落在树外 → 环境红。
+function parseSummary(text, cwd) {
   const num = (re) => {
     const m = String(text || '').match(re);
     return m ? Number(m[1]) : null;
@@ -48,8 +49,24 @@ function parseSummary(text) {
   const missing = [...new Set([...String(text || '').matchAll(/Cannot find module '([^']+)'/g)].map((m) => m[1]))];
   const missingDeps = missing.filter(isBarePackageName);
   const missingOwn = missing.filter((s) => !isBarePackageName(s));
-  const envBroken = missingDeps.length > 0 || /ENOENT|EACCES/.test(text || '');
-  return { tests, pass, fail, failedNames: [...new Set(failedNames)], envBroken, missingDeps, missingOwn };
+  // 只认单行形态 `ENOENT ... '路径'`。Node 抛的对象 dump 里有 `code: 'ENOENT',` + 下一行 `syscall: 'spawn python3'`，
+  // 跨行匹配会捕获出 ",\n    syscall: " 这种假路径，把一次合法取证判成环境失败（本轮实测）。
+  const enoent = [...new Set([...String(text || '').matchAll(/ENOENT[^'\n]*'([^'\n]+)'/g)].map((m) => m[1]))];
+  const ownEnoent = [...new Set(enoent.map((p) => repoRel(p, cwd)).filter(Boolean))];
+  const envPaths = [...new Set([...missingDeps, ...enoent.filter((p) => repoRel(p, cwd) === null)])];
+  const envBroken = envPaths.length > 0;
+  return { tests, pass, fail, failedNames: [...new Set(failedNames)], envBroken,
+    envPaths, missingDeps, missingOwn: [...new Set([...missingOwn, ...ownEnoent])] };
+}
+
+// 在 cwd 之下 → 返回仓库相对路径；不在 → null（不知道树在哪时一律按"树外"处理，保守）。
+// 分隔符要按"一段"折叠：Node 报出的路径有 `D:\\.wt-…\tools` 这种双反斜杠形态（本轮实测），
+// 不折叠就会把"树内新增文件"误判成树外，进而把一次合法取证判成环境失败。
+function repoRel(p, cwd) {
+  if (!cwd) return null;
+  const pre = String(cwd).split(/[\\/]+/).filter(Boolean).join('/') + '/';
+  const n = String(p).replace(/\\/g, '/').replace(/\/{2,}/g, '/');
+  return n.toLowerCase().startsWith(pre.toLowerCase()) ? n.slice(pre.length) : null;
 }
 
 /**
@@ -59,8 +76,8 @@ function parseSummary(text) {
  */
 function verdict(base, head, wantNames = []) {
   if (!base || !head) return { ok: false, why: '没有解析到 node:test 汇总行，等于没跑' };
-  if (base.envBroken) return { ok: false, why: 'base 侧有环境类失败（Cannot find module 等），不能当改前红证据' };
-  if (head.envBroken) return { ok: false, why: 'head 侧有环境类失败，先修环境再谈证据' };
+  if (base.envBroken) return { ok: false, why: `base 侧有环境类失败，不能当改前红证据（元凶：${(base.envPaths || []).join(', ') || '未记名'}）` };
+  if (head.envBroken) return { ok: false, why: `head 侧有环境类失败，先修环境再谈证据（${(head.envPaths || []).join(', ')}）` };
   if (head.fail !== 0) return { ok: false, why: `改后仍有 ${head.fail} 条红，未修好` };
   const hit = wantNames.length ? base.failedNames.filter((n) => wantNames.some((w) => n.includes(w))) : base.failedNames;
   if (!base.fail) return { ok: false, why: '改前也全绿 —— 这条锁抓不到 bug，按 §6 应删掉或重写断言' };
@@ -95,10 +112,10 @@ function runTestFiles(cwd, files, namePattern) {
   const env = { ...process.env, NODE_PATH: nodePathFor() };
   try {
     const out = execFileSync(process.execPath, args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env, stdio: ['ignore', 'pipe', 'pipe'] });
-    return relMissing(parseSummary(out) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false, unparsed: String(out).slice(0, 400) }, cwd);
+    return relMissing(parseSummary(out, cwd) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false, missingOwn: [], unparsed: String(out).slice(0, 400) }, cwd);
   } catch (e) {
     const out = String((e && e.stdout) || '') + String((e && e.stderr) || '');
-    const p = parseSummary(out);
+    const p = parseSummary(out, cwd);
     if (p) return relMissing(p, cwd);
     return relMissing({ tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: true, missingDeps: [], missingOwn: [], unparsed: out.slice(0, 400) }, cwd);
   }
@@ -274,6 +291,29 @@ function selfTest() {
       const own = "ℹ tests 3\nℹ pass 0\nℹ fail 3\n✖ B60-1 x (1ms)\nError: Cannot find module '../lib/reading-filters'\n";
       const p = parseSummary(own);
       return p && p.envBroken === false && p.missingOwn.length === 1 && parseSummary(broken).missingDeps.length === 1;
+    })()],
+    ['ENOENT 也要分树内/树外：新增文件类修复的报错是产品红，不是环境红', (() => {
+      const inside = "ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: ENOENT: no such file or directory, scandir 'D:\\wt\\tools\\eval-content'\n";
+      const outside = "ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: ENOENT: no such file or directory, open 'C:\\Windows\\whatever'\n";
+      const pi = parseSummary(inside, 'D:\\wt');
+      const po = parseSummary(outside, 'D:\\wt');
+      return pi.envBroken === false && pi.missingOwn.includes('tools/eval-content')
+        && po.envBroken === true && parseSummary(inside).envBroken === true;   // 不给 cwd 时保守判环境红
+    })()],
+    ['双反斜杠形态的树内路径不许被判成环境红（本轮 f 锁取证当场踩到）', (() => {
+      const dbl = "ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: ENOENT: no such file or directory, scandir 'D:\\\\.wt-9\\\\tools\\\\eval-content'\n";
+      const p = parseSummary(dbl, 'D:\\.wt-9');
+      return p.envBroken === false && p.missingOwn.includes('tools/eval-content');
+    })()],
+    ['Node 的对象 dump（code: ENOENT 跨行）不许被当成缺失路径', (() => {
+      const dump = "ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: spawnSync python3 ENOENT\n  code: 'ENOENT',\n  syscall: 'spawn python3',\n  path: 'python3',\n";
+      const p = parseSummary(dump, 'D:\\wt');
+      return p.envPaths.length === 0 && p.fail === 1;
+    })()],
+    ['判"环境红"时必须点出是哪个路径（不许只说"有环境问题"让人瞎猜）', (() => {
+      const v = verdict(parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: Cannot find module 'left-pad'\n", 'D:\\wt'),
+        parseSummary(clean), ['t']);
+      return v.ok === false && /left-pad/.test(v.why);
     })()],
     ['改后仍有红 = 未修好', verdict(p1, p1, ['B28']).ok === false],
     ['指定的锁在 base 没红 = 断言没打中', verdict(p1, parseSummary(clean), ['B99']).ok === false],
