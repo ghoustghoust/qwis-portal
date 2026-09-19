@@ -63,6 +63,7 @@
 | **B88**（新） | 待办 | 云端 `/api/status` 不返回 `bilibili/douyin/wechat/queue` 与 `pausedSources.items`（只有 `{count}`），而 `BilibiliTab`/`DouyinTab`/`WechatTab`/`QueuePanel` 都在读它们 → 后台这四个组件在云端永远读到 `undefined`。本地端反而有（两份实现分叉，AGENTS §1 同族） |
 | **B89**（新，已随 B26 修） | ✅ | 本地来源榜原本只算**最新 1 期** `daily_reports`，而界面文案写「近7天入早报」、云端算 7 期 → 同一句话两端不同值。已统一成 7 天并补头像，I10 钉住不许退回单期 |
 | **B90**（新） | 待办 | `todayNew/weekNew` 的"今日"用**容器本地时间**取 0 点：Vercel 跑 UTC → 北京时间 08:00 前统计的是 UTC 那一天。同刻实测：线上（UTC 日）`todayNew=3554` vs 北京时间日 `9626`。要么固定按 `Asia/Shanghai` 算日界，要么把口径写明；别继续让"今日"随部署地漂移 |
+| **B91**（新，已修） | ✅ | `tools/audit-cloud.js` 用**全局 fetch**，而 undici 的 `ProxyAgent` 只有配 undici 自己的 fetch 才生效 → 本机直连不通时表现是 **19/19 "fetch failed"**，被读成"云端全挂"（而这支脚本存在的意义正是发现云端问题；同一坑早写在 `eval-preflight` 注释里，只是没共享出去）。修：基址+代理+出口统一进 `lib/cloud-site#cloudFetch`，preflight 改用它不再各留一份 PROXY；新增 **isEnvOutage**——非 SKIP 全失败且一条 HTTP 响应都没拿到时判**环境红退 2**，并指路 `EVAL_PROXY`。修后实测 20 通过/0 失败/1 未验收（共 21），含 B26 两条新观测位（轻投影 200/3044ms、按需重统计 200/551ms）。锁 I12（含 isEnvOutage 的三种输入行为断言，不用字面量断言） |
 
 ## 🆕 本轮 20 条页面批注实测新增（2026-09-19，B27~B58）
 
