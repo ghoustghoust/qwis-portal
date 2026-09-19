@@ -1,0 +1,96 @@
+{
+ "at": "2026-09-19T08:09:32.946Z",
+ "baseRef": "668e254",
+ "headRef": "HEAD",
+ "baseSha": "668e254ca7d0e565f2ded480bcd37066791c924e",
+ "headSha": "b9a50d8598c2f103a9a4bb802cd882cb76fd775b",
+ "files": [
+  "tests/regression-20260919h.test.js"
+ ],
+ "wantNames": [
+  "H6",
+  "H8"
+ ],
+ "targets": [
+  "H6",
+  "H8"
+ ],
+ "lockIntros": {
+  "H6": [
+   "b9a50d8598c2f103a9a4bb802cd882cb76fd775b"
+  ],
+  "H8": [
+   "b9a50d8598c2f103a9a4bb802cd882cb76fd775b"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " M docs/INDEX.md",
+  " M server/services/ai/daily-ai.js",
+  " M server/services/scheduler/index.js",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? archive/_diag/",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/audit/",
+  "?? docs/eval/content/report-20260919-142559.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? docs/specs/42-full-audit-2026-09/",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tests/regression-audit42-portal-channel.test.js",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs",
+  "?? tools/audit-graph.cjs"
+ ],
+ "headDirtyCount": 41,
+ "base": {
+  "tests": 2,
+  "pass": 0,
+  "fail": 2,
+  "failedNames": [
+   "H6 订阅 id 全部悬空时回退 spotlight，不再整页退化成 no-subscription（B78，坑 #52）",
+   "H8 端到端一环：悬空订阅 + 有真实早报 → 页面必须拿到 report，不是引导态"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "head": {
+  "tests": 2,
+  "pass": 2,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 2 条（2 个目标全中，实指 2 条锁），改后 2 条全绿"
+}
