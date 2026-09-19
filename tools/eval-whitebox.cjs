@@ -266,6 +266,22 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
     `mediaItems 构造点 ${sites} 处（<6 说明判据抓不到东西了）；缺 source_avatar：${JSON.stringify(misses)}`);
 }
 
+// ── W13 日报栏目表只许一份（B10：同一张表抄了 5 份且已漂，漂的那份把关键词复述当栏目注解
+//    写上了线上；更糟的是"恢复默认栏目"会把副本写进 settings，脏默认值能进生产库）──
+{
+  const OWNER = 'lib/daily-columns.js';
+  // 认栏目的身份特征（名字 + special 标记同时出现才算一份完整副本），不按关键词数组判：
+  // 关键词数组在 reading 侧另有合法用途（lib/reading-filters.js 的源类型集合含历史 wemp）
+  const MARK = /name:\s*'培训课程发布'[\s\S]{0,220}?special:\s*'spotlight'/;
+  const copies = [];
+  for (const f of walk('server').concat(walk('api'), walk('tools'), walk('lib'))) {
+    if (!/\.(js|cjs)$/.test(f) || f === OWNER) continue;
+    if (MARK.test(read(f))) copies.push(f);
+  }
+  ok('W13', copies.length === 0 && exists(OWNER) && MARK.test(read(OWNER)),
+    `日报栏目表必须只有 ${OWNER} 一份实现，副本：${JSON.stringify(copies)}（多份必漂；「恢复默认栏目」会把副本写进 settings）`);
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

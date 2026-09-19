@@ -105,6 +105,48 @@ test('I6 B72：评测接线同步——E10 从 known_gap 回到门禁位，剧�
   assert.ok(/notfound/.test(src), 'E10 没有用 404 锚点做判据（还在只判"页面有没有阅读器文案"）');
 });
 
+test('I8 坑 #55/B10：栏目表只许一份实现，且写回 settings 的默认值必须来自它', () => {
+  const lib = read('lib', 'daily-columns.js');
+  assert.ok(/DEFAULT_COLUMNS/.test(lib) && /培训课程发布/.test(lib), 'lib/daily-columns.js 不再是那份唯一实现');
+  // desc 是给人看的说明，不是关键词数组的复述（B10 的可见症状）。
+  // 判据取「desc 覆盖了该栏目的全部关键词」——按"出现≥3个"会误杀合法中文文案（本轮就误杀过一次：
+  // 「新公开的课程、训练营与社群招募」本就自然含 3 个词），而两份历史脏值恰好都是全量复述。
+  const isEcho = (desc, kws) => kws.length > 0 && kws.every((k) => desc.includes(k));
+  const cols = [...lib.matchAll(/\{\s*id:\s*'[^']+',\s*name:\s*'[^']+',\s*desc:\s*'([^']*)',\s*keywords:\s*\[([^\]]*)\]/g)]
+    .map((m) => ({ desc: m[1], kws: [...m[2].matchAll(/'([^']+)'/g)].map((x) => x[1]) }));
+  assert.ok(cols.length >= 2, `从唯一实现里解析出的带 desc 栏目只有 ${cols.length} 个，判据失去对象`);
+  const echoed = cols.filter((c) => isEcho(c.desc, c.kws));
+  assert.ok(echoed.length === 0, `栏目 desc 又在复述全部关键词（B10 原症状）：${JSON.stringify(echoed.map((e) => e.desc).slice(0, 2))}`);
+  // 正向探针：两条历史脏 desc 必须被同一判据抓红（抓不到=判据写松了，等于假门禁）
+  assert.ok(isEcho('Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向',
+    ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP']), '探针：旧 AI技术 desc 该被抓出');
+  assert.ok(isEcho('课程/训练营/社群招募/项目培训/技术培训发布或预告',
+    ['课程', '训练营', '社群', '招募', '培训']), '探针：旧 c1 desc 该被抓出');
+  // 「恢复默认栏目」写进 settings 的那份，必须是同一个 require（副本漂了会把脏默认值落库）
+  const slug = read('api', '[...slug].js');
+  assert.ok(/require\('\.\.\/lib\/daily-columns'\)/.test(slug), '读层没有引用唯一实现');
+  assert.ok(/restoreDefaultColumns[\s\S]{0,160}DAILY_DEFAULT_COLUMNS/.test(slug), '「恢复默认栏目」不再写 DAILY_DEFAULT_COLUMNS，本锁需同步改判');
+  // "全仓库只许一份"由白盒 W13 负责（它按内容特征扫，能抓到新增副本）；这里只钉读层这一处的接线
+});
+
+test('I9 B8：正文/摘要的两种来源必须分流渲染（纯文本回退不再走 safeHtml）', () => {
+  const rt = read('web', 'src', 'components', 'ui', 'RichText.jsx');
+  assert.ok(/HTML_RE/.test(rt) && /MdText/.test(rt) && /safeHtml/.test(rt), 'RichText 缺 HTML/纯文本分流');
+  // 三个回退点都必须改走分流：把纯文本塞进 safeHtml 会让 **加粗** ==重点== 变成裸星号
+  for (const [f, mark] of [
+    ['web/src/components/ArticleView.jsx', 'article.translated_content || article.content_html || article.summary'],
+    ['web/src/components/QuickStudyModal.jsx', 'contentHtml || intro'],
+  ]) {
+    const src = read(...f.split('/'));
+    assert.ok(/<RichText/.test(src), `${f} 没有改用 RichText`);
+    assert.ok(new RegExp(mark.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .replace('\\\\ ', '\\\\s+')).test(src.replace(/\s+/g, ' ')) || src.includes(mark), `${f} 的取值链变了，本锁需同步改判`);
+  }
+  const hot = read('web', 'src', 'components', 'HotDetail.jsx');
+  assert.ok(/<MdText text=\{summary\}/.test(hot) && /<MdText text=\{reason\}/.test(hot),
+    '热点详情的 AI 导读/推荐理由仍是裸文本（B8 的"重点标注丢失"面）');
+});
+
 test('I7 B85 追加：设了上界的列必须同时可收缩，否则行尾会被裁（800px 实测 6/37 行溢出）', () => {
   const file = read('web', 'src', 'components', 'ColumnSection.jsx');
   const row = bodyOf(file, 'function CompactRow');

@@ -635,13 +635,16 @@ async function handleHotEventDetail(req, rank) {
 }
 
 // ─── 日报生成核心（供 handleDaily getOrGenerate 复用） ───
-const DAILY_COLUMNS = [
-  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
-  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
-  { id: 'fallback', name: '其它重要', special: 'fallback' },
-];
-const DAILY_SOURCE_TYPES = ['wechat', 'rss', 'x'];
+// 栏目表与入报源类型的**唯一实现**在 lib/daily-columns.js（B10）。
+// 本文件此前有两份副本：这里的生成用列 + 下面设置段的"默认列"（后者会被 :2277 的
+// 「恢复默认栏目」写进 settings，副本一漂，脏默认值就能进生产库）。
+const {
+  DEFAULT_COLUMNS: DAILY_COLUMNS,
+  ARTICLE_SOURCE_TYPES: DAILY_SOURCE_TYPES,
+  DEFAULT_COLUMNS: DAILY_DEFAULT_COLUMNS,
+  ARTICLE_SOURCE_TYPES: DAILY_ARTICLE_TYPES,
+  VIDEO_SOURCE_TYPES: DAILY_VIDEO_TYPES,
+} = require('../lib/daily-columns');
 
 function dailyTitleTokens(title) {
   return String(title || '').replace(/[^\w\u4e00-\u9fff]/g, ' ').split(/\s+/).filter(t => t.length >= 2);
@@ -2074,14 +2077,7 @@ async function handleAuditCleanup(req) {
 // 与本地 server/routes/settings.js + routes/daily.js settingsRouter 语义对齐
 const SETTINGS_BLOCKLIST = ['auth.secret', 'admin.passwordHash', 'backup.latest', 'cloud.collect'];
 
-const DAILY_DEFAULT_COLUMNS = [
-  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
-  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
-  { id: 'fallback', name: '其它重要', special: 'fallback' },
-];
-const DAILY_ARTICLE_TYPES = ['wechat', 'rss', 'x'];
-const DAILY_VIDEO_TYPES = ['bilibili', 'douyin', 'youtube'];
+// 栏目表/入报源类型：见文件上方对 lib/daily-columns.js 的唯一引用（B10，此处曾另抄一份）
 
 // 对象型 setting 合并写；敏感键留空（undefined/''）不覆盖
 async function mergeSetting(key, patch, sensitiveKeys = []) {

@@ -1474,13 +1474,8 @@ async function runMyBrief(analyzed) {
 }
 
 // ─── 模式：daily（日报生成，逻辑与 api/daily-generate.js 对齐） ───
-const DEFAULT_COLUMNS = [
-  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
-  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
-  { id: 'fallback', name: '其它重要', special: 'fallback' },
-];
-const ARTICLE_SOURCE_TYPES = ['wechat', 'rss', 'x'];
+// B10：栏目表与入报源类型不再各抄一份，三端共用 lib/daily-columns.js
+const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES } = require('../lib/daily-columns');
 
 async function getSetting(key, def = null) {
   const rows = await qAll('SELECT value FROM settings WHERE key = ?', [key]);

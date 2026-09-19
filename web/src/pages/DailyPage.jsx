@@ -7,6 +7,7 @@ import StatCards from '../components/StatCards.jsx';
 import ColumnSection from '../components/ColumnSection.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
+import MdText from '../components/ui/MdText.jsx';
 
 // 每日情报日报页（/daily/，F13~F20）：报纸风页头 + 统计卡 + 栏目 + 快速学习弹窗
 // 设置入口已下线（第二期迁入管理后台），日报设置仅剩管理后台可改
@@ -174,7 +175,7 @@ export default function DailyPage() {
             <div className="mt-6">
               <div className="text-[11px] tracking-widest t-accent font-medium">今日主题</div>
               <p className="serif mt-2 text-lg sm:text-2xl italic leading-relaxed t-text">
-                {report.theme}
+                <MdText text={report.theme} />
               </p>
               {report.degraded && (
                 <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>

@@ -45,8 +45,8 @@ const API_BUDGET_MS = Number(process.env.E2E_API_BUDGET || 8000);
 // ── 参数出处表：一律抄自被检代码，禁止凭印象（F7 逐条查 source 形如 file:line）──
 const SRC = {
   hotTab: 'api/[...slug].js:384',        // tab: all | featured(:397) | hotlist(:402)
-  readingTab: 'api/[...slug].js:1023',   // ['all','favorited','read']
-  readingType: 'api/[...slug].js:1024',  // ['all','article','video','podcast']
+  readingTab: 'api/[...slug].js:1026',   // ['all','favorited','read']（B10 收副本后本文件行号上移；G5 专抓这种漂移）
+  readingType: 'api/[...slug].js:1027',  // ['all','article','video','podcast']
   articlesTab: 'api/[...slug].js:127',
   articlesSort: 'api/[...slug].js:128',
   videosTab: 'api/[...slug].js:261',

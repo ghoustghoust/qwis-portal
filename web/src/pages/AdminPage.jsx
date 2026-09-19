@@ -3,6 +3,7 @@ import { ThemeButton } from '../theme.jsx';
 import { RadarLogo } from '../components/icons.jsx';
 import ErrorBoundary from '../components/ErrorBoundary.jsx';
 import AdminRefCard from '../components/AdminRefCard.jsx';
+import { SkeletonList } from '../components/Skeleton.jsx';
 
 // 2.2 性能优化：管理后台 Tab 懒加载（用户每次只看一个 Tab，无需同步加载全部 ~2500 行组件）
 // spec30（2026-09-15）：12 Tab 收敛为 5——公众号RSS/B站并入源库「平台接入」视图；日报设置并入早报中心；
@@ -17,9 +18,13 @@ const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
 const BriefCenterTab = lazy(() => import('../components/BriefCenterTab.jsx'));
 
-// Tab 切换时的加载占位
+// Tab 切换时的加载占位（B11：文字「加载中…」→ 骨架屏，与前台同语言）
 function TabLoader() {
-  return <div className="py-16 text-center text-sm t-muted">加载中…</div>;
+  return (
+    <div className="card">
+      <SkeletonList n={6} />
+    </div>
+  );
 }
 
 // 合并分区块的小标题 + C2 作用对象标注

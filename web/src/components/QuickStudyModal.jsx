@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
-import { safeHtml } from '../sanitize';
+import RichText from './ui/RichText.jsx';
 import PodcastCover from './ui/PodcastCover.jsx';
 
 // 快速学习弹窗（F17/F20）：类型标签 + 标题 + 来源时间 + 收藏/复制链接/打开原文 + 内容简介 + 正文
@@ -280,10 +280,7 @@ export default function QuickStudyModal({ item, onClose }) {
               </p>
             )}
             {!loading && !isVideo && (
-              <div
-                className="article-content"
-                dangerouslySetInnerHTML={{ __html: safeHtml(contentHtml || intro || '') }}
-              />
+              <RichText className="article-content" text={contentHtml || intro || ''} />
             )}
           </div>
         </div>

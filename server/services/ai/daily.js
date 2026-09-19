@@ -7,28 +7,10 @@ const { nowIso } = require('../../util/time');
 const log = require('../../util/log');
 const { htmlToText } = require('./summary');
 
-// 默认四栏目（plan.md「栏目配置」，F15/F18）
-// 27b（2026-09-15）：special 'focus' 更名 'spotlight'（focus 列退役）；引擎读入时兼容旧值
-const DEFAULT_COLUMNS = [
-  {
-    id: 'c1',
-    name: '培训课程发布',
-    desc: '课程/训练营/社群招募/项目培训/技术培训发布或预告',
-    keywords: ['课程', '训练营', '社群', '招募', '培训'],
-  },
-  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
-  {
-    id: 'c2',
-    name: 'AI技术',
-    desc: 'Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向',
-    keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'],
-  },
-  { id: 'fallback', name: '其它重要', special: 'fallback' },
-];
-
-// wemp 已随 we-mp-rss 退役移除（2026-09-04）：公众号迁移为 type='rss'（wechat2rss）
-const ARTICLE_SOURCE_TYPES = ['wechat', 'rss', 'x'];
-const VIDEO_SOURCE_TYPES = ['bilibili', 'douyin', 'youtube'];
+// 默认四栏目 + 入报源类型（B10：唯一实现在 lib/daily-columns.js，本地/runner/云端三端共用）
+// 本文件此前自带一份 desc 写成「Codex、Claude、豆包…等动向」的关键词复述版，
+// 它生成的报告同步进云端后，就是线上 AI 版早报显示"关键词版栏目注解"的直接来源。
+const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES, VIDEO_SOURCE_TYPES } = require('../../../lib/daily-columns');
 
 // 九期补丁:日报出库安检——乱码(西里尔/修饰字母/替换符/高频乱码字是 UTF-8 被 GBK 误读的特征)与风控错误页不得入报
 function hasMojibake(text) {

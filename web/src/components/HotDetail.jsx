@@ -5,6 +5,7 @@ import { copyText, formatDateTime, relativeTime, parseTags, sourceLabel, imgUrl 
 import Stars from './ui/Stars.jsx';
 import TagPills from './ui/TagPills.jsx';
 import { safeHtml } from '../sanitize';
+import MdText from './ui/MdText.jsx';
 
 // 热点榜详情弹窗（七期 T10/F4）：对齐 AIHOT 详情页结构
 // 返回/精选徽章/AI 评分/♡收藏/打开原文/标题/信源+时间/「AI 导读」/「推荐理由」/标签
@@ -172,14 +173,14 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
           )}
           {summary && (
             <Section title="AI 导读">
-              <p className="text-[14px] leading-relaxed t-text whitespace-pre-line">{summary}</p>
+              <p className="text-[14px] leading-relaxed t-text whitespace-pre-line"><MdText text={summary} /></p>
             </Section>
           )}
           {reason && (
             <Section title="推荐理由">
               {/* 2026-09-05 视觉精修：推荐理由收敛为 accent-soft 浅底圆角块 */}
               <p className="rounded-xl t-accent-soft px-4 py-3 text-[13px] leading-relaxed t-text">
-                {reason}
+                <MdText text={reason} />
               </p>
             </Section>
           )}
@@ -220,7 +221,7 @@ export default function HotDetail({ item, onClose, onToggleLater }) {
                 <div ref={contentRef} className="article-content" dangerouslySetInnerHTML={{ __html: safeHtml(zhHtml) }} />
               ) : (
                 <div>
-                  {summary && <p className="text-[14px] leading-relaxed t-text whitespace-pre-line">{summary}</p>}
+                  {summary && <p className="text-[14px] leading-relaxed t-text whitespace-pre-line"><MdText text={summary} /></p>}
                   {!article && !summary && <div className="py-6 text-center text-xs t-muted">正文加载中…</div>}
                 </div>
               ))}

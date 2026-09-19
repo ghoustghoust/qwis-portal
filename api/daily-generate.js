@@ -41,15 +41,8 @@ async function getSetting(key, def = null) {
   try { return JSON.parse(row.value); } catch { return def; }
 }
 
-// ─── 默认栏目配置（27b：special 'focus' 更名 'spotlight'，引擎兼容旧值） ───
-const DEFAULT_COLUMNS = [
-  { id: 'c1', name: '培训课程发布', desc: '课程/训练营/社群招募', keywords: ['课程', '训练营', '社群', '招募', '培训'] },
-  { id: 'spotlight', name: '重点更新', special: 'spotlight' },
-  { id: 'c2', name: 'AI技术', desc: 'Codex/Claude/Agent/模型等', keywords: ['Codex', 'Claude', '豆包', 'Agent', '模型', '自动化', 'RAG', 'MCP'] },
-  { id: 'fallback', name: '其它重要', special: 'fallback' },
-];
-
-const ARTICLE_SOURCE_TYPES = ['wechat', 'rss', 'x'];
+// ─── 默认栏目配置（B10：唯一实现收进 lib/daily-columns.js，本地/runner/云端三端共用） ───
+const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES } = require('../lib/daily-columns');
 
 // ─── 出库安检 ───
 function hasMojibake(text) {

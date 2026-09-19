@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
-import { safeHtml } from '../sanitize';
+import RichText from './ui/RichText.jsx';
 import { RadarLogo } from './icons.jsx';
 import PodcastCover from './ui/PodcastCover.jsx';
 import { useI18n } from '../i18n.jsx';
@@ -288,14 +288,12 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
                 </div>
               </div>
             )}
-            <div
-              ref={contentRef}
+            <RichText
+              innerRef={contentRef}
               className="article-content mt-6"
-              dangerouslySetInnerHTML={{ __html: safeHtml(
-                showTranslated
-                  ? (article.translated_content || article.content_html || article.summary || '')
-                  : (article.content_html || article.summary || '')
-              ) }}
+              text={showTranslated
+                ? (article.translated_content || article.content_html || article.summary || '')
+                : (article.content_html || article.summary || '')}
             />
             {/* P0-4：翻译/原文切换——快速切换按钮 */}
             {hasTranslation && article.translated_content && article.content_html && (
