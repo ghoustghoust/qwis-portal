@@ -927,6 +927,7 @@ const SCENARIOS = [
   {
     id: 'E10', title: '未知路径 /videos/：渲染可见 404 兜底，且不得静默渲染成阅读器（B72 已修）',
     async run(page, c, target, net) {
+      net.length = 0;   // 与 E3/E8 同规格：不清的话，前一个剧本打过的 /api/articles 会让下面那条 api 判据假红
       await goto(page, c, target + '/videos/', '[data-e2e="notfound"]');
       const txt = await bodyText(page);
       c.renderedText = txt.slice(0, 200);
@@ -934,6 +935,11 @@ const SCENARIOS = [
       assert(c, 'render', '未知路径出现 404 兜底块（且只有一块）', nBlocks === 1, `notfound 块数=${nBlocks}`);
       assert(c, 'render', '不再静默渲染成阅读器（页面不含「加载更多/稍后阅读」）',
         !/加载更多|稍后阅读/.test(txt), '兜底页文本：' + txt.slice(0, 60));
+      // 静默渲染阅读器的那个版本**必然**会去拉阅读器数据流；兜底页不该发这个请求。
+      // 这条比"页面没那些文案"更硬：它钉的是"根本没走阅读器的数据链路"（坑 #53：判据要能独立翻红）。
+      const readerCalls = net.filter((r) => String(r.url).startsWith('/api/articles'));
+      assert(c, 'api', '兜底页不发起阅读器数据请求（/api/articles 调用数=0）',
+        readerCalls.length === 0, `实际 ${readerCalls.length} 次：${readerCalls.map((r) => r.url).slice(0, 2).join(' , ')}`);
       // SPA catch-all 仍回 200 + index.html（vercel.json:11），服务端不会 404 ——
       // 这条判据钉的是「兜底责任在客户端」这个契约，不是"修好了就变 404"的错觉。
       const doc = net.filter((r) => r.kind === 'doc').pop();

@@ -55,17 +55,17 @@
 |---|---|---|
 | E1 | `/reader/` 今日流 | 页面自己发出的 `/api/articles` 的 items（行数 + 每条标题是否上屏） |
 | E2 | 阅读器「视频」Tab | `/api/videos`：切换后必须是视频卡、文章行清零 |
-| E3 | `/daily/` 栏目 pill | `report.sections[].column` 逐列条数（B39 档位可见） |
+| E3 | `/daily/` 栏目 pill | `report.sections[].column` 逐列条数（B39 档位可见）。**几何判据（B85，09-19 线上基线）**：37 行最长 129px、标题列最小 160px → 断"行高 ≤160 且标题列 ≥100"；修前同一页同一数据是**最长行 594px / 标题列 0 宽**（来源名无界把主列挤没，0 宽下 line-clamp 不裁剪，坑 #54）。阈值取实测 129 + 余量，不是拍脑袋 |
 | E4 | `/hot/` 三视图 | featured/all 走"渲染行 ⊆ 响应"，热搜事件走"响应事件覆盖率"（两套行结构不同，实测） |
 | E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因），且都走 `assertStays`「复查不翻转」（B74 的晚到覆盖就长这样）。口径的实测基线（2026-09-19 10:34 线上直取 `?tab=all`）：`type=all → counts.all=25160`、`article=7300`、`video=0`、`podcast=145`——四值互异才叫"进入计数口径"；**比较两侧必须都是有限数**，第 1 轮冷启动时 article 曾整段没带 counts，`Number(undefined) !== Number(25160)` 是恒真假绿（坑 #50），现已改成"缺数即红 + 有界重试并把等待时长记进 metrics" |
-| E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串 |
+| E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串。**媒体卡图形判据（B84，09-19 基线）**：视频/播客卡 DOM 数 = `report.sections.media` 条数（实测 10=10）、每张左栏必须有真实图形（`img`/`svg`/`.avatar-fallback`）10/10、**整页 🎧/▶ 计 0**——最后一条与当天数据无关，永远会翻红，专门防"数据恰好没播客就假装通过" |
 | E7 | 客户端路由与深链 | 点导航后 **window 标记仍存活 + document 只拉过一次**（两者都是"真会翻转"的观测量；原 `performance.navigation` 计数两侧恒等属空判据，已删）+ 刷新不丢位置（38-3 前置） |
 | E8 | 7 个页面 | 无 JS `pageerror`、**无裸 i18n key 上屏**（抓到 B71）、未登录时 `/api/auth/me` 真的 401 |
 | E9 | 点开文章 | 点的是**页面自己那份列表响应里的第 0 条**，正文必须落在详情面板的 `article` 元素里（`selectHint` 消失）；正文对账**两侧都要先归一空白**（切片是"HTML→单空格"文本，而 `innerText` 块元素间是换行，不归一必然对不上——2026-09-19 曾据此把正常渲染误判成 3/3 产品红，且我第一次归错了原因，猜成"面板显示译文"，被 `来源=content_html` 的读数否掉）。`content_html` 明文 >300 字时取中段比对，薄正文记进 `metrics.detailBodyChars` 不假装通过 |
-| E10 | `/videos/` 未知路径 | 不得静默渲染成阅读器（B72，登记为 known_gap；第二判据改成可翻转的"实测回 200 HTML"，不写死真） |
+| E10 | `/videos/` 未知路径 | **✅ B72 已修（09-19），本剧本从 `KNOWN_GAPS` 摘回门禁位**（登记期原文见下）。四条判据覆盖 render/api/data 三类各 ≥1（§3.3）：兜底块唯一（`[data-e2e="notfound"]` count=1）、页面不含「加载更多/稍后阅读」、**不发起 `/api/articles`**（静默渲染阅读器必然带这条请求，比"没那些文案"更硬）、document 仍 200（钉住"服务端不 404、兜底在客户端"的契约，不假装修完就变 404）。剧本开头 `net.length = 0` 是必须的——`net` 跨剧本累积，不清就会被前一个剧本的 `/api/articles` 判成假红。<br>登记期原文（已作废，留痕）：「不得静默渲染成阅读器（B72，登记为 known_gap；第二判据改成可翻转的"实测回 200 HTML"，不写死真）」 |
 
 **仍待补**：`/reader/` 的搜索与中英对照、翻页；`/reading/` 日期分组无「未知日期」；后台 8 板块的"改一个设置 → 前台真的变了"闭环剧本（**卡在不替你登录**，需你授权测试口令或人工跑）；41-5 覆盖矩阵要等这份清单定稿。
-**L1 侧同批待办**：`regression-my-brief / weekly / cloud-settings / cloud-sources / ai-infra / bilibili / translate` 这一族"直打生产 Turso"的测试要全部搬到本地 libsql 文件库（B83；my-brief、weekly、cloud-settings、cloud-alerts 四份本轮已完成，其余四份同模板），别再让测试改写生产数据——线上「我的早报」就曾被它留下的悬空 `subscription.ids` 打成引导态（B78/B79，坑 #52）。
+**L1 侧（B83）已收口**：`regression-my-brief / weekly / cloud-settings / cloud-alerts / cloud-sources / ai-infra / bilibili / translate` 这一族"直打生产 Turso"的测试**七份全部**搬到本地 libsql 文件库（2026-09-19），每份带一条"自证不读 `.env`、不给 `createClient` 传真 authToken"的锁；把四个环境变量灌成毒值后 31/31 仍绿，证明它们不再需要生产凭据。别再让测试改写生产数据——线上「我的早报」就曾被它留下的悬空 `subscription.ids` 打成引导态（B78/B79，坑 #52）。
 
 每条剧本必须产出：截图、网络请求清单（含体积与耗时）、断言结果、`env_lock`。**截图小于 10KB 判 `fail_env`**（空白页当证据是 B50 类漂移的评测版），这条也进了回归锁。
 

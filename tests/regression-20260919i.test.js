@@ -37,7 +37,7 @@ test('I1 B85：CompactRow 标题列必须有宽度下限，来源列必须有宽
   const file = read('web', 'src', 'components', 'ColumnSection.jsx');
   const row = bodyOf(file, 'function CompactRow');
   assert.ok(row, '找不到 CompactRow，本条会退化成恒真');
-  // flex-1 = flex:1 1 0%：基准 0 让标题列在收缩阶段永远抢不到宽度，必须有 min-w 下限
+  // 坑 #54：flex-1 = flex:1 1 0%，基准 0 让标题列在收缩阶段永远抢不到宽度，必须有 min-w 下限
   const title = row.match(/<span className="([^"]*flex-1[^"]*)"/);
   assert.ok(title, '标题列（flex-1）不存在');
   assert.ok(/min-w-\[\d/.test(title[1]), `标题列没有 min-width 下限（只有 min-w-0 会被挤到 0 宽）：${title[1]}`);
