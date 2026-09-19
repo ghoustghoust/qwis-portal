@@ -52,7 +52,7 @@
 
 ## 五、本文件明确没有做的
 
-- **代码零改动**。文档侧：本文件、`docs/ISSUES.md`（B101~B112）、`FEATURE_MATRIX.md`、三处调度文档的更正，均为本地提交、**未 push**（用户指令仍是「不要 push」；提交只为防这些规格文件在并行会话里被误清）。**未 push 提交清单以 `docs/ISSUES.md` 顶部放行表第 11 行为唯一写死处**，本文件不复制编号（AGENTS §2.5）。工作区里我的代码改动仍只有 `api/[...slug].js` 两处读侧 `NULLIF(…,'null')`（:232、:1448）**未提交**，与未跟踪的 `lib/dirty-columns.js` 半成品。
+- **代码零改动**。文档侧：本文件、`docs/ISSUES.md`（B101~B112）、`FEATURE_MATRIX.md`、三处调度文档的更正，均为本地提交、**未 push**（用户指令仍是「不要 push」；提交只为防这些规格文件在并行会话里被误清）。**未 push 提交以 `git log --oneline origin/main..HEAD` 为准**（本文件与 `docs/ISSUES.md` 放行表第 11 行都不复制编号——易变事实只写取法，AGENTS §2.5）。工作区里我的代码改动仍只有 `api/[...slug].js` 两处读侧 `NULLIF(…,'null')`（:232、:1448）**未提交**，与未跟踪的 `lib/dirty-columns.js` 半成品。
 - ✅ 已更正（本轮）：已 push 的文档写「W15 的污染列由 `lib/dirty-columns.js` 派生，附 5 种躲法自证探针」——实际 W15 仍是手写 `const POLLUTED = ['last_fetched_at']`，自证探针不存在。`FEATURE_MATRIX.md` 与 `ISSUES.md` 两处均已按实测改写成"未交付"。仍欠的实现（把 W15 真接上 DDL 派生 + 补躲法自证）在"不许改代码"令解除后再做。
 - ✅ 已记为未验收（本轮）：`npm run eval:e2e` 的 10/10×3（`acceptance.ok=true`）**不覆盖数据保留面**——剧本只断言"页面有内容 / 接口到达 / 无 pageerror"，从不断言"老数据没被误删"。`FEATURE_MATRIX.md` 该行已把这一面显式列进「未覆盖」。**同轮补判据**：`docs/specs/41-e2e-whitebox-eval/coverage-matrix-20260919.md` 手工核对 39 个功能格 → ✅3 / ◐8 / ⛔28，并查明 `tools/eval-e2e.cjs:1023` 的 `KNOWN_GAPS` 实测是 `{}`、`uncoveredKinds` 只统计剧本内断言类别，**两者都不是覆盖分母**，此前把 `knownGaps=[]` 读成"没有缺口"是误读。
 - ⛔ **同轮复跑新查出的第二处不实（B104）**：`npm run eval:whitebox` 在最终 HEAD 上复跑 **W9 红**——坑 #62/#63/#64 在 `tests/` 里没有任何 `#NN` 字面引用（判据面只扫 `tests/`，而三处实现/自证分别落在 `tools/eval-e2e.cjs`、`tools/_probe-strip-selftest.cjs` 与 `docs/EVAL_GUIDE.md`）。此前文档写"whitebox W1~W16 全过"是**照抄旧轮、未复跑**的结果，已更正。**不走 `whitebox-baseline.json` 豁免**：那是历史债账本，用来豁免当轮新造的缺口＝自我放行（坑 #45/#59 禁止的正是这个动作）。
