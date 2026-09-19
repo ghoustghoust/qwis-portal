@@ -371,3 +371,13 @@ test('41-3 两种红要分开：裸包名=环境红（不算证据），相对�
   assert.equal(verdict(own, green, ['B60-1']).ok, true, '产品红（缺新建共享模块）该判成立');
   assert.match(verdict(own, green, ['B60-1']).why, /改前缺本次修复新建的文件/, '成立理由里必须写明红在"缺新文件"，别让人以为是断言打红');
 });
+
+// 自检项数不写死在文档里（写死就会漂）：这里只钉"必须全绿"，数量由工具自己报
+test('41-3 取证器自检必须全绿（探针数与通过数相等，且不许少于 15 项）', () => {
+  const { execFileSync } = require('node:child_process');
+  const out = execFileSync(process.execPath, ['tools/eval-f2p.cjs', '--self-test'], { cwd: ROOT, encoding: 'utf8' });
+  const m = out.match(/自检：(\d+)\/(\d+) 通过/);
+  assert.ok(m, '自检没输出计数，等于没跑：' + out.slice(0, 200));
+  assert.equal(m[1], m[2], `有探针没通过（未通过一律视为假门禁）：\n${out}`);
+  assert.ok(Number(m[2]) >= 15, `探针数量退化了（${m[2]}），取证器的负向验证不能省`);
+});

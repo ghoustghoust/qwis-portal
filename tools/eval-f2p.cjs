@@ -95,13 +95,24 @@ function runTestFiles(cwd, files, namePattern) {
   const env = { ...process.env, NODE_PATH: nodePathFor() };
   try {
     const out = execFileSync(process.execPath, args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env, stdio: ['ignore', 'pipe', 'pipe'] });
-    return parseSummary(out) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false, unparsed: String(out).slice(0, 400) };
+    return relMissing(parseSummary(out) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false, unparsed: String(out).slice(0, 400) }, cwd);
   } catch (e) {
     const out = String((e && e.stdout) || '') + String((e && e.stderr) || '');
     const p = parseSummary(out);
-    if (p) return p;
-    return { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: true, missingDeps: [], missingOwn: [], unparsed: out.slice(0, 400) };
+    if (p) return relMissing(p, cwd);
+    return relMissing({ tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: true, missingDeps: [], missingOwn: [], unparsed: out.slice(0, 400) }, cwd);
   }
+}
+
+// 证据要进 git：把 `D:\\.wt-f2p-1789776782282\tools\…` 这种一次性临时树的绝对路径折成仓库相对路径，
+// 否则每轮证据里都多一份随机目录名，既读不动也可能被文档门禁当成引用去解析。
+// 分隔符按"一段"匹配（`\\`、`\/`、`//` 都出现过：Node 报的 specifier 会带上 join 出来的双反斜杠）。
+function relMissing(p, cwd) {
+  if (!p || !Array.isArray(p.missingOwn)) return p;
+  const parts = String(cwd).split(/[\\/]+/).filter(Boolean);
+  const preRe = new RegExp('^' + parts.map(rxEscape).join('[\\\\/]+') + '[\\\\/]+', 'i');
+  p.missingOwn = [...new Set(p.missingOwn.map((m) => String(m).replace(preRe, '').replace(/\\/g, '/').replace(/\/{2,}/g, '/')))];
+  return p;
 }
 
 // ── 基线守卫 ───────────────────────────────────────────────────────
@@ -278,6 +289,10 @@ function selfTest() {
       return a === want && b === want;
     })()],
     ['测试名解析出真用例名', testNamesIn(f1).length >= 8],
+    ['证据里的 worktree 绝对路径折成仓库相对（含 Node 报出的双反斜杠形态）', (() => {
+      const r = relMissing({ missingOwn: ['D:\\\\.wt-1\\\\tools\\\\x.cjs', '../tools/y.cjs', '../lib/foo'] }, 'D:\\.wt-1');
+      return r.missingOwn[0] === 'tools/x.cjs' && r.missingOwn[1] === '../tools/y.cjs' && r.missingOwn[2] === '../lib/foo';
+    })()],
   ];
   for (const [n, ok] of probes) console.log(`  ${ok ? '✓' : '✗'} ${n}`);
   const bad = probes.filter(([, ok]) => !ok);
