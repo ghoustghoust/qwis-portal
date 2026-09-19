@@ -303,6 +303,31 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
     '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现见 lib/daily-writers.js；漏一处 = 那一处照旧把低质内容塞进早报）');
 }
 
+// ── W15 取"最后同步时间"的 MAX(时间列) 必须排掉字面串 'null'（B93，2026-09-19 第三次同类污染） ──
+// 判据同样从事实派生（坑 #58/#59）：扫所有"MAX(<已知污染时间列>)"的出现点，要求同一表达式里有 NULLIF。
+// 只收 MAX 不收 MIN：文本序 `'null' > '2026-…'`，所以被毒的是 MAX（「最后同步」变 null）；
+// MIN 取到的仍是最早的真实时间，'null' 抢不到第一，故不在此判据范围内（别为了让判据对称而改无关代码）。
+{
+  const { stripComments } = require('../lib/src-spans');
+  const POLLUTED = ['last_fetched_at']; // 实测有字面串 'null' 的列（sources.last_fetched_at）
+  const MAXRE = new RegExp(`\\bMAX\\(([^)]*\\b(?:${POLLUTED.join('|')})\\b[^)]*)\\)`, 'g');
+  const bad = [];
+  let seenMax = 0;
+  for (const f of ['server', 'api', 'tools', 'lib'].flatMap((d) => walk(d))) {
+    const src = stripComments(read(f));
+    for (const m of src.matchAll(MAXRE)) {
+      seenMax++;
+      if (!/NULLIF\s*\(/i.test(m[1])) {
+        const line = src.slice(0, m.index).split('\n').length;
+        bad.push(`${f}:~${line} → MAX(${m[1].trim().slice(0, 40)})`);
+      }
+    }
+  }
+  ok('W15', seenMax >= 3 && bad.length === 0,
+    `MAX(${POLLUTED.join('/')}) 共 ${seenMax} 处，未排字面串 'null' 的：${JSON.stringify(bad)}` +
+    '（B93：一行 \'null\' 就能让后台「最后同步」自上线起恒显示"从未同步"，且两端各写一遍必漏一端）');
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

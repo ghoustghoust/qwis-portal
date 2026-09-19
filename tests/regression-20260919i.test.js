@@ -278,7 +278,7 @@ test('I12 坑 #56 同源面：巡检必须走统一代理出口，并把"拿不�
     rows([200]).concat([{ pass: true, skip: '', status: 200 }])), false, '有通过就不许判环境红');
 });
 
-test('I14 B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「最后同步」', () => {
+test('I14 坑 #60 / B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「最后同步」', () => {
   // 迁移期污染（与 B15 同族）：库里 1 行 last_fetched_at 是字符串 'null'。文本序 'null' > '2026-…'
   // → 裸 MAX() 取到它，读层归一化后又变 null，于是后台「RSS 最后同步」自上线起恒显示"从未同步"（线上实测）。
   // 判据是行为不是字面量：种一个真时间戳 + 一个 'null'，端点必须回那个真时间戳。
@@ -289,16 +289,20 @@ test('I14 B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「最后同�
     const express = require('express');
     const { db } = require(${JSON.stringify(path.join(ROOT, 'server', 'db.js'))}); // 按 APP_DATA_DIR 建表
     const REAL = '2026-09-19T10:00:00.000Z';
-    const ins = db.prepare("INSERT INTO sources(type,name,url,enabled,last_fetched_at,created_at) VALUES('rss',?,?,1,?,?)");
-    ins.run('I14 正常源', 'https://i14a.example/f', REAL, REAL);
-    ins.run('I14 脏值源', 'https://i14b.example/f', 'null', REAL); // 迁移期写进去的字面串
+    const ins = db.prepare("INSERT INTO sources(type,name,url,enabled,last_fetched_at,created_at) VALUES(?,?,?,1,?,?)");
+    ins.run('rss', 'I14 正常源', 'https://i14a.example/f', REAL, REAL);
+    ins.run('rss', 'I14 脏值源', 'https://i14b.example/f', 'null', REAL); // 迁移期写进去的字面串
+    // 同一族有 4 条查询，本锁把两条都钉住：rss 侧与 bilibili 侧（上一轮只修了 rss，bilibili 漏到第二次审查）
+    ins.run('bilibili', 'I14 B站脏值源', 'https://i14c.example/f', 'null', REAL);
+    ins.run('bilibili', 'I14 B站正常源', 'https://i14d.example/f', REAL, REAL);
     const app = express();
     app.use('/api/status', require(${JSON.stringify(path.join(ROOT, 'server', 'routes', 'status.js'))}));
     const srv = app.listen(0, '127.0.0.1', async () => {
       const data = await (await fetch('http://127.0.0.1:' + srv.address().port + '/api/status')).json();
       console.log('OUT ' + JSON.stringify({
         rss: data.wechat.rssLastFetch,
-        srcs: db.prepare('SELECT COUNT(*) c FROM sources').get().c, // 前提探针：两条源真进了库
+        bili: data.bilibili.lastFetch,
+        srcs: db.prepare('SELECT COUNT(*) c FROM sources').get().c, // 前提探针：四条源都要真进库
         dirty: db.prepare("SELECT COUNT(*) c FROM sources WHERE last_fetched_at='null'").get().c,
       }));
       srv.close(); process.exit(0);
@@ -310,10 +314,12 @@ test('I14 B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「最后同�
     const m = /^OUT (.+)$/m.exec(out);
     assert.ok(m, '子进程没打印读数：\n' + out.slice(-400));
     const got = JSON.parse(m[1]);
-    assert.equal(got.srcs, 2, '前提：两条源都要真进统计（否则是空库假绿）');
-    assert.equal(got.dirty, 1, "前提：库里要真有一行字面串 'null'（否则本用例什么都没测）");
+    assert.equal(got.srcs, 4, '前提：四条源都要真进库（否则是空库假绿）');
+    assert.equal(got.dirty, 2, "前提：库里要真有两行字面串 'null'（rss 与 bilibili 各一，否则本用例什么都没测）");
     assert.equal(got.rss, '2026-09-19T10:00:00.000Z',
-      "B93 复发：MAX() 又被字面串 'null' 毒掉（要在 SQL 层 NULLIF 排掉，不是在 JS 里补兜底）");
+      "坑 #60 复发：MAX() 又被字面串 'null' 毒掉（要在 SQL 层 NULLIF 排掉，而不是在 JS 里补兜底）");
+    assert.equal(got.bili, '2026-09-19T10:00:00.000Z',
+      "坑 #60 复发：bilibili 那条又漏了 NULLIF（上一轮就是这么只修了一半，被第二次审查抓出）");
   } finally {
     try { fs.unlinkSync(driver); } catch { /* 已清 */ }
     fs.rmSync(tmpDir, { recursive: true, force: true });

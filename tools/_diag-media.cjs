@@ -14,7 +14,7 @@ for (const line of fs.readFileSync(require('path').join(__dirname, '..', '.env')
     console.log(` ${r.platform}: ${r.n} 个, 最新 ${r.latest}, 无封面 ${r.no_cover}`);
   }
   console.log('=== 视频源采集状态 ===');
-  for (const r of await q("SELECT s.type, COUNT(*) n, SUM(s.enabled) enabled, MAX(s.last_fetched_at) last_fetch, SUM(CASE WHEN s.next_fetch_at IS NULL THEN 1 ELSE 0 END) no_next FROM sources s WHERE s.type IN ('youtube','bilibili','douyin') GROUP BY s.type")) {
+  for (const r of await q("SELECT s.type, COUNT(*) n, SUM(s.enabled) enabled, MAX(NULLIF(s.last_fetched_at,'null')) last_fetch, SUM(CASE WHEN s.next_fetch_at IS NULL THEN 1 ELSE 0 END) no_next FROM sources s WHERE s.type IN ('youtube','bilibili','douyin') GROUP BY s.type")) {
     console.log(` ${r.type}: ${r.n} 源 (${r.enabled} 启用), 最近采集 ${r.last_fetch}, 无下次排期 ${r.no_next}`);
   }
   console.log('=== 播客（音频条目）规模 ===');
