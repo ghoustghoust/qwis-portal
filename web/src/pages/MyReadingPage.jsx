@@ -67,6 +67,10 @@ export default function MyReadingPage() {
   const [batchBusy, setBatchBusy] = useState(false);
   const boxRef = useRef(null);
   const loadingRef = useRef(false);
+  // B73（2026-09-19 端到端评测抓到）：请求序号守卫。首屏 type=all 那条实测要 15~30s，
+  // 期间用户点「文章/视频」发的新请求会先返回，旧响应晚到会把列表和计数**整体覆盖回未筛选态**
+  // （表现：点了筛选像没反应，过一会儿内容又跳回去）。
+  const seqRef = useRef(0);
 
   // 搜索防抖
   const [qInput, setQInput] = useState('');
@@ -77,7 +81,9 @@ export default function MyReadingPage() {
 
   // 加载数据
   const fetchPage = useCallback(async (cur, reset) => {
-    if (loadingRef.current) return;
+    // 只在"翻页"时防重入；**筛选切换必须能打断上一次请求**，否则加载中点的筛选会被整段吞掉（B73）
+    if (!reset && loadingRef.current) return;
+    const seq = ++seqRef.current;
     loadingRef.current = true;
     setLoading(true);
     try {
@@ -85,6 +91,7 @@ export default function MyReadingPage() {
       if (q) params.q = q;
       if (cur) params.cursor = cur;
       const d = await api.get(`/api/reading${qs(params)}`);
+      if (seq !== seqRef.current) return;      // 晚到的旧响应不得覆盖新筛选结果
       const newItems = d?.items || [];
       setCounts(d?.counts || { all: 0, favorited: 0, read: 0 });
       if (reset) {
@@ -95,10 +102,11 @@ export default function MyReadingPage() {
       setCursor(d?.nextCursor || null);
       setDone(!d?.nextCursor);
     } catch (e) {
+      if (seq !== seqRef.current) return;
       if (reset) setItems([]);
       toast(e.message || t('reading.loadFailed'));
     } finally {
-      setLoading(false);
+      if (seq === seqRef.current) setLoading(false);
       loadingRef.current = false;
     }
   }, [tab, type, q]);

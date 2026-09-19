@@ -25,10 +25,10 @@
 | L1 单元/回归 | `npm test` | 函数行为、历史 bug 不复发 | 已有（BL1 已闭合：09-19 把 4 条指向已独立成仓 `portal/*` 的锚点重锚到根树真文件，现 344 项 0 红） |
 | L2 构建 | `npm run build:vercel` | 前端可构建、静态资源齐 | 已有 |
 | L3 云端实测 | `docs/DELIVERY_VERIFICATION.md` 流程 | 端点活着、SHA 已上线 | 已有（人工） |
-| **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，待建 |
+| **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，**41-2 已交付**（`tools/eval-e2e.cjs`，10 条剧本 / 自检 44 项 / 首轮就抓到 B71 裸 key） |
 | **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，W1~W10 已落地 |
 | **L4b' 过程检查** | `npm run eval:process` | **这次运行到底可不可信**（截图/报告/断言数/占位文案/证据路径/退出码/参数出处） | 本文 §3.6，`tools/eval-process-checks.cjs` 已落地 |
-| **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，待建 |
+| **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，41-8 已交付（未 `--judge` 时只出产物采集与人工对齐，不冒充评分） |
 | L5 文档门禁 | `npm run lint:docs` | 文档不腐烂、无悬空、无明文密钥 | 已有 |
 
 ## 3. 端到端评测（E2E）
@@ -49,10 +49,24 @@
 
 ### 3.2 剧本清单（页面 × 关键交互，逐条可断言）
 
-前台：`/reader/`（今日流、翻页、点开详情、中英对照、搜索）、`/daily/`（AI 版档位、栏目、星级）、`/mybrief/`（订阅集、探索位）、`/weekly/`（期号、storylines、导语无污染串）、`/hot/`（三视图）、`/reading/`（三 tab × 三类型矩阵、日期分组无「未知日期」）。
-后台：8 个板块（源库 / 后台首页 / 早报中心 / AI 能力 / 系统·数据 / 监控·报警 / 热点榜策展 / 全局壳导航），每板块至少一条"改一个设置 → 前台或链路真的变了"的闭环剧本。
+**已落地（`tools/eval-e2e.cjs`，41-2，09-19 夜）**——前台 6 页 + 后台登录门共 10 条：
 
-每条剧本必须产出：截图、网络请求清单（含体积与耗时）、断言结果、`env_lock`。
+| 剧本 | 覆盖 | 对账对象 |
+|---|---|---|
+| E1 | `/reader/` 今日流 | 页面自己发出的 `/api/articles` 的 items（行数 + 每条标题是否上屏） |
+| E2 | 阅读器「视频」Tab | `/api/videos`：切换后必须是视频卡、文章行清零 |
+| E3 | `/daily/` 栏目 pill | `report.sections[].column` 逐列条数（B39 档位可见） |
+| E4 | `/hot/` 三视图 | featured/all 走"渲染行 ⊆ 响应"，热搜事件走"响应事件覆盖率"（两套行结构不同，实测） |
+| E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因） |
+| E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串 |
+| E7 | 客户端路由与深链 | `performance.navigation` 计数不增（P0-5）+ 刷新不丢位置（38-3 前置） |
+| E8 | 7 个页面 | 无 JS `pageerror`、**无裸 i18n key 上屏**（抓到 B71）、未登录时 `/api/auth/me` 真的 401 |
+| E9 | 点开文章 | 详情接口 200 且 `content_html` 非空 + 面板正文 >300 字（B52 类） |
+| E10 | `/videos/` 未知路径 | 不得静默渲染成阅读器（B72，登记为 known_gap） |
+
+**仍待补**：`/reader/` 的搜索与中英对照、翻页；`/reading/` 日期分组无「未知日期」；后台 8 板块的"改一个设置 → 前台真的变了"闭环剧本（**卡在不替你登录**，需你授权测试口令或人工跑）；41-5 覆盖矩阵要等这份清单定稿。
+
+每条剧本必须产出：截图、网络请求清单（含体积与耗时）、断言结果、`env_lock`。**截图小于 10KB 判 `fail_env`**（空白页当证据是 B50 类漂移的评测版），这条也进了回归锁。
 
 ### 3.3 断言分三类，缺一不算覆盖
 
@@ -60,10 +74,17 @@
 2. **接口断言**：响应字段齐且形状匹配（B27 漏 `date`、B47 形状不匹配都属此类，肉眼看不出来）。
 3. **数据断言**：写操作后回读库/端点确认落地（改设置后必须回读，对应 B54「改了不保存」）。
 
+缺哪一类，报告如实写进 `summary.uncoveredKinds`（回归锁要求整轮为零）——**不许拿别的类补数**。
+
 > **探针参数不许猜**（2026-09-19 实测教训）：第一次云端实测把类型筛选当成 `tab=` 打（真实参数是 `type=`，
 > `tab` 是已读/稍后读状态），三个不同 Tab 返回同一批数据，一度被误判成"筛选仍失效"。
 > 剧本里的每个参数名与取值枚举，必须抄自被检代码（路由白名单那一行），并在剧本文件里注明出处。
 > 判据来自猜测的"失败"不是缺陷证据，是评测工具自身的 bug。
+> **端到端额外两条**（都是首轮 4 类假红换来的，详见 `docs/pitfalls/testing.md` #46~#49）：
+> ① 对账数据必须取**页面自己发出的那次请求**（`page.on('response')` 拦截），剧本另发探针会绕过前端缓存与
+>    参数构造逻辑，测到的是"接口自己"而不是"这个页面"；未登记出处的路径一旦带参数，过程层 F7 直接判红。
+> ② **响应形状也是实测项**：`/api/daily` 是 `report.sections[].column`、`/api/weekly` 是 `report.issue`、
+>    `/api/reading` 是 `{items,counts}`——按直觉写成 `sections`/`items` 顶层键，会得到一整套"接口没数据"的假红。
 
 ### 3.4 结果四分类与 flaky
 
@@ -245,7 +266,7 @@ npm run eval:content -- --judge --align <人工分.json> # 真评（花 AI 配�
 
 ## 9. 产物与门禁
 
-- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，41-2 已交付：默认线上 + 每剧本连跑 3 次）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。
