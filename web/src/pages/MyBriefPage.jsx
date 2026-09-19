@@ -313,7 +313,7 @@ function RestRow({ item, onOpen }) {
       {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}
       {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>{item.reason}</span>}
       {/* 来源名不设界会把标题列挤到 0 宽（同 B85 的 CompactRow 根因，字段同源）：自己截断 */}
-      <span className="flex-none max-w-[15rem] truncate text-[11px] t-muted" title={item.source || ''}>{item.source}</span>
+      <span className="min-w-0 max-w-[15rem] truncate text-[11px] t-muted" title={item.source || ''}>{item.source}</span>
     </div>
   );
 }

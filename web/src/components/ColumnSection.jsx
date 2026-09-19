@@ -251,15 +251,17 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
           </span>
         )}
       </span>
-      {/* 18-daily-ai-v2：AI 推荐理由（窄屏隐藏） */}
+      {/* 18-daily-ai-v2：AI 推荐理由（窄屏隐藏）。可收缩（min-w-0，不是 flex-none）：
+          不可收缩兄弟的基准宽之和一旦顶过行宽，被裁掉的是行尾（800px 实测 6/37 行溢出），
+          让"锦上添花"的列先收缩才能保住主列下限又不裁内容。 */}
       {item.reason ? (
-        <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>
+        <span className="min-w-0 hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>
           {item.reason}
         </span>
       ) : null}
       {/* 2026-09-05 视觉精修：星级评分 + 标签胶囊（窄屏隐藏，无字段时不渲染） */}
       <Stars score={item.score} size={11} showNum={false} className="flex-none hidden sm:inline-flex" />
-      <TagPills tags={item.tags} max={3} className="flex-none hidden lg:flex flex-nowrap max-w-[26%] overflow-hidden" />
+      <TagPills tags={item.tags} max={3} className="min-w-0 hidden lg:flex flex-nowrap max-w-[26%] overflow-hidden" />
       {Array.isArray(item.related) && item.related.length > 0 && (
         <span
           className="flex-none badge-green"
@@ -270,7 +272,7 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
       )}
       {/* 来源名长度无上限（线上实测到 620px 的 SEO 拼接名），必须自己截断：
           原先整串 whitespace-nowrap 且不设界，直接把标题列挤没（B85）。时间单独一段，永不参与截断。 */}
-      <span className="flex-none hidden sm:inline-flex items-center gap-1 text-[11px] t-muted max-w-[15rem]">
+      <span className="min-w-0 hidden sm:inline-flex items-center gap-1 text-[11px] t-muted max-w-[15rem]">
         {item.source_name ? (
           <span className="truncate min-w-0" title={item.source_name}>{item.source_name}</span>
         ) : null}

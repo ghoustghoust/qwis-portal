@@ -88,6 +88,14 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`），runner 与云端读层共用——
     **任何一端都不许重写这条规则**。周刊不足 4 条一律不发布（宁缺毋滥，不得用空/降级产物覆盖上一期）。
 
+13. **早报「视频与播客」栏有**三份**实现，字段必须一起改（B84，2026-09-19）**：
+    `api/[...slug].js`（云端日报）、`tools/collect-turso.js` 日报批、同文件 mybrief 批各写一份
+    `mediaItems`，形状由 `lib/media.js` 的口径决定（播客：`audio_url=cover`、`cover=null`）。
+    显示层的兜底头像走 `source_avatar`（`s.avatar`）——**加/改这一栏的字段必须三处同步**，
+    漏一处的表现是"某些天有图标某些天没有"，看不出是没同步。
+    对账锁：`tests/regression-20260919i.test.js` I3（扫这两份文件里每一条 `mediaItems.push`，
+    少字段即红；push 总数对不上会判"新增了副本没同步锁"）。
+
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
    dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份

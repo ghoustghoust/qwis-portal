@@ -568,6 +568,22 @@ const SCENARIOS = [
       assert(c, 'render', '日报行高受限（B85 曾有行撑到 594px）', rowGeo.length > 0 && maxH <= 160, c.metrics.dailyRowGeo);
       assert(c, 'render', '标题列宽度有下限（B85 根因＝标题列被挤到 0 宽）',
         withTitle.length > 0 && minW >= 100, `${c.metrics.dailyRowGeo} 带标题行=${withTitle.length}`);
+      // 断点扫一遍：裁切只在特定宽度出现（800px 实测过 6/37 行 scrollWidth 超出行宽 75px），
+      // 单视口跑不出来 —— 只在大屏判"没撑高"会把"行尾被 overflow-hidden 剪掉"当成修好了。
+      const sweep = [];
+      for (const w of [800, 1024]) {
+        await page.setViewportSize({ width: w, height: 800 });
+        await page.waitForTimeout(400);
+        const g = await page.$$eval('div.card.card-lift.divide-y > div', (els) => els.map((e) => ({
+          ov: e.scrollWidth - e.clientWidth, h: Math.round(e.getBoundingClientRect().height),
+        }))).catch(() => []);
+        const line = `${w}px 溢出 ${g.filter((x) => x.ov > 1).length}/${g.length} 最长 ${g.length ? Math.max(...g.map((x) => x.h)) : 0}px`;
+        sweep.push(line);
+        assert(c, 'render', `${w}px 档：行尾不被裁切且行高受限`,
+          g.length > 0 && g.every((x) => x.ov <= 1 && x.h <= 160), line);
+      }
+      await page.setViewportSize({ ...VIEWPORT });
+      c.metrics.rowSweep = sweep.join(' ; ');
     },
   },
   {

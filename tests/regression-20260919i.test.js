@@ -104,3 +104,19 @@ test('I6 B72：评测接线同步——E10 从 known_gap 回到门禁位，剧�
   assert.ok(!/E10/.test(gaps[0]), `B72 已修，E10 仍挂在 KNOWN_GAPS 上不进门禁：${gaps[0]}`);
   assert.ok(/notfound/.test(src), 'E10 没有用 404 锚点做判据（还在只判"页面有没有阅读器文案"）');
 });
+
+test('I7 B85 追加：设了上界的列必须同时可收缩，否则行尾会被裁（800px 实测 6/37 行溢出）', () => {
+  const file = read('web', 'src', 'components', 'ColumnSection.jsx');
+  const row = bodyOf(file, 'function CompactRow');
+  assert.ok(row, '找不到 CompactRow');
+  // 「有 max-w 上界」只保证不撑爆主列；不可收缩（flex-none）时溢出会落到行尾被 overflow-hidden 剪掉。
+  const bounded = [...row.matchAll(/className="([^"]*max-w-[^"]*)"/g)].map((m) => m[1]);
+  assert.ok(bounded.length >= 3, `带宽度上界的列只有 ${bounded.length} 个（理由/标签/来源），判据对象不对`);
+  const stiff = bounded.filter((c) => /flex-none/.test(c) && !/min-w-0/.test(c));
+  assert.ok(stiff.length === 0, `这些列设了上界却不可收缩，窄档会裁掉行尾：${JSON.stringify(stiff).slice(0, 200)}`);
+  // 判据必须存在于端到端：只看单一视口抓不到"只在 800px 裁切"这一类
+  const e2e = read('tools', 'eval-e2e.cjs');
+  const a0 = e2e.indexOf("id: 'E3'"); const a1 = e2e.indexOf("id: 'E4'");
+  assert.ok(a0 > 0 && a1 > a0, 'E3 剧本段定位失败');
+  assert.ok(/setViewportSize/.test(e2e.slice(a0, a1)), 'E3 没有做多视口扫描（单视口跑不出断点级裁切）');
+});
