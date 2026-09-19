@@ -1121,13 +1121,15 @@ async function runDailyAi() {
   // 坐进最显眼的「重点更新」栏（该栏只看"源"有没有被标 spotlight，完全不看分），score=22 的
   // 志愿者招募提醒进「培训课程发布」头条位。门槛放在 L5 加权之后，保证"用户看到的星数"
   // 就是"被判定过的那个分"，不会出现加权前 31→加权后 26 还留在报里的错位。
+  let gateDropped = 0; // 与其它四份写入器同一口径：stats.gateDropped = 门槛剔掉的条数
   try {
     const guards = require('../lib/brief-guards');
     const aiCfg = await getSetting('ai', {});
-    const { kept } = guards.applyDailyQualityGate(analyzed, aiCfg?.dailyMinScore, log);
+    const g = guards.applyDailyQualityGate(analyzed, aiCfg?.dailyMinScore, log);
+    gateDropped = g.dropped;
     analyzed.length = 0;
-    analyzed.push(...kept);
-  } catch (e) { log(`分析后门槛失败（不阻断）: ${e.message}`); }
+    analyzed.push(...g.kept);
+  } catch (e) { log(`分析后门槛失败（不阻断出报，但本期等于无门槛）: ${e.message}`); }
 
   // L5b 低曝光保护位：近 14 天从未入报且六维 ≥75 的源，保底 2 个名额（防小众行业级内容被淹没）
   let protectedItems = [];
@@ -1248,7 +1250,7 @@ async function runDailyAi() {
   } catch { /* 统计失败不阻断 */ }
   const stats = {
     schemaVersion: 2, theme, degraded: false, themes,
-    candidates: valid.length, articles: valid.length, videos: windowVideos,
+    candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
     sections: sections.length, totalItems: allItems.length,
     elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,

@@ -282,6 +282,8 @@ test('I14 坑 #60 / B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「
   // 迁移期污染（与 B15 同族）：库里 1 行 last_fetched_at 是字符串 'null'。文本序 'null' > '2026-…'
   // → 裸 MAX() 取到它，读层归一化后又变 null，于是后台「RSS 最后同步」自上线起恒显示"从未同步"（线上实测）。
   // 判据是行为不是字面量：种一个真时间戳 + 一个 'null'，端点必须回那个真时间戳。
+  // 本锁的 F2P 只能手动回拨基线取 `6665087`（修复与锁落在了相邻两个提交，--auto-base 会误判"锁是假的"）——
+  // 流程教训见坑 #61：**锁必须与它保护的修复同批提交**。
   const { execFileSync } = require('child_process');
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'i14-b93-'));
   const driver = path.join(ROOT, `.i14-driver-${process.pid}.cjs`);

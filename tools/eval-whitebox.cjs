@@ -297,10 +297,12 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   const { findDailyReportWriters } = require('../lib/daily-writers');
   const writers = findDailyReportWriters(ROOT);
   const ungated = writers.filter((w) => !w.ok);
+  // 下限的"5"只在这里出现一次；写入点清单的**语义**（哪五份、各由谁触发）唯一写死处是
+  // docs/CLOUD_PIPELINE_GUIDE.md §不变量 12，本判据只负责"每一处有没有真接上"，不复述清单。
   ok('W14', writers.length >= 5 && ungated.length === 0,
-    `daily_reports 写入点 ${writers.length} 处（清单：${writers.map((w) => `${w.fn}@${w.f || w.file}`).join(' / ')}）；` +
+    `daily_reports 写入点 ${writers.length} 处（${writers.map((w) => `${w.fn}@${w.file}`).join(' / ')}）；` +
     `未接门槛：${JSON.stringify(ungated.map((w) => `${w.fn}@${w.file}`))}。` +
-    '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现见 lib/daily-writers.js；漏一处 = 那一处照旧把低质内容塞进早报）');
+    '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现 lib/daily-writers.js；写入点语义见 CLOUD_PIPELINE_GUIDE §12）');
 }
 
 // ── W15 取"最后同步时间"的 MAX(时间列) 必须排掉字面串 'null'（B93，2026-09-19 第三次同类污染） ──
