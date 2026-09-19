@@ -38,12 +38,12 @@
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
 | **39-1** | **小 spec 已出：`39-1-ai-config-write-guard.md`**。`ai.minIntervalMs` 复位 4000 并加下限保护（<1000 视为误配，三端同一实现）；**AI 配置写入口径已裁决（2026-09-19，用户选「保留可写」）**：`PUT /api/ai/config` 保留，但每次写必须 ①审计（旧值指纹→新值指纹，不落明文）②变更告警 ③写后轻量连通探测失败即回滚；`/api/settings` 的 `ai` 键 400 拦截保留（**但文案要改**：现在还在指"去改 Vercel 环境变量"，与裁决相反 → B68） | 事故预防 | S，**写生产配置延后到 41 就位**（BL7/BL8 同批） |
-| 39-2 | 死代码清除：4 开关 / 操作流程 4 折叠 / 「x/4 已启用」/ `llmChat()` / `slice(0,20)` / 「Agencs→Agnes」（含 `DEVELOPMENT_STANDARDS.md:176`） | 清理 | S |
-| 39-3 | 提供商与模型：`GET /api/ai/models`（服务端持 key 代理、脱敏、超时、按 base 归一，不支持则回退手输）；provider 预设 + 各家控制台链接与"三处同步"提示；`/api/ai/ping` 返回 `elapsedMs` 并降级为轻量探活（不占生成配额） | 新能力 | M |
-| 39-4 | AI 运行台：`GET /api/ai/stats`（24h 次数/均耗时/失败分类/配额），前端面板 + 与 37 域事件打通 | 新页面 | M |
-| 39-5 | 真实控制点入后台：阈值/预算/精翻轮次/术语库 CRUD/prompt 编辑（版本与 A/B）——每项都要"写进去且链路真读"，配回归锁 | 能力补齐 | L |
-| 39-6 | 翻译管线视图：云端补齐 `/api/ai/translate/*` 或改为"翻译队列 + 术语生长 + 保护窗"只读视图；prompt 键名统一 `prompt.translate`；`autoTranslate` 死键清理 | 重构 | M |
-| 39-7 | 非 AI 功能正名：摘要/分类/事件关联从"AI 开关"里摘出，归入各自功能域（早报/热点榜） | 语义修正 | S |
+| 39-2 | 死代码清除：4 开关 / 操作流程 4 折叠 / 「x/4 已启用」/ `llmChat()` / `slice(0,20)` / 「Agencs→Agnes」 | 清理 | ✅ **主体已交付并逐项 grep 复核**（`features`/`已启用`/`llmChat`/`slice(0,20)` 在代码里全部 0 命中；`settings.ai` 实读只有 `enabled,apiKey,apiBase,model`）。小 spec 已出：`39-2-dead-code-audit.md`（含残余：「操作流程 4 折叠」未复核到对象，不许写成已完成；B110 的递归掩码规范待落） |
+| 39-3 | 提供商与模型：`GET /api/ai/models`（服务端持 key 代理、脱敏、超时、按 base 归一，不支持则回退手输）；provider 预设 + 各家控制台链接与"三处同步"提示；`/api/ai/ping` 返回 `elapsedMs` 并降级为轻量探活 | 新能力 | ⏸ 小 spec 已出：`39-3-models-and-ping.md`。实测起点：`/api/ai/ping` **已存在**（`api/[...slug].js:1490`、路由 `:2846`、前端 `AiSettingsTab.jsx:72`）但**不返回耗时**（`elapsedMs` 全仓 0 命中）；`/api/ai/models` **不存在** |
+| 39-4 | AI 运行台：`GET /api/ai/stats`（24h 次数/均耗时/失败分类/配额），前端面板 + 与 37 域事件打通 | 新页面 | ⏸ 小 spec 已出：`39-4-ai-run-console.md`。实测：数据早在写（`settings['ai.stats']` 59KB，滚动 500 条，字段 `at,kind,ok,ms,provider`），**近 7 天 500 条里失败 131 条**，其中 129 次是同一个「推理模型只吐 reasoning 无正文」（坑 #26 / B19 / W6 同根，**属常态不是偶发**）；但**无任何端点暴露**。**同时订正 B46 的旧数字「261 条失败」→ 可复现口径是 131/500** |
+| 39-5 | 真实控制点入后台：阈值/预算/精翻轮次/术语库 CRUD/prompt 编辑——每项都要"写进去且链路真读" | 能力补齐 | ⏸ 小 spec 已出：`39-5-real-control-points.md`（含"什么叫真实控制点"的四条判据 + 三个实测样本：`ai.minIntervalMs` 线上存 **0**（默认 4000 被显式覆盖，唯一读点 `api/_ai.js:141`）= BL8 精确化；`ai.glossary` 92,961 字节无管理界面；`ai.prompt.*` 只有本地读） |
+| 39-6 | 翻译管线视图：prompt 收单实现、键名统一 | 重构 | ⏸ 小 spec 已出：`39-6-translate-prompt-single-source.md`。**本轮新查**：翻译提示词有 **3~4 份来源**（本地 `getSetting('ai.prompt.translate')` / 云端 `renderTranslatePrompt`+`prompts/translate.md`+内嵌兜底 / runner `collect-turso.js:1618` 常量），runner 明明能用同一套 `loadPrompt`（`:1709` 就这么读了）。⚠️ **撤销原计划里"autoTranslate 死键清理"**——实测它活着（`translate-skill.js:164/184` 读、`TranslateSkillTab.jsx:83-85` 写），删了就是砸功能 |
+| 39-7 | 非 AI 功能正名：摘要/分类/事件关联从"AI 开关"里摘出 | 语义修正 | ⏸ 小 spec 已出：`39-7-non-ai-feature-rename.md`。核心缺口是**`ai.enabled=false` 的降级语义从未定义**（关了以后摘要是照跑、走规则版、还是全停？现在只能靠"代码恰好怎么写"回答）→ 本包交付一张降级矩阵 + 每格一条行为锁 |
 
 ## 边界
 

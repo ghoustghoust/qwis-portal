@@ -1,6 +1,6 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
-> 最后更新：2026-09-18（代理端口统一 12000）
+> 最后更新：2026-09-19（夜·B101 实测加注：`cleanup` job 从未被自动触发，手动 dispatch 也选不到该 mode；09-18 代理端口统一 12000）
 > 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南；已与当前代码核对一致，2026-09-11 复核）。
 > 架构与凭据位置看根目录 `ARCHITECTURE.md`；修复历史看 `archive/docs-deprecated/A_CLASS_FIX_REPORT.md`；历史文档在 `archive/`。
 
@@ -96,6 +96,10 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 # 周刊：周五 18:03             node tools/collect-turso.js weekly
 #                          node tools/generate-snapshots.js（push 回仓库）
 # 清理：04:13                 node tools/collect-turso.js cleanup
+#   ⚠️ 实测（2026-09-19 夜，B101）：**这个 job 从来没被自动跑过**——它的 if 只认 `github.event.schedule == '13 20 * * *'`，
+#   而主力触发是 cron-job.org 的 workflow_dispatch（mode 选项里没有 cleanup）→ 每个 dispatch 批次它都是 skipped。
+#   现在去 GitHub → Actions → Run workflow 也**选不到 cleanup**，要清只能手动跑上面这条命令（需 TURSO_* 环境变量）。
+#   判"到底跑没跑"的硬证据：`settings['cloud.collect'].history[].mode` 里有没有 cleanup（本轮实读 168 轮 = 0 次）。
 # （cron 表达式以 .github/workflows/collect.yml 为唯一事实源，本段只标北京时刻）
 
 # 手动触发：GitHub → Actions → collect → Run workflow → 选 mode

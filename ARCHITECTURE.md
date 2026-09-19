@@ -1,7 +1,7 @@
 # 全网情报系统 · 架构文档
 
 > 所有 Agent 的共用上下文。改架构/流程/凭据位置时必须同步更新本文档。文档自身的清洁规则见 `docs/DOC_GOVERNANCE.md`。
-> 最后更新:2026-09-18(文档清洁轮：调度改指针、pitfalls 索引补 #D2、日期订正;方案A 采集移入 GH runner 直写 Turso 见 2026-09-11)
+> 最后更新:2026-09-19(夜·只读复核轮：图下加注「清理 04:13 当前从未触发」的实测依据与心跳判据,见 B101;09-18 文档清洁轮：调度改指针、pitfalls 索引补 #D2、日期订正;方案A 采集移入 GH runner 直写 Turso 见 2026-09-11)
 
 ## 0. 部署方向决策(2026-09-11 方案A)
 
@@ -38,6 +38,8 @@
 ```
 
 **Vercel 为读层主部署,采集主链路在 GH Actions runner(方案A,2026-09-11),本地为开发/灾备**。`api/` 目录是读 API 正式代码;采集/日报/清理由 `.github/workflows/collect.yml` 驱动 `tools/collect-turso.js` 直写 Turso(根治 Hobby 10s→单次 2 源死局,详见 docs/changes/2026-09-11-runner-direct-collect.md)。本地 Express 保留完整功能(含抖音 Playwright),用于开发和全功能灾备,未来宝塔/自有服务器全量部署时抖音功能在服务器运行。portal 历史:原 portal/ 独立仓库已合并进根项目 api/,冻结态已解除;Vercel 老项目 qwis-portal 已于 2026-09-11 删除下架。双端共享语义但独立实现,改一边要检查另一边。
+
+> ⚠️ **图里"清理 04:13"是设计时刻,不是实际状态**（2026-09-19 夜实测,见 `docs/ISSUES.md` B101）：`cleanup` job 唯一的触发条件是 `if: github.event.schedule == '13 20 * * *'`,而实际主力触发器 cron-job.org 走的是 `workflow_dispatch`,其 `mode` 选项里**根本没有 cleanup** → dispatch 永远跑不到它；216 条 scheduled run 里没有一条落在 20:13 前后;生产心跳近 168 轮（≈23h）里 `cleanup` 出现 **0 次**。反向证据:拿那两条 DELETE 的原样谓词做 COUNT,线上现有 **10,733 条**（保留清理 8,616 + 热榜 2,117）满足删除条件却仍在库里 → **保留清理自引入起基本没执行过**。改这张图之前请先读 B101 与 `docs/specs/43-collect-retention-safety/spec.md`（是否要恢复每日删除属产品决策 D4,不是bug修复）。
 
 ## 2. 仓库与目录
 

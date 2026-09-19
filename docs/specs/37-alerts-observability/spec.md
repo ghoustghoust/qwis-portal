@@ -29,12 +29,12 @@
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
 | **37-1** | **P0 止血**：从本地恢复真渠道（`tools/sync-alerts-config.js --force`）；把 `regression-cloud-alerts.test.js` 改为隔离 settings 快照/还原并断言恢复；给 `PUT /api/settings/alerts` 加"测试指纹禁止写入"守卫 | 事故修复 | S，需授权写生产 |
-| 37-2 | 事件模型统一：三端事件表（本地多 `source_slow`）对齐为一份 `lib/alert-events.js`（拟建，本 spec 交付后存在）；`eventMeta` 落库并驱动 UI（前端不再硬编码） | 三端收敛 | M | <!-- doc-lint:ignore -->
-| 37-3 | 结构化 payload：`{event, sourceId?, runId?, mode, errKind, errParam, codeRef, suggestion, selfHealState}`；`audit_log` 换成独立 `alert_events` 表（50 条上限的 `recentLog` 只作缓存） | 数据模型 | M |
-| 37-4 | 覆盖面扩展：翻译缺失/摘要缺失/深析失败/早报周刊我的早报降级/AI 配额与限速（读 `ai.stats`）/渠道投递失败，各出一个检测点 + 事件 | 能力补齐 | L |
-| 37-5 | CI 可观测：runner 内用默认 `GITHUB_TOKEN` 抓本仓 `actions/runs`+jobs 摘要，发 `ci_failed`（含 job 名、run 链接、失败步骤、日志尾 200 行）；Vercel 侧只读展示 | 新对接 | M |
-| 37-6 | 报警台 UI：时间线 + 按事件/源筛选 + 一键跳自愈记录 + 静默管理（当前 silence 只有 sourceId 维度） | 前端 | M |
-| 37-7 | 监控面板纠偏：①任务队列面板——本 spec 原意是**下线**（数字无真值），09-19 已先修数据形状（B47：`MonitorTab` 改读 `queueStats.overall`，线上真值 pending=177 此前显示 0）。**留一个待拍板**：修好后是保留（现在显示的是 runner 队列真实积压）还是仍按原计划下线换成 `settings.cloud.collect` 心跳；②健康概览改为后台首页可点击跳转（用户批注⑯⑰）——**前置是 B26**：`/api/status` 冷启动 30.7s→504、热态 0.66s 双峰，不先拆冷路径则跳过去也是白屏；③`AlertsTab.jsx:591` JSX 转义字面串修复（B48，已完成） | 小刺打包 + 两项待决策 | S |
+| 37-2 | 事件模型统一：**事件表实际是两份代码 + 两份落库 + 两处前端/响应硬写**（键集互不相同，详见小 spec 现状表）；收成 `lib/alert-events.js`（拟建）一份 | 三端收敛 | M ⏸ 小 spec 已出：`37-2-alert-event-model-unify.md`。**根因比 §背景 #2 更硬**：`api/[...slug].js:1575-1577` 的 `eventMeta` 是**字面量硬写**、压根不读 `cfg.eventMeta` → 落不落库都看不到真值；另本地 settings 残留 `wemp_down/wemp_cookie_expired` 两个**代码里已删除**的幽灵键（B109） | <!-- doc-lint:ignore -->
+| 37-3 | 结构化 payload + `alert_events` 表（现 `recentLog` 只 50 条、无源 id/参数/代码位置/建议/自愈状态） | 数据模型 | M ⏸ 小 spec 已出：`37-3-structured-alert-payload.md`（实测：`alert_events` 在两端 DDL 里**不存在**；线上 `recentLog=50` 条，最后一条 `2026-09-19T22:20:31` `frozen_digest` 186 源熔断 `ok:false fetch failed`） |
+| 37-4 | 覆盖面扩展：翻译/摘要**缺失型**、周刊截断、我的早报降级、AI 配额、渠道投递失败 | 能力补齐 | L ⏸ 小 spec 已出：`37-4-coverage-heartbeats.md`（实测哑点清单：`/api/ai/stats` 全仓 0 命中；B17 的初筛截断每天都在发生但只进日志；BL7 型"报警发不出去"目前没有报警） |
+| 37-5 | CI 可观测：`ci_failed` + **`scheduler_gap`（最近 24h 每种期望 mode 是否都出现过）** | 新对接 | M ⏸ 小 spec 已出：`37-5-ci-observability.md`（实测：全仓无 `actions/runs`/`GITHUB_TOKEN` 调用；216 条 scheduled run 无 20:13 那条 = B101，正是 `scheduler_gap` 该自动抓到的形态） |
+| 37-6 | 报警台**数据契约**（过滤分页、静默加维度且必须带过期、自愈联动字段）；界面归 38-G | 前端/契约 | M ⏸ 小 spec 已出：`37-6-alerts-console-data.md` |
+| 37-7 | 监控面板纠偏打包：①队列面板 B47 已修（`MonitorTab.jsx:51` 读 `queueStats.overall`）→ **保留还是下线待拍板**；②健康概览跳转**前置 B26 未解**；③B48 已完成；④新增"启用/全量源数"口径提示 | 小刺打包 + 三项待决策 | S ⏸ 小 spec 已出：`37-7-monitor-panel-fixes.md` |
 
 ## 边界
 
