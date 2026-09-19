@@ -12,8 +12,8 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const PROXY = process.env.EVAL_PROXY || 'http://127.0.0.1:12000';
-const SITE = require('../lib/cloud-site').CLOUD_SITE;
+// 基址与出网代理都由 lib/cloud-site.js 单份持有（AGENTS §2.5；代理端口见 §2.2）
+const { CLOUD_PROXY: PROXY, CLOUD_SITE: SITE, cloudFetch } = require('../lib/cloud-site');
 const asJson = process.argv.includes('--json');
 const results = [];
 const add = (name, ok, kind, detail) => { results.push({ name, ok, kind, detail }); return ok; };
@@ -29,14 +29,12 @@ function loadEnv() {
 }
 const sh = (cmd) => execSync(cmd, { cwd: ROOT, encoding: 'utf8' }).trim();
 async function probe(url, ms = 8000) {
-  const { ProxyAgent, fetch: uFetch } = require('undici');
-  const r = await uFetch(url, { dispatcher: new ProxyAgent(PROXY), signal: AbortSignal.timeout(ms), redirect: 'manual' });
+  const r = await cloudFetch(url, { signal: AbortSignal.timeout(ms), redirect: 'manual' });
   return r.status;
 }
-// 坑：undici 的 ProxyAgent 必须配 undici 自己的 fetch；用全局 fetch 会静默忽略 dispatcher 而 fetch failed
+// 代理与 undici fetch 的配对统一在 lib/cloud-site#cloudFetch（坑：ProxyAgent 配全局 fetch 会被静默忽略）
 async function probeJson(url, ms = 8000) {
-  const { ProxyAgent, fetch: uFetch } = require('undici');
-  const r = await uFetch(url, { dispatcher: new ProxyAgent(PROXY), signal: AbortSignal.timeout(ms), redirect: 'manual' });
+  const r = await cloudFetch(url, { signal: AbortSignal.timeout(ms), redirect: 'manual' });
   return { status: r.status, body: await r.json().catch(() => null) };
 }
 

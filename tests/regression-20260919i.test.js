@@ -200,3 +200,28 @@ test('I7 B85 追加：设了上界的列必须同时可收缩，否则行尾会�
   assert.ok(a0 > 0 && a1 > a0, 'E3 剧本段定位失败');
   assert.ok(/setViewportSize/.test(e2e.slice(a0, a1)), 'E3 没有做多视口扫描（单视口跑不出断点级裁切）');
 });
+
+test('I12 坑 #56 同源面：巡检必须走统一代理出口，并把"拿不到响应"判成环境红', () => {
+  const site = read('lib', 'cloud-site.js');
+  assert.ok(/CLOUD_PROXY/.test(site) && /function cloudFetch/.test(site), 'lib/cloud-site.js 没同时管基址与代理出口');
+  assert.ok(/ProxyAgent/.test(site) && /fetch: uFetch/.test(site),
+    'cloudFetch 必须用 undici 自己的 fetch 配 ProxyAgent——全局 fetch 会静默忽略 dispatcher（本轮 19/19 fetch failed 的成因）');
+
+  const audit = read('tools', 'audit-cloud.js');
+  const at = audit.indexOf('async function probe(');
+  assert.ok(at > 0, '找不到 probe 函数');
+  const body = audit.slice(at, audit.indexOf('\n}', at));
+  assert.ok(/cloudFetch\(/.test(body), '巡检仍用全局 fetch → 代理被忽略，整支脚本会"看起来像云端全挂"');
+  assert.ok(!/await fetch\(/.test(body), 'probe 里还留着裸 fetch 调用');
+  // B26 的两条长期观测位：轻投影 + 按需重统计，缺一侧就漏判一种回退
+  assert.ok(audit.includes("'/api/status'") && audit.includes("'/api/status/daily-sources'"),
+    '巡检未覆盖 B26 的两端（只验一侧会漏掉另一种回退形态）');
+
+  // 环境红判据是行为，不是字面量（同 B65 的教训：只 grep 源码 = 等价重构假红、字面量在而逻辑坏假绿）
+  const { tally, isEnvOutage } = require('../tools/audit-cloud.js');
+  const rows = (st) => st.map((s) => ({ pass: false, skip: '', status: s }));
+  assert.equal(isEnvOutage(tally(rows([0, 0, 0])), rows([0, 0, 0])), true, '全是"没拿到响应"应判环境红');
+  assert.equal(isEnvOutage(tally(rows([0, 401, 0])), rows([0, 401, 0])), false, '有一条真拿到 HTTP 响应就不是环境红');
+  assert.equal(isEnvOutage(tally(rows([200]).concat([{ pass: true, skip: '', status: 200 }])),
+    rows([200]).concat([{ pass: true, skip: '', status: 200 }])), false, '有通过就不许判环境红');
+});

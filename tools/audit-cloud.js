@@ -1,6 +1,6 @@
 // 云端门户巡检:所有关键端点打一遍,和本地对账
 // 用法: node tools/audit-cloud.js
-const BASE = require('../lib/cloud-site').CLOUD_SITE;
+const { CLOUD_SITE: BASE, cloudFetch } = require('../lib/cloud-site');
 const UA = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0' };
 
 const results = [];
@@ -21,7 +21,9 @@ function verdictToResult(verdict) {
 async function probe(name, url, check, opts = {}) {
   const t0 = Date.now();
   try {
-    const r = await fetch(BASE + url, { headers: UA, signal: AbortSignal.timeout(20000), ...opts });
+    // 必须走 lib/cloud-site#cloudFetch：本机直连 vercel.app 不通，而全局 fetch 会静默忽略
+    // undici 的 ProxyAgent → 症状是"19/19 fetch failed"，被读成云端挂了（实为脚本没走代理）。
+    const r = await cloudFetch(BASE + url, { headers: UA, signal: AbortSignal.timeout(20000), ...opts });
     const ms = Date.now() - t0;
     let body = null;
     try { body = await r.json(); } catch { /* 非 JSON */ }
@@ -39,6 +41,21 @@ async function main() {
   await probe('热点页', '/hot/', (r) => r.ok);
   await probe('管理页', '/admin/', (r) => r.ok);
   await probe('meta', '/api/meta', (r, b) => b && b.ok && b.articles > 0 ? true : 'articles 计数异常');
+  // B26：状态面拆成"轻投影 + 按需重统计"两端，两条都要长期盯——
+  // 只验轻的那条会漏掉"拆分后重统计根本取不到"，只验重的会漏掉"首屏又被塞回 heavy 字段"。
+  await probe('状态轻投影', '/api/status', (r, b) => {
+    const o = (b && b.overview) || {};
+    const nums = ['unreadArticles', 'todayNew', 'weekNew', 'enabledSources'];
+    if (!nums.every((k) => typeof o[k] === 'number')) return '轻投影字段缺失或非数字：' + nums.filter((k) => typeof o[k] !== 'number').join(',');
+    if ('dailyItemCount' in o || 'dailyTopSources' in o) return '重统计又回到首屏（B26 拆分被回退）';
+    return true;
+  });
+  await probe('状态重统计(按需)', '/api/status/daily-sources', (r, b) => {
+    if (r.status === 401) return '401：新端点漏进 PUBLIC_GET_PATHS（坑 #56）';
+    const o = (b && b.overview) || {};
+    return typeof o.dailyItemCount === 'number' && Array.isArray(o.dailyTopSources)
+      ? true : 'dailyItemCount/dailyTopSources 形状不对';
+  });
   await probe('文章列表', '/api/articles', (r, b) => b && b.ok && b.items && b.items.length > 0 ? true : 'items 为空');
   // 云端 /api/articles 从来没有 dedup 语义（`api/[...slug].js` 里只有日报内部 dailyDedup 与
   // POST /api/sources/dedupe，列表处理器不读该参数），原先断言的 `deduped` 字段是一个不存在的契约。
@@ -67,8 +84,22 @@ async function main() {
     console.log(`${mark} ${r.name.padEnd(14)} ${String(r.status).padEnd(4)} ${r.ms}ms ${r.note || r.skip}`);
   }
   console.log(`\n通过 ${t.pass}、失败 ${t.fail}、未验收 ${t.skip}（共 ${t.total}）`);
+  // 全部探针都拿不到 HTTP 响应（status=0）＝出网/代理问题，不是云端问题。
+  // 不分开的话"代理没开"会被读成"云端 21 项全挂"——B26 本轮实测就差点这么误判（19/19 fetch failed）。
+  if (isEnvOutage(t, results)) {
+    console.log('⚠ 环境红：一条 HTTP 响应都没拿到（status 全 0），这是出网/代理故障，不是云端故障。');
+    console.log(`  代理取值来自 lib/cloud-site#CLOUD_PROXY（当前 ${require('../lib/cloud-site').CLOUD_PROXY || '直连'}）；本机 Clash 端口见 AGENTS §2.2，或 EVAL_PROXY=none 走直连。`);
+    process.exitCode = 2;
+    return;
+  }
   // 退出码诚实：有失败=1；一条都没真验（全 SKIP / 空结果）=2（未评测），只有真有通过才 0
   process.exitCode = exitCodeOf(t);
+}
+// 环境红判据：非 SKIP 的条目全失败，且失败原因全是"没拿到响应"（status 0）
+function isEnvOutage(t, rows) {
+  const real = (rows || []).filter((r) => !r.skip);
+  if (!real.length || real.length !== t.fail) return false;
+  return real.every((r) => Number(r.status) === 0);
 }
 // 计数与退出码单独成函数：B65-3 原来只 grep 源码字面量（等价重构即假红、字面量在而逻辑坏则假绿），
 // 这里把它变成可测行为（对抗性审查 I8：全 SKIP 也不能退 0）
@@ -82,4 +113,4 @@ function exitCodeOf(t) { return t.fail ? 1 : (t.total === 0 || t.skip === t.tota
 // 被 require 时不许自动打云端（本轮在 eval-process-checks 上刚踩过同一形态：模块级副作用会污染测试进程）
 if (require.main === module) main();
 
-module.exports = { verdictToResult, tally, exitCodeOf, BASE };
+module.exports = { verdictToResult, tally, exitCodeOf, isEnvOutage, BASE };
