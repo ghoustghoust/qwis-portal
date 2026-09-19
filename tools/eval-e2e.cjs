@@ -554,6 +554,20 @@ const SCENARIOS = [
       assert(c, 'data', '≥3 个栏目 pill 在页面上带条数（档位分层可见，B39）',
         matched.length >= 3, `可见 ${matched.length}/${secs.length}：${secs.map((s) => `${s.column}=${pills[s.column]}`).join(' , ')}`);
       for (const s of matched) assert(c, 'data', `栏目「${s.column}」pill ↔ API items 数`, pills[s.column] === s.items.length, `DOM=${pills[s.column]} API=${s.items.length}`);
+      // B85 回归（判据来自实测基线，不是拍脑袋）：修前该页最长行 594px——来源名不设界把标题列
+      // 挤到 0 宽，而 0 宽下 line-clamp 不裁剪；修后实测 37 行最长 129px、标题列最小 160px。
+      // 阈值 160 = 129 + 余量，仍远低于"一行占半屏"的故障形态。
+      const rowGeo = await page.$$eval('div.card.card-lift.divide-y > div', (els) => els.map((e) => {
+        const t = e.querySelector('span.line-clamp-2');
+        return { h: Math.round(e.getBoundingClientRect().height), titleW: t ? Math.round(t.getBoundingClientRect().width) : -1 };
+      })).catch(() => []);
+      const maxH = rowGeo.length ? Math.max(...rowGeo.map((r) => r.h)) : 0;
+      const withTitle = rowGeo.filter((r) => r.titleW >= 0);
+      const minW = withTitle.length ? Math.min(...withTitle.map((r) => r.titleW)) : 0;
+      c.metrics.dailyRowGeo = `rows=${rowGeo.length} maxH=${maxH} minTitleW=${minW}`;
+      assert(c, 'render', '日报行高受限（B85 曾有行撑到 594px）', rowGeo.length > 0 && maxH <= 160, c.metrics.dailyRowGeo);
+      assert(c, 'render', '标题列宽度有下限（B85 根因＝标题列被挤到 0 宽）',
+        withTitle.length > 0 && minW >= 100, `${c.metrics.dailyRowGeo} 带标题行=${withTitle.length}`);
     },
   },
   {
@@ -710,6 +724,23 @@ const SCENARIOS = [
       const orphans = orphanCards(dom1, titles);
       assert(c, 'data', '我的早报每张卡都出自产物（无孤儿卡）', titles.length > 0 && orphans.length === 0,
         `产物标题 ${titles.length} 条，孤儿卡 ${orphans.length}/${dom1.length}${orphans.length ? '：' + orphans[0].slice(0, 40) : ''}`);
+      // B84 回归：视频/播客卡左栏必须有真实图形（封面图 / 源头像 / 首字块 / 内联 SVG）。
+      // 修前无封面的播客卡只有一枚 emoji 冒充图标（缺字库时字面"没有图标"），
+      // 且生成端 lib/media.js 早就声明了"由源头像兜底"却没实现——这条钉住契约真的落到 DOM。
+      const apiMedia = (((((mb && mb.json) || {}).report || {}).sections) || {}).media || [];
+      const mediaGeo = await page.$$eval('article.card', (els) => els
+        .filter((a) => [...a.querySelectorAll('span')].some((s) => ['视频', '播客'].includes(s.textContent.trim())))
+        .map((a) => {
+          const col = a.firstElementChild;
+          return { art: !!col && !!col.querySelector('img, svg, .avatar-fallback'), emoji: /[🎧▶]/.test((col && col.textContent) || '') };
+        }), []).catch(() => []);
+      const pageTxt = await bodyText(page);
+      c.metrics.mediaCards = `DOM=${mediaGeo.length} API=${apiMedia.length} art=${mediaGeo.filter((x) => x.art).length} emoji=${mediaGeo.filter((x) => x.emoji).length}`;
+      assert(c, 'render', '视频/播客卡渲染条数 = 产物 media 条数', mediaGeo.length === apiMedia.length, c.metrics.mediaCards);
+      assert(c, 'render', '每张视频/播客卡左栏都有真实图形（B84）',
+        apiMedia.length === 0 || mediaGeo.every((x) => x.art), c.metrics.mediaCards);
+      assert(c, 'render', '整页不再用 emoji 冒充播放/收听图标（B84；此条与数据无关，永远会红）',
+        !/[🎧▶]/.test(pageTxt) && mediaGeo.every((x) => !x.emoji), c.metrics.mediaCards);
       net.length = 0;
       await goto(page, c, target + '/weekly/', 'h1,h2,h3');
       const heads = await page.$$eval('h1,h2,h3', (els) => els.map((e) => e.innerText.trim()).filter(Boolean));
