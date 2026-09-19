@@ -615,17 +615,30 @@ const SCENARIOS = [
       // 探针必须在 goto 之后发：page 还停在 about:blank 时 fetch 直接 status 0（会被误读成"接口挂了"）
       const probe = (type) => api(page, c, '/api/reading?' + new URLSearchParams({ tab: 'all', type }),
         { tab: { value: 'all', source: SRC.readingTab }, type: { value: type, source: SRC.readingType } });
-      const all = await probe('all');
-      const art = await probe('article');
-      assert(c, 'api', '/api/reading 两种 type 均 200 且带 counts', [all, art].every((r) => r.status === 200 && r.json && r.json.counts),
-        JSON.stringify((all.json || {}).counts || {}).slice(0, 120));
+      let all = await probe('all');
+      let art = await probe('article');
+      const countsOf = (r) => (r && r.json && r.json.counts) || {};
+      // 冷启动实测：验收轮第 1 轮 type=article 那条**根本没带 counts**（B73/B31 慢接口族），
+      // 而上一版判据是 `Number(undefined) !== Number(25155)` → `NaN !== 数字` 恒真，
+      // 等于把"没拿到数据"判成"口径生效"（坑 #50 的假绿版本）。现在：两侧必须是有限数，
+      // 缺数据时有界重试（最多 90s）并把等待时长记进 metrics——慢是可见事实，不被等待吸收掉。
+      const t0 = Date.now();
+      while ((!Number.isFinite(Number(countsOf(all).all)) || !Number.isFinite(Number(countsOf(art).all))) && Date.now() - t0 < 90000) {
+        await new Promise((rr) => setTimeout(rr, 5000));
+        all = await probe('all'); art = await probe('article');
+      }
+      c.metrics.readingCountsWaitMs = Date.now() - t0;
+      assert(c, 'api', '/api/reading 两种 type 均 200 且 counts.all 是有限数（有界重试后仍缺即红）',
+        [all, art].every((r) => r.status === 200 && Number.isFinite(Number(countsOf(r).all))),
+        `all=${JSON.stringify(countsOf(all)).slice(0, 90)} article=${JSON.stringify(countsOf(art)).slice(0, 90)} 已重试 ${c.metrics.readingCountsWaitMs}ms`);
       const artItems = (art.json || {}).items || [];
       // 不再断言"type=article 与 type=all 的 id 集合必须不同"：云端实测阅读沉淀里视频为 0，
       // 两个 type 的首屏 30 条**本来就可能完全相同**（判据来自猜而不是实测）。口径是否生效由下面的
       // counts 差异 + 计数 pill 对账来判。
-      assert(c, 'api', 'type=article 的 counts.all 与 type=all 不同（口径真的生效）',
-        Number(((art.json || {}).counts || {}).all) !== Number(((all.json || {}).counts || {}).all),
-        `article=${((art.json || {}).counts || {}).all} all=${((all.json || {}).counts || {}).all}`);
+      const cAll = Number(countsOf(all).all); const cArt = Number(countsOf(art).all);
+      assert(c, 'api', 'type=article 的 counts.all 与 type=all 不同，且两侧都是数字（口径真的生效）',
+        Number.isFinite(cAll) && Number.isFinite(cArt) && cArt !== cAll,
+        `article=${cArt} all=${cAll}${Number.isFinite(cArt) && cArt === cAll ? ' ← 相同，说明 type 没进计数口径' : ''}（NaN/缺数一律算红，不再拿"没数据"当"不同"）`);
       // 先等首屏那条 type=all 落地再点（清空 store 之前等，否则 waitQuiet 看不到任何响应会白等满超时）
       const quiet1 = await waitQuiet(net, '/api/reading');
       c.metrics.quietBeforeArticle = quiet1;

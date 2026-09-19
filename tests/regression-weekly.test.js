@@ -1,19 +1,23 @@
 // 20-weekly-picks 回归测试：窗口/归类/加权/上限/归档/API
-const { test, after } = require('node:test');
+// **2026-09-19 起改在本地 libsql 文件库上跑（B83 / 坑 #52）**：
+// 旧版用真凭据连生产 Turso，DELETE + INSERT OR REPLACE 生产 settings 的 weekly.latest /
+// weekly.archive（107KB 的归档数组整键覆盖），再靠 50s 轮询等读层 30s 缓存过期。
+// 这一族的实际代价已经付过一次：中断后 settings 里留下指向已删除 TEST 源的 subscription.ids，
+// 线上「我的早报」整页退化成引导态（B78/B79）。模板同 tests/regression-my-brief.test.js：
+// 每条 API 用例起一个子进程 + file: 本地库，既零生产写入，又天然绕开进程内缓存。
+'use strict';
+const { test, before, after } = require('node:test');
 const assert = require('node:assert');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { execFileSync } = require('child_process');
 
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
-for (const line of envTxt.split(/\r?\n/)) {
-  const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
-  if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
-}
-const handler = require('../api/[...slug].js');
-const { createClient } = require('@libsql/client');
-const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
+const ROOT = path.join(__dirname, '..');
+const DB_FILE = path.join(os.tmpdir(), `weekly-local-${process.pid}.db`).replace(/\\/g, '/');
+const DRIVER = path.join(ROOT, `.weekly-driver-${process.pid}.cjs`);
 
-// 从 collect-turso 借归类函数语义（独立验证，不依赖导出）
+// 从 collect-turso 借归类语义（独立验证，不依赖导出）
 const WEEKLY_THEMES = [
   { key: '行业大变化', kws: ['发布', '上线', '收购', '融资', '政策', '监管'] },
   { key: '重大影响', kws: ['安全', '漏洞', '泄露', '事故', '涨价'] },
@@ -26,15 +30,54 @@ function classify(item) {
   return '其它';
 }
 
-let origWeekly = null;
-let origArchive = null;
+function call(query) {
+  const out = execFileSync(process.execPath, [DRIVER, query || '', DB_FILE],
+    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const line = out.trim().split('\n').filter((l) => l.startsWith('BODY ')).pop();
+  assert.ok(line, `子进程没打印响应体（${query}）：\n${out}`);
+  return JSON.parse(line.slice(5));
+}
 
-after(async () => {
-  if (origWeekly !== null) await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.latest',?)", args: [origWeekly] });
-  else await db.execute("DELETE FROM settings WHERE key='weekly.latest'");
-  if (origArchive !== null) await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.archive',?)", args: [origArchive] });
-  else await db.execute("DELETE FROM settings WHERE key='weekly.archive'");
-  db.close();
+before(() => {
+  fs.writeFileSync(DRIVER, `
+process.env.TURSO_DATABASE_URL = 'file:' + process.argv[3];
+process.env.TURSO_AUTH_TOKEN = '';
+const { createClient } = require('@libsql/client');
+const handler = require(${JSON.stringify(path.join(ROOT, 'api', '[...slug].js'))});
+const ARG = process.argv[2] || '';
+const Q = ARG === 'empty' ? '' : ARG;
+const REPORT = { issue: 2, dateStart: '2026-09-05', dateEnd: '2026-09-12', theme: '测试主题',
+  items: [{ rank: 1, id: 1, title: '甲题' }] };
+const ARCHIVE = [
+  { issue: 1, dateStart: '2026-08-29', dateEnd: '2026-09-05', theme: '上期', count: 1,
+    report: { issue: 1, items: [{ rank: 1, id: 9, title: '旧题' }] } },
+  { issue: 2, dateStart: '2026-09-05', dateEnd: '2026-09-12', theme: '测试主题', count: 1, report: REPORT },
+];
+(async () => {
+  const db = createClient({ url: process.env.TURSO_DATABASE_URL });
+  await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
+  await db.execute('CREATE TABLE IF NOT EXISTS articles(id INTEGER PRIMARY KEY, title TEXT, translated_title TEXT)');
+  await db.execute('CREATE TABLE IF NOT EXISTS sources(id INTEGER PRIMARY KEY, name TEXT, url TEXT, type TEXT, enabled INTEGER DEFAULT 1, spotlight INTEGER DEFAULT 0)');
+  await db.execute({ sql: 'INSERT OR REPLACE INTO articles(id,title,translated_title) VALUES(1,?,?)', args: ['Title A', '甲题'] });
+  await db.execute({ sql: 'INSERT OR REPLACE INTO articles(id,title,translated_title) VALUES(9,?,?)', args: ['Old B', '旧题'] });
+  // 「空态」用例：latest 缺失（不写入）；其余写正常态
+  if (ARG !== 'empty') {
+    await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.latest',?)", args: [JSON.stringify(REPORT)] });
+    await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.archive',?)", args: [JSON.stringify(ARCHIVE)] });
+  }
+  const res = { _status: 200, _body: null };
+  res.setHeader = () => res; res.status = (s) => { res._status = s; return res; };
+  res.json = (b) => { res._body = b; return res; }; res.send = (b) => { res._body = b; return res; }; res.end = () => res;
+  await handler({ method: 'GET', url: '/api/weekly', query: Object.fromEntries(new URLSearchParams(Q.replace(/^empty\\?/, '?'))), headers: {} }, res);
+  console.log('BODY ' + JSON.stringify({ status: res._status, body: res._body }));
+  await db.close();
+})().catch((e) => { console.error('DRIVERERR ' + e.message); process.exitCode = 3; });
+`);
+});
+after(() => {
+  for (const f of [DRIVER, DB_FILE, DB_FILE + '-wal', DB_FILE + '-shm']) {
+    try { fs.rmSync(f, { force: true }); } catch { /* 关不掉就留给系统临时目录 */ }
+  }
 });
 
 test('1. 窗口为前 7 天', () => {
@@ -54,9 +97,7 @@ test('3. impactScore 加权：同总分行业大变化排前', () => {
   const W = { 行业大变化: 1.2, 其它: 0.9 };
   const a = { totalScore: 80, weeklyTheme: '行业大变化' };
   const b = { totalScore: 80, weeklyTheme: '其它' };
-  const ia = a.totalScore * W[a.weeklyTheme];
-  const ib = b.totalScore * W[b.weeklyTheme];
-  assert.ok(ia > ib);
+  assert.ok(a.totalScore * W[a.weeklyTheme] > b.totalScore * W[b.weeklyTheme]);
 });
 
 test('4. top20 硬上限与宁缺', () => {
@@ -66,41 +107,30 @@ test('4. top20 硬上限与宁缺', () => {
   assert.equal(few.slice(0, 20).length, 7);
 });
 
-test('5. API：空态 → 正常 → 归档查询', async () => {
-  const wr = await db.execute("SELECT value FROM settings WHERE key='weekly.latest'");
-  origWeekly = wr.rows[0] ? wr.rows[0].value : null;
-  const ar = await db.execute("SELECT value FROM settings WHERE key='weekly.archive'");
-  origArchive = ar.rows[0] ? ar.rows[0].value : null;
+test('5. API 空态：latest 缺失 → no-content（不是空 report 壳）', () => {
+  const r = call('empty');
+  assert.equal(r.body.empty, 'no-content', JSON.stringify(r.body).slice(0, 160));
+  assert.equal(r.body.report, undefined);
+});
 
-  const call = async (url) => {
-    const res = { _status: 200, _body: null, setHeader() { return res; }, status(s) { res._status = s; return res; }, json(b) { res._body = b; return res; }, send(b) { res._body = b; return res; }, end() { return res; } };
-    const [p, qs] = url.split('?');
-    await handler({ method: 'GET', url: p, query: Object.fromEntries(new URLSearchParams(qs || '')), headers: {} }, res);
-    return { status: res._status, body: res._body };
-  };
-
-  // 空态
-  await db.execute("DELETE FROM settings WHERE key='weekly.latest'");
-  let r = await call('/api/weekly');
-  assert.equal(r.body.empty, 'no-content');
-
-  // 正常 + 归档（settings 缓存 30s，轮询等待）
-  const report = { issue: 2, dateStart: '2026-09-05', dateEnd: '2026-09-12', theme: '测试主题', items: [{ rank: 1, id: 1, title: 't' }] };
-  const archive = [
-    { issue: 1, dateStart: '2026-08-29', dateEnd: '2026-09-05', theme: '上期', count: 1, report: { issue: 1, items: [{ rank: 1, id: 9, title: 'old' }] } },
-    { issue: 2, dateStart: '2026-09-05', dateEnd: '2026-09-12', theme: '测试主题', count: 1, report },
-  ];
-  await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.latest',?)", args: [JSON.stringify(report)] });
-  await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('weekly.archive',?)", args: [JSON.stringify(archive)] });
-  for (let i = 0; i < 10; i++) {
-    await new Promise((res) => setTimeout(res, 5000));
-    r = await call('/api/weekly');
-    if (r.body.report && r.body.report.theme === '测试主题') break;
-  }
-  assert.equal(r.body.report.theme, '测试主题');
+test('6. API 正常态 + 归档列表（issue/count 都在）', () => {
+  const r = call('');
+  assert.equal(r.body.report.theme, '测试主题', JSON.stringify(r.body).slice(0, 160));
   assert.equal(r.body.archive.length, 2);
-  r = await call('/api/weekly?issue=1');
-  assert.equal(r.body.report.issue, 1);
-  r = await call('/api/weekly?issue=99');
-  assert.equal(r.status, 404);
+  assert.equal(r.body.archive[0].issue, 1);
+});
+
+test('7. API 按 issue 查归档，不存在的期号回 404', () => {
+  assert.equal(call('issue=1').body.report.issue, 1);
+  assert.equal(call('issue=99').status, 404);
+});
+
+test('8. 自证：本文件不再碰生产库（B83/坑 #52 的门禁）', () => {
+  const full = fs.readFileSync(path.join(__dirname, 'regression-weekly.test.js'), 'utf8');
+  const cut = full.indexOf("test('8.");
+  assert.ok(cut > 0, '找不到自证条目起点，本条会退化成恒真');
+  const src = full.slice(0, cut);
+  assert.ok(!/['"]\.env['"]/.test(src), '还在读 .env → 又要拿真凭据连生产库了');
+  assert.ok(!/authToken:\s*process\.env/.test(src), 'createClient 带真实 authToken → 会打到生产 Turso');
+  assert.match(src, /TURSO_DATABASE_URL = 'file:'/, '子进程必须被指到本地文件库');
 });
