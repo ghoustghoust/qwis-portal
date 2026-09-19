@@ -56,7 +56,7 @@
 | # | 症状 |
 |---|---|
 | B33 | 源库组合视图无搜索框；四轴编辑入口割裂在 5 处（`reader_visible`/`muted` 只能批量改）；组卡「订阅」无计数、无退订分支、无「仅已订阅」筛选 |
-| B34 | **spotlight 双写冲突**：`DailySettingsTab.jsx:96` → `PUT /api/settings/daily` 全量替换 spotlight，会清掉非 wechat/rss/x/bili/douyin/youtube 类型的重点源 |
+| B34 | **spotlight 双写冲突**：`DailySettingsTab.jsx:96` → `PUT /api/settings/daily` 全量替换 spotlight，会清掉非 wechat/rss/x/bili/douyin/youtube 类型的重点源。**09-19 代码级确认（两端同病）**：云端 `api/[...slug].js:2263` 与本地 `server/routes/daily.js:133` 都是 `UPDATE sources SET spotlight = CASE WHEN id IN (…) THEN 1 ELSE 0 END`，**没有 WHERE 作用域** → 界面只列出候选集内的源（GET 用 `sourceList(DAILY_ARTICLE_TYPES,…)`），保存时却把**候选集之外**（如 wemp 公众号、podcast）的 `spotlight=1` 一律清零，用户无从取消也就无从挽回。另：候选类型表现在有 **5 份副本**（`api/[...slug].js:644`、`:2083`、`api/daily-generate.js:52`、`server/services/ai/daily.js:30`、`server/routes/opml.js:26`/`status.js:21` 的内联字面量），而 `lib/reading-filters.js` 的文章类含 `wemp`——同一概念两种答案。**09-19 线上实测暴露面**：`spotlight=1` 共 59 个（rss 37 / x 18 / youtube 3 / bilibili 1），**候选集之外当前是 0 个** → 这条今天是**潜伏**的，不是正在丢数据；触发条件是"在源库给 wemp/播客类源标了重点 → 再去日报设置点保存 → 那批被静默清零"。**修法（待批准，属 38-C C2 + 38-D D3）**：新建候选集唯一实现（`lib/` 一份），全量替换的 UPDATE 必须 `WHERE type IN (候选集)`，即"替换作用域 = 界面呈现集合"；两端同步改并配隔离库行为锁（局外源的 spotlight 必须存活）|
 | B35 | 后台 header 内层 `max-w-[1100px]` 与内容区 1160/960 两套容器 → 左缘永久错位 54~70px（用户"看着别扭"的定量根因） |
 | B36 | 全后台无 sticky/浮动保存条；保存语义三种并存（即时写 / 底部统一 / 分散多按钮）；无 dirty 未保存提示 |
 | B37 | 调频与 failover 用 `window.prompt`/`confirm`；Tab 态纯 `useState` 无 URL 深链，刷新回源库 |
