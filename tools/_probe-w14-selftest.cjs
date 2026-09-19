@@ -51,15 +51,61 @@ for (const kind of ['cut', 'discard', 'commented']) {
     const orig = originals.get(w.file);
     let next;
     try { next = mutate(orig, w.fn, kind); } catch (e) { console.log(`  ${kind} ${w.fn}@${w.file} -> 跳过：${e.message}`); bad++; continue; }
+    // 变异**必须**在 finally 里复原：上一版中途抛异常就把退化代码留在产品文件里继续跑判据
+    let r = { red: false, out: '' };
     fs.writeFileSync(path.join(ROOT, w.file), next);
-    const r = whitebox();
-    const named = r.out.includes(w.fn);
-    if (!r.red || !named) bad++;
-    console.log(`  ${kind.padEnd(9)} ${w.fn}@${w.file} -> ${r.red ? (named ? '红且点名' : '红但没点名本函数') : '未红（判据抓不到）'}`);
-    fs.writeFileSync(path.join(ROOT, w.file), orig);
+    try {
+      r = whitebox();
+      const named = r.out.includes(w.fn);
+      if (!r.red || !named) bad++;
+      console.log(`  ${kind.padEnd(9)} ${w.fn}@${w.file} -> ${r.red ? (named ? '红且点名' : '红但没点名本函数') : '未红（判据抓不到）'}`);
+    } finally {
+      fs.writeFileSync(path.join(ROOT, w.file), orig);
+    }
   }
 }
 const back = whitebox();
 if (back.red) bad++;
 console.log(`全部复原 -> ${back.red ? '仍红（复原失败）' : 'W14 绿'}`);
-console.log(bad ? `探针不成立：${bad} 例未按预期` : `探针成立：${writers.length} 处写入点 × 3 种摘法全红且点名，复原后绿`);
+
+// ── 合成树用例：判据要认出的"形状"，不去改产品文件（第三轮对抗审查给的四种躲法）──
+const os = require('os');
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'w14-shapes-'));
+const G = "  const { kept } = guards.applyDailyQualityGate(items, 30, log);\n";
+const INS = (t = 'daily_reports') => `  db.prepare('INSERT INTO ${t}(stats) VALUES(?)').run('x');\n`;
+const CASES = [
+  ['s1-comment-only.js', `async function gen(items) {\n${'  // const { kept } = guards.applyDailyQualityGate(items, 30, log);\n'}${INS()}}\n`,
+    { found: 1, ok: false }],
+  ['s2-string-todo.js', `async function gen(items) {\n  log('TODO: const g = guards.applyDailyQualityGate(items, 30, log)');\n${INS()}}\n`,
+    { found: 1, ok: false }],
+  ['s3-exports-fn.cjs', `module.exports.save = async function saveReport(items) {\n${G}${INS()}};\n`,
+    { found: 1, ok: true }],
+  ['s4-second-insert.js', `async function gen(raw) {\n${G}  db.prepare('INSERT INTO daily_reports(stats) VALUES(?)').run('a');\n  let items = raw;\n${INS()}}\n`,
+    { found: 2, okFirst: true, okSecond: false }],
+  ['s5-or-replace.js', `async function gen(items) {\n${G}  db.prepare('INSERT OR REPLACE INTO daily_reports(stats) VALUES(?)').run('x');\n}\n`,
+    { found: 1, ok: true }],
+  ['s6-concat.js', `async function gen(items) {\n${G}  db.prepare('INSERT INTO daily_' + 'reports(stats) VALUES(?)').run('x');\n}\n`,
+    { found: 1, ok: true }],
+  ['s7-dynamic-table.cjs', `const TBL = 'daily_reports';\nasync function gen(items) {\n${G}  db.prepare(\`INSERT INTO \${TBL}(stats) VALUES(?)\`).run('x');\n}\n`,
+    { dynamic: true }],
+  ['s8-never-run.js', `async function gen(items) {\n${G}  db.prepare('INSERT INTO daily_reports(stats) VALUES(?)');\n}\n`,
+    { found: 1, ok: true, executed: false }],
+];
+for (const [name, body, want] of CASES) fs.writeFileSync(path.join(tmp, name), body);
+const got = findDailyReportWriters(tmp);
+const byFile = new Map();
+for (const g of got) { if (!byFile.has(g.file)) byFile.set(g.file, []); byFile.get(g.file).push(g); }
+for (const [name, , want] of CASES) {
+  const list = byFile.get(name) || [];
+  const label = `${name} → ${list.map((x) => `${x.fn}(ok=${x.ok},exec=${x.executed},dyn=${x.dynamic})`).join(' + ') || '(不可见)'}`;
+  let pass;
+  if (want.dynamic) pass = list.length === 1 && list[0].dynamic;
+  else if (want.found === 2) pass = list.length === 2 && list[0].ok === want.okFirst && list[1].ok === want.okSecond;
+  else pass = list.length === want.found && list.every((x) => x.ok === want.ok)
+    && (want.executed === undefined || list.every((x) => x.executed === want.executed));
+  if (!pass) bad++;
+  console.log(`  ${pass ? '成立' : '不成立'}  ${label}`);
+}
+fs.rmSync(tmp, { recursive: true, force: true });
+console.log(bad ? `探针不成立：${bad} 例未按预期` : `探针成立：${writers.length} 处 × 3 种摘法 + ${CASES.length} 种形状全按预期`);
+process.exitCode = bad ? 1 : 0;

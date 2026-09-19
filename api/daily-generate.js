@@ -84,18 +84,9 @@ function jaccard(a, b) {
 async function generateDaily(windowHours) {
   const cfg = await getSetting('daily', {});
 
-  // 采集窗口：前一天 00:00 ~ 今天 06:00（北京时间）
-  // 覆盖前一天全部资讯 + 凌晨补充
-  const now = new Date();
-  const bjOffset = 8 * 3600e3; // 北京时间偏移
-  const bjNow = new Date(now.getTime() + bjOffset);
-  const todayStart = new Date(bjNow);
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600e3);
-  const todaySixAM = new Date(todayStart.getTime() + 6 * 3600e3);
-  // 转回 UTC
-  const cutoff = new Date(yesterdayStart.getTime() - bjOffset).toISOString();
-  const cutoffEnd = new Date(todaySixAM.getTime() - bjOffset).toISOString();
+  // 采集窗口：北京昨日 00:00 → 北京今日 06:00（B90：口径与 api/[...slug].js、runner 共用 lib/time-window，
+  // 原来这里手搓一遍"+8h 后 setUTCHours(0,0,0,0) 再减回 8h"，三处写法迟早不一致）
+  const { startIso: cutoff, endIso: cutoffEnd } = require('../lib/time-window').dailyReportWindowIso();
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 

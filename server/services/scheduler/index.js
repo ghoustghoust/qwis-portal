@@ -129,10 +129,11 @@ function start() {
     timers.push(setInterval(() => { require('../queue/poller').pollAll().catch(() => {}); }, queueMs));
     log.info(`队列轮询已注册: 每 ${queueMs / 60e3}min（wechat/bilibili/douyin 依次）`);
   }
-  // 九期:Vercel 只读门户数据同步(每 2 小时,portal.enabled!==false 时启用)
-  if (getSetting('portal.enabled', true)) {
+  // 九期:Vercel 只读门户数据同步。2026-09-19 审计轮改默认关：portal Vercel 项目已下线、
+  // portal/ 判定为主仓库历史快照副本；需恢复时显式置 settings.portal.enabled=true
+  if (getSetting('portal.enabled', false)) {
     timers.push(setInterval(() => { jobsPortal.runPortalSync(); }, 2 * 3600e3));
-    log.info('门户数据同步已注册: 每 2h(需 portal/ 完成 git 绑定)');
+    log.info('门户数据同步已注册: 每 2h（默认关闭，需 settings 显式开启）');
   }
   // 1.3:数据生命周期——每 24h 清理过期数据
   timers.push(setInterval(() => {

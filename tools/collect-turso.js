@@ -29,8 +29,9 @@ try {
 
 const { createClient } = require('@libsql/client');
 const Parser = require('rss-parser');
-const { cleanTitle } = require('../lib/text-clean'); // B94：标题/源名实体解码唯一实现（同文件的 cleanTranslatedTitle 也在这里）
-const { decodeXmlEntities } = require('../lib/text-clean'); // B94：实体解码唯一实现（OPML/XML 属性）
+const { cleanTitle, decodeXmlEntities } = require('../lib/text-clean'); // B94：标题/源名/属性实体解码唯一实现
+// B90：北京日界/日报窗口/北京日期串的唯一口径（原来这个文件里手搓了 4 遍 +8h 换算）
+const { beijingNow, beijingDateStr, beijingDayStartMs, dailyReportWindowIso } = require('../lib/time-window');
 
 // ─── 配置 ───
 const MODE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'collect';
@@ -898,8 +899,8 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
   // 期号与归档
   const archive = (await getSetting('weekly.archive', [])) || [];
   const issue = archive.length ? (archive[archive.length - 1].issue || 0) + 1 : 1;
-  const dateEnd = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
-  const dateStart = new Date(Date.now() + 8 * 3600e3 - 7 * 86400e3).toISOString().slice(0, 10);
+  const dateEnd = beijingDateStr();
+  const dateStart = beijingDateStr(Date.now() - 7 * 86400e3);
   const report = {
     issue, dateStart, dateEnd, theme, degraded, weeklySummary,
     ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
@@ -972,11 +973,10 @@ function briefWindow() {
     const end = Date.now();
     return { startUtc: new Date(end - 24 * 3600e3).toISOString(), endUtc: new Date(end).toISOString(), label: '滚动24h' };
   }
-  const bjOffset = 8 * 3600e3;
-  const todayStart = new Date(Date.now() + bjOffset); todayStart.setUTCHours(0, 0, 0, 0);
+  const dayStart = beijingDayStartMs();
   return {
-    startUtc: new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString(),
-    endUtc: new Date(todayStart.getTime() - bjOffset).toISOString(),
+    startUtc: new Date(dayStart - 86400e3).toISOString(),
+    endUtc: new Date(dayStart).toISOString(),
     label: '北京自然日',
   };
 }
@@ -1312,7 +1312,7 @@ async function runMyBrief(analyzed) {
   }
   const subIds = new Set(subs.map((s) => s.id));
   const mbCfg = await getSetting('mybrief', {}); // T3-1 R5：exploreStrength/domainQuotas 读取前提
-  const dateStr = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const dateStr = beijingDateStr();
   // 设计修正：早报不能依赖 daily 的 top-N 切片共享池（订阅源可能不在内）——
   // 订阅源在窗口内的文章单独补齐分析；已在池中的复用，零重复调用
   const analyzedIds = new Set((analyzed || []).map((a) => a.id));
@@ -1464,7 +1464,7 @@ async function runMyBrief(analyzed) {
   const pushCfg = await getSetting('mybrief', {});
   if (pushCfg.pushEnabled !== false) {
     try {
-      const d = new Date(Date.now() + 8 * 3600e3);
+      const d = beijingNow();
       await require('../api/_alerts').dispatch('mybrief', {
         title: `☀️ 我的早报 · ${d.getUTCMonth() + 1}月${d.getUTCDate()}日`,
         text: `${theme || '今日精选'}\n\n${sections.top.map((it, i) => `${i + 1}. ${it.title}（${it.source}）`).join('\n')}`,
@@ -1541,15 +1541,8 @@ function dedupItems(items) {
 
 async function runDaily() {
   const cfg = await getSetting('daily', {});
-  const now = new Date();
-  const bjOffset = 8 * 3600e3;
-  const bjNow = new Date(now.getTime() + bjOffset);
-  const todayStart = new Date(bjNow);
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600e3);
-  const todaySixAM = new Date(todayStart.getTime() + 6 * 3600e3);
-  const cutoff = new Date(yesterdayStart.getTime() - bjOffset).toISOString();
-  const cutoffEnd = new Date(todaySixAM.getTime() - bjOffset).toISOString();
+  // 采集窗口＝北京昨日 00:00 → 今日 06:00（与两份云端实现共用 lib/time-window 那一份算术）
+  const { startIso: cutoff, endIso: cutoffEnd } = dailyReportWindowIso();
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
@@ -1730,7 +1723,7 @@ async function translatePipeline(article) {
 // T3-1 R0b 生成 > 翻译：早报/周报生成窗口内 translate 批次让路（配额让给深析/导语/综述）
 // 保护窗（北京时）：每日 18:30~次日 03:30（晚间 21:30 rolling24 生成 + 00:32 备份批）；周五另加 15:00~21:00（周刊 18:03）
 function inGenerationGuard() {
-  const bj = new Date(Date.now() + 8 * 3600e3);
+  const bj = beijingNow();
   const h = bj.getUTCHours() + bj.getUTCMinutes() / 60;
   if (h >= 18.5 || h < 3.5) return true;
   if (bj.getUTCDay() === 5 && h >= 15 && h < 21) return true; // 周五

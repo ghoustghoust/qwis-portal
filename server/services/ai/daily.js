@@ -11,6 +11,8 @@ const { htmlToText } = require('./summary');
 // 本文件此前自带一份 desc 写成「Codex、Claude、豆包…等动向」的关键词复述版，
 // 它生成的报告同步进云端后，就是线上 AI 版早报显示"关键词版栏目注解"的直接来源。
 const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES, VIDEO_SOURCE_TYPES } = require('../../../lib/daily-columns');
+// B90：「今日」的日界唯一口径（北京 0 点），与 /api/status 两端共用
+const { beijingDayStartIso } = require('../../../lib/time-window');
 
 // 九期补丁:日报出库安检——乱码(西里尔/修饰字母/替换符/高频乱码字是 UTF-8 被 GBK 误读的特征)与风控错误页不得入报
 function hasMojibake(text) {
@@ -208,10 +210,11 @@ function needsGeneration() {
   const now = new Date();
   const genAt = new Date(now);
   genAt.setHours(m ? Number(m[1]) : 8, m ? Number(m[2]) : 0, 0, 0);
-  if (now < genAt) return false; // 今日生成时间未到
-  const dayStart = new Date(now);
-  dayStart.setHours(0, 0, 0, 0);
-  const row = db.prepare('SELECT id FROM daily_reports WHERE generated_at >= ? LIMIT 1').get(dayStart.toISOString());
+  if (now < genAt) return false; // 今日生成时间未到（本机钟点，刻意按容器时区：这是"本机几点跑"的开关）
+  // B90：「今天有没有生成过」必须与 /api/status 的「今日」同一个日界（北京 0 点），
+  // 否则在非北京时区的机器上，状态卡说"今天没有日报"而这里认为"今天已经有了"。
+  const row = db.prepare('SELECT id FROM daily_reports WHERE generated_at >= ? LIMIT 1')
+    .get(beijingDayStartIso(now.getTime()));
   return !row;
 }
 

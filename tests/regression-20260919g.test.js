@@ -66,6 +66,10 @@ test('G4 端到端引擎自检必须全绿（判据坏了就等于整轮结果�
 });
 
 test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"出处是编的"；坑 #46/#47/#57）', () => {
+  // 出处有两种形态：手写 `file:行号`，或 `file#fn=函数名::代码片段`（行号加载时现算，
+  // 专治那个最长文件的第 6 次漂移）。后者解析不出来 = 代码搬家/改名，必须逐条点名。
+  assert.deepStrictEqual(e2e.ANCHOR_ERRORS || [], [],
+    '出处锚点解析失败：\n' + (e2e.ANCHOR_ERRORS || []).join('\n'));
   const table = Object.assign({}, e2e.SRC, e2e.QUERY_SRC);
   const bad = [];
   for (const [k, v] of Object.entries(table)) {

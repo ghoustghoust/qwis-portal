@@ -79,14 +79,21 @@ test('3c. generateTheme：第一人称"写作意图句"必须拒绝（2026-09-18
 }, { timeout: 30000 });
 
 test('4. 窗口计算：北京自然日边界', () => {
-  // 复现 runDailyAi 的窗口算法
-  const bjOffset = 8 * 3600e3;
-  const bjNow = new Date(Date.now() + bjOffset);
-  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
-  const startUtc = new Date(todayStart.getTime() - 24 * 3600e3 - bjOffset).toISOString();
-  const endUtc = new Date(todayStart.getTime() - bjOffset).toISOString();
-  assert.equal(new Date(endUtc) - new Date(startUtc), 24 * 3600e3);
-  // endUtc 应是北京今天 00:00
-  const endBj = new Date(Date.parse(endUtc) + bjOffset);
-  assert.equal(endBj.getUTCHours(), 0);
+  // 原来这里把产品的算术**又抄了一遍**（自己 +8h、自己 setUTCHours），于是它判的是"我抄的两份一致"，
+  // 而不是"产品算得对"——偏移写错它照样绿。改成：性质判在产品用的那份实现上，再钉住产品确实走它。
+  const fs = require('fs');
+  const path = require('path');
+  const { beijingDayStartMs, beijingDateStr } = require('../lib/time-window');
+  const dayStart = beijingDayStartMs();
+  const startUtc = new Date(dayStart - 24 * 3600e3).toISOString();
+  const endUtc = new Date(dayStart).toISOString();
+  assert.equal(new Date(endUtc) - new Date(startUtc), 24 * 3600e3, '窗口不是整整一个北京日');
+  assert.equal(beijingDateStr(Date.parse(endUtc)), beijingDateStr(), '窗口右端不是"今天 0 点"（北京）');
+  assert.equal(beijingDateStr(Date.parse(startUtc)), beijingDateStr(Date.now() - 24 * 3600e3),
+    '窗口左端不是"昨天 0 点"（北京）');
+  // runner 的 briefWindow 必须走这同一份实现（否则上面的性质判据与线上无关）
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'collect-turso.js'), 'utf8')
+    .replace(/\r\n/g, '\n');
+  assert.match(src, /function briefWindow\(\)[\s\S]{0,500}beijingDayStartMs\(\)/,
+    'tools/collect-turso.js 的 briefWindow 不再走 lib/time-window（窗口算术又各自写了一份）');
 });

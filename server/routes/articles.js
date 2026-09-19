@@ -2,6 +2,8 @@
 const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
+// B99：日期筛选的日历日按**北京日**解释，口径与云端、与「今日」统计共用 lib/time-window
+const { beijingDayRangeIso } = require('../../lib/time-window');
 
 const router = express.Router();
 const PAGE_SIZE = 30;
@@ -46,14 +48,15 @@ function buildWhere(query) {
     conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');
     args.push(`%${query.q}%`, `%${query.q}%`);
   }
-  // F4：日期范围筛选（YYYY-MM-DD，按 UTC 日期边界；to 含当天全天）
+  // F4：日期范围筛选（YYYY-MM-DD，按**北京日**边界；to 含当天全天。B99：原来拼的是 UTC 零点，
+  // 与界面显示的北京日差 8 小时 —— 北京 08:00 前发的文会落到前一天）
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.from || '')) {
     conds.push('COALESCE(a.published_at, a.created_at) >= ?');
-    args.push(`${query.from}T00:00:00.000Z`);
+    args.push(beijingDayRangeIso(query.from).startIso);
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.to || '')) {
     conds.push('COALESCE(a.published_at, a.created_at) <= ?');
-    args.push(`${query.to}T23:59:59.999Z`);
+    args.push(beijingDayRangeIso(query.to).endIso);
   }
   // 27-reader-today：since=<ISO datetime> 精确时刻下限（「今日」视图的滚动 24h 窗口用，比 from 日期粒度细）
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(query.since || '')) {

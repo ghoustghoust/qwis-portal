@@ -43,22 +43,76 @@ const DEFAULT_REPEAT = 3;
 const API_BUDGET_MS = Number(process.env.E2E_API_BUDGET || 8000);
 
 // ── 参数出处表：一律抄自被检代码，禁止凭印象（F7 逐条查 source 形如 file:line）──
-const SRC = {
-  hotTab: 'api/[...slug].js:384',        // tab: all | featured(:397) | hotlist(:402)
-  readingTab: 'api/[...slug].js:1062',   // ['all','favorited','read']（B26 拆首屏后又下移；G5 专抓这种漂移）
-  readingType: 'api/[...slug].js:1063',  // ['all','article','video','podcast']
-  articlesTab: 'api/[...slug].js:127',
-  articlesSort: 'api/[...slug].js:128',
-  videosTab: 'api/[...slug].js:261',
+// 两种写法：
+//   'file:行号'                —— 手写行号，只用于**不会频繁搬家**的文件
+//   'file#fn=函数名::代码片段'  —— 锚定代码片段，行号在加载时现算
+// 为什么要有第二种：`api/[...slug].js` 是全库最长的那个文件，每次改动都挪几十行，
+// 手写行号已经漂移第 6 次（每轮 G5 报红后人肉重找，上一轮就为此重跑三次）。锚子串后，
+// 只要那行代码还在，出处就自动跟着走；代码真被删/改名时解析失败 → G5 判红，比"指向别处"诚实。
+const ANCHOR_RE = /^(.+)#fn=(\w+)::(.+)$/;
+// 第三种：'file#片段' —— 全文件唯一片段，行号现算（前端组件没有具名函数，用这条）
+const FRAG_RE = /^([^#]+)#(?!fn=)(.+)$/;
+const ANCHOR_ERRORS = []; // 供 G5 逐条点名（不许静默降级成"指向第 1 行"）
+function resolveSrc(key, val) {
+  const m = ANCHOR_RE.exec(val);
+  if (!m) {
+    const f = FRAG_RE.exec(val);
+    if (!f) return val;
+    const [, file, frag] = f;
+    try {
+      const lines = fs.readFileSync(path.join(ROOT, file), 'utf8').replace(/\r\n/g, '\n').split('\n');
+      const hits = lines.map((l, i) => [i + 1, l]).filter(([, l]) => l.includes(frag)).map(([n]) => n);
+      if (hits.length !== 1) {
+        ANCHOR_ERRORS.push(`${key}→${val}：片段在 ${file} 命中 ${hits.length} 处${hits.length ? `（${hits.join(',')}）` : ''}，锚点不唯一`);
+        return val;
+      }
+      return `${file}:${hits[0]}`;
+    } catch (e) { ANCHOR_ERRORS.push(`${key}→${val}：解析失败 ${e.message}`); return val; }
+  }
+  const [, file, fnName, frag] = m;
+  try {
+    const { spans } = require('../lib/src-spans');
+    const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const own = spans(src).filter((s) => s.name === fnName);
+    if (!own.length) { ANCHOR_ERRORS.push(`${key}→${val}：找不到函数 ${fnName}（改名或搬家了）`); return val; }
+    const abs = src.replace(/\r\n/g, '\n').split('\n');
+    const cand = [];
+    for (const s of own) {
+      const from = src.slice(0, s.start).replace(/\r\n/g, '\n').split('\n').length;
+      const to = from + s.body.split('\n').length;
+      for (let n = from; n <= to; n++) if ((abs[n - 1] || '').includes(frag)) cand.push(n);
+    }
+    if (cand.length !== 1) {
+      ANCHOR_ERRORS.push(`${key}→${val}：片段在 ${fnName} 内命中 ${cand.length} 处${cand.length ? `（${cand.join(',')}）` : ''}，锚点不够唯一`);
+      return val;
+    }
+    return `${file}:${cand[0]}`;
+  } catch (e) {
+    ANCHOR_ERRORS.push(`${key}→${val}：解析失败 ${e.message}`);
+    return val;
+  }
+}
+function resolveAll(table) {
+  const out = {};
+  for (const [k, v] of Object.entries(table)) out[k] = resolveSrc(k, v);
+  return out;
+}
+const SRC = resolveAll({
+  hotTab: 'api/[...slug].js#fn=handleHot::const tab = q.tab',
+  readingTab: 'api/[...slug].js#fn=handleReading::].includes(q.tab)',   // ['all','favorited','read']
+  readingType: 'api/[...slug].js#fn=handleReading::].includes(q.type)', // ['all','article','video','podcast']
+  articlesTab: 'api/[...slug].js#fn=handleArticles::const tab = q.tab',
+  articlesSort: 'api/[...slug].js#fn=handleArticles::const sort = q.sort',
+  videosTab: 'api/[...slug].js#fn=handleVideos::q.tab !== ',
   // 分页大小是接口里写死的 PAGE_SIZE（本系统没有 limit 参数，传了也没人读）。对账"满一页 vs 不满一页"
   // 必须知道这个常量，否则会把"接口一共只给了 4 条"当成前端漏渲染。
-  pageSizeArticles: 'api/[...slug].js:126',
-  pageSizeVideos: 'api/[...slug].js:260',
-  pageSizeReading: 'api/[...slug].js:1065',
-  feArticles: 'web/src/components/ArticleList.jsx:89',
-  feVideos: 'web/src/components/VideoGrid.jsx:57',
-  feReading: 'web/src/pages/MyReadingPage.jsx:93',
-  feHot: 'web/src/pages/HotPage.jsx:217',
+  pageSizeArticles: 'api/[...slug].js#fn=handleArticles::const PAGE_SIZE',
+  pageSizeVideos: 'api/[...slug].js#fn=handleVideos::const PAGE_SIZE',
+  pageSizeReading: 'api/[...slug].js#fn=handleReading::const PAGE_SIZE',
+  feArticles: 'web/src/components/ArticleList.jsx#`/api/articles${qs({',
+  feVideos: 'web/src/components/VideoGrid.jsx#`/api/videos${qs({',
+  feReading: 'web/src/pages/MyReadingPage.jsx#/api/reading${qs(params)}',
+  feHot: 'web/src/pages/HotPage.jsx#`/api/hot${qs({',
   feHotGroups: 'web/src/pages/HotPage.jsx:171',
   feHotSources: 'web/src/pages/HotPage.jsx:183',
   feHotEvents: 'web/src/pages/HotPage.jsx:200',
@@ -74,7 +128,7 @@ const SRC = {
   feSettingsDaily: 'web/src/components/DailySettingsTab.jsx:22',
   feHotEventsDomain: 'web/src/components/HotEvents.jsx:192',
   railNav: 'web/src/main.jsx:72',
-};
+});
 // 页面自己发出的请求：出处 = 前端构造该 query 的那一行。未登记路径一旦带参数，F7 直接判红——
 // 这是故意的：逼着"新增剧本先补出处"，而不是把参数名当常识。
 const QUERY_SRC = {
@@ -1320,7 +1374,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-  SCENARIOS, SEL, SRC, QUERY_SRC, KNOWN_GAPS, EMPTY_READING, scriptInflight,
+  SCENARIOS, SEL, SRC, QUERY_SRC, ANCHOR_ERRORS, KNOWN_GAPS, EMPTY_READING, scriptInflight,
   classify, exitCodeOf, acceptanceOf, rawKeyHits, kindCoverage, countMatches, emptyStateHits, pillCounts,
   collectTitles, orphanCards, subsetConsistency, assert, makeCase, dictKeys, gapIssues, byPage,
   collected, waitForApi, waitForApiWhere, waitQuiet, api, attachNet,

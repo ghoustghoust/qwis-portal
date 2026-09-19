@@ -433,10 +433,17 @@ test('I15 坑 #58/#59：日报写入点清单必须由事实派生（目录白�
     assert.ok(!byFile['tests/w5.test.js'], 'tests/ 夹具不该参与');
 
     // 真仓库侧：派生清单必须非空且全接（防"扫不到东西也算过"——同 W12/W13 的数量断言）
+    // 2026-09-20 语义更正：动态表名的 INSERT（备份恢复/整库迁移）不是"生成日报"，
+    // 门槛对它没有意义 —— 但它必须**被列出来**，否则"把表名改成变量"就是绕过判据的门。
     const real = findDailyReportWriters(ROOT);
-    assert.ok(real.length >= 5, `真仓库只派生出 ${real.length} 处写入点，比实测的 5 处少 = 扫描面坏了`);
-    assert.deepEqual(real.filter((w) => !w.ok).map((w) => `${w.fn}@${w.file}`), [],
+    const gen = real.filter((w) => !w.dynamic);
+    assert.ok(gen.length >= 5, `真仓库只派生出 ${gen.length} 处生成类写入点，比实测的 5 处少 = 扫描面坏了`);
+    assert.deepEqual(gen.filter((w) => !w.ok).map((w) => `${w.fn}@${w.file}:${w.line}`), [],
       '真仓库里有日报写入点没接门槛');
+    assert.deepEqual(gen.filter((w) => !w.executed).map((w) => `${w.fn}@${w.file}`), [],
+      '接了门槛但所在函数里找不到任何执行入口 = 这条写入点其实没写库');
+    assert.ok(real.some((w) => w.dynamic),
+      '一条整表复制/迁移路径都没有？多半是扫描面漏了（本仓至少有备份恢复与 migrate-to-turso）');
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }

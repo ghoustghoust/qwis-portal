@@ -6,6 +6,8 @@ import { SearchIcon, BookIcon } from '../components/icons.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { imgUrl } from '../util.js';
+// B99：文件名里的"今天"也要与服务端同一个日历（前端那份对端，比对锁见 regression-20260920c C5）
+import { beijingDateStr } from '../beijing-date.mjs';
 import { useI18n } from '../i18n.jsx';
 import { SkeletonList } from '../components/Skeleton.jsx';
 
@@ -194,7 +196,7 @@ export default function MyReadingPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${t('reading.title')}_${new Date().toISOString().slice(0, 10)}.md`;
+      a.download = `${t('reading.title')}_${beijingDateStr()}.md`;
       a.click();
       URL.revokeObjectURL(url);
       toast(`${t('reading.exported')} ${d.count} ${t('reading.items')}`);

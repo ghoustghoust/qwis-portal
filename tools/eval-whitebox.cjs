@@ -287,21 +287,28 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
     `日报栏目表必须只有 ${OWNER} 一份实现，副本：${JSON.stringify(copies)}（多份必漂；「恢复默认栏目」会把副本写进 settings）`);
 }
 
-// ── W14 入报质量门槛必须接在**每一个写 daily_reports 的函数**里（B20）──
-// 这一判据本身已经错过三次，每次都因为"清单/字面量"而不是"事实"（详见坑 #58 与 ISSUES B20）：
+// ── W14 入报质量门槛必须接在**每一处生成日报并写库**的语句上（B20）──
+// 这一判据本身已经错过四次，每次都因为"清单/字面量"而不是"事实"（坑 #58/#63 与 ISSUES B20）：
 //  ① 手工列 3 个文件 → 真实 5 个写入函数；② 文件级 grep → 同文件第二个写入函数被算成已接；
-//  ③ 只看"出现过 passesDailyQualityGate" → 把返回值扔掉、或只写进行尾注释，都照样绿。
-// 现在改成：全仓扫 `INSERT INTO daily_reports`（不再维护目录白名单）→ 定位宿主函数 →
-// 要求该 INSERT **之前**存在一次"结果被赋值回去"的 applyDailyQualityGate 调用。
+//  ③ 只看"出现过 passesDailyQualityGate" → 把返回值扔掉、或只写进行尾注释，都照样绿；
+//  ④ 在源码全文里找 SQL → 正则里的引号让注释没剥干净，且 log('TODO: applyDailyQualityGate(...)')
+//     也算接线（第三轮对抗审查实测）。现在 SQL 只在**字符串字面量**里找、接线只看 masked 视图。
+// 动态表名（INSERT INTO 变量）= 整表复制路径（备份恢复/迁移），门槛对它不适用，但**必须列出来**：
+// 否则"把表名改成变量"就成了绕过判据的门。
 {
   const { findDailyReportWriters } = require('../lib/daily-writers');
-  const writers = findDailyReportWriters(ROOT);
+  const all = findDailyReportWriters(ROOT);
+  const writers = all.filter((w) => !w.dynamic);
+  const copies = all.filter((w) => w.dynamic);
   const ungated = writers.filter((w) => !w.ok);
+  const notExec = writers.filter((w) => w.ok && !w.executed);
   // 下限的"5"只在这里出现一次；写入点清单的**语义**（哪五份、各由谁触发）唯一写死处是
   // docs/CLOUD_PIPELINE_GUIDE.md §不变量 12，本判据只负责"每一处有没有真接上"，不复述清单。
-  ok('W14', writers.length >= 5 && ungated.length === 0,
-    `daily_reports 写入点 ${writers.length} 处（${writers.map((w) => `${w.fn}@${w.file}`).join(' / ')}）；` +
-    `未接门槛：${JSON.stringify(ungated.map((w) => `${w.fn}@${w.file}`))}。` +
+  ok('W14', all.length > 0 && writers.length >= 5 && ungated.length === 0 && notExec.length === 0,
+    `daily_reports 写入语句 ${all.length} 处（生成类 ${writers.length}：${writers.map((w) => `${w.fn}@${w.file}:${w.line}`).join(' / ')}；` +
+    `整表复制类 ${copies.length}：${copies.map((w) => `${w.fn}@${w.file}:${w.line}`).join(' / ') || '无'}）；` +
+    `未接门槛：${JSON.stringify(ungated.map((w) => `${w.fn}@${w.file}:${w.line}`))}；` +
+    `接了但所在函数没有执行入口：${JSON.stringify(notExec.map((w) => `${w.fn}@${w.file}:${w.line}`))}。` +
     '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现 lib/daily-writers.js；写入点语义见 CLOUD_PIPELINE_GUIDE §12）');
 }
 
@@ -328,6 +335,19 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   ok('W15', seenMax >= 3 && bad.length === 0,
     `MAX(${POLLUTED.join('/')}) 共 ${seenMax} 处，未排字面串 'null' 的：${JSON.stringify(bad)}` +
     '（B93：一行 \'null\' 就能让后台「最后同步」自上线起恒显示"从未同步"，且两端各写一遍必漏一端）');
+}
+
+// ── W16 「今日/北京日界」只许一份实现（B90/B96/B97/B99，2026-09-20）──
+// 与回归锁 tests/regression-20260920b B4 共用 lib/time-caliber.js 那一份判据（两边各写一遍必漂）。
+// 允许清单里只有两份：服务端 lib/time-window.js 与浏览器对端 web/src/beijing-date.mjs ——
+// 后者不是重复实现而是同一日历在浏览器里的另一份运行时（前端不能 require CJS），
+// 它的正确性由 regression-20260920c C5 **逐时刻跑数**比对，不靠文本相似。
+{
+  const { findTimeCaliberViolations } = require('../lib/time-caliber');
+  const r = findTimeCaliberViolations(ROOT);
+  ok('W16', r.scanned > 100 && r.violations.length === 0 && r.missingImport.length === 0,
+    `扫 ${r.scanned} 个运行文件；时间口径第二份实现：${JSON.stringify(r.violations.slice(0, 8).map((v) => `${v.file}:${v.line} ${v.label}`))}；` +
+    `不再引用唯一实现的消费点：${JSON.stringify(r.missingImport)}（允许清单：${r.allowed.join('、')}）`);
 }
 
 const asJson = process.argv.includes('--json');

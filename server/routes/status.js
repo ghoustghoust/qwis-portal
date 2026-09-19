@@ -1,6 +1,8 @@
 // 状态卡汇总 API（T15，F23/F28/F36）：GET /api/status
 const express = require('express');
 const { db, getSetting } = require('../db');
+// B90：「今日/近 7 天」的唯一口径（北京日界，不随容器时区漂）
+const { beijingDayStartIso, weekAgoIso } = require('../../lib/time-window');
 
 const router = express.Router();
 
@@ -89,14 +91,14 @@ router.get('/', (req, res) => {
   // 统计口径与阅读器一致：排除热榜/聚合源噪音(否则「近7天更新」被热榜刷成上万条,毫无意义)
   // NOISE 已提到模块作用域（来源榜也要用；见文件上方）
   const now = Date.now();
-  const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
-  const weekAgo = new Date(now - 7 * 86400e3).toISOString();
+  const dayStartIso = beijingDayStartIso(now);
+  const weekAgo = weekAgoIso(now);
   // 27-reader-today：未读只统计近 3 天（历史自动归档，口径与 GET /api/sources 未读一致）
   const threeDaysAgo = new Date(now - 3 * 86400e3).toISOString();
   const overview = {
     enabledSources: count(`SELECT COUNT(*) c FROM sources s WHERE s.enabled=1 AND NOT ${NOISE}`),
     unreadArticles: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ? AND NOT ${NOISE}`, threeDaysAgo),
-    todayNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, dayStart.toISOString()),
+    todayNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, dayStartIso),
     weekNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, weekAgo),
     // B26：入报统计（dailyItemCount / dailyTopSources）不在首屏——与云端同一份契约：
     // 一律走 GET /api/status/daily-sources。两端形状不同会让"哪一端算错了"无从判断（对抗审查查出）。

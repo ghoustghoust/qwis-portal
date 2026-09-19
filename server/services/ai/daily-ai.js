@@ -80,10 +80,11 @@ async function analyzeBatch(items, opts = {}) {
  * 检查 AI 日报功能是否启用
  */
 function isEnabled() {
+  if (process.env.AGNES_API_KEY) return true;
   try {
     const { getSetting } = require('../../db');
     const aiCfg = getSetting('ai', {}) || {};
-    return !!aiCfg.enabled;
+    return aiCfg.enabled !== false && !!(aiCfg.apiKey || process.env.AGNES_API_KEY);
   } catch { return false; }
 }
 

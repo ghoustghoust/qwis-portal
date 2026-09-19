@@ -2,6 +2,8 @@
 const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
+// B99：日期筛选的日历日按**北京日**解释（与云端、与「今日」统计共用一份口径）
+const { beijingDayRangeIso } = require('../../lib/time-window');
 const bilibili = require('../services/collectors/bilibili');
 
 const router = express.Router();
@@ -19,14 +21,14 @@ function buildWhere(query) {
   if (query.source_id) { conds.push('v.source_id=?'); args.push(Number(query.source_id)); }
   else conds.push('COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1'); // 27b：屏蔽/未收录源不进阅读器视频流（显式 source_id 豁免）
   if (query.group_id) { conds.push('s.group_id=?'); args.push(Number(query.group_id)); }
-  // F4：日期范围筛选（YYYY-MM-DD，按 UTC 日期边界；to 含当天全天）
+  // F4：日期范围筛选（YYYY-MM-DD，按**北京日**边界；B99：原来拼 UTC 零点，与界面日期差 8 小时）
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.from || '')) {
     conds.push('COALESCE(v.published_at, v.created_at) >= ?');
-    args.push(`${query.from}T00:00:00.000Z`);
+    args.push(beijingDayRangeIso(query.from).startIso);
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(query.to || '')) {
     conds.push('COALESCE(v.published_at, v.created_at) <= ?');
-    args.push(`${query.to}T23:59:59.999Z`);
+    args.push(beijingDayRangeIso(query.to).endIso);
   }
   return { where: conds.length ? `WHERE ${conds.join(' AND ')}` : '', args };
 }

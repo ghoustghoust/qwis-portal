@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import { FilterIcon, XIcon } from './icons.jsx';
+// B99：筛选参数里的"某一天"必须与服务端同一个日历（对端锁见 tests/regression-20260920c C5）
+import { beijingDateStr, beijingWeekStartStr, beijingMonthStartStr } from '../beijing-date.mjs';
 
 // 十一期：高级筛选面板（浮层）
 // 维度：排序（智能/最新/最早）、时间（全部/今天/本周/本月）、语言（全部/中/英）、评分（不限/≥80/≥90）、关键词
@@ -30,23 +32,14 @@ const SCORE_OPTIONS = [
   { value: 90, label: '≥ 90' },
 ];
 
-// 时间预设 → 本地日期（from）
+// 时间预设 → 日期（from）。B99：三档原本各算各的（今天=UTC 日、本周=浏览器本地周一、
+// 本月=浏览器本地月首），而服务端现在按**北京日**解释这个参数 —— 北京 08:00 前"今天"
+// 会传成昨天的日子。统一走 beijing-date.mjs（与 lib/time-window.js 逐时刻比对，见回归锁 C5）。
 export function timePresetToDate(preset) {
   if (!preset || preset === 'all') return null;
-  const now = new Date();
-  if (preset === 'today') {
-    return now.toISOString().slice(0, 10);
-  }
-  if (preset === 'week') {
-    const d = new Date(now);
-    const day = d.getDay();
-    const diff = day === 0 ? 6 : day - 1; // 周一为起点
-    d.setDate(d.getDate() - diff);
-    return d.toISOString().slice(0, 10);
-  }
-  if (preset === 'month') {
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-  }
+  if (preset === 'today') return beijingDateStr();
+  if (preset === 'week') return beijingWeekStartStr();
+  if (preset === 'month') return beijingMonthStartStr();
   return null;
 }
 

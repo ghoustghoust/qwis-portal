@@ -143,8 +143,9 @@ async function handleArticles(req) {
 
   if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
   if (q.q) { conds.push('(a.title LIKE ? OR a.content_html LIKE ?)'); args.push(`%${q.q}%`, `%${q.q}%`); }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(`${q.from}T00:00:00.000Z`); }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { conds.push('COALESCE(a.published_at, a.created_at) <= ?'); args.push(`${q.to}T23:59:59.999Z`); }
+  // B99：from/to 是**北京日历日**（前端日期控件给的也是北京日），边界不许拼成 UTC 零点
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(beijingDayRangeIso(q.from).startIso); }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { conds.push('COALESCE(a.published_at, a.created_at) <= ?'); args.push(beijingDayRangeIso(q.to).endIso); }
   // 27-reader-today：since=<ISO datetime> 精确时刻下限（「今日」滚动 24h 窗口）
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(q.since || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(String(q.since)); }
 
@@ -267,8 +268,8 @@ async function handleVideos(req) {
   if (q.group_id) { vConds.push('s.group_id=?'); vArgs.push(Number(q.group_id)); }
   if (q.tab === 'favorite') vConds.push('v.favorite=1');
   else if (q.tab === 'history') vConds.push('v.watched_at IS NOT NULL');
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { vConds.push('COALESCE(v.published_at, v.created_at) >= ?'); vArgs.push(`${q.from}T00:00:00.000Z`); }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { vConds.push('COALESCE(v.published_at, v.created_at) <= ?'); vArgs.push(`${q.to}T23:59:59.999Z`); }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { vConds.push('COALESCE(v.published_at, v.created_at) >= ?'); vArgs.push(beijingDayRangeIso(q.from).startIso); }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { vConds.push('COALESCE(v.published_at, v.created_at) <= ?'); vArgs.push(beijingDayRangeIso(q.to).endIso); }
 
   // 播客侧条件（音频 enclosure 落 cover 的历史形态）——口径唯一来源 lib/media.js#audioCoverSql
   const pConds = ['s.enabled=1', audioCoverSql('a.cover')];
@@ -276,8 +277,8 @@ async function handleVideos(req) {
   const pArgs = [];
   if (q.source_id) { pConds.push('a.source_id=?'); pArgs.push(Number(q.source_id)); }
   if (q.group_id) { pConds.push('s.group_id=?'); pArgs.push(Number(q.group_id)); }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { pConds.push('COALESCE(a.published_at, a.created_at) >= ?'); pArgs.push(`${q.from}T00:00:00.000Z`); }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { pConds.push('COALESCE(a.published_at, a.created_at) <= ?'); pArgs.push(`${q.to}T23:59:59.999Z`); }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { pConds.push('COALESCE(a.published_at, a.created_at) >= ?'); pArgs.push(beijingDayRangeIso(q.from).startIso); }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { pConds.push('COALESCE(a.published_at, a.created_at) <= ?'); pArgs.push(beijingDayRangeIso(q.to).endIso); }
 
   // 游标：sort_key|kind|id 复合（kind 字典序 video>podcast，同刻视频在前）
   let cursorCond = '';
@@ -371,6 +372,9 @@ const { mapAudioFields, audioCoverSql } = require('../lib/media');
 const { cleanTranslatedTitle, decodeXmlEntities } = require('../lib/text-clean');
 // 2026-09-18：日报/周刊 AI 守卫（runner 与读层共用同一份实现）
 const briefGuards = require('../lib/brief-guards');
+// B90：「今日」日界、日报窗口与北京日期串的唯一口径（北京 0 点）。Vercel 容器是 UTC，
+// 用 setHours(0,0,0,0) 会统计到 UTC 那一天 —— 同刻实测线上 3554 vs 北京日 9626。
+const { beijingDayStartMs, beijingDayStartIso, beijingNow, beijingDateStr, beijingDayRangeIso, weekAgoIso, dailyReportWindowIso } = require('../lib/time-window');
 // B58（2026-09-19）：热点榜六类与分类映射与本地服务层共用一份实现
 const hotCats = require('../lib/hot-categories');
 // B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
@@ -671,14 +675,8 @@ function dailyFormatItem(a) {
 }
 
 async function generateDailyInline() {
-  const now = new Date();
-  const bjOffset = 8 * 3600e3;
-  const bjNow = new Date(now.getTime() + bjOffset);
-  const todayStart = new Date(bjNow); todayStart.setUTCHours(0, 0, 0, 0);
-  const yesterdayStart = new Date(todayStart.getTime() - 24 * 3600e3);
-  const todaySixAM = new Date(todayStart.getTime() + 6 * 3600e3);
-  const cutoff = new Date(yesterdayStart.getTime() - bjOffset).toISOString();
-  const cutoffEnd = new Date(todaySixAM.getTime() - bjOffset).toISOString();
+  // 采集窗口＝北京昨日 00:00 → 今日 06:00（口径与 api/daily-generate.js、runner 共用一份）
+  const { startIso: cutoff, endIso: cutoffEnd } = dailyReportWindowIso();
 
   const columns = await getSetting('daily.columns', null) || DAILY_COLUMNS;
   const cfg = await getSetting('daily', {});
@@ -813,11 +811,12 @@ async function handleDaily(req) {
   // 检查是否需要自动生成
   if (row) {
     const genDate = new Date(row.generated_at);
-    const now = new Date();
-    // 同一天（UTC）则直接返回；30h 内的 AI 增强版同样视同当日有效（否则会被次日裸报告顶掉）
+    // 「同一天」＝**同一个北京日**。原来写的是 `genDate.toDateString() === now.toDateString()`，
+    // 而 toDateString() 用的是容器时区：Vercel 是 UTC，于是北京 08:00 之后再看昨天生成的报告，
+    // 会被判成"不是今天"→ 走补生成分支，同一天多插一份日报（B97，与 B90 同根）。
     const freshAi = briefGuards.isAiDailyReport(row)
       && briefGuards.ageHours(row, Date.now()) <= briefGuards.DAILY_AI_MAX_AGE_HOURS;
-    if (genDate.toDateString() === now.toDateString() || freshAi) {
+    if (beijingDateStr(genDate.getTime()) === beijingDateStr() || freshAi) {
       let sections = [];
       try { sections = JSON.parse(row.sections || '[]'); } catch { /* 无效 JSON */ }
       let stats = {};
@@ -836,11 +835,11 @@ async function handleDaily(req) {
     }
   }
 
-  // 判断是否已过生成时间（北京时间 9:00）
-  const now = new Date();
-  const bjNow = new Date(now.getTime() + 8 * 3600e3);
-  const hour = bjNow.getUTCHours();
-  if (hour >= 1) { // UTC 1:00 = 北京 9:00
+  // 判断是否已过生成时间：读的是**北京墙上时钟的小时数**（B90 收口径，不再各自 +8h）
+  // ⚠️ 本行注释历史上写「北京时间 9:00」，而条件 `hour >= 1` 读的是北京小时 → 实际门槛是北京 01:00。
+  //    本轮只统一时区口径、**不改触发点**（改了会挪动云端补生成时间），差异记为 B98 等裁决。
+  const hour = beijingNow().getUTCHours();
+  if (hour >= 1) {
     try {
       const report = await generateDailyInline();
       return jsonOk({ report: { generated_at: report.generated_at, sections: await enrichDailyTranslated(report.sections), stats: report.stats }, stale: false, autoGenerated: true });
@@ -925,8 +924,8 @@ async function handleStatus(req) {
   // 逐行评估巨型 IN 列表）。下面三条计数共用同一段 JOIN/WHERE 前缀，口径必须一致。
   const notNoiseJoin = "JOIN sources s ON s.id=a.source_id WHERE s.type!='hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)!=1";
   const now = Date.now();
-  const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
-  const weekAgo = new Date(now - 7 * 86400e3).toISOString();
+  const dayStartIso = beijingDayStartIso(now);
+  const weekAgo = weekAgoIso(now);
 
   let overview;
   {
@@ -937,7 +936,7 @@ async function handleStatus(req) {
     // 语义必须逐字不变：判据、噪声过滤、时间字段口径都与合并版一致（本轮以修前线上读数做对账）。
     const threeDaysAgo = new Date(now - 3 * 86400e3).toISOString();
     const unread = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ?`, [threeDaysAgo]);
-    const today = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [dayStart.toISOString()]);
+    const today = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [dayStartIso]);
     const week = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [weekAgo]);
     overview = {
       unreadArticles: unread?.c || 0,
@@ -1585,14 +1584,14 @@ async function handleAlertsLog(req) {
 
 // ─── P1-11: POST /api/daily/regenerate — 手动重新生成日报 ───
 async function handleDailyRegenerate(req) {
-  // 删除今日已有日报（北京时间判断）
-  const now = new Date();
-  const bjNow = new Date(now.getTime() + 8 * 3600e3);
-  const todayStr = bjNow.toISOString().slice(0, 10);
+  // 删除"今日"已有日报。B96：原来写的是 `todayStr = 北京日期串`，再拼成 `T00:00:00.000Z`
+  // 当边界用 —— 日期串是**标签**不是时刻，拼出来的区间其实是"上一个 UTC 日"，
+  // 于是北京 00:00~08:00 之间生成的日报（落在前一个 UTC 日）删不掉，手动重新生成会插出第二份。
+  const dayStart = beijingDayStartMs();
   try {
     await qRun(
       "DELETE FROM daily_reports WHERE generated_at >= ? AND generated_at < ?",
-      [`${todayStr}T00:00:00.000Z`, `${todayStr}T23:59:59.999Z`]
+      [new Date(dayStart).toISOString(), new Date(dayStart + 86400e3).toISOString()]
     );
   } catch { /* 无今日日报，忽略 */ }
   const report = await generateDailyInline();
