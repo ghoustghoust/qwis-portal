@@ -162,13 +162,35 @@
 4. **golden set 冻结 + 时间戳**：被评样本集固定（含 `issue/date`、来源端点、抓取时间），新样本进新集；
    与 §7 去污染同源规则——**不允许用刚改完的产物当评测样本再让同一个模型评**。
 5. **对齐抽检**：每轮随机 3 条人工与 judge 同时打分，记录一致率；一致率 < 0.7 时该轮 judge 结果只作参考、不写趋势。
-6. 趋势落 `docs/eval/trend/`（按产物类型 × 轴），看走向而非单次绝对值。
+6. 趋势落 `docs/eval/content/trend.json`（按轮次追加 `mean_score` / `n` / `judge_prompt_version`），看走向而非单次绝对值。 <!-- doc-lint:ignore：该文件要等"真评 + 人工对齐够 3 条产物"的首轮才生成，当前仓库里没有是事实 -->
 
-### 5.4 运行形态
 
-评测器是**独立 Python 侧工具**（不进应用运行时、不进 `package.json` 依赖），命令入口由 npm script 转发；
-输出仍是 `report.json`，由 Node 侧门禁与 ISSUES 空洞清单消费。前置：`python3` 可用且已装 `agentscope`
-（缺依赖属 `fail_env`，见 §3.1，不得折算成产品失败）。
+### 5.4 运行形态（2026-09-19 交付实况）
+
+评测器是**独立 Python 侧工具**（不进应用运行时、不进 `package.json` 依赖），入口 `npm run eval:content` →
+`tools/eval-content.cjs` → `tools/eval-content/{schema,scoring,judge,run}.py`。四种跑法：
+
+```bash
+npm run eval:content -- --self-test                 # 三层探针（scoring / judge / run），零网络零花费；项数以命令输出为准
+npm run eval:content -- --build-golden --limit 6    # 只读线上读层，冻结 golden 集（带抓取时间与参照物字段出处）
+npm run eval:content                                # stub 轮次：验管线，报告 counts_as_judgment=false
+npm run eval:content -- --judge --align <人工分.json> # 真评（花 AI 配额）+ 人工对齐，够一致率才写 trend.json
+```
+
+三条与"纸面要求"不同的落地决定，都写在这里以免后来人以为要做满：
+
+1. **`agentscope` 是可选而不是前置**（本机实测：Python 3.14.4、`import agentscope` → ModuleNotFoundError）。
+   `schema.py` 提供与之**同形**的零依赖本地实现（`Task`/`MetricBase`/`MetricResult`/`MetricType`/`SolutionOutput`），
+   装了 agentscope 就换 import，业务代码不动；报告里 `engine` 字段写明这次用的哪套。
+   理由：计分口径与判据不该被一个未批准的 pip 安装卡住（本项目规矩：不静默装依赖）。是否安装由用户决定。
+2. **judge 默认不联网**，必须显式 `--judge`。线上 `ai.minIntervalMs=0`（BL8）时，任何"顺手打一轮模型"都是在烧免费池（坑 #A1）。
+   缺凭据时 `judge_once` **抛错**而不是退回 stub——"没评"和"评了但失败"必须是两种可见状态。
+3. **stub 轮次不是评测**：报告带 `counts_as_judgment=false` + `warnings_advisory=true`，
+   不产出均值、不写趋势；Node 侧锁 `tests/regression-20260919f.test.js` 钉住这三件事（坑 #43 同族：
+   检查器把自己没干的事报成干过，比没检查器更危险）。趋势只在人工对齐一致率 ≥ 0.7 时写入。
+
+前置缺失（没 python、没 golden）一律属 `fail_env`（§3.1），**不得折算成产品失败**；
+`npm test` 里那层锁在找不到 python 时 `skip` 并写明原因，不算通过也不算红。
 
 ## 6. F2P / P2P 双集合与「改前必红」
 
@@ -211,7 +233,7 @@
 
 ## 9. 产物与门禁
 
-- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，待建）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。

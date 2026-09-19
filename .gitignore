@@ -44,3 +44,7 @@ archive/_eval/wechat-rss-plus/
 
 # 含敏感凭据的交接文档，勿提交（GitHub 会扫描吊销 PAT）
 docs/HANDOVER.md
+
+# Python 侧评测工具（41-8）的字节码缓存
+__pycache__/
+*.pyc
