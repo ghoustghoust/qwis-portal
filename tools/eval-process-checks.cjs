@@ -50,7 +50,8 @@ const CHECKS = {
     const planned = Array.isArray(run.plan) ? run.plan.length : null;
     const got = Array.isArray(parsed.cases) ? parsed.cases.length : null;
     if (planned !== null && got !== planned) return { ok: false, code: 'fail_product', why: `剧本清单 ${planned} 条，报告只有 ${got} 条（漏跑）` };
-    if (!got) return { ok: false, code: 'fail_product', why: '报告里 cases 为空' };
+    if (got === null) return { ok: false, code: 'fail_product', why: '报告里没有 cases 数组（结构不对，等于没记用例）' };
+    if (got === 0) return { ok: false, code: 'fail_product', why: '报告里 cases 是空数组（一条都没跑）' };
     return { ok: true, why: `报告 ${got} 条用例，与剧本清单一致` };
   },
 
@@ -125,6 +126,28 @@ const CHECKS = {
     const n = (run.cases || []).reduce((a, c) => a + Object.keys((c.requests || [])[0]?.params || {}).length, 0);
     return { ok: true, why: `参数均带 file:line 出处（抽样计数 ${n}）` };
   },
+
+  // F8 三类断言必须各自 ≥1（§3.3 的机器版：渲染/接口/数据缺一类就不算覆盖，不许拿别的类补数）
+  // 允许显式豁免：run.kindExemptions = { '<用例id>': ['api'] }，豁免必须带理由（见 e2e 报告 knownGap）
+  check_assertion_kinds(run) {
+    const KINDS = ['render', 'api', 'data'];
+    const ex = run.kindExemptions || {};
+    const bad = [];
+    for (const c of run.cases || []) {
+      const list = Array.isArray(c.detail) ? c.detail : [];
+      if (!list.length) continue;                       // 空断言由 F3 负责，这里不重复计
+      const got = new Set(list.map((a) => a && a.kind));
+      const waive = new Set(ex[c.id] || []);
+      const miss = KINDS.filter((k) => !got.has(k) && !waive.has(k));
+      if (miss.length) bad.push(`${c.id} 缺 ${miss.join('+')}`);
+    }
+    if (bad.length) return { ok: false, code: 'fail_product', why: `断言类别缺口（§3.3 三类各 ≥1）：${bad.slice(0, 6).join(' / ')}` };
+    const waived = Object.entries(ex).filter(([, v]) => (v || []).length).map(([k, v]) => `${k}:${v.join('+')}`);
+    // 一条都没判过 = 这个检查自己是个空壳（坑 #45：判据永不命中就是假绿）
+    const judged = (run.cases || []).filter((c) => Array.isArray(c.detail) && c.detail.length).length;
+    if (!judged) return { ok: false, code: 'fail_env', why: '没有任何用例带 detail[]（三类覆盖根本没判，等于假门禁）' };
+    return { ok: true, why: `${judged} 条用例三类断言齐${waived.length ? `（豁免 ${waived.join(', ')}）` : ''}` };
+  },
 };
 
 // ── 自检：每个检查都要"坏样本会红、好样本会绿"（EVAL_GUIDE §4.1 的负向验证）──
@@ -139,8 +162,10 @@ function selfTest() {
     startedAt: new Date(Date.now() - 1000).toISOString(),
     events: [{ type: 'screenshot', path: goodImg }],
     reportPath: goodReport, plan: ['a', 'b'],
-    cases: [{ id: 'a', assertions: 3, renderedText: '正常标题', requests: [{ params: { type: { value: 'podcast', source: 'api/[...slug].js:1021' } } }] },
-      { id: 'b', assertions: 2, renderedText: '别的正常文本' }],
+    cases: [{ id: 'a', assertions: 3, renderedText: '正常标题', requests: [{ params: { type: { value: 'podcast', source: 'api/[...slug].js:1021' } } }],
+        detail: [{ kind: 'render', ok: true }, { kind: 'api', ok: true }, { kind: 'data', ok: true }] },
+      { id: 'b', assertions: 2, renderedText: '别的正常文本',
+        detail: [{ kind: 'render', ok: true }, { kind: 'api', ok: true }, { kind: 'data', ok: true }] }],
     commands: [{ cmd: 'npm test', exitCode: 0 }],
     root: process.cwd(),
   };
@@ -156,6 +181,10 @@ function selfTest() {
     if (name === 'check_evidence_paths_resolve') broken.cases = [{ id: 'a', assertions: 1, evidence: 'docs/eval/never-written.md' }];
     if (name === 'check_exit_code_honest') broken.commands = [{ cmd: 'npm test | tail' }];
     if (name === 'check_probe_params_sourced') broken.cases = [{ id: 'a', assertions: 1, requests: [{ params: { tab: { value: 'article' } } }] }];
+    if (name === 'check_assertion_kinds') {
+      broken.cases = [{ id: 'a', assertions: 2, renderedText: '正常', detail: [{ kind: 'render' }, { kind: 'api' }] }];
+      broken.kindExemptions = {};
+    }
     const badR = fn(broken);
     const pass = goodR.ok && !badR.ok;
     results.push({ name, goodOk: goodR.ok, badCaught: !badR.ok, pass, goodWhy: goodR.why, badWhy: badR.why });

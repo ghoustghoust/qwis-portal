@@ -208,6 +208,46 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   if (knownW10.length) notes.push(`  i W10：${knownW10.length} 组重复判定已在基线（逐步清）`);
 }
 
+// ── W11 独立入口的 Provider 完整性（B71：后台入口漏挂 LanguageProvider，登录门五个文案显示裸 key）──
+// 通用化判据：入口的模块图里只要有人调 useI18n()/useTheme()，入口自己就必须挂对应 Provider。
+// 只查"入口文件里有没有那几个字"是抓不到的——AdminPage 自己不用 i18n，用的是它下面的 LoginModal。
+{
+  const read0 = (p) => { try { return fs.readFileSync(path.join(ROOT, p), 'utf8'); } catch { return ''; } };
+  const importsOf = (file) => [...read0(file).matchAll(/from\s+['"](\.[^'"]+)['"]/g)].map((m) => m[1]);
+  const resolve = (from, spec) => {
+    const base = path.posix.join(path.posix.dirname(from), spec).replace(/\\/g, '/');
+    for (const cand of [base, base + '.jsx', base + '.js', base + '.tsx']) {
+      if (fs.existsSync(path.join(ROOT, cand))) return cand;
+    }
+    return null;
+  };
+  const closure = (entry) => {
+    const seen = new Set(); const q = [entry];
+    while (q.length) {
+      const f = q.shift();
+      if (seen.has(f)) continue;
+      seen.add(f);
+      for (const s of importsOf(f)) { const r = resolve(f, s); if (r && !seen.has(r)) q.push(r); }
+    }
+    return [...seen];
+  };
+  const cfg = read0('web/vite.config.js');
+  const declared = [...cfg.matchAll(/['"](src\/[\w/.-]+\.jsx?)['"]/g)].map((m) => 'web/' + m[1]);
+  const entries = declared.length ? declared : ['web/src/main.jsx', 'web/src/admin.jsx'];
+  const need = [['useI18n(', 'LanguageProvider'], ['useTheme(', 'ThemeProvider']];
+  const bad = [];
+  for (const e of entries) {
+    const files = closure(e);
+    if (!files.length || !read0(e)) continue;
+    for (const [hook, provider] of need) {
+      const user = files.find((f) => read0(f).includes(hook));
+      if (user && !read0(e).includes(`<${provider}`)) bad.push(`${e} 的模块图里 ${user} 用了 ${hook}，入口却没挂 <${provider}>`);
+    }
+  }
+  ok('W11', bad.length === 0, `独立入口缺 Provider（Hook 会静默退回 createContext 默认值，界面显示裸 key 或主题失效）：\n      ${bad.join('\n      ')}`);
+  if (entries.length) notes.push(`  i W11：检查了 ${entries.length} 个入口（${entries.join(', ')}）`);
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

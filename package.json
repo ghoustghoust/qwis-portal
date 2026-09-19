@@ -23,7 +23,8 @@
     "pm2:start": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop qwis-server",
     "pm2:restart": "pm2 restart qwis-server",
-    "pm2:logs": "pm2 logs qwis-server --lines 100"
+    "pm2:logs": "pm2 logs qwis-server --lines 100",
+    "eval:e2e": "node tools/eval-e2e.cjs"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",
