@@ -229,12 +229,16 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
 function CompactRow({ item, index, keywords, highlight, onOpen }) {
   return (
     <div
-      className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)]"
+      className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)] overflow-hidden"
       onClick={() => onOpen?.(item)}
       style={{ borderColor: 'var(--border)' }}
     >
       <span className="flex-none w-5 text-right text-[11px] t-muted tabular-nums">{index + 1}</span>
-      <span className="flex-1 min-w-0">
+      {/* min-w 必须有：flex-1 = flex:1 1 0%，基准 0 意味着收缩阶段它永远抢不到宽度。
+          线上实测（B85）：来源名无界 + 推荐理由/标签/星级同为 flex-none，兄弟基准宽之和 1179px
+          > 行宽 1014px → 标题列被压到 0 宽，而 0 宽下 -webkit-line-clamp 不再裁剪（实测 scrollHeight
+          仍是 554px），标题按字换行把一行撑成 594px 空框。给下限 = 这类撑高结构上不可能再发生。 */}
+      <span className="flex-1 min-w-[10rem]">
         {/* 原先单行 truncate：长标题（如「出售 AI 工作站——有人有兴趣到意大利北部提货吗？」）
             右边还要让位给推荐理由/星级/标签，一行根本显示不完 → 改两行折行 */}
         <span className="block text-[13px] t-text leading-snug line-clamp-2">
@@ -255,7 +259,7 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
       ) : null}
       {/* 2026-09-05 视觉精修：星级评分 + 标签胶囊（窄屏隐藏，无字段时不渲染） */}
       <Stars score={item.score} size={11} showNum={false} className="flex-none hidden sm:inline-flex" />
-      <TagPills tags={item.tags} max={3} className="flex-none hidden lg:flex flex-nowrap" />
+      <TagPills tags={item.tags} max={3} className="flex-none hidden lg:flex flex-nowrap max-w-[26%] overflow-hidden" />
       {Array.isArray(item.related) && item.related.length > 0 && (
         <span
           className="flex-none badge-green"
@@ -264,10 +268,15 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
           {item.related.length + 1} 源
         </span>
       )}
-      <span className="flex-none text-[11px] t-muted whitespace-nowrap hidden sm:inline">
-        {item.source_name || ''}
-        {item.source_name ? ' · ' : ''}
-        {relativeTime(item.published_at)}
+      {/* 来源名长度无上限（线上实测到 620px 的 SEO 拼接名），必须自己截断：
+          原先整串 whitespace-nowrap 且不设界，直接把标题列挤没（B85）。时间单独一段，永不参与截断。 */}
+      <span className="flex-none hidden sm:inline-flex items-center gap-1 text-[11px] t-muted max-w-[15rem]">
+        {item.source_name ? (
+          <span className="truncate min-w-0" title={item.source_name}>{item.source_name}</span>
+        ) : null}
+        <span className="flex-none whitespace-nowrap">
+          {item.source_name ? '· ' : ''}{relativeTime(item.published_at)}
+        </span>
       </span>
       {item.cover ? (
         <img

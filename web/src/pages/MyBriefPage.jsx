@@ -11,7 +11,7 @@ import MdText from '../components/ui/MdText.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import SourceAvatar from '../components/ui/SourceAvatar.jsx';
-import { SunIcon } from '../components/icons.jsx';
+import { SunIcon, PlayIcon, HeadphonesIcon } from '../components/icons.jsx';
 import { SkeletonCards } from '../components/Skeleton.jsx';
 
 const TYPES = [
@@ -198,6 +198,7 @@ function BriefSection({ title, items, kind, type, onOpen }) {
 // 但纯文本行不渲染图片，也没有播放入口，等于把已有的封面和可播放性全丢了。
 function MediaRow({ item, onOpen }) {
   const isPod = item.kind === 'podcast';
+  const Glyph = isPod ? HeadphonesIcon : PlayIcon;
   return (
     <article className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
       {item.cover
@@ -209,15 +210,18 @@ function MediaRow({ item, onOpen }) {
               className="absolute inset-0 w-full h-full object-cover"
             />
             <span className="absolute inset-0 grid place-items-center">
-              <span className="w-9 h-9 grid place-items-center rounded-full text-[13px]" style={{ background: 'rgba(0,0,0,.55)', color: '#fff' }}>
-                {isPod ? '🎧' : '▶'}
+              <span className="w-9 h-9 grid place-items-center rounded-full" style={{ background: 'rgba(0,0,0,.55)', color: '#fff' }}>
+                <Glyph size={16} />
               </span>
             </span>
           </div>
         )
         : (
-          <div className="flex-none w-14 grid place-items-center text-[18px]" style={{ background: 'var(--surface-2)' }}>
-            {isPod ? '🎧' : '▶'}
+          // 无封面 ≠ 无图：lib/media.js 的约定是播客把封面挪到 audio_url、cover 置空，
+          // 显示层由「源头像 / 首字块」兜底。原先这里只有一枚 emoji（用户批注「没有图标」= B84）。
+          <div className="flex-none w-14 flex flex-col items-center justify-center gap-1.5" style={{ background: 'var(--surface-2)' }}>
+            <SourceAvatar name={item.source_name || item.source || ''} avatar={item.source_avatar} size={40} />
+            <Glyph size={13} className="t-accent" />
           </div>
         )}
       <div className="flex-1 min-w-0 p-3 sm:p-4">
@@ -300,7 +304,7 @@ function RestRow({ item, onOpen }) {
     <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
       {/* 原先硬编码 index+4 当序号：top3+featured7 之后 rest 实际从 11 开始，显示的是错号。
           补充阅读不是排名列表，去掉序号而不是补一个更复杂的偏移。 */}
-      <span className="flex-1 min-w-0">
+      <span className="flex-1 min-w-[10rem]">
         <span className="block truncate text-[13px] t-text">{item.title}</span>
         {item.original_title && (
           <span className="block truncate text-[11px] t-muted mt-0.5" title={item.original_title}>{item.original_title}</span>
@@ -308,7 +312,8 @@ function RestRow({ item, onOpen }) {
       </span>
       {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}
       {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>{item.reason}</span>}
-      <span className="flex-none text-[11px] t-muted whitespace-nowrap">{item.source}</span>
+      {/* 来源名不设界会把标题列挤到 0 宽（同 B85 的 CompactRow 根因，字段同源）：自己截断 */}
+      <span className="flex-none max-w-[15rem] truncate text-[11px] t-muted" title={item.source || ''}>{item.source}</span>
     </div>
   );
 }

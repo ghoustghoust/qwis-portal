@@ -724,18 +724,18 @@ async function generateDailyInline() {
   try {
     const mediaItems = [];
     const mediaVids = await qAll(
-      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name, s.avatar AS source_avatar
        FROM videos v JOIN sources s ON s.id=v.source_id
        WHERE v.published_at >= ? AND v.published_at <= ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`,
       [cutoff, cutoffEnd]
     );
     for (const v of mediaVids) {
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null });
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null, source_avatar: cleanNull(v.source_avatar) });
     }
     // B61：这里曾是第四份「音频封面」判定，且比别处少一个 .opus —— opus 单集进不了日报「视频与播客」栏
     const mediaPods = await qAll(
-      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name, s.avatar AS source_avatar
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
          AND ${audioCoverSql('a.cover')}
@@ -743,7 +743,7 @@ async function generateDailyInline() {
       [cutoff, cutoffEnd]
     );
     for (const a of mediaPods) {
-      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null });
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null, source_avatar: cleanNull(a.source_avatar) });
     }
     if (mediaItems.length) {
       sections.push({ column: '视频与播客', desc: '窗口内新视频/播客，点开即可播放收听', items: mediaItems });

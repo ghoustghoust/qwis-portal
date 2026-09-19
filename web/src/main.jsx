@@ -87,6 +87,37 @@ export function IconRail() {
   );
 }
 
+// 未知路径兜底页（B72）：可见地告诉用户「这里没有页面」，并给出去处的链接。
+// data-e2e 是端到端评测 E10 的锚点——改类名可以，改这个属性必须同步 tools/eval-e2e.cjs。
+function NotFoundPage({ path }) {
+  const links = [
+    ['/reader/', '阅读器'],
+    ['/daily/', '每日早报'],
+    ['/mybrief/', '我的早报'],
+    ['/weekly/', '精选周刊'],
+    ['/hot/', '热点榜'],
+    ['/reading/', '我的阅读'],
+  ];
+  return (
+    <div className="flex h-full">
+      <IconRail />
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 py-16 sm:py-24 text-center" data-e2e="notfound">
+          <div className="serif text-5xl font-bold t-text">404</div>
+          <p className="mt-4 text-[13px] t-muted break-all">
+            没有这个页面：<code className="t-accent">{path}</code>
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {links.map(([href, label]) => (
+              <a key={href} href={href} className="pill !cursor-pointer text-[12px]">{label}</a>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function App() {
   const [path, setPath] = useState(window.location.pathname);
 
@@ -105,13 +136,19 @@ function App() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  // B72：此前 else 分支无条件渲染阅读器 —— 拼错 /打错前缀的路径（如 /videos/）会得到一个
+  // 看起来正常、但内容完全无关的阅读器页面，用户无从知道自己走错了（vercel.json 的
+  // catch-all 让所有路径都回 200 + index.html，服务端也不会 404）。
+  const KNOWN_PREFIXES = ['/daily', '/mybrief', '/weekly', '/hot', '/reading', '/reader', '/admin', '/api'];
+  const known = path === '/' || path === '' || KNOWN_PREFIXES.some((p) => path.startsWith(p));
   let page;
   if (path.startsWith('/daily')) page = <DailyPage />;
   else if (path.startsWith('/mybrief')) page = <MyBriefPage />;
   else if (path.startsWith('/weekly')) page = <WeeklyPage />;
   else if (path.startsWith('/hot')) page = <HotPage />;
   else if (path.startsWith('/reading')) page = <MyReadingPage />;
-  else page = <ReaderPage />;
+  else if (known) page = <ReaderPage />;
+  else page = <NotFoundPage path={path} />;
 
   return (
     <NavCtx.Provider value={{ path, navigate }}>

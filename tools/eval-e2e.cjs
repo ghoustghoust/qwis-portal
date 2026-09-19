@@ -894,23 +894,26 @@ const SCENARIOS = [
     },
   },
   {
-    id: 'E10', title: '未知路径 /videos/：不得静默渲染成阅读器（B72 登记不门禁）',
+    id: 'E10', title: '未知路径 /videos/：渲染可见 404 兜底，且不得静默渲染成阅读器（B72 已修）',
     async run(page, c, target, net) {
-      await goto(page, c, target + '/videos/', SEL.readerRow);
+      await goto(page, c, target + '/videos/', '[data-e2e="notfound"]');
       const txt = await bodyText(page);
       c.renderedText = txt.slice(0, 200);
-      assert(c, 'render', '拼错路径要可见地"不存在"（有 404/兜底提示）',
-        !/加载更多|稍后阅读/.test(txt), '现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）');
-      // 原来这里是一条写死 true 的"登记事实"——写死真的判据永远不会红，等于假门禁（同 reviewer 对 #6 的判定）。
-      // 改成可翻转的实测：未知路径确实回了 200 + HTML（这就是 B72 成立的事实本身）
+      const nBlocks = await page.locator('[data-e2e="notfound"]').count();
+      assert(c, 'render', '未知路径出现 404 兜底块（且只有一块）', nBlocks === 1, `notfound 块数=${nBlocks}`);
+      assert(c, 'render', '不再静默渲染成阅读器（页面不含「加载更多/稍后阅读」）',
+        !/加载更多|稍后阅读/.test(txt), '兜底页文本：' + txt.slice(0, 60));
+      // SPA catch-all 仍回 200 + index.html（vercel.json:11），服务端不会 404 ——
+      // 这条判据钉的是「兜底责任在客户端」这个契约，不是"修好了就变 404"的错觉。
       const doc = net.filter((r) => r.kind === 'doc').pop();
-      assert(c, 'data', '实测事实：未知路径返回 200 的 HTML（而非 404）→ 用户看不出自己打错了',
+      assert(c, 'data', 'document 仍是 200 HTML（服务端不 404，兜底由客户端负责）',
         !!doc && doc.status === 200, doc ? `document status=${doc.status}` : '没拦到 document 响应');
     },
   },
 ];
 // known_gap：登记在册、报告与终端都显式印出，但不进门禁（防"为了绿而删剧本"）
-const KNOWN_GAPS = { E10: 'B72' };
+// B72 已于 2026-09-19 修复（main.jsx NotFoundPage），E10 回归门禁位；下一条登记的缺口须来自实测红。
+const KNOWN_GAPS = {};
 
 // ───────────────────────── 运行器 ─────────────────────────
 

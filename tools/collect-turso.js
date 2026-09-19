@@ -1212,7 +1212,7 @@ async function runDailyAi() {
   try {
     const mediaItems = [];
     const mediaVids = await qAll(
-      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name, s.avatar AS source_avatar
        FROM videos v JOIN sources s ON s.id=v.source_id
        WHERE v.published_at >= ? AND v.published_at < ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`,
@@ -1220,10 +1220,10 @@ async function runDailyAi() {
     );
     for (const v of mediaVids) {
       // intro/duration 此前根本没查出来：视频卡只能显示一个光标题，前端没有摘要可渲染
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null });
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null, source_avatar: v.source_avatar || null });
     }
     const mediaPods = await qAll(
-      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name, s.avatar AS source_avatar
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
          AND ${require('../lib/media').audioCoverSql('a.cover')}
@@ -1231,7 +1231,7 @@ async function runDailyAi() {
       [startUtc, endUtc]
     );
     for (const a of mediaPods) {
-      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null });
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null, source_avatar: a.source_avatar || null });
     }
     if (mediaItems.length) {
       sections.push({ column: '视频与播客', desc: '窗口内新视频/播客，点开即可播放收听', items: mediaItems });
@@ -1420,7 +1420,7 @@ async function runMyBrief(analyzed) {
   try {
     const mediaItems = [];
     const mediaVids = await qAll(
-      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name, s.avatar AS source_avatar
        FROM videos v JOIN sources s ON s.id=v.source_id
        WHERE v.published_at >= ? AND v.published_at < ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`,
@@ -1428,10 +1428,10 @@ async function runMyBrief(analyzed) {
     );
     for (const v of mediaVids) {
       // intro/duration 此前根本没查出来：视频卡只能显示一个光标题，前端没有摘要可渲染
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null });
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null, source_avatar: v.source_avatar || null });
     }
     const mediaPods = await qAll(
-      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name, s.avatar AS source_avatar
        FROM articles a JOIN sources s ON s.id=a.source_id
        WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
          AND ${require('../lib/media').audioCoverSql('a.cover')}
@@ -1439,7 +1439,7 @@ async function runMyBrief(analyzed) {
       [startUtc, endUtc]
     );
     for (const a of mediaPods) {
-      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null });
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, source_name: a.source_name, published_at: a.published_at, audio_url: a.cover, cover: null, source_avatar: a.source_avatar || null });
     }
     if (mediaItems.length) sections.media = mediaItems;
   } catch (e) { log(`mybrief 媒体栏失败（不阻断）: ${e.message}`); }
