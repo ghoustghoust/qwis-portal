@@ -57,3 +57,4 @@
 | 手动触发采集 | GH Actions → Run workflow，或 `POST /api/rss/refresh`（标记到期） |
 | 凭据/密钥 | `docs/HANDOVER.md` §1.5（本地文件） |
 | 待开发清单 | `docs/FEATURE_MATRIX.md` §2 |
+| 评测/门禁命令全清单 | `docs/FEATURE_MATRIX.md` §1.5（唯一清单；§3 的十条验收按它跑） |

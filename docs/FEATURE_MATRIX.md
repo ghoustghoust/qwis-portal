@@ -82,6 +82,27 @@
 
 ---
 
+### 1.5 评测与门禁工具链（命令的唯一清单，别处只写"见 §1.5"）
+
+| 命令 | 实现 | 作用 | 状态（2026-09-19） |
+|---|---|---|---|
+| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ 370 条 / 0 红 / 3 跳过 |
+| `node smoke-test.js` | `smoke-test.js` | 生产库副本冒烟 + 自带对抗性段（超长 URL/特殊字符/空内容/并发/错误边界） | ✅ 20/20，零副作用 |
+| `npm run build:vercel` | Vite + `api/` | 云端构建面 | ✅ 通过 |
+| `npm run lint:docs` | `tools/doc-lint.cjs` | 文档门禁六条（头注/悬空/INDEX/归档头/超长/明文密钥） | ✅ 0 错（`docs/eval/` 机器产物不参与悬空扫描） |
+| `npm run eval:preflight` | `tools/eval-preflight.cjs` + `lib/cloud-site.js` + `lib/alert-channels.js` | 环境前置：代理 / **线上 commit==origin/main** / Turso / 隔离 / BL7~BL9 配置真值 | ⛔ 6/9（红=BL7 两条 + BL8，均为待授权，非环境问题） |
+| `npm run eval:whitebox` | `tools/eval-whitebox.cjs` | 三端一致性 W1~W10（含 W3b 假开关、W9 坑↔锁对账、W10 重复判定） | ✅ 全过 |
+| `npm run eval:process` | `tools/eval-process-checks.cjs` | 过程性二值检查（截图/报告/断言数/占位文案/证据路径/退出码/参数出处） | ✅ 7/7 |
+| `npm run eval:f2p` | `tools/eval-f2p.cjs` | 「改前红/改后绿」取证：`--auto-base` 反查基线、自建 worktree、红因分环境/产品，证据落 `docs/eval/f2p/` | ✅ 自检 20 项；b~f 五个锁文件已出证 |
+| `npm run eval:content` | `tools/eval-content.cjs` → `tools/eval-content/*.py` | 41-8 内容质量五维 judge（LLM 分只作趋势与复核触发，不作门禁） | ✅ 已交付；真评需 `--judge`（花配额）+ `--align`（≥3 条产物） |
+| `npm run eval:e2e` | — | 端到端剧本引擎（41-2） | ⛔ **未建**（需后台登录态，无人值守下我不使用你的口令）→ 端到端评测本轮**没做**，前端视觉项仍记为未验收 |
+| `node tools/audit-cloud.js` | 同名 | 云端 19 端点只读巡检（判据：只有 `true` 算通过，未验收单列，有失败退 1） | ✅ 18 通过 / 0 失败 / 1 未验收 |
+
+**基址与凭据口径**：云端域名只在 `lib/cloud-site.js` 一份（Python 侧由 `tools/eval-content.cjs` 经 `CLOUD_SITE` 传入，不许第二份）；
+报警"有出口/已送达"的判据只在 `lib/alert-channels.js` 一份；密钥永不明文回显，日志与报告只留前 4 后 4 指纹。
+
+---
+
 ## 2. 待开发目标（按优先级）
 
 | 优先级 | 事项 | 依赖 | 预期效果 |
