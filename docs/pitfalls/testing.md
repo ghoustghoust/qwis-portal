@@ -103,3 +103,9 @@
 - 规则：①验收轮定义写死为「全剧本 × ≥3 轮 × 真实云端」，三条缺一即 `NOT_ACCEPTANCE` 且**永不返回 0**（返回 2），即便全绿；②`env_lock.json` 与 `report.json` 都落 `acceptance:{ok,reasons}`，交付说明引用端到端前先读这个字段；③`known_gap` 豁免必须校验编号真的登记在 `docs/ISSUES.md`，未登记的豁免等于删剧本，直接 fail_env 中止；④同一口径适用于其它层：白盒/过程/内容检查的自检项数以 `--self-test` 输出为准，文档不复制条数（防漂移）。
 - 案例：`tools/eval-e2e.cjs` 的 `acceptanceOf/gapIssues`；`docs/EVAL_GUIDE.md` §3.7；AGENTS.md §3 第 10 条子项。
 
+### #52 回归测试写生产数据，留下的最坏形态不是"脏值"而是**悬空引用**（2026-09-19 线上实测，B78/B79）
+- 症状：`GET /api/mybrief` 线上回 `{"ok":true,"empty":"no-subscription"}` —— 用户的「我的早报」整页退化成引导态，但库里 `settings.subscription.ids` 看着完全正常（`[2104]`，非空、类型对、能 JSON 解析）。
+- 根因：`regression-my-brief` 会**在真实 Turso 里建一个 TEST 源**、把 `subscription.ids` 指向它，测后 `after()` 删掉源行、再把 `subscription.ids` 还原成"进测试前快照到的值"。只要某次运行在快照之后、还原之前被打断（Ctrl-C、超时、进程被杀），**还原的就是那个 TEST id**，而源行已经删了 →  settings 里留下一个不存在的 id。读层 `resolveSubscriptionIds` 对"键缺失/空数组"有兜底，对"声明了但全部落空"**没有**，于是直接把整页打死。（**是哪一次中断留下的没有日志可查**，这里只声称机制成立，不声称还原了现场经过。）
+- 规则：①测试**不许**在生产库里"建实体 + 让别的表引用它"——要么全程本地文件库（H 组的做法：`file:` + 子进程冷缓存），要么引用只用到测试自己可见的临时键；②`after()` 的还原必须是"删掉我建的东西 + 把引用也清掉"，而不是"写回一个我快照来的值"（快照本身可能已经被上一次中断污染）；③凡是"id 列表"型设置，读层必须对**引用完整性**负责：全部落空要与空集合同等对待，部分落空要忽略坏 id（别让一个坏 id 打死整页）；④这类损伤**接口巡检看不出来**（`/api/mybrief` 回 200 且 `ok:true`），只有按用户语义断言"应该拿到 report 或明确的空态"才看得见。
+- 案例：`lib/source-axes.js#resolveSubscriptionIds`（兜底补齐）、`tests/regression-20260919h.test.js` H6/H7/H8、`docs/ISSUES.md` B78（代码已修）/B79（生产数据修复等你授权）。
+
