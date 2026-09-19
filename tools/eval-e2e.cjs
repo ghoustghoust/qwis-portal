@@ -749,7 +749,7 @@ const SCENARIOS = [
     id: 'E8', title: '七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）',
     async run(page, c, target, net, dict) {
       const list = ['/reader/', '/daily/', '/hot/', '/reading/', '/weekly/', '/mybrief/', '/admin/'];
-      const leaks = []; const errs = []; const texts = {}; const settle = {};
+      const leaks = []; const errs = []; const texts = {}; const settle = {}; const emptyPages = {};
       let adminBtn = '';
       for (const p of list) {
         page.once('pageerror', (e) => errs.push(`${p}: ${String(e.message).slice(0, 100)}`));
@@ -762,6 +762,13 @@ const SCENARIOS = [
         settle[p] = st;
         const txt = await bodyText(page);
         texts[p] = txt.length;
+        // 产物页有**第二种合法态**：显式空态。验收轮实测第 3 轮 `/mybrief/` 只有 218 字——
+        // 那是 B76 归一后页面正常落到「今天订阅源没有新的精选内容」（runner 当批写出的是空态），
+        // 不是白屏。所以判据写成"要么 >500 字内容，要么命中空态文案"：
+        // 白屏/半空壳两条都不满足，仍然红——放行的是合法态，不是把门槛调低。
+        const EMPTY_OK = ['今天订阅源没有新的精选内容', '我的早报需要你的订阅', EMPTY_READING];
+        const es = EMPTY_OK.filter((s) => txt.includes(s));
+        if (es.length) emptyPages[p] = es[0];
         if (p === '/admin/') adminBtn = await page.$$eval('button', (els) => els.map((e) => e.innerText.trim()).filter(Boolean).join(' | ')).catch(() => '');
         leaks.push(...rawKeyHits(txt, dict).map((k) => `${p}→${k}`));
       }
@@ -769,8 +776,10 @@ const SCENARIOS = [
       assert(c, 'render', '七个页面均无 JS pageerror', errs.length === 0, errs.slice(0, 3).join(' , '));
       assert(c, 'render', '后台登录按钮是本地化文案（不是 `login.submit`）',
         /登录|Sign In/i.test(adminBtn) && !adminBtn.includes('login.'), adminBtn.slice(0, 120));
-      assert(c, 'data', '前台六页各渲染出 >500 字可见文本（不白屏）',
-        Object.entries(texts).filter(([p, v]) => p !== '/admin/' && v <= 500).length === 0, JSON.stringify(texts));
+      c.metrics.emptyPages = emptyPages;
+      assert(c, 'data', '前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）',
+        Object.entries(texts).filter(([p, v]) => p !== '/admin/' && v <= 500 && !(p in emptyPages)).length === 0,
+        JSON.stringify(texts) + (Object.keys(emptyPages).length ? ` 空态页=${JSON.stringify(emptyPages)}` : ''));
       // 后台未登录只有登录门（实测 190 字），"不白屏"要判的是**门在不在**而不是字数：
       // 必须有口令输入框 + 有可见文案，否则就是白屏或裸壳
       const hasPwd = await page.locator('input[type=password]').count();
