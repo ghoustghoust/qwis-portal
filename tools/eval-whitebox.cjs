@@ -248,6 +248,24 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   if (entries.length) notes.push(`  i W11：检查了 ${entries.length} 个入口（${entries.join(', ')}）`);
 }
 
+// ── W12 早报「视频与播客」栏的字段对账（B84：三份 mediaItems 实现各写一遍，
+//    消费端依赖的 source_avatar 只要有一处漏带，表现就是"某些天有图标某些天没有"）──
+// 全仓库扫，不写死文件清单：新增副本必须被同一个判据抓到（坑 #40/#41 同族）。
+{
+  const misses = [];
+  let sites = 0;
+  for (const f of walk('server').concat(walk('api'), walk('tools'), walk('lib'))) {
+    if (!/\.(js|cjs)$/.test(f)) continue;
+    read(f).split('\n').forEach((line, i) => {
+      if (!/mediaItems\.push\(/.test(line) || !/kind: '(video|podcast)'/.test(line)) return;
+      sites++;
+      if (!/source_avatar/.test(line)) misses.push(`${f}:${i + 1}`);
+    });
+  }
+  ok('W12', sites >= 6 && misses.length === 0,
+    `mediaItems 构造点 ${sites} 处（<6 说明判据抓不到东西了）；缺 source_avatar：${JSON.stringify(misses)}`);
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

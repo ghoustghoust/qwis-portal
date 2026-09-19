@@ -139,7 +139,9 @@ function App() {
   // B72：此前 else 分支无条件渲染阅读器 —— 拼错 /打错前缀的路径（如 /videos/）会得到一个
   // 看起来正常、但内容完全无关的阅读器页面，用户无从知道自己走错了（vercel.json 的
   // catch-all 让所有路径都回 200 + index.html，服务端也不会 404）。
-  const KNOWN_PREFIXES = ['/daily', '/mybrief', '/weekly', '/hot', '/reading', '/reader', '/admin', '/api'];
+  // `/index.html` 必须算已知：Vercel 确实按字面路径回这个静态文件（线上实测 200 HTML），
+  // 有人存书签/爬虫抓到的就是它；不列进来的话会被自己的 404 误伤成真 404。
+  const KNOWN_PREFIXES = ['/daily', '/mybrief', '/weekly', '/hot', '/reading', '/reader', '/admin', '/api', '/index.html'];
   const known = path === '/' || path === '' || KNOWN_PREFIXES.some((p) => path.startsWith(p));
   let page;
   if (path.startsWith('/daily')) page = <DailyPage />;

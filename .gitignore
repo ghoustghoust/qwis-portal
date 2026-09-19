@@ -48,3 +48,11 @@ docs/HANDOVER.md
 # Python 侧评测工具（41-8）的字节码缓存
 __pycache__/
 *.pyc
+
+# 回归测试的子进程驱动（B77/B83 模板：测试在仓库根写一个 .<用例>-driver-<pid>.cjs 再 spawn，
+# 正常由 after() 删掉；被中断时会留在那里）。这些文件里带本地文件库路径与自签 token，
+# 且是一次性产物——不忽略就等于让下一次 git add -A 有机会把中断残留提交上去。
+.-*-driver-*.cjs
+.*-driver-*.cjs
+.*-fix-*.cjs
+.tmp-*-*.cjs
