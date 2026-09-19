@@ -159,6 +159,10 @@ test('I10 B26：/api/status 首屏不得内联重统计，重统计走独立端�
   assert.ok(!/CASE WHEN/.test(body),
     'B26 根因复发：多条计数被合并成一条无 WHERE 的 CASE 全扫（实测 11.8s，索引全被打掉）');
   assert.ok(slug.includes("path === '/api/status/daily-sources'"), '云端新端点没接进路由表');
+  // 路由接了不等于能访问：漏进 PUBLIC_GET_PATHS 的话线上直接 401，右栏永远拿不到来源榜
+  // （本轮实测踩过：静态判据全绿、curl 一打就是 401）
+  assert.ok(/PUBLIC_GET_PATHS[\s\S]{0,500}'\/api\/status\/daily-sources'/.test(slug),
+    '新端点未进公开白名单 PUBLIC_GET_PATHS → 线上 401');
   // 本地端必须有同名端点：前端两端共用，缺一个就是本地永远显示"加载失败"
   const local = read('server', 'routes', 'status.js');
   assert.ok(local.includes("router.get('/daily-sources'"), '本地端缺 GET /api/status/daily-sources');
