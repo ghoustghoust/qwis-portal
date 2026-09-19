@@ -1,0 +1,363 @@
+{
+  "target": "http://127.0.0.1:3999",
+  "startedAt": "2026-09-19T03:41:07.153Z",
+  "summary": {
+    "total": 1,
+    "pass": 0,
+    "failProduct": 1,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "fail_product",
+      "why": "data:每个页面都渲染出 >500 字可见文本（不白屏）〔{\"/reader/\":332,\"/daily/\":616,\"/hot/\":6871,\"/reading/\":5541,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2346}〕",
+      "assertions": 5,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": true,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 "
+        },
+        {
+          "kind": "data",
+          "label": "每个页面都渲染出 >500 字可见文本（不白屏）",
+          "ok": false,
+          "detail": "{\"/reader/\":332,\"/daily/\":616,\"/hot/\":6871,\"/reading/\":5541,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2346}"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 65 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 50 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 41 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 38 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 32 | 进入 | 暂停组 | 调频 | failover | 重点 1 | 订阅 | 屏蔽 0 | 收录 35 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 13 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 恢复组 | 调频 | failover | 重点 1 | 订阅 | 屏蔽 0 | 收录 14 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 6 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 4 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 2 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 8 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 3 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 3 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 1 | 进入 | 恢复组 | 调频 | failover | 重点 4 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 暂停组 | 调频 | failover | 重点 2 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 恢复组 | 调频 | failover | 重点 4 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 5 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 5 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 4 | 进入 | 恢复组 | 调频 | failover | 登录",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 \n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 \n每个页面都渲染出 >500 字可见文本（不白屏） {\"/reader/\":332,\"/daily/\":616,\"/hot/\":6871,\"/reading/\":5541,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2346}\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 45,
+          "ms": 5,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1612,
+          "ms": 4,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 7,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 10,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 149,
+          "ms": 9,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T03:41:07.495Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 60186,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 60,
+          "ms": 6,
+          "params": {
+            "tab": {
+              "value": "today",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 5,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 3,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 46092,
+          "ms": 9,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 404,
+          "bytes": 32,
+          "ms": 3,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 12444,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 5,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 2,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 20885,
+          "ms": 7,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 1,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 5624,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://tieba.baidu.com/favicon.ico",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 3829,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://ifeng.com/favicon.ico",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 200,
+          "bytes": 372589,
+          "ms": 24,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 23,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 45,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T034107/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T034107/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T034107/report.json"
+      ],
+      "metrics": {},
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    }
+  ]
+}

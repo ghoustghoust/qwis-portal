@@ -1,0 +1,2007 @@
+{
+  "target": "http://127.0.0.1:3999",
+  "startedAt": "2026-09-19T03:06:59.297Z",
+  "summary": {
+    "total": 9,
+    "pass": 1,
+    "failProduct": 7,
+    "failEnv": 1,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [
+      "E10(B72)"
+    ],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E1",
+      "title": "阅读器今日流：渲染 ↔ 页面自己拿到的 /api/articles 对账",
+      "status": "fail_product",
+      "why": "api:页面自身发出的 /api/articles 返回 200 且带 items〔status=200 n=0〕 / render:列表渲染出行（div.cursor-pointer.flex.gap-2）〔rows=0〕 / render:渲染文本非占位（不是「加载中…」）〔〕 / data:API 首屏标题确实出现在 DOM（≥3 条命中）〔前 10 条命中 0〕",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面自身发出的 /api/articles 返回 200 且带 items",
+          "ok": false,
+          "detail": "status=200 n=0"
+        },
+        {
+          "kind": "api",
+          "label": "每条含 id + 非空 title（B27 类字段形状漂移在此红）",
+          "ok": true,
+          "detail": "首条键=无"
+        },
+        {
+          "kind": "render",
+          "label": "列表渲染出行（div.cursor-pointer.flex.gap-2）",
+          "ok": false,
+          "detail": "rows=0"
+        },
+        {
+          "kind": "render",
+          "label": "渲染文本非占位（不是「加载中…」）",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "DOM 行数 ↔ API items 数（±3 分页容差）",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "API 首屏标题确实出现在 DOM（≥3 条命中）",
+          "ok": false,
+          "detail": "前 10 条命中 0"
+        }
+      ],
+      "renderedText": "",
+      "assertTargets": "页面自身发出的 /api/articles 返回 200 且带 items status=200 n=0\n每条含 id + 非空 title（B27 类字段形状漂移在此红） 首条键=无\n列表渲染出行（div.cursor-pointer.flex.gap-2） rows=0\n渲染文本非占位（不是「加载中…」） \nDOM 行数 ↔ API items 数（±3 分页容差） DOM=0 API=0\nAPI 首屏标题确实出现在 DOM（≥3 条命中） 前 10 条命中 0",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1612,
+          "ms": 7,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "未登记：请在 QUERY_SRC 补 /api/groups 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13250,
+          "ms": 7,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1446,
+          "ms": 13,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 149,
+          "ms": 11,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T03:06:59.796Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 60186,
+          "ms": 11,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 60,
+          "ms": 10,
+          "params": {
+            "tab": {
+              "value": "today",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 10,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 7,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E1-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E1-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 45036
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E2",
+      "title": "阅读器「视频」Tab：切过去渲染的是视频卡，文章行清零",
+      "status": "fail_product",
+      "why": "render:切换前渲染的是文章流〔〕",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "切换前渲染的是文章流",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "点得到「视频」筛选",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/videos 返回 200 且带 items",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "data",
+          "label": "视频网格渲染出卡片（不是文章行）",
+          "ok": true,
+          "detail": "div.card.card-lift.cursor-pointer.group.overflow-hidden ×28"
+        },
+        {
+          "kind": "render",
+          "label": "视频卡文本非占位",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "视频卡数 ↔ 页面响应 items 数（±3 分页）",
+          "ok": true,
+          "detail": "DOM=28 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "切换后文章行已消失（两类列表没同时渲染）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "22:15 去了一趟山西。 影视飓风 · 7天前\nWhy Scientific Taste Must Be Learned Through Practice — Edward Hughes M Machine Learning Street Talk · 7天前\nGPT-6 Astra added unexpected details O OpenAI · 7天前\nFrom pilot to broad adoption: Avoid the conditions trap G GitHub · 7天前\nGPT-Live-1 is now in the API O OpenAI · 7天前\nGPT-6 Astra handles the editing busywork O OpenAI · 7天前\nLlama Loves Pirates — Tom McGrath M Machine Learning Street Talk · 7天前\nGPT-6 Astra built a font playground O OpenAI · 7天前",
+      "assertTargets": "切换前渲染的是文章流 \n点得到「视频」筛选 \n页面发出的 /api/videos 返回 200 且带 items status=200 n=30\n视频网格渲染出卡片（不是文章行） div.card.card-lift.cursor-pointer.group.overflow-hidden ×28\n视频卡文本非占位 \n视频卡数 ↔ 页面响应 items 数（±3 分页） DOM=28 API=30\n切换后文章行已消失（两类列表没同时渲染） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 350,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "video",
+              "source": "未登记：请在 QUERY_SRC 补 /api/groups 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/videos",
+          "status": 200,
+          "bytes": 15293,
+          "ms": 26,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/VideoGrid.jsx:57"
+            }
+          }
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 60,
+          "ms": 3,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 2,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 11619,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/P4bYjTJvD28/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9497,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/OSaP6bJoU44/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 19006,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/lfsWnaM2vmg/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 13515,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/ZlvkQYZo3ZE/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10011,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/4bGb2OjU5tA/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 8165,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/X7gS0-Xjz2M/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 21694,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/P7bxbDSnZRM/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 21281,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bbmgWQKZ5ZU/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10816,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/0NUm552iB3U/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 11862,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/BzfsGEr8lFg/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10539,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/KjPqQksDnvA/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9073,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2-lA7Escqns/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 18092,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/aWz3BWj3d00/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17658,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/MujaqZS9wtM/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14081,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/TkxGupjwdxE/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 13078,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2YHa1vhnmK0/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14168,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/PbfXbDbCthA/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12073,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/pjv-mp5J4hA/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 6650,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/SNhmFJzieR4/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17267,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/UA0UkPombNk/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 8200,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/5UW6P0R_HT4/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 18167,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/qg_54P-oPgI/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10935,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/mPAmXQnhv2E/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9710,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/UXitU2EXay0/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 13237,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/0XLGisanEAs/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12493,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/3muTUwNkrAI/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10487,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/W2jW4_WXI8g/hqdefault.jpg",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E2-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E2-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 45031
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E3",
+      "title": "每日早报：栏目 pill 条数逐列 ↔ 页面响应 report.sections[].column",
+      "status": "fail_product",
+      "why": "api:report 带 schemaVersion（W2 读侧档位口径的前提字段）〔〕 / render:日报正文无占位串〔〕",
+      "assertions": 11,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/daily 返回 200 且 report.sections 非空",
+          "ok": true,
+          "detail": "status=200 sections=5"
+        },
+        {
+          "kind": "api",
+          "label": "sections 形状是 {column, desc, items[]}（字段漂移会在这里红）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "report 带 schemaVersion（W2 读侧档位口径的前提字段）",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "日报列表渲染",
+          "ok": true,
+          "detail": "div.cursor-pointer.flex.gap-3"
+        },
+        {
+          "kind": "render",
+          "label": "日报正文无占位串",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "≥3 个栏目 pill 在页面上带条数（档位分层可见，B39）",
+          "ok": true,
+          "detail": "可见 5/5：培训课程发布=0 , 重点更新=0 , AI技术=0 , 其它重要=0 , 茧房外 · 你圈子之外的热点=5"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「培训课程发布」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「重点更新」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「AI技术」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「其它重要」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「茧房外 · 你圈子之外的热点」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=5 API=5"
+        }
+      ],
+      "renderedText": "1 沙特首都利雅得遭空袭 6 源 · 2分钟前\n2 何立峰率团赴纽约与美方举行经贸磋商 3 源 · 3分钟前\n3 媒体称欧盟希中国自愿限制混动汽车对欧出口，商务部：坚决反对 3 源 · 8分钟前\n4 中国男篮不敌日本男篮，未能晋级亚运男篮决赛 2 源 · 1分钟前\n5 特朗普：已与丹麦达成协议 美国获得对格陵兰岛的永久安全控制权 2 源 · 1分钟前",
+      "assertTargets": "页面发出的 /api/daily 返回 200 且 report.sections 非空 status=200 sections=5\nsections 形状是 {column, desc, items[]}（字段漂移会在这里红） \nreport 带 schemaVersion（W2 读侧档位口径的前提字段） \n日报列表渲染 div.cursor-pointer.flex.gap-3\n日报正文无占位串 \n≥3 个栏目 pill 在页面上带条数（档位分层可见，B39） 可见 5/5：培训课程发布=0 , 重点更新=0 , AI技术=0 , 其它重要=0 , 茧房外 · 你圈子之外的热点=5\n栏目「培训课程发布」pill ↔ API items 数 DOM=0 API=0\n栏目「重点更新」pill ↔ API items 数 DOM=0 API=0\n栏目「AI技术」pill ↔ API items 数 DOM=0 API=0\n栏目「其它重要」pill ↔ API items 数 DOM=0 API=0\n栏目「茧房外 · 你圈子之外的热点」pill ↔ API items 数 DOM=5 API=5",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 3,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 46092,
+          "ms": 7,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E3-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E3-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 149
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E4",
+      "title": "热点榜三视图：每个 tab 渲染的确实是该 tab 的数据（B28 列表↔计数同源）",
+      "status": "fail_product",
+      "why": "data:「热搜事件」渲染条数 ↔ 页面响应条数〔DOM=0 API=30〕 / data:「热搜事件」DOM 与该 tab 的数据同源〔前 8 条命中 0〕",
+      "assertions": 16,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "热点榜默认视图渲染",
+          "ok": true,
+          "detail": "article.card.card-lift.cursor-pointer.p-4"
+        },
+        {
+          "kind": "api",
+          "label": "tab=featured 接口 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 精选」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 精选」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=30"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 精选」渲染条数 ↔ 页面响应条数",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 精选」DOM 与该 tab 的数据同源",
+          "ok": true,
+          "detail": "前 8 条命中 8"
+        },
+        {
+          "kind": "api",
+          "label": "tab=all 接口 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 信息实时流」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 信息实时流」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=30"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 信息实时流」渲染条数 ↔ 页面响应条数",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 信息实时流」DOM 与该 tab 的数据同源",
+          "ok": true,
+          "detail": "前 8 条命中 8"
+        },
+        {
+          "kind": "api",
+          "label": "tab=hotlist 接口 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「热搜事件」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「热搜事件」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=30"
+        },
+        {
+          "kind": "data",
+          "label": "「热搜事件」渲染条数 ↔ 页面响应条数",
+          "ok": false,
+          "detail": "DOM=0 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "「热搜事件」DOM 与该 tab 的数据同源",
+          "ok": false,
+          "detail": "前 8 条命中 0"
+        }
+      ],
+      "renderedText": "IT之家（RSS） AI 评分 65/100 ♡ 25 位菲尔兹奖得主联合发表声明警告 AI 在数学领域严重错位 当地时间 9 月 11 日，陶哲轩、邓煜、Peter Scholze 等 25 位菲尔兹奖得主联合发表声明《A Severe Misalignment of AI in Mathematics》，警告 AI 公司与数学界目标严重错位。 大佬观点 推理 X：FRANK WANG 玉伯 (@LIFESINGER) AI 评分 47/100 ♡ 陶哲轩谈数学研究如何用 AI：三个比喻 陶哲轩与女儿 Riley 对谈如何在数学研究里用 AI，给出三个比喻：AI 像功率惊人的喷气发动机，但没人会把它绑在背上飞，真正需要的是让它安全可靠的&quot;飞机&quot;；科研过去像出水干净但太慢的小水龙头，AI 像量大却浑浊的消防水管，机会在于加一道滤网。AI 擅长翻遍成千上万个例子的蛮力活，",
+      "assertTargets": "热点榜默认视图渲染 article.card.card-lift.cursor-pointer.p-4\ntab=featured 接口 200 且非空 status=200 n=30\n点得到「AI 精选」 \n「AI 精选」页面自己的请求返回非空 n=30\n「AI 精选」渲染条数 ↔ 页面响应条数 DOM=30 API=30\n「AI 精选」DOM 与该 tab 的数据同源 前 8 条命中 8\ntab=all 接口 200 且非空 status=200 n=30\n点得到「AI 信息实时流」 \n「AI 信息实时流」页面自己的请求返回非空 n=30\n「AI 信息实时流」渲染条数 ↔ 页面响应条数 DOM=30 API=30\n「AI 信息实时流」DOM 与该 tab 的数据同源 前 8 条命中 8\ntab=hotlist 接口 200 且非空 status=200 n=30\n点得到「热搜事件」 \n「热搜事件」页面自己的请求返回非空 n=30\n「热搜事件」渲染条数 ↔ 页面响应条数 DOM=0 API=30\n「热搜事件」DOM 与该 tab 的数据同源 前 8 条命中 0",
+      "requests": [
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=featured",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 126,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "api/[...slug].js:384"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=all",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 123,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:384"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=hotlist",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 124,
+          "params": {
+            "tab": {
+              "value": "hotlist",
+              "source": "api/[...slug].js:384"
+            }
+          }
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 7,
+          "params": {
+            "tab": {
+              "value": "hotlist",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 7948,
+          "ms": 5,
+          "params": {
+            "domain": {
+              "value": "all",
+              "source": "web/src/pages/HotPage.jsx:200"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E4-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E4-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 424
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E5",
+      "title": "我的阅读：type 筛选后 DOM 与 /api/reading 计数逐个同源（B60 四处口径）",
+      "status": "fail_product",
+      "why": "api:/api/reading 两种 type 均 200 且带 counts〔{}〕 / api:type=article 与 type=all 返回不同集合（筛选没退化成 all）〔article=0 all=0〕 / render:筛选后仍是真实标题（非占位）〔〕",
+      "assertions": 10,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "/api/reading 两种 type 均 200 且带 counts",
+          "ok": false,
+          "detail": "{}"
+        },
+        {
+          "kind": "api",
+          "label": "type=article 与 type=all 返回不同集合（筛选没退化成 all）",
+          "ok": false,
+          "detail": "article=0 all=0"
+        },
+        {
+          "kind": "api",
+          "label": "type=article 的 counts.all 与 type=all 不同（口径真的生效）",
+          "ok": true,
+          "detail": "article=undefined all=undefined"
+        },
+        {
+          "kind": "render",
+          "label": "我的阅读渲染出卡片",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「文章」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "筛选后仍是真实标题（非占位）",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "筛选后行数 ↔ 页面响应 items 数",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        },
+        {
+          "kind": "data",
+          "label": "三个 tab 的计数 pill 与 API counts 逐项同源（B60 根因就是各写一份）",
+          "ok": true,
+          "detail": "DOM={\"全部\":129,\"已收藏\":3,\"已读\":129} API={\"all\":129,\"favorited\":3,\"read\":129}"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「视频」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "视频筛选的 DOM 条数与接口一致（0 则必须是显式空态）",
+          "ok": true,
+          "detail": "DOM=0 API=0"
+        }
+      ],
+      "renderedText": "",
+      "assertTargets": "/api/reading 两种 type 均 200 且带 counts {}\ntype=article 与 type=all 返回不同集合（筛选没退化成 all） article=0 all=0\ntype=article 的 counts.all 与 type=all 不同（口径真的生效） article=undefined all=undefined\n我的阅读渲染出卡片 \n点得到类型筛选「文章」 \n筛选后仍是真实标题（非占位） \n筛选后行数 ↔ 页面响应 items 数 DOM=0 API=0\n三个 tab 的计数 pill 与 API counts 逐项同源（B60 根因就是各写一份） DOM={\"全部\":129,\"已收藏\":3,\"已读\":129} API={\"all\":129,\"favorited\":3,\"read\":129}\n点得到类型筛选「视频」 \n视频筛选的 DOM 条数与接口一致（0 则必须是显式空态） DOM=0 API=0",
+      "requests": [
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all",
+          "status": 0,
+          "bytes": 0,
+          "ms": 4,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=article",
+          "status": 0,
+          "bytes": 0,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "article",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=video",
+          "status": 200,
+          "bytes": 82,
+          "ms": 6,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "video",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 82,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "video",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 82,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "video",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E5-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E5-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 268
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E6",
+      "title": "我的早报 + 精选周刊：产物页渲染、条数与产物对账、无污染串",
+      "status": "fail_env",
+      "why": "截图仅 7471B（<10KB ≈ 没渲染出东西）",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的早报渲染出内容卡",
+          "ok": false,
+          "detail": "article.card.card-lift.cursor-pointer.overflow-hidden ×0"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/mybrief 返回 200 且带 report",
+          "ok": false,
+          "detail": "没拦到该请求"
+        },
+        {
+          "kind": "render",
+          "label": "周刊渲染出标题层级",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/weekly 返回 200 且 report.storylines 非空",
+          "ok": false,
+          "detail": "没拦到该请求"
+        },
+        {
+          "kind": "data",
+          "label": "页面显示的期号 = API report.issue",
+          "ok": false,
+          "detail": "issue=undefined"
+        },
+        {
+          "kind": "data",
+          "label": "周刊 storylines 出现在页面上（≥3 条）",
+          "ok": false,
+          "detail": "前 6 条命中 0"
+        },
+        {
+          "kind": "render",
+          "label": "AI 产物无污染串（围栏残留 / undefined / NaN / [object Object]）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "\nCannot GET /weekly/",
+      "assertTargets": "我的早报渲染出内容卡 article.card.card-lift.cursor-pointer.overflow-hidden ×0\n页面发出的 /api/mybrief 返回 200 且带 report 没拦到该请求\n周刊渲染出标题层级 \n页面发出的 /api/weekly 返回 200 且 report.storylines 非空 没拦到该请求\n页面显示的期号 = API report.issue issue=undefined\n周刊 storylines 出现在页面上（≥3 条） 前 6 条命中 0\nAI 产物无污染串（围栏残留 / undefined / NaN / [object Object]） ",
+      "requests": [],
+      "observedRequests": [],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E6-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E6-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 45029
+      },
+      "repeatStatuses": [
+        "fail_env"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E7",
+      "title": "客户端路由与深链：点导航不整页刷新、刷新不丢位置（P0-5 / 38-3 前置）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "点得到左栏「每日早报」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "URL 变 /daily/ 且日报行出现",
+          "ok": true,
+          "detail": "http://127.0.0.1:3999/daily/ rows=5"
+        },
+        {
+          "kind": "data",
+          "label": "客户端路由（未新增整页导航，JS 上下文与 api 缓存跨页存活）",
+          "ok": true,
+          "detail": "navigation 1→1"
+        },
+        {
+          "kind": "api",
+          "label": "切页后页面自己重新取到 /api/daily",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "深链 + 刷新仍停在热点榜（有内容不是空壳）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "刷新后公共数据链路仍活着（/api/settings 由 store 拉取）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n🔥 热点榜\n全源聚合 · 只呈现 AI 相关动态\nAI 精选\nAI 信息实时流\n热搜事件\n当前热点\n完整榜单 →\n1\n沙特首都利雅得遭空袭\n45 热度\n2\n何立峰率团赴纽约与美方举行经贸磋商\n7 热度\n3\n媒体称欧盟希中国自愿限制混动汽车对欧出口，商务部：坚决反对\n7 热度\n4\n特朗普禁止CNN等三家媒体进入白宫采访\n3 热度\n5\n中国男篮不敌日本男篮，未能晋级亚运男篮决赛\n3 热度\n检索\n9月12日 星期六\n· 30 条\n▼\n12:55\nIT之家（RSS）\nAI 评分 65/100\n♡\n25 位菲尔兹奖得主联合发表声明警告 AI 在数",
+      "assertTargets": "点得到左栏「每日早报」 \nURL 变 /daily/ 且日报行出现 http://127.0.0.1:3999/daily/ rows=5\n客户端路由（未新增整页导航，JS 上下文与 api 缓存跨页存活） navigation 1→1\n切页后页面自己重新取到 /api/daily \n深链 + 刷新仍停在热点榜（有内容不是空壳） \n刷新后公共数据链路仍活着（/api/settings 由 store 拉取） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/hot/groups",
+          "status": 404,
+          "bytes": 32,
+          "ms": 4,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 7948,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 5,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 1,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 404,
+          "bytes": 32,
+          "ms": 3,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 7948,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 5,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 2,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E7-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E7-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 275
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "fail_product",
+      "why": "render:七个页面都没有未挂 Provider 造成的裸 key 泄漏〔/admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit〕 / render:后台登录按钮是本地化文案（不是 `login.submit`）〔源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 〕 / data:每个页面都渲染出 >500 字可见文本（不白屏）〔{\"/reader/\":331,\"/daily/\":612,\"/hot/\":6889,\"/reading/\":5543,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2384}〕",
+      "assertions": 5,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": false,
+          "detail": "/admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit"
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": false,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 "
+        },
+        {
+          "kind": "data",
+          "label": "每个页面都渲染出 >500 字可见文本（不白屏）",
+          "ok": false,
+          "detail": "{\"/reader/\":331,\"/daily/\":612,\"/hot/\":6889,\"/reading/\":5543,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2384}"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 65 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 50 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 41 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 38 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 32 | 进入 | 暂停组 | 调频 | failover | 重点 1 | 订阅 | 屏蔽 0 | 收录 35 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 13 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 恢复组 | 调频 | failover | 重点 1 | 订阅 | 屏蔽 0 | 收录 14 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 6 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 4 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 2 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 8 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 3 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 3 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 1 | 进入 | 恢复组 | 调频 | failover | 重点 4 | 订阅 | 屏蔽 0 | 收录 12 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 暂停组 | 调频 | failover | 重点 2 | 订阅 | 屏蔽 0 | 收录 10 | 进入 | 恢复组 | 调频 | failover | 重点 4 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 7 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 5 | 进入 | 暂停组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 5 | 进入 | 恢复组 | 调频 | failover | 重点 0 | 订阅 | 屏蔽 0 | 收录 4 | 进入 | 恢复组 | 调频 | failover | login.submit",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 /admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit\n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源\n584 | 检索 | 平台接入 | 重点 0 | 订阅 | 屏蔽 0 | 收录 254 | 进入 | 恢复组 | 调频 | failover | 重点 0 \n每个页面都渲染出 >500 字可见文本（不白屏） {\"/reader/\":331,\"/daily/\":612,\"/hot/\":6889,\"/reading/\":5543,\"/weekly/\":19,\"/mybrief/\":20,\"/admin/\":2384}\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 45,
+          "ms": 4,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1612,
+          "ms": 7,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "未登记：请在 QUERY_SRC 补 /api/groups 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 3,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 149,
+          "ms": 3,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T03:12:39.320Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 60186,
+          "ms": 13,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 60,
+          "ms": 0,
+          "params": {
+            "tab": {
+              "value": "today",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 16,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 10,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 10,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 9,
+          "params": {}
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 46092,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 404,
+          "bytes": 32,
+          "ms": 3,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 7948,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 20221,
+          "ms": 6,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 91,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 90,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 20885,
+          "ms": 6,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 1,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 3829,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://ifeng.com/favicon.ico",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 5624,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://tieba.baidu.com/favicon.ico",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 502,
+          "bytes": 35,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://zaobao.com/favicon.ico",
+              "source": "未登记：请在 QUERY_SRC 补 /api/img 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 200,
+          "bytes": 372589,
+          "ms": 25,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 24,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 45,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {},
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E9",
+      "title": "点开一篇文章：详情正文渲染（B52 类\"接口 200 但页面空\"）",
+      "status": "fail_product",
+      "why": "render:列表有可点的行〔〕 / render:点得到第一行〔〕 / api:页面发出的详情请求返回 200 且 content_html 非空〔/api/articles?tab=all&sort=smart&since=2026-09-18T03%3A13%3A00.898Z&dedup=1 status=200 len=0〕 / render:详情面板展开后文本显著增长且非占位〔文本 331→331〕",
+      "assertions": 5,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "列表有可点的行",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "点得到第一行",
+          "ok": false,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的详情请求返回 200 且 content_html 非空",
+          "ok": false,
+          "detail": "/api/articles?tab=all&sort=smart&since=2026-09-18T03%3A13%3A00.898Z&dedup=1 status=200 len=0"
+        },
+        {
+          "kind": "render",
+          "label": "详情面板展开后文本显著增长且非占位",
+          "ok": false,
+          "detail": "文本 331→331"
+        },
+        {
+          "kind": "data",
+          "label": "详情标题与列表首条同源",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n0\n检索\n0\n稍后阅读\n2\n历史存档\n105\n分组\n订阅源\n暂无订阅，去管理后台（/admin/）添加\n今日\n合并\n筛选\n今日早报\n4分钟前\n读全文 →\n今日暂无新内容——去「检索」查更早的，或等下一轮采集\n从左侧选择文章，或点文件夹读聚合流\n本周概览\n未读文章\n0\n今日新增\n0\n近7天更新\n37\n入早报条目\n5\n近7天入早报 · 来源榜\n本期暂无\n使用提示\n💡\n点左侧文件夹即可读整个分组的聚合资讯，不用逐源点开\n💡\n开启「合并」开关，同一事件的多信源报道会折叠为一条\n💡\n筛选条件可在筛选面板里「保存为视图」，之后一键复用\n💡\n热榜类内容在「热点榜」页浏览，不占这里的未读数",
+      "assertTargets": "列表有可点的行 \n点得到第一行 \n页面发出的详情请求返回 200 且 content_html 非空 /api/articles?tab=all&sort=smart&since=2026-09-18T03%3A13%3A00.898Z&dedup=1 status=200 len=0\n详情面板展开后文本显著增长且非占位 文本 331→331\n详情标题与列表首条同源 ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1612,
+          "ms": 3,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "未登记：请在 QUERY_SRC 补 /api/groups 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 13266,
+          "ms": 3,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "未登记：请在 QUERY_SRC 补 /api/sources 的构造行号"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 1487,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 149,
+          "ms": 2,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T03:13:00.898Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 60186,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 60,
+          "ms": 4,
+          "params": {
+            "tab": {
+              "value": "today",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 893,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 1941,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/since",
+          "status": 200,
+          "bytes": 38,
+          "ms": 1,
+          "params": {
+            "ts": {
+              "value": "2026-09-12T04:55:04.000Z",
+              "source": "web/src/hooks/useRealtime.js:32"
+            },
+            "tab": {
+              "value": "today",
+              "source": "web/src/hooks/useRealtime.js:32"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E9-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E9-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 45032
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E10",
+      "title": "未知路径 /videos/：不得静默渲染成阅读器（B72 登记不门禁）",
+      "status": "fail_env",
+      "why": "截图仅 7455B（<10KB ≈ 没渲染出东西）",
+      "assertions": 2,
+      "assertionKinds": [
+        "render",
+        "data"
+      ],
+      "uncoveredKinds": [
+        "api"
+      ],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "拼错路径要可见地\"不存在\"（有 404/兜底提示）",
+          "ok": true,
+          "detail": "现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）"
+        },
+        {
+          "kind": "data",
+          "label": "未知路径不返回 200 HTML 兜底",
+          "ok": true,
+          "detail": "由 rewrite 决定，本条只登记事实"
+        }
+      ],
+      "renderedText": "Cannot GET /videos/",
+      "assertTargets": "拼错路径要可见地\"不存在\"（有 404/兜底提示） 现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）\n未知路径不返回 200 HTML 兜底 由 rewrite 决定，本条只登记事实",
+      "requests": [],
+      "observedRequests": [],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T030659/screens/E10-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T030659/screens/E10-r1.png",
+        "docs\\eval\\e2e\\20260919T030659/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 45014
+      },
+      "repeatStatuses": [
+        "fail_env"
+      ],
+      "knownGap": {
+        "ref": "B72",
+        "why": "已登记缺口（不计入门禁，禁止删剧本）"
+      },
+      "screenshots": 1
+    }
+  ]
+}

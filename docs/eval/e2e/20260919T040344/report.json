@@ -1,0 +1,2328 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T04:03:45.105Z",
+  "summary": {
+    "total": 9,
+    "pass": 5,
+    "failProduct": 4,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [
+      "E10(B72)"
+    ],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E1",
+      "title": "阅读器今日流：渲染 ↔ 页面自己拿到的 /api/articles 对账",
+      "status": "pass",
+      "why": "",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面自身发出的 /api/articles 返回 200 且带 items",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "api",
+          "label": "每条含 id + 非空 title（B27 类字段形状漂移在此红）",
+          "ok": true,
+          "detail": "首条键=id,source_id,title,translated_title,url,author"
+        },
+        {
+          "kind": "render",
+          "label": "列表渲染出行（div.card.card-lift.p-3.cursor-pointer.relative）",
+          "ok": true,
+          "detail": "rows=30"
+        },
+        {
+          "kind": "render",
+          "label": "文章行选择器没有落到侧栏（防\"数错元素\"式假对账）",
+          "ok": true,
+          "detail": "侧栏内命中 0"
+        },
+        {
+          "kind": "render",
+          "label": "渲染文本不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "DOM 行数 ↔ API items 数（满一页按 ±1，不满一页严格相等）",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "API 首屏前 10 条标题渲染到列表（≥8 条）",
+          "ok": true,
+          "detail": "前 10 条命中 10"
+        }
+      ],
+      "renderedText": "Reddit · Linux, Self-Hosted, DevOps &amp; AI · 4分钟前 Building a flight simulator guided by an implanted fly brain to hit a ship [P] The concept is to make fly guided anti ship missile. The Front legs of the fly grip the flight stick while its middle legs of fly step on the rudder pedals. I coded a base engine for realistic avionic 334 字 · 约 1 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 4分钟前 capture-input implement for wlroots (unfinished) I am about to implement the input-capture portal for xdg-desktop-portal, that works for wlroots, for example, sway, hyperland. The pr is here 403 字 · 约 1 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 32分钟前 A name to call a environment with window manager? If my Linux desktop does not use GNOME, KDE, Cosmic (any full DE), but only use a window manager (like Niri, Hyperland), with a desktop shell (like Noctalia, DankMaterialShell). What is a general name 275 字 · 约 1 分钟\n创见思考——怎样度过这一生 · 54分钟前 配速：下午的判断力，是上午花掉的 人对自己状态下滑的解释，往往取最省事的那一个：下午三四点做不动了，是年纪上来了；晚上看不进书，是这一天太累。这类解释听着顺理成章，也确实不假，只是它把问题算在了总量上——干得太多，所以不行了。 2703 字 · 约 7 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 55分钟前 Cactus Needle 3? Hello friends. These are just exciting times I saw the release of Needle 3 and was wondering if anyone has tried using it in a harness yet or found other fun things to do with it? I’m kind of trying t 411 字 · 约 1 分钟\nAl Jazeera – Breaking News, World News and Video from Al Jazeera · 1h 报道：伊朗战争美军死亡人数超五角大楼所称 Report: More US troops have died in Iran war than Pentagon says The Pentagon publicly lists 18 US military deaths since the Iran war began. 75 字 · 约 1 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 1h AcreetionOS: A Community Linux Distro Looking for Contributors and FOSS Collaboration My dad and I work on a Linux distro called AcreetionOS together, but I&#39;m not really posting this as a &quot;come use my distro&quot; advertisement. 7199 字 · 约 18 分钟\n第一财经 · 1h 中国男篮赛后发声 9月18日晚的亚运会男篮半决赛中，中国队以77:97不敌东道主日本队，连续第二届被挡在亚运会决赛门外。 505 字 · 约 1 分钟\nAl Jazeera – Breaking News, World News and Video from Al Jazeera · 1h 数百人参加反杀女罪追悼会，南非民众宣泄愤怒 South Africans voice their anger as hundreds hold femicide vigil Hundreds of people gathered at the University of Cape Town on Friday at a vigil for victims of femicide in South Africa. 120 字 · 约 1 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 1h Anthropic just named seven Chinese AI labs for stealing Claude's reasoning. I read the full report and the Qwen part doesn't hold up the way the headline does. Anthropic published a 154 page threat intelligence report in September naming seven Chinese labs for what they call illicit distillation, and the internet is already treating all seven as guilty. I re 68 4953 字 · 约 12 分钟\nHacker News 首页 · 1h SDCC – 小型设备 C 编译器 SDCC – Small Device C Compiler Article URL: https://sdcc.sourceforge.net/ 126 字 · 约 1 分钟\nReddit · Linux, Self-Hosted, DevOps &amp; AI · 1h Training a Neural Network on AMD MI50s Using Vulkan: Proof of ConceptOr: Why I Stopped Listening and Just Did It Note: This writeup was put together with the help of AI. 1.3 万字 · 约 31 分钟",
+      "assertTargets": "页面自身发出的 /api/articles 返回 200 且带 items status=200 n=30\n每条含 id + 非空 title（B27 类字段形状漂移在此红） 首条键=id,source_id,title,translated_title,url,author\n列表渲染出行（div.card.card-lift.p-3.cursor-pointer.relative） rows=30\n文章行选择器没有落到侧栏（防\"数错元素\"式假对账） 侧栏内命中 0\n渲染文本不是占位文案 \nDOM 行数 ↔ API items 数（满一页按 ±1，不满一页严格相等） DOM=30 API=30\nAPI 首屏前 10 条标题渲染到列表（≥8 条） 前 10 条命中 10",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 204,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 22439,
+          "ms": 12,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T04:03:48.272Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17187,
+          "ms": 19,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSi2erOaUAAdCHE.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 24,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1783,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1897858917507776512/TRVTyKFk_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561666,
+          "ms": 643,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E1-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E1-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2398
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E2",
+      "title": "阅读器「视频」Tab：切过去渲染的是视频卡，文章行清零",
+      "status": "pass",
+      "why": "",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "切换前渲染的是文章流",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "点得到「视频」筛选",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/videos 返回 200 且带 items",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "data",
+          "label": "视频网格渲染出卡片（不是文章行）",
+          "ok": true,
+          "detail": "div.card.card-lift.cursor-pointer.group.overflow-hidden ×28"
+        },
+        {
+          "kind": "render",
+          "label": "视频卡文本不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "视频卡数 ↔ 页面响应 items 数（±3 分页）",
+          "ok": true,
+          "detail": "DOM=28 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "切换后文章行已消失（两类列表没同时渲染）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "This AI Trick Magically Creates New Camera Angles C Curious Refuge · 3h\nI Can't Believe Sam, Dario, and Elon Agree T Theo - t3․gg · 4h\nThe first \"typesafe\" model?? Let's talk about Jev T Theo - t3․gg · 5h\nThe Big Problem With Taking Peptides C Chris Williamson · 5h\nNVIDIA PAIR Connects Your Computers for Local AI M Matthew Berman · 5h\nIS TRUMP WRONG ABOUT THE AI RACE? T The Diary Of A CEO · 7h\nDream it, Build it, Ship it! | GitHub Copilot Day G GitHub · 7h\n🎧 播客 The Domino’s Pizza Tracker Theory of Everything Planet Money · 8h",
+      "assertTargets": "切换前渲染的是文章流 \n点得到「视频」筛选 \n页面发出的 /api/videos 返回 200 且带 items status=200 n=30\n视频网格渲染出卡片（不是文章行） div.card.card-lift.cursor-pointer.group.overflow-hidden ×28\n视频卡文本不是占位文案 \n视频卡数 ↔ 页面响应 items 数（±3 分页） DOM=28 API=30\n切换后文章行已消失（两类列表没同时渲染） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "video",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/videos",
+          "status": 200,
+          "bytes": 14177,
+          "ms": 11,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/VideoGrid.jsx:57"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 18957,
+          "ms": 12,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/6QC6nOotxrU/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 7798,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/pWinvBxv0QU/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12536,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/6wmDUgR5zlE/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 7961,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Z4no-hhcuas/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 6009,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/DnUAXX41KJ8/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10354,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/-svLMqHJGaU/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 13623,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/a5uUuBYrTOQ/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 11288,
+          "ms": 32,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/S4XM-I37ldM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14044,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2dy2hFR3-q4/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 6010,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/SO2PofNNzVM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 6269,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/FQchGN0xmXg/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 11782,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bRQEWPA832A/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 15756,
+          "ms": 14,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/4mTLpuQpB80/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 19269,
+          "ms": 14,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Zw5DkDfKw_c/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20942,
+          "ms": 16,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/GzEtpAKYRvE/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1150,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://www.youtube.com/favicon.ico",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 16230,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/o1CogAtWdBk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 6762,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/EthkNLasUa8/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 8338,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/6pyHDEiYNhk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14416,
+          "ms": 152,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Nbwv5wHQoj0/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10230,
+          "ms": 152,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/71-8fJIGi34/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 18033,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/ZK9NkUIqNZQ/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 7658,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/SZK-VoAK33g/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 4940,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/XS1PBKUQo3k/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12579,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/HIayLIpZF34/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20846,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/T_SMf9j50uc/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 502,
+          "bytes": 35,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Dah8tph_hdc/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E2-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E2-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2118
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E3",
+      "title": "每日早报：栏目 pill 条数逐列 ↔ 页面响应 report.sections[].column",
+      "status": "pass",
+      "why": "",
+      "assertions": 11,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/daily 返回 200 且 report.sections 非空",
+          "ok": true,
+          "detail": "status=200 sections=5"
+        },
+        {
+          "kind": "api",
+          "label": "sections 形状是 {column, desc, items[]}（字段漂移会在这里红）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "report 带 schemaVersion（W2 读侧档位口径的前提字段）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "日报列表渲染",
+          "ok": true,
+          "detail": "div.cursor-pointer.flex.gap-3"
+        },
+        {
+          "kind": "render",
+          "label": "日报正文没有占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "≥3 个栏目 pill 在页面上带条数（档位分层可见，B39）",
+          "ok": true,
+          "detail": "可见 5/5：培训课程发布=2 , 重点更新=15 , AI技术=15 , 其它重要=4 , 视频与播客=10"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「培训课程发布」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=2 API=2"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「重点更新」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=15 API=15"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「AI技术」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=15 API=15"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「其它重要」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=4 API=4"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「视频与播客」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=10 API=10"
+        }
+      ],
+      "renderedText": "1 基于复杂网络和事故数据的地铁运营事故关键风险因素综合分析方法 Comprehensive analysis method of key risk factors in the subway operation accident by complex network and accident data 学术论文，方法论扎实，但未提出突破性观点，适合行业从业者参考 交通安全 学术研究 PLOS One · 14h\n2 AI时代下电视剧要怎么变：AI混制重构剧集工作流 聚焦AI混制这一行业前沿实践，腾讯专家分享+WorkRally平台解析，对长剧制作流程变革有参考价值 AI影视制作 腾讯视频 窄播 · 15h\n1 多家A股公司，被立案 常规立案资讯汇总，信息密度一般，缺乏独立分析，对投资者有一定警示参考价值。 A股监管 立案调查 第一财经 · 12h\n2 关于新台式机组装的建议，充分利用我现有的两块R9700卡 Advice on a new desktop build to take advantage of my existing R9700 cards (x2) 社区技术帖，双R9700 AI PRO组网升级思路清晰，对相似硬件困境读者有参考价值，但非深度分析文章。 硬件升级 自托管AI Reddit · Linux, Self-Hosted, DevOps &amp; AI · 12h\n3 幸存者回忆尼日利亚监狱死囚牢房中的恐慌与呼吸困难，37人死于此地 Survivor recounts panic and struggle to breathe in Nigerian prison cell where 37 died 尼日利亚监狱37人死难事件，幸存者证词具冲击力，但文章偏快讯，分析深度有限。 尼日利亚 人权事件 World news | The Guardian · 12h\n4 美股半导体股分化，闪迪涨超6%，高通跌超4%，中国资产深夜上涨，阿里巴巴涨超4% 美股盘后速览，数据密集，便于快速掌握中概股与半导体板块动向，适合盘中决策参考。 美股快讯 半导体 中概股 第一财经 · 12h\n5 安全研究人员利用 Claude 协助入侵 OpenAI Security researchers used Claude to help them hack into OpenAI 首起利用竞争对手AI工具入侵OpenAI内部系统的实战案例，具高度警示意义与话题价值。 AI安全 红队测试 The Verge · 12h\n6 inclusionAI/Realtime-Venus · Hugging Face 开源全双工AI模型，支持视频+音频实时交互，开发者可直接部署自建，技术亮点明确。 AI模型 多模态 开源项目 Reddit · Linux, Self-Hosted, DevOps &amp; AI · 12h\n7 【金牌纪要库】诺和诺德与Anthropic宣布战略合作、字节跳动拆分AI制药公司获美元融资，AI制药从工具采购进入平台共建时代（附深度梳理） 诺和诺德×Anthropic合作事件有新闻价值，但文章以产品介绍为主，干货有限，参考价值中等。 AI制药 生物医药 财联社 · 12h\n8 Brendan Carr 执掌下的 FCC 更担心《观点》节目采访谁，而非外国政府持有多少派拉蒙股份 Brendan Carr’s FCC is more worried about who The View interviews than foreign governments owning Paramount 揭露FCC在媒体自由与外资持股问题上双重标准的有力叙事，观点鲜明且具批判性。 FCC监管 媒体并购 The Verge · 12h",
+      "assertTargets": "页面发出的 /api/daily 返回 200 且 report.sections 非空 status=200 sections=5\nsections 形状是 {column, desc, items[]}（字段漂移会在这里红） \nreport 带 schemaVersion（W2 读侧档位口径的前提字段） \n日报列表渲染 div.cursor-pointer.flex.gap-3\n日报正文没有占位文案 \n≥3 个栏目 pill 在页面上带条数（档位分层可见，B39） 可见 5/5：培训课程发布=2 , 重点更新=15 , AI技术=15 , 其它重要=4 , 视频与播客=10\n栏目「培训课程发布」pill ↔ API items 数 DOM=2 API=2\n栏目「重点更新」pill ↔ API items 数 DOM=15 API=15\n栏目「AI技术」pill ↔ API items 数 DOM=15 API=15\n栏目「其它重要」pill ↔ API items 数 DOM=4 API=4\n栏目「视频与播客」pill ↔ API items 数 DOM=10 API=10",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 137,
+          "params": {}
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 114066,
+          "ms": 219,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561666,
+          "ms": 646,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E3-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E3-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2200
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E4",
+      "title": "热点榜三视图：每个 tab 渲染的确实是该 tab 的数据（B28 列表↔计数同源）",
+      "status": "fail_product",
+      "why": "data:「热搜事件」每一行都出自这次响应（无接口没给的内容）〔漏 60/60：综合热搜 · 微博热搜 综合热搜 · B站热搜 公众号 · 环球时报 +6 源 · 12 篇报道 · 51分钟前更新 ·〕",
+      "assertions": 16,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "热点榜默认视图渲染",
+          "ok": true,
+          "detail": "article.card.card-lift.cursor-pointer.p-4"
+        },
+        {
+          "kind": "api",
+          "label": "AI 精选：/api/hot?tab=featured 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=200"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 精选」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 精选」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=200"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 精选」渲染条数不超过响应条数",
+          "ok": true,
+          "detail": "DOM=24 API=200"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 精选」每一行都出自这次响应（无接口没给的内容）",
+          "ok": true,
+          "detail": "漏 0/24"
+        },
+        {
+          "kind": "api",
+          "label": "AI 信息实时流：/api/hot?tab=all 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=200"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 信息实时流」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 信息实时流」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=200"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 信息实时流」渲染条数不超过响应条数",
+          "ok": true,
+          "detail": "DOM=60 API=200"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 信息实时流」每一行都出自这次响应（无接口没给的内容）",
+          "ok": true,
+          "detail": "漏 0/60"
+        },
+        {
+          "kind": "api",
+          "label": "热搜事件：/api/hot/events 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=190"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「热搜事件」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「热搜事件」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=190"
+        },
+        {
+          "kind": "data",
+          "label": "「热搜事件」渲染条数不超过响应条数",
+          "ok": true,
+          "detail": "DOM=60 API=190"
+        },
+        {
+          "kind": "data",
+          "label": "「热搜事件」每一行都出自这次响应（无接口没给的内容）",
+          "ok": false,
+          "detail": "漏 60/60：综合热搜 · 微博热搜 综合热搜 · B站热搜 公众号 · 环球时报 +6 源 · 12 篇报道 · 51分钟前更新 ·"
+        }
+      ],
+      "renderedText": "字母AI AI 评分 68/100 ♡ Gemini 4 Pro疑似泄露，“AI减速”又成空话 前几个月，OpenAI和Anthropic轮番把旗舰模型往前推，谷歌却显得异常安静。 推荐理由：Gemini 4 Pro疑似泄露事件追踪，有多位开发者实测验证，信息源较丰富，适合关注AI行业竞态的读者。 /U/ENGINETOWN AI 评分 68/100 ♡ Anthropic just named seven Chinese AI labs for stealing Claude's reasoning. I read the full report and the Qwen part doesn't hold up the way the headline does. Anthropic published a 154 page threat intelligence report in ",
+      "assertTargets": "热点榜默认视图渲染 article.card.card-lift.cursor-pointer.p-4\nAI 精选：/api/hot?tab=featured 返回 200 且非空 status=200 n=200\n点得到「AI 精选」 \n「AI 精选」页面自己的请求返回非空 n=200\n「AI 精选」渲染条数不超过响应条数 DOM=24 API=200\n「AI 精选」每一行都出自这次响应（无接口没给的内容） 漏 0/24\nAI 信息实时流：/api/hot?tab=all 返回 200 且非空 status=200 n=200\n点得到「AI 信息实时流」 \n「AI 信息实时流」页面自己的请求返回非空 n=200\n「AI 信息实时流」渲染条数不超过响应条数 DOM=60 API=200\n「AI 信息实时流」每一行都出自这次响应（无接口没给的内容） 漏 0/60\n热搜事件：/api/hot/events 返回 200 且非空 status=200 n=190\n点得到「热搜事件」 \n「热搜事件」页面自己的请求返回非空 n=190\n「热搜事件」渲染条数不超过响应条数 DOM=60 API=190\n「热搜事件」每一行都出自这次响应（无接口没给的内容） 漏 60/60：综合热搜 · 微博热搜 综合热搜 · B站热搜 公众号 · 环球时报 +6 源 · 12 篇报道 · 51分钟前更新 ·",
+      "requests": [
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=featured",
+          "status": 200,
+          "bytes": 149814,
+          "ms": 1660,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "api/[...slug].js:384"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=all",
+          "status": 200,
+          "bytes": 113818,
+          "ms": 2064,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:384"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "fullUrl": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 355,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 63,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 654,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/sources",
+          "status": 200,
+          "bytes": 7071,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 395,
+          "params": {
+            "domain": {
+              "value": "all",
+              "source": "web/src/components/HotEvents.jsx:192"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E4-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E4-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 3633
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E5",
+      "title": "我的阅读：type 筛选后 DOM 与 /api/reading 计数逐个同源（B60 四处口径）",
+      "status": "fail_product",
+      "why": "data:三个 tab 的计数 pill 与 API counts 逐项同源（B60 根因就是各写一份）〔DOM={\"全部\":25150,\"已收藏\":1,\"已读\":25150} API={\"all\":7290,\"favorited\":1,\"read\":7290}〕 / data:视频筛选的 DOM 条数与接口一致（0 则必须是显式空态）〔DOM=30 API=0〕",
+      "assertions": 10,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的阅读渲染出卡片",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "/api/reading 两种 type 均 200 且带 counts",
+          "ok": true,
+          "detail": "{\"all\":25150,\"favorited\":1,\"read\":25150}"
+        },
+        {
+          "kind": "api",
+          "label": "type=article 的 counts.all 与 type=all 不同（口径真的生效）",
+          "ok": true,
+          "detail": "article=7290 all=25150"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「文章」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "筛选后是真实标题而不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "点击后页面确实按 type=article 重新请求（筛选接到了参数）",
+          "ok": true,
+          "detail": "type=article"
+        },
+        {
+          "kind": "data",
+          "label": "筛选后行数 ↔ 页面响应 items 数",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "三个 tab 的计数 pill 与 API counts 逐项同源（B60 根因就是各写一份）",
+          "ok": false,
+          "detail": "DOM={\"全部\":25150,\"已收藏\":1,\"已读\":25150} API={\"all\":7290,\"favorited\":1,\"read\":7290}"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「视频」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "视频筛选的 DOM 条数与接口一致（0 则必须是显式空态）",
+          "ok": false,
+          "detail": "DOM=30 API=0"
+        }
+      ],
+      "renderedText": "配速：下午的判断力，是上午花掉的 文章 已读 创见思考——怎样度过这一生 · 2026-09-19 人对自己状态下滑的解释，往往取最省事的那一个：下午三四点做不动了，是年纪上来了；晚上看不进书，是这一天太累。这类解释听着顺理成章，也确实不假，只是它把问题算在了总量上——干得太多，所以不行了。\n三星海外机型将于 9 月 30 日起取消微软 OneDrive 集成，改用谷歌 Google Photos 同步 文章 已读 IT之家 · 2026-09-18 IT之家 9 月 19 日消息，据博主 @i冰宇宙 透露，由于三星与微软 OneDrive 合作到期，三星海外机型照片应用（Gallery）将于 9 月 30 日取消集成 OneDrive 原生相册，谷歌正在开发基于 Google Phot\n多家A股公司，被立案 文章 已读 第一财经 · 2026-09-18 9月18日，多家A股上市公司或控股子公司被中国证监会立案，均因涉嫌信息披露违法违规。\nAdvice on a new desktop build to take advantage of my existing R9700 cards (x2) 文章 已读 Reddit · Linux, Self-Hosted, DevOps &amp; AI · 2026-09-18 I started out my LLM / AI journey before I really knew what I was getting into. When I fell in love with the tech, I gra\nSurvivor recounts panic and struggle to breathe in Nigerian prison cell where 37 died 文章 已读 World news | The Guardian · 2026-09-18 Police fire teargas as protests break out in the city of Minna after the deaths of the suspected illegal goldminers\n美股半导体股分化，闪迪涨超6%，高通跌超4%，中国资产深夜上涨，阿里巴巴涨超4% 文章 已读 第一财经 · 2026-09-18 9月18日晚间，美股三大指数高开低走，盘中集体转跌。截至发稿，道指跌0.41%，纳指跌0.02%，标普500指数跌0.12%。\nP Comprehensive analysis method of key risk factors in the subway operation accident by complex network and accident data 文章 已读 PLOS One · 2026-09-18 by Shengxiang Ma, Wei Jiang With the continuous expansion of subway systems in China, the operational systems of subway\nAI时代下电视剧要怎么变：AI混制重构剧集工作流 文章 已读 窄播 · 2026-09-18 近日，中国电视剧制作产业协会举办「AI混制与原生的全链路实战方法论」专题培训，百余位会员单位代表到场参训，2478人线上收看。腾讯在线视频BU制作中台AI混制专家闫宪鑫作为讲师之一，分享了对于电视剧领域AI应用的理解。",
+      "assertTargets": "我的阅读渲染出卡片 \n/api/reading 两种 type 均 200 且带 counts {\"all\":25150,\"favorited\":1,\"read\":25150}\ntype=article 的 counts.all 与 type=all 不同（口径真的生效） article=7290 all=25150\n点得到类型筛选「文章」 \n筛选后是真实标题而不是占位文案 \n点击后页面确实按 type=article 重新请求（筛选接到了参数） type=article\n筛选后行数 ↔ 页面响应 items 数 DOM=30 API=30\n三个 tab 的计数 pill 与 API counts 逐项同源（B60 根因就是各写一份） DOM={\"全部\":25150,\"已收藏\":1,\"已读\":25150} API={\"all\":7290,\"favorited\":1,\"read\":7290}\n点得到类型筛选「视频」 \n视频筛选的 DOM 条数与接口一致（0 则必须是显式空态） DOM=30 API=0",
+      "requests": [
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all",
+          "status": 200,
+          "bytes": 25232,
+          "ms": 1071,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=article",
+          "status": 200,
+          "bytes": 22770,
+          "ms": 4318,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "article",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=video",
+          "status": 200,
+          "bytes": 82,
+          "ms": 1066,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "video",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 82,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "video",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E5-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E5-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2098,
+        "readingResponses": [
+          {
+            "type": "article",
+            "bytes": 22770,
+            "counts": {
+              "all": 7290,
+              "favorited": 1,
+              "read": 7290
+            }
+          }
+        ]
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E6",
+      "title": "我的早报 + 精选周刊：产物页渲染、渲染内容出自产物、无污染串",
+      "status": "pass",
+      "why": "",
+      "assertions": 9,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的早报渲染出内容卡",
+          "ok": true,
+          "detail": "article.card.card-lift.cursor-pointer.overflow-hidden ×20"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/mybrief 返回 200 且带 report",
+          "ok": true,
+          "detail": "status=200"
+        },
+        {
+          "kind": "data",
+          "label": "我的早报每张卡都出自产物（无孤儿卡）",
+          "ok": true,
+          "detail": "产物标题 32 条，孤儿卡 0/20"
+        },
+        {
+          "kind": "render",
+          "label": "周刊渲染出标题层级",
+          "ok": true,
+          "detail": "第 5 期——AI基础设施之争与生产力重构 / AI基础设施：从算力扩张到稳定性竞赛 / 推出 Amazon SageMaker HyperPod Inference Gateway"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空",
+          "ok": true,
+          "detail": "items=20 storylines=4"
+        },
+        {
+          "kind": "data",
+          "label": "周刊条数 ↔ report.items 条数（±4）",
+          "ok": true,
+          "detail": "DOM=20 API=20"
+        },
+        {
+          "kind": "data",
+          "label": "页面显示的期号 = API report.issue",
+          "ok": true,
+          "detail": "issue=5"
+        },
+        {
+          "kind": "data",
+          "label": "周刊 storylines 出现在页面上（≥3 条）",
+          "ok": true,
+          "detail": "前 6 条命中 4"
+        },
+        {
+          "kind": "render",
+          "label": "AI 产物无污染串（围栏残留 / undefined / NaN / [object Object]）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "TOP 1 来自你的关注 第一财经 74 对话华为轮值董事长汪涛：支撑中国大模型的算力路，已经走出来了 华为轮值董事长汪涛在2026全联接大会上透露，昇腾960DT提前至2027年Q1发布，960PR提前至Q3，未来保持一年一代节奏。文章系统复盘了华为从单芯片向超节点、服务器、网络、存储及软件生态的全链路算力布局，强调通过提升MFU（模型浮点算力利用率）来解决大规模集群效率问题，有望助力中国大模型训练跨越关键瓶颈。 推荐：华为轮值董事长首次系统阐述昇腾从单芯片到超节点的系统级算力战略，数据详实、洞察清晰，对理解中国AI算力路径有重要参考价值。 · 昇腾960两大版本发布时间均大幅提前，华为芯片演进节奏保持一年一代 · 华为战略已从单芯片竞争转向超节点系统级算力，解决10万卡集群的效率瓶颈 · 超节点与集群的本质区别在于跨物理节点的统一内存编址能力，而非简单互联 MFU每提升1个百分点，10T大模型训练可以缩短三天。 华为昇腾 AI算力 12h\nTOP 2 来自你的关注 ProPublica 72 田纳西州议员要求就州青少年监狱安全问题给出答复 Tennessee Lawmakers Demand Answers on Safety in State Youth Prisons ProPublica与WPLN联合调查揭示，田纳西州三名高风险少年监狱由Jason Crews的公司Wayne Halfway House运营，多次未履行上报虐待事件的法律义务。调查基于数十名前员工和青少年访谈及大量文件。四名民主党州议员致信儿童服务部要求透明回应，该公司则援引州审计否认指控。 推荐：ProPublica重磅调查报道，揭露田纳西州少年监狱系统性虐待儿童且未上报，四众议员联名问责，具有强烈公共利益价值。 · 田纳西州三名最高安全级别少年监狱均由同一承包商Wayne Halfway House运营 · 调查团队采访数十名前员工和青少年，审查紧急呼叫日志、公司记录和州文件 · 四民主党州议员联名致信儿童服务部，要求独立可验证的透明度回应 The allegations that serious physical and sexual abuse, dangerous restraints, injuries, and other critical incidents have gone unreported by WHH demand an urgent, transparent, and independently verifi 调查报道 青少年司法 13h\nTOP 3 来自你的关注 财联社 72 谷歌、Meta，布局长时储能 AI数据中心能耗激增推动长时储能需求爆发。美国已公布150吉瓦时长时储能项目，为2024年底的五倍以上。谷歌投资Energy Dome二氧化碳电池项目，Meta预订Noon Energy百吉瓦时级产能。长时储能可覆盖4天以上风光低谷，弥补锂电池4小时局限，且不依赖石墨等地缘敏感矿产。行业仍处早期，成本与性能待验证，但AI订单已成关键加速器。 推荐：AI驱动长时储能赛道升温，谷歌Meta头部布局，数据详实，产业链图谱清晰，稀缺度高。 · AI数据中心能耗需求推动长时储能成为清洁技术新焦点，美国150吉瓦时长项目已超2024年底规划规模的5倍 · 传统锂电池仅4小时储能，长时储能可达100小时以上，可覆盖连续数日风光发电低谷 · 长时储能不依赖石墨等地缘敏感矿产，给了西方企业在中国主导锂电池市场之外追赶的机会 数据中心是这个行业的加速器。 A",
+      "assertTargets": "我的早报渲染出内容卡 article.card.card-lift.cursor-pointer.overflow-hidden ×20\n页面发出的 /api/mybrief 返回 200 且带 report status=200\n我的早报每张卡都出自产物（无孤儿卡） 产物标题 32 条，孤儿卡 0/20\n周刊渲染出标题层级 第 5 期——AI基础设施之争与生产力重构 / AI基础设施：从算力扩张到稳定性竞赛 / 推出 Amazon SageMaker HyperPod Inference Gateway\n页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空 items=20 storylines=4\n周刊条数 ↔ report.items 条数（±4） DOM=20 API=20\n页面显示的期号 = API report.issue issue=5\n周刊 storylines 出现在页面上（≥3 条） 前 6 条命中 4\nAI 产物无污染串（围栏残留 / undefined / NaN / [object Object]） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561666,
+          "ms": 27,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/weekly",
+          "status": 200,
+          "bytes": 33364,
+          "ms": 391,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E6-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E6-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2150
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E7",
+      "title": "客户端路由与深链：点导航不整页刷新、刷新不丢位置（P0-5 / 38-3 前置）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "点得到左栏「每日早报」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "URL 变 /daily/ 且日报行出现",
+          "ok": true,
+          "detail": "https://qwis-intel.vercel.app/daily/ rows=37"
+        },
+        {
+          "kind": "data",
+          "label": "客户端路由（未新增整页导航，JS 上下文与 api 缓存跨页存活）",
+          "ok": true,
+          "detail": "navigation 1→1"
+        },
+        {
+          "kind": "api",
+          "label": "切页后页面自己重新取到 /api/daily",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "深链 + 刷新仍停在热点榜（有内容不是空壳）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "刷新后公共数据链路仍活着（/api/settings 由 store 拉取）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n🔥 热点榜\n全源聚合 · 只呈现 AI 相关动态\nAI 精选\nAI 信息实时流\n热搜事件\n当前热点\n完整榜单 →\n1\n沙特首都利雅得遭空袭\n286 热度\n2\n特朗普称获格陵兰岛永久安全控制权\n126 热度\n3\nGemini hacked three companies in first known breakout by Google's AI\n101 热度\n4\n我把嵌入迁移项目发到这儿后火了，于是加了你们反馈的缺失功能 [R]\n82 热度\n5\nAI insiders issue new warnings – including for",
+      "assertTargets": "点得到左栏「每日早报」 \nURL 变 /daily/ 且日报行出现 https://qwis-intel.vercel.app/daily/ rows=37\n客户端路由（未新增整页导航，JS 上下文与 api 缓存跨页存活） navigation 1→1\n切页后页面自己重新取到 /api/daily \n深链 + 刷新仍停在热点榜（有内容不是空壳） \n刷新后公共数据链路仍活着（/api/settings 由 store 拉取） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 149814,
+          "ms": 16,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 452,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 26,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 149814,
+          "ms": 14,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E7-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E7-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2067
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "fail_product",
+      "why": "render:七个页面都没有未挂 Provider 造成的裸 key 泄漏〔/admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit〕 / render:后台登录按钮是本地化文案（不是 `login.submit`）〔源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | login.submit〕 / data:每个页面都渲染出 >500 字可见文本（不白屏）〔{\"/reader/\":7734,\"/daily/\":5594,\"/hot/\":8013,\"/reading/\":6677,\"/weekly/\":8036,\"/mybrief/\":7169,\"/admin/\":228}〕",
+      "assertions": 5,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": false,
+          "detail": "/admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit"
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": false,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | login.submit"
+        },
+        {
+          "kind": "data",
+          "label": "每个页面都渲染出 >500 字可见文本（不白屏）",
+          "ok": false,
+          "detail": "{\"/reader/\":7734,\"/daily/\":5594,\"/hot/\":8013,\"/reading/\":6677,\"/weekly/\":8036,\"/mybrief/\":7169,\"/admin/\":228}"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | login.submit",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 /admin/→login.title , /admin/→login.subtitle , /admin/→login.username , /admin/→login.password , /admin/→login.submit\n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | login.submit\n每个页面都渲染出 >500 字可见文本（不白屏） {\"/reader/\":7734,\"/daily/\":5594,\"/hot/\":8013,\"/reading/\":6677,\"/weekly/\":8036,\"/mybrief/\":7169,\"/admin/\":228}\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 309,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 22439,
+          "ms": 49,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T04:05:09.408Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 8,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1783,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1897858917507776512/TRVTyKFk_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17187,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSi2erOaUAAdCHE.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 31,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 109,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 26,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 114066,
+          "ms": 12,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 79855,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 27,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 149814,
+          "ms": 15,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 25232,
+          "ms": 8,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            },
+            "type": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:87"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 2078,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1328032552704159744/fgfpdX1p_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 28,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/weekly",
+          "status": 200,
+          "bytes": 33364,
+          "ms": 180,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 30,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/mybrief",
+          "status": 200,
+          "bytes": 24009,
+          "ms": 9,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 16230,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/o1CogAtWdBk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9231,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/eURc55MsNPc/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14070,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bbNTY8O0GTY/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 24417,
+          "ms": 9,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Kof2VcHTjrk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17289,
+          "ms": 12,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/fYyzlv1byOM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10787,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2z-7pIj57f8/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20488,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/FQNftquDDaI/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 621,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {},
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E9",
+      "title": "点开一篇文章：详情正文渲染（B52 类\"接口 200 但页面空\"）",
+      "status": "fail_product",
+      "why": "api:页面发出的详情请求返回 200 且 content_html 非空〔/api/articles/1739245 status=200 len=0〕",
+      "assertions": 5,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "列表有可点的行",
+          "ok": true,
+          "detail": "Reddit · Lin"
+        },
+        {
+          "kind": "render",
+          "label": "点得到第一行",
+          "ok": true,
+          "detail": "Reddit · Lin"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的详情请求返回 200 且 content_html 非空",
+          "ok": false,
+          "detail": "/api/articles/1739245 status=200 len=0"
+        },
+        {
+          "kind": "render",
+          "label": "详情面板展开后文本显著增长且没有占位文案",
+          "ok": true,
+          "detail": "文本 7809→8310"
+        },
+        {
+          "kind": "data",
+          "label": "详情标题与列表首条同源",
+          "ok": true,
+          "detail": "Reddit · Lin"
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n2864\n检索\n11973\n稍后阅读\n1\n历史存档\n25150\n分组\n科技博客\n136\nX·AI推主\n671\nTop200 精选\n3381\nAI·前沿\n1388\n中文科技\n709\n工程实践\n638\n公司技术团队\n研究\n30\nai\n科技热榜\n29\n国际视野\n4\n文化生活\n52\n国际科技\n292\n生活方式\n国际观察\n社会文化\n创投\n财经\n科技\nAI\n公众号\n1620\n播客\n30\n人工智能\n48\n编程技术\n34\n新闻媒体\n1044\n生活方式与文化\n69\n商业科技\n307\n金融经济\n254\n产品\n26\n效率成长\n1\n订阅源\nAIHOT 日报\n3\nAIHOT 热榜\n1186\nAIHOT 精选全文\n20\n阮一峰的网络日志\n1\n今日\n合并\n筛选\n30\n今日早报\n7h\n读全文 →\n从Claude入侵OpenAI到AI Agent工具生态爆发。\n1.基于复杂网络和事故数据的地铁运营事故关键风险因素综合分析方法 · PLOS One\n2.AI时代下电视剧要怎么变：AI混制重构剧集工作流 · 窄播\n3.多家A股公司，被立案 · 第一财经\nReddit · Linux, Self-Hosted, DevOps &amp; AI\n·\n6分钟前\nBuilding a flight simulator guided by an implanted fly brain to hit a ship [P]\nThe concept is to make fly guided anti ship missile. The Front legs of the fly grip the flight stick while its middle legs of fly step on the rudder pedals. I coded a ",
+      "assertTargets": "列表有可点的行 Reddit · Lin\n点得到第一行 Reddit · Lin\n页面发出的详情请求返回 200 且 content_html 非空 /api/articles/1739245 status=200 len=0\n详情面板展开后文本显著增长且没有占位文案 文本 7809→8310\n详情标题与列表首条同源 Reddit · Lin",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 22511,
+          "ms": 9,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T04:05:32.382Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1783,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1897858917507776512/TRVTyKFk_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17187,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSi2erOaUAAdCHE.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 50634,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6CRL0IbOnOf9n66mYHko2JKkv3662EoCZHd9K3rhVia1Q/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 10,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 376,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/articles/1739245",
+          "status": 200,
+          "bytes": 1847,
+          "ms": 16,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E9-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E9-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 1610
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E10",
+      "title": "未知路径 /videos/：不得静默渲染成阅读器（B72 登记不门禁）",
+      "status": "fail_product",
+      "why": "render:拼错路径要可见地\"不存在\"（有 404/兜底提示）〔现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）〕",
+      "assertions": 2,
+      "assertionKinds": [
+        "render",
+        "data"
+      ],
+      "uncoveredKinds": [
+        "api"
+      ],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "拼错路径要可见地\"不存在\"（有 404/兜底提示）",
+          "ok": false,
+          "detail": "现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）"
+        },
+        {
+          "kind": "data",
+          "label": "未知路径不返回 200 HTML 兜底",
+          "ok": true,
+          "detail": "由 rewrite 决定，本条只登记事实"
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n2864\n检索\n11971\n稍后阅读\n1\n历史存档\n25151\n分组\n科技博客\n136\nX·AI推主\n671\nTop200 精选\n3380\nAI·前沿\n1387\n中文科技\n709\n工程实践\n638\n公司技术团队\n研究\n30\nai\n科技热榜\n29\n国际视野\n4\n文化生活\n52\n国际科技\n292\n生活方式\n国际观察\n社会文化\n创",
+      "assertTargets": "拼错路径要可见地\"不存在\"（有 404/兜底提示） 现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）\n未知路径不返回 200 HTML 兜底 由 rewrite 决定，本条只登记事实",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3215,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 22533,
+          "ms": 56,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T04:05:37.948Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 56,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 15,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1783,
+          "ms": 8,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1897858917507776512/TRVTyKFk_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17187,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSi2erOaUAAdCHE.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 50634,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6CRL0IbOnOf9n66mYHko2JKkv3662EoCZHd9K3rhVia1Q/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 561664,
+          "ms": 456,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T040344/screens/E10-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T040344/screens/E10-r1.png",
+        "docs\\eval\\e2e\\20260919T040344/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2211
+      },
+      "repeatStatuses": [
+        "fail_product"
+      ],
+      "knownGap": {
+        "ref": "B72",
+        "why": "已登记缺口（不计入门禁，禁止删剧本）"
+      },
+      "screenshots": 1
+    }
+  ]
+}

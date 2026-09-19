@@ -1,0 +1,87 @@
+{
+ "at": "2026-09-19T05:25:03.358Z",
+ "baseRef": "14e51d4",
+ "headRef": "HEAD",
+ "baseSha": "14e51d4e9cc80e92176856835a852c74831c42cc",
+ "headSha": "84b53af24ed09d5d25bbc8ecf20c1927a47f1ada",
+ "files": [
+  "tests/regression-20260919g.test.js"
+ ],
+ "wantNames": [
+  "G9 B73 阅读页必须有"
+ ],
+ "targets": [
+  "G9 B73 阅读页必须有"
+ ],
+ "lockIntros": {
+  "G9 B73 阅读页必须有": [
+   "84b53af24ed09d5d25bbc8ecf20c1927a47f1ada"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? archive/_diag/",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/e2e/",
+  "?? docs/eval/f2p/2026-09-19052237.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 38,
+ "base": {
+  "tests": 1,
+  "pass": 0,
+  "fail": 1,
+  "failedNames": [
+   "G9 B73 阅读页必须有\"晚到的旧响应不得覆盖新筛选\"的序号守卫"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "head": {
+  "tests": 1,
+  "pass": 1,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 1 条（1 个目标全中，实指 1 条锁），改后 1 条全绿"
+}
