@@ -161,6 +161,16 @@ function exitCodeOf(s) {
   return 0;
 }
 
+/** 只有「全剧本 × ≥3 轮 × 真实云端」才算验收轮；否则这轮绿了也不许当交付证据（reviewer #2）。
+ *  纯函数，自检里逐条反着验（少一条剧本/少一轮/本地站，都必须 ok=false）。*/
+function acceptanceOf(nCases, nAll, repeat, isRemote) {
+  const reasons = [];
+  if (nCases !== nAll) reasons.push(`只跑了 ${nCases}/${nAll} 条剧本`);
+  if (!(repeat >= 3)) reasons.push(`每剧本 ${repeat} 轮（<3，flaky 判不出来）`);
+  if (!isRemote) reasons.push('目标不是真实云端站点');
+  return { ok: reasons.length === 0, reasons, nCases, nAll, repeat, remote: !!isRemote };
+}
+
 /** 未翻译 key 泄漏：只认字典里真实存在的键，避免把 "v1.2.3" 这类正常文本误判（B71 就这么定位的）*/
 function rawKeyHits(text, dictKeys) {
   const set = new Set(dictKeys);
@@ -238,14 +248,23 @@ function assert(c, kind, label, ok, detail) {
 
 // ───────────────── 浏览器工具 ─────────────────
 
+/** 剧本自己发的探针 URL（api() 登记）。attachNet 同步读它给响应打 by 标记。
+ *  为什么必须标：探针响应和页面响应进的是同一个 store，`net.length=0` 挡不住
+ *  探针那条**晚到**的异步 push（res.text() 在 await 之后才 push），
+ *  于是"页面自己发出的请求"对账里混进了脚本发的请求 = 自己证明自己（假绿）。 */
+const scriptInflight = new Set();
+
 /** 拦截页面自己发出的 /api/ 响应：这是"对账"的数据来源，不让剧本另发探针替页面决定参数 */
 function attachNet(page, store) {
   page.on('response', async (res) => {
     let u;
     try { u = new URL(res.url()); } catch { return; }
-    // document 类响应单独记一条：E7 用"整页导航次数"判客户端路由是否真的没刷新
+    const self = u.pathname + u.search;
+    // by 必须在 await 之前同步定下：晚 push 的记录若事后补标会把页面响应误标成脚本响应
+    const by = scriptInflight.has(self) ? 'script' : 'page';
+    // document 类响应单独记一条：E7 用"有没有再拉 HTML"判客户端路由是否真的没刷新
     if (res.request().resourceType() === 'document') {
-      store.push({ url: u.pathname, kind: 'doc', status: res.status(), bytes: 0, json: null, params: {}, at: Date.now() });
+      store.push({ url: u.pathname, kind: 'doc', by, status: res.status(), bytes: 0, json: null, params: {}, at: Date.now() });
       return;
     }
     if (!u.pathname.startsWith('/api/')) return;
@@ -260,19 +279,23 @@ function attachNet(page, store) {
     for (const [k, v] of u.searchParams.entries()) {
       params[k] = { value: v, source: src || '未登记：请在 QUERY_SRC 补 ' + u.pathname + ' 的构造行号' };
     }
-    const rec = { url: u.pathname, fullUrl: u.pathname + u.search, status: res.status(), bytes: 0, json: null, params, ms: 0, at: Date.now() };
+    const rec = { url: u.pathname, fullUrl: u.pathname + u.search, by, status: res.status(), bytes: 0, json: null, params, ms: 0, at: Date.now() };
+    store.pending = store.pending || {};
+    store.pending[u.pathname] = (store.pending[u.pathname] || 0) + 1;
     const t0 = Date.now();
-    try { const text = await res.text(); rec.bytes = text.length; try { rec.json = JSON.parse(text); } catch { /* 非 JSON 不参与对账 */ } } catch { }
-    rec.ms = Date.now() - t0;
-    store.push(rec);
+    try { const text = await res.text(); rec.bytes = text.length; try { rec.json = JSON.parse(text); } catch { /* 非 JSON 不参与对账 */ } }
+    catch { }
+    finally { rec.ms = Date.now() - t0; store.pending[u.pathname]--; store.push(rec); }
   });
 }
+/** 只看**页面自己**发出的记录：剧本探针的响应不参与对账（见 scriptInflight） */
+const byPage = (r) => r.by !== 'script';
 /** 把本轮某接口的所有响应**合并**成一张 id→item 表。
  *  列表页会自己追加请求（阅读器 12s 轮询 /api/articles/since、筛选切换重发…），
  *  只拿"某一条响应"对账必然出现 DOM 比它多/少的假红（实测 34↔30 就是两轮响应的并集）。*/
 function collected(store, pathname) {
   const byId = new Map();
-  for (const r of store.filter((x) => x.url === pathname && x.json)) {
+  for (const r of store.filter((x) => byPage(x) && x.url === pathname && x.json)) {
     for (const it of (r.json.items || r.json.articles || r.json.videos || r.json.events) || []) {
       if (it && (it.id !== undefined || it.rank !== undefined)) byId.set(`${it.kind || ''}:${it.id ?? it.rank}`, it);
     }
@@ -285,7 +308,7 @@ async function waitForApi(store, pathname, timeout = RENDER) {
   const t0 = Date.now();
   let last = null;
   while (Date.now() - t0 < timeout) {
-    const hit = store.filter((r) => r.url === pathname && r.json !== null).pop();
+    const hit = store.filter((r) => byPage(r) && r.url === pathname && r.json !== null).pop();
     if (hit) last = hit;
     if (last && !last.json.stale) return last;      // stale = 正在重生成，再等一轮拿新的
     await new Promise((r) => setTimeout(r, 400));
@@ -296,7 +319,7 @@ async function waitForApi(store, pathname, timeout = RENDER) {
 async function waitForApiWhere(store, pred, timeout = RENDER) {
   const t0 = Date.now();
   while (Date.now() - t0 < timeout) {
-    const hit = store.filter(pred).pop();
+    const hit = store.filter((r) => byPage(r) && pred(r)).pop();
     if (hit) return hit;
     await new Promise((r) => setTimeout(r, 400));
   }
@@ -308,15 +331,24 @@ async function api(page, c, p, paramsMeta = {}) {
   // 而 status 0 长得像"接口挂了"——本轮差点据此把 type=all 误判成筛选失效（pitfalls #43 的评测器版本）
   const href = page.url();
   if (!/^https?:/.test(href)) throw new Error(`TOOL: 探针没有同源文档（当前页 ${href}）——剧本必须先 goto 再打接口`);
+  // 登记给 attachNet 打 by:'script'：探针响应绝不能进"页面自己发出的请求"对账
+  let key = '';
+  try { const u = new URL(p, href); key = u.pathname + u.search; } catch { }
   const t0 = Date.now();
-  const res = await page.evaluate(async (u) => {
-    try {
-      const r = await fetch(u, { headers: { accept: 'application/json' } });
-      const text = await r.text();
-      let json = null; try { json = JSON.parse(text); } catch { }
-      return { status: r.status, bytes: text.length, json, text: text.slice(0, 300) };
-    } catch (e) { return { status: 0, bytes: 0, json: null, text: String(e.message || e) }; }
-  }, p);
+  if (key) scriptInflight.add(key);
+  let res;
+  try {
+    res = await page.evaluate(async (u) => {
+      try {
+        const r = await fetch(u, { headers: { accept: 'application/json' } });
+        const text = await r.text();
+        let json = null; try { json = JSON.parse(text); } catch { }
+        return { status: r.status, bytes: text.length, json, text: text.slice(0, 300) };
+      } catch (e) { return { status: 0, bytes: 0, json: null, text: String(e.message || e) }; }
+    }, p);
+  } finally { if (key) scriptInflight.delete(key); }
+  // status 0 = 请求根本没到服务端（网络层/代理不通），判产品红是冤枉它，判绿是自欺 → 环境红
+  if (res.status === 0) throw new Error(`TOOL: 探针 ${p} status 0（fetch 抛错：${String(res.text).slice(0, 80)}）——网络/代理不通，属 fail_env`);
   c.requests.push({ url: p.split('?')[0], fullUrl: p, status: res.status, bytes: res.bytes, ms: Date.now() - t0, params: paramsMeta });
   return res;
 }
@@ -380,11 +412,13 @@ function subsetConsistency(domTexts, apiItems, keep = 10) {
 async function waitQuiet(store, pathname, quietMs = 8000, timeoutMs = 90000) {
   const t0 = Date.now();
   for (;;) {
-    const seen = store.filter((r) => r.url === pathname).map((r) => r.at || 0);
+    const seen = store.filter((r) => byPage(r) && r.url === pathname).map((r) => r.at || 0);
     const newest = seen.length ? Math.max(...seen) : 0;
-    // 必须至少等到一次响应再谈“安静”：否则页面根本没发请求也会被当成“已经静下来了”（假绿）
-    if (seen.length && Date.now() - newest > quietMs) return { quiet: true, waitedMs: Date.now() - t0, responses: seen.length };
-    if (Date.now() - t0 > timeoutMs) return { quiet: false, waitedMs: Date.now() - t0, responses: seen.length };
+    // 两条都得满足：① 至少等到一次响应 ② 没有在飞的响应（body 未读完的记录还没 push 进 store，
+    // 只看已 push 的会把"26s 慢响应仍在读"当成已经静下来 = 假静）
+    const inflight = (store.pending || {})[pathname] || 0;
+    if (seen.length && !inflight && Date.now() - newest > quietMs) return { quiet: true, waitedMs: Date.now() - t0, responses: seen.length };
+    if (Date.now() - t0 > timeoutMs) return { quiet: false, waitedMs: Date.now() - t0, responses: seen.length, inflight };
     await new Promise((r) => setTimeout(r, 500));
   }
 }
@@ -402,6 +436,27 @@ async function waitRendered(page, { minChars = 500, timeoutMs = 30000, gapMs = 8
     if (Date.now() - t0 > timeoutMs) return { settled: false, chars: cur, waitedMs: Date.now() - t0 };
     await new Promise((r) => setTimeout(r, gapMs));
   }
+}
+/** 先等到成立、**再复查它是否被翻掉**：B74 的症状正是"先对、随后被晚到的旧响应覆盖"。
+ *  只做"首次相等即返回"的轮询等于看不见这个缺陷（对抗审查查出的真实漏判）。*/
+async function assertStays(c, kind, label, probe, { firstTimeoutMs = 25000, recheckMs = 8000, rechecks = 2 } = {}) {
+  const t0 = Date.now();
+  let last = { ok: false, detail: '一次都没判到' };
+  for (;;) {
+    last = await probe();
+    if (last.ok || Date.now() - t0 > firstTimeoutMs) break;
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  const settledAt = Date.now();
+  const flips = [];
+  for (let i = 0; i < rechecks; i++) {
+    await new Promise((r) => setTimeout(r, recheckMs));
+    const again = await probe();
+    if (!again.ok) flips.push(`第 ${i + 1} 次复查翻掉：${again.detail}`);
+  }
+  const ok = last.ok && !flips.length;
+  assert(c, kind, label, ok, `${last.detail}（首判等 ${settledAt - t0}ms，复查 ${rechecks} 次${flips.length ? '，' + flips.join('；') : '无翻转'}）`);
+  return ok;
 }
 /** 有界轮询判据：每轮重新读 DOM 再判，成立即绿、超时按真红。
  *  用在"点击之后才决定显示什么"的剧本上（E4 切视图、E5 切类型）——
@@ -585,18 +640,21 @@ const SCENARIOS = [
       // 响应到 DOM 之间有一帧滞后（实测每轮都是"网络层先到、pill 晚一帧"），所以有界轮询后再判；
       // 超时即真红——吸收的是渲染帧差，**不吸收口径不一致**（B60 那类"各写一份"不会因多等而变一致）。
       let tabs = {};
-      const pillWait = await waitUntil(async () => {
+      // 用 assertStays 而不是 waitUntil：B74 的症状是"先对、随后被晚到的旧响应覆盖回去"，
+      // 首次相等就收工等于看不见它（对抗审查查出的漏判）。谓词一字未改，只是多了两次复查。
+      const pillOk = await assertStays(c, 'data', '三个 tab 的计数 pill 与同一份响应对账且不被翻掉（B60/B74）', async () => {
         tabs = pillCounts(await buttonsOf(page));
-        return tabs['全部'] === Number(cnt.all) && tabs['已收藏'] === Number(cnt.favorited) && tabs['已读'] === Number(cnt.read);
-      }, 20000);
-      assert(c, 'data', '三个 tab 的计数 pill 与同一份响应对账（B60 根因就是各写一份）', pillWait.ok,
-        `DOM=${JSON.stringify(tabs)} API=${JSON.stringify(cnt)}（等了 ${pillWait.waitedMs}ms）`);
-      c.metrics.pillSettleMs = pillWait.waitedMs;
+        return {
+          ok: tabs['全部'] === Number(cnt.all) && tabs['已收藏'] === Number(cnt.favorited) && tabs['已读'] === Number(cnt.read),
+          detail: `DOM=${JSON.stringify(tabs)} API=${JSON.stringify(cnt)}`,
+        };
+      }, { firstTimeoutMs: 25000, recheckMs: 8000, rechecks: 2 });
+      c.metrics.pillSettleOk = pillOk;
       const ri = renderedInResponse(await rowsOf(page, SEL.readingCard), ownItems);
       assert(c, 'data', '响应的首屏条目都渲染出来了（无漏行）', ri.miss.length <= 2, `缺 ${ri.miss.length}/${ri.n}${ri.miss.length ? '：' + ri.miss[0].slice(0, 40) : ''}`);
       // 视频筛选：先等页面"没有新请求在飞"（否则上一型的慢响应会后到并覆盖，红就说不清是谁的锅），
       // 再点、再等到"参数对得上的响应"、再给一帧窗口。云端实测收藏视频为 0 → 必须是显式空态而不是残留上一批
-      c.metrics.readingResponses = net.filter((r) => r.url === '/api/reading').map((r) => ({ type: (r.params.type || {}).value, bytes: r.bytes, counts: (r.json || {}).counts }));
+      c.metrics.readingResponses = net.filter((r) => r.url === '/api/reading').map((r) => ({ by: r.by, type: (r.params.type || {}).value, bytes: r.bytes, counts: (r.json || {}).counts }));
       const vid = await probe('video');
       const vidN = ((vid.json || {}).items || []).length;
       await waitQuiet(net, '/api/reading');
@@ -605,14 +663,16 @@ const SCENARIOS = [
       const vidOwn = await waitForApiWhere(net, (r) => r.url === '/api/reading' && ((r.params.type || {}).value === 'video'), RENDER);
       const vidItems = (vidOwn && vidOwn.json && vidOwn.json.items) || [];
       assert(c, 'api', 'type=video 的接口口径与页面响应一致（探针↔页面同源）', vidN === vidItems.length, `探针=${vidN} 页面响应=${vidItems.length}`);
-      await untilAssert(c, 'data', '视频筛选的 DOM 条数与该响应一致（0 则必须是显式空态）', async () => {
+      // 同一条口径：这里也必须"复查不翻转"。首屏那条 type=all 慢响应（实测 15~30s）正是晚到后
+      // 把空态覆盖回 30 行文章的，untilAssert 的首次命中看不见它（B74 的漏判版本）。
+      await assertStays(c, 'data', '视频筛选的 DOM 条数与该响应一致且不被翻掉（0 则必须是显式空态）', async () => {
         const shown = await page.locator(SEL.readingCard).count();
         const t = await bodyText(page);
         return {
           ok: vidItems.length > 0 ? shown > 0 : (shown === 0 && t.includes(EMPTY_READING)),
           detail: `DOM=${shown} API=${vidItems.length}${vidOwn ? '' : '（没等到 type=video 响应）'}`,
         };
-      }, 25000);
+      }, { firstTimeoutMs: 25000, recheckMs: 8000, rechecks: 2 });
     },
   },
   {
@@ -657,17 +717,18 @@ const SCENARIOS = [
     async run(page, c, target, net) {
       net.length = 0;
       await goto(page, c, target + '/reader/', SEL.readerRow);
-      const nav0 = await page.evaluate(() => performance.getEntriesByType('navigation').length);
+      // 判"没整页刷新"要一个**真会翻转**的观测量。早先用 performance navigation 计数，
+      // 但整页导航后新 document 的计数同样是 1 → 两侧恒等，刷新与不刷新都成立 = 空判据（reviewer 指出，已删）。
+      // 改为：在 window 上打标记，硬刷新必然清掉它；同时看网络层有没有再拉 document。
+      await page.evaluate(() => { window.__e2eCtxAlive = 'alive'; });
       assert(c, 'render', '点得到左栏「每日早报」',
         await page.locator(`${SEL.railBtn}[href="/daily/"]`).first().click({ timeout: 8000 }).then(() => true).catch(() => false));
       await page.waitForTimeout(SETTLE);
       const rowsN = await stableCount(page, SEL.dailyRow, 6, 800);
       assert(c, 'render', 'URL 变 /daily/ 且日报行出现', page.url().includes('/daily/') && rowsN > 0, `${page.url()} rows=${rowsN}`);
-      const nav1 = await page.evaluate(() => performance.getEntriesByType('navigation').length);
-      // 整页导航计数在部分 Chromium 版本上不增（实测出现过 0），所以同时看**网络层**：
-      // 客户端路由正确 = 切换后没有再拉 document（HTML）。两个判据任一不过即红。
-      const docs = net.filter((r) => r.kind === 'doc');
-      assert(c, 'data', '客户端路由（未新增整页导航，JS 上下文与 api 缓存跨页存活）', nav1 === nav0, `navigation ${nav0}→${nav1}`);
+      const alive = await page.evaluate(() => String(window.__e2eCtxAlive || ''));
+      const docs = net.filter((r) => r.kind === 'doc' && byPage(r));
+      assert(c, 'data', '点导航后 JS 上下文存活（window 标记还在 = 没有整页刷新）', alive === 'alive', `标记=${alive || '(被清了)'}`);
       assert(c, 'api', '点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次）', docs.length === 1,
         `document 响应 ${docs.length} 次：${docs.map((d) => d.url).join(',')}`);
       assert(c, 'api', '切页后页面自己重新取到 /api/daily', !!(await waitForApi(net, '/api/daily', 15000)));
@@ -718,14 +779,18 @@ const SCENARIOS = [
   },
   {
     id: 'E9', title: '点开一篇文章：详情正文渲染（B52 类"接口 200 但页面空"）',
-    async run(page, c, target, net) {
+    async run(page, c, target, net, dict) {
       net.length = 0;
       await goto(page, c, target + '/reader/', SEL.readerRow);
+      const list = await waitForApi(net, '/api/articles');
+      const items0 = (list && list.json && list.json.items && list.json.items[0]) || null;
       const first = await rowsOf(page, SEL.readerRow);
-      const head = String(first[0] || '').slice(0, 12);
-      assert(c, 'render', '列表有可点的行', first.length > 0, head);
+      const head = String((items0 && items0.title) || first[0] || '').slice(0, 12);
+      assert(c, 'render', '列表有可点的行', first.length > 0 && !!items0, head);
       const before = (await bodyText(page)).length;
-      assert(c, 'render', '点得到第一行', await page.locator(SEL.readerRow).first().click({ timeout: 8000 }).then(() => true).catch(() => false), head);
+      // 点的是"页面自己响应里的第 1 条"，不是"DOM 第 1 个"——两者不一致时后面所有对账都会错位
+      const row = page.locator(SEL.readerRow).filter({ hasText: String(items0.title).slice(0, 20) }).first();
+      assert(c, 'render', '点得到那篇文章所在的行', await row.click({ timeout: 8000 }).then(() => true).catch(() => false), head);
       const det = await waitForApiWhere(net, (r) => /^\/api\/articles\/\d+$/.test(r.url), 20000);
       const item = (det && det.json && (det.json.item || det.json)) || {};
       const html = String(item.content_html || item.content || '');
@@ -745,28 +810,44 @@ const SCENARIOS = [
       // 只要求"显著增长"（实测薄正文条目整屏只多 400 字，>500 是我拍的门槛，会把正常渲染判成缺陷）；
       // 真判据在下面那条：详情面板自身必须出现 >300 字的正文
       assert(c, 'render', '详情展开后页面文本显著增长', after > before + 200, `文本 ${before}→${after}`);
-      // 详情面板按"包含被点标题且文本够长的最小容器"取（B52 的判据必须落在面板本身，
-      // 而不是整页——整页里侧栏/图片懒加载也会出现「加载中…」，那是假红）
-      const pane = await page.evaluate((t) => {
-        const cand = [...document.querySelectorAll('article,section,div')]
-          .filter((e) => e.innerText && e.innerText.includes(t) && e.innerText.length > 300);
-        cand.sort((a, b) => a.innerText.length - b.innerText.length);
-        return cand.length ? cand[0].innerText.slice(0, 1500) : '';
-      }, head);
-      assert(c, 'render', '详情面板渲染出正文（>300 字）且面板内没有占位文案',
-        pane.length > 300 && emptyStateHits(pane).length === 0, `面板长度=${pane.length}`);
-      assert(c, 'data', '详情标题与列表首条同源', txt.includes(head), head);
+      // 详情面板用组件自己的钩子（实测 ArticleView.jsx:241 打开时渲染 `article.max-w-[720px]`，
+      // 未选文章时渲染 selectHint）。上一版按"含标题且 >300 字的最小容器"取面板，结果列表行的
+      // 摘要 div（105 字，出现 12 次）就能满足判据 —— 等于全不渲染详情也能绿（对抗审查查出）。
+      const hint = dict && dict['article.selectHint'] ? dict['article.selectHint'] : '从左侧选择文章';
+      const pane = await page.evaluate(({ title, hintTxt }) => {
+        const arts = [...document.querySelectorAll('article')].filter((e) => e.innerText && e.innerText.includes(title));
+        if (!arts.length) return { found: false, len: 0, hintStill: document.body.innerText.includes(hintTxt), text: '' };
+        arts.sort((a, b) => a.innerText.length - b.innerText.length);
+        const t = arts[0].innerText;
+        return { found: true, len: t.length, hintStill: document.body.innerText.includes(hintTxt), text: t.slice(0, 2000) };
+      }, { title: String(items0 && items0.title || head), hintTxt: hint });
+      assert(c, 'render', '详情面板（article 元素）出现且含被点标题', pane.found && pane.len > 300, `面板字数=${pane.len}`);
+      assert(c, 'render', '未选文章的提示已消失（不是还停在空态）', !pane.hintStill, `selectHint 仍在=${pane.hintStill}`);
+      assert(c, 'render', '面板内没有占位文案', emptyStateHits(pane.text).length === 0);
+      // 正文对账只在接口确实给了长正文时判（实测今日流里有 content_html 只有 105 字的薄正文条目，
+      // 那种条目面板本来就只有摘要长度，硬判"正文出现"是把判据建立在没测过的前提上）
+      const plain = html.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
+      c.metrics.detailBodyChars = plain.length;
+      if (plain.length > 300) {
+        const slice = plain.slice(Math.floor(plain.length / 3), Math.floor(plain.length / 3) + 30);
+        assert(c, 'data', '接口给的正文出现在详情面板里（DOM↔详情响应对账）', pane.text.includes(slice), `切片「${slice.slice(0, 24)}」`);
+      }
+      assert(c, 'data', '详情标题与列表首条同源', pane.text.includes(String(items0 && items0.title || head).slice(0, 12)), head);
     },
   },
   {
     id: 'E10', title: '未知路径 /videos/：不得静默渲染成阅读器（B72 登记不门禁）',
-    async run(page, c, target) {
+    async run(page, c, target, net) {
       await goto(page, c, target + '/videos/', SEL.readerRow);
       const txt = await bodyText(page);
       c.renderedText = txt.slice(0, 200);
       assert(c, 'render', '拼错路径要可见地"不存在"（有 404/兜底提示）',
         !/加载更多|稍后阅读/.test(txt), '现状：静默渲染成阅读器（SPA catch-all 无 404，vercel.json:11）');
-      assert(c, 'data', '未知路径不返回 200 HTML 兜底', true, '由 rewrite 决定，本条只登记事实');
+      // 原来这里是一条写死 true 的"登记事实"——写死真的判据永远不会红，等于假门禁（同 reviewer 对 #6 的判定）。
+      // 改成可翻转的实测：未知路径确实回了 200 + HTML（这就是 B72 成立的事实本身）
+      const doc = net.filter((r) => r.kind === 'doc').pop();
+      assert(c, 'data', '实测事实：未知路径返回 200 的 HTML（而非 404）→ 用户看不出自己打错了',
+        !!doc && doc.status === 200, doc ? `document status=${doc.status}` : '没拦到 document 响应');
     },
   },
 ];
@@ -775,12 +856,26 @@ const KNOWN_GAPS = { E10: 'B72' };
 
 // ───────────────────────── 运行器 ─────────────────────────
 
-/** 从 web/src/i18n.jsx 抽字典键：E8 判裸 key 只认真实存在的键，避免误报 */
+/** 从 web/src/i18n.jsx 抽字典键：E8 判裸 key 只认真实存在的键，避免误报。
+ *  **读不到必须抛错**：原先 catch 返回 [] → E8 的"无裸 key"永远绿，
+ *  一次文件改名就能把检查变成假门禁（reviewer #7）。抛错会被 runner 归成 fail_env。 */
 function dictKeys() {
-  try {
-    const src = fs.readFileSync(path.join(ROOT, 'web', 'src', 'i18n.jsx'), 'utf8');
-    return [...src.matchAll(/'([a-z][a-z0-9]*\.[a-zA-Z0-9]+)'\s*:/g)].map((m) => m[1]);
-  } catch { return []; }
+  const f = path.join(ROOT, 'web', 'src', 'i18n.jsx');
+  if (!fs.existsSync(f)) throw new Error('TOOL: 字典文件不存在 ' + f + ' —— 裸 key 判据失去依据，本轮不算跑过');
+  const src = fs.readFileSync(f, 'utf8');
+  const keys = [...src.matchAll(/'([a-z][a-z0-9]*\.[a-zA-Z0-9]+)'\s*:/g)].map((m) => m[1]);
+  if (keys.length < 50) throw new Error(`TOOL: 字典只解析出 ${keys.length} 个键（i18n.jsx 结构变了，E8 的判据要同步改）`);
+  return keys;
+}
+/** known_gap 只准豁免**已登记在册**的缺口：编号必须真的出现在 docs/ISSUES.md，
+ *  否则"标成 known_gap"就等于删剧本（§3.6 禁止的那件事）。 */
+function gapIssues() {
+  const f = path.join(ROOT, 'docs', 'ISSUES.md');
+  const text = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '';
+  return Object.entries(KNOWN_GAPS).map(([id, ref]) => ({
+    id, ref,
+    ok: /^B\d+$/.test(ref) && new RegExp(`\\*\\*${ref}\\*\\*|\\|\\s*${ref}\\s*\\|`).test(text),
+  }));
 }
 function gitRev(ref) { try { return execFileSync('git', ['rev-parse', ref], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { return ''; } }
 function arg(argv, name, dflt) { const i = argv.indexOf(name); return i >= 0 && argv[i + 1] ? argv[i + 1] : dflt; }
@@ -828,11 +923,18 @@ async function main() {
     return 2;
   }
   const originSha = isRemote ? gitRev('origin/main') : '';
+  // ── 验收轮判定（reviewer #2）：跑子集、只跑 1 轮、或打本地站，都**不构成验收**。
+  //    不加这条，`--only E1 --fast` 绿了也会 exit 0，于是"我跑过端到端"可以拿一条探针来兑——
+  //    正是本轮反复犯的那类错（把跑过 ≠ 验收过）。
+  const acceptance = acceptanceOf(cases.length, SCENARIOS.length, repeat, isRemote);
+  const gaps = gapIssues();
+  const badGap = gaps.find((g) => !g.ok);
+  if (badGap) { await browser.close(); console.error(`fail_env：known_gap ${badGap.id}→${badGap.ref} 没在 docs/ISSUES.md 登记 —— 未登记的豁免等于删剧本`); return 2; }
   fs.writeFileSync(path.join(ROOT, dir, 'env_lock.json'), JSON.stringify({
     startedAt, target, proxy: isRemote ? PROXY : '(local)', liveCommit: liveSha, originMain: originSha,
     node: process.version,
     playwright: (() => { try { return require('playwright/package.json').version; } catch { return '?'; } })(),
-    viewport: VIEWPORT, repeat, scenarios: cases.map((s) => s.id), argv,
+    viewport: VIEWPORT, repeat, scenarios: cases.map((s) => s.id), argv, acceptance, gaps,
   }, null, 2));
   if (isRemote) {
     if (!liveSha) { await browser.close(); console.error('fail_env：/api/meta 没回传 commit —— 线上构建未带 VERCEL_GIT_COMMIT_SHA（§3.1：等于改动没生效）'); return 2; }
@@ -843,7 +945,7 @@ async function main() {
     }
   }
   // 每轮剧本一个干净 page：前端 api.js 有 5s 内存缓存，共用 page 会让后一条剧本"页面根本没发请求"，
-  // 对账拿不到数据（假红）。干净 page 同时让 E7 的 performance navigation 计数可判。
+  // 对账拿不到数据（假红）。干净 page 同时让 E7 的"document 只拉过一次"可判。
   const ctx2 = await browser.newContext({ viewport: VIEWPORT });
 
   const results = [];
@@ -924,7 +1026,7 @@ async function main() {
     consoleErrors: consoleErrs.slice(0, 10),
   };
   const reportPath = path.join(dir, 'report.json').replace(/\\/g, '/');
-  fs.writeFileSync(path.join(ROOT, reportPath), JSON.stringify({ target, startedAt, summary, cases: results }, null, 2));
+  fs.writeFileSync(path.join(ROOT, reportPath), JSON.stringify({ target, startedAt, acceptance, summary, cases: results }, null, 2));
 
   console.log(`\n端到端评测（41-2）· 目标 ${target} · 线上 commit ${liveSha.slice(0, 7) || '-'} · 每剧本 ${repeat} 次`);
   for (const r of results) {
@@ -963,14 +1065,21 @@ async function main() {
     }
   }
   if (procProduct || procEnv) console.log(`过程层不过：${procProduct ? 'fail_product（评测产物不诚实）' : ''}${procEnv ? ' fail_env（本轮不算跑过）' : ''}`);
-  if (procProduct) return 1;
-  return code || (procEnv ? 2 : 0);
+  let final = procProduct ? 1 : (code || (procEnv ? 2 : 0));
+  // 非验收轮**永远不许 exit 0**（reviewer #2）：全绿但只跑了一条剧本，也不构成"端到端验过"
+  if (!acceptance.ok && final === 0) final = 2;
+  run.commands[0].exitCode = final;
+  console.log(acceptance.ok
+    ? '本轮为**验收轮**：全剧本 × ≥3 轮 × 真实云端，可作为交付证据。'
+    : `NOT_ACCEPTANCE：${acceptance.reasons.join('；')} —— 只算探针跑，不得写进交付说明当端到端验收`);
+  return final;
 }
 
 // ───────────────── 自检：坏样本必须被抓住（EVAL_GUIDE §4.1 负向验证）─────────────────
-function selfTest() {
+async function selfTest() {
   const probes = [];
-  const P = (name, pass, detail) => probes.push({ name, pass, detail });
+  const P = (name, pass, detail) => probes.push({ name, pass: !!pass, detail });
+  const SCRIPT_SRC = fs.readFileSync(__filename, 'utf8');
 
   P('classify: 3 次全过 = pass', classify(['pass', 'pass', 'pass']) === 'pass');
   P('classify: 偶发失败 = flaky（不得当通过）', classify(['pass', 'fail_product', 'pass']) === 'fail_flaky');
@@ -1028,7 +1137,60 @@ function selfTest() {
   P('QUERY_SRC 的出处必须是前端构造行（不许指回后端白名单，那对不上真实请求）', Object.values(QUERY_SRC).every((s) => /^web\/src\//.test(s)));
   P('剧本表：id 唯一且每条有 run', new Set(SCENARIOS.map((s) => s.id)).size === SCENARIOS.length && SCENARIOS.every((s) => s.id && s.title && typeof s.run === 'function'));
   P('known_gap 必须指向真实剧本', Object.keys(KNOWN_GAPS).every((id) => SCENARIOS.some((s) => s.id === id)));
+  P('known_gap 的编号必须真在 docs/ISSUES.md 登记（未登记的豁免=删剧本）', gapIssues().every((g) => g.ok),
+    gapIssues().filter((g) => !g.ok).map((g) => `${g.id}→${g.ref}`).join(','));
   P('attachNet 确实注册了 response 监听', (() => { let got = null; attachNet({ on: (ev, fn) => { if (ev === 'response') got = fn; } }, []); return typeof got === 'function'; })());
+
+  // ── #2 验收轮：绿 ≠ 验收过 ──
+  P('验收轮：全剧本 ×3 轮 × 云端才算验收', acceptanceOf(SCENARIOS.length, SCENARIOS.length, 3, true).ok === true);
+  P('验收轮：--only 跑一条全绿也不是验收（不得 exit 0）', acceptanceOf(1, SCENARIOS.length, 3, true).ok === false);
+  P('验收轮：--fast 单轮不是验收', acceptanceOf(SCENARIOS.length, SCENARIOS.length, 1, true).ok === false);
+  P('验收轮：打本地站不是验收（AGENTS §3 第 8 条只认云端）', acceptanceOf(SCENARIOS.length, SCENARIOS.length, 3, false).ok === false);
+
+  // ── #3 探针响应必须排除在对账外（否则脚本自己发、自己证明页面发过）──
+  {
+    const s1 = [{ url: '/api/reading', by: 'script', json: { items: [{ id: 1 }] }, params: {}, at: 1, status: 200 }];
+    P('collected: 脚本探针的响应不进对账', collected(s1, '/api/reading').size === 0);
+    s1.push({ url: '/api/reading', by: 'page', json: { items: [{ id: 2 }] }, params: {}, at: 2, status: 200 });
+    P('collected: 页面自己的响应照常进对账（排除别顺手做成全排除）', collected(s1, '/api/reading').size === 1);
+    P('waitForApiWhere: 谓词命中脚本记录也不算数', (await waitForApiWhere(s1, (r) => r.by === 'script', 60)) === null);
+    P('waitQuiet: 只有脚本发过时不得判"页面已静"', (await waitQuiet(s1.slice(0, 1), '/api/reading', 8000, 200)).quiet === false);
+    P('waitQuiet: 页面发过且静下来才算静', (await waitQuiet(s1, '/api/reading', 200, 3000)).quiet === true);
+  }
+  {
+    const store = [];
+    let handler = null;
+    attachNet({ on: (ev, fn) => { if (ev === 'response') handler = fn; } }, store);
+    const mkRes = (u) => ({ url: () => u, request: () => ({ resourceType: () => 'fetch' }), status: () => 200, text: async () => '{"items":[]}' });
+    scriptInflight.add('/api/reading?type=video');
+    await handler(mkRes('https://h/api/reading?type=video'));
+    scriptInflight.delete('/api/reading?type=video');
+    P('attachNet: 探针在飞时该 URL 的响应标 script', store.length === 1 && store[0].by === 'script');
+    await handler(mkRes('https://h/api/reading?type=video'));
+    P('attachNet: 探针不在飞时同 URL 的响应算页面发出', store[1].by === 'page');
+    P('attachNet: body 读完后 pending 归零（慢响应不算"还在飞"）', store.pending['/api/reading'] === 0);
+    P('attachNet: 带 query 的 URL 用完整 pathname+search 比对（防只比路径把页面请求也屏蔽）',
+      SCRIPT_SRC.includes('const self = u.pathname + u.search;'));
+  }
+  // ── #7 status 0 / 字典读不到 都不得被当成判据 ──
+  {
+    const c1 = makeCase('t', 't');
+    let msg = '';
+    try { await api({ url: () => 'https://h/reader/', evaluate: async () => ({ status: 0, bytes: 0, json: null, text: 'Failed to fetch' }) }, c1, '/api/reading?type=all'); } catch (e) { msg = String(e.message); }
+    P('api: status 0 抛 TOOL（归 fail_env，不冤枉产品也不放过）', /^TOOL:/.test(msg), msg.slice(0, 60));
+    let msg2 = '';
+    try { await api({ url: () => 'about:blank', evaluate: async () => ({ status: 0 }) }, makeCase('t2', 't'), '/api/x'); } catch (e) { msg2 = String(e.message); }
+    P('api: 无同源文档时仍先抛 TOOL（原 about:blank 坑）', /^TOOL:/.test(msg2));
+    P('dictKeys: 解析真实 i18n 字典且不少于 50 键', dictKeys().length >= 50, `实际 ${dictKeys().length}`);
+  }
+  // ── #6 空判据：写死真的 assert 永远不会红，等于假门禁。
+  //    只扫剧本表那一段（SCENARIOS 到 KNOWN_GAPS 之间）：扫全文会让本条自检的源码自己命中自己。
+  const a0 = SCRIPT_SRC.indexOf('const SCENARIOS = ['), a1 = SCRIPT_SRC.indexOf('const KNOWN_GAPS');
+  const TABLE_SRC = a0 >= 0 && a1 > a0 ? SCRIPT_SRC.slice(a0, a1) : '';
+  P('能定位到剧本表区间（区间取不到则本条判据失效，必须红）', TABLE_SRC.length > 1000, `区间长度 ${TABLE_SRC.length}`);
+  P('剧本里不许有写死真的判据（E10 那条 true 就是这么来的）',
+    !/assert\(c,\s*'[a-z]+',\s*'[^']*',\s*true[,)]/.test(TABLE_SRC));
+  P('剧本里不许有两侧同值的常数判据（E7 的 navigation 计数犯过）', !/=== nav|nav\d\s*===\s*nav\d/.test(TABLE_SRC));
 
   let bad = 0;
   for (const p of probes) if (!p.pass) { bad++; console.log(`  ✗ 自检 ${p.name}${p.detail ? ' — ' + p.detail : ''}`); }
@@ -1043,4 +1205,9 @@ if (require.main === module) {
   });
 }
 
-module.exports = { SCENARIOS, SEL, SRC, QUERY_SRC, KNOWN_GAPS, EMPTY_READING, classify, exitCodeOf, rawKeyHits, kindCoverage, countMatches, emptyStateHits, pillCounts, collectTitles, orphanCards, subsetConsistency, assert, makeCase, dictKeys };
+module.exports = {
+  SCENARIOS, SEL, SRC, QUERY_SRC, KNOWN_GAPS, EMPTY_READING, scriptInflight,
+  classify, exitCodeOf, acceptanceOf, rawKeyHits, kindCoverage, countMatches, emptyStateHits, pillCounts,
+  collectTitles, orphanCards, subsetConsistency, assert, makeCase, dictKeys, gapIssues, byPage,
+  collected, waitForApi, waitForApiWhere, waitQuiet, api, attachNet,
+};

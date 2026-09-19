@@ -22,12 +22,12 @@
 
 | 层 | 命令 | 证什么 | 现状 |
 |---|---|---|---|
-| L1 单元/回归 | `npm test` | 函数行为、历史 bug 不复发 | 已有（BL1 已闭合：09-19 把 4 条指向已独立成仓 `portal/*` 的锚点重锚到根树真文件，现 344 项 0 红） |
+| L1 单元/回归 | `npm test` | 函数行为、历史 bug 不复发 | 已有（BL1 已闭合：09-19 把 4 条指向已独立成仓 `portal/*` 的锚点重锚到根树真文件；**条数唯一写死处是 `FEATURE_MATRIX.md` §1.5**，本文件不复制） |
 | L2 构建 | `npm run build:vercel` | 前端可构建、静态资源齐 | 已有 |
 | L3 云端实测 | `docs/DELIVERY_VERIFICATION.md` 流程 | 端点活着、SHA 已上线 | 已有（人工） |
-| **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，**41-2 已交付**（`tools/eval-e2e.cjs`，10 条剧本 / 自检 44 项 / 首轮就抓到 B71 裸 key） |
+| **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，**41-2 已交付**（`tools/eval-e2e.cjs`，10 条剧本；自检项数以 `--self-test` 输出为准；首轮就抓到 B71 裸 key、B74 晚到响应覆盖） |
 | **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，W1~W11 已落地 |
-| **L4b' 过程检查** | `npm run eval:process` | **这次运行到底可不可信**（截图/报告/断言数/占位文案/证据路径/退出码/参数出处） | 本文 §3.6，`tools/eval-process-checks.cjs` 已落地 |
+| **L4b' 过程检查** | `npm run eval:process` | **这次运行到底可不可信**（截图/报告/断言数/占位文案/证据路径/退出码/参数出处/断言三类覆盖 F1~F8） | 本文 §3.6，`tools/eval-process-checks.cjs` 已落地 |
 | **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，41-8 已交付（未 `--judge` 时只出产物采集与人工对齐，不冒充评分） |
 | L5 文档门禁 | `npm run lint:docs` | 文档不腐烂、无悬空、无明文密钥 | 已有 |
 
@@ -57,12 +57,12 @@
 | E2 | 阅读器「视频」Tab | `/api/videos`：切换后必须是视频卡、文章行清零 |
 | E3 | `/daily/` 栏目 pill | `report.sections[].column` 逐列条数（B39 档位可见） |
 | E4 | `/hot/` 三视图 | featured/all 走"渲染行 ⊆ 响应"，热搜事件走"响应事件覆盖率"（两套行结构不同，实测） |
-| E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因） |
+| E5 | `/reading/` type 筛选 | 行数 + 三个 tab 计数 pill **逐个** ↔ 同一份响应的 `counts`（B60 根因），且都走 `assertStays`「复查不翻转」（B74 的晚到覆盖就长这样） |
 | E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串 |
-| E7 | 客户端路由与深链 | `performance.navigation` 计数不增（P0-5）+ 刷新不丢位置（38-3 前置） |
+| E7 | 客户端路由与深链 | 点导航后 **window 标记仍存活 + document 只拉过一次**（两者都是"真会翻转"的观测量；原 `performance.navigation` 计数两侧恒等属空判据，已删）+ 刷新不丢位置（38-3 前置） |
 | E8 | 7 个页面 | 无 JS `pageerror`、**无裸 i18n key 上屏**（抓到 B71）、未登录时 `/api/auth/me` 真的 401 |
-| E9 | 点开文章 | 详情接口 200 且 `content_html` 非空 + 面板正文 >300 字（B52 类） |
-| E10 | `/videos/` 未知路径 | 不得静默渲染成阅读器（B72，登记为 known_gap） |
+| E9 | 点开文章 | 点的是**页面自己那份列表响应里的第 0 条**，正文必须落在详情面板的 `article` 元素里（`selectHint` 消失）；`content_html` 明文 >300 字时取中段比对，薄正文记进 `metrics.detailBodyChars` 不假装通过 |
+| E10 | `/videos/` 未知路径 | 不得静默渲染成阅读器（B72，登记为 known_gap；第二判据改成可翻转的"实测回 200 HTML"，不写死真） |
 
 **仍待补**：`/reader/` 的搜索与中英对照、翻页；`/reading/` 日期分组无「未知日期」；后台 8 板块的"改一个设置 → 前台真的变了"闭环剧本（**卡在不替你登录**，需你授权测试口令或人工跑）；41-5 覆盖矩阵要等这份清单定稿。
 
@@ -80,11 +80,18 @@
 > `tab` 是已读/稍后读状态），三个不同 Tab 返回同一批数据，一度被误判成"筛选仍失效"。
 > 剧本里的每个参数名与取值枚举，必须抄自被检代码（路由白名单那一行），并在剧本文件里注明出处。
 > 判据来自猜测的"失败"不是缺陷证据，是评测工具自身的 bug。
-> **端到端额外两条**（都是首轮 4 类假红换来的，详见 `docs/pitfalls/testing.md` #46~#49）：
+> **端到端额外五条**（都是首轮 4 类假红 + 一轮对抗审查换来的，详见 `docs/pitfalls/testing.md` #46~#51）：
 > ① 对账数据必须取**页面自己发出的那次请求**（`page.on('response')` 拦截），剧本另发探针会绕过前端缓存与
 >    参数构造逻辑，测到的是"接口自己"而不是"这个页面"；未登记出处的路径一旦带参数，过程层 F7 直接判红。
 > ② **响应形状也是实测项**：`/api/daily` 是 `report.sections[].column`、`/api/weekly` 是 `report.issue`、
 >    `/api/reading` 是 `{items,counts}`——按直觉写成 `sections`/`items` 顶层键，会得到一整套"接口没数据"的假红。
+> ③ **探针响应必须打 `by:'script'` 标记并从对账里排除**：拦截器与页面请求进的是同一个 store，
+>    `net.length=0` 挡不住探针那条**晚到**的异步 push（body 读完才 push）。不标就是"脚本自己发、
+>    再证明页面发过"——假绿，且比假红危险得多。
+> ④ **判据必须"复查不翻转"**（`assertStays`）：轮询到第一次相等就收工，看不见 B74 那种
+>    "先对、随后被 15~30s 晚到的旧响应覆盖回去"。谓词一字不改，只多两次 8s 复查。
+> ⑤ **不许有写死真的判据**：`assert(c,…,true,…)`、`nav1 === nav0`（两侧恒等）这类**永远不会红**的行
+>    等于假门禁。自检里有两条专项探针扫剧本表源码，且只扫剧本表区间——扫全文会让探针命中自己的源码。
 
 ### 3.4 结果四分类与 flaky
 
@@ -103,17 +110,34 @@
 ### 3.6 过程性二值检查（防"没真跑却算通过"）
 
 借论文的二值检查型指标思路（`check_screenshot_taken(events)` / `check_report_generated(artifacts)`）：
-端到端**结果**绿了不代表**过程**真发生。每次运行必须对运行器自身做机器可判的过程检查，任一不过即 `fail_env`（不算通过，也不算产品缺陷）：
+端到端**结果**绿了不代表**过程**真发生。每次运行必须对运行器自身做机器可判的过程检查：任一不过即**本轮不算通过**，
+但分类不同——**评测产物不诚实**（断言为空、证据路径不存在、参数没出处、退出码不诚实）判 `fail_product`，
+**运行条件不足**（截图缺失/旧图冒充、报告没生成）判 `fail_env`；两类都不许写进交付说明当"通过"。
 
 | 检查 | 判据 | 抓的是哪类假通过 |
 |---|---|---|
-| `check_screenshot_taken(events)` | 本次事件流里**确实存在** screenshot 调用，且落盘文件存在、字节数 > 10KB | 剧本只发了请求没渲染页面；截图是上一次的残留 |
-| `check_report_generated(artifacts)` | `docs/eval/<轮次>/` 下存在 `report.json` + `env_lock.json`，且每条剧本都有对应产物文件名（命名合规即算存在，内容另判） | 跑挂了但退出码被管道吞掉（本项目真实踩过：`npm test \| tail` 让 exit code 变成 tail 的 0） |
-| `check_assertions_executed(report)` | 每条剧本的 `assertions[]` 非空且含三类各 ≥1 | "点开了就算过"的空断言 |
-| `check_no_stub_text(report/screenshots)` | 断言目标文本不得命中占位词表（`加载中…`、`暂无数据`、`undefined`、`NaN`、`[object Object]`） | B52 恒「加载中…」、B47 恒 0 |
-| `check_evidence_paths_resolve(report)` | 报告里每条证据的截图/响应路径在磁盘上真实存在 | 证据是手写进 JSON 的 |
+| **F1** `check_screenshot_taken(events)` | 本次事件流里**确实存在** screenshot 调用，且落盘文件存在、字节数 > 10KB、mtime 落在本次运行窗口内 | 剧本只发了请求没渲染页面；截图是上一次的残留 |
+| **F2** `check_report_generated(artifacts)` | `report.json` 可解析，且剧本清单条数 == 报告 `cases[]` 条数（区分"没有 cases 字段"与"空数组"） | 跑挂了但退出码被管道吞掉（本项目真实踩过：`npm test \| tail` 让 exit code 变成 tail 的 0）；漏跑一条剧本 |
+| **F3** `check_assertions_executed(report)` | 每条剧本 `assertions` 计数 > 0，报 `pass` 却不记断言数也算红 | "点开了就算过"的空断言 |
+| **F4** `check_no_stub_text(report)` | 断言目标文本不得命中占位词表（`加载中…`、`暂无数据`、`not implemented`、`TODO`、`xxx`） | B52 恒「加载中…」、B47 恒 0 |
+| **F5** `check_evidence_paths_resolve(report)` | 报告**证据字段**（`evidence`/`artifacts`）引用的路径在磁盘上真实存在 | 证据是手写进 JSON 的（B50 类漂移的评测版） |
+| **F6** `check_exit_code_honest(commands)` | 每条命令记了自己的退出码；管道命令必须另注明退出码来源 | 同上，`npm test \| tail` |
+| **F7** `check_probe_params_sourced(report)` | 探针每个参数都带 `file:line` 出处（抄自被检代码，见 §3.3） | 把 `type=` 猜成 `tab=` 那类"判据来自猜"的假红/假绿 |
+| **F8** `check_assertion_kinds(report)` | 逐条剧本核 **render / api / data 三类判据是否各有 ≥1**（缺口须进 `kindExemptions` 显式豁免） | 只断言"接口 200"就当端到端通过——三类里缺 data 就是没对账 |
 
 > 原则同 §4：**过程性检查必须是二值的、可机器判定的**，不交给模型打分；模型只参与 §5 的内容质量维度。
+> 自检口径：`node tools/eval-process-checks.cjs --self-test` 必须**每项都"坏样本会红、好样本会绿"**，
+> 项数以 `--self-test` 输出为准（文档不写死条数，§3.2 同）。
+
+### 3.7 验收轮 vs 探针轮（`tools/eval-e2e.cjs` 的 `NOT_ACCEPTANCE`）
+
+**跑过 ≠ 验收过。** 端到端只有同时满足这三条才算验收轮，否则即便全绿也**永远不返回 0**（返回 2）并在终端打 `NOT_ACCEPTANCE`：
+
+1. 剧本清单 == 全部剧本（`--only` 跑子集不算）；
+2. 每剧本 ≥3 轮（`--fast` 单轮不算——单轮判不出 flaky）；
+3. 目标是真实云端站点（打本地 3000 端口不算——AGENTS §3 第 8 条只认云端）。
+
+`env_lock.json` 与 `report.json` 都落 `acceptance: {ok, reasons, ...}`。**交付说明里写"端到端已验收"之前，先看这两个字段。**
 
 ## 4. 白盒评测（代码不变量与三端一致性）
 
@@ -271,7 +295,7 @@ npm run eval:content -- --judge --align <人工分.json> # 真评（花 AI 配�
 
 ## 9. 产物与门禁
 
-- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，41-2 已交付：默认线上 + 每剧本连跑 3 次）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，41-2 已交付：默认线上 + 每剧本连跑 3 次；**非验收轮即便全绿也退 2**，口径见 §3.7）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查 F1~F8；自检项数以 `--self-test` 输出为准）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。

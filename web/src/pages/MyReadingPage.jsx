@@ -67,7 +67,7 @@ export default function MyReadingPage() {
   const [batchBusy, setBatchBusy] = useState(false);
   const boxRef = useRef(null);
   const loadingRef = useRef(false);
-  // B73（2026-09-19 端到端评测抓到）：请求序号守卫。首屏 type=all 那条实测要 15~30s，
+  // B74（2026-09-19 端到端评测抓到）：请求序号守卫。首屏 type=all 那条实测要 15~30s（慢的成因见 B73），
   // 期间用户点「文章/视频」发的新请求会先返回，旧响应晚到会把列表和计数**整体覆盖回未筛选态**
   // （表现：点了筛选像没反应，过一会儿内容又跳回去）。
   const seqRef = useRef(0);

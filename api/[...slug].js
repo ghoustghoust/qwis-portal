@@ -2672,6 +2672,13 @@ async function handleMyBrief(req) {
   if (!subIds.length) return jsonOk({ empty: 'no-subscription' });
   const report = await getSetting('mybrief.latest', null);
   if (!report) return jsonOk({ empty: 'no-content' });
+  // B76：runner 会把空态**当成报告写进行**（tools/collect-turso.js:1308 无订阅 / :1372 今日无精选），
+  // 只判 `!report` 就会回 `{report:{empty:'no-content'}}` —— 三态契约在 API 层断裂。
+  // 前台 MyBriefPage 用 `data?.empty || report?.empty` 兜住了，但只看 data.empty 的客户端
+  // （门户、飞书推送、脚本）会把"今日无更新"读成"有内容"。在读层归一，两种存储形态收敛成一个响应。
+  if (typeof report.empty === 'string') {
+    return jsonOk({ empty: report.empty, ...(report.message ? { message: report.message } : {}) });
+  }
   // T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键）
   const digest = await getSetting('reading.digest', null);
   return jsonOk({ report: await enrichBriefTitles(report), ...(digest ? { digest } : {}) });

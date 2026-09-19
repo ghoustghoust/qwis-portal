@@ -37,16 +37,17 @@
 ## 3. 测试约定
 
 - 验收 = 下面每条都跑并留证据（口径与判据见 `docs/EVAL_GUIDE.md`）：
-  1. `npm test` 全绿（346+ 项；引用 server/* 的测试文件先 require tests/helpers）
+  1. `npm test` 全绿（条数唯一写死处见 `docs/FEATURE_MATRIX.md` §1.5，本文件不复制；引用 server/* 的测试文件先 require tests/helpers）
   2. `node smoke-test.js` 冒烟（生产库副本，零副作用）
   3. `npm run build:vercel` 无错
   4. `npm run lint:docs` 零错（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
   5. `npm run eval:preflight` 环境前置（代理 / **线上 commit == origin/main** / Turso / 测试隔离 / BL7-BL9 配置告警）——红则先修环境，不许跳过去跑剧本
-  6. `npm run eval:whitebox` 全过（W1~W10：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
-  7. `npm run eval:process` 全过（这次评测运行可不可信：截图/报告/断言数/占位文案/证据路径/退出码/参数出处；任一不过判 `fail_env`，不算通过也不算产品失败）
+  6. `npm run eval:whitebox` 全过（W1~W11：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定、**入口 Provider 完整性**…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
+  7. `npm run eval:process` 全过（这次评测运行可不可信 F1~F8：截图/报告/断言数/占位文案/证据路径/退出码/参数出处/**断言三类覆盖**；任一不过本轮不算通过——产物不诚实判 `fail_product`、运行条件不足判 `fail_env`，两者都不许当"验收过"）
   8. 云端实测：按 `docs/DELIVERY_VERIFICATION.md` 打真实线上端点，curl/截图才算证据；**只有在第 5 条判「线上一致」时才算数**
   9. F2P：本轮每条修复出 `npm run eval:f2p -- --auto-base --tests <锁文件> --cases <本轮锁名前缀>`（基线由锁的引入提交反查，**必须逐条点名**——"文件里有红"不算证据，坑 #45），证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）。**退出码 1=锁假了（可删/重写），2=未评测（基线错、没跑到、没点名）只许修输入，禁止删用例**（坑 #41/#45）
   10. `npm run eval:e2e` **全过（41-2 已交付，与白盒同级的自检验收层级）**：默认打线上、每剧本连跑 3 次（§3.4 口径），产出 `docs/eval/e2e/<轮次>/{report.json,env_lock.json,screens/}`；退出码 1=产品红、2=环境/flaky/空跑。**它就是"页面真的对用户生效"这一层的证据来源**，未跑不得声称交付完成；确实没覆盖到的面（如需登录态的后台闭环剧本）必须显式记为未验收，不许用"接口 200"代替。
+     - **验收轮 vs 探针轮（EVAL_GUIDE §3.7）**：只有「全剧本 × ≥3 轮 × 真实云端」才允许 exit 0；用 `--only`/`--fast`/本地目标跑出来的绿一律退 2 并打 `NOT_ACCEPTANCE`，**写进交付说明前先看 `env_lock.json` 的 `acceptance.ok`**。跑过 ≠ 验收过。
   11. `npm run eval:content`（41-8，✅ 已交付：三层自检 `--self-test` 必须全绿；真评需 `--judge` 且人工对齐够 3 条产物才写趋势；stub 轮次不算已验收）——AI 产物**内容质量**仍属人工兜底，不与 e2e 混计
 - **固定交付链（一轮都不许跳，用户 2026-09-19 重申）**：
   改完 → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`collect.yml` 最近批次无红且本 commit 的 job 日志无新报错（⚠️ 当前**没有 push-CI**，`npm test`/`lint:docs` 只在本地跑；要"Actions 报不报错"成为可检查项需补 `.github/workflows/ci.yml`，见 FEATURE_MATRIX §1.5 末行）→ **Vercel 真实云端实测**（先 `/api/meta` 的 `commit == origin/main`，再打端点/截图）→ **冒烟测试 `node smoke-test.js`** → **对抗性审查**（不能只靠自己复查：至少一个独立 reviewer 看这批改动，见坑 #45 第⑤条）→ **白盒评测 `npm run eval:whitebox`** → **端到端评测 `npm run eval:e2e`（已就位：没跑 = 这轮没做完，不许用"接口 200"代替）** → **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号 / spec 状态），最后 `npm run lint:docs` 收口。
