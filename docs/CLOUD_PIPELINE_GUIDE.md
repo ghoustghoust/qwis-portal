@@ -81,12 +81,18 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    预聚合写 `settings['hot.eventsCache']`（15min 刷新），云端读层直读缓存（>45min 视为 runner 异常才内联兜底）。
    聚合逻辑唯一实现：`lib/hot-events.js`（纯函数，runner 与云端兜底共用，勿再写第三份）。
 
-12. **早报/周刊落库守卫（2026-09-18 事故后新增，详见坑 #32）**：`daily_reports` 有三个写入者
-    ——`daily-ai-evening`（北京 21:30，AI）、`daily-ai`（00:32 备跑，AI）、`daily-report`（09:03，**非 AI**），
-    外加读层 `getOrGenerate` 内联兜底。读层**必须按 `schemaVersion` 档位优先，不能按 `generated_at` 最新优先**，
+12. **早报/周刊落库守卫（2026-09-18 事故后新增，详见坑 #32；写入者数目 2026-09-19 实测订正）**：
+    `daily_reports` 的**代码写入函数有 5 个**（不是三个）——`tools/collect-turso.js#runDailyAi`（AI，由
+    `daily-ai-evening` 北京 21:30 / `daily-ai` 00:32 备跑两个 job 调）、同文件 `#runDaily`（**非 AI 裸报告**，
+    由 `daily-report` 09:03 调）、`api/daily-generate.js#generateDaily`（云端手动/定时生成）、
+    `server/services/ai/daily.js#generate`（本地灾备）、`api/[...slug].js#generateDailyInline`（**读层内联兜底**）。
+    读层**必须按 `schemaVersion` 档位优先，不能按 `generated_at` 最新优先**，
     否则 09:03 的裸报每天把 AI 增强版整体遮蔽（线上实测 id99 被 id100 顶掉）。
-    守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`），runner 与云端读层共用——
-    **任何一端都不许重写这条规则**。周刊不足 4 条一律不发布（宁缺毋滥，不得用空/降级产物覆盖上一期）。
+    守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly` / `passesDailyQualityGate`），
+    runner 与云端读层共用——**任何一端都不许重写这条规则**；入报门槛**必须 5 个写入函数逐个接**，
+    漏一个的表现就是"大部分天正常、个别天混进低质条目"（B20 实测：`id=103` 混进 29/22 分两条，
+    来源正是最后补上门槛的读层内联兜底）。对账锁 = 白盒 **W14**（从 `INSERT INTO daily_reports` 反查宿主函数，
+    不靠人记清单，见坑 #58）。周刊不足 4 条一律不发布（宁缺毋滥，不得用空/降级产物覆盖上一期）。
 
 13. **早报「视频与播客」栏有**三份**实现，字段必须一起改（B84，2026-09-19）**：
     `api/[...slug].js`（云端日报）、`tools/collect-turso.js` 日报批、同文件 mybrief 批各写一份

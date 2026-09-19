@@ -698,10 +698,19 @@ async function generateDailyInline() {
 
   const candidates = await qAll(sql, args);
   // 简单安检
-  const valid = candidates.filter(a => {
+  let valid = candidates.filter(a => {
     const t = String(a.title || '');
     return t.length >= 6 && !/参数错误|环境异常|访问过于频繁/.test(t);
   });
+  // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
+  // 最晚接上门槛 → id=103 的 stats 形状 {candidates,articles,sections,totalItems} 正是本函数的指纹，
+  // 实测带进 2 条 <30 分（29/22）。门槛口径与其余四份共用同一条 lib/brief-guards 实现。
+  try {
+    const minScore = Number(((await getSetting('ai', {})) || {}).dailyMinScore ?? briefGuards.DAILY_MIN_SCORE);
+    const before = valid.length;
+    valid = valid.filter((a) => briefGuards.passesDailyQualityGate(a, minScore));
+    if (before !== valid.length) console.log(`[日报内联] 门槛(≥${minScore} 分): 剔除 ${before - valid.length} 条`);
+  } catch { /* 门槛读设置失败不阻断出报 */ }
 
   const sections = [];
   const used = new Set();
@@ -901,8 +910,11 @@ async function handleStatus(req) {
   const intervals = { opml: 12, rss: 8, bilibili: 60, ...(await getSetting('intervals', {})) };
 
   // P1-5 修复：libsql client 在无数据时可能返回字符串 "null" 而非 JS null，显式归一化
-  const rssLastRaw = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type IN ('wechat','rss','wemp','x','youtube')")).t;
-  const biliLastRaw = (await qOne("SELECT MAX(last_fetched_at) t FROM sources WHERE type='bilibili'")).t;
+  // B93（2026-09-19 独立对抗审查查出）：库里有 1 行 last_fetched_at 是**字面字符串 'null'**
+  // （B15 同族的迁移期污染），而文本序 `'null' > '2026-…'` → MAX() 取到它，
+  // 归一化后变成 null → 后台「RSS 最后同步」自上线起恒显示"从未同步"。NULLIF 在 SQL 层就排掉。
+  const rssLastRaw = (await qOne("SELECT MAX(NULLIF(last_fetched_at,'null')) t FROM sources WHERE type IN ('wechat','rss','wemp','x','youtube')")).t;
+  const biliLastRaw = (await qOne("SELECT MAX(NULLIF(last_fetched_at,'null')) t FROM sources WHERE type='bilibili'")).t;
   const rssLast = (rssLastRaw === 'null' || rssLastRaw === undefined) ? null : rssLastRaw;
   const biliLast = (biliLastRaw === 'null' || biliLastRaw === undefined) ? null : biliLastRaw;
 
@@ -915,7 +927,7 @@ async function handleStatus(req) {
 
   let overview;
   {
-    // B26（2026-09-19 实测）：这原先是**一条无 WHERE 的合并 CASE 扫描**——四组计数一次扫完，
+    // B26（2026-09-19 实测）：这原先是**一条无 WHERE 的合并 CASE 扫描**——三组计数一次扫完，
     // 79.8k 行 × 平均 15.2KB TEXT 全部落进读层，idx_articles_read_sk/idx_articles_created 都被
     // CASE 合并打掉，单这一步 11.8s，整个端点冷态 12~30s（Hobby 预算 30s → 504）。
     // 拆成三条各自走索引的查询后实测合计 ≈1.8s（未读 1,116ms / 今日 147ms / 本周 455ms，线上只读取数）。
@@ -958,6 +970,10 @@ async function handleStatusDailySources() {
   try {
     const since = new Date(Date.now() - 7 * 86400e3).toISOString();
     const reports = await qAll('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
+    // B26 对账（2026-09-19 独立对抗审查查出）：本地端 computeDailySources 会排掉
+    // 「N 源」合成条目与噪声源名，云端此前不排 → 两端同一句话两个算法（近 7 天线上数据恰好
+    // 没有这类条目，所以是潜伏差异而非已显现）。现在云端补齐同一规则，契约才真叫一致。
+    const noiseNames = new Set((await qAll(`SELECT name FROM sources WHERE type='hotlist' OR COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)=1`)).map((r) => r.name));
     const srcCount = {};
     let itemCount = 0;
     for (const rep of reports) {
@@ -967,7 +983,8 @@ async function handleStatusDailySources() {
         for (const it of (col.items || [])) {
           itemCount++;
           const nm = it.source || it.source_name;
-          if (nm) srcCount[nm] = (srcCount[nm] || 0) + 1;
+          if (!nm || /^\d+ 源$/.test(nm) || noiseNames.has(nm)) continue; // 破茧合成条目与聚合源不进榜
+          srcCount[nm] = (srcCount[nm] || 0) + 1;
         }
       }
     }

@@ -116,7 +116,21 @@ async function generateDaily(windowHours) {
   const candidates = await qAll(sql, args);
 
   // 过滤安检
-  const valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  let valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+
+  // B20（2026-09-19 独立对抗审查查出，本轮实测坐实）：分析后质量门槛此前**只接在 runner 那一份**
+  // （tools/collect-turso.js:1128），本文件与本地 server/services/ai/daily.js 都没有 →
+  // 线上最新一期 id=103 实测仍有 2 条低于 30 分入报（29 分「Claude Code now reads AG…」/22 分）。
+  // 门槛口径与 runner 完全一致（同一 lib/brief-guards 实现 + 同一个 ai.dailyMinScore 设置），
+  // 未评分条目一律不误杀（降级关键词版要能出报）。
+  try {
+    const guards = require('../lib/brief-guards');
+    const aiCfg = await getSetting('ai', {}) || {};
+    const minScore = Number(aiCfg.dailyMinScore ?? guards.DAILY_MIN_SCORE);
+    const before = valid.length;
+    valid = valid.filter((a) => guards.passesDailyQualityGate(a, minScore));
+    if (before !== valid.length) console.log(`日报门槛(六维 ≥${minScore} 分): 剔除 ${before - valid.length} 条 / 保留 ${valid.length} 条`);
+  } catch (e) { console.log('门槛检查失败（不阻断，按无门槛继续）:', e.message); }
 
   // 栏目分配
   const sections = [];

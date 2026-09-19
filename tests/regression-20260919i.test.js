@@ -11,6 +11,8 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
+// 文本型锁的函数边界唯一实现（坑 #57/#58 的两类假结果都出在手写边界上）
+const { spans, ownerAt } = require('../lib/src-spans');
 
 // 抽出一个组件函数的函数体（从声明到下一个顶层 ^function / ^export 之前）
 function bodyOf(src, decl) {
@@ -129,18 +131,30 @@ test('I8 坑 #55/B10：栏目表只许一份实现，且写回 settings 的默�
   // "全仓库只许一份"由白盒 W13 负责（它按内容特征扫，能抓到新增副本）；这里只钉读层这一处的接线
 });
 
-test('I9 B8：正文/摘要的两种来源必须分流渲染（纯文本回退不再走 safeHtml）', () => {
+test('I9 B8：两种正文来源的分流必须是可测行为（不是文本断言）', () => {
+  // 2026-09-19 独立对抗审查把旧版 I9 判成假锁：它只查组件源码里有没有那几个字面量，
+  // 把判据改成"什么都走 safeHtml"（= B8 原样复发）仍然 12/12 全绿。所以判据挪进
+  // web/src/components/ui/md-inline.js#looksLikeHtml（纯函数，require(esm) 可直接跑），
+  // 这里钉的是**行为**，两个方向都要钉：只钉一侧，"全走 HTML"和"全走 markdown"都能蒙过去。
+  const { looksLikeHtml, mdInlineParse } = require('../web/src/components/ui/md-inline.js');
+  assert.equal(looksLikeHtml('<p>正文<strong>粗</strong></p>'), true, '真 HTML 正文必须走消毒分支');
+  assert.equal(looksLikeHtml('这是**重点**，涨幅==5%=='), false, 'AI 摘要必须走 markdown 分支（B8 症状本体）');
+  assert.equal(looksLikeHtml('今日发布 A 与 B，涨幅 <5% 以内'), false, '小于号后不是字母，不许误判成 HTML');
+  assert.equal(looksLikeHtml(''), false, '空串不许判 HTML');
+  assert.equal(looksLikeHtml(null), false, 'null 不许抛也不许判 HTML');
+  assert.deepEqual(mdInlineParse('这是**重点**').map((s) => s.t), ['text', 'bold'],
+    'markdown 分支要真产出标记，不是接了组件却不解析');
   const rt = read('web', 'src', 'components', 'ui', 'RichText.jsx');
-  assert.ok(/HTML_RE/.test(rt) && /MdText/.test(rt) && /safeHtml/.test(rt), 'RichText 缺 HTML/纯文本分流');
-  // 三个回退点都必须改走分流：把纯文本塞进 safeHtml 会让 **加粗** ==重点== 变成裸星号
+  assert.ok(/looksLikeHtml/.test(rt), 'RichText 没引用唯一判据实现');
+  assert.ok(!/<\[a-z\]/.test(rt), 'RichText 里又留了一份正则副本（判据必须只有一处）');
+  assert.ok(/safeHtml/.test(rt) && /MdText/.test(rt), 'RichText 缺任一分支都不成立');
   for (const [f, mark] of [
     ['web/src/components/ArticleView.jsx', 'article.translated_content || article.content_html || article.summary'],
     ['web/src/components/QuickStudyModal.jsx', 'contentHtml || intro'],
   ]) {
     const src = read(...f.split('/'));
     assert.ok(/<RichText/.test(src), `${f} 没有改用 RichText`);
-    assert.ok(new RegExp(mark.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      .replace('\\\\ ', '\\\\s+')).test(src.replace(/\s+/g, ' ')) || src.includes(mark), `${f} 的取值链变了，本锁需同步改判`);
+    assert.ok(src.replace(/\s+/g, ' ').includes(mark), `${f} 的取值链变了，本锁需同步改判`);
   }
   const hot = read('web', 'src', 'components', 'HotDetail.jsx');
   assert.ok(/<MdText text=\{summary\}/.test(hot) && /<MdText text=\{reason\}/.test(hot),
@@ -149,26 +163,43 @@ test('I9 B8：正文/摘要的两种来源必须分流渲染（纯文本回退�
 
 test('I10 B26：/api/status 首屏不得内联重统计，重统计走独立端点（两端都要有）', () => {
   const slug = read('api', '[...slug].js');
-  const a0 = slug.indexOf('async function handleStatus(');
-  const a1 = slug.indexOf('async function handleStatusDailySources(');
-  assert.ok(a0 > 0 && a1 > a0, '云端 handleStatus / handleStatusDailySources 定位失败');
-  const body = slug.slice(a0, a1);
-  assert.ok(!/FROM daily_reports/.test(body),
-    'B26 复发：/api/status 又把 daily_reports 的 BLOB 聚合塞进首屏（实测 214KB/2.0s）');
-  assert.ok(!/SELECT\s+stats/.test(body), '又 SELECT 了从未消费的 stats 列（坑 H11 同型）');
-  assert.ok(!/CASE WHEN/.test(body),
-    'B26 根因复发：多条计数被合并成一条无 WHERE 的 CASE 全扫（实测 11.8s，索引全被打掉）');
+  // 函数切分用 lib/src-spans 唯一实现（坑 #57/#58：自己手写边界 = 一次假红 + 一次假绿）
+  const fns = Object.fromEntries(spans(slug).map((s) => [s.name, s.body]));
+  const H = 'handleStatus', D = 'handleStatusDailySources';
+  assert.ok(fns[H] && fns[D], '云端 handleStatus / handleStatusDailySources 定位失败');
+
+  // 反规避：不变量是「首屏这条链路碰不到 daily_reports」。handleDaily/handleDailyRegenerate
+  // 合法读 daily_reports，所以不能全文要求"必须在按需端点内"（旧版判据本身错了）；
+  // 改成从 handleStatus 出发做调用闭包——把重统计藏进任何被它调到的辅助函数一样红。
+  const calls = new Map(Object.keys(fns).map((n) => [n, new RegExp(`\\b${n}\\s*\\(`)]));
+  const seen = new Set([H]);
+  const queue = [H];
+  while (queue.length) {
+    const cur = queue.shift();
+    for (const name of Object.keys(fns)) {
+      if (!seen.has(name) && calls.get(name).test(fns[cur])) { seen.add(name); queue.push(name); }
+    }
+  }
+  const pulled = [...seen].filter((n) => /daily_reports/.test(fns[n]));
+  assert.deepEqual(pulled, [], `首屏调用闭包里出现 daily_reports（= 重统计换了个函数名躲回冷路径）：${pulled}`);
+  assert.ok(!/case\s+when/i.test(fns[H]),
+    'B26 根因复发：多条计数被合并成一条 CASE 全扫（实测 11.8s，索引全被打掉）');
+  assert.ok(!/require\(['"][^'"]*daily/i.test(fns[H]), '首屏通过新的 lib 间接把重统计捞回来，同样算复发');
+
+  // 拆出去的东西必须真接在按需端点上，否则「拆了没接上」同样隐身
+  const heavySql = (fns[D].match(/SELECT [^`']*FROM daily_reports/) || [''])[0];
+  assert.ok(heavySql, '按需端点里没有 daily_reports 查询（来源榜被拆没了）');
+  assert.ok(!/\bstats\b/.test(heavySql),
+    `按需端点的 SQL 又捞了从未消费的 stats 列（坑 H11 同型）：${heavySql}`);
   assert.ok(slug.includes("path === '/api/status/daily-sources'"), '云端新端点没接进路由表');
-  // 路由接了不等于能访问：漏进 PUBLIC_GET_PATHS 的话线上直接 401，右栏永远拿不到来源榜
-  // （坑 #56：本轮实测踩过——静态判据全绿、curl 一打就是 401。两条断言成对，只断一条就是假绿）
-  assert.ok(/PUBLIC_GET_PATHS[\s\S]{0,500}'\/api\/status\/daily-sources'/.test(slug),
-    '新端点未进公开白名单 PUBLIC_GET_PATHS → 线上 401');
+  // 白名单判据过去用"500 字窗口"，把条目挪远一点就会假红：改成解析 Set 里的字面量
+  const setLit = (slug.match(/const PUBLIC_GET_PATHS = new Set\(\[([\s\S]*?)\]\)/) || [])[1] || '';
+  assert.ok(setLit.includes("'/api/status/daily-sources'"),
+    '新端点未进公开白名单 PUBLIC_GET_PATHS → 线上 401（坑 #56：路由接上≠能访问）');
   // 本地端必须有同名端点：前端两端共用，缺一个就是本地永远显示"加载失败"
   const local = read('server', 'routes', 'status.js');
   assert.ok(local.includes("router.get('/daily-sources'"), '本地端缺 GET /api/status/daily-sources');
-  assert.ok(/近 7 天|7 \* 86400e3/.test(local) && !/ORDER BY generated_at DESC LIMIT 1/.test(local),
-    'B89：本地来源榜又退回"只算最新一期"，与界面文案「近7天」和云端都不一致');
-  // 前端确实拆开了：概览栏不再从 status 读 heavy 字段
+  assert.ok(/7 \* 86400e3/.test(local), 'B89：本地来源榜的窗口不再是近 7 天');
   const rail = read('web', 'src', 'components', 'OverviewRail.jsx');
   assert.ok(rail.includes('/api/status/daily-sources'), '统计轨没有懒加载新端点');
   assert.ok(!/ov\?\.dailyTopSources/.test(rail), '统计轨仍从首屏 overview 读来源榜（拆了没接上）');
@@ -181,6 +212,9 @@ test('I11 B11：后台 Tab 冷加载必须是骨架屏，不是一行文字', ()
   assert.ok(at > 0, '找不到 TabLoader');
   const body = src.slice(at, src.indexOf('\n}', at));
   assert.ok(/<SkeletonList/.test(body), `TabLoader 又退回文字占位：${body.replace(/\s+/g, ' ').slice(0, 90)}`);
+  // 光"用了 SkeletonList"不够：n=0 会渲染一张空卡，视觉上和不处理没区别（对抗审查查出的绕过路径）
+  const n = Number((body.match(/<SkeletonList[^>]*n=\{(\d+)\}/) || [])[1]);
+  assert.ok(Number.isFinite(n) && n >= 3, `骨架屏占位数必须≥3（现在 n=${body.match(/n=\{(\d+)\}/)?.[1]}）`);
   assert.ok(!/加载中/.test(body), '文字占位与前台骨架屏不同语言（B11 的批注点）');
   assert.ok(/SkeletonList/.test(src.match(/^import[^\n]*Skeleton[^\n]*$/m)?.[0] || ''), '没 import SkeletonList，上面那条会白测');
 });
@@ -224,4 +258,48 @@ test('I12 坑 #56 同源面：巡检必须走统一代理出口，并把"拿不�
   assert.equal(isEnvOutage(tally(rows([0, 401, 0])), rows([0, 401, 0])), false, '有一条真拿到 HTTP 响应就不是环境红');
   assert.equal(isEnvOutage(tally(rows([200]).concat([{ pass: true, skip: '', status: 200 }])),
     rows([200]).concat([{ pass: true, skip: '', status: 200 }])), false, '有通过就不许判环境红');
+});
+
+test('I13 坑 #57/#58：函数边界切分必须 EOL 无关、注释不参与判据（文本锁的地基）', () => {
+  // 本轮两次假结果都出在"手写函数边界"：① 拿第一个行首 '}' 当右边界 → 被函数内 catch 截断（假红）；
+  // ② 探针用 replace('{\n') 注入，而仓库是 CRLF → 模式永不命中，"注入失败"被读成"锁没拦住"（假绿）。
+  // 所以这里钉的是 lib/src-spans 的**行为**，两个方向都要钉。
+  const lines = [
+    'async function heavy(req) {',
+    '  try { read();',
+    '  } catch { /* 忽略坏行 */ }',
+    '  // 说明：SELECT sections FROM daily_reports 已移出本函数',
+    "  const sql = 'SELECT * FROM daily_reports';",
+    '  return sql;',
+    '}',
+    '',
+    'function nextFn() { return 2; }',
+  ];
+  const crlf = lines.join('\r\n');
+  const lf = lines.join('\n');
+
+  const cut = (src) => {
+    const fns = Object.fromEntries(spans(src).map((f) => [f.name, f.body]));
+    return { names: spans(src).map((f) => f.name), heavy: fns.heavy, next: fns.nextFn };
+  };
+  const a = cut(crlf), b = cut(lf);
+
+  assert.deepEqual(a.names, ['heavy', 'nextFn'], '顶层函数清单不对');
+  assert.deepEqual(b.names, a.names, 'CRLF 与 LF 切出的清单不一致（判据会随行尾风格变绿变红）');
+  assert.deepEqual(b.heavy, a.heavy, '同上：body 也要一致');
+  assert.ok(a.heavy.includes('return sql'), '边界被函数内的 } 截断了 → 合法 SQL 会被误判成逃逸');
+  assert.ok(!/已移出本函数/.test(a.heavy), '整行注释没剥掉 → 自己写的说明文字会把自己判红');
+  assert.ok(/FROM daily_reports/.test(a.heavy), '真代码里的 daily_reports 必须留在 body 里（剥注释不许连代码一起剥）');
+  assert.ok(!/FROM daily_reports/.test(a.next), '边界越界到下一个函数 = 逃逸能隐身');
+
+  const at = crlf.indexOf('SELECT * FROM daily_reports');
+  assert.equal(ownerAt(crlf, at), 'heavy', '写入点归属判错宿主（W14 会把 A 函数的门槛算给 B 函数）');
+  assert.equal(ownerAt(crlf, crlf.indexOf('return 2;')), 'nextFn');
+  assert.equal(ownerAt(crlf, crlf.indexOf('function nextFn')), 'nextFn', '边界按"下一个声明"切：声明自身归自己');
+  assert.equal(ownerAt(crlf, crlf.indexOf('function nextFn') - 1), 'heavy', '上一个函数的尾部区段仍归上一个函数');
+
+  // 两处消费者必须用这一份实现，不许再各自手写边界（W13/W14 同族：清单靠人记必然漏）
+  for (const f of ['tests/regression-20260919i.test.js', 'tools/eval-whitebox.cjs']) {
+    assert.ok(read(...f.split('/')).includes("require('../lib/src-spans')"), `${f} 又回到手写函数边界`);
+  }
 });

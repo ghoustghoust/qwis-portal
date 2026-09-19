@@ -272,14 +272,49 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   const OWNER = 'lib/daily-columns.js';
   // 认栏目的身份特征（名字 + special 标记同时出现才算一份完整副本），不按关键词数组判：
   // 关键词数组在 reading 侧另有合法用途（lib/reading-filters.js 的源类型集合含历史 wemp）
-  const MARK = /name:\s*'培训课程发布'[\s\S]{0,220}?special:\s*'spotlight'/;
+  // 负向验证补两刀（2026-09-19 对抗审查）：只认单引号 → 改成双引号就绕过；间隔写死 220 →
+  // 换行排版就绕过。所以现在两种引号都认、间隔放宽到 600，并把 web/ 与脚本目录一起扫。
+  const MARK = /name:\s*['"]培训课程发布['"][\s\S]{0,600}?special:\s*['"]spotlight['"]/;
   const copies = [];
-  for (const f of walk('server').concat(walk('api'), walk('tools'), walk('lib'))) {
-    if (!/\.(js|cjs)$/.test(f) || f === OWNER) continue;
-    if (MARK.test(read(f))) copies.push(f);
+  const scanDirs = ['server', 'api', 'tools', 'lib', 'web/src', 'scripts'];
+  for (const d of scanDirs) {
+    for (const f of walk(d)) {
+      if (!/\.(js|cjs|jsx)$/.test(f) || f === OWNER) continue;
+      if (MARK.test(read(f))) copies.push(f);
+    }
   }
   ok('W13', copies.length === 0 && exists(OWNER) && MARK.test(read(OWNER)),
     `日报栏目表必须只有 ${OWNER} 一份实现，副本：${JSON.stringify(copies)}（多份必漂；「恢复默认栏目」会把副本写进 settings）`);
+}
+
+// ── W14 入报质量门槛必须接在**每一个写 daily_reports 的函数**里（B20）──
+// 上一版按"手工列 3 个文件"查，两次都漏：文件级判据把 runDailyAi 的门槛算给了同文件的 runDaily
+// （裸报告那份），也没把 api/[...slug].js 的读层内联兜底列进清单 → 线上 id=103 实测仍有
+// 29/22 分两条低质入报。判据改成扫真实写入点，函数级核对，清单不再靠人记。
+{
+  // 自检探针必须排除自身：本文件里那个 INSERT INTO daily_reports 字面量会被自己的扫描抓到（坑：判据命中自己的字面量）
+  const SELF = 'tools/eval-whitebox.cjs';
+  const FILES = ['server', 'api', 'tools', 'lib'].flatMap((d) => walk(d)).filter((f) => f !== SELF);
+  const { spans, ownerAt } = require('../lib/src-spans');
+
+  const writers = [];
+  for (const f of FILES) {
+    const src = read(f);
+    if (!/INSERT INTO daily_reports/.test(src)) continue;
+    // 宿主函数用 lib/src-spans 的唯一实现；不按花括号配对（SQL 模板串里的 ${} 与 '{}' 会算错）
+    const seen = new Set();
+    for (const m of src.matchAll(/INSERT INTO daily_reports/g)) {
+      const fn = ownerAt(src, m.index) || '(顶层)';
+      if (seen.has(fn)) continue;
+      seen.add(fn);
+      const own = spans(src).find((s) => s.name === fn);
+      writers.push({ f, fn, gated: !!own && /passesDailyQualityGate/.test(own.body) });
+    }
+  }
+  const ungated = writers.filter((w) => !w.gated);
+  ok('W14', writers.length >= 5 && ungated.length === 0,
+    `daily_reports 写入点 ${writers.length} 处（${writers.map((w) => `${w.fn}@${w.f}`).join(' / ')}），未接门槛：${JSON.stringify(ungated)}` +
+    '（漏一处 = 那一处照旧把低质内容塞进早报；未评分条目由 lib/brief-guards 一律放行）');
 }
 
 const asJson = process.argv.includes('--json');

@@ -62,7 +62,9 @@ router.get('/', (req, res) => {
   const lastSyncAt = getSetting('wechat.lastSyncAt', null);
 
   const rssLast = db.prepare(
-    "SELECT MAX(last_fetched_at) t FROM sources WHERE type IN ('wechat','rss','x')"
+    // B93：NULLIF 排掉字面串 'null'（文本序比任何 ISO 都大，会把 MAX 毒成 null）；
+    // 类型集合与云端对齐（补 wemp/youtube——云端是 ('wechat','rss','wemp','x','youtube')）
+    "SELECT MAX(NULLIF(last_fetched_at,'null')) t FROM sources WHERE type IN ('wechat','rss','wemp','x','youtube')"
   ).get().t;
   const rssNext = db.prepare(
     "SELECT MIN(next_fetch_at) t FROM sources WHERE enabled=1 AND type IN ('wechat','rss','x')"
@@ -95,10 +97,9 @@ router.get('/', (req, res) => {
     unreadArticles: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ? AND NOT ${NOISE}`, threeDaysAgo),
     todayNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, dayStart.toISOString()),
     weekNew: count(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE a.created_at >= ? AND NOT ${NOISE}`, weekAgo),
-    dailyItemCount: 0,
-    dailyTopSources: [], // [{name, count}]
+    // B26：入报统计（dailyItemCount / dailyTopSources）不在首屏——与云端同一份契约：
+    // 一律走 GET /api/status/daily-sources。两端形状不同会让"哪一端算错了"无从判断（对抗审查查出）。
   };
-  Object.assign(overview, computeDailySources());
 
   res.json({
     ok: true,

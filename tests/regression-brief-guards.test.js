@@ -90,3 +90,19 @@ test('10. 门槛可配置：ai.dailyMinScore 覆盖默认 30', () => {
   assert.equal(passesDailyQualityGate({ totalScore: 45 }, 40), true);
   assert.equal(passesDailyQualityGate({ totalScore: 45 }), true, '不传参走默认 30');
 });
+
+test('11. 库里 score 列是 NULL（不是 0 分）：门槛必须放行，否则整期报纸被自己清空（B20 接线时实测）', () => {
+  // 2026-09-19 把门槛接到「裸报告 / 读层内联兜底 / 本地灾备」这三份时，回归测试
+  // tests/regression-phase9.test.js「日报安检:乱码标题条目被剔除并计数」当场变红：
+  // 那几份喂进来的是 articles 行，`score` 列允许 NULL，而 Number(null) === 0
+  // → 旧实现把"从未评过分"读成"判了 0 分"，正常条目一条不剩。
+  // 这一族的判据两侧都要钉：NULL=未评分放行、显式 0=评过且不及格才剔。
+  assert.equal(passesDailyQualityGate({ title: 't', score: null }), true, 'score=NULL 是未评分，不许当 0 分杀');
+  assert.equal(passesDailyQualityGate({ title: 't', score: undefined }), true, '缺列同样是未评分');
+  assert.equal(passesDailyQualityGate({ title: 't', score: '' }), true, '空串按未评分处理（迁移期脏值族）');
+  assert.equal(passesDailyQualityGate({ title: 't', totalScore: null, score: null }), true);
+  assert.equal(passesDailyQualityGate({ title: 't', score: 0 }), false, '显式 0 分是"判过了且不及格"，仍要剔');
+  assert.equal(passesDailyQualityGate({ title: 't', score: 22 }), false, '低分照剔：放宽只针对未评分，不针对不及格');
+  assert.equal(passesDailyQualityGate({ title: 't', score: '45' }), true, 'Turso 可能回字符串数字，仍按 45 分处理');
+  assert.equal(passesDailyQualityGate({ title: 't', score: '12' }, 20), false, '字符串分数一样受门槛约束');
+});

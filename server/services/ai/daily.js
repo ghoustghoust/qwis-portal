@@ -242,6 +242,22 @@ async function generate(windowHours) {
     log.warn(`[日报] AI 增强加载失败，降级为关键词模式: ${err.message}`);
   }
 
+  // B20：入报质量门槛（同一 lib/brief-guards 实现，不在此重写规则）。
+  // 说清本地端的局限，别把"接上了"说成"等价生效了"：本地 analyzeBatch 只回
+  // {summary,importance,tags}、没有六维分（B20 的长期项），所以未评分条目按门槛定义一律放行，
+  // 真正能拦住低质的是库里已有的 a.score；runner 那份才是全链路有分的主链路。
+  try {
+    const guards = require('../../../lib/brief-guards');
+    const minScore = Number(getSetting('ai', {})?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
+    const before = candidates.length;
+    const kept = candidates.filter((a) => guards.passesDailyQualityGate(a, minScore));
+    if (kept.length !== before) log.info(`[日报] 门槛(≥${minScore} 分)剔除 ${before - kept.length} 条，保留 ${kept.length} 条`);
+    candidates.length = 0;
+    candidates.push(...kept);
+  } catch (err) {
+    log.warn(`[日报] 门槛检查失败（不阻断，按无门槛继续）: ${err.message}`);
+  }
+
   const buckets = classify(candidates, columns);
 
   const sections = [];

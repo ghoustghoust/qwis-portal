@@ -79,10 +79,13 @@ test('UI-D2: GET /api/status 带 overview(统计轨契约)', async () => {
     const data = await r.json();
     assert.ok(data.overview, '应有 overview 字段');
     const o = data.overview;
-    for (const k of ['enabledSources', 'todayNew', 'weekNew', 'dailyItemCount']) {
+    for (const k of ['enabledSources', 'todayNew', 'weekNew']) {
       assert.equal(typeof o[k], 'number', `overview.${k} 应为数字`);
     }
-    assert.ok(Array.isArray(o.dailyTopSources), 'dailyTopSources 应为数组');
+    // B26：入报统计已移出首屏，两端同一契约——留一条"不许回到首屏"的反向断言，
+    // 否则日后有人图省事把它塞回 /api/status，本地测不出、只有线上会慢
+    assert.ok(!('dailyItemCount' in o) && !('dailyTopSources' in o),
+      '首屏 status 又带上了重统计字段（应只在 /api/status/daily-sources）');
     assert.ok(o.enabledSources >= 1, '至少有种子源');
   });
 });
@@ -104,9 +107,13 @@ test('UI-D3: overview.dailyTopSources 统计近 7 天日报条目的来源 Top5�
   db.prepare('INSERT INTO daily_reports(generated_at,window_hours,stats,sections) VALUES(?,?,?,?)')
     .run(new Date(Date.now() - 8 * 86400e3).toISOString(), 24, '{}',
       JSON.stringify([{ key: 'ai', items: [{ source_name: '窗口外来源' }] }]));
+
   await withServer(makeApp(), async (base) => {
-    const data = await (await fetch(`${base}/api/status`)).json();
-    const o = data.overview;
+    // B26：来源榜现在只在 GET /api/status/daily-sources 上提供（首屏不含），本用例钉这份契约
+    const r = await fetch(`${base}/api/status/daily-sources`);
+    assert.equal(r.status, 200);
+    const o = (await r.json()).overview;
+
     assert.equal(o.dailyItemCount, 4, '窗口外的期不得计入');
     assert.equal(o.dailyTopSources[0].name, '来源甲');
     assert.equal(o.dailyTopSources[0].count, 2);
@@ -116,14 +123,10 @@ test('UI-D3: overview.dailyTopSources 统计近 7 天日报条目的来源 Top5�
     assert.ok(!o.dailyTopSources.some((t) => t.name === '窗口外来源'), '8 天前那期不得进榜');
     assert.equal(o.dailyTopSources.length, 2, '合成「N 源」条目不计入');
   });
-  // 拆分后的按需端点必须与首屏同源同数（"拆走"不等于"算了另一套"）
+  // 首屏必须不再带这份统计；带上了就是 B26 的拆分被回退（与 UI-D2 的反向断言成对）
   await withServer(makeApp(), async (base) => {
-    const a = await (await fetch(`${base}/api/status`)).json();
-    const b = await (await fetch(`${base}/api/status/daily-sources`)).json();
-    assert.ok(Array.isArray(b.overview.dailyTopSources), '新端点缺 dailyTopSources');
-    assert.equal(b.overview.dailyItemCount, a.overview.dailyItemCount,
-      `两端条目数不一致：status=${a.overview.dailyItemCount} daily-sources=${b.overview.dailyItemCount}`);
-    assert.deepEqual(b.overview.dailyTopSources, a.overview.dailyTopSources, '两端来源榜不一致');
+    const light = (await (await fetch(`${base}/api/status`)).json()).overview;
+    assert.ok(!('dailyItemCount' in light) && !('dailyTopSources' in light), '重统计又回到首屏');
   });
 });
 
@@ -157,18 +160,40 @@ test('UI-D4: 列表默认排除 hotlist/聚合源，include_hot=1 豁免', async
   });
 });
 
-test('UI-D5: overview 统计排除 hotlist/聚合源噪音', async () => {
+test('UI-D5: 噪音排除同时作用于轻统计与来源榜', async () => {
+  // B26 后来源榜搬到了 /api/status/daily-sources，本用例跟着拆成两段：
+  // 前半钉首屏(enabledSources/unread 排噪音)，后半钉来源榜(热榜/聚合源名不得进 Top)。
+  // 种一期"含热榜源名"的日报，否则"来源榜不含热榜"这条断言永远空跑（坑 #41 同族：假绿锁）。
+  const seedAt = new Date().toISOString();
+  db.prepare('INSERT INTO daily_reports(generated_at,window_hours,stats,sections) VALUES(?,?,?,?)')
+    .run(seedAt, 24, '{}', JSON.stringify([
+      { key: 'ai', items: [{ source_name: '微博热搜T' }, { source_name: 'AIHOT聚合T' }, { source_name: '正常来源' }] },
+    ]));
   await withServer(makeApp(), async (base) => {
     const data = await (await fetch(`${base}/api/status`)).json();
     const o = data.overview;
-    // 种子噪音源的今日新增/启用源数不应被计入
     const noiseEnabled = db.prepare("SELECT COUNT(*) c FROM sources WHERE enabled=1 AND type='hotlist'").get().c;
     assert.ok(noiseEnabled >= 1, '前提：存在 hotlist 种子源');
-    assert.ok(!o.dailyTopSources.some((s) => s.name === '微博热搜T'), '来源榜不含热榜源');
     // enabledSources 应小于启用总数（排除了噪音源）
     const total = db.prepare('SELECT COUNT(*) c FROM sources WHERE enabled=1').get().c;
     assert.ok(o.enabledSources < total, 'enabledSources 应排除 hotlist/聚合源');
     assert.equal(typeof o.unreadArticles, 'number');
+    // 未读口径也必须排噪音：用"全量 − 噪音"精确对账（坑 #41：`<` 这类松判据会被
+    // 库里的过期文章蒙过去，改成等式 + 噪音条目数 ≥1 的前提断言才可能真红）
+    const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
+    const win = "a.read_at IS NULL AND COALESCE(a.published_at,a.created_at) >= ?";
+    const allIn = db.prepare(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id WHERE ${win}`).get(threeDaysAgo).c;
+    const noiseIn = db.prepare(`SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id
+      WHERE ${win} AND (s.type='hotlist' OR COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)=1)`).get(threeDaysAgo).c;
+    assert.ok(noiseIn >= 2, `前提：窗口内应有热榜+聚合两条噪音未读，实际 ${noiseIn}`);
+    assert.equal(o.unreadArticles, allIn - noiseIn, '未读统计未排除噪音源条目');
+  });
+  await withServer(makeApp(), async (base) => {
+    const o = (await (await fetch(`${base}/api/status/daily-sources`)).json()).overview;
+    const names = o.dailyTopSources.map((s) => s.name);
+    assert.ok(names.includes('正常来源'), '正常来源必须进榜（否则是"全都排掉"的假绿）');
+    assert.ok(!names.includes('微博热搜T'), '来源榜不含热榜源');
+    assert.ok(!names.includes('AIHOT聚合T'), '来源榜不含聚合源');
   });
 });
 

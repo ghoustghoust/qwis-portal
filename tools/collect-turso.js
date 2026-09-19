@@ -1565,7 +1565,18 @@ async function runDaily() {
   sql += ' ORDER BY a.published_at DESC LIMIT 500';
 
   const candidates = await qAll(sql, args);
-  const valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  let valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  // B20（2026-09-19 第二次对抗审查补漏）：门槛此前只接在 runDailyAi（AI 深析版）那一份，
+  // 本函数产出的"裸报告"（degraded/关键词兜底）没有 → 一旦读层选中裸报告，低质条目照样入报。
+  // 未评分条目一律不误杀（passesDailyQualityGate 对 score 非数放行），口径共用 lib/brief-guards。
+  try {
+    const guards = require('../lib/brief-guards');
+    const aiCfg = await getSetting('ai', {});
+    const minScore = Number(aiCfg?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
+    const before = valid.length;
+    valid = valid.filter((a) => guards.passesDailyQualityGate(a, minScore));
+    if (before !== valid.length) log(`裸日报门槛(≥${minScore} 分): 剔除 ${before - valid.length} 条 / 保留 ${valid.length} 条`);
+  } catch (e) { log(`裸日报门槛检查失败（不阻断）: ${e.message}`); }
 
   const sections = [];
   const used = new Set();

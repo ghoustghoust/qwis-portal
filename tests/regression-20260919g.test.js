@@ -65,7 +65,7 @@ test('G4 端到端引擎自检必须全绿（判据坏了就等于整轮结果�
   assert.strictEqual(m[1], m[2], '端到端引擎自检未全绿：\n' + out);
 });
 
-test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"出处是编的"；坑 #46/#47）', () => {
+test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"出处是编的"；坑 #46/#47/#57）', () => {
   const table = Object.assign({}, e2e.SRC, e2e.QUERY_SRC);
   const bad = [];
   for (const [k, v] of Object.entries(table)) {
@@ -73,7 +73,7 @@ test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"�
     if (!m) { bad.push(`${k}→${v}（不是 file:line 形态）`); continue; }
     const [, f, ln] = m;
     if (!exists(f)) { bad.push(`${k}→${v}（文件不存在）`); continue; }
-    const lines = read(f).split('\n');
+    const lines = read(f).split(/\r?\n/); // 坑 #57：按 '\n' 切会让 CRLF 文件每行带尾 \r，行号与内容都别信
     if (Number(ln) > lines.length) { bad.push(`${k}→${v}（文件只有 ${lines.length} 行）`); continue; }
     bad.length === 0 || null;
     const hit = lines[Number(ln) - 1];
@@ -81,7 +81,14 @@ test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"�
     const tok = /(pageSize|PAGE_SIZE)/.test(k) ? /PAGE_SIZE|const\s/ :
       /(readingTab|readingType|hotTab|articlesTab|articlesSort|videosTab)/.test(k) ? /tab|type|sort|PAGE_SIZE|\|\|/ :
       /^\/api\//.test(k) || /^fe/.test(k) ? /api\/|\bps\b|qs\(|useEffect|fetch|=>/ : /.*/;
-    if (!tok.test(hit)) bad.push(`${k}→${v} 指向的行不含预期 token：「${hit.trim().slice(0, 70)}」`);
+    if (!tok.test(hit)) {
+      // 行号漂移是常态（本仓最长的那个文件每次改动都挪几十行）：红灯必须自带"现在在哪一行"，
+      // 否则每轮都要人肉重找一遍——上一轮就为此重跑了三次。
+      const near = lines.map((l, i) => ({ n: i + 1, d: Math.abs(i + 1 - Number(ln)) }))
+        .filter((x) => tok.test(lines[x.n - 1])).sort((a, b) => a.d - b.d)[0];
+      bad.push(`${k}→${v} 指向的行不含预期 token：「${hit.trim().slice(0, 50)}」` +
+        (near ? `；token 最近处在 ${f}:${near.n}（差 ${near.n - Number(ln) > 0 ? '+' : ''}${near.n - Number(ln)} 行），改出处表` : `；全文件找不到含该 token 的行（代码搬家或出处是编的）`));
+    }
   }
   assert.deepStrictEqual(bad, [], '参数出处表有问题：\n' + bad.join('\n'));
 });
