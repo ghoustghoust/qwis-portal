@@ -143,7 +143,7 @@
 1. 数据：load() 拉 `/api/sources/library` + `/api/groups`；本地 state
 2. 工具栏：SearchIcon 搜索框、类型/文件夹/状态三下拉、SparklesIcon「自动分类回填」按钮
 3. 筛选 useMemo：类型判定表（plan 模块设计）/group_id/状态（wemp=已退役；fail_count≥3&&enabled=0=熔断；enabled=0=停用；focus=特别关注）/名称搜索
-4. 表格：checkbox 列（含表头全选本页）、头像（有则 img no-referrer，无则首字占位——照 Sidebar.jsx:186 模式）、名称+LockIcon（锁定源）、类型徽章、GroupSelect(native select，只列同 kind 组+「未分组」)、状态徽章、itemCount、relativeTime(last_fetched_at)、☆ 切换、启用开关
+4. 表格：checkbox 列（含表头全选本页）、头像（有则 img no-referrer，无则首字占位——该写法现已收进唯一实现 `web/src/components/ui/SourceAvatar.jsx`，旧引用 `Sidebar.jsx:186` 是烂锚，见 `docs/ISSUES.md` B115）、名称+LockIcon（锁定源）、类型徽章、GroupSelect(native select，只列同 kind 组+「未分组」)、状态徽章、itemCount、relativeTime(last_fetched_at)、☆ 切换、启用开关
 5. 批量浮动条：选中>0 显示；四动作 + 移动到文件夹；调 batch 接口；toast 结果；load() 刷新
 6. 单点 ☆/开关/改组：复用 batch / move 接口
 7. 分页：每页 20/50/100，页码样式照 SourceTable:148-175
