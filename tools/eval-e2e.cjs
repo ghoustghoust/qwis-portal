@@ -838,12 +838,18 @@ const SCENARIOS = [
       assert(c, 'render', '点得到那篇文章所在的行', await row.click({ timeout: 8000 }).then(() => true).catch(() => false), head);
       const det = await waitForApiWhere(net, (r) => /^\/api\/articles\/\d+$/.test(r.url), 20000);
       const item = (det && det.json && (det.json.item || det.json)) || {};
-      const html = String(item.content_html || item.content || '');
+      const rawHtml = String(item.content_html || item.content || '');
+      // 面板默认渲染**译文**（ArticleView.jsx:244 的 showTranslated 分支），所以正文对账要跟
+      // `translated_content` 比，不是跟英文原文比——验收轮 3/3 就是这么红的：
+      // 切片取自原文「…ean account. I specifica…」，而屏上是中文译文。
+      const shownHtml = String(item.translated_content || rawHtml || '');
+      c.metrics.detailBodySource = item.translated_content ? 'translated_content' : 'content_html';
+      c.metrics.detailOrigChars = String(item.content_html || '').replace(/<[^>]*>/g, ' ').length;
       // 判据是"非空"而不是"长度 >200"：实测今日流里就有正文只有 98 字的源（薄正文通道），
       // 拿一个拍出来的长度当门槛会把正常渲染判成缺陷；真正的 B52 症状是**根本没返回正文**。
       assert(c, 'api', '页面发出的详情请求返回 200 且带非空 content_html',
-        !!det && det.status === 200 && html.length > 0,
-        det ? `${det.fullUrl} status=${det.status} len=${html.length} 键=${Object.keys(item).slice(0, 6).join(',')}` : '没拦到详情请求');
+        !!det && det.status === 200 && rawHtml.length > 0,
+        det ? `${det.fullUrl} status=${det.status} len=${rawHtml.length} 键=${Object.keys(item).slice(0, 6).join(',')}` : '没拦到详情请求');
       let after = before;
       for (let i = 0; i < 12; i++) {
         after = (await bodyText(page)).length;
@@ -870,7 +876,7 @@ const SCENARIOS = [
       // 面板真实长度 297 字（标题+元信息+那 112 字）——绝对门槛等于把正常渲染判成缺陷，
       // 而且这正是本文件上面自己写过又犯过的错（"拿拍出来的长度当门槛"）。
       // 换成**相对判据**：面板长度必须至少接住正文明文的一半——只渲染标题不渲染正文会红，薄正文条目不会误红。
-      const plain = html.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
+      const plain = shownHtml.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
       c.metrics.detailBodyChars = plain.length;
       assert(c, 'render', '详情面板（article 元素）出现、含被点标题，且长度接得住正文',
         pane.found && pane.len > 0 && pane.len >= Math.ceil(plain.length / 2),
@@ -880,7 +886,9 @@ const SCENARIOS = [
       // 正文对账只在接口确实给了长正文时判（薄正文条目面板本来就只有摘要长度）
       if (plain.length > 300) {
         const slice = plain.slice(Math.floor(plain.length / 3), Math.floor(plain.length / 3) + 30);
-        assert(c, 'data', '接口给的正文出现在详情面板里（DOM↔详情响应对账）', pane.text.includes(slice), `切片「${slice.slice(0, 24)}」`);
+        const paneFlat = pane.text.replace(/\s+/g, ' ');
+        assert(c, 'data', '接口给的正文出现在详情面板里（DOM↔详情响应对账，两侧都归一空白）', paneFlat.includes(slice),
+          `来源=${c.metrics.detailBodySource} 正文=${plain.length}字 面板=${pane.len}字 | 切片「${slice.slice(0, 40)}」 | 面板头「${paneFlat.slice(0, 120)}」`);
       }
       assert(c, 'data', '详情标题与列表首条同源', pane.text.includes(String(items0 && items0.title || head).slice(0, 12)), head);
     },

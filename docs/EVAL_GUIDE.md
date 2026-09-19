@@ -61,11 +61,11 @@
 | E6 | `/mybrief/` + `/weekly/` | 孤儿卡判据（渲染内容必须出自产物本身）、期号、AI 产物污染串 |
 | E7 | 客户端路由与深链 | 点导航后 **window 标记仍存活 + document 只拉过一次**（两者都是"真会翻转"的观测量；原 `performance.navigation` 计数两侧恒等属空判据，已删）+ 刷新不丢位置（38-3 前置） |
 | E8 | 7 个页面 | 无 JS `pageerror`、**无裸 i18n key 上屏**（抓到 B71）、未登录时 `/api/auth/me` 真的 401 |
-| E9 | 点开文章 | 点的是**页面自己那份列表响应里的第 0 条**，正文必须落在详情面板的 `article` 元素里（`selectHint` 消失）；`content_html` 明文 >300 字时取中段比对，薄正文记进 `metrics.detailBodyChars` 不假装通过 |
+| E9 | 点开文章 | 点的是**页面自己那份列表响应里的第 0 条**，正文必须落在详情面板的 `article` 元素里（`selectHint` 消失）；正文对账**两侧都要先归一空白**（切片是"HTML→单空格"文本，而 `innerText` 块元素间是换行，不归一必然对不上——2026-09-19 曾据此把正常渲染误判成 3/3 产品红，且我第一次归错了原因，猜成"面板显示译文"，被 `来源=content_html` 的读数否掉）。`content_html` 明文 >300 字时取中段比对，薄正文记进 `metrics.detailBodyChars` 不假装通过 |
 | E10 | `/videos/` 未知路径 | 不得静默渲染成阅读器（B72，登记为 known_gap；第二判据改成可翻转的"实测回 200 HTML"，不写死真） |
 
 **仍待补**：`/reader/` 的搜索与中英对照、翻页；`/reading/` 日期分组无「未知日期」；后台 8 板块的"改一个设置 → 前台真的变了"闭环剧本（**卡在不替你登录**，需你授权测试口令或人工跑）；41-5 覆盖矩阵要等这份清单定稿。
-**L1 侧同批待办**：`regression-my-brief` 第 2/3 条仍直打生产 `settings`（B77），要按 H 组的"本地 libsql 文件库 + 子进程冷缓存"写法搬走——本轮线上那条页就因为它留下的悬空 `subscription.ids` 退化成引导态（B78/B79，坑 #52）。
+**L1 侧同批待办**：`regression-my-brief / weekly / cloud-settings / cloud-sources / ai-infra / bilibili / translate` 这一族"直打生产 Turso"的测试要全部搬到本地 libsql 文件库（B83；my-brief、weekly、cloud-settings、cloud-alerts 四份本轮已完成，其余四份同模板），别再让测试改写生产数据——线上「我的早报」就曾被它留下的悬空 `subscription.ids` 打成引导态（B78/B79，坑 #52）。
 
 每条剧本必须产出：截图、网络请求清单（含体积与耗时）、断言结果、`env_lock`。**截图小于 10KB 判 `fail_env`**（空白页当证据是 B50 类漂移的评测版），这条也进了回归锁。
 
