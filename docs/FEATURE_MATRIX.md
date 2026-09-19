@@ -95,7 +95,7 @@
 | `npm run eval:process` | `tools/eval-process-checks.cjs` | 过程性二值检查（截图/报告/断言数/三类覆盖/占位文案/证据路径/退出码/参数出处） | ✅ 8/8（F8＝§3.3 三类断言各 ≥1，09-19 夜加） |
 | `npm run eval:f2p` | `tools/eval-f2p.cjs` | 「改前红/改后绿」取证：`--auto-base` 反查基线、自建 worktree、红因分环境/产品，证据落 `docs/eval/f2p/` | ✅ 自检 24 项；b~f + g 六个锁文件已出证 |
 | `npm run eval:content` | `tools/eval-content.cjs` → `tools/eval-content/*.py` | 41-8 内容质量五维 judge（LLM 分只作趋势与复核触发，不作门禁） | ✅ 已交付；真评需 `--judge`（花配额）+ `--align`（≥3 条产物） |
-| `npm run eval:e2e` | `tools/eval-e2e.cjs`（Playwright） | **41-2 端到端评测**：10 条剧本覆盖 6 个前台页 + 后台登录门，DOM ↔ 页面自己发出的响应对账，默认线上、每剧本连跑 3 次 | ✅ **验收轮已过：9/9 ×3 全绿**（线上 `9c99a2f`，证据 `docs/eval/e2e/20260919T060727/`，退出码 0，已知缺口 E10→B72）。首轮抓到 B71/B74 两个真缺陷并当场修复+取证。**未覆盖**：后台 8 板块的写回闭环剧本（需登录态，我不代你登录）→ 那部分仍记为未验收 |
+| `npm run eval:e2e` | `tools/eval-e2e.cjs`（Playwright） | **41-2 端到端评测**：10 条剧本覆盖 6 个前台页 + 后台登录门，DOM ↔ 页面自己发出的响应对账，默认线上、每剧本连跑 3 次 | ✅ **验收轮已过：9/9 ×3 全绿**（线上 `9c99a2f`，证据 `docs/eval/e2e/20260919T060727/`，退出码 0，已知缺口 E10→B72）。首轮抓到 B71/B74 两个真缺陷并当场修复+取证。**验收轮口径（EVAL_GUIDE §3.7）**：全剧本 × ≥3 轮 × 真实云端才允许 exit 0，`--only`/`--fast`/本地目标一律打 `NOT_ACCEPTANCE` 退 2——跑过 ≠ 验收过。**未覆盖**：后台 8 板块的写回闭环剧本（需登录态，我不代你登录）→ 那部分仍记为未验收 |
 | `node tools/audit-cloud.js` | 同名 | 云端 19 端点只读巡检（判据：只有 `true` 算通过，未验收单列，有失败退 1） | ✅ 18 通过 / 0 失败 / 1 未验收 |
 
 **基址与凭据口径**：云端域名只在 `lib/cloud-site.js` 一份（Python 侧由 `tools/eval-content.cjs` 经 `CLOUD_SITE` 传入，不许第二份）；

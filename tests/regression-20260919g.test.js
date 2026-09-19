@@ -187,3 +187,21 @@ test('G11b 剧本表里不许有写死真/两侧恒等的判据，字典读不�
   assert.ok(!/dictKeys\(\)[\s\S]{0,200}catch \{ return \[\]; \}/.test(src), '字典读失败兜底成空集 → E8 的裸 key 判据变常绿');
   assert.ok(e2e.dictKeys().length >= 50, '真实字典必须解析得出来，否则 E8 无依据');
 });
+
+test('G12 E4 不许在断言前清掉本轮已拦到的响应，E9 不许用绝对长度门槛（坑 #53）', () => {
+  const src = read('tools/eval-e2e.cjs');
+  const e4 = src.slice(src.indexOf("id: 'E4'"), src.indexOf("id: 'E5'"));
+  const e9 = src.slice(src.indexOf("id: 'E9'"), src.indexOf("id: 'E10'"));
+  // ① E4 的坑：点 tab 前 net.length=0 → 首屏已经取回的那条响应被扔掉，"页面自己的请求"永远拦不到
+  assert.ok(!/net\.length = 0;\s*\n\s*assert\(c, 'render', `点得到/.test(e4),
+    'E4 又在点击前清了 net（会把首屏那条真实响应扔掉；坑 #53）');
+  assert.match(e4, /waitForApiWhere\(net,[\s\S]{0,160}params\.tab/, 'E4 必须按 tab 参数筛整轮记录，而不是"清点后等一条新的"');
+  // ② E9 的坑：pane.len > 300 这种绝对门槛把薄正文条目判成缺陷（实测 112 字正文 / 297 字面板）
+  assert.ok(!/pane\.len > 300/.test(e9), 'E9 又用绝对长度当门槛（坑 #53 的第二个症状）');
+  assert.match(e9, /pane\.len >= Math\.ceil\(plain\.length \/ 2\)/, 'E9 必须用相对判据：面板长度要接得住正文明文的一半');
+  // 反向自证：把两条坏写法还原回去，判据必须能抓到（否则这两行锁是恒真的）
+  assert.ok(e4.replace("const own = await waitForApiWhere(net,", "net.length = 0;\n        const own = await waitForApiWhere(net,")
+    .includes('net.length = 0;'), '探针失效：坏写法没能被还原出来');
+  assert.notEqual(e9.replace('pane.len >= Math.ceil(plain.length / 2)', 'pane.len > 300'), e9,
+    '探针失效：绝对门槛的写法没能被还原出来');
+});

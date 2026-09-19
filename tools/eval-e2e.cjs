@@ -573,12 +573,17 @@ const SCENARIOS = [
         const probe = await api(page, c, t.path + q, t.path === '/api/hot' ? { tab: { value: t.tab, source: SRC.hotTab } } : {});
         const items = (probe.json && (probe.json.items || probe.json.events)) || [];
         assert(c, 'api', `${t.label}：${t.path}${q} 返回 200 且非空`, probe.status === 200 && items.length > 0, `status=${probe.status} n=${items.length}`);
-        net.length = 0;
+        // **不在这里清 net**：SPA 首屏已经把该视图的数据取回来了（实测 `/hot/` 默认视图的
+        // `/api/hot?tab=featured` 就在 first paint 那批里），清点之后再点同一个 tab 不会再发请求，
+        // 于是"页面自己的请求"永远拦不到。09-19 之前这里是**假绿**：`waitForApi` 拿到的其实是
+        // 上面那条探针自己的响应（当时还没打 by:'script' 标记）——脚本自己发、自己证明页面发过。
         assert(c, 'render', `点得到「${t.label}」`, await clickBtn(page, t.label));
-        const own = await waitForApi(net, t.path, 20000);
+        const own = await waitForApiWhere(net,
+          (r) => r.url === t.path && (!q || ((r.params.tab || {}).value === t.tab)), 20000);
         await waitRendered(page, { minChars: 500, timeoutMs: 30000 });
         const ownItems = (own && own.json && (own.json.items || own.json.events)) || [];
-        assert(c, 'api', `「${t.label}」页面自己的请求返回非空`, !!own && ownItems.length > 0, own ? `n=${ownItems.length}` : '没拦到');
+        assert(c, 'api', `「${t.label}」页面自己的请求返回非空`, !!own && ownItems.length > 0,
+          own ? `n=${ownItems.length}` : `没拦到（本轮页面只发过：${[...new Set(net.filter(byPage).map((r) => r.url + '?' + ((r.params.tab || {}).value || '')))].join(' , ') || '无'}）`);
         const dom = await stableCount(page, t.sel, 8, 800);
         const domRows = await rowsOf(page, t.sel);
         const txt = domRows.join(' ');
@@ -821,13 +826,18 @@ const SCENARIOS = [
         const t = arts[0].innerText;
         return { found: true, len: t.length, hintStill: document.body.innerText.includes(hintTxt), text: t.slice(0, 2000) };
       }, { title: String(items0 && items0.title || head), hintTxt: hint });
-      assert(c, 'render', '详情面板（article 元素）出现且含被点标题', pane.found && pane.len > 300, `面板字数=${pane.len}`);
-      assert(c, 'render', '未选文章的提示已消失（不是还停在空态）', !pane.hintStill, `selectHint 仍在=${pane.hintStill}`);
-      assert(c, 'render', '面板内没有占位文案', emptyStateHits(pane.text).length === 0);
-      // 正文对账只在接口确实给了长正文时判（实测今日流里有 content_html 只有 105 字的薄正文条目，
-      // 那种条目面板本来就只有摘要长度，硬判"正文出现"是把判据建立在没测过的前提上）
+      // 判据不能是"面板 >300 字"：本轮实测今日流里就有 `content_html` 明文只有 112 字的薄正文条目，
+      // 面板真实长度 297 字（标题+元信息+那 112 字）——绝对门槛等于把正常渲染判成缺陷，
+      // 而且这正是本文件上面自己写过又犯过的错（"拿拍出来的长度当门槛"）。
+      // 换成**相对判据**：面板长度必须至少接住正文明文的一半——只渲染标题不渲染正文会红，薄正文条目不会误红。
       const plain = html.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
       c.metrics.detailBodyChars = plain.length;
+      assert(c, 'render', '详情面板（article 元素）出现、含被点标题，且长度接得住正文',
+        pane.found && pane.len > 0 && pane.len >= Math.ceil(plain.length / 2),
+        `面板=${pane.len}字 正文明文=${plain.length}字 found=${pane.found} 标题头=${head}`);
+      assert(c, 'render', '未选文章的提示已消失（不是还停在空态）', !pane.hintStill, `selectHint 仍在=${pane.hintStill}`);
+      assert(c, 'render', '面板内没有占位文案', emptyStateHits(pane.text).length === 0);
+      // 正文对账只在接口确实给了长正文时判（薄正文条目面板本来就只有摘要长度）
       if (plain.length > 300) {
         const slice = plain.slice(Math.floor(plain.length / 3), Math.floor(plain.length / 3) + 30);
         assert(c, 'data', '接口给的正文出现在详情面板里（DOM↔详情响应对账）', pane.text.includes(slice), `切片「${slice.slice(0, 24)}」`);
