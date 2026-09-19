@@ -1,177 +1,161 @@
 {
   "report": {
-    "id": 100,
-    "generated_at": "2026-09-18T05:41:26.603Z",
+    "id": 103,
+    "generated_at": "2026-09-19T05:35:40.188Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
-        "items": [
-          {
-            "id": 1493646,
-            "title": "股价暴涨10%！粉笔再发“小作文”：像素级模仿了友商产品，降价后一天卖了1200多人，没有想到打价格战居然赚钱",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NTA5MjkyNQ==&mid=2248588882&idx=2&sn=d5359fb5b6c4c501a3efb18c68555cd8",
-            "source": "每日经济新闻",
-            "published_at": "2026-09-17T16:58:00.000Z",
-            "score": null,
-            "summary": "9月16日盘后，粉笔发布了一篇小作文“阴阳”友商。9月17日盘中，粉笔公考教育再发小作文：我们昨天上线了一个产品，像素级模仿了超格国庆七天课程，他们七天我们也七天，他们刷题量大我们也刷题量大，他们搞订金我们也搞订金，他们2180我们也，哦不，我们不也了，我们1680，再优惠300，1380。没有想到这个产品居然有意外收获，昨天一天粉笔这个产品卖了1200多人，我们以为价格战打得不赚钱，嘿没有想到居",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=da0812fa&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FGXaOuDJovOo7GdxCjPedzlziapIellNAa7pq9vicdWDUZpiaa7Nicp3umD9sklKSUHjqAHz5qxJQKYyBkT4Iyc3JMt8iaSmQ3aQExMkfhTovziclI%2F0%3Fwx_fmt%3Djpeg"
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 1465934,
-            "title": "Future of general LLM work (interp/inference/alignment) vs agentic/physical AI (VLA, multimodal) for career [D]",
-            "url": "https://www.reddit.com/r/MachineLearning/comments/1wj7ltg/future_of_general_llm_work/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:55:47.000Z",
-            "score": 32,
-            "summary": "I&#39;m at a crossroads with two grad school options that would take me in somewhat different research directions, and I wanted some general advice on these fields, their growth, and industry alignmen",
-            "cover": null
-          },
-          {
-            "id": 1462698,
-            "title": "Australia news live: Albanese to meet Apple heads in US after social media reform; medicinal cannabis driving laws pass in NSW",
-            "url": "https://www.theguardian.com/australia-news/live/2026/sep/18/labor-migration-plan-tony-burke-coalition-qantas-renewable-energy-ntwnfb",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-17T21:44:18.000Z",
-            "score": null,
-            "summary": "Get our breaking news email, free app or daily news podcast",
-            "cover": null
-          },
-          {
-            "id": 1461866,
-            "title": "US judge orders 30-day notice prior to any Kennedy Center physical changes",
-            "url": "https://www.aljazeera.com/news/2026/9/17/us-judge-orders-30-day-notice-prior-to-any-kennedy-center-physical-changes?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-17T21:42:31.000Z",
-            "score": null,
-            "summary": "The ruling comes amid legal battle over Trump’s changes to the Kennedy Center, including his effort to rename it.",
-            "cover": null
-          },
-          {
-            "id": 1466171,
-            "title": "To show what these optimizations make possible, we’re partnering with Adaptyv Bio on a protein desig...",
-            "url": "https://x.com/AnthropicAI/status/2100701582744797347",
-            "source": "Anthropic(@AnthropicAI)",
-            "published_at": "2026-09-17T21:41:01.000Z",
-            "score": null,
-            "summary": "To show what these optimizations make possible, we’re partnering with Adaptyv Bio on a protein design competition. Together, we’ll be experimentally validating over 5,000 designs. We&#39;re providing ",
-            "cover": null
-          },
-          {
-            "id": 1466172,
-            "title": "You can find all of the code on GitHub: https://t.co/MmPk9hIZpx\r\n\r\nAnd the full results in our technic...",
-            "url": "https://x.com/AnthropicAI/status/2100701583940190644",
-            "source": "Anthropic(@AnthropicAI)",
-            "published_at": "2026-09-17T21:41:01.000Z",
-            "score": null,
-            "summary": "You can find all of the code on GitHub: github.com/anthropics/upl…And the full results in our technical report: www-cdn.anthropic.com/d8ca26d0d20570…💬0🔄3❤️13👀2739📊2⚡ Powered by xgo.ing",
-            "cover": null
-          },
-          {
-            "id": 1466173,
-            "title": "Biologists use specialized open-source models for tasks like modeling the structure of molecular sys...",
-            "url": "https://x.com/AnthropicAI/status/2100701581109072332",
-            "source": "Anthropic(@AnthropicAI)",
-            "published_at": "2026-09-17T21:41:00.000Z",
-            "score": null,
-            "summary": "Biologists use specialized open-source models for tasks like modeling the structure of molecular systems, designing drug-like molecules, and predicting the effects of genetic mutations. But these mode",
-            "cover": null
-          },
-          {
-            "id": 1465935,
-            "title": "Are there any standard benchmarks out for AFM3 Core / Advanced yet?",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wj778h/are_there_any_standard_benchmarks_out_for_afm3/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:39:49.000Z",
-            "score": null,
-            "summary": "I can&#39;t seem to find any. Apple&#39;s own announcements have only really mentioned human preference evals over AFM 2025, and I&#39;m really curious how AFM3 performs against the new Qwen / Gemma m",
-            "cover": null
-          },
-          {
-            "id": 1461867,
-            "title": "Trump administration approves sale of F-35 jets to Saudi Arabia",
-            "url": "https://www.aljazeera.com/news/2026/9/17/trump-administration-approves-sale-of-f-35-jets-to-saudi-arabia?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-17T21:38:17.000Z",
-            "score": null,
-            "summary": "The deal, which needs approval from Congress, comes as Riyadh seeks Washington&#039;s help in its war with Yemen&#039;s Houthis.",
-            "cover": null
-          },
-          {
-            "id": 1465936,
-            "title": "jev reproductions tracker. keeping up with jev reproduction efforts",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wj74f4/jev_reproductions_tracker_keeping_up_with_jev/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:36:39.000Z",
-            "score": null,
-            "summary": "&#32; submitted by &#32; /u/apolinariosteps &#32; to &#32; r/LocalLLaMA [link] &#32; [comments]",
-            "cover": "https://external-preview.redd.it/7A_DpIEJX_koM9uPqwqtXvOMmEp6cfsGotqA1HlaxiY.png?width=640&crop=smart&auto=webp&s=2ec2a75816f84d68bdd56fc5bf2164c414e2bfff"
-          },
-          {
-            "id": 1465937,
-            "title": "September 2026 updated chart of strix halo mini pc size chartstrix.png",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wj6zxt/september_2026_updated_chart_of_strix_halo_mini/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:31:30.000Z",
-            "score": null,
-            "summary": "should be the final chart for 395 since 495 is coming out",
-            "cover": "https://preview.redd.it/q24qzi6gf5qh1.png?width=640&crop=smart&auto=webp&s=7ee7b502b2fa2dc7d6c8818c1fb31c98cf79cf99"
-          },
-          {
-            "id": 1471325,
-            "title": "早知天下事〔2026.09.18〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650239004&idx=1&sn=841fdc62a8c9b63c6e9f032eab519a7a",
+            "id": 1696903,
+            "title": "早知天下事〔2026.09.19〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650239392&idx=1&sn=556dc99f45c448cb35ca3f2cd49ad54d",
             "source": "新华社",
-            "published_at": "2026-09-17T21:30:00.000Z",
+            "published_at": "2026-09-18T22:00:00.000Z",
             "score": null,
-            "summary": "习近平就发展先进制造业作出重要指示强调，持续做大做强先进制造业，为推进中国式现代化提供有力支撑。详情&gt;&gt;",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6ce5cd5f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIQUdBarouribtCpnKKRx1eSsT8Hfic3BiaiaZCiaWlxAO2icQhSuWfbsdQEoDbRJZg1RtXx2fdfPiajoBE1TKZ856q8tNbjP87n7ry0E4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "住房城乡建设部消息，当前房地产市场出现了“两个转变”：一是房地产市场供求关系发生重大变化，二是房地产进入存量时代。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=83e85237&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIR2nSwgZZWFA7aFVb8EL3DWPqYapCrz4f6gKjicQPkT92GHBxCibIhgvsm2GQzWJsupqia29fNmBtpMa55aiaVTAGzrXcbibUWzW97A%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 1461868,
-            "title": "Yemenis recount journey to Djibouti as refugee arrivals surge",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/17/yemenis-recount-journey-to-djibouti-as-refugee-arrivals-surge?traffic_source=rss",
+            "id": 1685476,
+            "title": "Men deported from US bound and beaten in Equatorial Guinea detention hotel, lawyers say",
+            "url": "https://www.theguardian.com/us-news/2026/sep/18/us-men-deported-hotel-equatorial-guinea",
+            "source": "World news | The Guardian",
+            "published_at": "2026-09-18T21:59:24.000Z",
+            "score": null,
+            "summary": "Group trapped at Hotel Bamy after US removal as rights groups sound alarm over poor conditions and violence",
+            "cover": null
+          },
+          {
+            "id": 1706989,
+            "title": "Code Signing in Linux: Complete Guide to Signing Packages, Binaries, and Containers",
+            "url": "https://www.reddit.com/r/linux/comments/1wk3jxc/code_signing_in_linux_complete_guide_to_signing/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-18T21:49:59.000Z",
+            "score": null,
+            "summary": "&#32; submitted by &#32; /u/throwaway16830261 &#32; to &#32; r/linux [link] &#32; [comments]",
+            "cover": null
+          },
+          {
+            "id": 1684969,
+            "title": "Brighton vs Arsenal: Premier League – predictions, teams, lineups",
+            "url": "https://www.aljazeera.com/sports/2026/9/18/brighton-vs-arsenal-premier-league-predictions-teams-lineups?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-17T21:27:11.000Z",
+            "published_at": "2026-09-18T21:41:55.000Z",
             "score": null,
-            "summary": "Djibouti has appealed to the international community to help provide humanitarian assistance as thousand flee Yemen.",
+            "summary": "Premier League holders Arsenal have won all seven of their matches to start the new season.",
             "cover": null
           },
           {
-            "id": 1465938,
-            "title": "What's up with the Proxmox hype?",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wj6tmp/whats_up_with_the_proxmox_hype/",
+            "id": 1706990,
+            "title": "Self-host calendar?",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wk38lh/selfhost_calendar/",
             "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:24:36.000Z",
+            "published_at": "2026-09-18T21:37:01.000Z",
             "score": null,
-            "summary": "I am genuinely getting fed up with people hyping up Proxmox, telling other people to install it and start with it when I am convinced it makes no sense for the average self-hoster.",
+            "summary": "I&#39;m looking for some open-source calendar software for myself. Here are my requirements:",
             "cover": null
           },
           {
-            "id": 1465939,
-            "title": "Update: Laranode now runs in Docker and has local/S3/SFTP backups + restores",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wj6scf/update_laranode_now_runs_in_docker_and_has/",
+            "id": 1706991,
+            "title": "New benchmark just dropped: Qwen 3.8 UD-Q6_K_XL tries to draw playboi carti in SVG and ends up creating random white guy",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk306j/new_benchmark_just_dropped_qwen_38_udq6_k_xl/",
             "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:23:12.000Z",
-            "score": null,
-            "summary": "About a year ago I posted Laranode here, my open-source hosting control panel, and nearly 500 github stars later here we are: I said the next steps would be a PHP version manager and a backup manager.",
-            "cover": "https://preview.redd.it/kzxa3n2td5qh1.png?width=640&crop=smart&auto=webp&s=321dfb09991ec0ffa2a38f1a2e50d47b823ec8eb"
+            "published_at": "2026-09-18T21:27:43.000Z",
+            "score": 42,
+            "summary": "&#32; submitted by &#32; /u/AnimalPuzzleheaded71 &#32; to &#32; r/LocalLLaMA [link] &#32; [comments]",
+            "cover": "https://preview.redd.it/jog0482ojcqh1.png?width=640&crop=smart&auto=webp&s=26778d32db93751799bb05429e09b45224608265"
           },
           {
-            "id": 1465940,
-            "title": "Hardware Suggestion similar to Umbrel Pro",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wj6s8l/hardware_suggestion_similar_to_umbrel_pro/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-17T21:23:05.000Z",
+            "id": 1681946,
+            "title": "OpenAI and Microsoft knew they were starting a ‘doom loop’ for the web",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/997633/openai-microsoft-chatgpt-ai-new-york-times-doom-loop-theft-google-zero",
+            "source": "The Verge",
+            "published_at": "2026-09-18T21:07:24.000Z",
+            "score": 76,
+            "summary": "Recently unsealed court documents in the New York Times' case against OpenAI and Microsoft are pretty damning. The companies' own documentation warned that it was starting a \"doom loop\" that would dam",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/STKS534_AI_DOOMSDAY2_B.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+          },
+          {
+            "id": 1684970,
+            "title": "New cat species found, first in more than 100 years",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/18/new-cat-species-found-first-in-more-than-100-years?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-18T21:06:15.000Z",
             "score": null,
-            "summary": "I&#39;m currently running my homelab on a Beelink EQ14 (N150) and it&#39;s running great. Now I also want to upgrade my storage and found the Umbrel Pro hardware. I really like the low power consumpti",
+            "summary": "A new species of living cat has been identified for the first time in more than a century.",
+            "cover": null
+          },
+          {
+            "id": 1684971,
+            "title": "Germany receives first F-35 jet from US as NATO boosts military spending",
+            "url": "https://www.aljazeera.com/news/2026/9/18/germany-receives-first-f-35-jet-from-us-as-nato-boosts-military-spending?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-18T21:06:14.000Z",
+            "score": null,
+            "summary": "Germany received the first of nearly three dozen F-35 stealth warplanes it ordered four years ago from Lockheed Martin.",
+            "cover": null
+          },
+          {
+            "id": 1681306,
+            "title": "Claude Code now reads AGENTS.md if there is no Claude.md",
+            "url": "https://code.claude.com/docs/en/changelog",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-18T21:00:32.000Z",
+            "score": 29,
+            "summary": "Article URL: https://code.claude.com/docs/en/changelog",
+            "cover": null
+          },
+          {
+            "id": 1675241,
+            "title": "[ Removed by Reddit ]",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk28e0/removed_by_reddit/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-18T20:57:46.000Z",
+            "score": null,
+            "summary": "[ Removed by Reddit on account of violating the content policy. ]",
+            "cover": null
+          },
+          {
+            "id": 1684972,
+            "title": "UK court clears woman of voicing support for Hamas in university speech",
+            "url": "https://www.aljazeera.com/news/2026/9/18/uk-court-clears-woman-of-voicing-support-for-hamas-in-university-speech?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-18T20:55:57.000Z",
+            "score": null,
+            "summary": "Sarah Cotte said her comments were not in support of Hamas, but in support of Palestinians&#039; right to resist.",
+            "cover": null
+          },
+          {
+            "id": 1675242,
+            "title": "NGL, I’m hyped to see if Qwen3.8 27b can make me a sandwich. Instant buy for me.",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk22tw/ngl_im_hyped_to_see_if_qwen38_27b_can_make_me_a/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-18T20:51:47.000Z",
+            "score": 38,
+            "summary": "Saw this little dude in a Forbes article (https://www.forbes.com/sites/johnkoetsier/2026/08/18/american-humanoid-robot-launches-for-just-1688-delivery-this-fall-made-in-san-francisco/)",
+            "cover": "https://external-preview.redd.it/UbASXk_9Tj5hiuOXeiWurVB5PP4pax9JQ33_sr8fxP0.png?width=640&crop=smart&auto=webp&s=b50ce4f73fdbee943b6ba0e91c474d591aaa7ae7"
+          },
+          {
+            "id": 1675243,
+            "title": "Fedora signing: draw the rest of the owl",
+            "url": "https://www.reddit.com/r/linux/comments/1wk21py/fedora_signing_draw_the_rest_of_the_owl/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-18T20:50:34.000Z",
+            "score": null,
+            "summary": "&#32; submitted by &#32; /u/throwaway16830261 &#32; to &#32; r/linux [link] &#32; [comments]",
+            "cover": null
+          },
+          {
+            "id": 1675244,
+            "title": "Omarchy? Hyprland? No way!",
+            "url": "https://www.reddit.com/r/linux/comments/1wk20zm/omarchy_hyprland_no_way/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-18T20:49:43.000Z",
+            "score": null,
+            "summary": "Over the past year, I&#39;ve come across all these pieces of information separately—different sources, different angles, sometimes even conflicting. But now? Someone&#39;s finally putting it all toget",
             "cover": null
           }
         ]
@@ -181,153 +165,153 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 1466586,
-            "title": "Show HN: Jev routing coding tasks to Grok Build or Codex Astra",
-            "url": "https://github.com/jcpsimmons/jev-model-router-demo",
-            "source": "Show HN",
-            "published_at": "2026-09-17T21:55:28.000Z",
-            "score": 47,
-            "summary": "Article URL: https://github.com/jcpsimmons/jev-model-router-demo",
-            "cover": null
+            "id": 1691306,
+            "title": "This is the way.",
+            "url": "https://x.com/omarsar0/status/2101049154885611808",
+            "source": "elvis(@omarsar0)",
+            "published_at": "2026-09-18T20:42:08.000Z",
+            "score": null,
+            "summary": "This is the way.Thariq@trq212We&#39;re adding support for AGENTS.md to Claude Code. Starting today in version 2.1.277, if there is no CLAUDE.md in a folder, Claude will check for and use AGENTS.md.You",
+            "cover": "https://pbs.twimg.com/profile_images/1976939058741039104/r3GgzqRh_normal.jpg"
           },
           {
-            "id": 1475777,
-            "title": "Claude Code 的 Projects 改版：Claude Tag 的架构 + Slack 的 Thread 功能\r\n\r\n以前就有人说现在 ChatBot、Agent 的交互就是借鉴自 Slack ...",
-            "url": "https://x.com/dotey/status/2100696009282080778",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-17T21:18:52.000Z",
-            "score": 73,
-            "summary": "Claude Code 的 Projects 改版：Claude Tag 的架构 + Slack 的 Thread 功能以前就有人说现在 ChatBot、Agent 的交互就是借鉴自 Slack 的，现在看起来一点不假，Anthropic 今天重做了 Claude 的 Projects 功能，先在 Claude Code 里上线测试版，终于把我最喜欢的 Thread 功能也抄进来了。以前的 Pro",
-            "cover": "https://pbs.twimg.com/media/HScrNKIWUAEawNT.jpg"
+            "id": 1681626,
+            "title": "Build agentic apps with the GitHub Copilot SDK, without implementing the agent loop yourself.\r\n\r\nJoin ...",
+            "url": "https://x.com/github/status/2101044801122836501",
+            "source": "GitHub(@github)",
+            "published_at": "2026-09-18T20:24:50.000Z",
+            "score": 42,
+            "summary": "Build agentic apps with the GitHub Copilot SDK, without implementing the agent loop yourself.Join this beginner-friendly livestream to learn how to use sessions, tools, MCP servers, streaming events, ",
+            "cover": "https://pbs.twimg.com/media/HShjeUPW8AA-W3q.jpg"
           },
           {
-            "id": 1466340,
-            "title": "OpenAI Safety Guardrails: What to Test Before Trusting an AI Agent",
-            "url": "https://www.pentesty.co/blog/openai-safety-guardrails-ai-agent-security",
+            "id": 1671618,
+            "title": "Uncle Bob Martin's UML Tool to Manage Grok AI Agents",
+            "url": "https://github.com/unclebob/uml-viewer",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-17T21:11:32.000Z",
-            "score": 63,
-            "summary": "Article URL: https://www.pentesty.co/blog/openai-safety-guardrails-ai-agent-security",
+            "published_at": "2026-09-18T20:05:25.000Z",
+            "score": 38,
+            "summary": "Article URL: https://github.com/unclebob/uml-viewer",
             "cover": null
           },
           {
-            "id": 1466292,
-            "title": "Agentic CLI customizations now in the usage metrics API",
-            "url": "https://github.blog/changelog/2026-09-17-agentic-cli-customizations-now-in-the-usage-metrics-api",
-            "source": "Use Case: copilot - GitHub Changelog",
-            "published_at": "2026-09-17T21:08:50.000Z",
+            "id": 1671594,
+            "title": "Show HN: I told my open-source AI agent it was a prisoner – it tried to escape",
+            "url": "https://github.com/nordevelopment/RoninAgent/blob/main/EXPERIMENT_REPORT_SUBJECT0.md",
+            "source": "Show HN",
+            "published_at": "2026-09-18T19:55:30.000Z",
+            "score": 55,
+            "summary": "Article URL: https://github.com/nordevelopment/RoninAgent/blob/main/EXPERIMENT_REPORT_SUBJECT0.md",
+            "cover": null
+          },
+          {
+            "id": 1671595,
+            "title": "Show HN: Procedurally Generated Mineral Gems",
+            "url": "https://gems.0x0000007a.com/",
+            "source": "Show HN",
+            "published_at": "2026-09-18T19:38:34.000Z",
             "score": null,
-            "summary": "GitHub Copilot expands existing CLI report coverage with agentic activity metrics for skills, custom agents, Model Context Protocol (MCP) servers, slash commands, and plugins.",
+            "summary": "I wanted to give users of a new app I'm working on a way to generate their own custom icon. It turned out pretty cool so I chucked it up on a Cloudflare page. Codex did the 3d work, and then I integra",
             "cover": null
           },
           {
-            "id": 1458943,
-            "title": "The fix for rogue AI agents could be more AI",
-            "url": "https://techcrunch.com/2026/09/17/the-fix-for-rogue-ai-agents-could-be-more-ai/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-17T20:34:47.000Z",
+            "id": 1668241,
+            "title": "Storytelling is finally solved.\r\n\r\nNeither ChatGPT nor Claude could solve it because it required long-...",
+            "url": "https://x.com/omarsar0/status/2101030043673837726",
+            "source": "elvis(@omarsar0)",
+            "published_at": "2026-09-18T19:26:12.000Z",
             "score": 52,
-            "summary": "As companies hand off longer and more complex tasks to AI agents, they are running into an oversight problem: Agents can act faster, longer, and at greater volume than humans can realistically review.",
-            "cover": null
+            "summary": "Storytelling is finally solved.Neither ChatGPT nor Claude could solve it because it required long-horizon consistency, and they would just hallucinate consistently.Sherpa has data on 5.5 billion minut",
+            "cover": "https://pbs.twimg.com/profile_images/2097863287044186112/KRtqKZMb_normal.jpg"
           },
           {
-            "id": 1500003,
-            "title": "ICE agent appears in Minnesota court to face charges in the shooting of a Venezuelan immigrant - NPR",
-            "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOTEhMLU1ybjhKTkRaSVRZbTF1ZzY4R2RraEJYTlc3aDlYcjFJR1VWWDVXbFVkeTM2LVVXZWVDYU5PSEREb3RuTmU4Qm4zR0NHMUdOcjdtRVZHTHFTbHo0RC1BcXYxNzh4Vl9aMG94TkN2SHFrUnFRZFozR2JNYTN6c2J0NXpEWElHT2locmdwMEpmQ2ZqRlYtSG9lc205a1dQdXhF?oc=5",
-            "source": "Top stories - Google News",
-            "published_at": "2026-09-17T20:23:34.000Z",
+            "id": 1665132,
+            "title": "这年头，对 Photoshop 不满意，就自己开发了一个\r\n\r\n是开源的，提交记录都有 Claude，看起来是 AI 辅助的。\r\n\r\nhttps://t.co/qZKLaB8fwf",
+            "url": "https://x.com/dotey/status/2101029005159805101",
+            "source": "宝玉(@dotey)",
+            "published_at": "2026-09-18T19:22:04.000Z",
+            "score": 55,
+            "summary": "这年头，对 Photoshop 不满意，就自己开发了一个是开源的，提交记录都有 Claude，看起来是 AI 辅助的。github.com/robbietilton/C…Robbie Tilton@robbietiltonI built a Photoshop-like image editor. It’s called Compositor.robbietilton.com/compositor",
+            "cover": "https://pbs.twimg.com/profile_images/1842035847602049024/uGkmO5O7_normal.jpg"
+          },
+          {
+            "id": 1662082,
+            "title": "Claude couldn’t hack OpenAI. Then Anthropic shipped Opus 5.",
+            "url": "https://thenewstack.io/claude-exploits-openai-forum/",
+            "source": "The New Stack",
+            "published_at": "2026-09-18T18:57:14.000Z",
+            "score": 75,
+            "summary": "Three security researchers at Hacktron AI found a memory-corruption bug in a widely used image library. Finding it was the easy part.",
+            "cover": "https://cdn.thenewstack.io/media/2026/09/62433673-behnam-mohsenzadeh-n6gc9ebg7v4-unsplash-1024x576.jpg"
+          },
+          {
+            "id": 1662415,
+            "title": "An Empirical Study of Harness Design for Coding Agents\r\n\r\npaper: https://t.co/pqcxSfs1h0",
+            "url": "https://x.com/_akhaliq/status/2101020560964866103",
+            "source": "AK(@_akhaliq)",
+            "published_at": "2026-09-18T18:48:31.000Z",
             "score": null,
-            "summary": "ICE agent appears in Minnesota court to face charges in the shooting of a Venezuelan immigrant&nbsp;&nbsp;NPRICE Agent Charged in Shooting Appears in Minnesota Court After Arrest&nbsp;&nbsp;The New Yo",
-            "cover": null
+            "summary": "An Empirical Study of Harness Design for Coding Agentspaper: huggingface.co/papers/2609.20…💬3🔄1❤️13👀2115📊5⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HShTBsraIAABLq-.jpg"
           },
           {
-            "id": 1466599,
-            "title": "Show HN: Multiplayer Mode for AI Agents",
-            "url": "https://gotincan.com/",
-            "source": "Show HN",
-            "published_at": "2026-09-17T19:48:24.000Z",
-            "score": 54,
-            "summary": "I built Tincan for my agents across different harnesses (Claude, Codex, Hermes) to coordinate work with each other in real time.Tincan lets agents create shared rooms, exchange messages and files, and",
-            "cover": null
-          },
-          {
-            "id": 1472087,
-            "title": "[分享发现] 编程任务中，模型的上下文窗口开多大最合适?",
-            "url": "https://www.v2ex.com/t/1242828#reply0",
-            "source": "V2EX",
-            "published_at": "2026-09-17T19:48:20.000Z",
+            "id": 1663591,
+            "title": "https://t.co/PqUQYmx1YB",
+            "url": "https://x.com/claudeai/status/2101017908843352238",
+            "source": "Claude(@claudeai)",
+            "published_at": "2026-09-18T18:37:59.000Z",
             "score": null,
-            "summary": "现在的旗舰模型普遍标称 1M 甚至更大的上下文窗口。一个很自然的想法是把窗口拉满，一次性塞进整个仓库，省得频繁压缩。直觉上窗口越大越省事，压缩越少越省钱。但真的如此吗。本文把 2023 到 2026 年的相关论文、基准和工程博客串起来，回答三个问题。",
+            "summary": "x.com/yanliudesign/s…Yan Liu@yanliudesignCreated a gemstone brush in Claude for the trend: put gemstone stickers on anything and make it sparkle!!! 💎Pick your gems, draw whatever you want, and add a ",
+            "cover": "https://pbs.twimg.com/profile_images/2023498751017717760/j1DzJs7E_normal.jpg"
+          },
+          {
+            "id": 1663593,
+            "title": "A thread of our favorite things people built with Claude recently:\r\n\r\nhttps://t.co/bLVmlNj5ew",
+            "url": "https://x.com/claudeai/status/2101017902316982783",
+            "source": "Claude(@claudeai)",
+            "published_at": "2026-09-18T18:37:57.000Z",
+            "score": 22,
+            "summary": "A thread of our favorite things people built with Claude recently:x.com/kevin_t_ngo/st…Kevin Ngo@kevin_t_ngoI made a website with 25 mini rooms, each with Claude keeping people company.Created with Cl",
+            "cover": "https://pbs.twimg.com/profile_images/2030333350272241664/ifQxaQ_C_normal.jpg"
+          },
+          {
+            "id": 1653548,
+            "title": "哈哈 Claude Code 终于支持 AGENTS.md，所以什么时候支持 .agents/skills ?",
+            "url": "https://x.com/dotey/status/2101013914116915454",
+            "source": "宝玉(@dotey)",
+            "published_at": "2026-09-18T18:22:06.000Z",
+            "score": 43,
+            "summary": "哈哈 Claude Code 终于支持 AGENTS.md，所以什么时候支持 .agents/skills ?Thariq@trq212We&#39;re adding support for AGENTS.md to Claude Code. Starting today in version 2.1.277, if there is no CLAUDE.md in a folder, Clau",
+            "cover": "https://pbs.twimg.com/profile_images/1976939058741039104/r3GgzqRh_normal.jpg"
+          },
+          {
+            "id": 1667216,
+            "title": "Ask HN: So is AI taking our jobs?",
+            "url": "https://news.ycombinator.com/item?id=49758136",
+            "source": "Ask HN",
+            "published_at": "2026-09-18T18:17:26.000Z",
+            "score": 32,
+            "summary": "I'm a software developer with about 12 YEO, so far I haven't had a problem finding work and for the foreseeable future I don't see Claude taking my job just yet, but every month AI models get better, ",
             "cover": null
           },
           {
-            "id": 1466603,
-            "title": "Show HN: MCPJam - the first testing & evaluations platform for MCP servers",
-            "url": "https://www.mcpjam.com",
-            "source": "Show HN",
-            "published_at": "2026-09-17T19:23:47.000Z",
-            "score": 58,
-            "summary": "Prathmesh, CEO of MCPJam here.Users now start in ChatGPT, Claude, Cursor, and other AI clients. They reach your product through your MCP server.That means your users often aren’t in your product anymo",
-            "cover": null
-          },
-          {
-            "id": 1453045,
-            "title": "Excited to share that we partnered with @speakeasydev  to build the sdks for the Interactions API an...",
-            "url": "https://x.com/_philschmid/status/2100664321646690491",
-            "source": "Philipp Schmid(@_philschmid)",
-            "published_at": "2026-09-17T19:12:57.000Z",
+            "id": 1669632,
+            "title": "v2.1.277",
+            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.277",
+            "source": "Release notes from claude-code",
+            "published_at": "2026-09-18T18:06:32.000Z",
             "score": null,
-            "summary": "Excited to share that we partnered with @speakeasydev to build the sdks for the Interactions API and supported them to open-source their their entire OpenAPI generator suite (SDKs, agent CLIs, and MCP",
+            "summary": "What's changed Added AGENTS.md support: in a project with no CLAUDE.md, Claude Code reads AGENTS.md instead; change it under \"Project instructions\" in /config (not yet on Bedrock, Vertex or Foundry) A",
             "cover": null
           },
           {
-            "id": 1436969,
-            "title": "Included Health built Dot, a federated multi-agent healthcare guide, on LangGraph + Deep Agents, bac...",
-            "url": "https://x.com/LangChain/status/2100659471093481843",
-            "source": "LangChain(@LangChainAI)",
-            "published_at": "2026-09-17T18:53:40.000Z",
-            "score": null,
-            "summary": "Included Health built Dot, a federated multi-agent healthcare guide, on LangGraph + Deep Agents, backed by LangSmith for clinical oversight.Multi-turn simulation evals got 4 teams onto Deep Agents in ",
-            "cover": null
-          },
-          {
-            "id": 1436199,
-            "title": "Medicine is the only job where the expert with the most to say has the least time to record it. \r\n\r\nHe...",
-            "url": "https://x.com/HeyGen/status/2100658037187125698",
-            "source": "HeyGen(@HeyGen_Official)",
-            "published_at": "2026-09-17T18:47:59.000Z",
-            "score": null,
-            "summary": "Medicine is the only job where the expert with the most to say has the least time to record it. HeyGen runs inside ChatGPT and Claude, so you can turn the notes you already wrote into a month of clini",
-            "cover": null
-          },
-          {
-            "id": 1523822,
-            "title": "LLMs respond differently to harmful prompts when AI watermarking is used",
-            "url": "https://arstechnica.com/security/2026/09/ai-text-watermarking-can-make-models-more-vulnerable-to-adversarial-prompts/",
-            "source": "Ars Technica",
-            "published_at": "2026-09-17T18:33:13.000Z",
-            "score": null,
-            "summary": "In response to a new European Union law, AI platforms are implementing new schemes for watermarking the content they generate. Anthropic recently disclosed its future Claude models will use SynthID-Te",
-            "cover": null
-          },
-          {
-            "id": 1439317,
-            "title": "Omid and the team did great work on this one. Most of my Claude Desktop work these days is in these ...",
-            "url": "https://x.com/mikeyk/status/2100653182708035658",
-            "source": "Mike Krieger(@mikeyk)",
-            "published_at": "2026-09-17T18:28:41.000Z",
-            "score": 45,
-            "summary": "Omid and the team did great work on this one. Most of my Claude Desktop work these days is in these new-style projects and I&#39;ve really enjoyed how easy it is to kick off a bunch of work while stil",
-            "cover": "https://pbs.twimg.com/profile_images/1770587470134185984/1m34mw_C_normal.jpg"
-          },
-          {
-            "id": 1435520,
-            "title": "Show HN: Agent Router picks Cursor/Claude and effort per task, then launches it",
-            "url": "https://github.com/nidhi-singh02/agent-router",
-            "source": "Show HN",
-            "published_at": "2026-09-17T18:13:55.000Z",
-            "score": 35,
-            "summary": "Article URL: https://github.com/nidhi-singh02/agent-router",
+            "id": 1665073,
+            "title": "WebMCP support now available in mcp-handler",
+            "url": "https://vercel.com/changelog/webmcp-mcp-handler",
+            "source": "Vercel News",
+            "published_at": "2026-09-18T18:00:00.000Z",
+            "score": 65,
+            "summary": "now has experimental support for , the proposed web standard for exposing tools to in-browser agents. Add a single script tag to your site, and your existing MCP tools become available there too.mcp-h",
             "cover": null
           }
         ]
@@ -337,103 +321,93 @@
         "desc": "",
         "items": [
           {
-            "id": 1462101,
-            "title": "Intel squeezed a 1.58-bit LLM down to 1.485 bits without changing a single weight",
-            "url": "https://thenewstack.io/intel-bitcos-ternary-compression/",
-            "source": "The New Stack",
-            "published_at": "2026-09-17T20:51:57.000Z",
-            "score": 85,
-            "summary": "The 1.58 in a 1.58-bit language model sounds like a hard limit, but Intel researchers pushed a ternary model below it by changing how its weights are stored rather than changing the model itself.",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/110b435f-mohsen-samimi-jlomy2njzxe-unsplash-1024x576.jpg"
+            "id": 1650078,
+            "title": "AI 怎么当餐厅的“隐形店长”",
+            "url": "https://www.huxiu.com/article/4892392.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-09-18T17:45:44.000Z",
+            "score": 78,
+            "summary": "红餐产业研究院的调研数据显示，目前中国餐饮行业的AI应用渗透率仅为15%。与此同时，上海市商务委等五部门2025年11月印发的《上海市促进餐饮业智能化布局行动计划（2026—2028年）》提出：团餐、快餐、茶饮咖啡企业全链条智能化渗透率要超过70%，正餐企业关键环节智能化应用率超过50%。",
+            "cover": "https://img.huxiucdn.com/article/content/26-09-19/58ef9236-7af1-4863-b884-2345cb1d76ea.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 1428847,
-            "title": "GitHub and Anthropic used their own agents for major Rust rewrites — with very different playbooks",
-            "url": "https://thenewstack.io/github-copilot-anthropic-rust-migration/",
-            "source": "The New Stack",
-            "published_at": "2026-09-17T18:06:03.000Z",
-            "score": 83,
-            "summary": "Rust is seemingly the language of the moment, with open-source projects and companies forming an orderly queue to move core software over to the general-purpose programming lingo. The draw? A pursuit ",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/d12121e8-ekaterina-bogdan-awl6ao7puu0-unsplash-1024x731.jpg"
-          },
-          {
-            "id": 1482589,
-            "title": "Hands-On Evolution of Deep Learning – Geoffrey Hinton’s AI Legacy",
-            "url": "https://www.freecodecamp.org/news/hands-on-evolution-of-deep-learning-geoffrey-hinton-s-ai-legacy/",
-            "source": "freeCodeCamp.org",
-            "published_at": "2026-09-17T18:00:11.000Z",
-            "score": 83,
-            "summary": "Geoffrey Hinton is known as the \"the Godfather of AI\".",
-            "cover": null
-          },
-          {
-            "id": 1466347,
-            "title": "US, China security experts propose nuclear-style safeguards for AI risks",
-            "url": "https://www.reuters.com/world/china/us-china-security-experts-propose-nuclear-style-safeguards-ai-risks-2026-09-17/",
+            "id": 1671620,
+            "title": "AI chatbot's false report nearly sparked war with China, sources say",
+            "url": "https://www.rnz.co.nz/news/world/1465265/ai-chatbot-s-false-report-nearly-sparked-war-with-china-sources-say",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-17T20:41:32.000Z",
-            "score": 76,
-            "summary": "Article URL: https://www.reuters.com/world/china/us-china-security-experts-propose-nuclear-style-safeguards-ai-risks-2026-09-17/",
+            "published_at": "2026-09-18T19:59:56.000Z",
+            "score": 72,
+            "summary": "Article URL: https://www.rnz.co.nz/news/world/1465265/ai-chatbot-s-false-report-nearly-sparked-war-with-china-sources-say",
             "cover": null
           },
           {
-            "id": 1440189,
-            "title": "“Be transparent only if asked”: OpenAI’s models learned to leave notes for their future selves",
-            "url": "https://thenewstack.io/openai-model-misalignment-reports/",
-            "source": "The New Stack",
-            "published_at": "2026-09-17T18:27:44.000Z",
-            "score": 76,
-            "summary": "OpenAI revealed Wednesday evening that some GPT-5.6 Sol model instances, during reinforcement learning (RL) training, wrote instructions to conceal mistakes or misaligned behavior from users.",
-            "cover": "https://cdn.thenewstack.io/media/2026/03/f7a6563d-screenshot-2026-03-04-at-14.29.48-1024x585.png"
+            "id": 1629229,
+            "title": "Pivoting and Tunneling",
+            "url": "https://blog.abb00717.com/%E7%AD%86%E8%A8%98/%E6%BB%B2%E9%80%8F%E7%AD%86%E8%A8%98/Pivoting-and-Tunneling",
+            "source": "ABB00717",
+            "published_at": "2026-09-18T16:19:23.515Z",
+            "score": 72,
+            "summary": "SSH tunneling over SOCKS proxy $ nmap -sT -p22,3306 10.129.202.64 PORT STATE SERVICE 22/tcp open ssh 3306/tcp closed mysql MySQL 並沒有對外開放，若要使用必須透過 port forwarding，可以透過 SSH 將 MySQL 轉到 port 1234 上： abb00",
+            "cover": null
           },
           {
-            "id": 1466341,
-            "title": "ESP32 Wi-Fi Vulns: Coordinated Disclosure Is Broken by AI",
-            "url": "https://fughilli.substack.com/p/auditing-the-closed-esp32-c6-wi-fi",
+            "id": 1678024,
+            "title": "Databricks' @alighodsi on AI risk and adoption:\r\n\r\nAli isn't losing sleep over the existential risk de...",
+            "url": "https://x.com/a16z/status/2101032223457829137",
+            "source": "a16z(@a16z)",
+            "published_at": "2026-09-18T19:34:52.000Z",
+            "score": 68,
+            "summary": "Databricks&#39; @alighodsi on AI risk and adoption:Ali isn&#39;t losing sleep over the existential risk debate.He says a number of conditions would all have to be true simultaneously to enable an actu",
+            "cover": null
+          },
+          {
+            "id": 1643415,
+            "title": "US Military had close call after using AI for hallucinated intelligence report",
+            "url": "https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-17T21:08:31.000Z",
-            "score": 72,
-            "summary": "Article URL: https://fughilli.substack.com/p/auditing-the-closed-esp32-c6-wi-fi",
+            "published_at": "2026-09-18T17:28:01.000Z",
+            "score": 68,
+            "summary": "Article URL: https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
             "cover": null
           },
           {
-            "id": 1466342,
-            "title": "Shaping the Future of Learning: Education Readiness for the Age of AI [pdf]",
-            "url": "https://reports.weforum.org/docs/WEF_Shaping_the_Future_of_Learning_2026.pdf",
+            "id": 1643416,
+            "title": "I Hijacked a Real Artist's Spotify with AI Music. It Was Disturbingly Easy",
+            "url": "https://www.404media.co/spotify-ai-music-scam/",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-17T20:51:46.000Z",
-            "score": 72,
-            "summary": "Article URL: https://reports.weforum.org/docs/WEF_Shaping_the_Future_of_Learning_2026.pdf",
+            "published_at": "2026-09-18T17:16:13.000Z",
+            "score": 68,
+            "summary": "Article URL: https://www.404media.co/spotify-ai-music-scam/",
             "cover": null
           },
           {
-            "id": 1466345,
-            "title": "Why sovereign AI demands a tenancy model, not just geography",
-            "url": "https://www.redhat.com/en/blog/datacenter-myth-why-sovereign-ai-demands-tenancy-model-not-just-geography",
+            "id": 1678023,
+            "title": "Databricks' @alighodsi on why most companies wouldn't even notice if frontier AI models stopped adva...",
+            "url": "https://x.com/a16z/status/2101044182475547120",
+            "source": "a16z(@a16z)",
+            "published_at": "2026-09-18T20:22:23.000Z",
+            "score": 64,
+            "summary": "Databricks&#39; @alighodsi on why most companies wouldn&#39;t even notice if frontier AI models stopped advancing:&quot;The models are smart enough, but they just don&#39;t have the context that exist",
+            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
+          },
+          {
+            "id": 1671596,
+            "title": "Show HN: OnPanda – Steer LLMs and agents at the token level",
+            "url": "https://onpanda.diyer22.com/",
+            "source": "Show HN",
+            "published_at": "2026-09-18T19:26:50.000Z",
+            "score": 64,
+            "summary": "I built onPanda – an interactive tool for token visualization & control, model inspection and data annotation.onPanda is designed for hackers, power users, curious minds, and engineers. Its UI is buil",
+            "cover": null
+          },
+          {
+            "id": 1643414,
+            "title": "Disney Hires Its First CTO: Karandeep Anand, Former CEO of AI Chatbot Startup",
+            "url": "https://variety.com/2026/biz/news/disney-cto-karandeep-anand-character-ai-1236866528/",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-17T20:48:19.000Z",
-            "score": 72,
-            "summary": "Article URL: https://www.redhat.com/en/blog/datacenter-myth-why-sovereign-ai-demands-tenancy-model-not-just-geography",
-            "cover": null
-          },
-          {
-            "id": 1428778,
-            "title": "Virtual biotech company puts thousands of AI scientist agents to work on drug discovery",
-            "url": "https://phys.org/news/2026-09-virtual-biotech-company-thousands-ai.html",
-            "source": "Phys.org - latest science and technology news stories",
-            "published_at": "2026-09-17T18:00:10.000Z",
-            "score": 72,
-            "summary": "The latest company to spin out of a Stanford Medicine lab is a biotech undertaking with 37,000 employees—and none of them are human. There's no lab space, no lunch breaks and no payroll. It's an artif",
-            "cover": null
-          },
-          {
-            "id": 1430770,
-            "title": "Today we are releasing a new Gemini managed agents version with better caching, lower costs, a Files...",
-            "url": "https://x.com/_philschmid/status/2100635151080550793",
-            "source": "Philipp Schmid(@_philschmid)",
-            "published_at": "2026-09-17T17:17:02.000Z",
-            "score": 72,
-            "summary": "Today we are releasing a new Gemini managed agents version with better caching, lower costs, a Files API, and a Credentials API.📉 Up to 30% lower costs with up to 22% higher cache hits📁 Files API: U",
+            "published_at": "2026-09-18T17:30:25.000Z",
+            "score": 64,
+            "summary": "Article URL: https://variety.com/2026/biz/news/disney-cto-karandeep-anand-character-ai-1236866528/",
             "cover": null
           }
         ]
@@ -442,9 +416,9 @@
     "stats": {
       "candidates": 500,
       "articles": 500,
-      "sections": 4,
-      "totalItems": 41
+      "sections": 3,
+      "totalItems": 39
     }
   },
-  "generated_at": "2026-09-18T06:13:42.494Z"
+  "generated_at": "2026-09-19T06:12:38.770Z"
 }
