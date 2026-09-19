@@ -132,6 +132,14 @@ for (const t of tracked) {
   }
 }
 
+// 7 目录索引待维护（DOC_GOVERNANCE §2.5）：只汇总一条，明细走 node tools/gen-dir-index.cjs --check
+// 按警不按错是为了不阻塞在途开发；不逐条打印是为了不把门禁变成噪音（噪音会让人学会忽略它）
+try {
+  const out = execSync('node tools/gen-dir-index.cjs --check', { cwd: path.join(__dirname, '..'), encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  const n = (out.match(/^\s*!/gm) || []).length;
+  if (n) warnings.push(`[目录索引] ${n} 个目录的 README 待维护（未登记条目/缺 README）—— 明细：node tools/gen-dir-index.cjs --check`);
+} catch (e) { warnings.push(`[目录索引] 检查未能运行：${String(e.message).slice(0, 70)}`); }
+
 console.log(`doc-lint：${errors.length} 错 ${warnings.length} 警`);
 for (const e of errors) console.log('  ✗ ' + e);
 for (const w of warnings) console.log('  ! ' + w);

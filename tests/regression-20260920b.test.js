@@ -14,7 +14,10 @@ const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
-const { beijingDayStartMs, beijingDayStartIso } = require('../lib/time-window');
+// 惰性取被测模块：F2P 要在**改前的基线**上逐条点名报红，若在这里顶层 require，
+// 基线上没有 lib/time-window.js → 整个文件加载崩，用例名一个都不出现，
+// F2P 只能报"改前不红"（本轮实测踩过：13 条锁全被判成抓不到 bug）。
+const tw = () => require('../lib/time-window');
 
 // B1 的断言写成"对一份 tw 模块跑一遍、返回红灯清单"的形式，这样 B5 能把同一套断言
 // 打在**改坏的副本**上自证：判据真的依赖 BJ_OFFSET_MS 这个常数（第三轮审查：原写法
@@ -45,8 +48,8 @@ function dayChecks(tw) {
 }
 
 test('B1 日界/窗口/日期串计算本身：两个方向都要钉（北京日 ≠ 容器日）', () => {
-  assert.deepStrictEqual(dayChecks(require('../lib/time-window')), [],
-    'lib/time-window 的口径不成立：\n' + dayChecks(require('../lib/time-window')).join('\n'));
+  const reds = () => dayChecks(tw());
+  assert.deepStrictEqual(reds(), [], 'lib/time-window 的口径不成立：\n' + reds().join('\n'));
 });
 
 test('B5 反向自证：把 BJ_OFFSET_MS 改成 0，B1 的断言必须逐条变红（否则锁与常数无关）', () => {
