@@ -1,0 +1,136 @@
+{
+ "at": "2026-09-19T02:17:52.013Z",
+ "baseRef": "f3172b2d973f568604a565d383d65f25545af62f",
+ "headRef": "HEAD",
+ "baseSha": "f3172b2d973f568604a565d383d65f25545af62f",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919f.test.js"
+ ],
+ "wantNames": [
+  "正向探针：npm 入口",
+  "Python 侧自检必须全绿",
+  "跨语言单一事实源",
+  "五轴与权重",
+  "judge 纪律落进代码"
+ ],
+ "targets": [
+  "正向探针：npm 入口",
+  "Python 侧自检必须全绿",
+  "跨语言单一事实源",
+  "五轴与权重",
+  "judge 纪律落进代码"
+ ],
+ "lockIntros": {
+  "正向探针：npm 入口": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "Python 侧自检必须全绿": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "跨语言单一事实源": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "五轴与权重": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ],
+  "judge 纪律落进代码": [
+   "be539eccffad51ac30a7f3b73529d8aa46e2681f"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/f2p/2026-09-19021348.json",
+  "?? docs/eval/f2p/2026-09-19021351.json",
+  "?? docs/eval/f2p/2026-09-19021354.json",
+  "?? docs/eval/f2p/2026-09-19021356.json",
+  "?? docs/eval/f2p/2026-09-19021359.json",
+  "?? docs/eval/f2p/2026-09-19021402.json",
+  "?? docs/eval/f2p/2026-09-19021405.json",
+  "?? docs/eval/f2p/2026-09-19021421.json",
+  "?? docs/eval/f2p/2026-09-19021747.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 59,
+ "base": {
+  "tests": 5,
+  "pass": 0,
+  "fail": 5,
+  "failedNames": [
+   "41-8 正向探针：npm 入口存在且转发到 tools/eval-content.cjs",
+   "41-8 Python 侧自检必须全绿（探针数 = 通过数，且不少于 40 项）；没 python 属 fail_env 而不是通过",
+   "41-8 跨语言单一事实源：Python 侧不许写死第二份云端域名（B64 的跨国版）",
+   "41-8 五轴与权重：文档 §5.1/§5.2 与 scoring.py 必须是同一份定义",
+   "41-8 judge 纪律落进代码：默认不打模型、打模型要记模型与 prompt 版本"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "tools/eval-content",
+   "tools/eval-content/scoring.py",
+   "tools/eval-content/judge.py"
+  ]
+ },
+ "head": {
+  "tests": 5,
+  "pass": 5,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 5 条（5 个目标全中，实指 5 条锁），改后 5 条全绿；改前缺本次修复新建的文件 tools/eval-content, tools/eval-content/scoring.py, tools/eval-content/judge.py"
+}

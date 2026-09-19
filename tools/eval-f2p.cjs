@@ -70,22 +70,33 @@ function repoRel(p, cwd) {
 }
 
 /**
- * 判一次锁是否成立。
- * base = 改动之前，期望目标用例红；head = 改动之后，期望全绿。
- * envBroken（模块找不到一类）绝不能当成"改前红"，那是假证据。
+ * 判一次锁是否成立。三态，退出码不混用（EVAL_GUIDE §9：2=fail_env，视为未评测）：
+ *   state='ok'    → 退 0：每条目标锁改前都红、改后全绿
+ *   state='product' → 退 1：锁真的抓不到 bug / 没修好 —— 只有这一档才允许"删或重写用例"
+ *   state='env'   → 退 2：输入错、没跑到、依赖缺 —— **禁止据此删用例**（坑 #41）
+ * 判据要点（本轮对抗性审查指出后收紧）：
+ *   ①**逐条目标**都要在改前红，"文件里有任意一条红"不成立（旧版会把无关老用例的红当证据）；
+ *   ②没点名目标一律拒判（旧版 wantNames 为空时用 base.failedNames 自证，等于循环论证）；
+ *   ③任何一侧一条都没跑到 = 没跑，不许当成"改后 0 红 = 全绿"。
  */
 function verdict(base, head, wantNames = []) {
-  if (!base || !head) return { ok: false, why: '没有解析到 node:test 汇总行，等于没跑' };
-  if (base.envBroken) return { ok: false, why: `base 侧有环境类失败，不能当改前红证据（元凶：${(base.envPaths || []).join(', ') || '未记名'}）` };
-  if (head.envBroken) return { ok: false, why: `head 侧有环境类失败，先修环境再谈证据（${(head.envPaths || []).join(', ')}）` };
-  if (head.fail !== 0) return { ok: false, why: `改后仍有 ${head.fail} 条红，未修好` };
-  const hit = wantNames.length ? base.failedNames.filter((n) => wantNames.some((w) => n.includes(w))) : base.failedNames;
-  if (!base.fail) return { ok: false, why: '改前也全绿 —— 这条锁抓不到 bug，按 §6 应删掉或重写断言' };
-  if (wantNames.length && !hit.length) {
-    return { ok: false, why: `改前红的用例里没有指定的目标锁（目标 ${wantNames.join(', ')}；实际红 ${base.failedNames.slice(0, 6).join(' | ') || '无'}）` };
+  const envFail = (why) => ({ state: 'env', ok: false, why });
+  if (!base || !head) return envFail('没有解析到 node:test 汇总行，等于没跑（不算证据，也不算锁假）');
+  if (base.envBroken) return envFail(`base 侧有环境类失败，不能当改前红证据（元凶：${(base.envPaths || []).join(', ') || '未记名'}）`);
+  if (head.envBroken) return envFail(`head 侧有环境类失败，先修环境再谈证据（${(head.envPaths || []).join(', ')}）`);
+  if (!head.tests) return envFail('head 侧一条测试都没跑到（多半是 node:test 输出格式变了或 reporter 被改），绝不记成"改后全绿"');
+  if (!base.tests) return envFail('base 侧一条测试都没跑到，等于没取证');
+  if (!wantNames.length) return envFail('没点名目标锁：不给 --cases 时按锁文件里的用例名逐条要求，空目标集不许自证成立');
+  if (head.fail !== 0) return { state: 'product', ok: false, why: `改后仍有 ${head.fail} 条红，未修好` };
+  const miss = wantNames.filter((w) => !base.failedNames.some((n) => n.includes(w)));
+  const hit = wantNames.length - miss.length;
+  if (!base.fail) return { state: 'product', ok: false, why: `改前也全绿 —— ${wantNames.length} 条锁一条都抓不到 bug，按 §6 应删掉或重写断言` };
+  if (miss.length) {
+    return { state: 'product', ok: false, why: `${miss.length}/${wantNames.length} 条目标锁改前不红（${miss.slice(0, 5).join(' | ')}${miss.length > 5 ? ' …' : ''}）—— 它们抓不到本轮改动：要么用 --cases 只点本轮的锁，要么按 §6 重写；已红的 ${hit} 条不构成本次取证` };
   }
   const own = (base.missingOwn || []).length ? `；改前缺本次修复新建的文件 ${base.missingOwn.join(', ')}` : '';
-  return { ok: true, why: `改前红 ${base.fail} 条${wantNames.length ? `（命中 ${hit.length} 条目标）` : ''}，改后 ${head.tests} 条全绿${own}` };
+  const matched = [...new Set(base.failedNames.filter((n) => wantNames.some((w) => n.includes(w))))];
+  return { state: 'ok', ok: true, why: `改前红 ${base.fail} 条（${wantNames.length} 个目标全中，实指 ${matched.length} 条锁），改后 ${head.tests} 条全绿${own}`, perCase: matched };
 }
 
 // worktree 里必须能解析依赖：把主树 node_modules 挂进 NODE_PATH（本轮踩过才知道）
@@ -112,7 +123,7 @@ function runTestFiles(cwd, files, namePattern) {
   const env = { ...process.env, NODE_PATH: nodePathFor() };
   try {
     const out = execFileSync(process.execPath, args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env, stdio: ['ignore', 'pipe', 'pipe'] });
-    return relMissing(parseSummary(out, cwd) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false, missingOwn: [], unparsed: String(out).slice(0, 400) }, cwd);
+    return relMissing(parseSummary(out, cwd) || { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: true, missingOwn: [], unparsed: String(out).slice(0, 400) }, cwd);
   } catch (e) {
     const out = String((e && e.stdout) || '') + String((e && e.stderr) || '');
     const p = parseSummary(out, cwd);
@@ -128,7 +139,10 @@ function relMissing(p, cwd) {
   if (!p || !Array.isArray(p.missingOwn)) return p;
   const parts = String(cwd).split(/[\\/]+/).filter(Boolean);
   const preRe = new RegExp('^' + parts.map(rxEscape).join('[\\\\/]+') + '[\\\\/]+', 'i');
-  p.missingOwn = [...new Set(p.missingOwn.map((m) => String(m).replace(preRe, '').replace(/\\/g, '/').replace(/\/{2,}/g, '/')))];
+  const rel = (s) => String(s).replace(preRe, '').replace(/\\/g, '/').replace(/\/{2,}/g, '/');
+  p.missingOwn = [...new Set(p.missingOwn.map(rel))];
+  // 环境类失败也要脱掉临时树前缀：证据是要进 git 的，不该留一次性目录名
+  if (Array.isArray(p.envPaths)) p.envPaths = [...new Set(p.envPaths.map(rel))];
   return p;
 }
 
@@ -192,6 +206,19 @@ function baseIsStale(intros, baseSha) {
   return bad;
 }
 
+// --tests 参数收敛到仓库内（越界一律拒，防止"声称跑隔离树实际写主树"）
+function scopeFiles(testsArg) {
+  const list = String(testsArg || '').split(',').map((s) => s.trim()).filter(Boolean);
+  const out = [];
+  for (const f of list) {
+    if (path.isAbsolute(f)) return { error: `--tests 不许绝对路径：${f}` };
+    const abs = path.resolve(ROOT, f);
+    if (abs !== ROOT && !abs.startsWith(ROOT + path.sep)) return { error: `--tests 越界（必须在仓库内）：${f}` };
+    out.push(path.relative(ROOT, abs).split(path.sep).join('/'));
+  }
+  return { files: out };
+}
+
 function main(argv) {
   const get = (k) => { const i = argv.indexOf(k); return i < 0 ? null : argv[i + 1]; };
   let base = get('--base');
@@ -201,7 +228,11 @@ function main(argv) {
     console.error('用法：node tools/eval-f2p.cjs (--base <ref> | --auto-base) --tests <file[,file…]> [--cases <名字子串>] [--json]');
     return 2;
   }
-  const files = testsArg.split(',').map((s) => s.trim()).filter(Boolean);
+  // --tests 必须落在仓库内：旧版只做 existsSync(path.join(ROOT,f))，`../…/AGENTS.md` 能过检查，
+  // 而 copy 目标 path.join(wt,f) 会解析回**主树** → 取证声称跑隔离树，实际改的是工作区（对抗性审查 I9）
+  const scoped = scopeFiles(testsArg);
+  if (scoped.error) { console.error(scoped.error + ' —— 取证输入错了，不是锁假了'); return 2; }
+  const files = scoped.files;
   const missing = files.filter((f) => !fs.existsSync(path.join(ROOT, f)));
   if (missing.length) { console.error('测试文件不存在：' + missing.join(', ')); return 2; }
 
@@ -209,15 +240,22 @@ function main(argv) {
   const targets = wantNames.length ? wantNames : files.flatMap((f) => testNamesIn(f));
   const intros = lockIntros(files, targets);
   if (!Object.keys(intros).length) {
-    console.error('没能在指定测试文件里定位到任何一条锁的引入提交（锁名对不上？先跑 --tests 单文件不带 --cases）');
+    console.error('没能在指定测试文件里定位到任何一条锁的引入提交（锁名对不上？）');
     return 2;
   }
   if (!base) {
     base = suggestBase(intros);
+    if (!base) { console.error('目标锁的引入提交里有根提交，没有"改前树"可用 —— 换基线或只点可取证的锁'); return 2; }
     console.error(`自动基线：--base ${base}`);
   }
-  const baseSha = git(['rev-parse', base + '^{commit}']);
-  const headSha = git(['rev-parse', 'HEAD']);
+  let baseSha, headSha;
+  try {
+    baseSha = git(['rev-parse', base + '^{commit}']);
+    headSha = git(['rev-parse', 'HEAD']);
+  } catch (e) {
+    console.error(`基线 ref 解析失败（${base}）：${String(e.message || e).split('\n')[0]} —— 这是取证输入错了，**不是锁假了，不要删用例**`);
+    return 2;
+  }
   if (baseSha === headSha) { console.error('base 与 HEAD 同一个 commit，取证无意义'); return 2; }
   const stale = baseIsStale(intros, baseSha);
   if (stale.length) {
@@ -226,10 +264,16 @@ function main(argv) {
     return 2;
   }
 
-  const wt = path.join(path.dirname(ROOT), `.wt-f2p-${Date.now()}`);
+  // head 侧跑的是**工作区**：有未提交改动时证据不可从 HEAD 复现 → 如实记进 rec 并大声提示（不阻塞，
+  // 因为用户常有在途改动；但"改后绿"从此带着 dirty 标记，读证据的人知道自己在看什么）
+  const dirty = git(['status', '--porcelain']).split('\n').filter(Boolean);
 
+  const wt = path.join(path.dirname(ROOT), `.wt-f2p-${Date.now()}`);
   let baseRun = null, headRun = null;
+  const dropWt = () => { try { gitRaw(['worktree', 'remove', wt, '--force']); gitRaw(['worktree', 'prune']); } catch { /* 残留由 git 自管 */ } };
+  process.on('SIGINT', () => { dropWt(); process.exit(130); });   // Ctrl-C 时 finally 不跑，worktree 会留在那
   try {
+    gitRaw(['worktree', 'prune']);
     gitRaw(['worktree', 'add', wt, baseSha]);
     // 只把"新写的锁"带进旧代码里跑：锁是本轮交付物，旧树里没有
     for (const f of files) {
@@ -244,28 +288,30 @@ function main(argv) {
     baseRun = runTestFiles(wt, files, pattern);
     headRun = runTestFiles(ROOT, files, pattern);
   } finally {
-    try { gitRaw(['worktree', 'remove', wt, '--force']); gitRaw(['worktree', 'prune']); } catch { /* 残留由 git 自管 */ }
+    dropWt();
   }
 
-  const v = verdict(baseRun, headRun, wantNames);
+  const v = verdict(baseRun, headRun, targets);
   const rec = {
     at: new Date().toISOString(),
     baseRef: base, headRef: 'HEAD', baseSha, headSha,
-    files, wantNames, lockIntros: intros,
-    base: baseRun, head: headRun, ok: v.ok, why: v.why,
+    files, wantNames, targets, lockIntros: intros,
+    headDirty: dirty, headDirtyCount: dirty.length,
+    base: baseRun, head: headRun, state: v.state, ok: v.ok, why: v.why,
   };
   fs.mkdirSync(path.join(ROOT, RECORD_DIR), { recursive: true });
-  const file = path.join(RECORD_DIR, `${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '')}.json`);
+  const file = path.join(ROOT, RECORD_DIR, `${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '')}.json`);
   fs.writeFileSync(file, JSON.stringify(rec, null, 1) + '\n');
 
   if (argv.includes('--json')) console.log(JSON.stringify(rec, null, 1));
   else {
     console.log(`  base ${rec.baseSha.slice(0, 9)} 红 ${baseRun.fail}/${baseRun.tests}（失败：${baseRun.failedNames.slice(0, 6).join(' | ') || '无'}${baseRun.envBroken ? '；含环境类失败' : ''}）`);
-    console.log(`  head ${rec.headSha.slice(0, 9)} 红 ${headRun.fail}/${headRun.tests}`);
-    console.log(`${v.ok ? '✓ F2P 成立' : '✗ F2P 不成立'} — ${v.why}`);
-    console.log(`  证据：${file}`);
+    console.log(`  head ${rec.headSha.slice(0, 9)} 红 ${headRun.fail}/${headRun.tests}${dirty.length ? `｜工作区有 ${dirty.length} 个未提交文件（证据不可从 HEAD 复现）` : ''}`);
+    console.log(`${v.state === 'ok' ? '✓ F2P 成立' : v.state === 'product' ? '✗ F2P 不成立（锁抓不到 bug，按 §6 处理）' : '⛔ 未取证（输入/环境问题，禁止据此删用例）'} — ${v.why}`);
+    console.log(`  证据：${path.relative(ROOT, file)}`);
   }
-  return v.ok ? 0 : 1;
+  // 只有"锁真的抓不到 bug"才退 1（§6 的处置动作是删/重写）；环境类一律退 2（视为未评测）
+  return v.state === 'ok' ? 0 : v.state === 'product' ? 1 : 2;
 }
 
 // 自检（EVAL_GUIDE §4.1：禁止型断言必须配正向探针）——保证解析器/判据不是"永远说好"
@@ -329,6 +375,31 @@ function selfTest() {
       return a === want && b === want;
     })()],
     ['测试名解析出真用例名', testNamesIn(f1).length >= 8],
+    // 对抗性审查（本轮）指出三条"工具自己会说谎"的路径，逐条钉住
+    ['没点名目标时不许自证成立（旧版：文件里任意一条红就判 ✓）', (() => {
+      const unrelated = parseSummary('ℹ tests 6\nℹ pass 1\nℹ fail 5\n✖ 无关老用例A (1ms)\n✖ B (1ms)\n✖ C (1ms)\n✖ D (1ms)\n✖ E (1ms)\n');
+      const v = verdict(unrelated, parseSummary(clean), []);
+      return v.ok === false && v.state === 'env';
+    })()],
+    ['部分目标改前不红 = 不成立（旧版命中 1 条就报 ✓ 并把 3 条目标全记进 wantNames）', (() => {
+      const one = parseSummary('ℹ tests 6\nℹ pass 5\nℹ fail 1\n✖ 锁X (1ms)\n');
+      const v = verdict(one, parseSummary(clean), ['锁X', '锁Y', '锁Z']);
+      return v.ok === false && v.state === 'product' && /3 条目标锁改前不红/.test(v.why);
+    })()],
+    ['解析不到汇总时不许凭空造出"改后 0 红 = 全绿"', (() => {
+      const red = parseSummary('ℹ tests 3\nℹ pass 0\nℹ fail 3\n✖ B28 x (1ms)\n✖ B29 y (1ms)\n✖ B60 z (1ms)\n');
+      const v = verdict(red, { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false }, ['B28']);
+      return v.ok === false && v.state === 'env' && /没跑到/.test(v.why);
+    })()],
+    ['--tests 越出仓库必须拒；能折回仓库内的要先归一（旧版 `../…/AGENTS.md` 会让 copy 目标解析回主树）', (() => {
+      const okPath = scopeFiles('tests/regression-20260919c.test.js');
+      const norm = scopeFiles('../全网情报系统/AGENTS.md');
+      const esc = scopeFiles('../../outside/x.test.js');
+      const abs = scopeFiles('D:/Windows/win.ini');
+      return okPath.files[0] === 'tests/regression-20260919c.test.js'
+        && norm.files && norm.files[0] === 'AGENTS.md'
+        && !!esc.error && !!abs.error;
+    })()],
     ['证据里的 worktree 绝对路径折成仓库相对（含 Node 报出的双反斜杠形态）', (() => {
       const r = relMissing({ missingOwn: ['D:\\\\.wt-1\\\\tools\\\\x.cjs', '../tools/y.cjs', '../lib/foo'] }, 'D:\\.wt-1');
       return r.missingOwn[0] === 'tools/x.cjs' && r.missingOwn[1] === '../tools/y.cjs' && r.missingOwn[2] === '../lib/foo';
@@ -347,5 +418,5 @@ if (require.main === module) {
 
 module.exports = {
   parseSummary, verdict, git, runTestFiles,
-  testNamesIn, lockIntroCommit, lockIntros, isAncestor, baseIsStale, suggestBase, rxEscape,
+  testNamesIn, lockIntroCommit, lockIntros, isAncestor, baseIsStale, suggestBase, rxEscape, scopeFiles, repoRel,
 };

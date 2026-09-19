@@ -147,6 +147,18 @@ def run_pipeline(golden: dict[str, Any], *, use_judge: bool, timeout: int) -> di
     }
 
 
+def exit_code_of(rep: dict[str, Any]) -> int:
+    """0=真验过且无解析错；1=有解析错（产品/契约问题）；2=什么都没评到（fail_env，视为未评测）。
+
+    旧写法 `return 1 if errors else 0` 的空 golden 轮次会退 0 —— "没测"和"测过没问题"必须可区分（坑 #43 同族）。
+    """
+    if rep.get("errors"):
+        return 1
+    if not rep.get("n_products"):
+        return 2
+    return 0
+
+
 def latest_golden() -> Path | None:
     if not OUT_DIR.exists():
         return None
@@ -163,7 +175,22 @@ def self_test() -> int:
     probes.append(("stub 跑出来的报告必须标 counts_as_judgment=False", rep["counts_as_judgment"] is False))
     probes.append(("stub 轮次不产生均值（均值只统计真评）", rep["mean_score"] is None and rep["n_judged"] == 0))
     probes.append(("无参照物的样本不进事实轴计分母", rep["products"][0]["counted_axes"] and "factual_correctness" not in rep["products"][0]["counted_axes"]))
-    probes.append(("管线出错要进 errors 而不是静默丢样本", isinstance(rep["errors"], list)))
+    # 出错路径用真行为验：要真评但没凭据 → judge_once 抛错 → 必须落进 errors、不许静默丢样本、也不许退化成 stub。
+    # 先把凭据摘掉再跑：自检**绝不能**真打模型（会花 AI 配额，BL8/坑 #A1 就是这个原因）
+    saved = {k: os.environ.pop(k, None) for k in ("AGNES_API_KEY", "AGNES_MODEL", "AGNES_JUDGE_MODEL")}
+    try:
+        no_cred = run_pipeline(fake, use_judge=True, timeout=5)
+    finally:
+        for k, v in saved.items():
+            if v is not None:
+                os.environ[k] = v
+    probes.append(("管线出错要进 errors 而不是静默丢样本",
+                   len(no_cred["errors"]) == 1 and len(no_cred["products"]) == 0 and no_cred["counts_as_judgment"] is False))
+    probes.append(("自检不许真打模型（摘掉凭据后必须走异常分支而不是网络）",
+                   "AGNES_API_KEY" not in os.environ and bool(no_cred["errors"][0]["error"])))
+    probes.append(("一条产物都没有 → 退出码属未评测（2），不是成功（0）", exit_code_of({"n_products": 0, "n_judged": 0, "errors": []}) == 2))
+    probes.append(("有产物无错 → 0；有解析错 → 1", exit_code_of({"n_products": 3, "n_judged": 3, "errors": []}) == 0
+                   and exit_code_of({"n_products": 3, "n_judged": 3, "errors": [{"id": "x"}]}) == 1))
     probes.append(("权重与阈值随报告落盘（换配置必须可追）", rep["axis_weights"] == AXIS_WEIGHTS and "judge_prompt_version" in rep))
     probes.append(("stub 轮次的告警必须标成 advisory，不许灌进 ISSUES", rep["warnings_advisory"] is True))
     probes.append(("参照物字段清单第一位是线上真实键 content_html（猜错过一次）", REF_FIELDS[0] == "content_html"))
@@ -286,8 +313,9 @@ def main(argv: list[str]) -> int:
         else:
             low = "一致率 " + str(al["rate"]) + " 低于阈值"
             print("趋势未写入：" + (al.get("why") or low))
-    # 退出码只反映"管线有没有出错"，不反映分数高低——分数低走 ISSUES 人工复核，不作唯一门禁（§5.3 第 2 条）
-    return 1 if rep["errors"] else 0
+    # 退出码：没产物=2（未评测，EVAL_GUIDE §9）；有解析错=1；否则 0。
+    # 分数低**不影响退出码** —— LLM 分不作唯一门禁（§5.3 第 2 条），低分走 ISSUES 人工复核。
+    return exit_code_of(rep)
 
 
 def _append_trend(rep: dict[str, Any]) -> None:

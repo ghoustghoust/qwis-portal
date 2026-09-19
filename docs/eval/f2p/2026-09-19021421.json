@@ -1,0 +1,115 @@
+{
+ "at": "2026-09-19T02:14:21.190Z",
+ "baseRef": "f58337f930b6f938285a59b987ea5f27d821fb6a",
+ "headRef": "HEAD",
+ "baseSha": "f58337f930b6f938285a59b987ea5f27d821fb6a",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919d.test.js"
+ ],
+ "wantNames": [
+  "41-3"
+ ],
+ "targets": [
+  "41-3"
+ ],
+ "lockIntros": {
+  "41-3": [
+   "947e753c8fb9119ccb829360347e4d41409b923d"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/f2p/2026-09-19021348.json",
+  "?? docs/eval/f2p/2026-09-19021351.json",
+  "?? docs/eval/f2p/2026-09-19021354.json",
+  "?? docs/eval/f2p/2026-09-19021356.json",
+  "?? docs/eval/f2p/2026-09-19021359.json",
+  "?? docs/eval/f2p/2026-09-19021402.json",
+  "?? docs/eval/f2p/2026-09-19021405.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 57,
+ "base": {
+  "tests": 7,
+  "pass": 0,
+  "fail": 7,
+  "failedNames": [
+   "41-3 取证器：git ref 的 ^ 必须原样送到 git（不经 cmd 解释）",
+   "41-3 判据本身：假锁/环境红/改后仍红 都必须判不过",
+   "41-3 基线守卫：选错基线要判\"基线错\"（退 2），不许长得像\"锁是假的\"（退 1）",
+   "41-3 两种红要分开：裸包名=环境红（不算证据），相对路径=修复新建文件（产品红，算证据）",
+   "41-3 ENOENT 按树内/树外分类，且正则不许跨行造出假路径（坑 #44）",
+   "41-3 判据收紧：逐条目标都要改前红，没跑到/没点名一律判\"未取证\"而不是\"成立\"",
+   "41-3 取证器自检必须全绿（探针数与通过数相等，且不许少于 15 项）"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "tools/eval-f2p.cjs",
+   "../tools/eval-f2p.cjs"
+  ]
+ },
+ "head": {
+  "tests": 7,
+  "pass": 7,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 7 条（1 个目标全中，实指 7 条锁），改后 7 条全绿；改前缺本次修复新建的文件 tools/eval-f2p.cjs, ../tools/eval-f2p.cjs"
+}

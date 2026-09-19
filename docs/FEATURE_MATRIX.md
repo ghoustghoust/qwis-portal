@@ -101,6 +101,11 @@
 **基址与凭据口径**：云端域名只在 `lib/cloud-site.js` 一份（Python 侧由 `tools/eval-content.cjs` 经 `CLOUD_SITE` 传入，不许第二份）；
 报警"有出口/已送达"的判据只在 `lib/alert-channels.js` 一份；密钥永不明文回显，日志与报告只留前 4 后 4 指纹。
 
+> **缺口（AGENTS §3 交付链第 2 步现在无可查对象）**：仓库只有一个 `collect.yml`（`schedule` + `workflow_dispatch`），
+> **没有 push-CI** → 我推 10 次 GitHub 上也不会有一次跑 `npm test`/`lint:docs`，"Actions 是否报错"因此只能查采集批次、查不到代码质量。
+> 补 `.github/workflows/ci.yml`（push/PR 跑 `npm test` + `lint:docs` + `eval:whitebox`，node 单版本、无 secrets）是一行决定，
+> 但会消耗 Hobby 免费 Actions 分钟数 → **等用户点头再加**（B70 之外单列，因为它是流程缺口不是代码缺陷）。
+
 ---
 
 ## 2. 待开发目标（按优先级）

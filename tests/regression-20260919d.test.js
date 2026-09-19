@@ -386,6 +386,28 @@ test('41-3 ENOENT 按树内/树外分类，且正则不许跨行造出假路径�
     '树外的 ENOENT 才是环境红');
 });
 
+// 对抗性审查（本轮独立 reviewer）查出取证器三条"会自己说谎"的路径，逐条钉住。见坑 #45。
+test('41-3 判据收紧：逐条目标都要改前红，没跑到/没点名一律判"未取证"而不是"成立"（坑 #45）', () => {
+  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
+  const green = parseSummary('ℹ tests 6\nℹ pass 6\nℹ fail 0\n');
+  // ① 旧版：文件里任意一条红就判成立 → 无关老用例的红会被当成本轮锁的证据
+  const unrelated = parseSummary('ℹ tests 6\nℹ pass 1\nℹ fail 5\n✖ 无关老用例 (1ms)\n✖ B (1ms)\n✖ C (1ms)\n✖ D (1ms)\n✖ E (1ms)\n');
+  assert.equal(verdict(unrelated, green, []).ok, false, '没点名目标时不许自证成立');
+  assert.equal(verdict(unrelated, green, []).state, 'env', '这一档属"未取证"，不允许据此删用例');
+  const partial = parseSummary('ℹ tests 6\nℹ pass 5\nℹ fail 1\n✖ 锁X (1ms)\n');
+  const vp = verdict(partial, green, ['锁X', '锁Y', '锁Z']);
+  assert.equal(vp.ok, false, '三条目标只红一条不许判成立（旧版命中 1 条就报 ✓）');
+  assert.equal(vp.state, 'product', '这里才是"锁抓不到 bug"，允许按 §6 处理');
+  assert.match(vp.why, /2\/3 条目标锁改前不红/);
+  // ② 旧版 head 解析失败时兜底成 0 红 → "改后 0 条全绿"是无中生有
+  const vh = verdict(unrelated, { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false }, ['无关老用例']);
+  assert.equal(vh.ok, false, '一条都没跑到不许记成"改后全绿"');
+  assert.equal(vh.state, 'env');
+  // ③ 全中才算成立
+  const all3 = parseSummary('ℹ tests 6\nℹ pass 3\nℹ fail 3\n✖ 锁X (1ms)\n✖ 锁Y (1ms)\n✖ 锁Z (1ms)\n');
+  assert.equal(verdict(all3, green, ['锁X', '锁Y', '锁Z']).state, 'ok');
+});
+
 // 自检项数不写死在文档里（写死就会漂）：这里只钉"必须全绿"，数量由工具自己报
 test('41-3 取证器自检必须全绿（探针数与通过数相等，且不许少于 15 项）', () => {
   const { execFileSync } = require('node:child_process');

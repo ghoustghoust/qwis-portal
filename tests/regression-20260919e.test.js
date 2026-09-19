@@ -90,10 +90,16 @@ test('B65-2 巡检脚本被 require 时不得自动打云端（模块级副作�
   assert.equal(typeof m.verdictToResult, 'function');
 });
 
-test('B65-3 巡检必须有诚实退出码：有失败即非 0，否则进不了任何门禁', () => {
-  const src = fs.readFileSync(path.join(ROOT, 'tools/audit-cloud.js'), 'utf8');
-  assert.match(src, /process\.exitCode = fail \? 1 : 0/, '退出码判据缺失或改写，请同步本锁');
-  assert.match(src, /未验收 \$\{skip\}/, '汇总行必须把"未验收"单列，不许混进"通过"');
+test('B65-3 巡检计数与退出码是行为，不是源码字面量（对抗性审查 I8 后重写）', () => {
+  const { tally, exitCodeOf } = require('../tools/audit-cloud.js');
+  assert.deepEqual(tally([{ pass: true, skip: '' }, { pass: false, skip: '', note: '失败理由' }, { pass: false, skip: '未验' }]),
+    { pass: 1, fail: 1, skip: 1, total: 3 }, '三种状态必须各归各的账');
+  assert.equal(exitCodeOf(tally([{ pass: true, skip: '' }])), 0, '有真通过且无失败 → 0');
+  assert.equal(exitCodeOf(tally([{ pass: false, skip: '', note: 'x' }])), 1, '有失败 → 1');
+  // 这一条就是审查指出的洞：判据大面积退化成 SKIP 时，旧实现照样退 0
+  assert.equal(exitCodeOf(tally([{ pass: false, skip: '契约不存在' }, { pass: false, skip: '契约不存在' }])), 2,
+    '全 SKIP（等于什么都没验）必须判"未评测"，不许绿灯进门禁');
+  assert.equal(exitCodeOf(tally([])), 2, '一条都没跑到 = 未评测，不是通过');
 });
 
 test('B66-1 巡检不许断言不存在的契约：/api/articles 无 dedup 语义，只能明说未验收', () => {
@@ -117,22 +123,29 @@ test('B66-0 正向探针：巡检的三条判据都对得上实测契约（字�
 // ── B67：报警出口的判据（本轮最贵的一条：P0 的 BL7 在验收门禁里显示绿灯）──
 const PROD_ALERT_CHANNELS = [{ id: 'test-ch', type: 'webhook', enabled: true, config: { url: 'http://127.0.0.1:1' } }];
 
-test('B67-1 哨兵/回环/坏值渠道一律不算"有出口"（生产实测就是这个形状）', () => {
+test('B67-1 哨兵/回环/内网/元数据/坏值渠道一律不算"有出口"（生产实测就是这个形状）', () => {
   const { isRealEndpointUrl, usableChannels } = require('../lib/alert-channels');
   assert.deepEqual(usableChannels(PROD_ALERT_CHANNELS), [],
     '生产库现况：唯一渠道是 test-ch → http://127.0.0.1:1，必须判"无出口"（BL7 不得在门禁里显示绿灯）');
   for (const bad of ['http://127.0.0.1:1', 'https://localhost/hook', 'http://[::1]:9/wh', 'http://127.0.0.1:53/x',
-    'undefined', 'null', '', 'http://', 'ftp://open.feishu.cn/x']) {
+    'undefined', 'null', '', 'http://', 'ftp://open.feishu.cn/x',
+    // 对抗性审查实测：这一组旧实现全判 true（配个内网地址就能骗过"有出口"判据）
+    'http://10.0.0.5:9000/hook', 'http://192.168.1.7:8080/hook', 'http://172.16.0.9/hook',
+    'http://169.254.169.254/latest/meta-data', 'http://metadata.google.internal/x',
+    'https://alerts.internal/hook', 'https://[fd00::12:34]:8443/hook',
+    'http://admin:s3cr3t@hooks.slack.com/services/T00/B00/XXX']) {
     assert.equal(isRealEndpointUrl(bad), false, `不该算出口：${bad}`);
   }
   assert.equal(isRealEndpointUrl(undefined), false, 'null/undefined 不许当通过');
+  assert.equal(isRealEndpointUrl('http://8.8.8.8/hook'), false, '裸 IP 也不给过（本项目的 webhook 从不长这样，放行只会掩盖坏配置）');
 });
 
 test('B67-0 正向探针：真公网 webhook 必须算有出口（防判据写成"永远红"）', () => {
   const { isRealEndpointUrl, usableChannels } = require('../lib/alert-channels');
   for (const good of ['https://open.feishu.cn/open-apis/bot/v2/hook/aaaa-bbbb',
     'https://oapi.dingtalk.com/robot/send?access_token=xxx',
-    'https://hooks.slack.com/services/T00/B00/XXX']) {
+    'https://hooks.slack.com/services/T00/B00/XXX',
+    'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abc']) {
     assert.equal(isRealEndpointUrl(good), true, `该算出口：${good}`);
   }
   const chans = [{ id: 'feishu-1', enabled: true, config: { url: 'https://open.feishu.cn/open-apis/bot/v2/hook/x' } }];
@@ -141,24 +154,42 @@ test('B67-0 正向探针：真公网 webhook 必须算有出口（防判据写�
     '禁用渠道不许算出口');
 });
 
-test('B67-2 dispatched ≠ delivered：连续投递失败必须判红，无记录只能算未验证', () => {
+test('B67-4 掩码必须到 host 为止：token 在 query、凭据在 userinfo 都不许漏进报告', () => {
+  const { maskEndpointUrl } = require('../lib/alert-channels');
+  const m = maskEndpointUrl('https://oapi.dingtalk.com/robot/send?access_token=SECRET123');
+  assert.equal(m, 'https://oapi.dingtalk.com/…', '掩码结果：' + m);
+  assert.ok(!/SECRET123/.test(m));
+  const ui = maskEndpointUrl('http://admin:passw0rd@hooks.example.com/x');
+  assert.ok(!/admin|passw0rd/.test(ui), 'userinfo 漏进掩码结果：' + ui);
+  assert.equal(maskEndpointUrl('undefined'), '(不可解析)');
+});
+
+test('B67-2 dispatched ≠ delivered：最新一条决定状态，老成功不许掩盖新断链', () => {
   const { deliveryState } = require('../lib/alert-channels');
   const now = Date.parse('2026-09-18T00:00:00.000Z');
   const failing = [{ at: '2026-09-17T08:34:24.125Z', event: 'source_error', results: [{ channel: 'TEST', ok: false, error: 'fetch failed' }] }];
   const d1 = deliveryState(failing, 7 * 864e5, now);
   assert.equal(d1.state, 'failing', '生产实测形状（全链 fetch failed）必须判 failing');
   assert.match(d1.detail, /fetch failed/);
+  // 审查指出的洞：9-16 成功过一次、9-17 起全断 → 旧实现按"7 天内有成功"判 ok
+  const masked = [
+    { at: '2026-09-16T10:00:00.000Z', results: [{ channel: 'feishu', ok: true }] },
+    { at: '2026-09-17T08:34:24.125Z', results: [{ channel: 'feishu', ok: false, error: 'fetch failed' }] },
+  ];
+  assert.equal(deliveryState(masked, 7 * 864e5, now).state, 'failing', '最新一条失败必须判 failing，历史成功只作附注');
   assert.equal(deliveryState([], 7 * 864e5, now).state, 'unknown', '没有投递记录不许算"已验证"');
   assert.equal(deliveryState(failing, 7 * 864e5, Date.parse('2026-12-01T00:00:00Z')).state, 'unknown',
     '窗口外的旧记录不算近期证据');
+  assert.equal(deliveryState([{ at: '2099-01-01T00:00:00Z', results: [{ ok: true }] }], 7 * 864e5, now).state, 'broken',
+    '未来时间戳是坏数据，必须点名而不是当成"刚送达"');
+  assert.equal(deliveryState([{ at: '昨天', results: [{ ok: true }] }], 7 * 864e5, now).state, 'broken',
+    '时间戳解析失败要报"坏数据"，不许静默过滤成"无记录"');
   assert.equal(deliveryState([{ at: '2026-09-17T08:34:24.125Z', results: [{ channel: 'feishu', ok: true }] }], 7 * 864e5, now).state, 'ok');
 });
 
-test('B67-3 preflight 必须引用共享判据，且报告里不许出现完整 webhook 地址', () => {
+test('B67-3 preflight 必须引用共享判据（唯一的接线契约，其余都按行为测）', () => {
   const src = fs.readFileSync(path.join(ROOT, 'tools/eval-preflight.cjs'), 'utf8');
   assert.match(src, /require\(['"]\.\.\/lib\/alert-channels['"]\)/, '报警出口判据必须来自 lib/alert-channels.js（唯一实现）');
+  assert.match(src, /maskEndpointUrl\(/, '掩码必须走共享实现，不许在调用方各写一份正则（本轮审查发现旧正则会漏 userinfo）');
   assert.doesNotMatch(src, /startsWith\('http'\)\)/, '又写回 `url.startsWith("http")` 这种宽判据了：哨兵渠道会把它变绿灯');
-  // 掩码：报告与终端只许出现 scheme://host —— 飞书/钉钉 webhook 的 token 就在 path/query 里
-  assert.ok(src.includes("'$1/…'"), '缺少 webhook 掩码：完整回调地址会落进终端输出与 --json 报告');
-  assert.doesNotMatch(src, /\.slice\(0, 40\)/, '不许用截断长度冒充掩码（前 40 字符仍可能含 token）');
 });

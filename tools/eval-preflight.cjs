@@ -97,15 +97,15 @@ async function probeJson(url, ms = 8000) {
     // 判据在 lib/alert-channels.js（唯一实现）。原先这里写的是
     // `enabled && url.startsWith('http')`，于是生产库里那个 url=http://127.0.0.1:1 的 test-ch
     // 被判成「1 个可用渠道」，把 P0 的 BL7（报警无出口）在门禁里显示成绿灯。见坑 #43。
-    const { usableChannels, deliveryState } = require('../lib/alert-channels');
+    const { usableChannels, deliveryState, maskEndpointUrl } = require('../lib/alert-channels');
     const usable = usableChannels(chans);
     add('config:报警渠道有真实出口', usable.length > 0, 'config',
       usable.length ? `${usable.length} 个可用渠道（${usable.map((c) => c.id).join(', ')}）`
-        // 只印 scheme://host，路径与 query 一律不落进终端/报告 JSON —— 飞书/钉钉 webhook 的 token 就在里面
-        : `channels=${JSON.stringify(chans.map((c) => `${c.id}:${String((c.config || {}).url || '').replace(/^(https?:\/\/[^/]+).*/i, '$1/…')}`))} —— 报警链路无出口（BL7）。恢复：node tools/sync-alerts-config.js --force`);
+        // 只印 scheme://host[:port]/…：用 URL 解析而非正则截断，避免把 userinfo/query（token 常在里面）漏进报告
+        : `channels=${JSON.stringify(chans.map((c) => `${c.id}:${maskEndpointUrl((c.config || {}).url || c.url)}`))} —— 报警链路无出口（BL7）。恢复：node tools/sync-alerts-config.js --force`);
     const dv = deliveryState(al.recentLog);
     add('config:最近报警真的送达', dv.state === 'ok', 'config',
-      `${dv.state === 'ok' ? '' : dv.state === 'unknown' ? '未验证：' : '送达失败：'}${dv.detail}（dispatched ≠ delivered）`);
+      `${dv.state === 'ok' ? '' : dv.state + '：'}${dv.detail}（dispatched ≠ delivered）`);
     const mi = Number(await get('ai.minIntervalMs'));
     add('config:AI 限速保护开启', Number.isFinite(mi) && mi >= 1000, 'config',
       `ai.minIntervalMs=${await get('ai.minIntervalMs')}（应 ≥1000，runner 默认 4000；0 = 无间隔硬打免费池，BL8）`);

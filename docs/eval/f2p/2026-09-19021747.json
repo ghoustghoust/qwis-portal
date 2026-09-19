@@ -1,0 +1,134 @@
+{
+ "at": "2026-09-19T02:17:47.286Z",
+ "baseRef": "947e753c8fb9119ccb829360347e4d41409b923d",
+ "headRef": "HEAD",
+ "baseSha": "947e753c8fb9119ccb829360347e4d41409b923d",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919e.test.js"
+ ],
+ "wantNames": [
+  "B64-",
+  "B65-",
+  "B66-",
+  "B67-"
+ ],
+ "targets": [
+  "B64-",
+  "B65-",
+  "B66-",
+  "B67-"
+ ],
+ "lockIntros": {
+  "B64-": [
+   "a3ad46fe89d51b53b4f71de39644ff938569d6e6"
+  ],
+  "B65-": [
+   "a3ad46fe89d51b53b4f71de39644ff938569d6e6"
+  ],
+  "B66-": [
+   "a3ad46fe89d51b53b4f71de39644ff938569d6e6"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/f2p/2026-09-19021348.json",
+  "?? docs/eval/f2p/2026-09-19021351.json",
+  "?? docs/eval/f2p/2026-09-19021354.json",
+  "?? docs/eval/f2p/2026-09-19021356.json",
+  "?? docs/eval/f2p/2026-09-19021359.json",
+  "?? docs/eval/f2p/2026-09-19021402.json",
+  "?? docs/eval/f2p/2026-09-19021405.json",
+  "?? docs/eval/f2p/2026-09-19021421.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 58,
+ "base": {
+  "tests": 13,
+  "pass": 0,
+  "fail": 13,
+  "failedNames": [
+   "B64-0 正向探针：云端基址确有唯一实现，且与权威文档同源",
+   "B64-1 云端基址全库一份：活代码里写死第二份必然漂（audit-cloud 已漂到 404 域名 8 天）",
+   "B64-2 巡检脚本必须走共享基址，历史死域名 qwis-portal 不许再出现在活代码里",
+   "B65-1 巡检判据：check 返回字符串是\"失败理由\"，不是\"通过的附注\"（坑 #43）",
+   "B65-2 巡检脚本被 require 时不得自动打云端（模块级副作用会污染测试进程）",
+   "B65-3 巡检计数与退出码是行为，不是源码字面量（对抗性审查 I8 后重写）",
+   "B66-1 巡检不许断言不存在的契约：/api/articles 无 dedup 语义，只能明说未验收",
+   "B66-0 正向探针：巡检的三条判据都对得上实测契约（字段名/状态码不是猜的）",
+   "B67-1 哨兵/回环/内网/元数据/坏值渠道一律不算\"有出口\"（生产实测就是这个形状）",
+   "B67-0 正向探针：真公网 webhook 必须算有出口（防判据写成\"永远红\"）",
+   "B67-4 掩码必须到 host 为止：token 在 query、凭据在 userinfo 都不许漏进报告",
+   "B67-2 dispatched ≠ delivered：最新一条决定状态，老成功不许掩盖新断链",
+   "B67-3 preflight 必须引用共享判据（唯一的接线契约，其余都按行为测）"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/cloud-site",
+   "../lib/alert-channels"
+  ]
+ },
+ "head": {
+  "tests": 13,
+  "pass": 13,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 13 条（4 个目标全中，实指 13 条锁），改后 13 条全绿；改前缺本次修复新建的文件 ../lib/cloud-site, ../lib/alert-channels"
+}

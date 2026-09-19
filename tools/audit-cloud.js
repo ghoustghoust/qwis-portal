@@ -61,17 +61,25 @@ async function main() {
   await probe('静态快照兜底', '/data/meta.json', (r) => r.ok);
 
   console.log('\n=== 云端巡检结果 ===');
-  let pass = 0, fail = 0, skip = 0;
+  const t = tally(results);
   for (const r of results) {
     const mark = r.skip ? '⏭ ' : r.pass ? '✅' : '❌';
     console.log(`${mark} ${r.name.padEnd(14)} ${String(r.status).padEnd(4)} ${r.ms}ms ${r.note || r.skip}`);
-    if (r.skip) skip++; else if (r.pass) pass++; else fail++;
   }
-  console.log(`\n通过 ${pass}、失败 ${fail}、未验收 ${skip}（共 ${results.length}）`);
-  // 退出码必须诚实：有失败就非 0，否则这支脚本没法进任何门禁（check_exit_code_honest 同源要求）
-  process.exitCode = fail ? 1 : 0;
+  console.log(`\n通过 ${t.pass}、失败 ${t.fail}、未验收 ${t.skip}（共 ${t.total}）`);
+  // 退出码诚实：有失败=1；一条都没真验（全 SKIP / 空结果）=2（未评测），只有真有通过才 0
+  process.exitCode = exitCodeOf(t);
 }
+// 计数与退出码单独成函数：B65-3 原来只 grep 源码字面量（等价重构即假红、字面量在而逻辑坏则假绿），
+// 这里把它变成可测行为（对抗性审查 I8：全 SKIP 也不能退 0）
+function tally(results) {
+  let pass = 0, fail = 0, skip = 0;
+  for (const r of results || []) { if (r.skip) skip++; else if (r.pass) pass++; else fail++; }
+  return { pass, fail, skip, total: (results || []).length };
+}
+function exitCodeOf(t) { return t.fail ? 1 : (t.total === 0 || t.skip === t.total ? 2 : 0); }
+
 // 被 require 时不许自动打云端（本轮在 eval-process-checks 上刚踩过同一形态：模块级副作用会污染测试进程）
 if (require.main === module) main();
 
-module.exports = { verdictToResult, BASE };
+module.exports = { verdictToResult, tally, exitCodeOf, BASE };

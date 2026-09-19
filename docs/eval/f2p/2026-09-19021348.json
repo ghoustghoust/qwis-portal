@@ -1,0 +1,131 @@
+{
+ "at": "2026-09-19T02:13:48.698Z",
+ "baseRef": "4f87120e27894158b78d2793e8964eb42347d3d5",
+ "headRef": "HEAD",
+ "baseSha": "4f87120e27894158b78d2793e8964eb42347d3d5",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919b.test.js"
+ ],
+ "wantNames": [
+  "B27",
+  "B28",
+  "B29",
+  "B47",
+  "B48",
+  "B22"
+ ],
+ "targets": [
+  "B27",
+  "B28",
+  "B29",
+  "B47",
+  "B48",
+  "B22"
+ ],
+ "lockIntros": {
+  "B27": [
+   "44073deaefe73a08c834b5b4bb657e2424526a21"
+  ],
+  "B28": [
+   "44073deaefe73a08c834b5b4bb657e2424526a21"
+  ],
+  "B29": [
+   "5aa8118d942942532c9e4a634817ab6201d7cc70"
+  ],
+  "B47": [
+   "44073deaefe73a08c834b5b4bb657e2424526a21"
+  ],
+  "B48": [
+   "44073deaefe73a08c834b5b4bb657e2424526a21"
+  ],
+  "B22": [
+   "44073deaefe73a08c834b5b4bb657e2424526a21"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 50,
+ "base": {
+  "tests": 6,
+  "pass": 0,
+  "fail": 6,
+  "failedNames": [
+   "B27: 云端 /api/reading 两条路径都必须产出 date 别名",
+   "B28: 云端 /api/reading 的 tabCond 必须被括号包住，否则类型条件被 OR 吞掉",
+   "B29: 阅读页类型口径必须含 wemp，且播客不再按 douyin 判定",
+   "B22: index.css 必须定义 t-success/t-warn/t-danger 与三主题 --warn",
+   "B47: MonitorTab 必须读 queueStats.overall（后端返回 {overall,byType}）",
+   "B48: AlertsTab 不得再把全角括号写成 JSX 文本转义"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/reading-filters"
+  ]
+ },
+ "head": {
+  "tests": 6,
+  "pass": 6,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 6 条（6 个目标全中，实指 6 条锁），改后 6 条全绿；改前缺本次修复新建的文件 ../lib/reading-filters"
+}

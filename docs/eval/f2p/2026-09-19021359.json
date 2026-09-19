@@ -1,0 +1,127 @@
+{
+ "at": "2026-09-19T02:13:59.737Z",
+ "baseRef": "82a33d0122fdfa8ab4a4a6dae614107f90ab9a1c",
+ "headRef": "HEAD",
+ "baseSha": "82a33d0122fdfa8ab4a4a6dae614107f90ab9a1c",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919d.test.js"
+ ],
+ "wantNames": [
+  "B54-",
+  "B56-",
+  "B58-",
+  "B51-"
+ ],
+ "targets": [
+  "B54-",
+  "B56-",
+  "B58-",
+  "B51-"
+ ],
+ "lockIntros": {
+  "B54-": [
+   "c648ef88115b84b454afdc15191906e34a051c45"
+  ],
+  "B56-": [
+   "09482e957de0f7a96db38d452fe2c6f62b8432b6"
+  ],
+  "B58-": [
+   "09482e957de0f7a96db38d452fe2c6f62b8432b6"
+  ],
+  "B51-": [
+   "09482e957de0f7a96db38d452fe2c6f62b8432b6"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/f2p/2026-09-19021348.json",
+  "?? docs/eval/f2p/2026-09-19021351.json",
+  "?? docs/eval/f2p/2026-09-19021354.json",
+  "?? docs/eval/f2p/2026-09-19021356.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 54,
+ "base": {
+  "tests": 12,
+  "pass": 4,
+  "fail": 8,
+  "failedNames": [
+   "B54-1 保留天数必须有独立保存通道，且不再依赖清理成功",
+   "B54-2 保存入口不受\"有没有可删内容\"限制",
+   "B51-1 假开关、假统计、假流程折叠必须摘除",
+   "B51-2 两端不得再有 ai.features 的读写面（没有行为就不要有持久化）",
+   "B58-1 分类映射常量只许有一份实现（lib），前端不得再抄一份默认表",
+   "B58-2 云端必须把生效映射与来源一起返回，前端不得静默降级",
+   "B56-1 两端必须用布尔声明文件快照能力，不能只写给人看的 note",
+   "B56-2 不支持时不得再出现「暂无快照」，动作按钮必须禁用"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/hot-categories"
+  ]
+ },
+ "head": {
+  "tests": 12,
+  "pass": 12,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 8 条（4 个目标全中，实指 8 条锁），改后 12 条全绿；改前缺本次修复新建的文件 ../lib/hot-categories"
+}

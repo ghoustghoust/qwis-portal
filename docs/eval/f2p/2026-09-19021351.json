@@ -1,0 +1,114 @@
+{
+ "at": "2026-09-19T02:13:51.501Z",
+ "baseRef": "44073deaefe73a08c834b5b4bb657e2424526a21",
+ "headRef": "HEAD",
+ "baseSha": "44073deaefe73a08c834b5b4bb657e2424526a21",
+ "headSha": "630f0477bdbdb7a61ec7df1a3f0215e2466f0362",
+ "files": [
+  "tests/regression-20260919c.test.js"
+ ],
+ "wantNames": [
+  "B60-",
+  "B61"
+ ],
+ "targets": [
+  "B60-",
+  "B61"
+ ],
+ "lockIntros": {
+  "B60-": [
+   "5aa8118d942942532c9e4a634817ab6201d7cc70"
+  ],
+  "B61": [
+   "5aa8118d942942532c9e4a634817ab6201d7cc70"
+  ]
+ },
+ "headDirty": [
+  "M archive/_eval/wechat-rss-plus",
+  " D docs/eval/f2p/2026-09-18225110.json",
+  " D docs/eval/f2p/2026-09-18232824.json",
+  " D docs/eval/f2p/2026-09-18232954.json",
+  " D docs/eval/f2p/2026-09-18233011.json",
+  " D docs/eval/f2p/2026-09-19001119.json",
+  " D docs/eval/f2p/2026-09-19001525.json",
+  " D docs/eval/f2p/2026-09-19002035.json",
+  " D docs/eval/f2p/2026-09-19010106.json",
+  " M lib/alert-channels.js",
+  " M portal",
+  " M server/services/ai/daily-ai.js",
+  " M tests/regression-20260919d.test.js",
+  " M tests/regression-20260919e.test.js",
+  " M tests/regression-20260919f.test.js",
+  " M tools/audit-cloud.js",
+  " M tools/eval-content/run.py",
+  " M tools/eval-f2p.cjs",
+  " M tools/eval-preflight.cjs",
+  " M web/src/pages/AdminPage.jsx",
+  " M web/src/pages/DailyPage.jsx",
+  "?? .mybrief-tmp.json",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/f2p/2026-09-19021348.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tools/_diag-thin-body-all.cjs",
+  "?? tools/_diag-thin-body.cjs",
+  "?? tools/_ops-revert-podcast-interval.cjs"
+ ],
+ "headDirtyCount": 51,
+ "base": {
+  "tests": 8,
+  "pass": 0,
+  "fail": 8,
+  "failedNames": [
+   "B60-1 单一实现：article 口径必须含 wemp（869 篇公众号此前不进计数）",
+   "B60-2 列表与计数同源：计数表达式必须由列表条件导出，不许再手写第二份",
+   "B60-3 播客不再按 source type 猜（s.type=douyin 是错的），且定义只有 lib/media 一份",
+   "B60-4 两端必须接入共享实现，且不得内联 type 谓词副本",
+   "B60-5 JS↔SQL 一致性锁：detectAudioUrl 与 audioCoverSql 对同一批封面 URL 判定必须相同",
+   "B60-6 真实数据回归：隔离库上 article 计数不再漏 wemp 源",
+   "B61 音频封面特征全库唯一（只允许 lib/media.js 持有）",
+   "B60-7 端到端一致性：本地 /api/reading 的 counts 与列表实际条数对得上"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/reading-filters"
+  ]
+ },
+ "head": {
+  "tests": 8,
+  "pass": 8,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 8 条（2 个目标全中，实指 8 条锁），改后 8 条全绿；改前缺本次修复新建的文件 ../lib/reading-filters"
+}

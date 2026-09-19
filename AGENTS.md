@@ -45,8 +45,11 @@
   6. `npm run eval:whitebox` 全过（W1~W10：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
   7. `npm run eval:process` 全过（这次评测运行可不可信：截图/报告/断言数/占位文案/证据路径/退出码/参数出处；任一不过判 `fail_env`，不算通过也不算产品失败）
   8. 云端实测：按 `docs/DELIVERY_VERIFICATION.md` 打真实线上端点，curl/截图才算证据；**只有在第 5 条判「线上一致」时才算数**
-  9. F2P：本轮每条修复出 `npm run eval:f2p -- --auto-base --tests <锁文件>`（基线由锁的引入提交反查，不靠人记 sha），证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）。**退出码 2 是"基线选错"不是"锁假了"，此时修基线、禁止删用例**（坑 #41）
+  9. F2P：本轮每条修复出 `npm run eval:f2p -- --auto-base --tests <锁文件> --cases <本轮锁名前缀>`（基线由锁的引入提交反查，**必须逐条点名**——"文件里有红"不算证据，坑 #45），证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）。**退出码 1=锁假了（可删/重写），2=未评测（基线错、没跑到、没点名）只许修输入，禁止删用例**（坑 #41/#45）
   10. `npm run eval:content`（41-8，✅ 已交付：三层自检 `--self-test` 必须全绿；真评需 `--judge` 且人工对齐够 3 条产物才写趋势；stub 轮次不算已验收）+ `npm run eval:e2e`（41-2，待建）——端到端未就位前，"页面真的对用户生效"仍靠人工实测兜底，须如实记为未验收
+- **固定交付链（一轮都不许跳，用户 2026-09-19 重申）**：
+  改完 → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`collect.yml` 最近批次无红且本 commit 的 job 日志无新报错（⚠️ 当前**没有 push-CI**，`npm test`/`lint:docs` 只在本地跑；要"Actions 报不报错"成为可检查项需补 `.github/workflows/ci.yml`，见 FEATURE_MATRIX §1.5 末行）→ **Vercel 真实云端实测**（先 `/api/meta` 的 `commit == origin/main`，再打端点/截图）→ **冒烟测试 `node smoke-test.js`** → **对抗性审查**（不能只靠自己复查：至少一个独立 reviewer 看这批改动，见坑 #45 第⑤条）→ **白盒评测 `npm run eval:whitebox`** → **端到端评测 `npm run eval:e2e`**（41-2 未就位时须显式记为未做）→ **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号 / spec 状态），最后 `npm run lint:docs` 收口。
+  跳过其中任何一步都必须在交付说明里写明"没做"及原因（本轮就发生过：漏跑 `smoke-test.js`、文档未同步 FEATURE_MATRIX 就被用户问出来）。
 - 每个线上修过的 bug 必须有回归测试
 
 ## 4. 常用入口

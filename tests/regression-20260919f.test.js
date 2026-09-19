@@ -50,11 +50,13 @@ test('41-8 Python 侧自检必须全绿（探针数 = 通过数，且不少于 4
   assert.ok(probes >= 40, `自检探针只有 ${probes} 项，覆盖退化（41-8 要求每轴锚定事故 + stub/真评/对齐三类判据）`);
 });
 
-test('41-8 stub 轮次绝不算一次评测：报告必须带 counts_as_judgment=false 与 warnings_advisory=true', () => {
-  if (!fs.existsSync(path.join(ROOT, 'docs/eval/content'))) return; // 还没建 golden 集时不判（宁缺毋假）
-  const reports = fs.readdirSync(path.join(ROOT, 'docs/eval/content')).filter((f) => /^report-.*\.json$/.test(f)).sort();
-  if (!reports.length) return;
-  const rep = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/eval/content', reports[reports.length - 1]), 'utf8'));
+test('41-8 stub 轮次绝不算一次评测：报告必须带 counts_as_judgment=false 与 warnings_advisory=true', (t) => {
+  const dir = path.join(ROOT, 'docs', 'eval', 'content');
+  // 缺产物是 fail_env（还没建 golden），必须显式 skip；旧写法是 `return` —— 没断言也判通过（对抗性审查 I7）
+  if (!fs.existsSync(dir)) { t.skip('还没建 golden/报告，属 fail_env（未评测），不算通过'); return; }
+  const reports = fs.readdirSync(dir).filter((f) => /^report-.*\.json$/.test(f)).sort();
+  if (!reports.length) { t.skip('docs/eval/content 下没有 report-*.json，属 fail_env'); return; }
+  const rep = JSON.parse(fs.readFileSync(path.join(dir, reports[reports.length - 1]), 'utf8'));
   if (rep.counts_as_judgment === true) {
     assert.ok(rep.alignment && rep.alignment.usable === true, '真评轮次必须带可用的人工对齐证据才能算数（§5.3 第 5 条）');
     return;
