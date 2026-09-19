@@ -26,7 +26,7 @@
 | L2 构建 | `npm run build:vercel` | 前端可构建、静态资源齐 | 已有 |
 | L3 云端实测 | `docs/DELIVERY_VERIFICATION.md` 流程 | 端点活着、SHA 已上线 | 已有（人工） |
 | **L4a 端到端评测** | `npm run eval:e2e` | **页面与交互真的对用户生效** | 本文 §3，**41-2 已交付**（`tools/eval-e2e.cjs`，10 条剧本 / 自检 44 项 / 首轮就抓到 B71 裸 key） |
-| **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，W1~W10 已落地 |
+| **L4b 白盒评测** | `npm run eval:whitebox` | **三端一致 + 不变量成立** | 本文 §4，W1~W11 已落地 |
 | **L4b' 过程检查** | `npm run eval:process` | **这次运行到底可不可信**（截图/报告/断言数/占位文案/证据路径/退出码/参数出处） | 本文 §3.6，`tools/eval-process-checks.cjs` 已落地 |
 | **L4c 内容质量评测** | `npm run eval:content` | **AI 产物本身好不好读、可不可信** | 本文 §5，41-8 已交付（未 `--judge` 时只出产物采集与人工对齐，不冒充评分） |
 | L5 文档门禁 | `npm run lint:docs` | 文档不腐烂、无悬空、无明文密钥 | 已有 |
@@ -134,7 +134,12 @@
 
 > W10 的元教训：**"注释里写了'与 X 同口径'不算同口径"**。`api/[...slug].js:273` 就带着
 > `// lib/media.js 同口径` 的注释，而两份实现事实上不同。只有可执行的引用（require 同一个函数）才算。
-> 新增检查器必须做**负向验证**：手工塞入一份漂移副本，确认它会红；没红就是假门禁。
+
+| **W11 独立入口的 Provider 完整性** | 对每个 Vite 入口做**模块图闭包**：图里任何文件调了 `useI18n()`/`useTheme()`，入口自己就必须挂 `<LanguageProvider>`/`<ThemeProvider>`。缺则红——Hook 拿到的会是 `createContext` 的兜底值（`t:(k)=>k`），界面静默显示裸 key | B71（后台登录门五个文案显示 `login.title/username/password/submit`，端到端首轮抓到） |
+
+> W11 的元教训：**只查入口文件本身永远抓不到**。`AdminPage` 自己不 import i18n，用它的是底下的 `LoginModal`——
+> 所以判据必须走引用图，而不是 grep 入口。第一版按"入口里有没有 LanguageProvider 字样"写，是假绿。
+> 两类检查器一样：新增检查器必须做**负向验证**（手工塞入漂移副本 / 删掉守卫，确认它会红），没红就是假门禁。
 
 ### 4.1 断言也要负向自证（同一规则适用于回归测试本身）
 

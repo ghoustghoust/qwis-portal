@@ -53,14 +53,16 @@ test('G3 eval-whitebox 必须有 W11 入口 Provider 检查且当前全过', () 
 // ── G4/G5/G6 端到端引擎自身 ──
 const e2e = require('../tools/eval-e2e.cjs');
 
-test('G4 端到端引擎自检必须全绿（判据坏了就等于整轮结果不可信）', () => {
+// 坑 #46~#49 的回归锁就落在本文件：#46→G4/G5（对账对象与出处表）、#47→G5/G6（选择器与覆盖表）、
+// #48→G8（按参数等响应）、#49→G9（晚到响应守卫）。W9 门禁要求坑编号必须被测试引用。
+test('G4 端到端引擎自检必须全绿（判据坏了就等于整轮结果不可信；坑 #46）', () => {
   const out = execFileSync(process.execPath, ['tools/eval-e2e.cjs', '--self-test'], { cwd: ROOT, encoding: 'utf8' });
   const m = /自检：(\d+)\/(\d+) 通过/.exec(out);
   assert.ok(m, '没打印自检计数：\n' + out.slice(-500));
   assert.strictEqual(m[1], m[2], '端到端引擎自检未全绿：\n' + out);
 });
 
-test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"出处是编的"）', () => {
+test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"出处是编的"；坑 #46/#47）', () => {
   const table = Object.assign({}, e2e.SRC, e2e.QUERY_SRC);
   const bad = [];
   for (const [k, v] of Object.entries(table)) {
@@ -81,7 +83,7 @@ test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"�
   assert.deepStrictEqual(bad, [], '参数出处表有问题：\n' + bad.join('\n'));
 });
 
-test('G6 剧本覆盖六个前台页 + 后台登录门，known_gap 必须带 ISSUES 编号', () => {
+test('G6 剧本覆盖六个前台页 + 后台登录门，known_gap 必须带 ISSUES 编号（坑 #47）', () => {
   const ids = e2e.SCENARIOS.map((s) => s.id);
   assert.ok(ids.length >= 10, `剧本数 ${ids.length}，比建成的覆盖面少了（删剧本逃门禁是禁止的）`);
   const body = e2e.SCENARIOS.map((s) => String(s.run)).join('\n');
@@ -104,7 +106,7 @@ test('G7 端到端证据链格式：每轮跑完必须留下 report.json + env_l
   assert.match(tool, /CHECKS/, '必须复用 §3.6 的过程检查器，而不是自成一派');
 });
 
-test('G9 B73 阅读页必须有"晚到的旧响应不得覆盖新筛选"的序号守卫', () => {
+test('G9 B73 阅读页必须有"晚到的旧响应不得覆盖新筛选"的序号守卫（坑 #49）', () => {
   const src = read('web/src/pages/MyReadingPage.jsx');
   // 判的是行为，不是某个字面量：①每次请求领一个序号 ②落地前比对"我还是最新的那次吗"
   // ③筛选切换（reset=true）不许被"正在加载"吞掉——这三条缺任何一条，B73 就会复发
@@ -121,7 +123,7 @@ test('G9 B73 阅读页必须有"晚到的旧响应不得覆盖新筛选"的序�
     '探针失效：把 reset 例外去掉的坏写法没被还原出来');
 });
 
-test('G8 B72/B73 已登记且判据没有反向迁就现状', () => {
+test('G8 B72/B73 已登记且判据没有反向迁就现状（坑 #48）', () => {
   const iss = read('docs/ISSUES.md');
   for (const id of ['B71', 'B72', 'B73']) {
     assert.ok(iss.includes('**' + id + '**'), `docs/ISSUES.md 缺 ${id}`);

@@ -20,7 +20,7 @@
 | 小 spec | 内容 | 类型 | 规模 |
 |---|---|---|---|
 | 41-1 | 环境前置检查器：代理可达 / Vercel 部署 SHA 与远端一致 / 三端凭据一致 / Turso 可读 / 测试隔离库就绪；不通过即中止（`fail_env`） | 工具 | S ✅ 已交付 `tools/eval-preflight.cjs`（本轮再加「线上 commit == origin/main」硬判据） |
-| 41-2 | 端到端剧本引擎：Playwright（已具备 MCP 与插件）跑 5 页 + 后台 5 Tab，断言渲染与关键 API；输出四分类结果 + 截图证据；同剧本跑 3 次判 flaky | 新工具 | M |
+| 41-2 | 端到端剧本引擎：**✅ 已交付 `tools/eval-e2e.cjs`（`npm run eval:e2e`，09-19 夜）**。Playwright 驱动真实线上页面，10 条剧本（E1~E10）覆盖 6 个前台页 + 后台登录门；核心方法是 **DOM ↔ 页面自己发出的那次 API 响应对账**（`page.on('response')` 拦截 + `collected()` 合并本轮同接口多轮响应），不是"元素存在就算过"。四分类 + 每剧本连跑 3 次判 flaky + 截图/env_lock/report.json 落 `docs/eval/e2e/<轮次>/` + 退出码 0/1/2；`--self-test` 44 项判据全部配坏样本；已知缺口用 `KNOWN_GAPS` 显式登记（B72）而非删剧本。**首轮就抓到两个真缺陷**：B71（后台裸 i18n key，根因入口漏挂 Provider）、B74（晚到的旧响应覆盖筛选结果），详见 `docs/pitfalls/testing.md` #46~#49 | 新工具 | M ✅ |
 | 41-3 | F2P/P2P 双集合与「改前必红」流程：与 git worktree/临时分支配合，未含改动的分支上先跑 F2P → **✅ 已交付 `tools/eval-f2p.cjs`**（`npm run eval:f2p`）：`--auto-base` 由锁的引入提交反查基线、自建 worktree、只拷新锁进旧树、两侧同用 `--cases` 过滤、自动挂 `NODE_PATH`、拒绝 `base == HEAD`，结论落盘 `docs/eval/f2p/*.json`；自检项数以 `--self-test` 输出为准（由回归锁要求"全绿"，不在文档写死数字）+ 回归锁 5 条（`^` 被 cmd 吃掉→坑 #40；凭记忆选错基线→误判假锁→基线守卫，坑 #41；`Cannot find module` 与 `ENOENT` 都按"树内/树外"分产品红与环境红；自检必须全绿）。已出证：b 10/10 红 @`4f87120`、c 8/8 红 @`44073de`、d 25/31 红 @`b766bf6`、e 12/12 红 @`947e753`、f 5/6 红 @`f3172b2`、F6 3/3 红 @`2e2c757`，head 侧全绿（f 里那条 stub 报告锁按设计只在有 golden 时才判，属 P2P 守卫，不参与 F2P） | 流程 | M ✅ |
 | 41-4 | 白盒一致性检查：三端常量 diff + 不变量断言（档位优先读、settings/env 优先级、熔断阈值与冷却、`'null'` 序列化陷阱这类"曾经踩过"的形态） | 工具 | M ✅ 已交付 `tools/eval-whitebox.cjs`（W1~W10；本轮新增 W3b 假开关与 W10 重复判定，两者都做过负向验证） |
 | 41-5 | 覆盖矩阵与空洞清单生成：解析 FEATURE_MATRIX 格子 × 剧本清单 → 未覆盖格子进 ISSUES；接进 `npm run lint:docs` 同级门禁 | 工具 | S ⛔ 待建（分母要等 41-2 的剧本清单） |

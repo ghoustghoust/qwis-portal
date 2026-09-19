@@ -1,0 +1,720 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T05:47:16.218Z",
+  "summary": {
+    "total": 2,
+    "pass": 2,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": true,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录"
+        },
+        {
+          "kind": "data",
+          "label": "前台六页各渲染出 >500 字可见文本（不白屏）",
+          "ok": true,
+          "detail": "{\"/reader/\":7810,\"/daily/\":5594,\"/hot/\":7396,\"/reading/\":6739,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":190}"
+        },
+        {
+          "kind": "data",
+          "label": "后台登录门未白屏：有口令输入框且文案非空（实测 190 字）",
+          "ok": true,
+          "detail": "password 输入框 1 个，/admin/ 文本 190 字"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 \n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录\n前台六页各渲染出 >500 字可见文本（不白屏） {\"/reader/\":7810,\"/daily/\":5594,\"/hot/\":7396,\"/reading/\":6739,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":190}\n后台登录门未白屏：有口令输入框且文案非空（实测 190 字） password 输入框 1 个，/admin/ 文本 190 字\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 319,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 2,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 23525,
+          "ms": 208,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T05:47:19.429Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 207,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 31,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 2075,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1743267669124816896/wv6pXt1q_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 78203,
+          "ms": 32,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSjNvevaEAALiay.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 633,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 5,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 114,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 25,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 0,
+          "ms": 62,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 81438,
+          "ms": 225,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 26,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 2,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 149044,
+          "ms": 657,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 25570,
+          "ms": 221,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            },
+            "type": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 2078,
+          "ms": 1,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1328032552704159744/fgfpdX1p_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 26,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 26,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/weekly",
+          "status": 200,
+          "bytes": 33364,
+          "ms": 376,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/mybrief",
+          "status": 200,
+          "bytes": 24009,
+          "ms": 200,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10787,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2z-7pIj57f8/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 24417,
+          "ms": 10,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Kof2VcHTjrk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 25,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20488,
+          "ms": 27,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/FQNftquDDaI/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9231,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/eURc55MsNPc/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 16230,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/o1CogAtWdBk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17289,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/fYyzlv1byOM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14070,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bbNTY8O0GTY/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T054716/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T054716/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T054716/report.json"
+      ],
+      "metrics": {},
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    },
+    {
+      "id": "E9",
+      "title": "点开一篇文章：详情正文渲染（B52 类\"接口 200 但页面空\"）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "列表有可点的行",
+          "ok": true,
+          "detail": "Al Jazeera –"
+        },
+        {
+          "kind": "render",
+          "label": "点得到第一行",
+          "ok": true,
+          "detail": "Al Jazeera –"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的详情请求返回 200 且带非空 content_html",
+          "ok": true,
+          "detail": "/api/articles/1754843 status=200 len=105 键=id,source_id,title,url,author,cover"
+        },
+        {
+          "kind": "render",
+          "label": "详情展开后页面文本显著增长",
+          "ok": true,
+          "detail": "文本 7810→8090"
+        },
+        {
+          "kind": "render",
+          "label": "详情面板渲染出正文（>300 字）且面板内没有占位文案",
+          "ok": true,
+          "detail": "面板长度=1500"
+        },
+        {
+          "kind": "data",
+          "label": "详情标题与列表首条同源",
+          "ok": true,
+          "detail": "Al Jazeera –"
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n2788\n检索\n11847\n稍后阅读\n1\n历史存档\n25153\n分组\n科技博客\n139\nX·AI推主\n649\nTop200 精选\n3376\nAI·前沿\n1370\n中文科技\n688\n工程实践\n629\n公司技术团队\n研究\n30\nai\n科技热榜\n28\n国际视野\n4\n文化生活\n50\n国际科技\n272\n生活方式\n国际观察\n社会文化\n创投\n财经\n科技\nAI\n公众号\n1605\n播客\n30\n人工智能\n48\n编程技术\n34\n新闻媒体\n1031\n生活方式与文化\n69\n商业科技\n308\n金融经济\n262\n产品\n26\n效率成长\n1\n订阅源\nAIHOT 日报\n3\nAIHOT 热榜\n1173\nAIHOT 精选全文\n21\n阮一峰的网络日志\n1\n今日\n合并\n筛选\n30\n今日早报\n9h\n读全文 →\n从Claude入侵OpenAI到AI Agent工具生态爆发。\n1.基于复杂网络和事故数据的地铁运营事故关键风险因素综合分析方法 · PLOS One\n2.AI时代下电视剧要怎么变：AI混制重构剧集工作流 · 窄播\n3.多家A股公司，被立案 · 第一财经\nAl Jazeera – Breaking News, World News and Video from Al Jazeera\n·\n18分钟前\nBrazilian police capture suspected serial killer disguised as a woman\nBrazilian police say they will reopen dozens of cases after they arrested a self-confessed serial killer.\n105 字\n·\n约 1 分钟\nAl Jazeera – Breaking News, World ",
+      "assertTargets": "列表有可点的行 Al Jazeera –\n点得到第一行 Al Jazeera –\n页面发出的详情请求返回 200 且带非空 content_html /api/articles/1754843 status=200 len=105 键=id,source_id,title,url,author,cover\n详情展开后页面文本显著增长 文本 7810→8090\n详情面板渲染出正文（>300 字）且面板内没有占位文案 面板长度=1500\n详情标题与列表首条同源 Al Jazeera –",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 23525,
+          "ms": 208,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T05:47:42.810Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 531602,
+          "ms": 34,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59527,
+          "ms": 31,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 2075,
+          "ms": 26,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1743267669124816896/wv6pXt1q_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 78203,
+          "ms": 26,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSjNvevaEAALiay.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 50635,
+          "ms": 22,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6CRL0IbOnOf9n66mYHko2JKkv3662EoCZHd9K3rhVia1Q/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6581,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/1754843",
+          "status": 200,
+          "bytes": 1021,
+          "ms": 10,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T054716/screens/E9-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T054716/screens/E9-r1.png",
+        "docs\\eval\\e2e\\20260919T054716/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2636
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    }
+  ]
+}

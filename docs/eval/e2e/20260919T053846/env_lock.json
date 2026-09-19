@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-09-19T05:38:46.571Z",
+  "target": "https://qwis-intel.vercel.app",
+  "proxy": "http://127.0.0.1:12000",
+  "liveCommit": "9c99a2f1c035154feabe089b905b8179309d101d",
+  "originMain": "9c99a2f1c035154feabe089b905b8179309d101d",
+  "node": "v24.14.1",
+  "playwright": "1.62.1",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "repeat": 1,
+  "scenarios": [
+    "E5",
+    "E9"
+  ],
+  "argv": [
+    "--fast",
+    "--only",
+    "E5,E9"
+  ]
+}
