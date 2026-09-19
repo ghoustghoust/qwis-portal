@@ -1,70 +1,77 @@
-// 15-cloud-alerts 回归测试：云端报警引擎真实驱动（test 渠道用不可达 webhook，验证失败隔离）
-// 运行：node --test tests/regression-cloud-alerts.test.js
-const { test, after } = require('node:test');
+// 15-cloud-alerts 回归测试：云端报警引擎（分类器 / 掩码 / 冷却 / 静默 / 失败隔离）
+// **2026-09-19 起改在本地 libsql 文件库上跑（B83 / 坑 #T2 / 坑 #52）**。
+// 旧版直打生产：`alerts.saveConfig()` 把**生产 settings.alerts 整键换成测试渠道**，靠
+// 快照/恢复 + "污染就跳过"兜着。两个真实代价：
+//   · 坑 #T2：某次运行没恢复成功，生产报警渠道被留在测试渠道上，报警链路哑了两天无人发现；
+//   · 就在本轮：生产现场仍是污染态（preflight 报 channels=["test-ch:http://127.0.0.1:1/…"]），
+//     于是旧版第 4/6/7 条**今天整批 skip**——覆盖率被生产状态悄悄吃掉（skip ≠ pass）。
+// 现在这三条跑在本地库上：无论生产怎样都会真跑，且生产配置不再被测试改写。
+'use strict';
+const { test, before, after } = require('node:test');
 const assert = require('node:assert');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { execFileSync } = require('child_process');
 
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
-for (const line of envTxt.split(/\r?\n/)) {
-  const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
-  if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+const ROOT = path.join(__dirname, '..');
+const DB_FILE = path.join(os.tmpdir(), `cloud-alerts-${process.pid}.db`).replace(/\\/g, '/');
+const DRIVER = path.join(ROOT, `.cloud-alerts-driver-${process.pid}.cjs`);
+const alerts = require('../api/_alerts');   // 纯函数部分（分类器/掩码）在本进程直接判
+
+function run(caseName) {
+  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE],
+    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const line = out.trim().split('\n').filter((l) => l.startsWith('OUT ')).pop();
+  assert.ok(line, `子进程没打印结果（${caseName}）：\n${out}`);
+  return JSON.parse(line.slice(4));
 }
 
-process.env.TURSO_DATABASE_URL = process.env.TURSO_DATABASE_URL;
-const alerts = require('../api/_alerts');
+before(() => {
+  fs.writeFileSync(DRIVER, `
+process.env.TURSO_DATABASE_URL = 'file:' + process.argv[3];
+process.env.TURSO_AUTH_TOKEN = '';
 const { createClient } = require('@libsql/client');
-const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
-
-let origAlerts = null;
-let origCooldowns = null;
-
-// 保存/恢复现场：alerts 配置与冷却是真实生产配置
-// 2026-09-19 加固（坑 #T2 / BL7）：本测试曾把生产 settings.alerts 写成测试渠道且无人发现，
-// 报警链路哑了两天。规则：①快照必须在任何用例之前完成；②恢复后必须回读断言，
-// 恢复不成立就让测试变红；③开跑前先检查现场是否已被测试残留污染，污染则拒绝继续。
-async function snapshot() {
-  const a = await db.execute("SELECT value FROM settings WHERE key='alerts'");
-  origAlerts = a.rows[0] ? a.rows[0].value : null;
-  const c = await db.execute("SELECT value FROM settings WHERE key='alerts.cooldowns'");
-  origCooldowns = c.rows[0] ? c.rows[0].value : null;
-}
-async function restore() {
-  if (origAlerts !== null) await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('alerts',?)", args: [origAlerts] });
-  if (origCooldowns !== null) await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('alerts.cooldowns',?)", args: [origCooldowns] });
-}
-async function verifyRestored() {
-  const a = await db.execute("SELECT value FROM settings WHERE key='alerts'");
-  const now = a.rows[0] ? a.rows[0].value : null;
-  assert.equal(now, origAlerts, '现场恢复失败：生产 settings.alerts 与快照不一致，报警渠道可能被测试写坏（坑 #T2）');
-}
-
-// 快照在任何用例前取得（不放进 test()，避免与用例抢顺序）
-// 生产现场已被测试残留污染时：本文件凡"写生产 alerts 配置"的用例一律跳过，
-// 并以 diagnostic 打出恢复命令 —— 既不往坏现场叠写，也不伪造绿灯（skip ≠ pass，见 EVAL_GUIDE §3.4）。
-let PROD_POLLUTED = false;
-
-test('0. 现场快照与污染前置检查', async (t) => {
-  await snapshot();
-  assert.ok(origAlerts !== null, '生产 settings.alerts 必须存在，否则无从恢复');
-  let cfg = {};
-  try { cfg = JSON.parse(origAlerts); } catch { /* 非 JSON 视为污染 */ PROD_POLLUTED = true; }
-  const bad = (cfg.channels || []).filter((c) => /^test-/i.test(String(c.id || ''))
-    || /127\.0\.0\.1|localhost/i.test(String((c.config || {}).url || '')));
-  if (bad.length || !Array.isArray(cfg.channels) || cfg.channels.length === 0) {
-    PROD_POLLUTED = true;
-    t.diagnostic(`⚠ 生产报警渠道不可用（残留/空：${JSON.stringify((cfg.channels || []).map((c) => c.id))}）`);
-    t.diagnostic('⚠ 报警链路当前无出口；恢复命令：node tools/sync-alerts-config.js --force（需授权写生产）');
-    t.diagnostic('⚠ 本文件写生产配置的用例（4/6/7）已跳过 —— skip 不算通过');
+const alerts = require(${JSON.stringify(path.join(ROOT, 'api', '_alerts.js'))});
+const CASE = process.argv[2];
+const CH = { channels: [{ id: 'test-ch', type: 'webhook', name: 'TEST', enabled: true, config: { url: 'http://127.0.0.1:1/unreachable' } }],
+  events: { source_error: true }, cooldownMin: 120, recentLog: [], silence: [] };
+(async () => {
+  const db = createClient({ url: process.env.TURSO_DATABASE_URL });
+  await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
+  await db.execute('CREATE TABLE IF NOT EXISTS sources (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, name TEXT NOT NULL, url TEXT, avatar TEXT, uid TEXT, group_id INTEGER, focus INTEGER DEFAULT 0, enabled INTEGER DEFAULT 1, status TEXT DEFAULT \\'ok\\', last_fetched_at TEXT, next_fetch_at TEXT, extra TEXT, created_at TEXT, fail_count INTEGER DEFAULT 0, spotlight INTEGER DEFAULT 0, muted INTEGER DEFAULT 0, reader_visible INTEGER DEFAULT 1)');
+  await db.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('alerts.cooldowns','{}')");
+  const out = {};
+  if (CASE === 'cooldown') {
+    await alerts.saveConfig(CH);
+    const src = { id: 999999, name: 'TEST-源', type: 'rss' };
+    const r1 = await alerts.sourceAlert(src, 2, 'HTTP 404');
+    const r2 = await alerts.sourceAlert(src, 2, 'HTTP 404');
+    out.r1 = r1; out.r2 = r2;
   }
+  if (CASE === 'silence') {
+    await alerts.saveConfig({ ...CH, silence: [{ sourceId: 777777, event: 'source_error' }] });
+    out.r = await alerts.sourceAlert({ id: 777777, name: 'TEST-静默源', type: 'rss' }, 2, 'HTTP 404');
+  }
+  if (CASE === 'frozen') {
+    await alerts.saveConfig(CH);
+    out.r = await alerts.frozenDigest();
+    // 再造一个熔断源：应当真的去发（不可达渠道 → sent=0，但流程走通）
+    await db.execute({ sql: "INSERT OR REPLACE INTO sources(id,type,name,url,enabled,status,fail_count) VALUES(555,'rss','TEST-熔断源','https://x.example.com/f',0,'paused',3)" });
+    out.r2 = await alerts.frozenDigest();
+  }
+  if (CASE === 'dispatch') out.r = await alerts.dispatch('source_error', { sourceId: 888888, title: 'TEST', text: 'x' });
+  // 现场自查：本用例跑完后，配置只在本地库里，生产从未被碰过
+  out.cfgKeys = (await db.execute('SELECT key FROM settings ORDER BY key')).rows.map((r) => r.key);
+  console.log('OUT ' + JSON.stringify(out));
+  await db.close();
+})().catch((e) => { console.error('DRIVERERR ' + e.message); process.exitCode = 3; });
+`);
 });
-
-const needsCleanProd = (t) => { if (PROD_POLLUTED) t.skip('生产 alerts 配置已污染，避免叠写'); };
-
-after(async () => {
-  await restore();
-  if (!PROD_POLLUTED) await verifyRestored();
-  db.close();
+after(() => {
+  for (const f of [DRIVER, DB_FILE, DB_FILE + '-wal', DB_FILE + '-shm']) {
+    try { fs.rmSync(f, { force: true }); } catch { /* 关不掉就留给系统临时目录 */ }
+  }
 });
 
 test('1. 错误分类器：youtube+404 → 反爬封锁；超时/DNS/500 分类正确', () => {
@@ -79,52 +86,42 @@ test('1. 错误分类器：youtube+404 → 反爬封锁；超时/DNS/500 分类�
 test('2. 掩码合并：PUT 回写掩码不覆盖真实密钥', () => {
   const old = [{ id: 'c1', type: 'webhook', name: 't', config: { url: 'https://real.example.com/hook' } }];
   const neu = [{ id: 'c1', type: 'webhook', name: 't', config: { url: '********' } }];
-  const merged = alerts.mergeChannelSecrets(old, neu);
-  assert.equal(merged[0].config.url, 'https://real.example.com/hook');
+  assert.equal(alerts.mergeChannelSecrets(old, neu)[0].config.url, 'https://real.example.com/hook');
 });
 
 test('3. 掩码输出：GET 视角密钥变 ********', () => {
-  const masked = alerts.maskChannels([{ id: 'c1', type: 'webhook', config: { url: 'https://x' } }]);
-  assert.equal(masked[0].config.url, '********');
+  assert.equal(alerts.maskChannels([{ id: 'c1', type: 'webhook', config: { url: 'https://x' } }])[0].config.url, '********');
 });
 
-test('4. dispatch 冷却：同事件同源第二次被抑制', async (t) => {
-  needsCleanProd(t);
-  // 临时配置：不可达 webhook 渠道
-  await alerts.saveConfig({
-    channels: [{ id: 'test-ch', type: 'webhook', name: 'TEST', enabled: true, config: { url: 'http://127.0.0.1:1/unreachable' } }],
-    events: { source_error: true }, cooldownMin: 120, recentLog: [], silence: [],
-  });
-  await db.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('alerts.cooldowns','{}')");
-  const src = { id: 999999, name: 'TEST-源', type: 'rss' };
-  const r1 = await alerts.sourceAlert(src, 2, 'HTTP 404');
-  assert.equal(r1.sent, 0); // 渠道不可达，发送失败但流程走通
-  assert.ok(!r1.skipped, '第一次不应被冷却');
-  const r2 = await alerts.sourceAlert(src, 2, 'HTTP 404');
-  assert.equal(r2.skipped, 'cooldown', '第二次应被冷却抑制');
+test('4. dispatch 冷却：同事件第二次被抑制（本地库，永远真跑）', () => {
+  const r = run('cooldown');
+  assert.equal(r.r1.sent, 0, '渠道不可达应 sent=0：' + JSON.stringify(r.r1));
+  assert.ok(!r.r1.skipped, '第一次不应被冷却：' + JSON.stringify(r.r1));
+  assert.equal(r.r2.skipped, 'cooldown', '第二次应被冷却抑制：' + JSON.stringify(r.r2));
 });
 
-test('5. dispatch 失败隔离：渠道不可达不 throw', async () => {
-  const r = await alerts.dispatch('source_error', { sourceId: 888888, title: 'TEST', text: 'x' });
-  assert.equal(typeof r.sent, 'number');
+test('5. dispatch 失败隔离：渠道不可达不 throw', () => {
+  const r = run('dispatch');
+  assert.equal(typeof r.r.sent, 'number', JSON.stringify(r.r));
 });
 
-test('6. 静默规则：命中 silence 的事件不发送', async (t) => {
-  needsCleanProd(t);
-  await alerts.saveConfig({
-    channels: [{ id: 'test-ch', type: 'webhook', name: 'TEST', enabled: true, config: { url: 'http://127.0.0.1:1/x' } }],
-    events: { source_error: true }, cooldownMin: 120, recentLog: [],
-    silence: [{ sourceId: 777777, event: 'source_error' }],
-  });
-  await db.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('alerts.cooldowns','{}')");
-  const r = await alerts.sourceAlert({ id: 777777, name: 'TEST-静默源', type: 'rss' }, 2, 'HTTP 404');
-  assert.equal(r.skipped, 'silenced');
+test('6. 静默规则：命中 silence 的事件不发送', () => {
+  assert.equal(run('silence').r.skipped, 'silenced');
 });
 
-test('7. frozen_digest：无熔断源时不发（当前线上应为 0 或少量）', async (t) => {
-  needsCleanProd(t);
-  await db.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('alerts.cooldowns','{}')");
-  const r = await alerts.frozenDigest();
-  // 有熔断源则发到不可达渠道（sent=0 但流程走通），无则 no-frozen
-  assert.ok(r.skipped === 'no-frozen' || typeof r.sent === 'number');
+test('7. frozen_digest：无熔断源不发，有熔断源才走发送', () => {
+  const r = run('frozen');
+  assert.equal(r.r.skipped, 'no-frozen', '本地库初始没有熔断源：' + JSON.stringify(r.r));
+  assert.equal(typeof r.r2.sent, 'number', '造出熔断源后应走发送：' + JSON.stringify(r.r2));
+});
+
+test('8. 自证：本文件不再碰生产库（B83/坑 #T2 的门禁）', () => {
+  const full = fs.readFileSync(path.join(__dirname, 'regression-cloud-alerts.test.js'), 'utf8');
+  const cut = full.indexOf("test('8.");
+  assert.ok(cut > 0, '找不到自证条目起点，本条会退化成恒真');
+  const src = full.slice(0, cut);
+  assert.ok(!/['"]\.env['"]/.test(src), '还在读 .env → 又要拿真凭据连生产库了');
+  assert.ok(!/authToken:\s*process\.env/.test(src), 'createClient 带真实 authToken → 会打到生产 Turso');
+  assert.match(src, /TURSO_DATABASE_URL = 'file:'/, '子进程必须被指到本地文件库');
+  assert.ok(!/PROD_POLLUTED/.test(src), '污染跳过的老机制已废弃：本地库上这三条必须真跑');
 });
