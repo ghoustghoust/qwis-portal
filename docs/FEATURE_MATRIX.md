@@ -86,12 +86,12 @@
 
 | 命令 | 实现 | 作用 | 状态（2026-09-19） |
 |---|---|---|---|
-| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ 412 条 / 0 红 / 0 跳过（约 92s；**B83 已收口——七份"直打生产 Turso"的回归测试全部搬到本地文件库**，不再有分钟级缓存轮询，也不再往生产数据层写东西） |
+| `npm test` | `tests/*.test.js`（node:test，`--test-concurrency=1`） | 回归网：每条线上修过的 bug 都要有锁 | ✅ 417 条 / 0 红 / 0 跳过（约 94s；**B83 已收口——七份"直打生产 Turso"的回归测试全部搬到本地文件库**，不再有分钟级缓存轮询，也不再往生产数据层写东西） |
 | `node smoke-test.js` | `smoke-test.js` | 生产库副本冒烟 + 自带对抗性段（超长 URL/特殊字符/空内容/并发/错误边界） | ✅ 20/20，零副作用 |
 | `npm run build:vercel` | Vite + `api/` | 云端构建面 | ✅ 通过 |
 | `npm run lint:docs` | `tools/doc-lint.cjs` | 文档门禁六条（头注/悬空/INDEX/归档头/超长/明文密钥） | ✅ 0 错（`docs/eval/` 机器产物不参与悬空扫描） |
 | `npm run eval:preflight` | `tools/eval-preflight.cjs` + `lib/cloud-site.js` + `lib/alert-channels.js` | 环境前置：代理 / **线上 commit==origin/main** / Turso / 隔离 / BL7~BL9 配置真值 | ⛔ 6/9（红=BL7 两条 + BL8，均为待授权，非环境问题） |
-| `npm run eval:whitebox` | `tools/eval-whitebox.cjs` | 三端一致性 W1~W12（含 W3b 假开关、W9 坑↔锁对账、W10 重复判定、W11 入口 Provider 完整性、**W12 媒体栏字段对账**） | ✅ 全过（W12 做过负向验证：摘掉一处 `source_avatar` 即红并点名行号） |
+| `npm run eval:whitebox` | `tools/eval-whitebox.cjs` | 三端一致性 W1~W13（含 W3b 假开关、W9 坑↔锁对账、W10 重复判定、W11 入口 Provider 完整性、W12 媒体栏字段对账、**W13 日报栏目表只许一份**） | ✅ 全过（W12/W13 都做过负向验证：摘掉一处 `source_avatar` 即红并点名行号；塞一份探针栏目表即红并点名文件） |
 | `npm run eval:process` | `tools/eval-process-checks.cjs` | 过程性二值检查（截图/报告/断言数/三类覆盖/占位文案/证据路径/退出码/参数出处） | ✅ 8/8（F8＝§3.3 三类断言各 ≥1，09-19 夜加） |
 | `npm run eval:f2p` | `tools/eval-f2p.cjs` | 「改前红/改后绿」取证：`--auto-base` 反查基线、自建 worktree、红因分环境/产品，证据落 `docs/eval/f2p/` | ✅ 自检 24 项；b~f + g 六个锁文件已出证 |
 | `npm run eval:content` | `tools/eval-content.cjs` → `tools/eval-content/*.py` | 41-8 内容质量五维 judge（LLM 分只作趋势与复核触发，不作门禁） | ✅ 已交付；真评需 `--judge`（花配额）+ `--align`（≥3 条产物） |

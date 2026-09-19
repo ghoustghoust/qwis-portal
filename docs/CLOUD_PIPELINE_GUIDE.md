@@ -98,6 +98,20 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     本地 Express 侧的日报条目构造在 `server/services/ai/daily.js`（**没有 mediaItems 这一栏**，
     见 B86：本地端结构性缺播客），但它同样带 `source_avatar`，以便补齐那一栏时不再分叉。
 
+14. **新增云端 GET 端点必须同一次改三处**（B26 拆分时实测踩过，坑 #56）：
+    路由表 `api/[...slug].js` 的 `if (path === …)`、鉴权白名单 `PUBLIC_GET_PATHS`（**精确匹配**，不是前缀）、
+    消费方。只改前两处 → 线上 401；只改一处 → 404。本地 Express 是单用户放行，**测不到这层**，
+    所以新端点必须有一次真打线上。成对断言见锁 I10。
+    本轮产出：`GET /api/status` 只回轻投影（未读/今日/本周/启用源/暂停数），
+    重统计移到 `GET /api/status/daily-sources`（近 7 天入报条目数 + Top5 来源，60s 独立缓存）——
+    因为前者原先把三组计数合并成一条无 WHERE 的 CASE 全扫（79.8k 行，实测 11.8s）并 SELECT 了
+    从未消费的 `daily_reports.stats`（214KB），冷态 12~30s 顶到 Hobby 30s 预算（曾 504）。
+
+15. **日报栏目表只许一份实现**（B10，坑 #55）：`lib/daily-columns.js` 是唯一出处，
+    三端生成器与读层设置段都 require 它。此前有 5 份副本，且读层那份会被
+    后台「恢复默认栏目」**写进 `settings.daily.columns`** —— 副本一漂，脏默认值就落进生产库。
+    全仓库按内容特征对账：白盒 W13；`desc` 不许复述 `keywords`：锁 I8（带历史脏值正向探针）。
+
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
    dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份
