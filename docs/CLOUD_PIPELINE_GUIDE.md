@@ -144,6 +144,28 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    人工「Run workflow」选 `daily-ai` / `daily-ai-evening` / `mybrief` / `weekly` 即可单独补跑
    ——周刊此前每周只有周五那一次 schedule 且完全不可补跑，是本周断更的直接成因。
 
+17. **「今日 / 北京日界」只许一份实现**（B90 同族 B96/B97/B99，2026-09-20）：全站的产品语义都是**北京日**，
+    而 Vercel 容器是 UTC、本地开发机恰好是东八区 —— 所以任何"各自算一下今天"的写法都会在云端错位 8 小时。
+    唯一口径是 `lib/time-window.js`：日界 `beijingDayStartIso/Ms`、日历日 `beijingDateStr`、
+    日历日→时刻区间 `beijingDayRangeIso`（**日期串是标签不是时刻**，拼 `T00:00:00.000Z` 就是 B96/B99）、
+    日报窗口 `dailyReportWindowIso`（北京昨日 00:00 → 今日 06:00，五份写入器共用）、
+    墙上时钟 `beijingNow`（读北京小时数用）。浏览器不能 require CJS，因此有且仅有一份对端
+    `web/src/beijing-date.mjs`，它的正确性由回归锁 **C5 逐时刻跑数**比对（不是比文本）。
+    消费点：本地 `/api/status`、云端 `handleStatus`、日期筛选 `buildWhere`（本地/云端 ×文章/视频/播客）、
+    `handleDailyRegenerate` 的删除区间、`handleDaily` 的"同一天"判定与补生成门槛、runner 的自然日窗口与期号。
+    判据：白盒 **W16** 与回归锁 **B4** 共用 `lib/time-caliber.js` 那一份派生扫描（六种被禁形态），
+    新增反向自证 `node tools/_probe-time-caliber-selftest.cjs`。**故意保留的一处例外**：
+    `server/services/ai/daily.js` 的 `genAt` 用本机钟点判断"到点了没有"——它是本地灾备端的调度触发器，
+    语义就是"这台机器的墙上时间"，跨时区部署才需要换。
+18. **文本型判据只许一份词法扫描**（坑 #63，2026-09-20 第三轮审查）：判"代码里真写了这句话"必须用
+    `lib/src-spans.js` 的 `stripStrings`/`maskText`（注释**和**字符串内容都抹），判"SQL 写了什么"才用
+    `stripComments`（保留字符串）。`stripComments` 不是第二套状态机，它复用 `scan()` 的注释区间 ——
+    两条路径各自判断"这是不是注释"必然分叉（上一版正则字面量里的引号开假字符串，231 个文件里 50 个受影响，
+    注释里的 `applyDailyQualityGate` 因此算"已接线"）。自检必须**双向**：
+    `node tools/_probe-strip-selftest.cjs`（291 个真实文件：抹完仍可 `node --check` ＋ 只在注释里的词确实消失 ＋ 字符串内容不许丢）。
+    派生清单类判据（W14 的日报写入点、W15 的污染列）一律从**事实**反查：SQL 只在字符串字面量里找、
+    逐条 INSERT 各自判定、动态表名单独记账（不许隐身），列名由 DDL 派生而不是手写一行 `['last_fetched_at']`。
+
 ## 3. 改代码时的检查清单
 
 - [ ] 改了采集语义（过滤/清洗/去重/熔断/UA）？→ **四处同步检查**：
