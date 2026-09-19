@@ -93,8 +93,10 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     `mediaItems`，形状由 `lib/media.js` 的口径决定（播客：`audio_url=cover`、`cover=null`）。
     显示层的兜底头像走 `source_avatar`（`s.avatar`）——**加/改这一栏的字段必须三处同步**，
     漏一处的表现是"某些天有图标某些天没有"，看不出是没同步。
-    对账锁：`tests/regression-20260919i.test.js` I3（扫这两份文件里每一条 `mediaItems.push`，
-    少字段即红；push 总数对不上会判"新增了副本没同步锁"）。
+    对账锁：`tests/regression-20260919i.test.js` I3 + 白盒 **W12**（全仓库扫 `mediaItems.push`，
+    少字段即红；构造点数量 <6 会判"判据抓不到东西了"，防清单被删空后假绿）。
+    本地 Express 侧的日报条目构造在 `server/services/ai/daily.js`（**没有 mediaItems 这一栏**，
+    见 B86：本地端结构性缺播客），但它同样带 `source_avatar`，以便补齐那一栏时不再分叉。
 
 9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；

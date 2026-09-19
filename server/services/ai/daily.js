@@ -92,6 +92,7 @@ function collectCandidates(windowHours, cfg) {
   }
 
   let vSql = `SELECT v.*, s.name AS source_name, s.spotlight AS source_spotlight,
+                     s.avatar AS source_avatar,
                      json_extract(COALESCE(s.extra,'{}'),'$.aggregator') AS source_aggregator
               FROM videos v LEFT JOIN sources s ON s.id = v.source_id
               WHERE v.published_at >= ? AND s.enabled = 1
@@ -107,6 +108,8 @@ function collectCandidates(windowHours, cfg) {
       source_name: r.source_name || '', url: r.url || '', published_at: r.published_at || '',
       // v.* 已查出 intro，此前没映射到 summary → 视频卡只有一行光标题（与云端 collect-turso 同口径补齐）
       summary: r.intro || undefined, duration: r.duration || null,
+      // 与云端三份 mediaItems 同口径带上源头像（B84/W12 的对账面：显示层兜底依赖这个字段）
+      source_avatar: r.source_avatar || null,
       spotlight: !!r.source_spotlight, aggregator: !!r.source_aggregator,
       // 2026-09-05 视觉精修：视频表暂无评分/标签列，字段占位对齐文章条目
       score: r.score ?? null, tags: r.tags || '',
