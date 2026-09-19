@@ -14,7 +14,7 @@
 | [ai.md](ai.md) | AI 管线 | #8 #24 #26 #32 #34 #A1 #A2 |
 | [frontend.md](frontend.md) | 前端 | #1 #2 #16 #F1 |
 | [deployment.md](deployment.md) | 部署与运维 | #5 #20 #21 #22 #D1 #D2 #D3 |
-| [testing.md](testing.md) | 测试 | #13 #18 #27 #T1 #T2 #T3 #40 |
+| [testing.md](testing.md) | 测试 | #13 #18 #27 #T1 #T2 #T3 #40 #41 #42 #43 |
 
 > 本表由 `node tools/doc-lint.cjs` 与各域文件 `### #N` 实际编号对账；两处不一致以域文件为准并改本表。
 

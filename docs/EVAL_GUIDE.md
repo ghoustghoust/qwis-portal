@@ -174,18 +174,27 @@
 
 - **P2P（回归集）**：§3.2 全部剧本 + §3.6 过程检查 + §4 全部不变量 + §5 golden set 全量，每轮全跑；L4a/L4b 必须全绿，L4c 按 §5.3 的阈值与升级规则处理。
 - **F2P（本轮集）**：本轮每个被修缺陷对应一条断言。**新用例必须先证明它能抓 bug**：在不含该改动的分支/worktree 上跑，必须红；抓不到就删掉这条用例。
-  取证已工具化（41-3）：`npm run eval:f2p -- --base <改动前ref> --tests <锁文件> --cases <用例名前缀>`
-  —— 它自建 worktree、把新锁拷进旧树、两侧都只跑目标用例、自动挂 `NODE_PATH`，
-  结论由脚本判定并落盘 `docs/eval/f2p/<时间戳>.json`（见坑 #40：这一步以前手工做，连错两次方向）。
+  取证已工具化（41-3）：**默认用 `--auto-base`**——基线由"这些锁在哪个提交引入"反查，不靠人记 sha。
   ```bash
-  npm run eval:f2p -- --base ca42cd5^ --tests tests/regression-20260919d.test.js --cases F6-1,F6-2,F6-3
+  npm run eval:f2p -- --auto-base --tests tests/regression-20260919d.test.js                # 整文件
+  npm run eval:f2p -- --auto-base --tests tests/regression-20260919d.test.js --cases F6-1   # 只点目标锁
   ```
-- **worktree 跑测试必须先解决依赖解析**，否则红是假红：worktree 里没有 `node_modules`，
-  凡 `require('better-sqlite3')` / `require('../server/db')` 的用例会以 `Cannot find module` 失败——
-  那属 `fail_env`，不是"改前红"的证据。本轮实测踩过：同一批锁在 worktree 里 4 红，
-  其中 1 条（B39-2）其实是模块找不到，加上 `NODE_PATH=<主树>/node_modules` 后只剩 3 条真空红。
+  它自建 worktree、把新锁拷进旧树、两侧都只跑目标用例、自动挂 `NODE_PATH`，
+  结论由脚本判定并落盘 `docs/eval/f2p/<时间戳>.json`。
+- **基线选错 ≠ 锁是假的**（本轮实测：手工把 base 记成修复提交的**子孙**，8 条真锁被判"改前也全绿"，
+  按本节上一段的判据下一步动作就是删用例——选错基线的代价是杀掉能抓 bug 的锁）。
+  工具现在会在建 worktree 之前拒绝：base 若已包含某条锁的引入提交 → 退出码 2 并给出建议基线。
+  **收到 2 就修基线，不要删用例。**（见坑 #41）
+- **worktree 跑测试的两种红必须分开**（`Cannot find module` 长得一样，含义相反）：
+  - **裸包名**（`better-sqlite3`）= 依赖没解析 = `fail_env`，**不是证据**。本轮实测踩过：同一批锁在 worktree 里 4 红，
+    其中 1 条（B39-2）其实是模块找不到，加上 `NODE_PATH=<主树>/node_modules` 后只剩 3 条真空红。
+  - **相对路径**（`../lib/reading-filters`）= 本次修复新建的文件在旧树里本来就没有 = **产品红，是合法证据**。
+    收敛型修复（6 份副本并成 1 个共享模块）只有这一种取证形态；早先一律判成 env 会让这类修复永远取不到证据。
+    代价是这种红是**粗粒度的**（整个文件因一次 import 而红），报告里必须写明"改前缺本次修复新建的文件 …"，读证据的人据此知道红在哪。
   **报 F2P 证据前必须逐条看失败原因，把 env 红剔出去。**
 - 报告里每条 F2P 必须同时给出"改前红"与"改后绿"两份证据，缺一不记为已修。
+  本轮实测落盘的证据：`regression-20260919b` 10/10 红（基线 `4f87120`）、`…c` 8/8 红（`44073de`）、
+  `…d` 23/29 红（`b766bf6`）、F6 三条 3/3 红（`2e2c757`），head 侧全绿。
 
 ## 7. 去污染：防止"实现者自己出题、只测顺手写对的路径"
 
@@ -202,7 +211,7 @@
 
 ## 9. 产物与门禁
 
-- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证，自检 8 项）、`npm run eval:content`（§5，待建）。
+- 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，待建）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查，自检 7 项）、`npm run eval:f2p`（§6 改前必红取证，自检 15 项）、`npm run eval:content`（§5，待建）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
 - 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。

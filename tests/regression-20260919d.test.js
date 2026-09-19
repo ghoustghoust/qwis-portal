@@ -336,3 +336,38 @@ test('41-3 判据本身：假锁/环境红/改后仍红 都必须判不过', () 
   assert.equal(verdict(red, red, ['F6-1']).ok, false, '改后仍红 = 没修好');
   assert.equal(parseSummary('没有汇总行'), null, '解析不到汇总必须返回 null，不能当通过');
 });
+
+// 本轮实测：凭记忆挑的 base（64124b7）其实是修复提交 5aa8118 的子孙，
+// 于是 8 条真锁被判"改前也全绿 = 假锁"，而 §6 给假锁的处置是删用例。见坑 #41。
+test('41-3 基线守卫：选错基线要判"基线错"（退 2），不许长得像"锁是假的"（退 1）', () => {
+  const t = require('../tools/eval-f2p.cjs');
+  const f = 'tests/regression-20260919c.test.js';
+  const intro = t.lockIntroCommit(f, 'B60-1');
+  assert.ok(intro && /^[0-9a-f]{40}$/.test(intro), '反查不到锁的引入提交，守卫等于不存在');
+  assert.deepEqual(t.baseIsStale({ 'B60-1': [intro] }, t.git(['rev-parse', 'HEAD'])), ['B60-1'],
+    'base=HEAD 早已包含该修复，必须判基线错');
+  // 正向探针：守卫反了方向会把所有取证拒死（suggestBase 的祖先判断真反过一次）
+  assert.deepEqual(t.baseIsStale({ 'B60-1': [intro] }, t.git(['rev-parse', intro + '^'])), [],
+    'base 在修复之前必须放行');
+  const { execFileSync } = require('node:child_process');
+  let code = 0, out = '';
+  try {
+    execFileSync(process.execPath, ['tools/eval-f2p.cjs', '--base', 'HEAD^', '--tests', f],
+      { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) { code = e.status; out = String(e.stdout || '') + String(e.stderr || ''); }
+  assert.equal(code, 2, `错基线必须退 2；退 1 会被读成"锁是假的"，处置动作就是删用例：\n${out}`);
+  assert.match(out, /不要按 §6 删用例/, '报错文案必须把"别删用例"写进去：' + out.slice(0, 300));
+});
+
+test('41-3 两种红要分开：裸包名=环境红（不算证据），相对路径=修复新建文件（产品红，算证据）', () => {
+  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
+  const own = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ B60-1 x (1ms)\nError: Cannot find module '../lib/reading-filters'\n");
+  assert.equal(own.envBroken, false, '收敛型修复新建的文件在旧树里本就没有；判成环境红 = 这类修复永远取不到证据');
+  assert.deepEqual(own.missingOwn, ['../lib/reading-filters']);
+  const dep = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: Cannot find module 'better-sqlite3'\n");
+  assert.deepEqual(dep.missingDeps, ['better-sqlite3'], '裸包名必须归环境类');
+  assert.equal(verdict(dep, parseSummary('ℹ tests 1\nℹ pass 1\nℹ fail 0\n'), ['t']).ok, false, '环境红仍不许当改前证据');
+  const green = parseSummary('ℹ tests 1\nℹ pass 1\nℹ fail 0\n');
+  assert.equal(verdict(own, green, ['B60-1']).ok, true, '产品红（缺新建共享模块）该判成立');
+  assert.match(verdict(own, green, ['B60-1']).why, /改前缺本次修复新建的文件/, '成立理由里必须写明红在"缺新文件"，别让人以为是断言打红');
+});

@@ -13,7 +13,7 @@ const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const PROXY = process.env.EVAL_PROXY || 'http://127.0.0.1:12000';
-const SITE = 'https://qwis-intel.vercel.app';
+const SITE = require('../lib/cloud-site').CLOUD_SITE;
 const asJson = process.argv.includes('--json');
 const results = [];
 const add = (name, ok, kind, detail) => { results.push({ name, ok, kind, detail }); return ok; };
@@ -94,9 +94,18 @@ async function probeJson(url, ms = 8000) {
     const get = async (k) => { const x = await db.execute({ sql: 'SELECT value FROM settings WHERE key=?', args: [k] }); return x.rows[0] ? x.rows[0].value : null; };
     let al = {}; try { al = JSON.parse(await get('alerts') || '{}'); } catch { al = {}; }
     const chans = Array.isArray(al.channels) ? al.channels : [];
-    const usable = chans.filter((c) => c.enabled && String((c.config || {}).url || '').startsWith('http'));
-    add('config:报警渠道有出口', usable.length > 0, 'config',
-      usable.length ? `${usable.length} 个可用渠道` : `channels=${JSON.stringify(chans.map((c) => c.id))} —— 报警链路无出口（BL7）。恢复：node tools/sync-alerts-config.js --force`);
+    // 判据在 lib/alert-channels.js（唯一实现）。原先这里写的是
+    // `enabled && url.startsWith('http')`，于是生产库里那个 url=http://127.0.0.1:1 的 test-ch
+    // 被判成「1 个可用渠道」，把 P0 的 BL7（报警无出口）在门禁里显示成绿灯。见坑 #43。
+    const { usableChannels, deliveryState } = require('../lib/alert-channels');
+    const usable = usableChannels(chans);
+    add('config:报警渠道有真实出口', usable.length > 0, 'config',
+      usable.length ? `${usable.length} 个可用渠道（${usable.map((c) => c.id).join(', ')}）`
+        // 只印 scheme://host，路径与 query 一律不落进终端/报告 JSON —— 飞书/钉钉 webhook 的 token 就在里面
+        : `channels=${JSON.stringify(chans.map((c) => `${c.id}:${String((c.config || {}).url || '').replace(/^(https?:\/\/[^/]+).*/i, '$1/…')}`))} —— 报警链路无出口（BL7）。恢复：node tools/sync-alerts-config.js --force`);
+    const dv = deliveryState(al.recentLog);
+    add('config:最近报警真的送达', dv.state === 'ok', 'config',
+      `${dv.state === 'ok' ? '' : dv.state === 'unknown' ? '未验证：' : '送达失败：'}${dv.detail}（dispatched ≠ delivered）`);
     const mi = Number(await get('ai.minIntervalMs'));
     add('config:AI 限速保护开启', Number.isFinite(mi) && mi >= 1000, 'config',
       `ai.minIntervalMs=${await get('ai.minIntervalMs')}（应 ≥1000，runner 默认 4000；0 = 无间隔硬打免费池，BL8）`);

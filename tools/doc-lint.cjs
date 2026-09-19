@@ -60,9 +60,14 @@ const strictOk = (f) => {
   const r = rel(f);
   return STRICT_REF.has(r) || r.startsWith('docs/features/') || r.startsWith('docs/pitfalls/') || r === 'docs/archive/README.md';
 };
+// 评测器自己写出的产物（F2P 证据、轮次报告、白盒基线）不参与"悬空引用"判定：
+// 里面的 `../tools/eval-f2p.cjs` 是**取证当时那棵 worktree** 的相对路径，本就不该存在于主树；
+// 拿人写的散文规则去扫机器输出，只会制造假悬空（本轮实测：一次取证即报 2 条）。
+const MACHINE_EVIDENCE = ['docs/eval/'];
 const lintTargets = [path.join(ROOT, 'AGENTS.md'), path.join(ROOT, 'ARCHITECTURE.md'), path.join(ROOT, 'README.md')]
   .concat(docsFiles)
-  .filter((f) => !ARCHIVE_PREFIXES.some((p) => rel(f).startsWith(p)));
+  .filter((f) => !ARCHIVE_PREFIXES.some((p) => rel(f).startsWith(p)))
+  .filter((f) => !MACHINE_EVIDENCE.some((p) => rel(f).startsWith(p)));
 for (const f of lintTargets) {
   if (!fs.existsSync(f)) continue;
   for (const r of extractRefs(read(f))) {

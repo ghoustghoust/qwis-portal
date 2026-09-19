@@ -45,7 +45,7 @@
   6. `npm run eval:whitebox` 全过（W1~W10：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
   7. `npm run eval:process` 全过（这次评测运行可不可信：截图/报告/断言数/占位文案/证据路径/退出码/参数出处；任一不过判 `fail_env`，不算通过也不算产品失败）
   8. 云端实测：按 `docs/DELIVERY_VERIFICATION.md` 打真实线上端点，curl/截图才算证据；**只有在第 5 条判「线上一致」时才算数**
-  9. F2P：本轮每条修复出 `npm run eval:f2p -- --base <改动前ref> --tests <锁文件> --cases <用例名>`，证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）
+  9. F2P：本轮每条修复出 `npm run eval:f2p -- --auto-base --tests <锁文件>`（基线由锁的引入提交反查，不靠人记 sha），证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）。**退出码 2 是"基线选错"不是"锁假了"，此时修基线、禁止删用例**（坑 #41）
   10. `npm run eval:content`（41-8，待建）+ `npm run eval:e2e`（41-2，待建）——未就位前，AI 产物质量与"页面真的对用户生效"只能靠人工实测兜底，须如实记为未验收
 - 每个线上修过的 bug 必须有回归测试
 

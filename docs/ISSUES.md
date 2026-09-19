@@ -4,7 +4,7 @@
 > 已核销历史：`docs/deprecated/ISSUES-resolved-2026-09-14.md`（09-13~09-15 全量，含热点榜三阶段/媒体治理/精选断更根治）
 > 与 `docs/deprecated/ISSUES-resolved-2026-09-13.md`（更早）。
 > 功能需求类事项见 `docs/NEXT-DEV-REQS.md`。
-> 最后更新：2026-09-19（自主轮：BL1 闭合 + 11 项小刺 + 云端实测逼出第二批 B60/B61（同判定 6 份副本收敛为 1 份 + 白盒 W10）；活跃 B8~B62、观察 W1~W9、挂案 H1~H17）
+> 最后更新：2026-09-19（自主轮收尾：41-3 取证工具化并为 b/c/d/e 四个锁文件出证；顺藤摸出 B64~B67——云端基址 5 份副本且巡检脚本 8 天在打 404 域名、巡检把失败理由算成通过、三条判据断的是不存在的契约、**报警出口判据把 P0 的 BL7 显示成绿灯（实测近 7 天 33 条事件全部未送达）**。活跃 B8~B67、观察 W1~W9、挂案 H1~H17）
 > 文档清洁与归档规则见 `docs/DOC_GOVERNANCE.md`。
 
 ---
@@ -147,17 +147,19 @@
 | BL4 | H9 portal gitlink 无 `.gitmodules` | 三端语义收敛时极易误改 `portal/` 副本；Vercel 构建已报 submodule 警告 | 拍板：补 `.gitmodules` or 停 portal 部署/收编为普通目录 |
 | ~~BL5~~ | 并入 BL10（原判「谁在批量标已读」是误诊，真因是 `'null'` 字符串污染，见 B15 订正） | — | 见 BL10 |
 | BL6 | ~~`tools/doc-lint.cjs` 尚未实现~~ **已实现**（六条门禁：头注/悬空/INDEX 登记/归档头注/超长/明文密钥；已接 `npm run lint:docs`） | 文档清洁此前只能人工核对，下次必烂回去 | 已闭合；待接进 CI 与 AGENTS §3 验收清单（下轮） |
-| **BL7** | **P0 云端报警链路无出口**（B44：渠道被回归测试写坏成 `url:undefined` 的 TEST，09-17 起 `sent:0`） | 系统正在"哑火"：熔断/停滞/AI 失败全都不再通知，与自愈改造互为前提（没有可观测就没有可信自愈） | **2026-09-19 用户决定：先不写生产，等 spec 41 评测就位后再做** → 恢复动作与"改前必红"证据一起出；期间任何故障无人通知属**已知风险** |
+| **BL7** | **P0 云端报警链路无出口**（B44：渠道被回归测试写坏成 `url:undefined` 的 TEST，09-17 起 `sent:0`） | 系统正在"哑火"：熔断/停滞/AI 失败全都不再通知，与自愈改造互为前提（没有可观测就没有可信自愈） | **2026-09-19 用户决定：先不写生产，等 spec 41 评测就位后再做** → 恢复动作与"改前必红"证据一起出；期间任何故障无人通知属**已知风险**。**2026-09-19 实测量化**：`alerts.recentLog` 近 7 天 **33 条事件全部未送达**（`results[].ok:false, error:"fetch failed"`，最后一条 09-17T08:34），生产库唯一渠道 `test-ch` 的回调是 `http://127.0.0.1:1`；而 `eval:preflight` 因判据过宽（见 B67）此前把它显示成「1 个可用渠道 ✓」——本条在门禁里长期是绿灯 |
 | **BL8** | **P0 `ai.minIntervalMs=0`**（B49） | 无间隔硬打 Agnes 免费池 → 45-60 分钟耗尽配额（坑 #A1），早报/周刊/翻译互相抢额度 | 同上：延后到 41 就位；**但"防再犯"的代码侧（测试隔离 + 写路径守卫）不写生产，可先行**（待批准） |
 | **BL9** | **P0 `settings.ai` 仍可被后台写回**（B50），与旧 env-only 声明冲突 | 09-11 全链路 401 停摆 2 天的合法复发通道 | **已裁决（2026-09-19）：保留可写 + 强制审计 + 变更告警 + 写后连通探测失败即回滚**；不变量表述已在 `CLOUD_PIPELINE_GUIDE.md` §6.1 作废落档。实施在 39-1/39-3 |
 | BL10 | `'null'` 字符串污染 2.5 万行（B15 订正） | 毒害保留清理豁免、未读角标、阅读足迹三处口径；不先清则任何"未读/已读"统计与自动回收都不可信 | 延后（同 BL7/BL8）：一行修根因 + 一次性 `UPDATE`，与 40-8 脏数据订正合并做，需授权 |
 | BL11 | 端到端/白盒评测流程尚未建立 | 用户新增验收要求；没有它，32 个新缺陷的修复无法自证"真的修好了" | 见 `docs/specs/41-e2e-whitebox-eval/spec.md` |
-| **BL12** | **Vercel 构建滞后于 HEAD，「推了就等于上线」不成立**（2026-09-19 实测，含对本条第一次判定的订正）：连推 5 次后 production 仍是 04:25 的 deployment。**第一版我判成「Git 触发器停了」——错了**：继续观察证明每次 push 都新建了 deployment，但新构建长时间卡在 `● Initializing`（a1b12ce 已 5 分钟仍未 Ready，而更早的构建 16~18 秒就完），期间 production 一直服务着旧的一份 | 后果不是「没部署」而是**线上何时变不可预测**：因此「云端实测」只有在线上 commit 等于 origin/main 时才算数，否则测的是旧代码。本轮实测结论：B58（`map` + `categorySource=settings` + 模型含「AI 模型」）与 B62（reading 条目带 `kind`）随 `5e5fn55iy` 上线**已验证通过**；`/api/meta` 的 commit 字段属 `a1b12ce`，构建仍在排队，未下结论 | 判据已建：`/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA`，`eval:preflight` 新增「线上 commit == origin/main」，不一致即红——不许再靠「我推过了」这种代理信号。**待查（需人）**：构建为何从 16s 退化为分钟级 `Initializing` 挂起，看 Vercel Deployments 日志/配额。**不要手动 `vercel --prod` 绕过**，那只会把根因盖住 |
+| **BL12** | **Vercel 构建滞后于 HEAD，「推了就等于上线」不成立**（2026-09-19 实测，含对本条第一次判定的订正）：连推 5 次后 production 仍是 04:25 的 deployment。**第一版我判成「Git 触发器停了」——错了**：继续观察证明每次 push 都新建了 deployment，但新构建长时间卡在 `● Initializing`（a1b12ce 已 5 分钟仍未 Ready，而更早的构建 16~18 秒就完），期间 production 一直服务着旧的一份 | 后果不是「没部署」而是**线上何时变不可预测**：因此「云端实测」只有在线上 commit 等于 origin/main 时才算数，否则测的是旧代码。本轮实测结论：B58（`map` + `categorySource=settings` + 模型含「AI 模型」）与 B62（reading 条目带 `kind`）随 `5e5fn55iy` 上线**已验证通过**；`/api/meta` 的 commit 字段属 `a1b12ce`，构建仍在排队，未下结论 | 判据已建：`/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA`，`eval:preflight` 新增「线上 commit == origin/main」，不一致即红——不许再靠「我推过了」这种代理信号。**待查（需人）**：构建为何从 16s 退化为分钟级 `Initializing` 挂起，看 Vercel Deployments 日志/配额。**不要手动 `vercel --prod` 绕过**，那只会把根因盖住。**2026-09-19 23:30 复测**：push `947e753` 后 `/api/meta` 的 `commit` 已在 10 分钟内等于 `origin/main`（`947e753c8…`），本轮「云端实测」门禁的硬前置恢复可用；退化成分钟级排队的**根因仍未查**（需人看 Vercel Deployments 日志/配额），本条不销
 
 ### ✅ 本轮已修（2026-09-19 自主轮，全部有"改前红/改后绿"双证据，待云端实测）
 
 按 `docs/NEXT-DEV-REQS.md` T6「第 1 步 当天可修小刺」执行，`docs/EVAL_GUIDE.md` §6 口径验收：
-**回归锁 `tests/regression-20260919b.test.js` 10 条在修复前 HEAD 的独立 worktree 上 10/10 全红，修复后 10/10 全绿。**
+**三个锁文件全部由 `npm run eval:f2p -- --auto-base` 出证（不再手工开 worktree）**：
+`regression-20260919b` 基线 `4f87120` 10/10 红、`…c` 基线 `44073de` 8/8 红、`…d` 基线 `b766bf6` 23/29 红，
+head 侧三份全绿；F6 三条另见基线 `2e2c757` 的 3/3 红。证据 JSON 在 `docs/eval/f2p/`。
 
 | 缺陷 | 修法 | 证据 |
 |---|---|---|
@@ -197,6 +199,10 @@
 | B58 分类表显示假默认 | 三方收敛：新建 `lib/hot-categories.js` 作为六类与映射的唯一实现（含线上实际 feed 名），本地 `server/services/hot.js` 改为引用它，云端 `handleHotCategories` 补回 `{categories, map, categorySource}`，前端删掉自带 `DEFAULT_MAP`、按 `categorySource` 显示「线上生效配置 / 内置默认 / 读取失败」三态徽章，`.catch(() => {})` 改为显式 error 行 | 回归锁 B58-0/1/2（B58-0 双向探针：既要求探针能看见坏形态，也要求"必须含 map"的断言对旧坏写法**不**匹配，防止断言写太松变假绿） |
 | B56 快照区把"做不到"说成"还没做" | 两端 `/api/data/list` 加**布尔能力位** `fileSnapshots`（云端 false / 本地 true），界面先判能力位再判列表长度，不支持时显示"本部署不提供该能力"并禁用生成/导入按钮；note 只当说明文字，不再是唯一载体（坑 #38） | 回归锁 B56-0/1/2（B56-2 判的是**分支顺序**：能力位必须排在长度判断之前，因为「暂无快照」在本地端是正确文案） |
 | 35A-F6 系统性故障不再折算成单源失败 | `lib/source-breaker.js` 加 `errorFingerprint()` + `detectSystemicFailure()` 三闸门判据：量级（≥30% 或失败数 ≥20，样本 <5 不判）＋同源性（≥60% 同指纹，指纹须把 URL/IP/端口/数字打码）＋**环境类**（指纹须命中 ECONNREFUSED/ETIMEDOUT/EAI_AGAIN/TLS/代理/429/503 等）。runner 命中后仍记 `status='error'`+`lastError` 供排障，但**不累加 fail_count、不熔断**，并在批次统计里标 `systemicSuppressed`。第三道闸门是刻意加的：没有它，一批同源 404（源真死了）也会被整批赦免，抑制器就变永久免死金牌。本轮只做 F6 这一条判据（T6 第 1 步已批），F1-F5/F7-F9 仍属 35A 待批 | 回归锁 F6-1/2/3（7 个场景实测：代理风暴抑制 / 25 超时抑制 / 30 同源 404 **不**抑制 / 指纹分散不抑制 / 小样本不抑制 / 正常轮不抑制 / 429 风暴抑制）；F2P 见 HEAD worktree 三条真空红；坑 #39 |
+| B64 云端基址 5 份手写副本，其中一份是 404 域名 | 新建 `lib/cloud-site.js` 作为云端基址唯一实现（可 `CLOUD_SITE` 覆盖），`tools/audit-cloud.js`、`tools/eval-preflight.cjs`、`tools/_test-api.cjs`（3 处）全部改引用。**发现过程**：我自己在探针里凭印象打了 `qwis-portal.vercel.app`（仓库名≠应用名）拿到 `DEPLOYMENT_NOT_FOUND`，顺查发现巡检脚本 8 天来打的一直是 2026-09-11 已下架的这个域名（坑 #42/#43） | 回归锁 B64-0/1/2：基址与 `FEATURE_MATRIX` 双向对账 + 全库活代码扫 `*.vercel.app` 字面量 + 死域名回归 |
+| B65 巡检把"失败理由"算成通过：`pass: !!verdict` | 判据改为**只有 `true` 才算通过**（抽出纯函数 `verdictToResult`），失败理由字符串一律 `pass:false`；新增 `SKIP:理由` 第三态（未验收单列，不进分子也不静默删）；补诚实退出码（有失败即 1）；`main()` 加 `require.main` 守卫，被 require 时不再自动打云端 | 回归锁 B65-1/2/3（含 `undefined`/`false`/字符串/ SKIP 四种返回的判据表）；实测修后 `通过 18、失败 0、未验收 1` |
+| B66 巡检的三条判据断的是不存在的契约 | 实测改正：`/api/sources` 载荷键是 `sources` 非 `items`；`/api/collect?key=wrong` 的 GET 是 405（只接 POST），鉴权语义改用 POST 断 403；`/api/articles/1` 原判据 `b.ok \|\| status===404` 是永真式，改为 200 且带 `item`；`?dedup=1` 在云端读层**无任何实现**（`api/[...slug].js` 只有日报内 `dailyDedup` 与 `POST /api/sources/dedupe`），改为显式未验收并挂本条 | 回归锁 B66-0/1（正向探针锁 + "判据必须对得上实测契约"锁，并反向锁"若将来真实现 dedup 参数则本锁必须改判"） |
+| B67 报警出口判据给 P0 的 BL7 开绿灯 | `eval-preflight` 原判据是 `enabled && url.startsWith('http')`，而生产库唯一渠道是 `test-ch` → `http://127.0.0.1:1`（必然 fetch failed 的哨兵），于是门禁显示「1 个可用渠道 ✓」。新建 `lib/alert-channels.js`：回环/哨兵端口/`undefined`/非 http(s)/`test-*` id 一律不算出口；另加 **dispatched ≠ delivered** 判据（读 `alerts.recentLog` 近 7 天：全失败=红、无记录=未验证、有 ok=true=绿）。修后 preflight 如实报红 | 回归锁 B67-0/1/2/3（含正向探针：真公网 webhook 必须算有出口，防止判据写成"永远红"）；掩码要求一并锁住（webhook token 在 path/query 里，报告只许出现 `scheme://host/…`） |
 
 顺带清掉 `server/routes/reading.js` 里三个从未被引用的类型集合常量（同一分类的第三份表示）。
 

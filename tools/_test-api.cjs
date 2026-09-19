@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const { CLOUD_SITE } = require('../lib/cloud-site');
+
 
 // 加载 .env
 const envPath = path.join(__dirname, '..', '.env');
@@ -10,7 +12,7 @@ for (const line of envContent.split('\n')) {
 }
 
 async function testCollect() {
-  const url = `https://qwis-intel.vercel.app/api/collect?key=${process.env.COLLECT_KEY}&mode=debug`;
+  const url = `${CLOUD_SITE}/api/collect?key=${process.env.COLLECT_KEY}&mode=debug`;
   console.log('Testing:', url.replace(process.env.COLLECT_KEY, '***'));
   
   try {
@@ -27,7 +29,7 @@ async function testCollect() {
 }
 
 async function testArticles() {
-  const url = 'https://qwis-intel.vercel.app/api/articles?sort=new&limit=3';
+  const url = `${CLOUD_SITE}/api/articles?sort=new&limit=3`;
   console.log('\nTesting:', url);
   
   try {
@@ -48,7 +50,7 @@ async function testArticles() {
 }
 
 async function testStatus() {
-  const url = 'https://qwis-intel.vercel.app/api/status';
+  const url = `${CLOUD_SITE}/api/status`;
   console.log('\nTesting:', url);
   
   try {
