@@ -288,33 +288,19 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
 }
 
 // ── W14 入报质量门槛必须接在**每一个写 daily_reports 的函数**里（B20）──
-// 上一版按"手工列 3 个文件"查，两次都漏：文件级判据把 runDailyAi 的门槛算给了同文件的 runDaily
-// （裸报告那份），也没把 api/[...slug].js 的读层内联兜底列进清单 → 线上 id=103 实测仍有
-// 29/22 分两条低质入报。判据改成扫真实写入点，函数级核对，清单不再靠人记。
+// 这一判据本身已经错过三次，每次都因为"清单/字面量"而不是"事实"（详见坑 #58 与 ISSUES B20）：
+//  ① 手工列 3 个文件 → 真实 5 个写入函数；② 文件级 grep → 同文件第二个写入函数被算成已接；
+//  ③ 只看"出现过 passesDailyQualityGate" → 把返回值扔掉、或只写进行尾注释，都照样绿。
+// 现在改成：全仓扫 `INSERT INTO daily_reports`（不再维护目录白名单）→ 定位宿主函数 →
+// 要求该 INSERT **之前**存在一次"结果被赋值回去"的 applyDailyQualityGate 调用。
 {
-  // 自检探针必须排除自身：本文件里那个 INSERT INTO daily_reports 字面量会被自己的扫描抓到（坑：判据命中自己的字面量）
-  const SELF = 'tools/eval-whitebox.cjs';
-  const FILES = ['server', 'api', 'tools', 'lib'].flatMap((d) => walk(d)).filter((f) => f !== SELF);
-  const { spans, ownerAt } = require('../lib/src-spans');
-
-  const writers = [];
-  for (const f of FILES) {
-    const src = read(f);
-    if (!/INSERT INTO daily_reports/.test(src)) continue;
-    // 宿主函数用 lib/src-spans 的唯一实现；不按花括号配对（SQL 模板串里的 ${} 与 '{}' 会算错）
-    const seen = new Set();
-    for (const m of src.matchAll(/INSERT INTO daily_reports/g)) {
-      const fn = ownerAt(src, m.index) || '(顶层)';
-      if (seen.has(fn)) continue;
-      seen.add(fn);
-      const own = spans(src).find((s) => s.name === fn);
-      writers.push({ f, fn, gated: !!own && /passesDailyQualityGate/.test(own.body) });
-    }
-  }
-  const ungated = writers.filter((w) => !w.gated);
+  const { findDailyReportWriters } = require('../lib/daily-writers');
+  const writers = findDailyReportWriters(ROOT);
+  const ungated = writers.filter((w) => !w.ok);
   ok('W14', writers.length >= 5 && ungated.length === 0,
-    `daily_reports 写入点 ${writers.length} 处（${writers.map((w) => `${w.fn}@${w.f}`).join(' / ')}），未接门槛：${JSON.stringify(ungated)}` +
-    '（漏一处 = 那一处照旧把低质内容塞进早报；未评分条目由 lib/brief-guards 一律放行）');
+    `daily_reports 写入点 ${writers.length} 处（清单：${writers.map((w) => `${w.fn}@${w.f || w.file}`).join(' / ')}）；` +
+    `未接门槛：${JSON.stringify(ungated.map((w) => `${w.fn}@${w.file}`))}。` +
+    '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现见 lib/daily-writers.js；漏一处 = 那一处照旧把低质内容塞进早报）');
 }
 
 const asJson = process.argv.includes('--json');

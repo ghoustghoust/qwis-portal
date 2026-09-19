@@ -7,6 +7,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
@@ -184,7 +185,24 @@ test('I10 B26：/api/status 首屏不得内联重统计，重统计走独立端�
   assert.deepEqual(pulled, [], `首屏调用闭包里出现 daily_reports（= 重统计换了个函数名躲回冷路径）：${pulled}`);
   assert.ok(!/case\s+when/i.test(fns[H]),
     'B26 根因复发：多条计数被合并成一条 CASE 全扫（实测 11.8s，索引全被打掉）');
-  assert.ok(!/require\(['"][^'"]*daily/i.test(fns[H]), '首屏通过新的 lib 间接把重统计捞回来，同样算复发');
+  // require 面：闭包里任何一处 require 解析到的本地文件，只要自己碰 daily_reports 就算把重统计捞回来
+  // （旧判据按路径里有没有 "daily" 字样猜，换个文件名即绕过 —— 对抗审查查出的逃逸）
+  const hits = [];
+  for (const name of seen) {
+    for (const rq of (fns[name] || '').matchAll(/require\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+      const spec = rq[1];
+      if (!spec.startsWith('.')) continue;
+      const abs = path.resolve(ROOT, name === H ? 'api' : '.', spec);
+      const cands = [abs, `${abs}.js`, `${abs}.json`, path.join(abs, 'index.js')];
+      const file = cands.find((p) => fs.existsSync(p) && fs.statSync(p).isFile());
+      if (!file) continue;
+      const body = spans(fs.readFileSync(file, 'utf8')).map((s) => s.body).join('\n');
+      if (/daily_reports/.test(body) || /daily_reports/.test(fs.readFileSync(file, 'utf8'))) {
+        hits.push(`${name} → ${spec}`);
+      }
+    }
+  }
+  assert.deepEqual(hits, [], `首屏调用闭包 require 到了碰 daily_reports 的模块：${JSON.stringify(hits)}`);
 
   // 拆出去的东西必须真接在按需端点上，否则「拆了没接上」同样隐身
   const heavySql = (fns[D].match(/SELECT [^`']*FROM daily_reports/) || [''])[0];
@@ -260,6 +278,48 @@ test('I12 坑 #56 同源面：巡检必须走统一代理出口，并把"拿不�
     rows([200]).concat([{ pass: true, skip: '', status: 200 }])), false, '有通过就不许判环境红');
 });
 
+test('I14 B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「最后同步」', () => {
+  // 迁移期污染（与 B15 同族）：库里 1 行 last_fetched_at 是字符串 'null'。文本序 'null' > '2026-…'
+  // → 裸 MAX() 取到它，读层归一化后又变 null，于是后台「RSS 最后同步」自上线起恒显示"从未同步"（线上实测）。
+  // 判据是行为不是字面量：种一个真时间戳 + 一个 'null'，端点必须回那个真时间戳。
+  const { execFileSync } = require('child_process');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'i14-b93-'));
+  const driver = path.join(ROOT, `.i14-driver-${process.pid}.cjs`);
+  fs.writeFileSync(driver, `
+    const express = require('express');
+    const { db } = require(${JSON.stringify(path.join(ROOT, 'server', 'db.js'))}); // 按 APP_DATA_DIR 建表
+    const REAL = '2026-09-19T10:00:00.000Z';
+    const ins = db.prepare("INSERT INTO sources(type,name,url,enabled,last_fetched_at,created_at) VALUES('rss',?,?,1,?,?)");
+    ins.run('I14 正常源', 'https://i14a.example/f', REAL, REAL);
+    ins.run('I14 脏值源', 'https://i14b.example/f', 'null', REAL); // 迁移期写进去的字面串
+    const app = express();
+    app.use('/api/status', require(${JSON.stringify(path.join(ROOT, 'server', 'routes', 'status.js'))}));
+    const srv = app.listen(0, '127.0.0.1', async () => {
+      const data = await (await fetch('http://127.0.0.1:' + srv.address().port + '/api/status')).json();
+      console.log('OUT ' + JSON.stringify({
+        rss: data.wechat.rssLastFetch,
+        srcs: db.prepare('SELECT COUNT(*) c FROM sources').get().c, // 前提探针：两条源真进了库
+        dirty: db.prepare("SELECT COUNT(*) c FROM sources WHERE last_fetched_at='null'").get().c,
+      }));
+      srv.close(); process.exit(0);
+    });
+  `);
+  try {
+    const out = execFileSync(process.execPath, [driver],
+      { cwd: ROOT, encoding: 'utf8', env: { ...process.env, APP_DATA_DIR: tmpDir }, timeout: 120000 });
+    const m = /^OUT (.+)$/m.exec(out);
+    assert.ok(m, '子进程没打印读数：\n' + out.slice(-400));
+    const got = JSON.parse(m[1]);
+    assert.equal(got.srcs, 2, '前提：两条源都要真进统计（否则是空库假绿）');
+    assert.equal(got.dirty, 1, "前提：库里要真有一行字面串 'null'（否则本用例什么都没测）");
+    assert.equal(got.rss, '2026-09-19T10:00:00.000Z',
+      "B93 复发：MAX() 又被字面串 'null' 毒掉（要在 SQL 层 NULLIF 排掉，不是在 JS 里补兜底）");
+  } finally {
+    try { fs.unlinkSync(driver); } catch { /* 已清 */ }
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
 test('I13 坑 #57/#58：函数边界切分必须 EOL 无关、注释不参与判据（文本锁的地基）', () => {
   // 本轮两次假结果都出在"手写函数边界"：① 拿第一个行首 '}' 当右边界 → 被函数内 catch 截断（假红）；
   // ② 探针用 replace('{\n') 注入，而仓库是 CRLF → 模式永不命中，"注入失败"被读成"锁没拦住"（假绿）。
@@ -298,8 +358,78 @@ test('I13 坑 #57/#58：函数边界切分必须 EOL 无关、注释不参与判
   assert.equal(ownerAt(crlf, crlf.indexOf('function nextFn')), 'nextFn', '边界按"下一个声明"切：声明自身归自己');
   assert.equal(ownerAt(crlf, crlf.indexOf('function nextFn') - 1), 'heavy', '上一个函数的尾部区段仍归上一个函数');
 
-  // 两处消费者必须用这一份实现，不许再各自手写边界（W13/W14 同族：清单靠人记必然漏）
-  for (const f of ['tests/regression-20260919i.test.js', 'tools/eval-whitebox.cjs']) {
-    assert.ok(read(...f.split('/')).includes("require('../lib/src-spans')"), `${f} 又回到手写函数边界`);
+  // 链路：判据/锁 → lib/daily-writers → lib/src-spans，任何一环换成手写边界都算漂移
+  // （W14 现在不直接 require src-spans，它拿的是 lib/daily-writers 派生出的写入点清单）
+  const chain = [
+    ['tests/regression-20260919i.test.js', '../lib/src-spans'],
+    ['lib/daily-writers.js', './src-spans'],
+    ['tools/eval-whitebox.cjs', '../lib/daily-writers'],
+  ];
+  for (const [f, dep] of chain) {
+    assert.ok(read(...f.split('/')).includes(dep), `${f} 丢了 ${dep} —— 又回到各自手写边界/自己列清单`);
+  }
+});
+
+test('I15 坑 #58/#59：日报写入点清单必须由事实派生（目录白名单、按函数去重、字面量存在都不算）', () => {
+  const os = require('os');
+  const { findDailyReportWriters } = require('../lib/daily-writers');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'i15-writers-'));
+  const put = (rel, text) => {
+    const p = path.join(tmp, ...rel.split('/'));
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, text.replace(/\n/g, '\r\n')); // 故意用 CRLF 造样本：判据不许依赖行尾风格（坑 #57）
+  };
+  try {
+    // ① 老判据的目录白名单之外（scripts/）也能看见
+    put('scripts/w1.js', [
+      'async function makeReport() {',
+      "  const g = guards.applyDailyQualityGate(valid, 30, log);",
+      '  valid = g.kept;',
+      "  await qRun('INSERT INTO daily_reports(generated_at,sections) VALUES(?,?)', []);",
+      '}',
+    ].join('\n'));
+    // ② 调用了但扔掉返回值 = 没接上
+    put('tools/w2.js', [
+      'async function makeReport2() {',
+      "  guards.applyDailyQualityGate(valid, 30, log);",
+      "  await qRun('INSERT INTO daily_reports(generated_at,sections) VALUES(?,?)', []);",
+      '}',
+    ].join('\n'));
+    // ③ 只在注释里提一句 = 既不算写入点，也不算接上门槛
+    put('tools/w3.js', [
+      'async function makeReport3() {',
+      '  // 以后要接 INSERT INTO daily_reports 的门槛',
+      '  return 1;',
+      '}',
+    ].join('\n'));
+    // ④ 归档与测试夹具不参与（各自一条理由，写在 lib/daily-writers.js）
+    put('archive/w4.js', [
+      'async function old() {',
+      "  await qRun('INSERT INTO daily_reports(generated_at,sections) VALUES(?,?)', []);",
+      '}',
+    ].join('\n'));
+    put('tests/w5.test.js', [
+      'function seed() {',
+      "  db.prepare('INSERT INTO daily_reports(generated_at) VALUES(1)').run();",
+      '}',
+    ].join('\n'));
+
+    const found = findDailyReportWriters(tmp);
+    const byFile = Object.fromEntries(found.map((w) => [w.file, w]));
+    assert.ok(byFile['scripts/w1.js'], 'scripts/ 下的写入点没被看见（还是在按目录白名单扫）');
+    assert.equal(byFile['scripts/w1.js'].ok, true);
+    assert.ok(byFile['tools/w2.js'], 'tools/ 下的写入点没被看见');
+    assert.equal(byFile['tools/w2.js'].ok, false, '扔掉返回值的调用被判成"已接门槛"（B20 那类假绿的评测版）');
+    assert.ok(!byFile['tools/w3.js'], '注释里的字面量被当成写入点（判据会被说明文字骗）');
+    assert.ok(!byFile['archive/w4.js'], 'archive/ 不该参与（排除项要显式，不要靠巧合）');
+    assert.ok(!byFile['tests/w5.test.js'], 'tests/ 夹具不该参与');
+
+    // 真仓库侧：派生清单必须非空且全接（防"扫不到东西也算过"——同 W12/W13 的数量断言）
+    const real = findDailyReportWriters(ROOT);
+    assert.ok(real.length >= 5, `真仓库只派生出 ${real.length} 处写入点，比实测的 5 处少 = 扫描面坏了`);
+    assert.deepEqual(real.filter((w) => !w.ok).map((w) => `${w.fn}@${w.file}`), [],
+      '真仓库里有日报写入点没接门槛');
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
   }
 });

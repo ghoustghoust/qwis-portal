@@ -1124,10 +1124,7 @@ async function runDailyAi() {
   try {
     const guards = require('../lib/brief-guards');
     const aiCfg = await getSetting('ai', {});
-    const minScore = Number(aiCfg?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
-    const kept = analyzed.filter((a) => guards.passesDailyQualityGate(a, minScore));
-    const dropped = analyzed.length - kept.length;
-    if (dropped) log(`分析后门槛(六维 ≥${minScore} 分): 剔除 ${dropped} 条低质内容，保留 ${kept.length} 条`);
+    const { kept } = guards.applyDailyQualityGate(analyzed, aiCfg?.dailyMinScore, log);
     analyzed.length = 0;
     analyzed.push(...kept);
   } catch (e) { log(`分析后门槛失败（不阻断）: ${e.message}`); }
@@ -1569,14 +1566,13 @@ async function runDaily() {
   // B20（2026-09-19 第二次对抗审查补漏）：门槛此前只接在 runDailyAi（AI 深析版）那一份，
   // 本函数产出的"裸报告"（degraded/关键词兜底）没有 → 一旦读层选中裸报告，低质条目照样入报。
   // 未评分条目一律不误杀（passesDailyQualityGate 对 score 非数放行），口径共用 lib/brief-guards。
+  let gateDropped = 0; // stats.candidates 统一口径 = 进门槛前的候选数（与其余四份写入器一致）
   try {
     const guards = require('../lib/brief-guards');
     const aiCfg = await getSetting('ai', {});
-    const minScore = Number(aiCfg?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
-    const before = valid.length;
-    valid = valid.filter((a) => guards.passesDailyQualityGate(a, minScore));
-    if (before !== valid.length) log(`裸日报门槛(≥${minScore} 分): 剔除 ${before - valid.length} 条 / 保留 ${valid.length} 条`);
-  } catch (e) { log(`裸日报门槛检查失败（不阻断）: ${e.message}`); }
+    const g = guards.applyDailyQualityGate(valid, aiCfg?.dailyMinScore, log);
+    valid = g.kept; gateDropped = g.dropped;
+  } catch (e) { log(`裸日报门槛检查失败（不阻断出报，但本期等于无门槛）: ${e.message}`); }
 
   const sections = [];
   const used = new Set();

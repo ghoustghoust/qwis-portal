@@ -70,7 +70,8 @@ router.get('/', (req, res) => {
     "SELECT MIN(next_fetch_at) t FROM sources WHERE enabled=1 AND type IN ('wechat','rss','x')"
   ).get().t;
   const biliLast = db.prepare(
-    "SELECT MAX(last_fetched_at) t FROM sources WHERE type='bilibili'"
+    // 与 rssLast 同一手法：'null' 字面串一样会毒 MAX()（B93 的残余面，独立审查查出我上一版只修了 rss）
+    "SELECT MAX(NULLIF(last_fetched_at,'null')) t FROM sources WHERE type='bilibili'"
   ).get().t;
 
   const biliCookie = db.prepare("SELECT cookie FROM credentials WHERE platform='bilibili'").get();

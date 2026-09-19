@@ -248,10 +248,8 @@ async function generate(windowHours) {
   // 真正能拦住低质的是库里已有的 a.score；runner 那份才是全链路有分的主链路。
   try {
     const guards = require('../../../lib/brief-guards');
-    const minScore = Number(getSetting('ai', {})?.dailyMinScore ?? guards.DAILY_MIN_SCORE);
-    const before = candidates.length;
-    const kept = candidates.filter((a) => guards.passesDailyQualityGate(a, minScore));
-    if (kept.length !== before) log.info(`[日报] 门槛(≥${minScore} 分)剔除 ${before - kept.length} 条，保留 ${kept.length} 条`);
+    const kept = guards.applyDailyQualityGate(candidates, getSetting('ai', {})?.dailyMinScore,
+      (m) => log.info(m)).kept;
     candidates.length = 0;
     candidates.push(...kept);
   } catch (err) {

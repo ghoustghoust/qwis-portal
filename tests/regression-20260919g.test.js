@@ -77,17 +77,21 @@ test('G5 剧本里每个 file:line 出处都必须真实指到那一行（防"�
     if (Number(ln) > lines.length) { bad.push(`${k}→${v}（文件只有 ${lines.length} 行）`); continue; }
     bad.length === 0 || null;
     const hit = lines[Number(ln) - 1];
-    // 出处那一行必须真的含相关 token（参数名 / 路径名 / PAGE_SIZE / 白名单），否则等于指向别处
+    // 出处那一行必须真的含相关 token（参数名 / 路径名 / PAGE_SIZE / 白名单），否则等于指向别处。
+    // **注释行不算**（坑 #57 同源）：`// tab 白名单…` 含 "tab" 却不是判据对象——
+    // 上一版就是被注释行蒙住，报出来的"token 最近处"根本不是代码行，改了三轮还在漂。
+    const isComment = (l) => /^\s*(\/\/|\*|\/\*)/.test(l);
     const tok = /(pageSize|PAGE_SIZE)/.test(k) ? /PAGE_SIZE|const\s/ :
       /(readingTab|readingType|hotTab|articlesTab|articlesSort|videosTab)/.test(k) ? /tab|type|sort|PAGE_SIZE|\|\|/ :
       /^\/api\//.test(k) || /^fe/.test(k) ? /api\/|\bps\b|qs\(|useEffect|fetch|=>/ : /.*/;
-    if (!tok.test(hit)) {
+    if (isComment(hit) || !tok.test(hit)) {
       // 行号漂移是常态（本仓最长的那个文件每次改动都挪几十行）：红灯必须自带"现在在哪一行"，
       // 否则每轮都要人肉重找一遍——上一轮就为此重跑了三次。
       const near = lines.map((l, i) => ({ n: i + 1, d: Math.abs(i + 1 - Number(ln)) }))
-        .filter((x) => tok.test(lines[x.n - 1])).sort((a, b) => a.d - b.d)[0];
-      bad.push(`${k}→${v} 指向的行不含预期 token：「${hit.trim().slice(0, 50)}」` +
-        (near ? `；token 最近处在 ${f}:${near.n}（差 ${near.n - Number(ln) > 0 ? '+' : ''}${near.n - Number(ln)} 行），改出处表` : `；全文件找不到含该 token 的行（代码搬家或出处是编的）`));
+        .filter((x) => !isComment(lines[x.n - 1]) && tok.test(lines[x.n - 1]))
+        .sort((a, b) => a.d - b.d)[0];
+      bad.push(`${k}→${v} 指向的${isComment(hit) ? '是注释行' : '行不含预期 token'}：「${hit.trim().slice(0, 50)}」` +
+        (near ? `；代码里的 token 在 ${f}:${near.n}（差 ${near.n - Number(ln) > 0 ? '+' : ''}${near.n - Number(ln)} 行），改出处表` : `；全文件找不到含该 token 的代码行（代码搬家或出处是编的）`));
     }
   }
   assert.deepStrictEqual(bad, [], '参数出处表有问题：\n' + bad.join('\n'));

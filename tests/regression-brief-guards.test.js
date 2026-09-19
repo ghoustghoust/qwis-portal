@@ -5,6 +5,7 @@ const assert = require('node:assert');
 const {
   pickDailyReport, isAiDailyReport, canPublishWeekly, passesDailyQualityGate,
   DAILY_AI_MAX_AGE_HOURS, DAILY_MIN_SCORE,
+  dailyMinScoreOf, applyDailyQualityGate,
 } = require('../lib/brief-guards.js');
 
 // 线上真实数据（/api/brief/history 2026-09-18）：
@@ -105,4 +106,29 @@ test('11. 库里 score 列是 NULL（不是 0 分）：门槛必须放行，否�
   assert.equal(passesDailyQualityGate({ title: 't', score: 22 }), false, '低分照剔：放宽只针对未评分，不针对不及格');
   assert.equal(passesDailyQualityGate({ title: 't', score: '45' }), true, 'Turso 可能回字符串数字，仍按 45 分处理');
   assert.equal(passesDailyQualityGate({ title: 't', score: '12' }, 20), false, '字符串分数一样受门槛约束');
+});
+
+test('12. 门槛配置本身坏掉时不许把整期已评分条目一起剔（2026-09-19 独立对抗审查查出）', () => {
+  // 五份写入器原来各自写 `Number(aiCfg.dailyMinScore ?? 30)`：
+  //   配置 = 'abc' → NaN → `s >= NaN` 恒 false → **95 分也照样被剔**，整期只剩无分条目；
+  //   配置 = ''    → 0  → 门槛静默失效（没人知道）。
+  // 现在归一与出声都收进 applyDailyQualityGate 一处实现（W14 反查每个写入点必须调它）。
+  assert.equal(passesDailyQualityGate({ score: 95 }, NaN), true, '坏门槛值不许把高分条目杀掉');
+  assert.equal(passesDailyQualityGate({ score: 95 }, ''), true, '空串门槛按默认 30 走，不许当 0 用');
+  assert.equal(passesDailyQualityGate({ score: 12 }, ''), false, '回默认 30 之后，12 分仍该剔');
+  assert.equal(passesDailyQualityGate({ score: 95 }, 1e9), true, '越界门槛按不可用处理（回 30）');
+  assert.equal(dailyMinScoreOf('abc'), DAILY_MIN_SCORE);
+  assert.equal(dailyMinScoreOf(undefined), DAILY_MIN_SCORE);
+  assert.equal(dailyMinScoreOf(45), 45, '正常配置原样生效');
+  const logs = [];
+  const list = [{ score: 95 }, { score: 10 }, { score: null }, { kind: 'video', score: 3 }];
+  const r = applyDailyQualityGate(list, 'abc', (m) => logs.push(m));
+  assert.equal(r.minScore, DAILY_MIN_SCORE);
+  assert.equal(r.fellBack, true, '坏配置必须回报 fellBack，供调用方出声');
+  assert.equal(r.kept.length, 3, '只该剔掉真不及格的那一条');
+  assert.deepEqual(r.kept.map((x) => x.score), [95, null, 3], '留下的是高分 + 未评分 + 视频（视频不参与分数门槛）');
+  assert.equal(r.dropped, 1);
+  assert.ok(logs.some((l) => /配置不可用/.test(l)), '坏配置必须单独出声，不能混在剔除数里（静默降级＝没人知道）');
+  const ok2 = applyDailyQualityGate(list, 30, (m) => logs.push(m));
+  assert.equal(ok2.fellBack, false, '正常配置不许报 fellBack');
 });

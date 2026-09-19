@@ -705,12 +705,15 @@ async function generateDailyInline() {
   // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
   // 最晚接上门槛 → id=103 的 stats 形状 {candidates,articles,sections,totalItems} 正是本函数的指纹，
   // 实测带进 2 条 <30 分（29/22）。门槛口径与其余四份共用同一条 lib/brief-guards 实现。
+  let gateDropped = 0; // stats.candidates 的口径统一为"进门槛前的候选数"（五份写入器同一条口径，见 CLOUD_PIPELINE_GUIDE §12）
   try {
-    const minScore = Number(((await getSetting('ai', {})) || {}).dailyMinScore ?? briefGuards.DAILY_MIN_SCORE);
-    const before = valid.length;
-    valid = valid.filter((a) => briefGuards.passesDailyQualityGate(a, minScore));
-    if (before !== valid.length) console.log(`[日报内联] 门槛(≥${minScore} 分): 剔除 ${before - valid.length} 条`);
-  } catch { /* 门槛读设置失败不阻断出报 */ }
+    const aiCfg = (await getSetting('ai', {})) || {};
+    const g = briefGuards.applyDailyQualityGate(valid, aiCfg.dailyMinScore, (m) => console.log(`[日报内联] ${m}`));
+    valid = g.kept; gateDropped = g.dropped;
+  } catch (e) {
+    // 门槛没跑成必须出声：静默 catch 会让"这一期没门槛"看不出来（W14 只看代码接线，看不到运行时没执行）
+    console.log('[日报内联] 门槛检查失败（不阻断出报，但本期等于无门槛）:', e.message);
+  }
 
   const sections = [];
   const used = new Set();
@@ -762,7 +765,7 @@ async function generateDailyInline() {
     }
   } catch { /* 媒体栏失败不阻断日报 */ }
 
-  const stats = { candidates: valid.length, articles: valid.length, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
+  const stats = { candidates: valid.length + gateDropped, articles: valid.length, gateDropped, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
   const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);
   await qRun('INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
     [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]);

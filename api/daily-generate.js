@@ -123,14 +123,13 @@ async function generateDaily(windowHours) {
   // 线上最新一期 id=103 实测仍有 2 条低于 30 分入报（29 分「Claude Code now reads AG…」/22 分）。
   // 门槛口径与 runner 完全一致（同一 lib/brief-guards 实现 + 同一个 ai.dailyMinScore 设置），
   // 未评分条目一律不误杀（降级关键词版要能出报）。
+  let gateDropped = 0; // stats.candidates 统一口径 = 进门槛前的候选数（五份写入器一致，见 CLOUD_PIPELINE_GUIDE §12）
   try {
     const guards = require('../lib/brief-guards');
     const aiCfg = await getSetting('ai', {}) || {};
-    const minScore = Number(aiCfg.dailyMinScore ?? guards.DAILY_MIN_SCORE);
-    const before = valid.length;
-    valid = valid.filter((a) => guards.passesDailyQualityGate(a, minScore));
-    if (before !== valid.length) console.log(`日报门槛(六维 ≥${minScore} 分): 剔除 ${before - valid.length} 条 / 保留 ${valid.length} 条`);
-  } catch (e) { console.log('门槛检查失败（不阻断，按无门槛继续）:', e.message); }
+    const g = guards.applyDailyQualityGate(valid, aiCfg.dailyMinScore, (m) => console.log(m));
+    valid = g.kept; gateDropped = g.dropped;
+  } catch (e) { console.log('门槛检查失败（不阻断出报，但本期等于无门槛）:', e.message); }
 
   // 栏目分配
   const sections = [];
@@ -184,7 +183,8 @@ async function generateDaily(windowHours) {
 
   // 统计
   const stats = {
-    candidates: valid.length,
+    candidates: valid.length + gateDropped,
+    gateDropped,
     articles: valid.length,
     sections: sections.length,
     totalItems: sections.reduce((n, s) => n + s.items.length, 0),
