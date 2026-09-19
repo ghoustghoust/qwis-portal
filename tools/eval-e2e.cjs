@@ -737,10 +737,16 @@ const SCENARIOS = [
       assert(c, 'api', '点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次）', docs.length === 1,
         `document 响应 ${docs.length} 次：${docs.map((d) => d.url).join(',')}`);
       assert(c, 'api', '切页后页面自己重新取到 /api/daily', !!(await waitForApi(net, '/api/daily', 15000)));
+      // 深链 + 刷新 = 一次**冷 document**：/api/hot 还没落地就数行，必然把"慢"读成"空壳"
+      // （验收轮第 1 轮就是这么红的，而上一版这条判据连读数都没记 → 红了也说不清）。
       net.length = 0;
       await goto(page, c, target + '/hot/', SEL.hotCard);
       await page.reload({ waitUntil: 'domcontentloaded', timeout: NAV });
-      assert(c, 'data', '深链 + 刷新仍停在热点榜（有内容不是空壳）', (await stableCount(page, SEL.hotCard, 6, 800)) > 0);
+      const hotOwn = await waitForApi(net, '/api/hot', 45000);
+      await waitRendered(page, { minChars: 500, timeoutMs: 30000 });
+      const hotN = await stableCount(page, SEL.hotCard, 8, 800);
+      assert(c, 'data', '深链 + 刷新仍停在热点榜（有内容不是空壳）', hotN > 0,
+        `刷新后卡片 ${hotN} 张，/api/hot ${hotOwn ? `已到达(status=${hotOwn.status}, ${hotOwn.bytes}B)` : '45s 内没到达'}，整页 ${await bodyText(page).then((t) => t.length)} 字`);
       assert(c, 'api', '刷新后公共数据链路仍活着（/api/settings 由 store 拉取）', !!(await waitForApi(net, '/api/settings', 15000)));
       c.renderedText = (await bodyText(page)).slice(0, 300);
     },
@@ -751,12 +757,20 @@ const SCENARIOS = [
       const list = ['/reader/', '/daily/', '/hot/', '/reading/', '/weekly/', '/mybrief/', '/admin/'];
       const leaks = []; const errs = []; const texts = {}; const settle = {}; const emptyPages = {};
       let adminBtn = '';
+      // 每页"应当有内容"的前提是**它自己的数据请求已经落地**。上一版只等 30s 渲染稳定，
+      // 于是 /api/weekly 冷启动慢的那一轮被读成"124 字的页面"——那是把"慢"判成"空壳"（坑 #48/#53 同源）。
+      const PAGE_API = { '/reader/': '/api/articles', '/daily/': '/api/daily', '/hot/': '/api/hot',
+        '/reading/': '/api/reading', '/weekly/': '/api/weekly', '/mybrief/': '/api/mybrief' };
+      const arrived = {};
       for (const p of list) {
         page.once('pageerror', (e) => errs.push(`${p}: ${String(e.message).slice(0, 100)}`));
+        net.length = 0;
         await page.goto(target + p, { waitUntil: 'domcontentloaded', timeout: NAV });
         await page.waitForSelector('body', { timeout: 20000 });
-        // 不用定长 sleep：慢的那一轮 /hot/ 只渲染出 376 字就被判"白屏"（实测 flaky 一次），
-        // 改成等渲染稳定，再按同一标准判
+        if (PAGE_API[p]) {
+          const own = await waitForApi(net, PAGE_API[p], 60000);
+          arrived[p] = own ? { status: own.status, bytes: own.bytes, ms: own.ms } : null;
+        }
         const st = await waitRendered(page, { minChars: p === '/admin/' ? 120 : 500, timeoutMs: 30000 });
         texts[p] = st.chars;
         settle[p] = st;
@@ -766,7 +780,8 @@ const SCENARIOS = [
         // 那是 B76 归一后页面正常落到「今天订阅源没有新的精选内容」（runner 当批写出的是空态），
         // 不是白屏。所以判据写成"要么 >500 字内容，要么命中空态文案"：
         // 白屏/半空壳两条都不满足，仍然红——放行的是合法态，不是把门槛调低。
-        const EMPTY_OK = ['今天订阅源没有新的精选内容', '我的早报需要你的订阅', EMPTY_READING];
+        const EMPTY_OK = ['今天订阅源没有新的精选内容', '我的早报需要你的订阅', EMPTY_READING,
+          '首期精选周刊将在周五 18:00 生成'];
         const es = EMPTY_OK.filter((s) => txt.includes(s));
         if (es.length) emptyPages[p] = es[0];
         if (p === '/admin/') adminBtn = await page.$$eval('button', (els) => els.map((e) => e.innerText.trim()).filter(Boolean).join(' | ')).catch(() => '');
@@ -777,9 +792,12 @@ const SCENARIOS = [
       assert(c, 'render', '后台登录按钮是本地化文案（不是 `login.submit`）',
         /登录|Sign In/i.test(adminBtn) && !adminBtn.includes('login.'), adminBtn.slice(0, 120));
       c.metrics.emptyPages = emptyPages;
-      assert(c, 'data', '前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）',
-        Object.entries(texts).filter(([p, v]) => p !== '/admin/' && v <= 500 && !(p in emptyPages)).length === 0,
-        JSON.stringify(texts) + (Object.keys(emptyPages).length ? ` 空态页=${JSON.stringify(emptyPages)}` : ''));
+      c.metrics.settle = settle;
+      c.metrics.pageApiArrived = arrived;
+      const redPages = Object.entries(texts).filter(([p, v]) => p !== '/admin/' && v <= 500 && !(p in emptyPages));
+      assert(c, 'data', '前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）', redPages.length === 0,
+        JSON.stringify(texts) + (Object.keys(emptyPages).length ? ` 空态页=${JSON.stringify(emptyPages)}` : '') +
+        (redPages.length ? ` 红页读数=${redPages.map(([p]) => `${p}: 等API=${arrived[p] ? JSON.stringify(arrived[p]) : 'n/a'}/${settle[p] && settle[p].settled ? '渲染稳定' : '渲染未稳定'} @${settle[p] && settle[p].waitedMs}ms`).join(' ; ')}` : ''));
       // 后台未登录只有登录门（实测 190 字），"不白屏"要判的是**门在不在**而不是字数：
       // 必须有口令输入框 + 有可见文案，否则就是白屏或裸壳
       const hasPwd = await page.locator('input[type=password]').count();
