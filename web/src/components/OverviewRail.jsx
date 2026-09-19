@@ -4,8 +4,10 @@ import StatCard from './ui/StatCard.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 右侧统计轨（2026-09-05 视觉精修）：未选中文章时的右栏占位
-// 数据来自 GET /api/status 的 overview（口径已去噪：不含热榜/聚合源）
-// {enabledSources,unreadArticles,todayNew,weekNew,dailyItemCount,dailyTopSources}
+// 数据分两路（B26 拆首屏）：
+//   GET /api/status               → {enabledSources,unreadArticles,todayNew,weekNew}（轻投影）
+//   GET /api/status/daily-sources → {dailyItemCount,dailyTopSources}（要聚合 daily_reports BLOB，懒加载）
+// 口径已去噪：不含热榜/聚合源
 const TIPS = [
   '点左侧文件夹即可读整个分组的聚合资讯，不用逐源点开',
   '开启「合并」开关，同一事件的多信源报道会折叠为一条',
@@ -15,10 +17,13 @@ const TIPS = [
 
 // B12：模块级缓存——切页回来立即命中（60s TTL），不再重新拉取
 let _ovCache = { data: null, ts: 0 };
+// B26：入报统计（条目数 + 来源榜）拆成独立按需请求，故单独一份缓存
+let _ovHeavyCache = { data: null, ts: 0 };
 const OV_TTL = 60e3;
 
 export default function OverviewRail() {
   const [ov, setOv] = useState(_ovCache.data && Date.now() - _ovCache.ts < OV_TTL ? _ovCache.data : null);
+  const [heavy, setHeavy] = useState(_ovHeavyCache.data && Date.now() - _ovHeavyCache.ts < OV_TTL ? _ovHeavyCache.data : null);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,7 +40,26 @@ export default function OverviewRail() {
     };
   }, []);
 
-  const top = ov?.dailyTopSources || [];
+  // B26（2026-09-19）：dailyItemCount / dailyTopSources 原先夹在 /api/status 里，
+  // 而这两个值要聚合近 7 天 daily_reports 的 BLOB（实测单次 214KB / 2.0s），
+  // 是首屏那个冷态 12~30s 端点的组成部分之一。它们不是首屏必需 → 拆到
+  // GET /api/status/daily-sources 懒加载；失败要显示得出来，不再 .catch(()=>{}) 静默成"本期暂无"。
+  useEffect(() => {
+    let cancelled = false;
+    if (_ovHeavyCache.data && Date.now() - _ovHeavyCache.ts < OV_TTL) return;
+    api
+      .get('/api/status/daily-sources')
+      .then((d) => {
+        _ovHeavyCache = { data: d?.overview || {}, ts: Date.now() };
+        if (!cancelled) setHeavy(_ovHeavyCache.data);
+      })
+      .catch(() => { if (!cancelled) setHeavy({ loadError: true }); });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const top = heavy?.dailyTopSources || [];
 
   // 2026-09-05 排版修正：钉在右缘的常驻窄边栏（对照样图 2.png 的右栏）；
   // 选中文章后不再卸载（正文加载不影响本周概览）；窄屏（<xl）让位隐藏
@@ -49,14 +73,18 @@ export default function OverviewRail() {
             <StatCard compact label="未读文章" value={ov?.unreadArticles ?? '—'} tone="soft" />
             <StatCard compact label="今日新增" value={ov?.todayNew ?? '—'} tone="surface" />
             <StatCard compact label="近7天更新" value={ov?.weekNew ?? '—'} tone="surface2" />
-            <StatCard compact label="入早报条目" value={ov?.dailyItemCount ?? '—'} tone="soft" />
+            <StatCard compact label="入早报条目" value={heavy?.loadError ? '—' : (heavy?.dailyItemCount ?? '—')} tone="soft" />
           </div>
         </div>
 
-        {/* ② 近7天入早报 Top5 来源榜 */}
+        {/* ② 近7天入早报 Top5 来源榜（B26：懒加载，加载失败要说得出口） */}
         <div className="card p-3">
           <div className="text-xs t-muted mb-2 tracking-wide">近7天入早报 · 来源榜</div>
-          {top.length === 0 ? (
+          {heavy?.loadError ? (
+            <div className="py-4 text-center text-xs t-muted">来源榜加载失败（不影响左侧阅读）</div>
+          ) : !heavy ? (
+            <div className="py-4 text-center text-xs t-muted">正在统计…</div>
+          ) : top.length === 0 ? (
             <div className="py-4 text-center text-xs t-muted">本期暂无</div>
           ) : (
             <div className="space-y-1">

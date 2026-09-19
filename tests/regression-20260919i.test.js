@@ -147,6 +147,40 @@ test('I9 B8：正文/摘要的两种来源必须分流渲染（纯文本回退�
     '热点详情的 AI 导读/推荐理由仍是裸文本（B8 的"重点标注丢失"面）');
 });
 
+test('I10 B26：/api/status 首屏不得内联重统计，重统计走独立端点（两端都要有）', () => {
+  const slug = read('api', '[...slug].js');
+  const a0 = slug.indexOf('async function handleStatus(');
+  const a1 = slug.indexOf('async function handleStatusDailySources(');
+  assert.ok(a0 > 0 && a1 > a0, '云端 handleStatus / handleStatusDailySources 定位失败');
+  const body = slug.slice(a0, a1);
+  assert.ok(!/FROM daily_reports/.test(body),
+    'B26 复发：/api/status 又把 daily_reports 的 BLOB 聚合塞进首屏（实测 214KB/2.0s）');
+  assert.ok(!/SELECT\s+stats/.test(body), '又 SELECT 了从未消费的 stats 列（坑 H11 同型）');
+  assert.ok(!/CASE WHEN/.test(body),
+    'B26 根因复发：多条计数被合并成一条无 WHERE 的 CASE 全扫（实测 11.8s，索引全被打掉）');
+  assert.ok(slug.includes("path === '/api/status/daily-sources'"), '云端新端点没接进路由表');
+  // 本地端必须有同名端点：前端两端共用，缺一个就是本地永远显示"加载失败"
+  const local = read('server', 'routes', 'status.js');
+  assert.ok(local.includes("router.get('/daily-sources'"), '本地端缺 GET /api/status/daily-sources');
+  assert.ok(/近 7 天|7 \* 86400e3/.test(local) && !/ORDER BY generated_at DESC LIMIT 1/.test(local),
+    'B89：本地来源榜又退回"只算最新一期"，与界面文案「近7天」和云端都不一致');
+  // 前端确实拆开了：概览栏不再从 status 读 heavy 字段
+  const rail = read('web', 'src', 'components', 'OverviewRail.jsx');
+  assert.ok(rail.includes('/api/status/daily-sources'), '统计轨没有懒加载新端点');
+  assert.ok(!/ov\?\.dailyTopSources/.test(rail), '统计轨仍从首屏 overview 读来源榜（拆了没接上）');
+  assert.ok(/loadError/.test(rail), '来源榜加载失败必须显示得出口，不许静默成"本期暂无"（坑 #38 同族）');
+});
+
+test('I11 B11：后台 Tab 冷加载必须是骨架屏，不是一行文字', () => {
+  const src = read('web', 'src', 'pages', 'AdminPage.jsx');
+  const at = src.indexOf('function TabLoader');
+  assert.ok(at > 0, '找不到 TabLoader');
+  const body = src.slice(at, src.indexOf('\n}', at));
+  assert.ok(/<SkeletonList/.test(body), `TabLoader 又退回文字占位：${body.replace(/\s+/g, ' ').slice(0, 90)}`);
+  assert.ok(!/加载中/.test(body), '文字占位与前台骨架屏不同语言（B11 的批注点）');
+  assert.ok(/SkeletonList/.test(src.match(/^import[^\n]*Skeleton[^\n]*$/m)?.[0] || ''), '没 import SkeletonList，上面那条会白测');
+});
+
 test('I7 B85 追加：设了上界的列必须同时可收缩，否则行尾会被裁（800px 实测 6/37 行溢出）', () => {
   const file = read('web', 'src', 'components', 'ColumnSection.jsx');
   const row = bodyOf(file, 'function CompactRow');

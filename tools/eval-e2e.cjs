@@ -45,8 +45,8 @@ const API_BUDGET_MS = Number(process.env.E2E_API_BUDGET || 8000);
 // ── 参数出处表：一律抄自被检代码，禁止凭印象（F7 逐条查 source 形如 file:line）──
 const SRC = {
   hotTab: 'api/[...slug].js:384',        // tab: all | featured(:397) | hotlist(:402)
-  readingTab: 'api/[...slug].js:1026',   // ['all','favorited','read']（B10 收副本后本文件行号上移；G5 专抓这种漂移）
-  readingType: 'api/[...slug].js:1027',  // ['all','article','video','podcast']
+  readingTab: 'api/[...slug].js:1042',   // ['all','favorited','read']（B26 拆首屏后又下移；G5 专抓这种漂移）
+  readingType: 'api/[...slug].js:1043',  // ['all','article','video','podcast']
   articlesTab: 'api/[...slug].js:127',
   articlesSort: 'api/[...slug].js:128',
   videosTab: 'api/[...slug].js:261',
@@ -54,7 +54,7 @@ const SRC = {
   // 必须知道这个常量，否则会把"接口一共只给了 4 条"当成前端漏渲染。
   pageSizeArticles: 'api/[...slug].js:126',
   pageSizeVideos: 'api/[...slug].js:260',
-  pageSizeReading: 'api/[...slug].js:1026',
+  pageSizeReading: 'api/[...slug].js:1045',
   feArticles: 'web/src/components/ArticleList.jsx:89',
   feVideos: 'web/src/components/VideoGrid.jsx:57',
   feReading: 'web/src/pages/MyReadingPage.jsx:93',

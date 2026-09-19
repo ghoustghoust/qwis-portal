@@ -87,22 +87,43 @@ test('UI-D2: GET /api/status 带 overview(统计轨契约)', async () => {
   });
 });
 
-test('UI-D3: overview.dailyTopSources 统计最新日报条目来源 Top5', async () => {
+test('UI-D3: overview.dailyTopSources 统计近 7 天日报条目的来源 Top5（带头像）', async () => {
   const sections = [
     { key: 'ai', items: [
       { source_name: '来源甲' }, { source_name: '来源甲' }, { source_name: '来源乙' },
     ] },
     { key: 'pocoon', items: [{ source_name: '3 源' }] }, // 合成条目应被跳过
   ];
+  // B26：本地端来源榜现在与云端同口径（近 7 天窗口 + 按名字补头像），
+  // 所以除了"计数对不对"，还要正向证明"头像取得到"——否则 avatar 永远是 null 也没人发现。
+  db.prepare("INSERT INTO sources(type,name,url,enabled,avatar,created_at) VALUES('rss','来源甲','https://a.example/rss',1,?,?)")
+    .run('https://cdn.example/a.png', new Date().toISOString());
   db.prepare('INSERT INTO daily_reports(generated_at,window_hours,stats,sections) VALUES(?,?,?,?)')
     .run(new Date().toISOString(), 24, '{}', JSON.stringify(sections));
+  // 窗口外（8 天前）的一期不得计入：钉的是"近 7 天"这句话，不是"最新一期"（本地旧实现就是后者）
+  db.prepare('INSERT INTO daily_reports(generated_at,window_hours,stats,sections) VALUES(?,?,?,?)')
+    .run(new Date(Date.now() - 8 * 86400e3).toISOString(), 24, '{}',
+      JSON.stringify([{ key: 'ai', items: [{ source_name: '窗口外来源' }] }]));
   await withServer(makeApp(), async (base) => {
     const data = await (await fetch(`${base}/api/status`)).json();
     const o = data.overview;
-    assert.equal(o.dailyItemCount, 4);
-    assert.deepEqual(o.dailyTopSources[0], { name: '来源甲', count: 2 });
-    assert.deepEqual(o.dailyTopSources[1], { name: '来源乙', count: 1 });
+    assert.equal(o.dailyItemCount, 4, '窗口外的期不得计入');
+    assert.equal(o.dailyTopSources[0].name, '来源甲');
+    assert.equal(o.dailyTopSources[0].count, 2);
+    assert.equal(o.dailyTopSources[0].avatar, 'https://cdn.example/a.png', '来源榜要带头像（统计轨渲染头像）');
+    assert.equal(o.dailyTopSources[1].name, '来源乙');
+    assert.equal(o.dailyTopSources[1].avatar, null, '无头像源显式 null，不能缺字段');
+    assert.ok(!o.dailyTopSources.some((t) => t.name === '窗口外来源'), '8 天前那期不得进榜');
     assert.equal(o.dailyTopSources.length, 2, '合成「N 源」条目不计入');
+  });
+  // 拆分后的按需端点必须与首屏同源同数（"拆走"不等于"算了另一套"）
+  await withServer(makeApp(), async (base) => {
+    const a = await (await fetch(`${base}/api/status`)).json();
+    const b = await (await fetch(`${base}/api/status/daily-sources`)).json();
+    assert.ok(Array.isArray(b.overview.dailyTopSources), '新端点缺 dailyTopSources');
+    assert.equal(b.overview.dailyItemCount, a.overview.dailyItemCount,
+      `两端条目数不一致：status=${a.overview.dailyItemCount} daily-sources=${b.overview.dailyItemCount}`);
+    assert.deepEqual(b.overview.dailyTopSources, a.overview.dailyTopSources, '两端来源榜不一致');
   });
 });
 

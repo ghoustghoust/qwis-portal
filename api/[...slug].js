@@ -906,8 +906,8 @@ async function handleStatus(req) {
   const rssLast = (rssLastRaw === 'null' || rssLastRaw === undefined) ? null : rssLastRaw;
   const biliLast = (biliLastRaw === 'null' || biliLastRaw === undefined) ? null : biliLastRaw;
 
-  // 抗过载优化（T3-3，Turso 实测）：①噪声过滤用正连接（104ms），弃 NOT IN(1500 字面量)（12.8s/次——
-  // 逐行评估巨型 IN 列表）；②四组 COUNT 合并单次扫描
+  // 抗过载优化（T3-3，Turso 实测）：噪声过滤用正连接（104ms），弃 NOT IN(1500 字面量)（12.8s/次——
+  // 逐行评估巨型 IN 列表）。下面三条计数共用同一段 JOIN/WHERE 前缀，口径必须一致。
   const notNoiseJoin = "JOIN sources s ON s.id=a.source_id WHERE s.type!='hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)!=1";
   const now = Date.now();
   const dayStart = new Date(now); dayStart.setHours(0, 0, 0, 0);
@@ -915,27 +915,49 @@ async function handleStatus(req) {
 
   let overview;
   {
-    // 27-reader-today：未读只统计近 3 天（与 GET /api/sources 同口径）
+    // B26（2026-09-19 实测）：这原先是**一条无 WHERE 的合并 CASE 扫描**——四组计数一次扫完，
+    // 79.8k 行 × 平均 15.2KB TEXT 全部落进读层，idx_articles_read_sk/idx_articles_created 都被
+    // CASE 合并打掉，单这一步 11.8s，整个端点冷态 12~30s（Hobby 预算 30s → 504）。
+    // 拆成三条各自走索引的查询后实测合计 ≈1.8s（未读 1,116ms / 今日 147ms / 本周 455ms，线上只读取数）。
+    // 语义必须逐字不变：判据、噪声过滤、时间字段口径都与合并版一致（本轮以修前线上读数做对账）。
     const threeDaysAgo = new Date(now - 3 * 86400e3).toISOString();
-    const row = await qOne(`
-      SELECT
-        SUM(CASE WHEN a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ? THEN 1 ELSE 0 END) AS unread,
-        SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS todayNew,
-        SUM(CASE WHEN a.created_at >= ? THEN 1 ELSE 0 END) AS weekNew
-      FROM articles a ${notNoiseJoin}
-    `, [threeDaysAgo, dayStart.toISOString(), weekAgo]);
+    const unread = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ?`, [threeDaysAgo]);
+    const today = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [dayStart.toISOString()]);
+    const week = await qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [weekAgo]);
     overview = {
-      unreadArticles: row?.unread || 0,
-      todayNew: row?.todayNew || 0,
-      weekNew: row?.weekNew || 0,
+      unreadArticles: unread?.c || 0,
+      todayNew: today?.c || 0,
+      weekNew: week?.c || 0,
     };
   }
   overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE enabled=1 AND type!='hotlist' AND COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)!=1`)).c;
 
-  // B4/P3-5：入早报统计——最近 7 天 daily_reports 的 sections 条目按来源聚合（≤7 行 JSON，JS 聚合零表扫描）
+  // B26：入报统计（近 7 天 daily_reports 的 sections 聚合 + 头像补全）**移出首屏**。
+  // 移出而不是删：① 它要读 daily_reports 的 BLOB——实测一次传输 214KB、耗时 2.0s，
+  // 而原查询连从未被消费的 stats 列一起 SELECT（H11 同型：全量取回只用几个投影字段）；
+  // ② 消费方只有阅读器右侧概览栏，可懒加载。改走 GET /api/status/daily-sources。
+  const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
+
+  const result = jsonOk({
+    intervals, lastSync: { rss: rssLast, bilibili: biliLast },
+    overview, pausedSources: { count: pausedCount },
+  });
+  _statusCache.val = result;
+  _statusCache.ts = Date.now();
+  return result;
+}
+
+// GET /api/status/daily-sources —— B26 拆出的重统计，按需加载（阅读器概览栏懒挂载）
+// 只 SELECT sections（stats 列历史上被取回后从未消费，见坑 H11），并独立缓存 60s：
+// 它比首屏字段更贵，但比 status 更可以旧。
+const _dailySourcesCache = { val: null, ts: 0 };
+const DAILY_SOURCES_TTL = 60000;
+async function handleStatusDailySources() {
+  if (_dailySourcesCache.val && Date.now() - _dailySourcesCache.ts < DAILY_SOURCES_TTL) return _dailySourcesCache.val;
+  const overview = { dailyItemCount: 0, dailyTopSources: [] };
   try {
-    const since = new Date(now - 7 * 86400e3).toISOString();
-    const reports = await qAll('SELECT stats, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
+    const since = new Date(Date.now() - 7 * 86400e3).toISOString();
+    const reports = await qAll('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
     const srcCount = {};
     let itemCount = 0;
     for (const rep of reports) {
@@ -960,16 +982,10 @@ async function handleStatus(req) {
       const avMap = new Map(avRows.map((r) => [r.name, r.avatar]));
       for (const t of overview.dailyTopSources) t.avatar = avMap.get(t.name) || null;
     }
-  } catch { /* 统计失败不阻断 status */ }
-
-  const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
-
-  const result = jsonOk({
-    intervals, lastSync: { rss: rssLast, bilibili: biliLast },
-    overview, pausedSources: { count: pausedCount },
-  });
-  _statusCache.val = result;
-  _statusCache.ts = Date.now();
+  } catch { /* 统计失败不阻断本端点 */ }
+  const result = jsonOk({ overview, since: new Date(Date.now() - 7 * 86400e3).toISOString() });
+  _dailySourcesCache.val = result;
+  _dailySourcesCache.ts = Date.now();
   return result;
 }
 
@@ -2849,6 +2865,7 @@ async function dispatch(req) {
     if (path === '/api/sources/library') return handleSourcesLibrary(req);
     if (path === '/api/sources') return handleSources(req);
     if (path === '/api/status') return handleStatus(req);
+    if (path === '/api/status/daily-sources') return handleStatusDailySources();
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
     if (path === '/api/weekly/archive' && method === 'GET') return jsonOk({ archive: (await getSetting('weekly.archive', [])) || [] });
