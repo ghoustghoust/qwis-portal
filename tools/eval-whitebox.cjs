@@ -412,6 +412,21 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   notes.push('  i W19：只在**相邻成员成组**出现事件键时判红（`api/[...slug].js` 里两处 `mybrief:` 是 settings 命名空间字段，第一版按整文件计数就是假红）');
 }
 
+// ── W20 翻译 prompt 只许 lib/ai-prompts.js 一份（B111 / spec 39-6，2026-09-21）──
+// 判据与回归锁 tests/regression-ai-prompts.test.js 共用 lib/ai-prompts#findPromptViolations。
+// 病根实测：同一条链路上有 5 份"翻译提示词"（prompts/translate.md + api/_ai.js 的 7 条内嵌兜底
+// + 本地精翻模块 DEFAULT_PROMPT + runner 里与它**字对字相同**却无人引用的死常量 + 本地端点更短的
+// 第三变体），键名还三种互不相通 → 后台改 prompt 对主链路无效（H10/B51 假开关同族）。
+{
+  const { findPromptViolations } = require('../lib/ai-prompts');
+  const r = findPromptViolations(ROOT);
+  ok('W20', r.scanned >= 100 && r.violations.length === 0 && r.missingImport.length === 0 && r.consumed >= 3,
+    `扫 ${r.scanned} 个源文件；手写翻译 prompt 字面量：${JSON.stringify(r.violations.slice(0, 6).map((v) => `${v.file}:${v.line} ${v.label}`))}；` +
+    `未接唯一实现的消费点应 0，实得 ${r.missingImport.length}：${r.missingImport.join('、') || '无'}（消费点 ${r.consumed}/3）`);
+  notes.push('  i W20：只认字符串字面量（注释里写 prompt 不算实现）；本轮第一次草稿把视图字段名写成 `masked`+`s.string`，'
+    + '遍历一个**字符串**得到的是逐字符、`undefined` 一律 continue → 判据恒绿。坏样本先跑一次红才算数（坑 #71）');
+}
+
 // ── W23 测试里的写方法必须指隔离库（B117 / spec43 §六，2026-09-21）──
 // 判据与回归锁 tests/regression-test-isolation.test.js 共用 lib/test-isolation#findWriteWithoutIsolation。
 // 病根：`regression-20260918` 曾对生产发 `DELETE /api/weekly/archive/999999`（真 Bearer token），

@@ -88,9 +88,11 @@ const CASE = process.argv[2];
     _ai._setProviderOverride(null);
   }
   if (CASE === 'prompt') {
-    await put('prompt.filter', '"自定义过滤提示词"');
+    // 键名 ai.prompt.filter 是 B111 统一后的写法（收口前这里叫 prompt.filter，与本地端的
+    // ai.prompt.translate / 精翻模块的 translate.prompt 三种并存、互不相通）
+    await put('ai.prompt.filter', '"自定义过滤提示词"');
     out.custom = await _ai.loadPrompt('filter');
-    await db.execute("DELETE FROM settings WHERE key='prompt.filter'");
+    await db.execute("DELETE FROM settings WHERE key='ai.prompt.filter'");
     out.fallback = await _ai.loadPrompt('filter');
   }
   if (CASE === 'stats') {
@@ -144,7 +146,9 @@ test('4. filterArticle：脏 JSON 兜底 + 正常解析', () => {
   assert.equal(r.dirty.ignore, false, '解析失败应放行');
 }, { timeout: 60000 });
 
-test('5. loadPrompt：settings 覆盖 > repo 文件', () => {
+test('5. loadPrompt：settings 覆盖 > repo 文件（键名由 lib/ai-prompts 统一，B111）', () => {
+  assert.equal(require('../lib/ai-prompts').settingKey('filter'), 'ai.prompt.filter',
+    '统一键名变了 → 驱动里写的那条键就不是产品代码读的那条，这条用例会变成恒真假绿');
   const r = run('prompt');
   assert.equal(r.custom, '自定义过滤提示词');
   assert.match(r.fallback, /初筛编辑/);

@@ -2,10 +2,9 @@
 // 全系统唯一 AI 调用通道：串行限流（Agnes 免费池实测 20 RPM）+ 429/5xx 退避重试
 // + 翻译降级链（Agnes→Bing→Google）+ 双层术语库 + 两阶段初筛 + prompt 文件化 + 调用统计
 // runner（tools/collect-turso.js）与 Vercel（api/[...slug].js）共用本模块。
-const fs = require('fs');
-const path = require('path');
 const { createClient } = require('@libsql/client');
 const { gapMs, DEFAULT_GAP_MS } = require('../lib/ai-throttle');
+const { promptText, settingKey: promptSettingKey } = require('../lib/ai-prompts');
 
 let _db = null;
 function getDb() {
@@ -271,34 +270,12 @@ async function filterArticle(meta) {
   }
 }
 
-// ═══ prompt 加载（F5）：settings 覆盖 > repo 文件 > 内嵌兜底 ═══
-const PROMPT_FILES = {
-  translate: path.join(__dirname, '..', 'prompts', 'translate.md'),
-  filter: path.join(__dirname, '..', 'prompts', 'filter.md'),
-  'term-extract': path.join(__dirname, '..', 'prompts', 'term-extract.md'),
-  'translate-refine': path.join(__dirname, '..', 'prompts', 'translate-refine.md'),
-  'translate-polish': path.join(__dirname, '..', 'prompts', 'translate-polish.md'),
-  'daily-analyze': path.join(__dirname, '..', 'prompts', 'daily-analyze.md'),
-  'daily-theme': path.join(__dirname, '..', 'prompts', 'daily-theme.md'),
-};
-// Vercel 部署可能不含 prompts/ 文件 → 内嵌兜底（与 prompts/ 同步义务）
-const EMBEDDED_PROMPTS = {
-  translate: '你是资深科技翻译专家。只输出译文，保留 Markdown 结构，代码/产品名不译，中英文间加空格。术语对照（必须严格遵循）：\n{{glossary}}\n',
-  filter: '你是初筛编辑。按 内容深度30/相关性30/写作质量20/实用创新20 打分。强制压分负例（命中即 ≤15 且 ignore=true）：标题党钩子（震惊/不看后悔/必看）、纯广告导购、荐股荐币拉人头、无信源八卦、内容农场空洞文。严格输出 JSON：{"score":0-100,"ignore":bool,"reason":"30字内"}\n',
-  'term-extract': '从中英对照文本提取专业术语对，置信度<0.7丢弃。严格输出 JSON 数组 [{"en","zh","domain","confidence"}]\n',
-  'translate-refine': '你是术语校对专家。只修正译文中与术语表不一致处，其余一字不动，只输出修正后全文。术语表：\n{{glossary}}\n',
-  'translate-polish': '你是资深科技出版编辑。从术语/表达/文化适应/格式四维改进译文，只输出最终稿。\n',
-  'daily-analyze': '你是科技媒体主编。按 选题/内容/深度/实用/创新/表达（各0-10）评分，给出 totalScore(0-100)/reason/summary/quote/points/tags。只输出严格 JSON。\n',
-  'daily-theme': '你是科技媒体主编。用一句话（≤60字，样式「从X，到Y，再到Z，判断W」）概括今日内容主线。只输出导语。\n',
-};
+// ═══ prompt 加载（F5）：优先级与兜底都在 lib/ai-prompts.js 一份（B111 / spec 39-6）═══
+// 键名从 `prompt.<name>` 改读 `ai.prompt.<name>`：云端与本地两端 settings 里**今天一个 prompt 覆盖键都没有**
+// （实测读数记在 docs/ISSUES.md B111 行），所以统一键名不需要迁移，也不改变任何现有行为。
 async function loadPrompt(name) {
-  const custom = await getSetting(`prompt.${name}`, '');
-  if (custom && String(custom).trim()) return String(custom);
-  try {
-    return fs.readFileSync(PROMPT_FILES[name], 'utf8');
-  } catch {
-    return EMBEDDED_PROMPTS[name] || '';
-  }
+  const custom = await getSetting(promptSettingKey(name), '');
+  return promptText(name, { override: custom });
 }
 
 // ═══ 多轮精翻（17-translate） ═══

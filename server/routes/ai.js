@@ -9,6 +9,7 @@
 const express = require('express');
 const llm = require('../services/ai/llm');
 const { getSetting, setSetting } = require('../db');
+const aiPrompts = require('../../lib/ai-prompts');
 const log = require('../util/log');
 
 const router = express.Router();
@@ -54,22 +55,20 @@ router.put('/config', (req, res) => {
 });
 
 // ── 精翻英文文章 ────────────────────────────────────────────
-const DEFAULT_TRANSLATE_PROMPT = `你是一位资深中英翻译专家，擅长科技/AI 领域。请将以下英文内容翻译为高质量中文，要求：
-1. 准确传达原意，不遗漏关键信息
-2. 符合中文科技文章表达习惯，避免翻译腔
-3. 专有名词首次出现时保留英文原文（如 "大语言模型（LLM）"）
-4. 保持原文段落结构
-5. 只输出翻译结果，不要添加解释或注释
-
-请翻译以下内容：`;
-
+// prompt 走 `lib/ai-prompts.js` 一份（B111 / spec 39-6）。这里原来那份
+// `DEFAULT_TRANSLATE_PROMPT` 是 `prompts/translate.md` 的第 5 个变体（同义、措辞更短），
+// 删掉之后本地端点与云端/runner 主链吃同一份文本。术语表这一端不注入（填空），
+// `translate.md` 自己写了"若上方为空，则按你的专业判断翻译"，所以空术语表不需要额外分支。
 router.post('/translate', async (req, res) => {
   try {
     const { text, prompt } = req.body || {};
     if (!text || !String(text).trim()) {
       return res.json({ ok: false, error: '请提供待翻译的文本内容' });
     }
-    const systemPrompt = prompt || getSetting('ai.prompt.translate', '') || DEFAULT_TRANSLATE_PROMPT;
+    const systemPrompt = prompt || aiPrompts.fillGlossary(
+      aiPrompts.promptText('translate', { override: getSetting(aiPrompts.settingKey('translate'), '') }),
+      ''
+    );
     const result = await llm.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: String(text).trim() },

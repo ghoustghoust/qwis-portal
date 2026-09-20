@@ -1,44 +1,40 @@
 // PDF Translate Skill（精翻模块）
 // 职责：对英文资讯/论文/工程文章进行高质量中文化翻译
-// Prompt 可通过 settings['translate.prompt'] 编辑，后台管理页提供编辑入口
+// Prompt 的唯一实现收在 `lib/ai-prompts.js`（B111 / spec 39-6）：
+//   · 默认文本 = `prompts/translate-skill.md`（读不到文件时用该文件里的兜底，兜底也只有一份）；
+//   · 覆盖键 = `settings['ai.prompt.translate-skill']`。收口前这里是 `translate.prompt`，
+//     与主链的 `ai.prompt.translate` 互不相通（= 后台改了另一条链路不认的键）；两端 settings
+//     里**今天没有任何一条 prompt 覆盖键**（实测记在 docs/ISSUES.md B111 行），所以换键不需要迁移。
 const llm = require('./llm');
 const { getSetting, setSetting } = require('../../db');
 const { db } = require('../../db');
+const aiPrompts = require('../../../lib/ai-prompts');
 const log = require('../../util/log');
 
 // ── 默认翻译提示词（精翻，非学术翻译）────────────────────────────
-const DEFAULT_PROMPT = `你是一位资深科技翻译专家，擅长将英文新闻资讯、技术论文和工程类文章翻译为高质量中文。
-
-翻译要求：
-1. 【准确性】忠实原文，不遗漏关键信息，不添加原文没有的内容
-2. 【流畅性】符合中文表达习惯，避免翻译腔（如"被...所"、"对于...来说"过多使用）
-3. 【专业性】技术术语首次出现时采用「中文（英文原文）」格式，如"大语言模型（LLM）"
-4. 【结构保持】保留原文的段落结构、列表、标题层级
-5. 【数字与单位】保留原始数字，单位按中文习惯转换（如 "10 million" → "1000 万"）
-6. 【专有名词】公司名/产品名/人名保留英文或通用译名，不强行音译
-7. 【语境适配】新闻体用简洁明快的语言，论文体用严谨正式的措辞
-
-请翻译以下内容，只输出翻译结果，不要添加任何解释或注释。`;
+const PROMPT_NAME = 'translate-skill';
+const promptKey = aiPrompts.settingKey(PROMPT_NAME);
+const DEFAULT_PROMPT = aiPrompts.defaultPrompt(PROMPT_NAME);
 
 /**
  * 获取当前翻译 Prompt（运行时配置 > 默认值）
  */
 function getPrompt() {
-  return getSetting('translate.prompt', '') || DEFAULT_PROMPT;
+  return aiPrompts.promptText(PROMPT_NAME, { override: getSetting(promptKey, '') });
 }
 
 /**
  * 更新翻译 Prompt
  */
 function setPrompt(text) {
-  setSetting('translate.prompt', String(text || ''));
+  setSetting(promptKey, String(text || ''));
 }
 
 /**
  * 恢复默认 Prompt
  */
 function resetPrompt() {
-  setSetting('translate.prompt', '');
+  setSetting(promptKey, '');
 }
 
 /**

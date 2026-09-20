@@ -1637,19 +1637,10 @@ async function runDaily() {
 }
 
 // ─── 模式：translate（AI 翻译，移植自 server/services/ai/translate-skill.js） ───
-// 语义对齐本地：同一默认 Prompt、同一 isEnglish 判定、同一写入列（translated_title/translated_content）
-const TRANSLATE_DEFAULT_PROMPT = `你是一位资深科技翻译专家，擅长将英文新闻资讯、技术论文和工程类文章翻译为高质量中文。
-
-翻译要求：
-1. 【准确性】忠实原文，不遗漏关键信息，不添加原文没有的内容
-2. 【流畅性】符合中文表达习惯，避免翻译腔（如"被...所"、"对于...来说"过多使用）
-3. 【专业性】技术术语首次出现时采用「中文（英文原文）」格式，如"大语言模型（LLM）"
-4. 【结构保持】保留原文的段落结构、列表、标题层级
-5. 【数字与单位】保留原始数字，单位按中文习惯转换（如 "10 million" → "1000 万"）
-6. 【专有名词】公司名/产品名/人名保留英文或通用译名，不强行音译
-7. 【语境适配】新闻体用简洁明快的语言，论文体用严谨正式的措辞
-
-请翻译以下内容，只输出翻译结果，不要添加任何解释或注释。`;
+// 语义对齐本地：同一 isEnglish 判定、同一写入列（translated_title/translated_content）。
+// prompt 不在这里写：本模式的翻译走 `_ai.translateText` → `lib/ai-prompts.js` 的 `translate`
+// （收口前这里另有一份 `TRANSLATE_DEFAULT_PROMPT`，与精翻模块那份**字对字相同**且**全文件无人引用**，
+//  实测读数记在 docs/ISSUES.md B111 行 —— 删掉它不改变任何行为，因为从来没有代码读过它）。
 
 function isEnglish(text) {
   if (!text) return false;
