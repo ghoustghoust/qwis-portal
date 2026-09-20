@@ -11,6 +11,7 @@
     "build:vercel": "vite build --config web/vite.config.js && node -e \"const fs=require('fs'),p=require('path');const s='static-data',d=p.join('web','dist','data');fs.mkdirSync(d,{recursive:true});for(const f of fs.readdirSync(s))fs.copyFileSync(p.join(s,f),p.join(d,f))\"",
     "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
     "lint:docs": "node tools/doc-lint.cjs",
+    "lint:docs:selftest": "node tools/doc-lint.cjs --self-test",
     "eval:preflight": "node tools/eval-preflight.cjs",
     "eval:whitebox": "node tools/eval-whitebox.cjs",
     "eval:process": "node tools/eval-process-checks.cjs --self-test",

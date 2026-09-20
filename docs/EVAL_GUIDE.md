@@ -194,7 +194,7 @@
 
 | 号 | 判据（一句话） | 归属缺陷 / 由谁实现 | 来源 spec |
 |---|---|---|---|
-| W17 | "删除/保留谓词"三端只许一份（`retention` 单实现），出现第二份即红 | ✅ **已实现（09-20 B102 收口）**：判据在 `lib/retention.js#findRetentionViolations`，白盒与锁 `tests/regression-retention.test.js` R4 共用这一份；形状判据只认"时间列 < ?"，级联/按 id/注释反例自然不命中。**已知空洞**：`api/[...slug].js` 整文件按"已记账待收口"豁免（并行会话在改它），该文件里新写的第二份谓词会被一起放过，随放行表 #4/#8 那批收口 | B102（本地 `CLEAN_TABLES` 无豁免且含 videos） | `docs/specs/43-collect-retention-safety/spec.md` |
+| W17 | "删除/保留谓词"三端只许一份（`retention` 单实现），出现第二份即红 | ✅ **已实现（09-20 B102 收口）**：判据在 `lib/retention.js#findRetentionViolations`，白盒与锁 `tests/regression-retention.test.js` R4 共用这一份；形状判据只认"时间列 < ?"，级联/按 id/注释反例自然不命中。**已知空洞**：`api/[...slug].js` 整文件按"已记账待收口"豁免（并行会话在改它），该文件里新写的第二份谓词会被一起放过，随放行表 #4/#8 那批收口。归属缺陷：B102（本地 `CLEAN_TABLES` 无豁免且含 videos） | `docs/specs/43-collect-retention-safety/spec.md` |
 | W18 | "噪声（hotlist/aggregator）判定"字面量全库只一份 | B107（实测手写 14 处，含变体 20 处；`/api/reading` 反而没用） | `36-7-source-spread-and-dedup.md`、`37-7` |
 | W19 | "报警事件枚举"两端代码 + 落库四处集合必须一致 | B45/B46/B109（幽灵键 `wemp_down/wemp_cookie_expired`、本地独有 `source_slow`） | `37-2-alert-event-model-unify.md` |
 | W20 | 同一份 system prompt 的字面量不许出现 ≥2 份（本地 settings / 云端文件+内嵌 / runner 常量） | B111（实测 3~4 份来源） | `39-6-translate-prompt-single-source.md` |
