@@ -57,6 +57,8 @@ export default function MyReadingPage() {
   const { t } = useI18n();
   const [tab, setTab] = useState('all');       // all | favorited | read
   const [type, setType] = useState('all');      // all | article | podcast | video
+  // B107（2026-09-21 批准口径）：足迹默认排除热榜/聚合噪声，勾上这个开关才把它们放回来
+  const [includeHot, setIncludeHot] = useState(false);
   const [q, setQ] = useState('');
   const [items, setItems] = useState([]);
   const [counts, setCounts] = useState({ all: 0, favorited: 0, read: 0 });
@@ -90,6 +92,7 @@ export default function MyReadingPage() {
     setLoading(true);
     try {
       const params = { tab, type };
+      if (includeHot) params.include_hot = '1';
       if (q) params.q = q;
       if (cur) params.cursor = cur;
       const d = await api.get(`/api/reading${qs(params)}`);
@@ -111,7 +114,7 @@ export default function MyReadingPage() {
       if (seq === seqRef.current) setLoading(false);
       loadingRef.current = false;
     }
-  }, [tab, type, q]);
+  }, [tab, type, q, includeHot]);
 
   // tab/type/q 变化时重新加载
   useEffect(() => {
@@ -282,6 +285,15 @@ export default function MyReadingPage() {
                 {item.label}
               </button>
             ))}
+            <span className="w-px h-4 t-surface2 flex-none mx-1" />
+            {/* B107：噪声开关——默认关（足迹排除热榜/聚合源），点开才含 */}
+            <button
+              onClick={() => setIncludeHot((v) => !v)}
+              title={t('reading.includeHotTip')}
+              className={`pill !px-3 !py-1 !text-xs ${includeHot ? 'on' : ''}`}
+            >
+              {t('reading.includeHot')}
+            </button>
             <div className="flex-1" />
             {/* 搜索 */}
             <div className="relative">

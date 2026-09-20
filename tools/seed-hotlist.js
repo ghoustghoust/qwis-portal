@@ -5,6 +5,8 @@ const path = require('path');
 process.env.APP_DATA_DIR = process.env.APP_DATA_DIR || path.join(__dirname, '..', 'data');
 const { db } = require('../server/db');
 const { nowIso } = require('../server/util/time');
+// B107：热榜轴只有一份实现
+const { hotlistCondSql } = require('../lib/noise');
 
 // 领域 → [newsnow 源 id, 显示名]
 const DOMAINS = {
@@ -39,7 +41,7 @@ function ensureGroup(name) {
 }
 
 function main() {
-  const find = db.prepare("SELECT id FROM sources WHERE type='hotlist' AND url=?");
+  const find = db.prepare(`SELECT id FROM sources WHERE ${hotlistCondSql('')} AND url=?`);
   const insert = db.prepare(
     "INSERT INTO sources(type, name, url, group_id, extra, enabled, status, created_at) VALUES('hotlist', ?, ?, ?, ?, 1, 'ok', ?)"
   );

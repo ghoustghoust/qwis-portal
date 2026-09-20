@@ -5,6 +5,8 @@
 const { db } = require('../../db');
 const { fetchText } = require('../../util/http');
 const log = require('../../util/log');
+// B107：聚合器轴唯一实现（哪些条目属于 AIHOT 聚合源）
+const { aggregatorCondSql } = require('../../../lib/noise');
 
 const GAP_MS = Number(process.env.AIHOT_ENRICH_GAP_MS) || 2000;
 
@@ -199,7 +201,7 @@ async function enrichMissing(limit = 10) {
     JOIN articles a ON a.url = p.url
     JOIN sources s ON s.id = a.source_id
     WHERE p.type = 'aihot_enrich'
-      AND json_extract(COALESCE(s.extra,'{}'),'$.aggregator') = 1
+      AND ${aggregatorCondSql('s')}
     ORDER BY p.imported_at DESC
     LIMIT ?
   `).all(Number(limit) || 10);

@@ -6,6 +6,8 @@ const { db, getSetting } = require('../../db');
 const { nowIso } = require('../../util/time');
 const log = require('../../util/log');
 const { htmlToText } = require('./summary');
+// B107：聚合器轴唯一实现（候选条目带出 source_aggregator 供去重时"一手源优先"）
+const { aggregatorFlagSql } = require('../../../lib/noise');
 
 // 默认四栏目 + 入报源类型（B10：唯一实现在 lib/daily-columns.js，本地/runner/云端三端共用）
 // 本文件此前自带一份 desc 写成「Codex、Claude、豆包…等动向」的关键词复述版，
@@ -53,7 +55,7 @@ function collectCandidates(windowHours, cfg) {
   const items = [];
 
   let aSql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight,
-                     json_extract(COALESCE(s.extra,'{}'),'$.aggregator') AS source_aggregator
+                     ${aggregatorFlagSql('s')} AS source_aggregator
               FROM articles a LEFT JOIN sources s ON s.id = a.source_id
               WHERE a.published_at >= ? AND s.enabled = 1
                 AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -77,7 +79,7 @@ function collectCandidates(windowHours, cfg) {
 
   let vSql = `SELECT v.*, s.name AS source_name, s.spotlight AS source_spotlight,
                      s.avatar AS source_avatar,
-                     json_extract(COALESCE(s.extra,'{}'),'$.aggregator') AS source_aggregator
+                     ${aggregatorFlagSql('s')} AS source_aggregator
               FROM videos v LEFT JOIN sources s ON s.id = v.source_id
               WHERE v.published_at >= ? AND s.enabled = 1
                 AND s.type IN (${VIDEO_SOURCE_TYPES.map(() => '?').join(',')})`;

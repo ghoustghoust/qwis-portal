@@ -15,6 +15,8 @@ try {
 } catch { /* CI 环境 */ }
 
 const { createClient } = require('@libsql/client');
+// B107：热榜轴只有一份实现
+const { hotlistCondSql } = require('../lib/noise');
 
 (async () => {
   const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
@@ -22,7 +24,7 @@ const { createClient } = require('@libsql/client');
   const groups = Array.from((await db.execute(`
     SELECT a.source_id, a.published_at, COUNT(*) c
     FROM articles a JOIN sources s ON s.id = a.source_id
-    WHERE s.type = 'hotlist' AND a.published_at IS NOT NULL
+    WHERE ${hotlistCondSql('s')} AND a.published_at IS NOT NULL
       AND a.published_at >= datetime('now', '-3 days')
     GROUP BY a.source_id, a.published_at HAVING c > 1
   `)).rows);

@@ -376,6 +376,19 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   if (r.exempt.length) notes.push(`  i W17：已记账待收口的第二份谓词 ${r.exempt.length} 处 —— ${Object.keys(require('../lib/retention').PENDING_UNIFY).join('、')}（豁免按**整文件**记账，所以该文件里新写的第二份谓词会被一起放过，收口前这条是已知空洞）`);
 }
 
+// ── W18 噪声（热榜/聚合）判定三端只许一份（B107 / spec 36-7 G7a，2026-09-21）──
+// 判据与回归锁 tests/regression-noise.test.js 共用 lib/noise#findNoiseViolations（坑 #58/#59）。
+// 病根实测：同一条 SQL 判定手抄 25 处，副本各有增减 —— `handleArticlesReadAll` 那份少两轴
+// （"全部标已读"会标掉列表里看不见的条目），而「我的阅读」两端一处都没套（旧库实测 71% 足迹是热榜）。
+{
+  const { findNoiseViolations } = require('../lib/noise');
+  const r = findNoiseViolations(ROOT);
+  ok('W18', r.scanned >= 100 && r.violations.length === 0 && r.missingImport.length === 0 && r.consumed >= 12,
+    `扫 ${r.scanned} 个源文件；第二份手写噪声判定：${JSON.stringify(r.violations.slice(0, 6).map((v) => `${v.file}:${v.line} ${v.label}`))}；` +
+    `未接唯一实现的消费点：${JSON.stringify(r.missingImport)}（消费点应 >=12，实得 ${r.consumed}）`);
+  notes.push('  i W18：只看**字符串字面量**里的 SQL（漂移全发生在拼 SQL 处）；JS 侧两处热榜排除由 N7 直接比对 isNoiseSource');
+}
+
 // ── W23 测试里的写方法必须指隔离库（B117 / spec43 §六，2026-09-21）──
 // 判据与回归锁 tests/regression-test-isolation.test.js 共用 lib/test-isolation#findWriteWithoutIsolation。
 // 病根：`regression-20260918` 曾对生产发 `DELETE /api/weekly/archive/999999`（真 Bearer token），

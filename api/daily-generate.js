@@ -43,6 +43,8 @@ async function getSetting(key, def = null) {
 
 // ─── 默认栏目配置（B10：唯一实现收进 lib/daily-columns.js，本地/runner/云端三端共用） ───
 const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES } = require('../lib/daily-columns');
+// B107：噪声（热榜/聚合）判定与读层、runner 共用一份实现
+const { notNoiseSql } = require('../lib/noise');
 
 // ─── 出库安检 ───
 function hasMojibake(text) {
@@ -101,7 +103,7 @@ async function generateDaily(windowHours) {
     args.push(...selectedIds);
   }
   // 排除热榜/聚合源
-  sql += " AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  sql += ` AND ${notNoiseSql('s')}`;
   sql += ' ORDER BY a.published_at DESC LIMIT 500';
 
   const candidates = await qAll(sql, args);

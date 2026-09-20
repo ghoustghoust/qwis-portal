@@ -9,6 +9,8 @@
 
 const path = require('path');
 const fs = require('fs');
+// B107：噪声（热榜/聚合）判定与阅读器可见性四轴只有一份实现
+const { notNoiseSql, hotlistCondSql } = require('../lib/noise');
 
 // 手动加载 .env（runner/CI 环境无此文件，env 由 workflow 注入，缺文件直接跳过）
 try {
@@ -72,9 +74,7 @@ async function genArticles(d) {
      a.published_at, a.read_at, a.later, a.created_at, a.score, a.tags, a.word_count,
      s.name AS source_name, s.spotlight AS source_spotlight
      FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE s.type != 'hotlist'
-       AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
-       AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1
+     WHERE ${notNoiseSql('s', { reader: true })}
      ORDER BY COALESCE(a.published_at, a.created_at) DESC LIMIT 200`
   );
   write('articles.json', { items: rows, generated_at: new Date().toISOString() });
@@ -97,7 +97,7 @@ async function genHot(d) {
     `SELECT a.id, a.title, a.url, a.author, a.cover, a.summary, a.score,
      a.published_at, a.category, s.name AS source_name
      FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE s.type='hotlist' AND a.published_at >= datetime('now', '-3 days')
+     WHERE ${hotlistCondSql('s')} AND a.published_at >= datetime('now', '-3 days')
      ORDER BY a.score DESC NULLS LAST, a.published_at DESC LIMIT 200`
   );
   write('hot.json', { items: rows, generated_at: new Date().toISOString() });

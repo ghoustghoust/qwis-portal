@@ -6,53 +6,75 @@ const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
 const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../../lib/reading-filters');
+// B107（2026-09-21 批准口径）：足迹默认排除热榜/聚合噪声，`include_hot=1` 才把它们带回来。
+// 只用两轴 —— 屏蔽(muted)/未收录是另一件事，批准里没说，不顺手扩。
+// 轴只有一份，见 lib/noise.js；形态选 NOT EXISTS 而不是 JOIN：源已删除的孤儿条目要留在足迹里
+// （足迹是历史事实），正连接会把它们一起丢掉。
+const { notNoiseExistsSql } = require('../../lib/noise');
+const NOISE_ALIAS = 'sn';
+
+// 视频侧不套：足迹视频只有 B站/抖音收藏，与热榜/聚合源类型不重叠，加了只多一次子查询
+function noiseFilterSql() {
+  return notNoiseExistsSql({ item: 'a', alias: NOISE_ALIAS });
+}
 
 const router = express.Router();
 const PAGE_SIZE = 30;
 
 // ---- 辅助：构造 UNION ALL 子查询的 WHERE + args ----
+// ⚠️ B134（2026-09-21，由 N8 锁抓到）：这里原来用 `return null` 表示"这一侧没内容"，
+// 而调用方把 null 理解成"整个筛选失败"→ 两侧一起 `WHERE 0`。后果是本地端除 tab=all&type=all
+// 之外的**每个筛选组合都返回空列表**（计数却正常 → 表现是"已读写着 5 条，点进去一片空白"）。
+// 云端同一处是把 '0' 只压进对应侧，所以这是本地/云端的真实分叉。空侧必须"只空一侧"。
 function buildFilters(query) {
   const tab = query.tab || 'all';
   const type = query.type || 'all';
   const q = (query.q || '').trim();
+  const T = readingTypeFilter(type);
 
   // 文章侧条件
   const aConds = [];
   const aArgs = [];
-  if (tab === 'all') aConds.push('(a.read_at IS NOT NULL OR a.later = 1)');
-  else if (tab === 'favorited') aConds.push('a.later = 1');
-  else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
-  const T = readingTypeFilter(type);
-  if (!T.includeArticles) return null; // 视频 tab 下文章侧返回空
-  if (T.articleCond) aConds.push(T.articleCond);
-  if (q) {
-    aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
-    aArgs.push(`%${q}%`, `%${q}%`);
+  if (!T.includeArticles) {
+    aConds.push('0'); // 视频 tab：只空文章侧
+  } else {
+    if (tab === 'all') aConds.push('(a.read_at IS NOT NULL OR a.later = 1)');
+    else if (tab === 'favorited') aConds.push('a.later = 1');
+    else if (tab === 'read') aConds.push('a.read_at IS NOT NULL');
+    if (T.articleCond) aConds.push(T.articleCond);
+    if (query.include_hot !== '1') aConds.push(noiseFilterSql());
+    if (q) {
+      aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
+      aArgs.push(`%${q}%`, `%${q}%`);
+    }
   }
 
-  // 视频侧条件
+  // 视频侧条件（已读 tab 不含视频；文章/播客 tab 只空视频侧）
   const vConds = [];
   const vArgs = [];
-  if (tab === 'all') vConds.push('v.favorite = 1');
-  else if (tab === 'favorited') vConds.push('v.favorite = 1');
-  else if (tab === 'read') return null; // 已读 tab 下视频侧返回空
-  if (!T.includeVideos) return null; // 文章/播客 tab 下视频侧返回空
-  if (q) {
-    vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
-    vArgs.push(`%${q}%`, `%${q}%`);
+  if (!T.includeVideos || tab === 'read') {
+    vConds.push('0');
+  } else {
+    if (tab === 'all' || tab === 'favorited') vConds.push('v.favorite = 1');
+    if (q) {
+      vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
+      vArgs.push(`%${q}%`, `%${q}%`);
+    }
   }
 
   return { aConds, aArgs, vConds, vArgs };
 }
 
-// ---- 辅助：计算各 tab 计数（受 type/q 过滤） ----
-function calcCounts(type, q) {
+// ---- 辅助：计算各 tab 计数（受 type/q/含热榜 过滤）----
+// AC4：计数与列表必须同一个表达式 —— 这里就是列表那一份的 noiseFilterSql()，不许再判一次
+function calcCounts(type, q, includeNoisy) {
   const counts = { all: 0, favorited: 0, read: 0 };
   const qLike = q ? `%${q}%` : null;
 
   // 文章侧计数（B60：表达式与列表同源，见 lib/reading-filters）
   const aTypeCond = readingTypeCondSql(type);
   const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
+  const aNoiseCond = includeNoisy ? '' : `AND ${noiseFilterSql()}`;
 
   if (aTypeCond !== 'AND 0') {
     try {
@@ -65,7 +87,7 @@ function calcCounts(type, q) {
           SUM(CASE WHEN a.later = 1 THEN 1 ELSE 0 END) AS fav,
           SUM(CASE WHEN a.read_at IS NOT NULL THEN 1 ELSE 0 END) AS rd
         FROM articles a LEFT JOIN sources s ON s.id = a.source_id
-        WHERE 1=1 ${aTypeCond} ${aQCond}
+        WHERE 1=1 ${aTypeCond} ${aQCond} ${aNoiseCond}
       `).get(...args);
       counts.all += (row?.total || 0);
       counts.favorited += (row?.fav || 0);
@@ -102,16 +124,15 @@ function whereClause(conds) {
 router.get('/', (req, res) => {
   const tab = req.query.tab || 'all';
   const filters = buildFilters(req.query);
-
-  // 某侧返回 null 意味着该侧无匹配（如 video tab 下文章侧为空）
-  const aWhere = filters ? whereClause(filters.aConds) : 'WHERE 0';
-  const vWhere = filters ? whereClause(filters.vConds) : 'WHERE 0';
-  const allArgs = [...(filters?.aArgs || []), ...(filters?.vArgs || [])];
+  // 空侧由 buildFilters 压一个 '0' 进去（B134：以前靠 return null，两侧一起被判空）
+  const aWhere = whereClause(filters.aConds);
+  const vWhere = whereClause(filters.vConds);
+  const allArgs = [...filters.aArgs, ...filters.vArgs];
 
   // 计数（受 type/q 影响，不受 tab 影响——各 tab 独立计数）
   const q = (req.query.q || '').trim();
   const type = req.query.type || 'all';
-  const counts = calcCounts(type, q);
+  const counts = calcCounts(type, q, req.query.include_hot === '1');
 
   // 游标分页
   const cmp = '<';

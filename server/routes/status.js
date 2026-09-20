@@ -15,8 +15,9 @@ function addHours(iso, hours) {
   return new Date(new Date(iso).getTime() + hours * 3600e3).toISOString();
 }
 
-// 噪声源判据（热榜/聚合器）：状态页所有计数与来源榜共用
-const NOISE = "(s.type='hotlist' OR COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)=1)";
+// 噪声源判据（热榜/聚合器）：状态页所有计数与来源榜共用。轴只有一份，见 lib/noise.js（B107）
+const { isNoiseSql } = require('../../lib/noise');
+const NOISE = isNoiseSql('s');
 
 // B26：入报统计（条目数 + Top5 来源榜）拆成独立端点按需取，故先抽成可复用的算法。
 // 窗口取近 7 天，与云端 api/[...slug].js 的同名统计、以及界面文案「近7天入早报」一致

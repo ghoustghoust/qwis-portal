@@ -32,6 +32,8 @@ const Parser = require('rss-parser');
 const { cleanTitle, decodeXmlEntities } = require('../lib/text-clean'); // B94：标题/源名/属性实体解码唯一实现
 // B90：北京日界/日报窗口/北京日期串的唯一口径（原来这个文件里手搓了 4 遍 +8h 换算）
 const { beijingNow, beijingDateStr, beijingDayStartMs, dailyReportWindowIso } = require('../lib/time-window');
+// B107：噪声（热榜/聚合）判定的轴只有一份实现，runner 侧不再手写第 N 份
+const { notNoiseSql, notHotlistSql } = require('../lib/noise');
 
 // ─── 配置 ───
 const MODE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'collect';
@@ -589,7 +591,7 @@ async function runQuickScore() {
      FROM articles a JOIN sources s ON s.id = a.source_id
      LEFT JOIN groups g ON g.id = s.group_id
      WHERE a.published_at >= ? AND s.enabled = 1
-       AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
+       AND ${notNoiseSql('s')}
        AND (a.score IS NULL OR a.score = '' OR CAST(a.score AS REAL) = 0)
        AND ${aiCond}
      ORDER BY a.published_at DESC LIMIT 60`,
@@ -786,7 +788,7 @@ async function runWeekly() {
     `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name
      FROM articles a LEFT JOIN sources s ON s.id = a.source_id
      WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
-       AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1
+       AND ${notNoiseSql('s')}
      ORDER BY a.published_at DESC LIMIT 2000`,
     [startUtc, endUtc]
   );
@@ -1045,7 +1047,7 @@ async function runDailyAi() {
   let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
-               AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1`;
+               AND ${notNoiseSql('s')}`;
   const args = [startUtc, endUtc];
   if (selectedIds && selectedIds.length) {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
@@ -1571,7 +1573,7 @@ async function runDaily() {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
     args.push(...selectedIds);
   }
-  sql += " AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  sql += ' AND ' + notNoiseSql('s');
   sql += ' ORDER BY a.published_at DESC LIMIT 500';
 
   const candidates = await qAll(sql, args);
@@ -1787,7 +1789,7 @@ async function translatePriorityMap() {
       `SELECT a.id FROM articles a JOIN sources s ON s.id=a.source_id
        LEFT JOIN groups g ON g.id = s.group_id
        WHERE a.published_at >= ?
-         AND s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60
+         AND ${notHotlistSql('s')} AND COALESCE(CAST(a.score AS REAL), 0) >= 60
          AND ${aiCond}`,
       args
     );

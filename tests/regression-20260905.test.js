@@ -123,7 +123,10 @@ test('P1-1: fulltext.js 用 json_extract(extra) 排除 aggregator，而非恒真
   // 剥掉注释，只检查实际 SQL 代码
   const code = src.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(!code.includes("s.type != 'aggregator'"), '不得再用 sources.type 判 aggregator（恒真 bug）');
-  assert.ok(code.includes("json_extract(COALESCE(s.extra,'{}'),'$.aggregator')"), '应走 extra.aggregator JSON 标志');
+  // B107（2026-09-21）：聚合器轴的 SQL 文本收进 lib/noise.js 一份，本文件里不再出现那句 json_extract 字面量。
+  // 断言因此从"看字面量"改成"看接线"——字面量与旧写法是否等价由 N5/N7 在真库上逐行证明。
+  assert.match(code, /require\(['"][^'"]*lib\/noise['"]\)/, '应改由 lib/noise 提供聚合器轴（B107：判定只许一份）');
+  assert.match(code, /aggregatorCondSql\(\s*'s'\s*,\s*0\s*\)/, '排除聚合源必须走 aggregatorCondSql(s, 0)');
 });
 
 // ─── P1-2：syncOpml 恢复走统一解冻语义（静态守卫）───

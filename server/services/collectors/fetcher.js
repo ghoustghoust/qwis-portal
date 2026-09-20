@@ -9,6 +9,8 @@ const registry = require('./registry');
 const { saveArticles, saveVideos } = require('./repo');
 const { withSourceLock, intervalMinFor } = require('./_shared');
 const { emitNewArticles, emitTranslation } = require('../realtime/event-bus');
+// B107：聚合器轴唯一实现（聚合源的 score 补抓走 pending_items 队列）
+const { aggregatorCondSql } = require('../../../lib/noise');
 
 // ─── 抓取单源（带并发防护） ──────────────────────────────────────────────────
 // P2 并发防护：同一 source.id 同时只允许一次抓取在飞
@@ -63,7 +65,7 @@ async function fetchSourceInner(source) {
           INSERT INTO pending_items(type, url, name, status, imported_at)
           SELECT 'aihot_enrich', a.url, a.title, 'pending', ?
           FROM articles a JOIN sources s ON s.id = a.source_id
-          WHERE json_extract(COALESCE(s.extra,'{}'),'$.aggregator') = 1
+          WHERE ${aggregatorCondSql('s')}
             AND a.score IS NULL
             AND NOT EXISTS (
               SELECT 1 FROM pending_items p

@@ -132,14 +132,11 @@ async function handleArticles(req) {
   const args = [];
 
   // 阅读器降噪：排除热榜/聚合源；27b（2026-09-15）：屏蔽(muted)/未收录(reader_visible=0)源同口径排除
-  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1" +
-    ' AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1';
-
   if (tab === 'later') conds.push('a.later=1');
   else if (tab === 'history') conds.push('a.read_at IS NOT NULL');
 
   if (q.source_id) { conds.push('a.source_id=?'); args.push(Number(q.source_id)); }
-  else if (q.include_hot !== '1') conds.push(NOISE);
+  else if (q.include_hot !== '1') conds.push(NOT_NOISE_READER);
 
   if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
   if (q.q) { conds.push('(a.title LIKE ? OR a.content_html LIKE ?)'); args.push(`%${q.q}%`, `%${q.q}%`); }
@@ -204,7 +201,7 @@ async function handleArticles(req) {
   const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
   const todayCount = (await qOne(
     `SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE COALESCE(a.published_at, a.created_at) >= ? AND ${NOISE}`,
+     WHERE COALESCE(a.published_at, a.created_at) >= ? AND ${NOT_NOISE_READER}`,
     [dayAgo])).c;
   const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
   const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
@@ -379,6 +376,11 @@ const { beijingDayStartMs, beijingDayStartIso, beijingNow, beijingDateStr, beiji
 const hotCats = require('../lib/hot-categories');
 // B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
 const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../lib/reading-filters');
+// B107（2026-09-21）：噪声（热榜/聚合）判定的轴只有一份实现。本文件此前自己写了 7 份，
+// 其中 `handleArticlesReadAll` 那份**少两轴**（只排热榜/聚合，不排 muted/未收录）→
+// "全部标已读"会标掉列表里根本看不见的条目。现在三处阅读器口径共用下面这一个常量。
+const { notNoiseSql, notNoiseExistsSql, notNoiseJoinSql, notHotlistSql, hotlistCondSql, isNoiseSql } = require('../lib/noise');
+const NOT_NOISE_READER = notNoiseSql('s', { reader: true });
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
@@ -401,10 +403,10 @@ async function handleHot(req) {
   if (tab === 'featured') {
     // AI 精选（2026-09-14 三阶段修正）：自有源六维≥60 且 AI 相关。
     // 此前「热榜热度>10000」量纲失误——热榜热度百万级，全部越过门槛，精选被知乎/酷安热榜淹没；已剔除热榜源。
-    conds.push("s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60");
+    conds.push(`${notHotlistSql('s')} AND COALESCE(CAST(a.score AS REAL), 0) >= 60`);
     conds.push(aiRelevanceCond(args));
   } else if (tab === 'hotlist') {
-    conds.push("s.type='hotlist'");
+    conds.push(hotlistCondSql('s'));
   } else if (tab === 'all') {
     // AI 信息实时流（2026-09-14）：从全源只挑 AI 相关内容——AI 主题分组源全收，其余源按标题命中 AI 词表
     conds.push(aiRelevanceCond(args));
@@ -522,7 +524,7 @@ async function handleHotGroups(req) {
   const conds = ['a.published_at >= ?'];
   const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
   if (tab === 'featured') {
-    conds.push("s.type != 'hotlist' AND COALESCE(CAST(a.score AS REAL), 0) >= 60");
+    conds.push(`${notHotlistSql('s')} AND COALESCE(CAST(a.score AS REAL), 0) >= 60`);
     conds.push(aiRelevanceCond(args));
   } else if (tab === 'all') {
     conds.push(aiRelevanceCond(args));
@@ -691,7 +693,7 @@ async function generateDailyInline() {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
     args.push(...selectedIds);
   }
-  sql += " AND s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
+  sql += ` AND ${notNoiseSql('s')}`;
   sql += ' ORDER BY a.published_at DESC LIMIT 500';
 
   const candidates = await qAll(sql, args);
@@ -922,7 +924,7 @@ async function handleStatus(req) {
 
   // 抗过载优化（T3-3，Turso 实测）：噪声过滤用正连接（104ms），弃 NOT IN(1500 字面量)（12.8s/次——
   // 逐行评估巨型 IN 列表）。下面三条计数共用同一段 JOIN/WHERE 前缀，口径必须一致。
-  const notNoiseJoin = "JOIN sources s ON s.id=a.source_id WHERE s.type!='hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0)!=1";
+  const notNoiseJoin = notNoiseJoinSql({ item: 'a' });
   const now = Date.now();
   const dayStartIso = beijingDayStartIso(now);
   const weekAgo = weekAgoIso(now);
@@ -944,7 +946,7 @@ async function handleStatus(req) {
       weekNew: week?.c || 0,
     };
   }
-  overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE enabled=1 AND type!='hotlist' AND COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)!=1`)).c;
+  overview.enabledSources = (await qOne(`SELECT COUNT(*) c FROM sources WHERE enabled=1 AND ${notNoiseSql('')}`)).c;
 
   // B26：入报统计（近 7 天 daily_reports 的 sections 聚合 + 头像补全）**移出首屏**。
   // 移出而不是删：① 它要读 daily_reports 的 BLOB——实测一次传输 214KB、耗时 2.0s，
@@ -975,7 +977,7 @@ async function handleStatusDailySources() {
     // B26 对账（2026-09-19 独立对抗审查查出）：本地端 computeDailySources 会排掉
     // 「N 源」合成条目与噪声源名，云端此前不排 → 两端同一句话两个算法（近 7 天线上数据恰好
     // 没有这类条目，所以是潜伏差异而非已显现）。现在云端补齐同一规则，契约才真叫一致。
-    const noiseNames = new Set((await qAll(`SELECT name FROM sources WHERE type='hotlist' OR COALESCE(json_extract(COALESCE(extra,'{}'),'$.aggregator'),0)=1`)).map((r) => r.name));
+    const noiseNames = new Set((await qAll(`SELECT name FROM sources WHERE ${isNoiseSql('')}`)).map((r) => r.name));
     const srcCount = {};
     let itemCount = 0;
     for (const rep of reports) {
@@ -1062,6 +1064,11 @@ async function handleReading(req) {
   const type = ['all', 'article', 'video', 'podcast'].includes(q.type) ? q.type : 'all';
   const searchQ = (q.q || '').trim();
   const PAGE_SIZE = 30;
+  // B107（与本地 server/routes/reading.js 同口径）：足迹默认排掉热榜/聚合噪声，`include_hot=1` 才带回来。
+  // 用 NOT EXISTS 而不是 JOIN：源已被删除的孤儿条目要留在足迹里（足迹是历史事实），正连接会把它们丢掉。
+  const includeNoisy = q.include_hot === '1';
+  const noiseExists = notNoiseExistsSql({ item: 'a', alias: 'sn' });
+  const noiseCond = includeNoisy ? '' : `AND ${noiseExists}`;
 
   // 文章侧条件（tab=all 的 OR 条件单独抽出——SQLite 无法对 OR 走索引，2026-09-13 实测 44k 宽行全扫 9.2s；
   // 拆成 read/later 两个索引分支 UNION ALL 后走 idx_articles_read / idx_articles_later）
@@ -1078,6 +1085,10 @@ async function handleReading(req) {
     aConds.push('(a.title LIKE ? OR s.name LIKE ?)');
     aArgs.push(`%${searchQ}%`, `%${searchQ}%`);
   }
+  // 「无用户筛选」必须在挂噪声口径**之前**判：默认排除是口径不是筛选，
+  // 挂在后面会让 T3-3 快路径在默认态永远进不去（实测首屏 350ms → 9~13s）。
+  const noUserFilter = !aConds.length;
+  if (!includeNoisy) aConds.push(noiseExists);
 
   // 视频侧条件
   const vConds = [];
@@ -1106,10 +1117,10 @@ async function handleReading(req) {
       // T3-3 快路径（2026-09-13 实测 1953ms→120ms）：无 q/type 过滤时计数走索引子查询，不 join 不扫宽行
       const row = await qOne(`
         SELECT
-          (SELECT COUNT(*) FROM articles WHERE read_at IS NOT NULL)
-            + (SELECT COUNT(*) FROM articles WHERE later=1 AND read_at IS NULL) AS total,
-          (SELECT COUNT(*) FROM articles WHERE later=1) AS fav,
-          (SELECT COUNT(*) FROM articles WHERE read_at IS NOT NULL) AS rd
+          (SELECT COUNT(*) FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond})
+            + (SELECT COUNT(*) FROM articles a WHERE a.later=1 AND a.read_at IS NULL ${noiseCond}) AS total,
+          (SELECT COUNT(*) FROM articles a WHERE a.later=1 ${noiseCond}) AS fav,
+          (SELECT COUNT(*) FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond}) AS rd
       `);
       counts.all += (row?.total || 0);
       counts.favorited += (row?.fav || 0);
@@ -1121,7 +1132,7 @@ async function handleReading(req) {
           SUM(CASE WHEN a.later = 1 THEN 1 ELSE 0 END) AS fav,
           SUM(CASE WHEN a.read_at IS NOT NULL THEN 1 ELSE 0 END) AS rd
       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
-      WHERE 1=1 ${aTypeCond} ${aQCond}
+      WHERE 1=1 ${aTypeCond} ${aQCond} ${noiseCond}
     `, countArgs);
       counts.all += (row?.total || 0);
       counts.favorited += (row?.fav || 0);
@@ -1145,7 +1156,7 @@ async function handleReading(req) {
   // T3-3 快路径（2026-09-13 实测 9-13s→~350ms）：无筛选时两段式——
   // ①窄查询只取 id/sort_key（表达式覆盖索引 idx_*_sk，不触碰宽行）②按 id 取 31 条全列
   // ⚠️ 仅 tab=all 且 type=all（对抗性审查：type=video 时快路径曾泄漏文章——快路径不解析 type）
-  if (!aConds.length && tab === 'all' && type === 'all') {
+  if (noUserFilter && tab === 'all' && type === 'all') {
     const narrowConds = [];
     const narrowArgs = [];
     if (q.cursor) { narrowConds.push('sort_key < ?'); narrowArgs.push(String(q.cursor)); }
@@ -1153,10 +1164,10 @@ async function handleReading(req) {
     const narrow = await qAll(`
       SELECT id, sort_key, item_type FROM (
         SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article' AS item_type
-        FROM articles a WHERE a.read_at IS NOT NULL
+        FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond}
         UNION ALL
         SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article'
-        FROM articles a WHERE a.later = 1 AND a.read_at IS NULL
+        FROM articles a WHERE a.later = 1 AND a.read_at IS NULL ${noiseCond}
         UNION ALL
         SELECT v.id, v.published_at AS sort_key, 'video'
         FROM videos v WHERE v.favorite = 1
@@ -1213,7 +1224,11 @@ async function handleReading(req) {
   const aBranchDefs = [];
   if (includeArticles) {
     if (aTabOr) {
-      aBranchDefs.push({ cond: aTabOr, args: aArgs });
+      // B135（2026-09-21，由 N9 跨端对账抓到）：分支一原来直接复用 `aTabOr`
+      // （`read_at IS NOT NULL OR later = 1`），于是**已稍后读又未读**的条目在分支一与分支二各出现一次
+      // → 云端「我的阅读」带筛选（type=文章/播客、或搜索）时每条稍后读重复两行；本地端单分支不受影响。
+      // 两条分支必须互斥：读侧只认 read_at，稍后读侧再排除已读。
+      aBranchDefs.push({ cond: 'a.read_at IS NOT NULL', args: aArgs });
       aBranchDefs.push({ cond: 'a.later = 1 AND a.read_at IS NULL', args: aArgs });
     } else {
       aBranchDefs.push({ cond: '1=1', args: aArgs });
@@ -1267,8 +1282,7 @@ async function handleArticlesReadAll(req) {
   const conds = [];
   const args = [];
 
-  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1";
-  conds.push(NOISE);
+  conds.push(NOT_NOISE_READER);
 
   if (body.tab === 'later') { conds.push('a.later=1'); }
   else if (body.tab === 'history') { conds.push('a.read_at IS NOT NULL'); }
@@ -2006,7 +2020,7 @@ const CLEAN_TABLES = [
 
 // 文章保留清理：豁免用户交互过的（已读/稍后读/精选标记）与热榜（热榜由 runner cleanup 固定 7 天规则处理）
 const ARTICLE_CLEAN_WHERE = `COALESCE(published_at, created_at) < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
-       AND source_id NOT IN (SELECT id FROM sources WHERE type='hotlist')`;
+       AND source_id NOT IN (SELECT id FROM sources WHERE ${hotlistCondSql('')})`;
 async function cleanupArticles(cutoff, { preview = false } = {}) {
   if (preview) return qOne(`SELECT COUNT(*) c FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);
   return qRun(`DELETE FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);

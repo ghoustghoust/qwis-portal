@@ -91,6 +91,9 @@ const DICT = {
   'reading.podcast':       { zh: '播客',               en: 'Podcast' },
   'reading.video':         { zh: '视频',               en: 'Video' },
   'reading.search':        { zh: '搜索标题/来源…',     en: 'Search title/source…' },
+  // B107：足迹默认排除热榜/聚合源，这个开关把它们放回来
+  'reading.includeHot':    { zh: '含热榜',             en: 'Incl. hotlist' },
+  'reading.includeHotTip': { zh: '显示来自热榜与聚合源的足迹', en: 'Show footprint from hotlist and aggregator sources' },
   'reading.batchManage':   { zh: '批量管理',           en: 'Batch Manage' },
   'reading.export':        { zh: '导出',               en: 'Export' },
   'reading.exportSelected':{ zh: '导出选中',           en: 'Export Selected' },

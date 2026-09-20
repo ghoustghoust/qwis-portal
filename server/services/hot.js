@@ -7,6 +7,8 @@ const PAGE_SIZE = 30;
 
 // 六类与默认映射的唯一实现在 lib/hot-categories.js（B58）；本文件只做 re-export，不再各留一份
 const { CATEGORIES, DEFAULT_CATEGORY_MAP } = require('../../lib/hot-categories');
+// B107：聚合器轴（"哪些源是聚合源"）由 lib/noise.js 生成，本文件不再手写第二份 json_extract
+const { aggregatorCondSql } = require('../../lib/noise');
 
 
 function categoryMap() {
@@ -52,7 +54,7 @@ function feedNameOf(author) {
 // 七期 F3/F4：返回富字段 score/reason/tags/featured/original_url/has_original
 function query({ category, q, source, cursor } = {}) {
   // 27b：屏蔽(muted)源从热点榜排除（与云端 handleHot 同口径）
-  const conds = ["json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1", 'COALESCE(s.muted,0)=0'];
+  const conds = [aggregatorCondSql('s'), 'COALESCE(s.muted,0)=0'];
   const args = [];
   if (q) {
     conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');
@@ -127,7 +129,7 @@ function sources() {
   const rows = db.prepare(`
     SELECT a.author, COUNT(*) AS count
     FROM articles a JOIN sources s ON s.id=a.source_id
-    WHERE json_extract(COALESCE(s.extra,'{}'),'$.aggregator')=1
+    WHERE ${aggregatorCondSql('s')}
     GROUP BY a.author ORDER BY count DESC
   `).all();
   return rows.map((r) => ({ author: r.author, feedName: feedNameOf(r.author), count: r.count }));

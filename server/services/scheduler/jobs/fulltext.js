@@ -4,6 +4,8 @@
 const cron = require('node-cron');
 const { db } = require('../../../db');
 const log = require('../../../util/log');
+// B107：聚合器轴唯一实现（聚合源由 enrich 管线处理，不在这里直抓第三方原站）
+const { aggregatorCondSql } = require('../../../../lib/noise');
 
 // P1: 全文补抓定时任务 - 每 6 小时批量补抓摘要不足的文章（P2-4：原每天 1 次×100 条远低于 87 源产文速度）
 async function performFulltextRecovery() {
@@ -16,7 +18,7 @@ async function performFulltextRecovery() {
      JOIN sources s ON a.source_id = s.id 
      WHERE a.content_html IS NOT NULL 
        AND LENGTH(a.content_html) < 1000 
-       AND json_extract(COALESCE(s.extra,'{}'),'$.aggregator') IS NOT 1  -- aggregator 由 enrich 管线处理
+       AND ${aggregatorCondSql('s', 0)}  -- aggregator 由 enrich 管线处理
      LIMIT 300`
   ).all();
   

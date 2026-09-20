@@ -5,6 +5,8 @@ const { db, getSetting, setSetting } = require('../../db');
 const { fetchText } = require('../../util/http');
 const log = require('../../util/log');
 const { parseDetail } = require('./enrich');
+// B107：聚合器轴唯一实现（回填条目挂到哪个聚合源下）
+const { aggregatorCondSql } = require('../../../lib/noise');
 
 const GAP_MS = Number(process.env.AIHOT_ENRICH_GAP_MS) || 2000;
 const KEY = 'aihot.backfill';
@@ -33,7 +35,7 @@ async function sitemapUrls() {
 // 聚合源 id（回填条目挂到 AIHOT 聚合源下，进热榜）
 function aggregatorSourceId() {
   const row = db.prepare(
-    `SELECT id FROM sources WHERE json_extract(COALESCE(extra,'{}'),'$.aggregator')=1 ORDER BY id LIMIT 1`
+    `SELECT id FROM sources WHERE ${aggregatorCondSql('')} ORDER BY id LIMIT 1`
   ).get();
   return row ? row.id : null;
 }
