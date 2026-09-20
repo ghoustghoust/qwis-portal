@@ -52,7 +52,48 @@
 
 ## 五、本文件明确没有做的
 
-- **代码零改动**。文档侧：本文件、`docs/ISSUES.md`（B101~B112）、`FEATURE_MATRIX.md`、三处调度文档的更正，均为本地提交、**未 push**（用户指令仍是「不要 push」；提交只为防这些规格文件在并行会话里被误清）。**未 push 提交以 `git log --oneline origin/main..HEAD` 为准**（本文件与 `docs/ISSUES.md` 放行表第 11 行都不复制编号——易变事实只写取法，AGENTS §2.5）。工作区里我的代码改动仍只有 `api/[...slug].js` 两处读侧 `NULLIF(…,'null')`（:232、:1448）**未提交**，与未跟踪的 `lib/dirty-columns.js` 半成品。
+- **代码零改动**。文档侧：本文件、`docs/ISSUES.md`（本域相关登记从 B101 起，最新编号见该文件顶部"活跃 B8~B1xx"一行——**不在这里复制条数**）、`FEATURE_MATRIX.md`、三处调度文档的更正，均为本地提交、**未 push**（用户指令仍是「不要 push」；提交只为防这些规格文件在并行会话里被误清）。**未 push 提交以 `git log --oneline origin/main..HEAD` 为准**（本文件与 `docs/ISSUES.md` 放行表第 11 行都不复制编号——易变事实只写取法，AGENTS §2.5）。工作区里我的代码改动仍只有 `api/[...slug].js` 两处读侧 `NULLIF(…,'null')`（:232、:1448）**未提交**，与未跟踪的 `lib/dirty-columns.js` 半成品。
 - ✅ 已更正（本轮）：已 push 的文档写「W15 的污染列由 `lib/dirty-columns.js` 派生，附 5 种躲法自证探针」——实际 W15 仍是手写 `const POLLUTED = ['last_fetched_at']`，自证探针不存在。`FEATURE_MATRIX.md` 与 `ISSUES.md` 两处均已按实测改写成"未交付"。仍欠的实现（把 W15 真接上 DDL 派生 + 补躲法自证）在"不许改代码"令解除后再做。
 - ✅ 已记为未验收（本轮）：`npm run eval:e2e` 的 10/10×3（`acceptance.ok=true`）**不覆盖数据保留面**——剧本只断言"页面有内容 / 接口到达 / 无 pageerror"，从不断言"老数据没被误删"。`FEATURE_MATRIX.md` 该行已把这一面显式列进「未覆盖」。**同轮补判据**：`docs/specs/41-e2e-whitebox-eval/coverage-matrix-20260919.md` 手工核对 39 个功能格 → ✅3 / ◐8 / ⛔28，并查明 `tools/eval-e2e.cjs:1023` 的 `KNOWN_GAPS` 实测是 `{}`、`uncoveredKinds` 只统计剧本内断言类别，**两者都不是覆盖分母**，此前把 `knownGaps=[]` 读成"没有缺口"是误读。
 - ⛔ **同轮复跑新查出的第二处不实（B104）**：`npm run eval:whitebox` 在最终 HEAD 上复跑 **W9 红**——坑 #62/#63/#64 在 `tests/` 里没有任何 `#NN` 字面引用（判据面只扫 `tests/`，而三处实现/自证分别落在 `tools/eval-e2e.cjs`、`tools/_probe-strip-selftest.cjs` 与 `docs/EVAL_GUIDE.md`）。此前文档写"whitebox W1~W16 全过"是**照抄旧轮、未复跑**的结果，已更正。**不走 `whitebox-baseline.json` 豁免**：那是历史债账本，用来豁免当轮新造的缺口＝自我放行（坑 #45/#59 禁止的正是这个动作）。
+
+## 六、测试侧写入面全量清点（09-20 凌晨，回答「线上数据到底有没有被测试删过」）
+
+**背景**：用户叫停令的第 4 问是"这些改动有没有把删除逻辑推到线上执行过"。本轮先把**测试套件**这一侧
+一次性查清（静态清点 49 份 `tests/*.test.js`，逐份看四件事：require 了哪份 db 实现、有没有把
+`TURSO_DATABASE_URL` 指到 `file:` 临时库、有没有 `APP_DATA_DIR` 隔离、出现了什么写语义）。
+清点脚本：`tools/_test-write-exposure.cjs`（一次性、未跟踪；正式版应并入 41 域门禁，见放行表 #12）。
+**判据与人工复核的分工要写清**：脚本按"碰云端层却没指 `file:` 临时库"标出 **5 份**，人工逐份读代码后排除了 2 份——
+`regression-daily-ai`（只 `require('../api/_ai')`，那是 AI 客户端、不碰 db）与 `regression-bc`（第 9 行
+`require('./helpers')` 已把 `APP_DATA_DIR` 指到临时目录，它的 `INSERT INTO sources` 落临时库）。
+**剩 3 份**真绑在生产 Turso 上，即下表。**光看脚本会多报 2 份、光靠 grep 关键字会漏报隔离方式**——
+将来若把它做成门禁，判据必须是"require 了 `api/[...slug].js` 且既无 `TURSO_DATABASE_URL='file:'`、
+也无 `require('./helpers')`"两个条件同时成立。
+
+### 结论：**没有任何测试写过或删过生产数据**，但"B83 已全部搬完"这句说满了
+
+| 判据 | 结果 |
+|---|---|
+| 生产 Turso 被测试**执行写 SQL** | **0 处** |
+| 生产 `settings` 被测试**写回** | **0 处**（BL7 那次是**历史事故**，肇事测试 `regression-cloud-alerts` 现已改指 `file:` 临时库并自带隔离断言） |
+| 仍绑在生产 Turso 上的测试 | **3 份**（下表）——`regression-20260913` / `20260913b` / `20260918` |
+
+### 三份"仍在生产上跑"的逐份判定（为什么仍然安全，以及哪里是隐患）
+
+| 测试 | 对生产做了什么 | 为什么没造成写 | 残留隐患 |
+|---|---|---|---|
+| `regression-20260913` | `require('../api/[...slug].js')` 且把 `.env` 读进 `process.env` → **真连生产 Turso**；但 `mockReq` 只造 `method:'GET'` | 全 GET，读路径 | 无（读生产是可接受的取证方式） |
+| 同上，F2 段 | `db.prepare('DELETE FROM articles WHERE url IN (?,?)')` | `server/db.js` 是 `better-sqlite3`，**不读 `TURSO_*`**；且第 10 行 `require('./helpers')` 早于第 83 行 require db → 落 `os.tmpdir()` 临时库，删的是它自己刚插的两条 `test-clamp-*` 夹具 | 无（本轮已复核，见 `docs/ISSUES.md` B115 的假警报段） |
+| `regression-20260913b` | `GET /api/reading` 若干 + **`POST /api/data/cleanup/preview {days:7}`** | `handleDataCleanupPreview` 实测只做 `SELECT COUNT(*)` 与 `cleanupArticles(cutoff,{preview:true})`，函数体内 **0 个 `DELETE FROM` / 0 个 `setSetting`**；且未带 token 时该端点回 401 | "预览"端点用 POST 且真打生产，语义上仍是**写方法的形状**——将来有人把 preview/execute 合并就会变成真删 |
+| `regression-20260918` | **`DELETE /api/weekly/archive/999999`，带 `.env` 里的真 Bearer token** | `handleWeeklyArchiveDelete` 的顺序是：读 `weekly.archive` → `filter` → **`next.length === archive.length` 即先 return 404「第 999999 期不存在」**，`setSetting` 在其后，所以未写 | ⚠️ **这是本轮查到的真实隐患**：测试的安全性完全押在"999999 这个期号不存在"这一个夹具选择上，而不是押在隔离上。它测的又只是"路由可达"（断言 = 不是通用 `Not Found` + 状态 404），**一个打生产的 DELETE 换到的只是可达性信息** |
+
+### 因此本域追加一条待办（登记为 B117，属代码改动等放行）
+
+1. `regression-20260918` 的"路由可达"改成**不需要打生产**的形态：在 `file:` 临时库里种一期归档，
+   断言"存在 → 删掉并回 `removed`；不存在 → 404 期号不存在"两种行为（正向 + 负向各一条），
+   与同族 8 份一样带"子进程必须被指到本地文件库"断言。
+2. `regression-20260913b` 的 `POST /api/data/cleanup/preview` 改走隔离库；顺带给 spec 41 的白盒加一条判据：
+   **测试里出现 `method:'DELETE'`/`'POST'` 且未设 `TURSO_DATABASE_URL='file:'` 即红**——这条正是本轮
+   靠人肉清点才发现的形态，应当自动化（并入放行表 #12 的文档/门禁扩面一起做）。
+3. `handleDataCleanupPreview` 建议改 `GET`（或 `POST` 但显式 `?execute=0`），别让"只数不删"的语义
+   靠方法名约定维持。**此项属行为变更，需单独拍板。**
