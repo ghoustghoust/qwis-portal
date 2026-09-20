@@ -1,162 +1,144 @@
 {
   "report": {
-    "id": 103,
-    "generated_at": "2026-09-19T05:35:40.188Z",
-    "window_hours": 30,
+    "id": 53,
+    "generated_at": "2026-09-20T06:04:04.101Z",
+    "window_hours": 24,
     "sections": [
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 1696903,
-            "title": "早知天下事〔2026.09.19〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650239392&idx=1&sn=556dc99f45c448cb35ca3f2cd49ad54d",
-            "source": "新华社",
-            "published_at": "2026-09-18T22:00:00.000Z",
-            "score": null,
-            "summary": "住房城乡建设部消息，当前房地产市场出现了“两个转变”：一是房地产市场供求关系发生重大变化，二是房地产进入存量时代。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=83e85237&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIR2nSwgZZWFA7aFVb8EL3DWPqYapCrz4f6gKjicQPkT92GHBxCibIhgvsm2GQzWJsupqia29fNmBtpMa55aiaVTAGzrXcbibUWzW97A%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 1685476,
-            "title": "Men deported from US bound and beaten in Equatorial Guinea detention hotel, lawyers say",
-            "url": "https://www.theguardian.com/us-news/2026/sep/18/us-men-deported-hotel-equatorial-guinea",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-18T21:59:24.000Z",
-            "score": null,
-            "summary": "Group trapped at Hotel Bamy after US removal as rights groups sound alarm over poor conditions and violence",
-            "cover": null
-          },
-          {
-            "id": 1706989,
-            "title": "Code Signing in Linux: Complete Guide to Signing Packages, Binaries, and Containers",
-            "url": "https://www.reddit.com/r/linux/comments/1wk3jxc/code_signing_in_linux_complete_guide_to_signing/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T21:49:59.000Z",
-            "score": null,
-            "summary": "&#32; submitted by &#32; /u/throwaway16830261 &#32; to &#32; r/linux [link] &#32; [comments]",
-            "cover": null
-          },
-          {
-            "id": 1684969,
-            "title": "Brighton vs Arsenal: Premier League – predictions, teams, lineups",
-            "url": "https://www.aljazeera.com/sports/2026/9/18/brighton-vs-arsenal-premier-league-predictions-teams-lineups?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-18T21:41:55.000Z",
-            "score": null,
-            "summary": "Premier League holders Arsenal have won all seven of their matches to start the new season.",
-            "cover": null
-          },
-          {
-            "id": 1706990,
-            "title": "Self-host calendar?",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wk38lh/selfhost_calendar/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T21:37:01.000Z",
-            "score": null,
-            "summary": "I&#39;m looking for some open-source calendar software for myself. Here are my requirements:",
-            "cover": null
-          },
-          {
-            "id": 1706991,
-            "title": "New benchmark just dropped: Qwen 3.8 UD-Q6_K_XL tries to draw playboi carti in SVG and ends up creating random white guy",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk306j/new_benchmark_just_dropped_qwen_38_udq6_k_xl/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T21:27:43.000Z",
-            "score": 42,
-            "summary": "&#32; submitted by &#32; /u/AnimalPuzzleheaded71 &#32; to &#32; r/LocalLLaMA [link] &#32; [comments]",
-            "cover": "https://preview.redd.it/jog0482ojcqh1.png?width=640&crop=smart&auto=webp&s=26778d32db93751799bb05429e09b45224608265"
-          },
-          {
-            "id": 1681946,
-            "title": "OpenAI and Microsoft knew they were starting a ‘doom loop’ for the web",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/997633/openai-microsoft-chatgpt-ai-new-york-times-doom-loop-theft-google-zero",
+            "id": 272731,
+            "title": "Does AI need an antitrust exemption so it doesn’t kill everyone????",
+            "url": "https://www.theverge.com/podcast/997382/openai-microsoft-anthropic-elon-musk-cartel-ai-competition",
             "source": "The Verge",
-            "published_at": "2026-09-18T21:07:24.000Z",
-            "score": 76,
-            "summary": "Recently unsealed court documents in the New York Times' case against OpenAI and Microsoft are pretty damning. The companies' own documentation warned that it was starting a \"doom loop\" that would dam",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/STKS534_AI_DOOMSDAY2_B.png?quality=90&#038;strip=all&#038;crop=0,0,100,100"
+            "source_name": "The Verge",
+            "published_at": "2026-09-19T14:00:00.000Z",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/DCD_2026-09-19_Kanter.jpg?quality=90&strip=all&crop=0,0,100,100",
+            "totalScore": 61,
+            "score": 61,
+            "scores": {
+              "选题": 8,
+              "内容": 6,
+              "深度": 7,
+              "实用": 4,
+              "创新": 7,
+              "表达": 6
+            },
+            "kind": "article",
+            "reason": "反垄断与AI监管的前沿碰撞，前司法部高官视角解读巨头卡特尔风险，话题热度与政策敏感度高",
+            "summary": "The Verge播客访谈美国司法部前反垄断负责人Jonathan Kanter，探讨AI巨头要求反垄断豁免以协调安全标准背后的监管俘获、卡特尔化风险。Anthropic、Google DeepMind研究者陆续离职警示AI威胁，部分CEO呼吁放慢发展并寻求豁免，引发市场对其借机规避IPO压力的质疑。",
+            "quote": "antitrust exemptions so they can all coordinate on safety issues",
+            "points": [
+              "AI巨头以安全为由请求反垄断豁免，被指可能构成监管俘获和卡特尔行为",
+              "Anthropic、Google DeepMind研究者以离职方式警示AI安全风险",
+              "市场对科技CEO诉求的动机存疑，或借此规避投资者压力与IPO预期"
+            ],
+            "tags": [
+              "AI监管",
+              "反垄断"
+            ],
+            "translated": false
           },
           {
-            "id": 1684970,
-            "title": "New cat species found, first in more than 100 years",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/18/new-cat-species-found-first-in-more-than-100-years?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-18T21:06:15.000Z",
-            "score": null,
-            "summary": "A new species of living cat has been identified for the first time in more than a century.",
-            "cover": null
+            "id": 272733,
+            "title": "The AI regulation smackdown isn’t over",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/997706/the-ai-regulation-smackdown-isnt-over",
+            "source": "The Verge",
+            "source_name": "The Verge",
+            "published_at": "2026-09-19T13:00:00.000Z",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/STK481_STK432_CONGRESS_GOVERNMENT_CIVRGINIA_C.jpg?quality=90&strip=all&crop=0,0,100,100",
+            "totalScore": 56,
+            "score": 56,
+            "scores": {
+              "选题": 7,
+              "内容": 6,
+              "深度": 5,
+              "实用": 5,
+              "创新": 6,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "AI头部企业集体转向支持监管，标志性事件，适合关注政策风向的读者。",
+            "summary": "本周AI行业格局出现微妙转变：Anthropic CEO Dario Amodei提出三步走监管方案，获Sam Altman、Demis Hassabis、Elon Musk等多位科技巨头公开支持。第三方评估介入实验室、行业协同与国际协议成为共识方向，AI治理进入加速期。",
+            "quote": "At the start of this week, the who's-who of AI seemed - at least tentatively - on the side of AI regulation.",
+            "points": [
+              "Anthropic提出三步监管计划，核心是嵌入第三方评估员",
+              "OpenAI、Google DeepMind、SpaceX CEO公开支持监管框架",
+              "AI行业从技术竞速转向治理共识，政策窗口正在打开"
+            ],
+            "tags": [
+              "AI监管",
+              "科技政策"
+            ],
+            "translated": false
           },
           {
-            "id": 1684971,
-            "title": "Germany receives first F-35 jet from US as NATO boosts military spending",
-            "url": "https://www.aljazeera.com/news/2026/9/18/germany-receives-first-f-35-jet-from-us-as-nato-boosts-military-spending?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-18T21:06:14.000Z",
-            "score": null,
-            "summary": "Germany received the first of nearly three dozen F-35 stealth warplanes it ordered four years ago from Lockheed Martin.",
-            "cover": null
-          },
-          {
-            "id": 1681306,
-            "title": "Claude Code now reads AGENTS.md if there is no Claude.md",
-            "url": "https://code.claude.com/docs/en/changelog",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-18T21:00:32.000Z",
-            "score": 29,
-            "summary": "Article URL: https://code.claude.com/docs/en/changelog",
-            "cover": null
-          },
-          {
-            "id": 1675241,
-            "title": "[ Removed by Reddit ]",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk28e0/removed_by_reddit/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T20:57:46.000Z",
-            "score": null,
-            "summary": "[ Removed by Reddit on account of violating the content policy. ]",
-            "cover": null
-          },
-          {
-            "id": 1684972,
-            "title": "UK court clears woman of voicing support for Hamas in university speech",
-            "url": "https://www.aljazeera.com/news/2026/9/18/uk-court-clears-woman-of-voicing-support-for-hamas-in-university-speech?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-18T20:55:57.000Z",
-            "score": null,
-            "summary": "Sarah Cotte said her comments were not in support of Hamas, but in support of Palestinians&#039; right to resist.",
-            "cover": null
-          },
-          {
-            "id": 1675242,
-            "title": "NGL, I’m hyped to see if Qwen3.8 27b can make me a sandwich. Instant buy for me.",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wk22tw/ngl_im_hyped_to_see_if_qwen38_27b_can_make_me_a/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T20:51:47.000Z",
+            "id": 272867,
+            "title": "AIHOT 日报 · 2026-09-19 — Qwen 发布 Qwen3.8-LiveTranslate 实时同传模型，LAAL 降至 2.3 秒",
+            "url": "https://aihot.news/daily/2026-09-19",
+            "source": "AIHOT 日报",
+            "source_name": "AIHOT 日报",
+            "published_at": "2026-09-19T00:00:11.000Z",
+            "cover": null,
+            "totalScore": 38,
             "score": 38,
-            "summary": "Saw this little dude in a Forbes article (https://www.forbes.com/sites/johnkoetsier/2026/08/18/american-humanoid-robot-launches-for-just-1688-delivery-this-fall-made-in-san-francisco/)",
-            "cover": "https://external-preview.redd.it/UbASXk_9Tj5hiuOXeiWurVB5PP4pax9JQ33_sr8fxP0.png?width=640&crop=smart&auto=webp&s=b50ce4f73fdbee943b6ba0e91c474d591aaa7ae7"
+            "scores": {
+              "选题": 7,
+              "内容": 2,
+              "深度": 2,
+              "实用": 3,
+              "创新": 5,
+              "表达": 4
+            },
+            "kind": "article",
+            "reason": "Qwen实时同传模型刷新LAAL纪录，技术突破明确，但正文仅含链接，无实质内容解析，信息密度严重不足。",
+            "summary": "阿里通义千问团队发布Qwen3.8-LiveTranslate实时同传模型，将首词延迟（LAAL）降至2.3秒，接近人类同传水平。该日报为AIHOT每日资讯汇总，正文仅提供原文链接，缺乏技术细节、应用场景及行业影响分析，读者需跳转外部链接获取完整信息。",
+            "quote": "LAAL 降至 2.3 秒",
+            "points": [
+              "Qwen发布实时同传模型，核心指标LAAL达2.3秒",
+              "日报形式为资讯聚合，非独立深度分析",
+              "原文内容极度简略，仅引导跳转链接"
+            ],
+            "tags": [
+              "同传翻译",
+              "模型更新"
+            ],
+            "translated": false
           },
           {
-            "id": 1675243,
-            "title": "Fedora signing: draw the rest of the owl",
-            "url": "https://www.reddit.com/r/linux/comments/1wk21py/fedora_signing_draw_the_rest_of_the_owl/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T20:50:34.000Z",
-            "score": null,
-            "summary": "&#32; submitted by &#32; /u/throwaway16830261 &#32; to &#32; r/linux [link] &#32; [comments]",
-            "cover": null
-          },
-          {
-            "id": 1675244,
-            "title": "Omarchy? Hyprland? No way!",
-            "url": "https://www.reddit.com/r/linux/comments/1wk20zm/omarchy_hyprland_no_way/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-09-18T20:49:43.000Z",
-            "score": null,
-            "summary": "Over the past year, I&#39;ve come across all these pieces of information separately—different sources, different angles, sometimes even conflicting. But now? Someone&#39;s finally putting it all toget",
-            "cover": null
+            "id": 272735,
+            "title": "Virginia governor creates an AI task force and moves to restrain data centers",
+            "url": "https://www.theverge.com/policy/997573/virginia-governor-spanberger-data-center-ai-task-force",
+            "source": "The Verge",
+            "source_name": "The Verge",
+            "published_at": "2026-09-18T18:29:17.000Z",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2295948062.jpg?quality=90&strip=all&crop=0,0,100,100",
+            "totalScore": 54,
+            "score": 54,
+            "scores": {
+              "选题": 7,
+              "内容": 6,
+              "深度": 5,
+              "实用": 4,
+              "创新": 5,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "弗吉尼亚州全球数据中心之都的政策转向值得关注，但报道偏资讯罗列，缺乏深度分析。",
+            "summary": "弗吉尼亚州州长Abigail Spanberger签署行政命令22号，成立AI特遣队并限制数据中心扩张，赋予地方政府更多话语权。措施包括禁止官员签署保密协议、加速噪音监管、审查备用发电设施，反映AI基础设施扩张引发的政策博弈。",
+            "quote": "Virginia is already home to the data center capital of the world.",
+            "points": [
+              "弗吉尼亚州为全球数据中心最密集区域，政策转向具有标杆意义",
+              "行政命令22号禁止官员签署数据中心项目保密协议",
+              "新设AI特遣队评估政府对AI风险应对策略"
+            ],
+            "tags": [
+              "AI政策",
+              "数据中心"
+            ],
+            "translated": false
           }
         ]
       },
@@ -165,154 +147,105 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 1691306,
-            "title": "This is the way.",
-            "url": "https://x.com/omarsar0/status/2101049154885611808",
-            "source": "elvis(@omarsar0)",
-            "published_at": "2026-09-18T20:42:08.000Z",
-            "score": null,
-            "summary": "This is the way.Thariq@trq212We&#39;re adding support for AGENTS.md to Claude Code. Starting today in version 2.1.277, if there is no CLAUDE.md in a folder, Claude will check for and use AGENTS.md.You",
-            "cover": "https://pbs.twimg.com/profile_images/1976939058741039104/r3GgzqRh_normal.jpg"
+            "id": 272978,
+            "title": "27B模型分分钟交付网页，Qwen 3.8还是太能了",
+            "url": "https://www.qbitai.com/2026/09/492573.html",
+            "source": "量子位博客",
+            "source_name": "量子位博客",
+            "published_at": "2026-09-19T11:43:12.000Z",
+            "cover": null,
+            "totalScore": 40,
+            "score": 40,
+            "scores": {
+              "选题": 6,
+              "内容": 4,
+              "深度": 3,
+              "实用": 5,
+              "创新": 6,
+              "表达": 6
+            },
+            "kind": "article",
+            "reason": "选题紧跟大模型应用热点，但内容过于简略，信息密度不足，缺乏深度分析与实用细节。",
+            "summary": "报道Qwen 3.8（27B参数）在网页设计与前端开发上的能力，可快速生成完整页面，但需开发者自行补充后端逻辑。",
+            "quote": "设计、前端一口气全干了，结果后端没来上班",
+            "points": [
+              "Qwen 3.8 具备从设计到前端的完整网页生成能力",
+              "27B参数模型可在短时间内交付可用页面",
+              "前后端分离场景下仍需人工介入后端开发"
+            ],
+            "tags": [
+              "大模型",
+              "前端开发",
+              "Qwen"
+            ],
+            "translated": false
           },
           {
-            "id": 1681626,
-            "title": "Build agentic apps with the GitHub Copilot SDK, without implementing the agent loop yourself.\r\n\r\nJoin ...",
-            "url": "https://x.com/github/status/2101044801122836501",
-            "source": "GitHub(@github)",
-            "published_at": "2026-09-18T20:24:50.000Z",
-            "score": 42,
-            "summary": "Build agentic apps with the GitHub Copilot SDK, without implementing the agent loop yourself.Join this beginner-friendly livestream to learn how to use sessions, tools, MCP servers, streaming events, ",
-            "cover": "https://pbs.twimg.com/media/HShjeUPW8AA-W3q.jpg"
-          },
-          {
-            "id": 1671618,
-            "title": "Uncle Bob Martin's UML Tool to Manage Grok AI Agents",
-            "url": "https://github.com/unclebob/uml-viewer",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-18T20:05:25.000Z",
+            "id": 272768,
+            "title": "AI hallucination nearly triggers US military operation",
+            "url": "https://techcrunch.com/2026/09/18/ai-hallucination-nearly-triggers-us-military-operation/",
+            "source": "TechCrunch",
+            "source_name": "TechCrunch",
+            "published_at": "2026-09-18T23:12:32.000Z",
+            "cover": null,
+            "totalScore": 38,
             "score": 38,
-            "summary": "Article URL: https://github.com/unclebob/uml-viewer",
-            "cover": null
+            "scores": {
+              "选题": 9,
+              "内容": 4,
+              "深度": 3,
+              "实用": 5,
+              "创新": 4,
+              "表达": 4
+            },
+            "kind": "article",
+            "reason": "AI幻觉险些触发美军行动的稀缺事件，但文章篇幅过短、信息密度不足，缺乏深度分析。",
+            "summary": "GovAI研究学者警告称，服务成员需了解大语言模型固有的不确定性。该文报道了一起因AI幻觉几乎导致美国军事行动的事件，突显了AI在高风险决策场景中的潜在风险。",
+            "quote": "It’s important for service members to understand the uncertainty inherent to LLMs",
+            "points": [
+              "AI幻觉可能引发真实军事风险",
+              "大语言模型存在固有不确定性",
+              "军方需提高对AI局限性的认知"
+            ],
+            "tags": [
+              "AI安全",
+              "国防科技"
+            ],
+            "translated": false
           },
           {
-            "id": 1671594,
-            "title": "Show HN: I told my open-source AI agent it was a prisoner – it tried to escape",
-            "url": "https://github.com/nordevelopment/RoninAgent/blob/main/EXPERIMENT_REPORT_SUBJECT0.md",
-            "source": "Show HN",
-            "published_at": "2026-09-18T19:55:30.000Z",
-            "score": 55,
-            "summary": "Article URL: https://github.com/nordevelopment/RoninAgent/blob/main/EXPERIMENT_REPORT_SUBJECT0.md",
-            "cover": null
-          },
-          {
-            "id": 1671595,
-            "title": "Show HN: Procedurally Generated Mineral Gems",
-            "url": "https://gems.0x0000007a.com/",
-            "source": "Show HN",
-            "published_at": "2026-09-18T19:38:34.000Z",
-            "score": null,
-            "summary": "I wanted to give users of a new app I'm working on a way to generate their own custom icon. It turned out pretty cool so I chucked it up on a Cloudflare page. Codex did the 3d work, and then I integra",
-            "cover": null
-          },
-          {
-            "id": 1668241,
-            "title": "Storytelling is finally solved.\r\n\r\nNeither ChatGPT nor Claude could solve it because it required long-...",
-            "url": "https://x.com/omarsar0/status/2101030043673837726",
-            "source": "elvis(@omarsar0)",
-            "published_at": "2026-09-18T19:26:12.000Z",
-            "score": 52,
-            "summary": "Storytelling is finally solved.Neither ChatGPT nor Claude could solve it because it required long-horizon consistency, and they would just hallucinate consistently.Sherpa has data on 5.5 billion minut",
-            "cover": "https://pbs.twimg.com/profile_images/2097863287044186112/KRtqKZMb_normal.jpg"
-          },
-          {
-            "id": 1665132,
-            "title": "这年头，对 Photoshop 不满意，就自己开发了一个\r\n\r\n是开源的，提交记录都有 Claude，看起来是 AI 辅助的。\r\n\r\nhttps://t.co/qZKLaB8fwf",
-            "url": "https://x.com/dotey/status/2101029005159805101",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-18T19:22:04.000Z",
-            "score": 55,
-            "summary": "这年头，对 Photoshop 不满意，就自己开发了一个是开源的，提交记录都有 Claude，看起来是 AI 辅助的。github.com/robbietilton/C…Robbie Tilton@robbietiltonI built a Photoshop-like image editor. It’s called Compositor.robbietilton.com/compositor",
-            "cover": "https://pbs.twimg.com/profile_images/1842035847602049024/uGkmO5O7_normal.jpg"
-          },
-          {
-            "id": 1662082,
-            "title": "Claude couldn’t hack OpenAI. Then Anthropic shipped Opus 5.",
-            "url": "https://thenewstack.io/claude-exploits-openai-forum/",
-            "source": "The New Stack",
-            "published_at": "2026-09-18T18:57:14.000Z",
-            "score": 75,
-            "summary": "Three security researchers at Hacktron AI found a memory-corruption bug in a widely used image library. Finding it was the easy part.",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/62433673-behnam-mohsenzadeh-n6gc9ebg7v4-unsplash-1024x576.jpg"
-          },
-          {
-            "id": 1662415,
-            "title": "An Empirical Study of Harness Design for Coding Agents\r\n\r\npaper: https://t.co/pqcxSfs1h0",
-            "url": "https://x.com/_akhaliq/status/2101020560964866103",
-            "source": "AK(@_akhaliq)",
-            "published_at": "2026-09-18T18:48:31.000Z",
-            "score": null,
-            "summary": "An Empirical Study of Harness Design for Coding Agentspaper: huggingface.co/papers/2609.20…💬3🔄1❤️13👀2115📊5⚡ Powered by xgo.ing",
-            "cover": "https://pbs.twimg.com/media/HShTBsraIAABLq-.jpg"
-          },
-          {
-            "id": 1663591,
-            "title": "https://t.co/PqUQYmx1YB",
-            "url": "https://x.com/claudeai/status/2101017908843352238",
-            "source": "Claude(@claudeai)",
-            "published_at": "2026-09-18T18:37:59.000Z",
-            "score": null,
-            "summary": "x.com/yanliudesign/s…Yan Liu@yanliudesignCreated a gemstone brush in Claude for the trend: put gemstone stickers on anything and make it sparkle!!! 💎Pick your gems, draw whatever you want, and add a ",
-            "cover": "https://pbs.twimg.com/profile_images/2023498751017717760/j1DzJs7E_normal.jpg"
-          },
-          {
-            "id": 1663593,
-            "title": "A thread of our favorite things people built with Claude recently:\r\n\r\nhttps://t.co/bLVmlNj5ew",
-            "url": "https://x.com/claudeai/status/2101017902316982783",
-            "source": "Claude(@claudeai)",
-            "published_at": "2026-09-18T18:37:57.000Z",
-            "score": 22,
-            "summary": "A thread of our favorite things people built with Claude recently:x.com/kevin_t_ngo/st…Kevin Ngo@kevin_t_ngoI made a website with 25 mini rooms, each with Claude keeping people company.Created with Cl",
-            "cover": "https://pbs.twimg.com/profile_images/2030333350272241664/ifQxaQ_C_normal.jpg"
-          },
-          {
-            "id": 1653548,
-            "title": "哈哈 Claude Code 终于支持 AGENTS.md，所以什么时候支持 .agents/skills ?",
-            "url": "https://x.com/dotey/status/2101013914116915454",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-18T18:22:06.000Z",
-            "score": 43,
-            "summary": "哈哈 Claude Code 终于支持 AGENTS.md，所以什么时候支持 .agents/skills ?Thariq@trq212We&#39;re adding support for AGENTS.md to Claude Code. Starting today in version 2.1.277, if there is no CLAUDE.md in a folder, Clau",
-            "cover": "https://pbs.twimg.com/profile_images/1976939058741039104/r3GgzqRh_normal.jpg"
-          },
-          {
-            "id": 1667216,
-            "title": "Ask HN: So is AI taking our jobs?",
-            "url": "https://news.ycombinator.com/item?id=49758136",
-            "source": "Ask HN",
-            "published_at": "2026-09-18T18:17:26.000Z",
-            "score": 32,
-            "summary": "I'm a software developer with about 12 YEO, so far I haven't had a problem finding work and for the foreseeable future I don't see Claude taking my job just yet, but every month AI models get better, ",
-            "cover": null
-          },
-          {
-            "id": 1669632,
-            "title": "v2.1.277",
-            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.277",
-            "source": "Release notes from claude-code",
-            "published_at": "2026-09-18T18:06:32.000Z",
-            "score": null,
-            "summary": "What's changed Added AGENTS.md support: in a project with no CLAUDE.md, Claude Code reads AGENTS.md instead; change it under \"Project instructions\" in /config (not yet on Bedrock, Vertex or Foundry) A",
-            "cover": null
-          },
-          {
-            "id": 1665073,
-            "title": "WebMCP support now available in mcp-handler",
-            "url": "https://vercel.com/changelog/webmcp-mcp-handler",
-            "source": "Vercel News",
-            "published_at": "2026-09-18T18:00:00.000Z",
-            "score": 65,
-            "summary": "now has experimental support for , the proposed web standard for exposing tools to in-browser agents. Add a single script tag to your site, and your existing MCP tools become available there too.mcp-h",
-            "cover": null
+            "id": 272772,
+            "title": "World model companies are keeping a lot of secrets",
+            "url": "https://techcrunch.com/2026/09/18/world-model-companies-are-keeping-a-lot-of-secrets/",
+            "source": "TechCrunch",
+            "source_name": "TechCrunch",
+            "published_at": "2026-09-18T20:18:14.000Z",
+            "cover": null,
+            "totalScore": 34,
+            "score": 34,
+            "scores": {
+              "选题": 6,
+              "内容": 4,
+              "深度": 3,
+              "实用": 3,
+              "创新": 5,
+              "表达": 5
+            },
+            "kind": "article",
+            "reason": "切入世界模型行业保密现状的观察角度新颖，但正文过于简略，缺乏实质信息支撑。",
+            "summary": "文章指出World Model领域公司普遍高度保密，创始人乃至数据供应商都拒绝透露具体产品细节，反映了该赛道资本热度高但透明度低的矛盾现象。",
+            "quote": "Everyone in the world-models space is sitting on a pile of cash and a ton of buzz, but good luck getting anyone — from the founders to their own data suppliers — to tell you what they're actually buil",
+            "points": [
+              "World Model赛道公司普遍资金充裕、话题热度高",
+              "从创始人到数据供应商均拒绝透露实际产品内容",
+              "行业整体处于高度保密状态"
+            ],
+            "tags": [
+              "世界模型",
+              "AI行业",
+              "商业保密"
+            ],
+            "translated": false
           }
         ]
       },
@@ -321,104 +254,319 @@
         "desc": "",
         "items": [
           {
-            "id": 1650078,
-            "title": "AI 怎么当餐厅的“隐形店长”",
-            "url": "https://www.huxiu.com/article/4892392.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-09-18T17:45:44.000Z",
-            "score": 78,
-            "summary": "红餐产业研究院的调研数据显示，目前中国餐饮行业的AI应用渗透率仅为15%。与此同时，上海市商务委等五部门2025年11月印发的《上海市促进餐饮业智能化布局行动计划（2026—2028年）》提出：团餐、快餐、茶饮咖啡企业全链条智能化渗透率要超过70%，正餐企业关键环节智能化应用率超过50%。",
-            "cover": "https://img.huxiucdn.com/article/content/26-09-19/58ef9236-7af1-4863-b884-2345cb1d76ea.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
-          },
-          {
-            "id": 1671620,
-            "title": "AI chatbot's false report nearly sparked war with China, sources say",
-            "url": "https://www.rnz.co.nz/news/world/1465265/ai-chatbot-s-false-report-nearly-sparked-war-with-china-sources-say",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-18T19:59:56.000Z",
+            "id": 272740,
+            "title": "FCC lets Paramount sell 49.5% equity stake to Saudi Arabia, UAE, and Qatar",
+            "url": "https://arstechnica.com/tech-policy/2026/09/fcc-lets-paramount-sell-49-5-equity-stake-to-saudi-arabia-uae-and-qatar/",
+            "source": "Ars Technica",
+            "source_name": "Ars Technica",
+            "published_at": "2026-09-18T17:57:41.000Z",
+            "cover": null,
+            "totalScore": 72,
             "score": 72,
-            "summary": "Article URL: https://www.rnz.co.nz/news/world/1465265/ai-chatbot-s-false-report-nearly-sparked-war-with-china-sources-say",
-            "cover": null
+            "scores": {
+              "选题": 8,
+              "内容": 7,
+              "深度": 5,
+              "实用": 6,
+              "创新": 7,
+              "表达": 8
+            },
+            "kind": "article",
+            "reason": "FCC罕见批准近50%外资持股，中东资本深度介入美国主流媒体，折射地缘政治与传媒格局双重变局，信息量充足且时效性强。",
+            "summary": "FCC批准Paramount Skydance向沙特、阿联酋、卡塔尔主权财富基金出售49.5%股权，外资持股比例突破美国广播法25%上限。此举系Paramount收购Warner Bros. Discovery（1110亿美元）融资方案的一部分，目前该并购案仍面临州诉讼阻挠，但司法部已批准。",
+            "quote": "Under US law, companies with licenses to run broadcast stations need FCC approval to have direct or indirect foreign ownership exceeding 25 percent of the company's stock.",
+            "points": [
+              "FCC批准Paramount突破25%外资持股上限，间接外资将高达49.5%",
+              "交易资金部分来源于沙特、阿联酋、卡塔尔主权财富基金",
+              "Paramount拟1110亿美元收购Warner Bros. Discovery，并购案仍面临州诉讼挑战"
+            ],
+            "tags": [
+              "传媒并购",
+              "中东资本"
+            ],
+            "translated": false
           },
           {
-            "id": 1629229,
-            "title": "Pivoting and Tunneling",
-            "url": "https://blog.abb00717.com/%E7%AD%86%E8%A8%98/%E6%BB%B2%E9%80%8F%E7%AD%86%E8%A8%98/Pivoting-and-Tunneling",
-            "source": "ABB00717",
-            "published_at": "2026-09-18T16:19:23.515Z",
-            "score": 72,
-            "summary": "SSH tunneling over SOCKS proxy $ nmap -sT -p22,3306 10.129.202.64 PORT STATE SERVICE 22/tcp open ssh 3306/tcp closed mysql MySQL 並沒有對外開放，若要使用必須透過 port forwarding，可以透過 SSH 將 MySQL 轉到 port 1234 上： abb00",
-            "cover": null
+            "id": 272741,
+            "title": "Finding the cells that put our brain to sleep",
+            "url": "https://arstechnica.com/science/2026/09/finding-the-cells-that-put-our-brain-to-sleep/",
+            "source": "Ars Technica",
+            "source_name": "Ars Technica",
+            "published_at": "2026-09-18T17:49:50.000Z",
+            "cover": null,
+            "totalScore": 66,
+            "score": 66,
+            "scores": {
+              "选题": 8,
+              "内容": 7,
+              "深度": 6,
+              "实用": 4,
+              "创新": 8,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "Nature新研究推翻睡眠经典认知，发现大脑皮层中存在可自主触发睡眠的特殊神经元群，颠覆性显著。",
+            "summary": "传统观点认为睡眠由大脑深部区域控制，皮层仅被动响应。Nature最新研究发表在《自然》上，Al伯特·爱因斯坦医学院Geoffrey Terral团队发现，大脑皮层中仅占抑制性神经元约1%的一群特殊细胞，一旦被激活，即可在小鼠身上直接引发睡眠。这表明皮层不仅能感知慢波节律，还能自主发起并促成睡眠，彻底改写了对睡眠调控机制的理解。",
+            "quote": "What our work shows is that the cortex can not only see this rhythm but also initiate it by itself, and this is sufficient to promote sleep.",
+            "points": [
+              "大脑皮层中发现一类仅需激活即可触发睡眠的特殊抑制性神经元",
+              "该发现颠覆了睡眠由深部脑区单向控制的经典理论",
+              "这类细胞仅占皮层抑制性神经元的约1%，却足以独立启动睡眠"
+            ],
+            "tags": [
+              "睡眠科学",
+              "神经科学"
+            ],
+            "translated": false
           },
           {
-            "id": 1678024,
-            "title": "Databricks' @alighodsi on AI risk and adoption:\r\n\r\nAli isn't losing sleep over the existential risk de...",
-            "url": "https://x.com/a16z/status/2101032223457829137",
-            "source": "a16z(@a16z)",
-            "published_at": "2026-09-18T19:34:52.000Z",
-            "score": 68,
-            "summary": "Databricks&#39; @alighodsi on AI risk and adoption:Ali isn&#39;t losing sleep over the existential risk debate.He says a number of conditions would all have to be true simultaneously to enable an actu",
-            "cover": null
+            "id": 272955,
+            "title": "《消逝的光芒：困兽》迎来一周年庆典，确认推出实体版",
+            "url": "https://www.gcores.com/articles/219854",
+            "source": "机核",
+            "source_name": "机核",
+            "published_at": "2026-09-18T16:00:00.000Z",
+            "cover": "https://image.gcores.com/265e330126ff34eb4d3b98e0a5f2c1db-1920-1080.jpg?x-oss-process=image/resize,limit_1,m_fill,w_626,h_292/quality,q_90",
+            "totalScore": 62,
+            "score": 62,
+            "scores": {
+              "选题": 6,
+              "内容": 7,
+              "深度": 4,
+              "实用": 8,
+              "创新": 3,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "实体版确认+周年活动详览，信息完整、决策参考明确，适合玩家入手指南",
+            "summary": "《消逝的光芒：困兽》一周年确认推出三款实体版（标准版/SRG限量版/周年版），9月18日起在Super Rare Games开放预购。同时启动三周年庆典活动：双倍经验预热、社区目标解锁限定外观与武器、每日登录赠礼，数字版史低5折促销至9月26日。",
+            "quote": "现在正是游玩《消逝的光芒：困兽》的最佳时机。",
+            "points": [
+              "Techland与Super Rare Games合作推出三款实体版本，限量版含金属外盒与编号认证",
+              "三周年庆典活动含社区目标解锁、每日登录赠礼、周五专属武器领取",
+              "数字版全平台史低5折，系列合集包最高7折，促销至9月26日"
+            ],
+            "tags": [
+              "游戏",
+              "实体版"
+            ],
+            "translated": false
           },
           {
-            "id": 1643415,
-            "title": "US Military had close call after using AI for hallucinated intelligence report",
-            "url": "https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-18T17:28:01.000Z",
-            "score": 68,
-            "summary": "Article URL: https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
-            "cover": null
+            "id": 272806,
+            "title": "Forget the AI Slowdown—the Vulnerability Explosion Is Already Happening",
+            "url": "https://www.wired.com/story/kernel-panic-ai-vulnerability-explosion/",
+            "source": "Wired",
+            "source_name": "Wired",
+            "published_at": "2026-09-19T11:00:00.000Z",
+            "cover": null,
+            "totalScore": 58,
+            "score": 58,
+            "scores": {
+              "选题": 9,
+              "内容": 6,
+              "深度": 7,
+              "实用": 5,
+              "创新": 8,
+              "表达": 8
+            },
+            "kind": "article",
+            "reason": "直击AI安全盲区：当业界争论AI发展速度时，AI已在加速漏洞发现，选题精准且具预警价值。",
+            "summary": "文章指出AI实验室正考虑放慢开发节奏的行业协议，但与此同时，公开的AI聊天机器人已在帮助安全研究者们揭开大规模安全漏洞的浪潮，揭示了一个被忽视的现实风险。",
+            "quote": "Meanwhile, widely available AI chatbots are already helping uncover a tidal wave of security flaws.",
+            "points": [
+              "AI发展放缓讨论正火热，但AI安全影响已悄然加速",
+              "开源/公开AI工具正在降低漏洞发现门槛",
+              "安全行业面临双重变局：既受AI影响又因AI而变"
+            ],
+            "tags": [
+              "AI安全",
+              "漏洞爆发",
+              "Wired"
+            ],
+            "translated": false
           },
           {
-            "id": 1643416,
-            "title": "I Hijacked a Real Artist's Spotify with AI Music. It Was Disturbingly Easy",
-            "url": "https://www.404media.co/spotify-ai-music-scam/",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-18T17:16:13.000Z",
-            "score": 68,
-            "summary": "Article URL: https://www.404media.co/spotify-ai-music-scam/",
-            "cover": null
+            "id": 272739,
+            "title": "FAA tees up $875M AI tool to help manage air traffic congestion",
+            "url": "https://arstechnica.com/ai/2026/09/faa-tees-up-875m-ai-tool-to-help-manage-air-traffic-congestion/",
+            "source": "Ars Technica",
+            "source_name": "Ars Technica",
+            "published_at": "2026-09-18T19:20:50.000Z",
+            "cover": null,
+            "totalScore": 58,
+            "score": 58,
+            "scores": {
+              "选题": 7,
+              "内容": 6,
+              "深度": 5,
+              "实用": 4,
+              "创新": 6,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "FAA首个AI空中交通管理系统部署进展，政府AI落地的标志性事件，关注后续全国推广节奏。",
+            "summary": "FAA计划9月21日起在华盛顿特区三大机场试点AI系统SMART，用于预测航班流量、识别潜在冲突。该系统综合航班时刻、天气、机场容量等因素辅助空管决策，成功后将覆盖全美2900万平方英里空域。专家评价分阶段推进是正确策略。",
+            "quote": "The decision to launch SMART in a limited scope before going nationwide is the 'right call.'",
+            "points": [
+              "SMART系统将在华盛顿特区三机场率先试点，逐步扩展至全国空域",
+              "AI模型用于预测航班流量并识别潜在冲突",
+              "分阶段部署策略获前FAA顾问认可"
+            ],
+            "tags": [
+              "AI应用",
+              "航空安全"
+            ],
+            "translated": false
           },
           {
-            "id": 1678023,
-            "title": "Databricks' @alighodsi on why most companies wouldn't even notice if frontier AI models stopped adva...",
-            "url": "https://x.com/a16z/status/2101044182475547120",
-            "source": "a16z(@a16z)",
-            "published_at": "2026-09-18T20:22:23.000Z",
-            "score": 64,
-            "summary": "Databricks&#39; @alighodsi on why most companies wouldn&#39;t even notice if frontier AI models stopped advancing:&quot;The models are smart enough, but they just don&#39;t have the context that exist",
-            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
+            "id": 272826,
+            "title": "一位卧底谷歌分析师成功渗透进一伙臭名昭著的供应链黑客团伙",
+            "original_title": "An Undercover Google Analyst Infiltrated a Notorious Supply-Chain Hacking Gang",
+            "url": "https://www.wired.com/story/an-undercover-google-analyst-infiltrated-a-notorious-supply-chain-hacking-gang/",
+            "source": "Wired",
+            "source_name": "Wired",
+            "published_at": "2026-09-18T16:00:00.000Z",
+            "cover": null,
+            "totalScore": 58,
+            "score": 58,
+            "scores": {
+              "选题": 9,
+              "内容": 8,
+              "深度": 7,
+              "实用": 5,
+              "创新": 7,
+              "表达": 8
+            },
+            "kind": "article",
+            "reason": "Wired独家报道Google渗透TeamPCP供应链黑客组织，网络安全领域重磅内幕，极具阅读价值。",
+            "summary": "Google威胁情报小组成功渗透进臭名昭著的TeamPCP黑客组织内部，该组织曾实施史上最严重的软件供应链攻击，入侵数千家企业。文章揭示了Google如何使用卧底分析师搜集情报、瓦解这一网络犯罪集团的全过程。",
+            "quote": "TeamPCP pulled off the worst-ever software supply-chain hacking spree and breached thousands of companies.",
+            "points": [
+              "Google通过卧底分析师潜入TeamPCP核心圈子获取关键情报",
+              "TeamPCP实施了史上最严重的软件供应链攻击事件之一",
+              "该黑客组织入侵了数千家企业的系统"
+            ],
+            "tags": [
+              "网络安全",
+              "Google"
+            ],
+            "translated": true
           },
           {
-            "id": 1671596,
-            "title": "Show HN: OnPanda – Steer LLMs and agents at the token level",
-            "url": "https://onpanda.diyer22.com/",
-            "source": "Show HN",
-            "published_at": "2026-09-18T19:26:50.000Z",
-            "score": 64,
-            "summary": "I built onPanda – an interactive tool for token visualization & control, model inspection and data annotation.onPanda is designed for hackers, power users, curious minds, and engineers. Its UI is buil",
-            "cover": null
+            "id": 272760,
+            "title": "Petlibro’s new AI-powered feeder is a game changer for multi-cat homes",
+            "url": "https://techcrunch.com/2026/09/19/petlibros-new-ai-powered-feeder-is-a-game-changer-for-multi-cat-homes/",
+            "source": "TechCrunch",
+            "source_name": "TechCrunch",
+            "published_at": "2026-09-19T15:00:00.000Z",
+            "cover": null,
+            "totalScore": 46,
+            "score": 46,
+            "scores": {
+              "选题": 6,
+              "内容": 5,
+              "深度": 4,
+              "实用": 6,
+              "创新": 6,
+              "表达": 7
+            },
+            "kind": "article",
+            "reason": "多猫家庭精准喂食痛点明确，AI识别+称重功能具实用性，但订阅付费模式削弱产品吸引力。",
+            "summary": "Petlibro推出Granary 2智能喂食器，内置称重传感器和AI摄像头，可追踪每只猫的进食量与时间。高端健康监控功能需额外订阅，适合多猫家庭的饮食管理需求。",
+            "quote": "Petlibro's new Granary 2 smart feeders use a built-in scale and (on pricier models) an AI camera to track exactly how much your cat is eating and when.",
+            "points": [
+              "AI摄像头+称重实现多猫精准分餐",
+              "高端健康监测功能需额外付费订阅",
+              "多猫家庭饮食管理场景定位清晰"
+            ],
+            "tags": [
+              "宠物智能硬件",
+              "AI识别"
+            ],
+            "translated": false
+          }
+        ]
+      },
+      {
+        "column": "视频与播客",
+        "desc": "窗口内新视频/播客，点开即可播放收听",
+        "items": [
+          {
+            "id": 266540,
+            "ref_id": 266540,
+            "kind": "podcast",
+            "title": "比永远更远，核周报 9.19",
+            "url": "https://www.gcores.com/radios/219595",
+            "source": "机核游戏频道",
+            "source_name": "机核游戏频道",
+            "published_at": "2026-09-19T15:00:00.000Z",
+            "audio_url": "http://alioss.gcores.com/uploads/audio/d01d310b-6b69-4487-9abd-8c76ae2f81af.mp3",
+            "cover": null,
+            "source_avatar": "https://alioss.gcores.com/download/podcast/gadio.png?v=1"
           },
           {
-            "id": 1643414,
-            "title": "Disney Hires Its First CTO: Karandeep Anand, Former CEO of AI Chatbot Startup",
-            "url": "https://variety.com/2026/biz/news/disney-cto-karandeep-anand-character-ai-1236866528/",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-18T17:30:25.000Z",
-            "score": 64,
-            "summary": "Article URL: https://variety.com/2026/biz/news/disney-cto-karandeep-anand-character-ai-1236866528/",
-            "cover": null
+            "id": 262437,
+            "ref_id": 262437,
+            "kind": "podcast",
+            "title": "科技会（以及不会）取代你的医生 | Zack Abbott 与 Dhruv Khullar",
+            "original_title": "How tech will (and won't) replace your doctor | Zack Abbott and Dhruv Khullar",
+            "url": "http://go.ted.com/zackanddhruv",
+            "source": "TED Talks Daily",
+            "source_name": "TED Talks Daily",
+            "published_at": "2026-09-19T15:00:00.000Z",
+            "audio_url": "https://sphinx.acast.com/p/open/s/67587e77c705e441797aff96/e/6aad5d477aa361c6129253f0/media.mp3",
+            "cover": null,
+            "source_avatar": "https://assets.pippa.io/shows/67587e77c705e441797aff96/show-cover.png"
+          },
+          {
+            "id": 272499,
+            "ref_id": 272499,
+            "kind": "podcast",
+            "title": "地沟油做的背包，是零碳创新还是新营销？|无限进化69",
+            "url": "https://www.xiaoyuzhoufm.com/episode/6aae1bed0916f6f8b445a893",
+            "source": "第一财经",
+            "source_name": "第一财经",
+            "published_at": "2026-09-19T05:31:58.000Z",
+            "audio_url": "https://media.xyzcdn.net/64c75555e8176c3ff81de98c/lkwCeulng_xdI0LVLeuD0ovAmAqU.m4a",
+            "cover": null,
+            "source_avatar": "https://image.xyzcdn.net/Fnx_1DU2Nog_nuuuNl6RLYXuQ2Rk.jpg@small"
+          },
+          {
+            "id": 260440,
+            "ref_id": 260440,
+            "kind": "podcast",
+            "title": "Domino's披萨追踪器的万物理论",
+            "original_title": "The Domino’s Pizza Tracker Theory of Everything",
+            "url": "https://www.npr.org/2026/09/18/nx-s1-5974101/dominos-pizza-tracker-labor-illusion",
+            "source": "Planet Money",
+            "source_name": "Planet Money",
+            "published_at": "2026-09-18T20:00:00.000Z",
+            "audio_url": "https://tracking.swap.fm/track/XvDEoI11TR00olTUO8US/prfx.byspotify.com/e/play.podtrac.com/npr-510289/npr.simplecastaudio.com/43b5acee-463e-4612-95ad-d2596d9dd337/episodes/015802bf-f8a4-4fdc-8b55-f82788d39640/audio/128/default.mp3?awCollectionId=43b5acee-463e-4612-95ad-d2596d9dd337&awEpisodeId=015802bf-f8a4-4fdc-8b55-f82788d39640&feed=hvWWWzRv&t=podcast&e=nx-s1-5974101&p=510289&d=1942&size=31077025",
+            "cover": null,
+            "source_avatar": "https://media.npr.org/assets/img/2022/10/24/pm_new_tile_2022_sq-e543deddd0a46a98be481b46e6a72efa6b52236f.jpg?s=1400&c=66&f=jpg"
           }
         ]
       }
     ],
     "stats": {
-      "candidates": 500,
-      "articles": 500,
-      "sections": 3,
-      "totalItems": 39
+      "schemaVersion": 2,
+      "theme": null,
+      "degraded": false,
+      "themes": [],
+      "candidates": 54,
+      "articles": 54,
+      "videos": 8,
+      "gateDropped": 17,
+      "filterStats": {
+        "candidates": 54,
+        "passed": 54,
+        "analyzed": 23
+      },
+      "sections": 4,
+      "totalItems": 18,
+      "elapsedMin": 1.4
     }
   },
-  "generated_at": "2026-09-19T06:12:38.770Z"
+  "generated_at": "2026-09-20T06:36:04.801Z"
 }

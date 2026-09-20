@@ -1,74 +1,18 @@
 {
   "groups": [
     {
-      "id": 63,
-      "kind": "article",
-      "name": "科技博客",
-      "sort": 0,
-      "source_count": 248
-    },
-    {
-      "id": 64,
-      "kind": "article",
-      "name": "X·AI推主",
-      "sort": 0,
-      "source_count": 126
-    },
-    {
-      "id": 65,
-      "kind": "article",
-      "name": "Top200 精选",
-      "sort": 0,
-      "source_count": 147
-    },
-    {
-      "id": 66,
-      "kind": "article",
-      "name": "AI·前沿",
-      "sort": 0,
-      "source_count": 31
-    },
-    {
-      "id": 67,
-      "kind": "article",
-      "name": "中文科技",
-      "sort": 0,
-      "source_count": 25
-    },
-    {
-      "id": 68,
-      "kind": "article",
-      "name": "工程实践",
-      "sort": 0,
-      "source_count": 44
-    },
-    {
-      "id": 69,
-      "kind": "article",
-      "name": "公司技术团队",
-      "sort": 0,
-      "source_count": 1
-    },
-    {
-      "id": 70,
-      "kind": "article",
-      "name": "研究",
-      "sort": 0,
-      "source_count": 3
-    },
-    {
       "id": 1,
       "kind": "article",
       "name": "ai",
       "sort": 1,
-      "source_count": 8
+      "source_count": 4
     },
     {
       "id": 2,
       "kind": "article",
       "name": "综合热搜",
       "sort": 2,
-      "source_count": 8
+      "source_count": 10
     },
     {
       "id": 3,
@@ -89,7 +33,7 @@
       "kind": "article",
       "name": "国际视野",
       "sort": 5,
-      "source_count": 5
+      "source_count": 3
     },
     {
       "id": 6,
@@ -124,35 +68,35 @@
       "kind": "article",
       "name": "社会文化",
       "sort": 10,
-      "source_count": 9
+      "source_count": 7
     },
     {
       "id": 11,
       "kind": "article",
       "name": "创投",
       "sort": 11,
-      "source_count": 9
+      "source_count": 4
     },
     {
       "id": 12,
       "kind": "article",
       "name": "财经",
       "sort": 12,
-      "source_count": 11
+      "source_count": 10
     },
     {
       "id": 13,
       "kind": "article",
       "name": "科技",
       "sort": 13,
-      "source_count": 14
+      "source_count": 12
     },
     {
       "id": 14,
       "kind": "article",
       "name": "AI",
       "sort": 14,
-      "source_count": 10
+      "source_count": 7
     },
     {
       "id": 15,
@@ -173,49 +117,49 @@
       "kind": "article",
       "name": "播客",
       "sort": 17,
-      "source_count": 66
+      "source_count": 49
     },
     {
       "id": 18,
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 28
+      "source_count": 37
     },
     {
       "id": 19,
       "kind": "article",
       "name": "编程技术",
       "sort": 19,
-      "source_count": 30
+      "source_count": 32
     },
     {
       "id": 20,
       "kind": "article",
       "name": "新闻媒体",
       "sort": 20,
-      "source_count": 13
+      "source_count": 14
     },
     {
       "id": 21,
       "kind": "article",
       "name": "生活方式与文化",
       "sort": 21,
-      "source_count": 11
+      "source_count": 12
     },
     {
       "id": 22,
       "kind": "article",
       "name": "商业科技",
       "sort": 22,
-      "source_count": 30
+      "source_count": 35
     },
     {
       "id": 23,
       "kind": "article",
       "name": "金融经济",
       "sort": 23,
-      "source_count": 11
+      "source_count": 13
     },
     {
       "id": 24,
@@ -260,5 +204,5 @@
       "source_count": 1
     }
   ],
-  "generated_at": "2026-09-19T06:12:39.129Z"
+  "generated_at": "2026-09-20T06:36:05.221Z"
 }
