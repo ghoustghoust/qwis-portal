@@ -1079,7 +1079,10 @@ async function runDailyAi() {
       if (consecFail >= 3 && analyzed.length === 0) {
         log('AI 链路连败 3 次，降级关键词版');
         const stats = await runDaily();
-        await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.degraded', json('true'), '$.schemaVersion', '1') WHERE id = (SELECT MAX(id) FROM daily_reports)");
+        // B112：原来这里写的是字符串 '1'（json_set 第三个实参带引号）→ 落库成 JSON 文本 "1"。
+        // 只把常量当**绑定参数**传进来还不够：JS number 经驱动绑进 SQLite 是 double，
+        // json_set 会存成 `1.0`（json_type = real）—— 实测过，所以必须 CAST AS INTEGER。
+        await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.degraded', json('true'), '$.schemaVersion', CAST(? AS INTEGER)) WHERE id = (SELECT MAX(id) FROM daily_reports)", [require('../lib/brief-guards').DAILY_SCHEMA_VERSION.KEYWORD]);
         return { degraded: true, fallback: stats };
       }
       continue;
@@ -1269,7 +1272,7 @@ async function runDailyAi() {
     windowVideos = (await qOne('SELECT COUNT(*) c FROM videos WHERE created_at >= ?', [startUtc])).c || 0;
   } catch { /* 统计失败不阻断 */ }
   const stats = {
-    schemaVersion: 2, theme, degraded: false, themes,
+    schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
     sections: sections.length, totalItems: allItems.length,
@@ -1618,6 +1621,8 @@ async function runDaily() {
   }
 
   const stats = {
+    // B112：关键词版也必须显式带档位 —— 原来只有降级分支用 json_set 补，正常跑出来的行是 `(无)`
+    schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.KEYWORD,
     candidates: valid.length, articles: valid.length, sections: sections.length,
     totalItems: sections.reduce((n, s) => n + s.items.length, 0),
   };

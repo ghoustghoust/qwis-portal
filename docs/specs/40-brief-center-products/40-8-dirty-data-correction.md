@@ -24,7 +24,7 @@
 | S2 | 根因一行修：迁移脚本里 `typeof null === 'object'` 的序列化分支（`tools/migrate-to-turso.js:250` 同族），**先修根因再清存量**（否则下一批迁移又写坏） | 代码 diff + 一条锁 |
 | S3 | 一次性 `UPDATE articles SET read_at=NULL WHERE read_at='null'`（连带 `tags`/`reason`/`videos.watched_at`），分批、带 where 保护、执行前后各跑一次同一份计数 SQL | 前后计数 + 未读角标/保留清理预览的变化 |
 | S4 | 周刊 theme：两条脏串改为清洗后的值或置空（**不重新生成周刊**，避免"顺手重跑"改动产物内容） | 逐期对照（改前/改后字符串） |
-| S5 | `schemaVersion` 定标为整数常量（配合 40-1 残余），存量 `(无)`/`"1"` 归一到明确档位 | 分档计数前后表 |
+| S5 | ◐ **写入侧已做 09-21（B112）**：常量 `DAILY_SCHEMA_VERSION` + 5 个生成写入点全接（判据并进白盒 W14，锁 Q1~Q5）。**存量归一未做**：那是一次 `UPDATE daily_reports` 批量写，与 S3/B121 同属"要点头才动"；且读侧 `Number()` 已兜住三种形态，不订正也不影响选版 | 分档计数前后表（真做时先出改前读数） |
 
 ## 判据与验收
 

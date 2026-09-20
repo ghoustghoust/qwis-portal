@@ -306,19 +306,28 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
 // 动态表名（INSERT INTO 变量）= 整表复制路径（备份恢复/迁移），门槛对它不适用，但**必须列出来**：
 // 否则"把表名改成变量"就成了绕过判据的门。
 {
-  const { findDailyReportWriters } = require('../lib/daily-writers');
+  const { findDailyReportWriters, findStatsSchemaTypeViolations } = require('../lib/daily-writers');
   const all = findDailyReportWriters(ROOT);
   const writers = all.filter((w) => !w.dynamic);
   const copies = all.filter((w) => w.dynamic);
   const ungated = writers.filter((w) => !w.ok);
   const notExec = writers.filter((w) => w.ok && !w.executed);
+  // B112（09-21）：同一份写入点清单还要判"档位字段"——每一处生成器都必须显式带
+  // `DAILY_SCHEMA_VERSION.KEYWORD|AI`（数字、走常量），且不许有 SQL 把它写成带引号的字符串。
+  const noSchema = writers.filter((w) => !w.schema || !w.schema.carried);
+  const bareSchema = writers.filter((w) => w.schema && (w.schema.bare || w.schema.stringTyped));
+  const strTyped = findStatsSchemaTypeViolations(ROOT);
   // 下限的"5"只在这里出现一次；写入点清单的**语义**（哪五份、各由谁触发）唯一写死处是
   // docs/CLOUD_PIPELINE_GUIDE.md §不变量 12，本判据只负责"每一处有没有真接上"，不复述清单。
-  ok('W14', all.length > 0 && writers.length >= 5 && ungated.length === 0 && notExec.length === 0,
+  ok('W14', all.length > 0 && writers.length >= 5 && ungated.length === 0 && notExec.length === 0
+    && noSchema.length === 0 && bareSchema.length === 0 && strTyped.length === 0,
     `daily_reports 写入语句 ${all.length} 处（生成类 ${writers.length}：${writers.map((w) => `${w.fn}@${w.file}:${w.line}`).join(' / ')}；` +
     `整表复制类 ${copies.length}：${copies.map((w) => `${w.fn}@${w.file}:${w.line}`).join(' / ') || '无'}）；` +
     `未接门槛：${JSON.stringify(ungated.map((w) => `${w.fn}@${w.file}:${w.line}`))}；` +
-    `接了但所在函数没有执行入口：${JSON.stringify(notExec.map((w) => `${w.fn}@${w.file}:${w.line}`))}。` +
+    `接了但所在函数没有执行入口：${JSON.stringify(notExec.map((w) => `${w.fn}@${w.file}:${w.line}`))}；` +
+    `没写档位字段（B112）：${JSON.stringify(noSchema.map((w) => `${w.fn}@${w.file}`))}；` +
+    `档位写成裸字面量/字符串（B112）：${JSON.stringify(bareSchema.map((w) => `${w.fn}@${w.file}`))}；` +
+    `SQL 里把 $.schemaVersion 绑成带引号值的语句：${JSON.stringify(strTyped.map((v) => `${v.file}:${v.line}`))}。` +
     '要求 = 该 INSERT 之前有一次"结果赋回变量"的 applyDailyQualityGate 调用（派生实现 lib/daily-writers.js；写入点语义见 CLOUD_PIPELINE_GUIDE §12）');
 }
 

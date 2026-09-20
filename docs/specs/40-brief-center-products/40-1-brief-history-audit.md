@@ -17,7 +17,7 @@
 
 ## 残余两件事（这才是要做的）
 
-1. **档位字段类型混杂**：同一字段 `json_extract(stats,'$.schemaVersion')` 实测出现 `(无)`、数字 `2`、字符串 `"1"` 三种形态 → "哪一版"只能靠 `isAiDailyReport()` 兜（已存在），但**落库侧仍按各自的写法**：要在 `lib/brief-guards.js` 定一份"写日报时 schemaVersion 必须是整数常量"的构造函数，三处写入器共用（与 W14 同一批钉）。
+1. ✅ **已做 09-21（B112）**：写入侧统一为 `lib/brief-guards.js#DAILY_SCHEMA_VERSION`（`{KEYWORD:1, AI:2}`），**5 个**生成写入点全部显式带档位并走该常量（原状：只有 `runDailyAi` 写、且写的是裸 `2`；`runDaily` 的降级分支用 `json_set(..., '$.schemaVersion', '1')` 写成字符串；云端内联 / 云端 cron / 本地引擎三份根本不写）。判据**并进白盒 W14**（不新开门禁号）：同一份派生写入点清单再判"带没带档位 / 是不是裸字面量 / SQL 里有没有带引号赋值"，另加一条全仓语句级扫描（那条 `UPDATE` 不在任何 INSERT 的宿主函数里，只看写入点会漏）。实测新坑记进 **坑 #70**：JS number 绑进 `json_set` 落成 `real`（`1.0`），要 integer 必须 `CAST(? AS INTEGER)`。锁 = `tests/regression-daily-schema-version.test.js` Q1~Q5。**存量三种形态不回灌**（与 B121 同一纪律，属数据订正要点头）：库里仍有 `(无)` 48 / 数字 2 19 / 字符串 `"1"` 1，而 Q5 钉住"读侧 `Number()` 兜底不许收紧"——收紧会让那 19 行 AI 报告集体降级。
 2. **归档列表仍是"全量解析换摘要"**：`handleBriefHistory` 每次都把 `weekly.archive`（107,918 字节）整块解析并 `map`，虽然 `map` 后只留 6 字段 → 属 40-2 的范围，本条只登记依赖关系。
 
 ## 判据（防复发型）

@@ -767,7 +767,7 @@ async function generateDailyInline() {
     }
   } catch { /* 媒体栏失败不阻断日报 */ }
 
-  const stats = { candidates: valid.length + gateDropped, articles: valid.length, gateDropped, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
+  const stats = { schemaVersion: briefGuards.DAILY_SCHEMA_VERSION.KEYWORD, candidates: valid.length + gateDropped, articles: valid.length, gateDropped, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
   const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);
   await qRun('INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
     [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]);

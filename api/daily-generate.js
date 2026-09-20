@@ -43,6 +43,8 @@ async function getSetting(key, def = null) {
 
 // ─── 默认栏目配置（B10：唯一实现收进 lib/daily-columns.js，本地/runner/云端三端共用） ───
 const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES } = require('../lib/daily-columns');
+// B112：日报产物档位常量（写入侧只许用 DAILY_SCHEMA_VERSION，不许裸字面量/字符串）
+const { DAILY_SCHEMA_VERSION } = require('../lib/brief-guards');
 // B107：噪声（热榜/聚合）判定与读层、runner 共用一份实现
 const { notNoiseSql } = require('../lib/noise');
 
@@ -176,6 +178,9 @@ async function generateDaily(windowHours) {
 
   // 统计
   const stats = {
+    // B112：档位必须显式写、且写数字。这份是关键词版（无 theme/六维），
+    // 不写就等于让 pickDailyReport 只能靠"有没有 theme"猜。
+    schemaVersion: DAILY_SCHEMA_VERSION.KEYWORD,
     candidates: valid.length + gateDropped,
     gateDropped,
     articles: valid.length,

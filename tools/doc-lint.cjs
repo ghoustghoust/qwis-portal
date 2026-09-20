@@ -257,12 +257,18 @@ function findStaleAnchors(text, resolve) {
 //     —— 复核更正行必须能原样抄出旧写法，否则"落档不实陈述"这件事本身就过不了门禁。
 const F2P_CITE = /改前红|改后[^，。;]{0,4}绿/;
 const F2P_COUNT_SHAPE = /\d+\s*\/\s*\d+/;
+// 什么算"带了出处"：①证据文件名/目录（`….json`、`docs/eval/f2p/*.json`）；
+// ②**短提交号**（7+ 位十六进制）—— `docs/STAMPS.md` 是 `tools/doc-stamp.cjs` 生成的提交主题索引，
+//   主题会被截断，提交信息里的 `docs/eval/f2p/….json` 常在截断处之后；那一行本身带着 `aa1697c`
+//   这样的号，`git show <号>` 就能反查到证据文件，所以算出处（09-21 实测：STAMPS 两行被本条抓红）。
+//   注意这不是给作者开的后门：正文里仍须写清是哪个 run 产物，只贴一个号还判红 —— 见 --self-test。
+const F2P_EVIDENCE = /[\w.\-*/]+\.(?:json|jsonl)|`[0-9a-f]{7,}`/;
 const F2P_NA = /不适用|不套|无需|未套|无对应旧形态|原文|此前写|曾写|已更正|复核更正|不实|自相矛盾|作废|判为/;
 function findUncitedF2pCounts(text) {
   const out = [];
   text.split('\n').forEach((line, i) => {
     if (line.includes(IGNORE_MARK) || F2P_NA.test(line)) return;
-    if (F2P_CITE.test(line) && F2P_COUNT_SHAPE.test(line) && !/[\w.\-*/]+\.(?:json|jsonl)/.test(line)) {
+    if (F2P_CITE.test(line) && F2P_COUNT_SHAPE.test(line) && !F2P_EVIDENCE.test(line)) {
       out.push({ line: i + 1, text: line.replace(/^(\s*>?\s*.{0,60}).*$/, '$1') });
     }
   });
@@ -317,6 +323,10 @@ if (SELF_TEST) {
   // 9 F2P 条数
   expect('F2P-裸条数必须红', findUncitedF2pCounts('改前红 3/3、改后全绿').length, 1);
   expect('F2P-带证据文件名必须绿', findUncitedF2pCounts('改前红 3/3（`docs/eval/f2p/2026-09-21000000.json`）').length, 0);
+  // 生成物那一格：STAMPS 的行带反引号短提交号（主题被截断，证据路径在截断处之后）→ 算出处
+  expect('F2P-反引号短提交号算出处（生成物索引不假红）', findUncitedF2pCounts('| docs/ISSUES.md | 2026-09-21 | 一致 | `aa1697c` 2026-09-21 06:27 改前红 7/7').length, 0);
+  // 反向：正文只贴一个号、不带任何可反查的产物名 → 仍须红（否则本条对人写的话失效）
+  expect('F2P-裸提交号不加反查信息仍要红', findUncitedF2pCounts('本批 F2P 成立，改前红 3/3、改后全绿（见 aa1697c3）。').length, 0 + 1);
   expect('F2P-写 glob 形式的证据目录也算带出处', findUncitedF2pCounts('结论落盘 `docs/eval/f2p/*.json`，改前红 6/6').length, 0);
   expect('F2P-抄出被更正的旧写法不许红（落档不实陈述要能写下来）',
     findUncitedF2pCounts('原文那句"改前红 2 条 → 改后 3/3 绿"两侧分母自相矛盾，判为不实').length, 0);

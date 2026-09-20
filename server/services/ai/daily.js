@@ -6,6 +6,8 @@ const { db, getSetting } = require('../../db');
 const { nowIso } = require('../../util/time');
 const log = require('../../util/log');
 const { htmlToText } = require('./summary');
+// B112：日报产物档位常量（写入侧只许 DAILY_SCHEMA_VERSION，与 runner/云端同一份事实）
+const { DAILY_SCHEMA_VERSION } = require('../../../lib/brief-guards');
 // B107：聚合器轴唯一实现（候选条目带出 source_aggregator 供去重时"一手源优先"）
 const { aggregatorFlagSql } = require('../../../lib/noise');
 
@@ -311,6 +313,8 @@ async function generate(windowHours) {
   }
 
   const stats = {
+    // B112：AI 增强跑出来的那份要能被读层认出来（pickDailyReport 靠档位优先选 AI 版）
+    schemaVersion: (aiEnabled && aiResults) ? DAILY_SCHEMA_VERSION.AI : DAILY_SCHEMA_VERSION.KEYWORD,
     candidates: candidates.length,
     articles: candidates.filter((i) => i.kind === 'article').length,
     videos: candidates.filter((i) => i.kind === 'video').length,
