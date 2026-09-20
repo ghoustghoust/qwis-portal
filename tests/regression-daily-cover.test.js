@@ -2,6 +2,8 @@
 // 单独成文件而不是并进 regression-daily-ai.test.js，是坑 #64 的同族：那份锁在顶层读 `.env` +
 // require `api/_ai`，F2P 把锁复制进基线树时 `.env` 不在（它被 gitignore），整个文件加载崩 →
 // base 侧只有"文件名红"没有"用例名红"，取证无法归因（坑 #67）。本文件零外部依赖，只读源码。
+// 取证纪律（坑 #68）：关键词版的条目**本来就带 cover**，所以"最新一期 daily_reports 有图"不能当
+// 本修复的证据 —— 必须按 AI 版形态指纹（条目有 reason/scores）筛出产出者，再看图在不在。
 const { test } = require('node:test');
 const assert = require('node:assert');
 const path = require('path');
