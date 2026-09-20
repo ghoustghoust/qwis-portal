@@ -867,7 +867,16 @@ async function runWeekly() {
     weeklySummary = await _ai.generateWeeklySummary(items).catch((e) => { log(`周刊周总结失败: ${e.message}`); return null; });
     // 周刊 v2 杂志结构（specs/24）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
     if (items.length >= 4) {
-      try { magazine = await _ai.generateWeeklyMagazine(items); } catch (e) { log(`周刊杂志结构失败（回退旧版）: ${e.message}`); }
+      // B121②：`agnes 仅含 reasoning 无 content` 是已知形态（B19/W6 同根），一次退避重试的代价
+      // 远小于"整期深析齐全但主线骨架全丢"——上一期就是这么发出去还报 `degraded=false`。
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      for (let attempt = 1; attempt <= 2 && !magazine; attempt++) {
+        try { magazine = await _ai.generateWeeklyMagazine(items); }
+        catch (e) {
+          log(`周刊杂志结构第 ${attempt} 次失败${attempt < 2 ? '，退避 15s 后重试一次' : '（回退旧版）'}: ${e.message}`);
+          if (attempt < 2) await sleep(15000);
+        }
+      }
     }
   }
   const published = await saveWeekly(theme, items, false, t0, weeklySummary, magazine);
@@ -891,23 +900,35 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
   if (itemIds.length) {
     await qRun(`UPDATE articles SET featured=1 WHERE id IN (${itemIds.join(',')}) AND COALESCE(featured,0)=0`);
   }
-  // 期号与归档
+  // 期号与归档（B121①③）：先算窗口，再按窗口定期号；骨架缺失如实进状态
   const archive = (await getSetting('weekly.archive', [])) || [];
-  const issue = archive.length ? (archive[archive.length - 1].issue || 0) + 1 : 1;
   const dateEnd = beijingDateStr();
   const dateStart = beijingDateStr(Date.now() - 7 * 86400e3);
+  const spine = guards.weeklySpine({ theme, magazine });
+  // 状态灯与端到端剧本同源：E6 断言的是"页面上有没有主线/故事线"，那 `degraded` 就必须为真，
+  // 不能像上一期那样"深析 20 条 + 骨架全丢 + degraded=false"（B121 的正是这一格）
+  const degradedFlag = !!degraded || spine.spineMissing;
+  const { issue, replaceIndex } = guards.resolveWeeklyIssue(archive, { dateStart, dateEnd });
   const report = {
-    issue, dateStart, dateEnd, theme, degraded, weeklySummary,
+    issue, dateStart, dateEnd, theme, degraded: degradedFlag,
+    spineMissing: spine.spineMissing, spineMissingParts: spine.missing, weeklySummary,
     ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
     generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
     items,
   };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.latest', ?)", args: [JSON.stringify(report)] });
   // 长久存储（2026-09-13 F5 用户决策）：一周才一份，归档不再截断保留全部期号
-  archive.push({ issue, dateStart, dateEnd, theme, count: items.length, report });
+  const entry = { issue, dateStart, dateEnd, theme, count: items.length, report };
+  if (replaceIndex >= 0) {
+    // 同一内容窗口重跑（换库后手动补跑、失败重试都算）→ 原地替换，不另起一期
+    log(`周刊第 ${issue} 期同窗口重跑 → 原地替换归档第 ${replaceIndex + 1} 条，不另算新期`);
+    archive[replaceIndex] = entry;
+  } else {
+    archive.push(entry);
+  }
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.archive', ?)", args: [JSON.stringify(archive)] });
-  log(`周刊第 ${issue} 期生成完成: ${items.length} 条${degraded ? '（降级）' : ''}, 主题: ${theme || '(无)'}`);
-  await writeHeartbeat('weekly', { issue, count: items.length, degraded, published: true });
+  log(`周刊第 ${issue} 期生成完成: ${items.length} 条${degradedFlag ? `（降级${spine.spineMissing ? `·骨架缺 ${spine.missing.join('/')}` : ''}）` : ''}, 主题: ${theme || '(无)'}`);
+  await writeHeartbeat('weekly', { issue, count: items.length, degraded: degradedFlag, spineMissing: spine.spineMissing, published: true });
   return true;
 }
 

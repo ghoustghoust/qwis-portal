@@ -125,7 +125,11 @@ export default function WeeklyPage() {
                 {report.theme && (
                   <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted"><MdText text={report.theme} /></p>
                 )}
-                {report.degraded && <div className="mt-2 text-[11px] t-muted">（本期为降级版：AI 不可用，按热度排序产出）</div>}
+                {report.degraded && <div className="mt-2 text-[11px] t-muted">
+                  {report.spineMissing
+                    ? `（本期骨架不全：缺 ${Array.isArray(report.spineMissingParts) && report.spineMissingParts.length ? report.spineMissingParts.join('、') : '主线/导语'}，条目为深析产物但无策展主线）`
+                    : '（本期为降级版：AI 不可用，按热度排序产出）'}
+                </div>}
                 {archive.length > 1 && issue === 0 && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     <span className="pill on !cursor-default">第 {report.issue} 期</span>

@@ -132,3 +132,51 @@ test('12. 门槛配置本身坏掉时不许把整期已评分条目一起剔（2
   const ok2 = applyDailyQualityGate(list, 30, (m) => logs.push(m));
   assert.equal(ok2.fellBack, false, '正常配置不许报 fellBack');
 });
+
+// ─── B121 周刊骨架与期号（09-20 登记，09-21 修）───
+// 病形：上一期 20 条深析齐全、theme=null、storylines 键不存在，却写 degraded=false，
+// 于是"状态灯说正常、端到端 E6 说页面没主线"两套事实并存（AGENTS §2.5 同一事实两份）。
+test('W-Spine 骨架三件齐才叫正常：缺任一必须 spineMissing 并点名缺哪件', () => {
+  const g = require('../lib/brief-guards');
+  const full = { theme: '本周主线：Agent 落地', magazine: { coverTheme: '落地', storylines: [{}, {}, {}] } };
+  assert.equal(g.weeklySpine(full).spineMissing, false, '三件齐却判成缺骨架 = 判据永远红，等于没有');
+  const cases = [
+    ['theme 丢', { theme: null, magazine: full.magazine }],
+    ['coverTheme 丢', { theme: full.theme, magazine: { storylines: [{}, {}, {}] } }],
+    ['storylines 只有 2 条', { theme: full.theme, magazine: { coverTheme: 'x', storylines: [{}, {}] } }],
+    ['magazine 整个没拿到（上一期的真实形态）', { theme: full.theme, magazine: null }],
+    ['storylines 不是数组', { theme: full.theme, magazine: { coverTheme: 'x', storylines: null } }],
+  ];
+  for (const [name, arg] of cases) {
+    const r = g.weeklySpine(arg);
+    assert.equal(r.spineMissing, true, `${name} 被判成骨架完整`);
+    assert.ok(r.missing.length >= 1, `${name} 没点名缺哪件 —— 报警与状态灯就没法解释为什么降级`);
+  }
+});
+
+test('W-Spine degraded 与 spineMissing 同源：骨架不全不许再写 degraded=false', () => {
+  const g = require('../lib/brief-guards');
+  const spine = g.weeklySpine({ theme: '有', magazine: null });
+  const degradedFlag = false || spine.spineMissing; // 与 tools/collect-turso.js saveWeekly 里同一式子
+  assert.equal(degradedFlag, true, '这就是 B121 的形状：深析在、骨架没、灯说正常');
+  // 反向：不许靠"硬置 spineMissing=false"关红灯 —— 判定必须真按 storylines 条数走
+  const enough = new Array(g.WEEKLY_MIN_STORYLINES).fill({});
+  assert.equal(g.weeklySpine({ theme: '有', magazine: { coverTheme: 'c', storylines: enough } }).spineMissing, false,
+    '刚够下界就被判缺 = 门槛写错，会把正常期全标成降级');
+});
+
+test('W-Issue 期号按内容窗口定：同窗口重跑原地替换，删过一期不串号', () => {
+  const g = require('../lib/brief-guards');
+  const arch = [
+    { issue: 1, dateStart: '2026-09-07', dateEnd: '2026-09-14' },
+    { issue: 2, dateStart: '2026-09-14', dateEnd: '2026-09-20' },
+  ];
+  assert.deepEqual(g.resolveWeeklyIssue(arch, { dateStart: '2026-09-14', dateEnd: '2026-09-20' }),
+    { issue: 2, replaceIndex: 1 }, '同窗口重跑（手动补跑/失败重试）必须复用第 2 期并原地替换');
+  assert.deepEqual(g.resolveWeeklyIssue(arch, { dateStart: '2026-09-20', dateEnd: '2026-09-27' }),
+    { issue: 3, replaceIndex: -1 });
+  assert.equal(g.resolveWeeklyIssue([], { dateStart: 'a', dateEnd: 'b' }).issue, 1, '换库后归档清空 → 从第 1 期起算');
+  // 旧算法是 archive.length + 1：归档被删过一期就会算出用过的期号，把历史覆盖掉
+  assert.equal(g.resolveWeeklyIssue([{ issue: 5, dateStart: 'x', dateEnd: 'y' }], { dateStart: 'p', dateEnd: 'q' }).issue, 6,
+    '期号必须取最大期号 +1，按条数 +1 会算出第 2 期并覆盖第 2 期归档');
+});
