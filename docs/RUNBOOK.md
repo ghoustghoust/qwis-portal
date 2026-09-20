@@ -127,6 +127,31 @@ curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY"
 # Vercel Dashboard → Project → Deployments → Functions → Logs
 ```
 
+## 10.9 Turso 读封锁：`BLOCKED: SQL read operations are forbidden`（2026-09-20 实遇，B118）
+
+**症状**：线上 `/api/*` 全 500（`error` 里带 `BLOCKED: …reads are blocked…`），静态 HTML 仍 200，
+前端于是显示自己写的兜底文案（如 `web/src/components/HotEvents.jsx` 的「热点榜服务尚未就绪」）——
+**那句话不是"后端在施工"，是 500 的兜底**，别照着它去查代码。
+
+**三步定性（都是只读，几分钟内可做完）**：
+
+1. 打 `/api/meta`：若 500 且文案含 `BLOCKED` → 进第 2 步（不是路由问题）。
+2. **绕开 Vercel 直连 Turso** 跑一条最小 `SELECT COUNT(*) FROM sources`：同样 `BLOCKED` ⇒ 封锁在
+   provider 侧（账号/DB 配额），与本次部署无关；全仓 grep 该文案 0 命中可佐证不是我们的字符串。
+3. 看 Turso 控制台 Quota。**本仓没有 Turso 平台 API token，配额无法程序化观测**（B119 ④）——
+   这一条是"挂了几小时没人知"的直接原因，只能人工看盘。
+
+**止血顺序（本轮实际做法）**：新建库 → 以本地灾备在线备份为基线搬 schema/十表 →
+源库按 `public/data/sources.json` 快照恢复 → **凭据三处同步**（本地 `.env` / Vercel env /
+GH Secrets，AGENTS §2.6）→ **必须用一次 workflow_dispatch 复验 runner 真写进新库**
+（看 `settings['cloud.collect']` 心跳与 articles 增长，不能只看 `/api/meta` 变绿）。
+
+**两条硬规矩**：
+- **旧库不许删**。读封锁是配额事件，重置/升级后旧库仍可回读——本轮 `settings.weekly.archive`
+  （5 期周刊归档、107,918B）只存在于旧库，是**唯一能无损补回的路径**。
+- **换库后必查"哪些键来自本地副本而非云端"**：`tools/migrate-to-turso.js` 搬的是本地 settings，
+  云端独有的键会静默丢失；实测口径见 `docs/ISSUES.md` B118/B119 与 `HANDOVER.md` §2.1「换库记录」。
+
 ## 11. 热点榜/日报机制速查
 
 - 热点榜数据源：AIHOT 聚合源文章（extra.aggregator=1），分类映射六胶囊（模型/产品/行业/论文/教程/观点）
