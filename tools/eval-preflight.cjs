@@ -10,6 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { gapMs, DEFAULT_GAP_MS, MIN_GAP_MS } = require('../lib/ai-throttle');
 
 const ROOT = path.resolve(__dirname, '..');
 // 基址与出网代理都由 lib/cloud-site.js 单份持有（AGENTS §2.5；代理端口见 §2.2）
@@ -104,9 +105,11 @@ async function probeJson(url, ms = 8000) {
     const dv = deliveryState(al.recentLog);
     add('config:最近报警真的送达', dv.state === 'ok', 'config',
       `${dv.state === 'ok' ? '' : dv.state + '：'}${dv.detail}（dispatched ≠ delivered）`);
-    const mi = Number(await get('ai.minIntervalMs'));
-    add('config:AI 限速保护开启', Number.isFinite(mi) && mi >= 1000, 'config',
-      `ai.minIntervalMs=${await get('ai.minIntervalMs')}（应 ≥1000，runner 默认 4000；0 = 无间隔硬打免费池，BL8）`);
+    const miRaw = await get('ai.minIntervalMs');
+    // 必须与 api/_ai.js 用同一份算术：`Number(缺键)` 是 0，直接读原始值会把"没这个键"报成"无间隔硬打免费池"
+    const mi = gapMs(miRaw);
+    add('config:AI 限速保护开启', mi >= MIN_GAP_MS, 'config',
+      `ai.minIntervalMs 原始=${miRaw === null || miRaw === undefined ? '（缺键，走默认）' : miRaw} → 生效=${mi}ms（下限 ${MIN_GAP_MS}，默认 ${DEFAULT_GAP_MS}，BL8）`);
     const aiRaw = await get('ai');
     if (aiRaw) {
       let o = {}; try { o = JSON.parse(aiRaw); } catch { /* ignore */ }

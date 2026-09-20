@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@libsql/client');
+const { gapMs, DEFAULT_GAP_MS } = require('../lib/ai-throttle');
 
 let _db = null;
 function getDb() {
@@ -138,7 +139,7 @@ async function _aiChatInner(messages, opts = {}) {
 
 // 串行 + 限速（Agnes 无并发能力；间隔默认 4s ≈ 15 RPM，留余量）
 async function aiChat(messages, opts = {}) {
-  const gap = Number(await getSetting('ai.minIntervalMs', 4000));
+  const gap = gapMs(await getSetting('ai.minIntervalMs', DEFAULT_GAP_MS));
   const run = _queue.then(async () => {
     const wait = Math.max(0, gap - (Date.now() - _lastCallAt));
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
