@@ -1,7 +1,7 @@
 // AI 策展版日报的封面图契约锁（B120）。
 // 单独成文件而不是并进 regression-daily-ai.test.js，是坑 #64 的同族：那份锁在顶层读 `.env` +
 // require `api/_ai`，F2P 把锁复制进基线树时 `.env` 不在（它被 gitignore），整个文件加载崩 →
-// base 侧只有"文件名红"没有"用例名红"，取证无法归因（坑 #65）。本文件零外部依赖，只读源码。
+// base 侧只有"文件名红"没有"用例名红"，取证无法归因（坑 #67）。本文件零外部依赖，只读源码。
 const { test } = require('node:test');
 const assert = require('node:assert');
 const path = require('path');
