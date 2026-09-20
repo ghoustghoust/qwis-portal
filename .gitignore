@@ -59,3 +59,13 @@ __pycache__/
 # 主代理本轮的一次性取证脚手架目录（探针脚本 + 下载的 runner 日志 + 端点响应），整目录不入库：
 # 里面有 /api/* 响应与 GH Actions 日志，一次 `git add -A` 就会把外部产物混进提交（同 B113/放行清单 #14 的形状）
 .tmpchk/
+
+# 审计图产物整目录（B113）：`tools/audit-graph.cjs` 把 `dbState.settings[*].value` 原样落盘，
+# 里面含真实飞书 webhook 明文，而该路径此前既未跟踪也未被忽略 → 一次 `git add docs/` 就连凭据一起提交
+docs/eval/audit/
+
+# 一次性诊断/取证探针（放行清单 #14 选项②）。实测边界必须写清：本模式之前
+# 已有 22 份 `tools/_*.cjs` 被跟踪并进了历史（含 FEATURE_MATRIX 引用的 _probe-*-selftest.cjs），
+# 所以这一行只挡住「今后新增的」误加，不撤销历史。要提交常驻探针须显式 `git add -f`，
+# 而真正常驻的判据应按 #14 选项①做成 npm 子命令，而不是留 `_` 前缀脚本
+tools/_*.cjs

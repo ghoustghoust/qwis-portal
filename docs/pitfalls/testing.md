@@ -147,7 +147,7 @@
   解析失败（片段消失/不唯一/函数改名）记进 `ANCHOR_ERRORS`，G5 逐条点名——**代码真被删时宁可红，也不许"静静指向别处"**。
 - 顺带修掉 G5 自己的一个假象：它找"token 最近处"时不排除注释行，于是给出的"改这里"建议指向的是注释文字（本轮按它的提示改了两次都没对）。
 - 验证：并发改动把 `handleHot` 推到 388、`handleReading` 推到 1061 之后，锚点自动跟上了（`node -e` 打印 SRC 对照），G5 全绿；把片段改成不存在的字符串，`ANCHOR_ERRORS` 立刻点名。
-- 案例：`tools/eval-e2e.cjs` 的 `resolveSrc/ANCHOR_ERRORS`、`tests/regression-20260919g.test.js` G5。
+- 案例：`tools/eval-e2e.cjs` 的 `resolveSrc/ANCHOR_ERRORS`、`tests/regression-20260919g.test.js` G5、`tests/regression-eval-substrate.test.js` #62-1（解析行号与"逐行找片段"独立复算必须同行）/#62-2（片段消失、命中多处、函数改名三种坏锚点逐个点名，外加"真锚点不许记"的反向对照）。
 
 ### #63 剥注释的状态机不认正则字面量：注释没被剥净，"注释里写一句已接线"就又算接了（2026-09-20 第三轮审查）
 - 症状：按坑 #59 把 `stripComments` 改成字符状态机之后，W14 自认为"注释不算接线"已成立。第三轮审查实测：**231 个源文件里 50 个**的状态机是坏的——`src.replace(/\ssrc=(["']).*?\1/gi,'')` 这类**正则字面量里的引号**被当成字符串开头，之后整行行尾注释以"字符串内容"的身份留下；`web/src/components/ui/md-inline.js` 里的反引号字符类 `` /[`~]/ `` 更狠，开一个假模板态一路吃掉后面十几行的真注释。于是 `// 门槛已接 applyDailyQualityGate` 仍然判绿。
@@ -157,13 +157,15 @@
 - 判 SQL 用「字符串字面量清单」而不是源码全文：`'INSERT INTO daily_'+'reports'`、`INSERT OR REPLACE INTO` 这些形态因此能被抓到，而注释里写一句 `INSERT INTO daily_reports` 不算写入点。
 - 自检必须**双向**：`tools/_probe-strip-selftest.cjs` 现在对 291 个真实文件同时断言 ① 抹完仍能 `node --check`（没吃代码）② 只出现在注释里的词在结果中确实消失（没留注释）③ `stripComments` 没丢字符串内容；再加 3 个杀手样本（正则里的引号 / 反引号字符类 / 模板尾注释）。上一版只做 ①，正好漏掉出事的那个方向。临时文件名也改成带序号，上一版按 basename 命名，11 组同名让 20 个文件从未被检查。
 - 两个自己踩到的次生坑：① `prev()` 写成对整个累积串跑正则 → O(n²)，自检脚本跑到被 kill；② 判据"抹完之后"的对照若用天真正则去注释，会把字符串里的 URL `https://` 当注释删掉，于是把代码里本来就有的词（`Schema`/`category`）报成漏剥——判据自己造假阳。
-- 案例：`lib/src-spans.js`、`lib/daily-writers.js`、`tools/_probe-strip-selftest.cjs`、`tools/_probe-w14-selftest.cjs`（现含 8 种形状样本，注释版/字符串版/第二次 INSERT 版/动态表名版/只 prepare 不 run 版全部按预期）。
+- 案例：`lib/src-spans.js`、`lib/daily-writers.js`、`tools/_probe-strip-selftest.cjs`、`tools/_probe-w14-selftest.cjs`（现含 8 种形状样本，注释版/字符串版/第二次 INSERT 版/动态表名版/只 prepare 不 run 版全部按预期）、`tests/regression-eval-substrate.test.js` #63-1（三种杀手形态）/#63-2（naive 状态机对照，证明样本有牙）/#63-3（把那条自证以等距抽样跑进 `npm test`）。
 
 ### #64 锁文件在顶层 require 本轮新建的模块 → F2P 在基线上整个文件加载崩，被判成"13 条锁都是假的"（2026-09-20）
 - 症状：`npm run eval:f2p -- --auto-base --cases B1..C6` 报「13/13 条目标锁改前不红 → 锁假了，按 §6 删或重写」。但锁是真的：B2/C1 拿改前的产品代码跑就是红的（上一轮刚用它抓到 ReferenceError 与同日重复生成）。
 - 根因：F2P 的判据是"基线上这条**用例名**要出现在红清单里"。锁文件顶层写了 `require('../lib/time-window')`，而基线上这个模块还不存在 → 整个文件加载失败 → 一个用例名都没产出 → 工具只能读成"改前不红"。这跟坑 #61 是同一族（取证输入错），但触发点从"提交顺序"换成了"加载期依赖"。
 - 规则：①行为锁里**被测模块一律惰性取**（`const tw = () => require('../lib/time-window')`），让每条用例各自报红；②新增门禁（基线上根本没有对应形态的判据，如 `W16`/`B4`/`I13`）**不适用 F2P**，它的取证是负向探针（把被禁写法喂给判据，必须逐个翻转），交付说明里要这么写，不许为了凑 F2P 把断言写弱；③探针里"跑不起来"和"跑出了红"必须分开报（本轮 C3 就是这么改的）——否则"变异体加载失败"会被当成锁变红。
-- 案例：`tests/regression-20260920b.test.js` / `tests/regression-20260920c.test.js` 的惰性 require；`tools/_probe-time-caliber-selftest.cjs`（新增门禁的负向取证）。
+- 次生形态（B104 补锁时实测到，同一族的另一种"跑不起来被当成没红"）：**在 `node --test` 里再 spawn `node --test`，子进程会被静默跳过** —— 父进程带着 `NODE_TEST_CONTEXT=child-v8`，子进程只往 stderr 打一句 `node:test run() is being called recursively within a test file. skipping running files.`，**stdout 为空**；于是解析器读到 `null`，锁要么恒绿要么以"没解析到"收场。跑法：子进程 env 里 `delete NODE_TEST_CONTEXT`（`tests/regression-eval-substrate.test.js` #64-2 就是这么做的，并另断言"汇总行必须存在"，防止这种空输出再次冒充通过）。
+- 怎么判"顶层"这两条都不许用：①**单行正则** —— `const {\n a,\n} = require('../lib/x')` 这种跨行解构直接躲过；②**括号深度** —— `const tw = () => require('../lib/x')` 在 `require` 处深度**也是 0**（箭头参数的括号在它之前就闭合了），拿深度当"顶层"会把三份正确的惰性锁判成违规（B104 第一版就错在这）。可行形态：只数花括号深度判"是否在函数体内"，深度 0 时再从本条语句起点往回的切片里找 `=>`；字符串与注释里的括号用 `masked` 等长视图排除（坑 #63 的不变量在这里正好复用）。
+- 案例：`tests/regression-20260920b.test.js` / `tests/regression-20260920c.test.js` 的惰性 require；`tools/_probe-time-caliber-selftest.cjs`（新增门禁的负向取证）；`tests/regression-eval-substrate.test.js` #64-1（扫描面派生自 `tests/*.test.js` 全量 + 六种形态反向自证）/#64-2（顶层依赖 vs 惰性依赖的两态对照）。
 
 ### #67 锁文件顶层读 `.env` → F2P 基线树里根本没有 `.env`（它被 gitignore），整份文件加载崩；而工具把这件事报成"锁假了、可以删"（2026-09-20 B120 实测）**编号说明**：#65 已由 B106 预留给"工具侧 env/product 误判"那条坑（待放行时与它的 `tests/` 锁同批落地，坑 #61），本条是它的一个**具体触发形态**，因此另占 #67，不合并
 - 症状：给 `tests/regression-daily-ai.test.js` 加第 5 条锁后跑 `eval:f2p --auto-base`，输出「base 红 1/1」**同时**判「1/1 条目标锁改前不红 → 锁假了，按 §6 删或重写」，退出码 1（=授权删用例）。两句自相矛盾。

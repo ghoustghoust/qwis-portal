@@ -1375,6 +1375,9 @@ if (require.main === module) {
 
 module.exports = {
   SCENARIOS, SEL, SRC, QUERY_SRC, ANCHOR_ERRORS, KNOWN_GAPS, EMPTY_READING, scriptInflight,
+  // resolveSrc 必须导出：坑 #62 的锁要能**主动喂坏锚点**验证它点名，只断言 ANCHOR_ERRORS 为空
+  // 等于只锁了正向（"解析失败也不出声"这条恰恰没人证明过它坏时会响）
+  resolveSrc, resolveAll,
   classify, exitCodeOf, acceptanceOf, rawKeyHits, kindCoverage, countMatches, emptyStateHits, pillCounts,
   collectTitles, orphanCards, subsetConsistency, assert, makeCase, dictKeys, gapIssues, byPage,
   collected, waitForApi, waitForApiWhere, waitQuiet, api, attachNet,

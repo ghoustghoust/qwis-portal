@@ -16,7 +16,9 @@ const { execFileSync } = require('child_process');
 const { scan, stripComments, stripStrings } = require('../lib/src-spans');
 
 const ROOT = path.join(__dirname, '..');
-const SKIP_DIR = new Set(['node_modules', '.git', 'dist', 'data', 'archive', 'trash', '.next', 'coverage']);
+// `.tmpchk` 是取证脚手架目录（已 gitignore，里面常躺着一两轮的一次性探针与草稿）：
+// 混进扫描面会让一次坏草稿把自证顶成假红（独立审查实测抽到 5 个草稿件）
+const SKIP_DIR = new Set(['node_modules', '.git', 'dist', 'data', 'archive', 'trash', '.next', 'coverage', '.tmpchk']);
 
 const files = [];
 (function sweep(dir) {
@@ -27,6 +29,22 @@ const files = [];
     if (/\.(js|cjs|mjs|jsx)$/.test(e.name)) files.push(rel);
   }
 })('');
+
+// STRIP_SELFTEST_LIMIT=N：等距抽样到 N 个文件，让这条自证能进 `npm test`（全量 328 个 ≈52s，
+// 慢在逐文件起 `node --check` 子进程；抽样 60 个 ≈10s）。**不许取前 N 个** —— 前 N 个全落在
+// 同一目录，恰好漏掉本坑出事的那两种形状（正则字面量里的引号 / 反引号字符类，坑 #63）；
+// 等距跨目录取，形状分布跟着铺开。杀手合成样本不受抽样影响，永远全跑。
+// 跑法：`npm test` 用抽样，交付链的门禁轮跑全量（不设该变量即是）。
+const LIMIT = Number(process.env.STRIP_SELFTEST_LIMIT || 0);
+let sampled = false;
+if (LIMIT > 0 && files.length > LIMIT) {
+  const stride = files.length / LIMIT;
+  const picked = [];
+  for (let i = 0; i < LIMIT; i++) picked.push(files[Math.floor(i * stride)]);
+  files.length = 0;
+  files.push(...new Set(picked));
+  sampled = true;
+}
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'strip-selftest-'));
 const check = (tag, text, ext) => {
@@ -89,7 +107,11 @@ for (const [code, marker] of KILLERS) {
   if (check(`killer-${marker}`, stripStrings(code), 'js')) bad.syntax.push(`杀手样本剥完语法坏：${marker}`);
 }
 
-console.log(`扫了 ${files.length} 个源文件（含注释的 ${withComments} 个），杀手样本 ${KILLERS.length} 个`);
+// 抽样模式若抽到"没有一个文件带注释"，两个方向就都没被测到 —— 判空样本，不许报 OK（同 C5 的
+// "样本太少，等于没比对"）
+if (!files.length || !withComments) bad.commentLeft.push(`样本为空/无注释：files=${files.length} withComments=${withComments}`);
+
+console.log(`扫了 ${files.length} 个源文件（含注释的 ${withComments} 个）${sampled ? '，等距抽样' : '，全量'}，杀手样本 ${KILLERS.length} 个`);
 for (const [k, v] of Object.entries(bad)) console.log(`  ${k}: ${v.length}`);
 for (const v of Object.values(bad)) for (const line of v.slice(0, 12)) console.log('   -', line);
 if (Object.values(bad).some((v) => v.length)) {
