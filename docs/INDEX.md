@@ -102,7 +102,7 @@
 
 ## 归档层
 
-- **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md`；`feature/` `optimization/` `integration/` `credentials/` 待用
+- **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md` · `debugging/2026-09-19-delivery-evidence-ledger.md`（已修条目的逐条处置与 F2P/评测读数对账） · `debugging/2026-09-20-round-status-records.md`（AGENTS §3 交付链状态的轮次记录，含洁净轮记录）；`feature/` `optimization/` `integration/` `credentials/` 待用
 - **`docs/deprecated/`（整篇作废，头注含替代指针）**：`ISSUES-resolved-2026-09-13.md` · `ISSUES-resolved-2026-09-14.md` · `AUDIT-2026-09-12.md` · `REFACTOR_GUIDE.md` · `MODULE_STATUS.md` · `PROJECT_STATUS.md` · `VERCEL_MIGRATION.md` · `PHASE6_REVIEW_REPORT.md` · `REPOWIKI_AUDIT_2026-09-06.md` · `1.CODE_REVIEW_2026-09-05.md` · `01/02/04` 三条已作废决策 · `AGENTS-generic-template.md` · `HEARTBEAT.md` `IDENTITY.md` `SOUL.md` `TOOLS.md` `USER.md`（早期 Agent 模板残留）
 - **仓库根 `archive/`**：`docs-deprecated/`（DEPLOYMENT、phase9-runbook、A_CLASS_FIX_REPORT 等历史件）+ 分析产物/样例/评测素材
 
