@@ -356,3 +356,32 @@ test('#64-2 顶层依赖 vs 惰性依赖：同一句断言必须给出"文件名
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// ───────────────────────── 坑 #65（B106 预留号位）：取证工具的输入面不许比它声称的窄 ─────────────────────────
+
+test('#65-1 工具必须把"没跑到"与"锁假了"分家，且不静默截断清单参数（四态逐个翻转）', () => {
+  const { verdict, parseSummary, parseFlagLists, ledger } = require('../tools/eval-f2p.cjs');
+  const green = parseSummary('ℹ tests 13\nℹ pass 13\nℹ fail 0\n');
+  // ① 四份误判样本的真实形态：红项是**文件名**、一条目标用例名都没产出 ⇒ env/退 2（禁止删用例）
+  const crash = parseSummary('ℹ tests 13\nℹ pass 0\nℹ fail 13\n✖ tests/regression-20260920b.test.js (1ms)\n✖ tests/regression-20260920c.test.js (1ms)\n');
+  const v1 = verdict(crash, green, ['B1', 'C6']);
+  assert.equal(v1.state, 'env', `文件级崩被判成 ${v1.state} —— 退 1 等于授权删掉 13 条好锁（B106 的原事故）`);
+  assert.match(v1.why, /禁止删用例/, 'env 的结论文案没写明"禁止据此删用例"，下个人还会去删');
+  // ② 反向：用例名级红仍是 product —— 不许为省事把判据改成"永远 env"，那等于取消这条判据
+  const named = parseSummary('ℹ tests 13\nℹ pass 12\nℹ fail 1\n✖ B9 无关老用例 (1ms)\n');
+  assert.equal(verdict(named, green, ['B1', 'B2']).state, 'product',
+    '真·改前不红被豁免了 = 判据不再抓假锁');
+  // ③ 收敛型修复（6 份副本并成 1 个共享模块）：基线缺本轮新建文件 + 用例名级红 = 合法证据，
+  //    我上一版的过度修正（把 missingOwn 单独判 env）正是被这条抓住的 —— 见 EVAL_GUIDE §6
+  const conv = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ B1 日界 (1ms)\nError: Cannot find module '../lib/time-window'\n");
+  const v3 = verdict(conv, green, ['B1']);
+  assert.equal(v3.state, 'ok', `收敛型取证被判成 ${v3.state} —— 这类修复将永远出不了 F2P（§6 明令禁止）：${v3.why}`);
+  assert.match(v3.why, /改前缺本次修复新建的文件/, '粗粒度的红必须原样写给读证据的人看（§6）');
+  // ④ 空格分隔的清单参数：旧版 argv[i+1] 只取一个，13 条目标被静默截成 1 条还报 ✓
+  const sp = parseFlagLists(['node', 'eval-f2p.cjs', '--cases', 'B1', 'B2', 'B3']);
+  assert.equal(sp.values['--cases'], 'B1');
+  assert.deepEqual(sp.stray, [{ flag: '--cases', extra: ['B2', 'B3'] }], '多余参数没被报出来 = 范围被改小');
+  assert.deepEqual(parseFlagLists(['node', 'x', '--cases', 'B1,B2,B3']).stray, [], '逗号形态被误伤');
+  // ⑤ --ledger 必须常驻可调（B114 的"结论与文档数字脱钩"靠它对账，不靠人记）
+  assert.equal(typeof ledger, 'function', 'eval:f2p --ledger 不在了 —— 那 B114 的账又只剩一次性脚本');
+});

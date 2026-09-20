@@ -90,6 +90,22 @@ function verdict(base, head, wantNames = []) {
   if (head.fail !== 0) return { state: 'product', ok: false, why: `改后仍有 ${head.fail} 条红，未修好` };
   const miss = wantNames.filter((w) => !base.failedNames.some((n) => n.includes(w)));
   const hit = wantNames.length - miss.length;
+  // 注意**不要**把"基线缺本轮新建的文件"单独判成 env：`docs/EVAL_GUIDE.md` §6 明写那是收敛型修复
+  // （6 份副本并成 1 个共享模块）**唯一能取到证据的形态**，一律判 env 会让这类修复永远出不了 F2P。
+  // 它的代价是红得粗，所以报告里必须原样打印"改前缺本次修复新建的文件 …"，由读证据的人判归因。
+  // B106（09-20 复查明出的三条里最危险的一条）：base 侧**一条目标用例名都没点到**，而红项全是
+  // `xxx.test.js` 这种**文件名**形态（或报"缺本项目文件"）⇒ 那是"整份文件在基线树上跑不起来"，
+  // 不是"锁抓不到 bug"。node --test 在加载崩时照样记 tests=1/fail=1，所以只看 `base.fail` 会把它
+  // 读成"改前不红 → 按 §6 删掉或重写" —— 判据方向是**删安全网**，比漏判危险（四份误判样本全这个形态）。
+  // 按坑 #41：这只能是 env/退 2（只许修输入），**禁止据此删用例**。
+  const fileLevelOnly = base.failedNames.length > 0
+    && base.failedNames.every((n) => /\.test\.[cm]?[jt]sx?$/i.test(String(n).trim()));
+  if (hit === 0 && (fileLevelOnly || (base.missingOwn || []).length)) {
+    return envFail('base 侧红项里没有一条是目标用例名'
+      + `（红项=${base.failedNames.join(' | ') || '无'}`
+      + `；基线缺的本项目文件=${(base.missingOwn || []).join(' | ') || '无'}）`
+      + '—— 这是"整份文件在基线上跑不起来"，不是"锁假了"。按坑 #41 只能退 2 修输入（换基线/补惰性 require/去掉顶层 .env 读），禁止删用例');
+  }
   if (!base.fail) return { state: 'product', ok: false, why: `改前也全绿 —— ${wantNames.length} 条锁一条都抓不到 bug，按 §6 应删掉或重写断言` };
   if (miss.length) {
     return { state: 'product', ok: false, why: `${miss.length}/${wantNames.length} 条目标锁改前不红（${miss.slice(0, 5).join(' | ')}${miss.length > 5 ? ' …' : ''}）—— 它们抓不到本轮改动：要么用 --cases 只点本轮的锁，要么按 §6 重写；已红的 ${hit} 条不构成本次取证` };
@@ -219,8 +235,32 @@ function scopeFiles(testsArg) {
   return { files: out };
 }
 
+// 清单参数的取法。旧版 `argv[i+1]` 只取一个 token：`--cases B1 B2 … C6` 会被静默截成只点名 B1，
+// 于是"13 条目标锁"变成"1 条"，结论照样打印"✓ F2P 成立"（09-20 实测就这么错的）。
+// **多出来的参数一律算输入错误退 2**，不许悄悄丢 —— 丢参数等于把取证范围改小，
+// 与坑 #41"输入错只能退 2、禁止据此删用例"同族。
+function parseFlagLists(argv) {
+  const out = { values: {}, stray: [] };
+  for (const k of ['--tests', '--cases', '--base']) {
+    const i = argv.indexOf(k);
+    if (i < 0) continue;
+    const vals = [];
+    for (let j = i + 1; j < argv.length && !String(argv[j]).startsWith('--'); j++) vals.push(argv[j]);
+    out.values[k] = vals[0] ?? '';
+    if (vals.length > 1) out.stray.push({ flag: k, extra: vals.slice(1) });
+  }
+  return out;
+}
+
 function main(argv) {
-  const get = (k) => { const i = argv.indexOf(k); return i < 0 ? null : argv[i + 1]; };
+  const flags = parseFlagLists(argv);
+  if (flags.stray.length) {
+    console.error('清单参数必须用**逗号**分隔（本工具不认空格分隔，见下方用法）。多出来的参数会被静默丢弃 = 取证范围被改小：');
+    for (const s of flags.stray) console.error(`  ${s.flag} 后面多出 ${s.extra.length} 个：${s.extra.join(' ')}`);
+    console.error('用法：node tools/eval-f2p.cjs (--base <ref> | --auto-base) --tests <file[,file…]> [--cases <名字子串[,子串…]>] [--json]');
+    return 2;
+  }
+  const get = (k) => (k in flags.values ? flags.values[k] : null);
   let base = get('--base');
   const testsArg = get('--tests');
   const casesArg = get('--cases');
@@ -314,6 +354,43 @@ function main(argv) {
   return v.state === 'ok' ? 0 : v.state === 'product' ? 1 : 2;
 }
 
+// 常驻账本（B114 的第二半：取证结论与文档数字脱钩）。原先是一次性 `tools/_f2p-ledger.cjs`，
+// 跑完就没人再跑 —— 那样"哪条锁真被改前红证明过"仍要靠人记，下一轮照样漂。
+function ledger() {
+  const dir = path.join(ROOT, RECORD_DIR);
+  if (!fs.existsSync(dir)) { console.log(`${RECORD_DIR} 不存在 —— 没有取证轮`); return 2; }
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort();
+  const rows = [];
+  for (const f of files) {
+    let j;
+    try { j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); } catch { rows.push({ f, state: 'unreadable' }); continue; }
+    const b = j.base || {};
+    const fileLevelOnly = (b.failedNames || []).length > 0
+      && b.failedNames.every((n) => /\.test\.[cm]?[jt]sx?$/i.test(String(n).trim()));
+    rows.push({
+      f, base: String(j.baseRef || j.baseSha || '').slice(0, 9), state: j.state, ok: j.ok,
+      want: (j.wantNames || []).length, baseRed: `${b.fail ?? '?'}/${b.tests ?? '?'}`,
+      headRed: `${(j.head || {}).fail ?? '?'}/${(j.head || {}).tests ?? '?'}`,
+      why: String(j.why || '').replace(/\s+/g, ' ').slice(0, 58),
+    });
+    // 已入库的旧证据按**新判据**重算一遍分类：旧轮判成 product 的，若其实是"文件级崩"就标出来
+    if (j.state === 'product' && fileLevelOnly) rows[rows.length - 1].misclassified = 'B106 形态（文件级崩被判成锁假）';
+    if ((j.base || {}).missingOwn && (j.base || {}).missingOwn.length && j.state === 'product')
+      rows[rows.length - 1].misclassified = rows[rows.length - 1].misclassified || 'B106 形态（基线缺本项目文件被算成产品红）';
+  }
+  console.log(`F2P 账本（${RECORD_DIR}，共 ${files.length} 份）`);
+  console.log('证据文件 | base | state | ok | 点名数 | base红/跑 | head红/跑 | 结论摘要');
+  for (const r of rows) {
+    console.log(`${r.f} | ${r.base || '-'} | ${r.state} | ${r.ok} | ${r.want ?? '-'} | ${r.baseRed || '-'} | ${r.headRed || '-'} | ${r.why || ''}${r.misclassified ? ` ⟵ ${r.misclassified}` : ''}`);
+  }
+  const bad = rows.filter((r) => r.misclassified);
+  const okCount = rows.filter((r) => r.ok === true).length;
+  console.log(`\nok ${okCount} / 不成立 ${rows.length - okCount}；按新判据重算后标出旧账里的 B106 形态 ${bad.length} 份`);
+  console.log('口径：只有 state=ok 且点名到用例名的证据才算"这条锁被改前红证明过"；'
+    + 'state=product 且 base 红项是文件名 ⇒ 属未取证（B106），文档里引用条数必须带证据文件名（坑 #45/B114）。');
+  return bad.length ? 2 : 0;
+}
+
 // 自检（EVAL_GUIDE §4.1：禁止型断言必须配正向探针）——保证解析器/判据不是"永远说好"
 function selfTest() {
   const good = 'x\nℹ tests 10\nℹ pass 7\nℹ fail 3\n✖ B28 加括号 (1ms)\n✖ B29 口径 (1ms)\n✖ B60 副本 (1ms)\n';
@@ -386,6 +463,34 @@ function selfTest() {
       const v = verdict(one, parseSummary(clean), ['锁X', '锁Y', '锁Z']);
       return v.ok === false && v.state === 'product' && /3 条目标锁改前不红/.test(v.why);
     })()],
+    ['空格分隔的清单参数必须报出来，不许静默只点名第一条（09-20 实测就这么错过一次）', (() => {
+      const sp = parseFlagLists(['node', 'x', '--cases', 'B1', 'B2', 'B3']);
+      const cm = parseFlagLists(['node', 'x', '--cases', 'B1,B2,B3', '--json']);
+      return sp.values['--cases'] === 'B1' && sp.stray.length === 1 && sp.stray[0].extra.join(' ') === 'B2 B3'
+        && cm.values['--cases'] === 'B1,B2,B3' && cm.stray.length === 0;
+    })()],
+    // B106：四份误判样本的形态必须落到 env（退 2），不许再授权"删掉 13 条好锁"
+    ['base 只有文件名级红 = 没跑到（判 env，不判 product）', (() => {
+      // 样本刻意**不带** "Cannot find module"，让它走"文件级崩"那条分支（另一条分支有独立探针）
+      const crash = parseSummary('ℹ tests 13\nℹ pass 0\nℹ fail 13\n✖ tests/regression-20260920b.test.js (1ms)\n✖ tests/regression-20260920c.test.js (1ms)\n');
+      const v = verdict(crash, parseSummary(clean), ['B1', 'B2', 'C6']);
+      return v.ok === false && v.state === 'env' && /禁止删用例/.test(v.why);
+    })()],
+    ['同一条判据不许误伤真·改前不红（用例名级红仍判 product）', (() => {
+      const named = parseSummary('ℹ tests 13\nℹ pass 12\nℹ fail 1\n✖ B3 别的用例 (1ms)\n');
+      const v = verdict(named, parseSummary(clean), ['B1', 'B2']);
+      return v.ok === false && v.state === 'product' && /2 条目标锁改前不红/.test(v.why);
+    })()],
+    ['基线缺本轮新建文件、但用例名级红 = 仍判成立（收敛型修复唯一取证形态，不许一律 env 掉）', (() => {
+      const ownMissing = 'ℹ tests 13\nℹ pass 0\nℹ fail 13\n✖ B1 日界 (1ms)\nError: Cannot find module \'../lib/time-window\'\n';
+      const v = verdict(parseSummary(ownMissing, ROOT), parseSummary(clean), ['B1']);
+      return v.ok === true && v.state === 'ok' && /改前缺本次修复新建的文件/.test(v.why);
+    })()],
+    ['文件名级红但有目标命中 = 不套文件级 env 规则（缺文件的那条另有判据）', (() => {
+      const mixed = parseSummary('ℹ tests 13\nℹ pass 11\nℹ fail 2\n✖ B1 时区窗 (1ms)\n✖ tests/regression-20260920c.test.js (1ms)\n');
+      const v = verdict(mixed, parseSummary(clean), ['B1', 'B2']);
+      return v.ok === false && v.state === 'product' && /1\/2 条目标锁改前不红/.test(v.why);
+    })()],
     ['解析不到汇总时不许凭空造出"改后 0 红 = 全绿"', (() => {
       const red = parseSummary('ℹ tests 3\nℹ pass 0\nℹ fail 3\n✖ B28 x (1ms)\n✖ B29 y (1ms)\n✖ B60 z (1ms)\n');
       const v = verdict(red, { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false }, ['B28']);
@@ -413,10 +518,11 @@ function selfTest() {
 
 if (require.main === module) {
   if (process.argv.includes('--self-test')) process.exitCode = selfTest();
+  else if (process.argv.includes('--ledger')) process.exitCode = ledger();
   else process.exitCode = main(process.argv);
 }
 
 module.exports = {
-  parseSummary, verdict, git, runTestFiles,
+  parseSummary, verdict, git, runTestFiles, ledger, parseFlagLists,
   testNamesIn, lockIntroCommit, lockIntros, isAncestor, baseIsStale, suggestBase, rxEscape, scopeFiles, repoRel,
 };

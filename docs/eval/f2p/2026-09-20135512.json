@@ -1,0 +1,229 @@
+{
+ "at": "2026-09-20T13:55:12.868Z",
+ "baseRef": "4c678f8d105bd116549c3fb79fbbe1e88674f9c7",
+ "headRef": "HEAD",
+ "baseSha": "4c678f8d105bd116549c3fb79fbbe1e88674f9c7",
+ "headSha": "9cabd97b0488a123a5bb8ab8d1fe8b3f548ac9f2",
+ "files": [
+  "tests/regression-20260920b.test.js",
+  "tests/regression-20260920c.test.js"
+ ],
+ "wantNames": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "C0",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6"
+ ],
+ "targets": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "C0",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6"
+ ],
+ "lockIntros": {
+  "B1": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "B2": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "B3": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "B4": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "B5": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "B6": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C0": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C1": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C2": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C3": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C4": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C5": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ],
+  "C6": [
+   "079a4c9063f5ad82af3f52712e83295da97ab811"
+  ]
+ },
+ "headDirty": [
+  "M AGENTS.md",
+  " M api/[...slug].js",
+  " M archive/_eval/wechat-rss-plus",
+  " M docs/DEV_GUIDE.md",
+  " M docs/DOC_GOVERNANCE.md",
+  " M docs/FEATURE_MATRIX.md",
+  " M docs/INDEX.md",
+  " M docs/ISSUES.md",
+  " M docs/archive/debugging/2026-09-20-round-status-records.md",
+  " M docs/specs/10-my-reading/spec.md",
+  " M docs/specs/14-sources-write/plan.md",
+  " M docs/specs/14-sources-write/task.md",
+  " M docs/specs/19-my-brief/plan.md",
+  " M docs/specs/19-my-brief/task.md",
+  " M tools/eval-f2p.cjs",
+  "?? .mybrief-tmp.json",
+  "?? api/README.md",
+  "?? archive/README.md",
+  "?? archive/_diag/",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? cloud/README.md",
+  "?? docs/STAMPS.md",
+  "?? docs/eval/content/report-20260919-142559.json",
+  "?? docs/eval/e2e/20260919T081631/",
+  "?? docs/eval/e2e/20260919T083030/",
+  "?? docs/eval/e2e/20260919T083126/",
+  "?? docs/eval/e2e/20260919T084509/",
+  "?? docs/eval/e2e/20260919T085015/",
+  "?? docs/eval/e2e/20260919T085140/",
+  "?? docs/eval/e2e/20260919T094856/",
+  "?? docs/eval/e2e/20260919T100056/",
+  "?? docs/eval/e2e/20260919T102242/",
+  "?? docs/eval/e2e/20260919T103639/",
+  "?? docs/eval/e2e/20260919T104810/",
+  "?? docs/eval/e2e/20260919T104908/",
+  "?? docs/eval/e2e/20260919T104944/",
+  "?? docs/eval/e2e/20260919T105143/",
+  "?? docs/eval/e2e/20260919T115420/",
+  "?? docs/eval/e2e/20260919T121006/",
+  "?? docs/eval/e2e/20260919T123438/",
+  "?? docs/eval/e2e/20260919T143903/",
+  "?? docs/eval/e2e/20260919T145627/",
+  "?? docs/eval/e2e/20260919T162930/",
+  "?? docs/eval/e2e/20260919T173518/screens/",
+  "?? docs/eval/e2e/20260919T185949/",
+  "?? docs/eval/e2e/20260919T190209/",
+  "?? docs/eval/e2e/20260919T191201/",
+  "?? docs/eval/e2e/20260919T214044/screens/",
+  "?? docs/eval/e2e/20260919T215110/screens/",
+  "?? docs/eval/e2e/20260920T112415/",
+  "?? docs/eval/f2p/2026-09-19114959.json",
+  "?? docs/eval/f2p/2026-09-19122458.json",
+  "?? docs/eval/f2p/2026-09-19141411.json",
+  "?? docs/eval/f2p/2026-09-19141414.json",
+  "?? docs/eval/f2p/2026-09-19141417.json",
+  "?? docs/eval/f2p/2026-09-19141420.json",
+  "?? docs/eval/f2p/2026-09-19162707.json",
+  "?? docs/eval/f2p/2026-09-19172730.json",
+  "?? docs/eval/f2p/2026-09-19211325.json",
+  "?? docs/eval/f2p/2026-09-19212614.json",
+  "?? docs/eval/f2p/2026-09-20134629.json",
+  "?? docs/eval/f2p/2026-09-20135021.json",
+  "?? docs/eval/f2p/2026-09-20135321.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? docs/specs/42-full-audit-2026-09/",
+  "?? lib/dirty-columns.js",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/README.md",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? server/README.md",
+  "?? server/routes/README.md",
+  "?? server/services/README.md",
+  "?? server/services/collectors/README.md",
+  "?? tests/README.md",
+  "?? tests/regression-audit42-portal-channel.test.js",
+  "?? tools/README.md",
+  "?? tools/audit-graph.cjs",
+  "?? tools/doc-stamp.cjs",
+  "?? tools/gen-dir-index.cjs",
+  "?? web/README.md",
+  "?? web/src/components/README.md"
+ ],
+ "headDirtyCount": 102,
+ "base": {
+  "tests": 13,
+  "pass": 0,
+  "fail": 13,
+  "failedNames": [
+   "B1 日界/窗口/日期串计算本身：两个方向都要钉（北京日 ≠ 容器日）",
+   "B5 反向自证：把 BJ_OFFSET_MS 改成 0，B1 的断言必须逐条变红（否则锁与常数无关）",
+   "B6 反向自证：判\"同一天\"的写法必须用日界而不是日期串（B96 的形状要能被 dayChecks 抓到）",
+   "B2 云端读层：同一份数据在 TZ=UTC 与 TZ=Asia/Shanghai 下 todayNew 必须相同（且=2）",
+   "B3 本地端 /api/status 同样两端一致（两端各写一遍日界 = 迟早漂）",
+   "B4 日界/北京时区只许一份实现：全仓派生扫描 + 判据自身要被绕过样本抓到",
+   "C0 夹具前提：同一北京日、不同 UTC 日（否则这条锁只是在原地打转）",
+   "C1 云端 /api/daily：北京 00:32 那一期在 TZ=UTC 下不得被判成\"昨天\"并重复生成",
+   "C2 换到 TZ=Asia/Shanghai 结果必须完全一致（判定不许依赖容器时区）",
+   "C3 反向自证（坑 #50）：判定退回 toDateString 形态后，C1 必须变红",
+   "C4 手动重新生成的删除区间必须是北京日（B96：北京日期串拼 UTC 边界删不掉凌晨那期）",
+   "C5 前端 beijing-date.mjs 与 lib/time-window 在同一批时刻上必须给出同一个日历",
+   "C6 前端确实把这份日历用在筛选参数上（不是造了个没人调的函数）"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "lib/time-window.js",
+   "../lib/time-window",
+   "../lib/time-caliber",
+   "web/src/beijing-date.mjs"
+  ]
+ },
+ "head": {
+  "tests": 13,
+  "pass": 13,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 13 条（13 个目标全中，实指 13 条锁），改后 13 条全绿；改前缺本次修复新建的文件 lib/time-window.js, ../lib/time-window, ../lib/time-caliber, web/src/beijing-date.mjs"
+}

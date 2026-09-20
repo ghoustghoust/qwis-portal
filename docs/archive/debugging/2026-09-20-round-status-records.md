@@ -299,3 +299,37 @@
 【| **B83** |·原 677 字符】
 | **B83** | **"测试直打生产 Turso"不是一个文件的问题，是 7 个**：实测除 my-brief 外，`regression-ai-infra / bilibili / cloud-alerts / cloud-settings / cloud-sources / translate / weekly` 各自都用 `process.env.TURSO_DATABASE_URL` + 真凭据建客户端，并含 **5~8 条 INSERT/DELETE/UPDATE**——也就是每跑一次 `npm test` 就往生产数据层写几十次（坑 #27 的"全量替换语义"事故正是这一族，B78 那个悬空 `subscription.ids` 也是这一族的产物）。逐个迁移模板已就位（`tests/regression-my-brief.test.js` 与 `tests/regression-20260919h.test.js`）。**本轮已迁完 4/7**：`regression-my-brief`（6/6）、`regression-weekly`（8/8）、`regression-cloud-settings`（11/11，含 spotlight 全量替换语义）、`regression-cloud-alerts`（8/8——旧版因生产已污染而**整批 skip** 的第 4/6/7 条现在真跑，skip ≠ pass）。三份带自证条。 | 41-3/测试基础设施；建议列为下一批阻塞项（AU-1 同族：数据正在被测试改写） |
 ```
+
+## 09-20 夜 · B104 收口轮交付链状态（AGENTS §3 十一条，按真实退出码逐条）
+
+> 本轮范围：两条小活儿（preflight 格更正 + `.gitignore`）+ B104 补锁；提交 `9cabd97`（9 个文件，不含并行会话的在途改动）。
+> **本轮零 runtime 代码改动**，所以"云端实测"验的是当轮线上现状而非新部署。
+
+| # | 项 | 结果 | 读数与原因 |
+|---|---|---|---|
+| 1 | `npm test` | ✅ 454/454、退 0 | 三轮复跑（改锁前 454 全绿、加严后全绿两次）；G3 随 W9 转绿；B105 那条 flaky 本轮未复现，**未修** |
+| 2 | `node smoke-test.js` | ✅ 20/20、退 0 | 生产库副本，零副作用 |
+| 3 | `npm run build:vercel` | ⛔ 没跑 | 本轮没动 `api/`、`web/`；并行会话正开 `web/`，跑构建会争抢 `web/dist`（与上一轮同因，不是遗漏） |
+| 4 | `npm run lint:docs` | ✅ 0 错 14 警 | 14 条既存：12 处"拟建 `lib/*.js`"悬空 + ISSUES/NEXT-DEV-REQS 两份超长 |
+| 5 | `npm run eval:preflight` | ✅ 9/9、退 0 | 提交前跑的；提交后「HEAD 已推送」一项会转红，属"未 push"而非故障（取法 `git rev-list --count origin/main..HEAD`） |
+| 6 | `npm run eval:whitebox` | ✅ 16/16、退 0 | **本轮目标**：W9 由红转绿；不走 baseline 豁免 |
+| 7 | `npm run eval:process` | ✅ 自检 8/8；轮内 F1~F8 零失败行 | ⚠️ 全绿不留痕 → 已登记 **B127**；拿 `--report` 复核本轮 e2e 产物反而造出 2 条假红（输入 schema 不同一套） |
+| 8 | 云端实测 | ✅ 有效 | `tools/audit-cloud.js` 21 项：通过 20 / 失败 0 / 未验收 1（`文章列表去重`=B66 契约缺失）；`/api/meta` 200，线上 `7c967bb` == `origin/main`；preflight 判"线上一致"成立 |
+| 9 | F2P | ⛔ 不适用 | 按坑 #64 规则②：新增门禁在基线树里没有对应形态，**不许为凑 F2P 把断言写弱**；取证＝锁内负向样本（#62 三态坏锚、#63 naive 对照 + 六形态反向自证、#64 两态夹具），逐条点名 |
+| 10 | `npm run eval:e2e` | ⚠️ 验收轮 9/10、退 1 | `docs/eval/e2e/20260920T112415/`，`acceptance.ok=true`（10 剧本 ×3 × 真实云端，线上 `7c967bb`）；唯一产品红 E6 周刊 `items=20 storylines=0` 3/3 稳定 = **B121**，未为绿灯放宽判据；未验收面不变（后台写回闭环、数据保留不误删） |
+| 11 | `npm run eval:content` | ⛔ 没跑 | 本轮无 AI 产物变化，五维 judge 无新对象 |
+| — | 对抗性审查 | ✅ 独立 reviewer | 抓到 5 处（写死宿主面、括号深度误判、多命中锚点跳过、`ANCHOR_ERRORS` 顺序依赖、`||` 逃生口 + `60` 双绑），逐条验证成立后全改；扩面另抓 4 处既存实例按记账豁免 |
+| — | `node tools/doc-stamp.cjs` | ⛔ 没跑 | §2.9 那套机制（条文 + 工具 + `STAMPS.md`）本身仍在并行会话工作区未提交，不替它落产物 |
+
+## 09-20 夜 · B106 收口批（放行表 #2）交付链增量
+
+> 只记与上一张表不同的项，其余十一条读数同上（同一晚、同一 HEAD 之外的改动只有 `tools/eval-f2p.cjs` + 一条锁）。
+> 范围：修取证工具的 env/product 误判 + 空格参数截断，`--ledger` 常驻，重跑时区族 13 条锁的 F2P，立坑 #65 并同批配锁（坑 #61）。
+
+| 项 | 结果 | 读数 |
+|---|---|---|
+| 3 `npm run eval:f2p -- --self-test` | ✅ 29/29 退 0 | 原 24 条 + 本批 5 条（文件级崩⇒env、用例名级红仍 product、收敛型缺文件⇒合法 ok、空格参数被报出、`--ledger` 可调） |
+| 9 F2P | ✅ 时区族 13 条**已出证** | `--auto-base --tests 20b,20c --cases B1..C6` → 改前红 13/13（**用例名级**）、改后 13 条全绿、退 0，证据 `docs/eval/f2p/2026-09-20135512.json`。旧判定下这批曾被误判 product/退 1（=授权删 13 条好锁） |
+| 1 `npm test` | ✅ 455/455 退 0 | +#65-1 一条 |
+| — 我自己在这批里犯的两处反向错（都被抓回来） | 已记 | ①把"基线缺本轮新建文件"单独判 env ⇒ 会废掉收敛型修复唯一取证形态，被 `--self-test` 的"改前也绿=假锁"探针挡回（EVAL_GUIDE §6 早有明文）；②给工具喂空格分隔的 `--cases` ⇒ 旧版静默截成 1 条目标还打印 ✓，这条误报暴露了坑 #65 规则② |
+| — 未做的收尾 | 说明 | `--ledger` 的"引用 F2P 条数必须带证据文件名"lint 判据属放行表 #12（与坑 #66 同批），本批没做；本批中间态的三份取证 JSON（134629/135021/135321）是废弃读数，未入库，只留最终那份 |
