@@ -55,7 +55,7 @@
 | #9 B79 悬空订阅 id | **待做**，用户已选"自己在后台重新勾选"（安全可核对），我这边不写生产 |
 | #10 三端小刺打包 | **待做**，B107 / B109 / B111 / B112 / B113 / B115 / B116 一行一号排队。**B108 已由并行会话按「撤义务」路径收口**（AGENTS 原 §2.8 删除 + `doc-lint` 第 7 条移除 + `gen-dir-index.cjs` 进隔离），故打包行少一条 |
 | #11 push 许可 | 已推（`961fec0 → c183413`，其后再 4 次） |
-| #12 门禁扩面四条 | ◐ **09-21 交付四条判据 + 新加一条**（`tools/doc-lint.cjs` 第 7~11 条：表格超格 B126 / 活锚点越界 B115① / F2P 条数须带证据 B114② / 父 spec 背景须带出处 B116③(提示级) / **同表编号唯一**——本轮实测抓到两个 B128 并存才加的)。判据自证 `npm run lint:docs:selftest` 31 例双向 + 锁 `tests/regression-doc-lint-rules.test.js`。**未做**：B115② 裸文件名要写全路径、`_cite-audit.cjs` 转常驻 `npm run lint:cites`、B127 的两条（e2e 把 CHECKS 写进产物、`--report` 先校验 schema）、W9 收紧、B124 拟号标注与打包行拆分 |
+| #12 门禁扩面四条 | ◐ **09-21 交付四条判据 + 新加一条**（`tools/doc-lint.cjs` 第 7~11 条：表格超格 B126 / 活锚点越界 B115① / F2P 条数须带证据 B114② / 父 spec 背景须带出处 B116③(提示级) / **同表编号唯一**——本轮实测抓到两个 B128 并存才加的)。判据自证 `npm run lint:docs:selftest` 31 例双向 + 锁 `tests/regression-doc-lint-rules.test.js`。**未做**（09-21 后续三轮已清大部分）：B115② 裸文件名要写全路径、`_cite-audit.cjs` 转常驻 `npm run lint:cites` —— 这两条仍待做。✅ 已交付：B127 两条（过程层读数落进 `report.json.process`；`--report` 先验输入 schema，喂错退 2 且说清认成了什么，`fail_env` 也改退 2）、W9 收紧（只认 `test()` 标题/断言消息里的 `#N`，注释不算）、B124 拟号标注与打包行拆分（`EVAL_GUIDE` §4.2 已标（拟）+ `W5`/`W8` 登记废弃）。另加两条本批自己撞出来的判据：第 7b 条「表格断裂」（表头与分隔行并成一行会让整张表脱离格数判据）与第 10 条「同表编号唯一」（实测两个 B128 并存） |
 | #13 B117 测试绑生产 | **待做**：三份仍绑生产 Turso 的测试搬隔离库 + 新判据"测试里出现 `DELETE`/`POST` 未指 `file:` 即红"。其中「`preview` 改 `GET`」随 §四 冻结 |
 | #14 一次性脚手架处置 | 已按选项②落地（`.gitignore` 加 `docs/eval/audit/` + `tools/_*.cjs` + `.tmpchk/`）。边界：只挡今后新增，已跟踪的 22 份 `tools/_*.cjs` 不动 |
 
