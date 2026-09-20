@@ -66,6 +66,12 @@ test('Q2 负向自证：不写档位 / 写裸数字 / 写成字符串 三种坏�
   assert.equal(str.typed.length, 1, `SQL 里字符串形态的档位赋值没被判出来：${JSON.stringify(str.typed)}`);
   assert.match(str.typed[0].file, /api\/w\.js$/, '违规没点名文件');
   assert.equal(str.typed[0].line, 2, `违规没点名行号（应 2，实得 ${str.typed[0].line}）`);
+  // 坑 #70：只绑 JS number 也一样错（落成 real），判据必须一并抓红 —— 中间那版我就写了这个
+  const bareBind = probe(`async function fix(){
+  await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', ?) WHERE id = ?", [1]);
+}
+`);
+  assert.equal(bareBind.typed.length, 1, `裸绑 JS number 没被判红：${JSON.stringify(bareBind.typed)}`);
 });
 
 test('Q3 反向：走常量的三种合法形状不许被误判，整表复制路径不参与本判据', () => {
@@ -73,10 +79,10 @@ test('Q3 反向：走常量的三种合法形状不许被误判，整表复制�
   assert.deepEqual([ok.writers[0].schema, ok.typed], [{ carried: true, bare: false, stringTyped: false }, []],
     '合法形状被误伤（判据第一版必错，坑 #62/#63）');
   const bind = probe(`async function fix(){
-  await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', ?) WHERE id = ?", [1]);
+  await qRun("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', CAST(? AS INTEGER)) WHERE id = ?", [1]);
 }
 `);
-  assert.deepEqual(bind.typed, [], '绑定参数的 json_set 被当成字符串形态 = 反向样本失守');
+  assert.deepEqual(bind.typed, [], 'CAST(? AS INTEGER) 这个唯一正确形态被误判 = 判据把作者往回推');
   const comment = probe(`async function gen(){
   // 老数据里 schemaVersion: 2 是裸数字，别学它
   const stats = { schemaVersion: DAILY_SCHEMA_VERSION.AI };
@@ -89,7 +95,15 @@ test('Q3 反向：走常量的三种合法形状不许被误判，整表复制�
     '整表复制类写入点（备份恢复/迁移）必须记 null：它们原样搬 stats，要求"写档位"是错的');
 });
 
-test('Q4 坑 #70 类型行为锁：档位经 SQL 落库时的四种形态（裸绑 JS 数字 = real 是实测抓到的新坑）', () => {
+test('Q4 坑 #70 类型锁：仓库 SQL 必须用 CAST(? AS INTEGER) 写档位，且 SQLite 侧四种形态实测对得上', () => {
+  // ① 代码形状：这条在改前必红 —— 改前是带引号的 '1'，中间那一版我以为绑数字就行（会落成 1.0）
+  const typed = DW().findStatsSchemaTypeViolations(ROOT);
+  assert.deepEqual(typed.map((v) => `${v.file}:${v.line}`), [],
+    `SQL 里给 $.schemaVersion 赋的不是 CAST(? AS INTEGER)：${JSON.stringify(typed)}`);
+  const runner = fs.readFileSync(path.join(ROOT, 'tools/collect-turso.js'), 'utf8');
+  assert.match(runner, /'\$\.schemaVersion', CAST\(\? AS INTEGER\)/, 'runner 降级分支的档位赋值没走 CAST');
+
+  // ② 数据库行为：四种写法各自落成什么类型（这就是①那条判据的事实依据，别只信代码长相）
   const Database = require('better-sqlite3');
   const db = new Database(':memory:');
   db.exec('CREATE TABLE daily_reports (id INTEGER PRIMARY KEY, stats TEXT)');
@@ -99,14 +113,10 @@ test('Q4 坑 #70 类型行为锁：档位经 SQL 落库时的四种形态（裸�
     db.prepare(sql).run(...v);
     return db.prepare("SELECT json_type(stats,'$.schemaVersion') t FROM daily_reports").get().t;
   };
-  // ① 只把 JS number 当绑定参数塞进 json_set：驱动给的是 double → JSON 存成 `1.0`，
-  //    json_type = 'real'。**这条是本轮实测才看到的**，第一版我以为"绑数字就对了"。
-  assert.equal(shape("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', ?) WHERE id=1", 1), 'real');
-  // ② 必须 CAST 才是 integer（runner 的降级分支现在就是这么写的）
+  assert.equal(shape("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', ?) WHERE id=1", 1), 'real',
+    'JS number 绑进 json_set 应落成 real(1.0) —— 判据不许因为"看着是数字"就放过它');
   assert.equal(shape("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', CAST(? AS INTEGER)) WHERE id=1", 1), 'integer');
-  // ③ 收口前那份带引号的字面量 = text（库里真有 1 行是这样的）
   assert.equal(shape("UPDATE daily_reports SET stats = json_set(stats, '$.schemaVersion', '1') WHERE id=1"), 'text');
-  // ④ 另外四份生成器走 JSON.stringify 整个 stats → integer，天然正确
   assert.equal(shape('UPDATE daily_reports SET stats = ? WHERE id=1', JSON.stringify({ schemaVersion: 2 })), 'integer');
   db.close();
 });

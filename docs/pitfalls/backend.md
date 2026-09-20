@@ -102,4 +102,5 @@
 - 规则：①凡是要往 JSON 列里写"必须是整数"的值，SQL 里写 **`CAST(? AS INTEGER)`**，常量仍从 JS 侧传；
   ②判"类型对不对"必须用 **`json_type(stats,'$.path')`** 实测，不要看代码里那个数字长什么样（与 #60 同族：污染在数据里，判据在代码里就等于看不见）；
   ③改这类字段时**读侧不许顺手收紧**成"只认 integer"——存量行有真实历史形态，收紧会把它们降级（Q5 就是钉这条）。
-- 案例：`tools/collect-turso.js` 的降级分支；行为锁 `tests/regression-daily-schema-version.test.js` Q4（四种形态逐个断言）；判据 = 白盒 W14 扩的一条（档位字段必须走 `DAILY_SCHEMA_VERSION` 常量，SQL 里不许出现 `'$.schemaVersion', '<带引号值>'`）。
+- 判据侧的连带教训（同一轮踩到）：想表达"赋值处不是 `CAST(`" 时**别写 `,\s*(?!CAST)`** —— `\s*` 会回溯出"零个空格"的匹配，而 lookahead 在空格位置上成立，于是**唯一正确的写法反而被判红**（实测 W14 当场把自己的修复判成违规）。改成"先取到赋值右侧的值，再用 `^\s*CAST\s*\(/` 测形状"（`schemaSetIsBad()`），一条规则一次匹配，不给回溯留位置。
+- 案例：`tools/collect-turso.js` 的降级分支；行为锁 `tests/regression-daily-schema-version.test.js` Q4（四种形态逐个断言 + 仓库 SQL 形状）；判据 = 白盒 W14 扩的一条（档位字段必须走 `DAILY_SCHEMA_VERSION` 常量，SQL 里赋值只放行 `CAST(? AS INTEGER)`）。
