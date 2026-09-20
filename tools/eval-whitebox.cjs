@@ -389,6 +389,20 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   notes.push('  i W18：只看**字符串字面量**里的 SQL（漂移全发生在拼 SQL 处）；JS 侧两处热榜排除由 N7 直接比对 isNoiseSource');
 }
 
+// ── W19 报警事件表三端 + 后台只许一份（B109/B45 / spec 37-2，2026-09-21）──
+// 判据与回归锁 tests/regression-alert-events.test.js 共用 lib/alert-events#findAlertEventCopies。
+// 病根实测：云端 DEFAULT_EVENTS 7 键 / 本地 EVENT_TITLE 5 键 / 健康摘要 3 键 / 前端说明第 4 份，
+// 而 `GET /api/alerts/config` 的 eventMeta 硬写四个在任何表里都不存在的键（fuse/stall/queue/error）
+// → 云端后台显示的是四个不存在事件的开关，真事件看不见、勾了没人读（B45 的硬根因）。
+{
+  const { findAlertEventCopies } = require('../lib/alert-events');
+  const r = findAlertEventCopies(ROOT);
+  ok('W19', r.scanned >= 100 && r.copies.length === 0 && r.consumers.length >= 4,
+    `扫 ${r.scanned} 个源文件；第二份手写事件表：${JSON.stringify(r.copies.slice(0, 8).map((c) => `${c.file}:${c.line} ${c.key}`))}；` +
+    `引用唯一实现的消费点应 >=4，实得 ${r.consumers.length}：${r.consumers.join('、') || '无'}`);
+  notes.push('  i W19：只在**相邻成员成组**出现事件键时判红（`api/[...slug].js` 里两处 `mybrief:` 是 settings 命名空间字段，第一版按整文件计数就是假红）');
+}
+
 // ── W23 测试里的写方法必须指隔离库（B117 / spec43 §六，2026-09-21）──
 // 判据与回归锁 tests/regression-test-isolation.test.js 共用 lib/test-isolation#findWriteWithoutIsolation。
 // 病根：`regression-20260918` 曾对生产发 `DELETE /api/weekly/archive/999999`（真 Bearer token），

@@ -4,6 +4,8 @@
 const express = require('express');
 const { db, getSetting } = require('../db');
 const { mask } = require('../util/log');
+// B109：报警事件表唯一实现（健康摘要不再自带第三份事件键与默认值）
+const { eventsState } = require('../../lib/alert-events');
 
 const router = express.Router();
 
@@ -59,11 +61,9 @@ function getAlertSummary() {
     const channels = Array.isArray(a.channels) ? a.channels : [];
     const recentLog = Array.isArray(a.recentLog) ? a.recentLog.slice(-5) : [];
     return {
-      eventsEnabled: {
-        source_error: events.source_error !== false,
-        source_paused: events.source_paused !== false,
-        collect_stalled: events.collect_stalled !== false,
-      },
+      // B109：这里原来是第三份手写事件表（只挑 3 个键、还自带一份默认值）——
+      // 现在整份状态由 lib/alert-events.js 出，健康摘要与后台/分发看到的是同一个键集
+      eventsEnabled: eventsState(events),
       enabledChannelCount: channels.filter((c) => c.enabled).length,
       cooldownMin: Number(a.cooldownMin) || 120,
       recentLog,

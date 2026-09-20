@@ -380,6 +380,8 @@ const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../
 // 其中 `handleArticlesReadAll` 那份**少两轴**（只排热榜/聚合，不排 muted/未收录）→
 // "全部标已读"会标掉列表里根本看不见的条目。现在三处阅读器口径共用下面这一个常量。
 const { notNoiseSql, notNoiseExistsSql, notNoiseJoinSql, notHotlistSql, hotlistCondSql, isNoiseSql } = require('../lib/noise');
+// B109/B45（spec 37-2）：报警事件表与开关状态也走一份实现（原本地 5 键、云端 7 键、响应里再硬写 4 个不存在的键）
+const { eventsState, eventMetaTable } = require('../lib/alert-events');
 const NOT_NOISE_READER = notNoiseSql('s', { reader: true });
 
 // GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
@@ -1581,12 +1583,13 @@ async function handleAlertsConfig(req) {
   const channels = _alerts.maskChannels(Array.isArray(cfg.channels) ? cfg.channels : []);
   return jsonOk({
     channels,
-    events: cfg.events || {},
+    events: eventsState(cfg.events),
     cooldownMin: cfg.cooldownMin || 120,
     recentLog: Array.isArray(cfg.recentLog) ? cfg.recentLog : [], // B5：管理台报警记录直接随 config 返回
-    eventMeta: {
-      fuse: '源熔断', stall: '采集停滞', queue: '队列异常', error: '系统错误'
-    },
+    // B45 的硬根因（09-21 修）：这里原来硬写 `{fuse:'源熔断', stall:'采集停滞', queue:'队列异常', error:'系统错误'}`
+    // —— 四个键在任何事件表里都不存在，既不读落库、也不含真事件，于是云端管理台显示四个假开关、
+    // 真事件的勾选根本看不见。现在键集恒等于 lib/alert-events.js，落库有同名覆盖值才优先。
+    eventMeta: eventMetaTable(cfg.eventMeta),
   });
 }
 

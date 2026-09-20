@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get('/config', (req, res) => {
   // P0 安全修复（2026-09-05）：渠道密钥（webhook url/secret/sendkey/deviceKey/token）脱敏回传
-  res.json({ ok: true, ...alerts.getPublicConfig(), eventMeta: alerts.EVENT_TITLE });
+  res.json({ ok: true, ...alerts.getPublicConfig(), eventMeta: alerts.eventMeta() });
 });
 
 router.put('/config', (req, res) => {

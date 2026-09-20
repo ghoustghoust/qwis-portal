@@ -37,17 +37,15 @@ async function auditRecord(action, opts = {}) {
   } catch { /* 审计失败不阻断 */ }
 }
 
-const DEFAULT_EVENTS = {
-  source_error: true, source_paused: true, daily_failed: true,
-  collect_stalled: true, ai_failed: true, frozen_digest: true,
-  mybrief: true, // 19-my-brief：我的早报推送
-};
+// B109/B45（spec 37-2）：事件表全库一份（原本地那份 5 键、这份 7 键，键集互不相同）
+const { defaultEvents, eventsState } = require('../lib/alert-events');
+const DEFAULT_EVENTS = defaultEvents();
 
 async function getConfig() {
   const a = (await getSetting('alerts', {})) || {};
   return {
     channels: Array.isArray(a.channels) ? a.channels : [],
-    events: { ...DEFAULT_EVENTS, ...(a.events || {}) },
+    events: eventsState(a.events),
     cooldownMin: Number(a.cooldownMin) || 120,
     recentLog: Array.isArray(a.recentLog) ? a.recentLog : [],
     silence: Array.isArray(a.silence) ? a.silence : [],

@@ -4,21 +4,16 @@ const { getSetting, setSetting } = require('../db');
 const { fetchJson } = require('../util/http');
 const log = require('../util/log');
 const audit = require('../services/audit');
+// B109/B45（spec 37-2）：事件表全库一份，两份手写副本（本地 5 键 / 云端 7 键）改由它派生
+const { defaultEvents, eventsState, eventTitles, eventMetaTable } = require('../../lib/alert-events');
 
-const DEFAULT_EVENTS = {
-  source_error: true,          // 源抓取失败(连续失败≥2 次才报)
-  source_paused: true,         // 源熔断自动暂停
-  source_slow: true,           // 3.2 抓取耗时超阈值（ms）
-  daily_failed: true,          // 日报生成失败
-  collect_stalled: true,       // 采集停滞(1 小时内 0 成功刷新)
-  // wemp_down / wemp_cookie_expired 已随 we-mp-rss 退役移除(2026-09-04)
-};
+const DEFAULT_EVENTS = defaultEvents();
 
 function getConfig() {
   const a = getSetting('alerts', {});
   return {
     channels: Array.isArray(a.channels) ? a.channels : [],
-    events: { ...DEFAULT_EVENTS, ...(a.events || {}) },
+    events: eventsState(a.events),
     cooldownMin: Number(a.cooldownMin) || 120,
     recentLog: Array.isArray(a.recentLog) ? a.recentLog : [],
     // 3.2 报警精细化：抓取耗时阈值（毫秒）+ 按源静默列表
@@ -298,13 +293,10 @@ async function dispatch(event, { sourceId, sourceType, title, text }) {
 }
 
 // ---- 事件便捷入口 ----
-const EVENT_TITLE = {
-  source_error: '⚠️ 源抓取失败',
-  source_paused: '🛑 源已熔断暂停',
-  source_slow: '🐢 源抓取耗时过长',
-  daily_failed: '📅 日报生成失败',
-  collect_stalled: '⏸ 采集停滞',
-};
+// 标题与说明都来自 lib/alert-events.js（原来这里是第二份手写表，且只有 5 个事件）
+const EVENT_TITLE = eventTitles();
+// 管理台要的富结构（{title, desc}）：落库若有同名覆盖值优先，默认来自表
+const eventMeta = () => eventMetaTable(getSetting('alerts', {}).eventMeta);
 
 // 2026-09-12：错误分类器（与 api/_alerts.js 同规则，改规则两边同步——三端同步义务）
 function classifyError(errMsg, sourceType) {
@@ -365,4 +357,4 @@ function sourceSlow(source, elapsedMs) {
   });
 }
 
-module.exports = { getConfig, getPublicConfig, saveConfig, mergeChannelSecrets, SECRET_MASK, SENSITIVE_KEYS, dispatch, sourceError, sourceSlow, dailyFailed, collectStalled, EVENT_TITLE, DEFAULT_EVENTS, SENDERS, clearCooldowns, autoCleanupOldCooldowns, autoCleanupOldLogs };
+module.exports = { getConfig, getPublicConfig, saveConfig, mergeChannelSecrets, SECRET_MASK, SENSITIVE_KEYS, dispatch, sourceError, sourceSlow, dailyFailed, collectStalled, EVENT_TITLE, eventMeta, DEFAULT_EVENTS, SENDERS, clearCooldowns, autoCleanupOldCooldowns, autoCleanupOldLogs };

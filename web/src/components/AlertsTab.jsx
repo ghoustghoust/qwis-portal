@@ -135,17 +135,16 @@ function HomeLink({ url, help, className = '' }) {
   );
 }
 
-// 事件含义补充说明（eventMeta 只有标题）
-const EVENT_DESC = {
-  source_error: '某个订阅源抓取失败时触发（受冷却时间限制）',
-  source_paused: '源连续失败被自动熔断停用时触发',
-  daily_failed: '每日情报生成失败时触发',
-};
+// B109/B45（spec 37-2 第 3 条）：事件说明原来在这里写死第 4 份（还只覆盖 3 个事件）。
+// 现在 title/desc 都由 GET /api/alerts/config 的 eventMeta 一次带来 —— 一份事实一次传输。
 
 // eventMeta 标题可能带 emoji 前缀，剥掉保持界面零 emoji
 function cleanTitle(t) {
   return String(t || '').replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, '');
 }
+// B109：eventMeta 的值从"标题字符串"升级成"{title, desc}"，两个消费点都从这里取值，
+// 免得再写两份 typeof 判断（日志列那里历史上传进来的一直是字符串，所以两种形状都要吃）。
+const metaTitle = (m) => cleanTitle(typeof m === 'string' ? m : (m && m.title) || '');
 
 function typeMeta(type) {
   return CHANNEL_TYPES[type] || { label: type, tagline: '', steps: [], doc: null, fields: [] };
@@ -498,7 +497,7 @@ export default function AlertsTab() {
         <div className="text-sm font-medium t-text">报警事件</div>
         <div className="mt-1 text-xs t-muted">勾选哪些事件需要推送报警；同一事件在冷却期内只发一次。</div>
         <div className="mt-3 space-y-2.5">
-          {Object.entries(meta).map(([key, title]) => (
+          {Object.entries(meta).map(([key, m]) => (
             <label key={key} className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -507,9 +506,9 @@ export default function AlertsTab() {
                 onChange={() => toggleEvent(key)}
               />
               <span>
-                <span className="text-[13px] t-text">{cleanTitle(title)}</span>
-                {EVENT_DESC[key] && (
-                  <span className="block text-[11px] t-muted mt-0.5">{EVENT_DESC[key]}</span>
+                <span className="text-[13px] t-text">{metaTitle(m)}</span>
+                {typeof m !== 'string' && m && m.desc && (
+                  <span className="block text-[11px] t-muted mt-0.5">{m.desc}</span>
                 )}
               </span>
             </label>
@@ -579,7 +578,7 @@ export default function AlertsTab() {
                     >
                       {formatDateTime(r.at)}
                     </span>
-                    <span className="badge-green">{cleanTitle(meta[r.event]) || r.event}</span>
+                    <span className="badge-green">{metaTitle(meta[r.event]) || r.event}</span>
                     <span className="flex-1" />
                     {(r.results || []).map((rr, j) => (
                       <span

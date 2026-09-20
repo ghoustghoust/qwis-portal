@@ -1,8 +1,14 @@
 # 37-2 · 事件模型统一：一份事件表驱动两端与前台 —— 小 Spec
 
-> 总框架：`spec.md`（37，G2/G3）。状态：**待批准，未动工**。关联缺陷：**B45**（事件勾选不生效）、**B109**（幽灵事件键，本轮新查）。
+> 总框架：`spec.md`（37，G2/G3）。状态：**部分交付（09-21）—— G2a 一份表、G2b 假开关消灭、G2c 幽灵键不外露（改法与原文不同，见下）、AC1(W19)/AC2/AC3 已落；改动点第 4 条（缺键写回落库 + 审计）与 AC5（后台剧本加"开关数==表条数"）未做**。关联缺陷：**B45**（✅ 同批拔掉硬根因）、**B109**（✅）。
 > UI 呈现归 `docs/specs/38-admin-ia-refactor/38-g-monitor-alerts-console.md`，本文件只管数据与判据。
-> 最后更新：2026-09-19（本轮实测复核）
+> 最后更新：2026-09-21
+>
+> **09-21 交付读数**：W19 判据实测**收口前 19 处手写事件表成员 → 收口后 0**（`scanned=198`，4 个消费点全接上）；
+> 收口前副本形状 = 云端 7 键 / 本地 5 键 / **健康摘要第三份 3 键（本 spec 原来没数到它）** / 前端说明第 4 份。
+> **G2c 的改法偏离原文并说明理由**：原文写"要么恢复事件、要么从配置里删（属配置写，需点头）"——
+> 实际改成**读时按表收敛**（`eventsState`），假开关同样消失而**零配置写**：根因是"列表由落库键集派生"，
+> 把派生源换成表就够了；`UPDATE settings` 收益相同但不可逆，故不做。落库里那两键仍在（不碍事）。
 
 ## 现状（2026-09-19 夜实测：读两端 settings + 读四处代码，未做任何写）
 
@@ -23,18 +29,18 @@ G2c 幽灵键清理：本地 `settings.alerts.events` 里的 `wemp_down/wemp_coo
 
 ## 改动点（批准后才写）
 
-1. 建 `lib/alert-events.js`，本地 `server/services/alerts.js` 的 `EVENT_TITLE` 与云端 `api/_alerts.js` 的 `DEFAULT_EVENTS` 改为从它派生（**删掉两份手写**，不是包一层留着）。
-2. `api/[...slug].js:1575` 改为 `eventMeta: cfg.eventMeta || ALERT_EVENTS.meta()`；本地 `server/routes/alerts.js:16` 同源。
-3. 前端 `EVENT_DESC` 删除，改为消费 `GET /api/alerts/config` 的 `eventMeta.desc`（一份事实一次传输）。
-4. 落库补齐：首次读时若 `events` 缺新事件键，按 `defaultOn` 补齐并写回（**写回要有审计**，别静默改生产配置）。
+1. ✅ **已做 09-21**：建 `lib/alert-events.js`，本地 `server/services/alerts.js` 的 `EVENT_TITLE` 与云端 `api/_alerts.js` 的 `DEFAULT_EVENTS` 改为从它派生（**两份手写表都删了**）。交付时多收了第三份：`server/routes/health.js` 的健康摘要自带 3 个键 + 自己一份默认值，同样改为 `eventsState()`。
+2. ✅ **已做 09-21**：`api/[...slug].js` 的 `eventMeta` 字面量（`fuse/stall/queue/error`）删除 → `eventMeta: eventMetaTable(cfg.eventMeta)`，**键集恒等于表、落库有覆盖值才优先**；本地 `server/routes/alerts.js` 同源（`alerts.eventMeta()`）。
+3. ✅ **已做 09-21**：前端 `EVENT_DESC` 删除，改消费 `GET /api/alerts/config` 的 `eventMeta[key].desc`（一份事实一次传输；`eventMeta` 的值从字符串升成 `{title, desc}`，日志徽章那处兼容两种形状）。
+4. ⬜ **未做（有意）**：落库补齐（缺键按 `defaultOn` 写回 + 审计）。原因：`eventsState()` 已在**读时**补默认值，对用户等价，而写回是一次生产配置写；它与 37-4（云端补 `source_slow` 的 dispatch）同批做更划算。
 
 ## 判据与验收
 
-- **AC1（白盒新判据，拟 W19）**：从字面量派生扫描"事件键集合"——若 `api/_alerts.js`、`server/services/alerts.js`、`lib/alert-events.js` 里出现 ≥2 份手写事件表即红并点名。判据纪律同坑 #58/#59/#63（剥注释、只认字符串字面量、排除自身）。
-- **AC2（负向自证）**：往 `api/_alerts.js` 塞一个手写事件键 → W19 必须红；只在注释里写事件名 → 不许红（证明它看的是代码不是文本）。
-- **AC3（回归锁，`tests/` 内，配 `坑 #NN` 标记同批）**：断言 `GET /api/alerts/config` 的 `eventMeta` 键集 == `lib/alert-events.js` 的键集（**行为锁**，不是文本比对）；并断言"落库改一个事件的开关 → 响应里跟着变"（这条在改前必红，因为现在被字面量覆盖）。
-- **AC4（F2P）**：按 **B106** 的构造规则出改前红证据（基线缺本轮新建文件时不许判成"锁假了"）。
-- **AC5（端到端）**：`npm run eval:e2e` 后台剧本里加一条：事件勾选框数量 == 事件表条数，且勾选后重启读层仍生效（P2P 集合）。
+- ✅ **AC1（白盒 W19 已实装）**：判据 `lib/alert-events.js#findAlertEventCopies`，白盒与锁共用同一份。收口前 19 处手写成员 → 0。
+- ✅ **AC2（负向自证）**：V2 塞一份相邻成组的手写表 → 必红且点名 `file:line`；注释/字符串里的事件键不许红。
+- ✅ **AC3（回归锁 `tests/regression-alert-events.test.js` V1~V7）**：V3 是本批新加的反向锁 —— **分散在两处的单键不许算成第二份表**（判据第一版按整文件计数，把 `api/[...slug].js` 两处 settings 命名空间的 `mybrief:` 拼成假表，假红 2 处）；V6 是行为锁：同一份"最坏落库"（真事件只关一个 + 两个幽灵键 + 一个自定义标题）分别喂本地路由与云端 handler，两端 `eventMeta`/`events` 键集必须相同且等于表（**改前必红**：改前云端返回四个硬写的假键）；V7 断言 `dispatch` 真读开关。
+- ◐ **AC4（F2P）**：本轮排期未跑，下批补（基线缺本轮新建文件时不许判成"锁假了"）。
+- ⬜ **AC5（端到端）**：后台剧本"事件勾选框数量 == 事件表条数，且勾选后重启仍生效"未加。
 
 ## 边界
 
