@@ -221,7 +221,7 @@ function findDuplicateIds(text) {
 //   不是自然腐烂（坑 #62 的量化补强）。硬前置：必须能区分"活锚点"与"作为反例被引用的死锚点"，
 //   否则天天误报、三天后就被人加 ignore 绕过。区分方式做成显式的两条豁免，而不是靠猜：
 //   ① 行内带 `doc-lint:ignore`；② 行内有"死锚点信号词"（说明这句是在**引用**一个坏锚点，不是在指向它）。
-const DEAD_ANCHOR_WORDS = /已删|删除后|已移除|不存在|作废|已作废|反例|坏锚点|已烂|曾写|原写|旧版|过期|从未|不再|被自己|重锚|锚点失效|越界/;
+const DEAD_ANCHOR_WORDS = /已删|删除后|已移除|不存在|作废|已作废|反例|坏锚点|烂锚|已烂|曾写|原写|旧版|旧引用|过期|从未|不再|被自己|重锚|锚点失效|越界/;
 const ANCHOR_RE = /([\w./[\]\-一-龥]+\.(?:js|jsx|cjs|mjs|ts|tsx|py|yml|yaml|md|css|json)):(\d{1,6})/g;
 function findStaleAnchors(text, resolve) {
   const bad = [];
@@ -245,6 +245,75 @@ function findStaleAnchors(text, resolve) {
     }
   }
   return { bad, scanned, skippedVocabulary, skippedIgnore };
+}
+
+// 12 裸文件名锚点（B115②）：只写 basename 的 `AlertsTab.jsx:591`。
+//   为什么单独立一条而不是"顺手并入第 8 条"：第 8 条的 `resolveFile` 按**仓根相对路径**查，
+//   裸名查不到就 `continue` → 这类引用今天**既不判越界、也不进分母**（`_cite-audit.cjs` 实测 8 条，
+//   多义的按候选收敛 = 赌运气）。判"越界"要挑错文件，所以只能先要求"写全路径"。
+//   只出提示不判错：这是书写纪律不是事实错误，判错三天后就会被整行加 ignore 绕过（坑 #64 规则①）。
+//   反向样本同批备好：①仓根真有 `README.md` 这种裸路径不许报 ②哪儿都没有的归悬空判据管。
+function findBareAnchors(text, { exists, resolveBare }) {
+  const bare = [];
+  let scanned = 0;
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    if (raw.includes(IGNORE_MARK)) continue;
+    for (const m of [...raw.matchAll(ANCHOR_RE)]) {
+      const [, file, lineStr] = m;
+      if (file.includes('/')) continue;
+      if (exists(file)) continue;
+      scanned++;
+      const cands = resolveBare(file) || [];
+      if (!cands.length) continue;
+      bare.push({ file, line: Number(lineStr), at: i + 1, cands: cands.length, sample: cands[0] });
+    }
+  }
+  return { bare, scanned };
+}
+
+// 取证台账（`--cites`，B115② 的另一半：把 `_cite-audit.cjs` 变成常驻命令）。
+// 与第 8/12 条**共用同一个正则与同一份解析**，只多做一件人肉才做的事：把锚点真正指向的那行打出来。
+function citeLedger(files, read, rel, { candidatesOf, resolveFile, all }) {
+  const cache = new Map();
+  const textOf = (c) => {
+    if (!cache.has(c)) cache.set(c, read(path.join(ROOT, c)).split('\n'));
+    return cache.get(c);
+  };
+  const rows = [];
+  for (const f of files) {
+    const text = read(f);
+    text.split('\n').forEach((raw, idx) => {
+      for (const m of [...raw.matchAll(ANCHOR_RE)]) {
+        const [, file, lineStr] = m;
+        const cands = candidatesOf(file);
+        let status = 'MISSING';
+        let at = '';
+        let where = '';
+        for (const c of cands) {
+          const n = resolveFile(c);
+          if (n === null) continue;
+          if (Number(lineStr) > n) { status = cands.length > 1 ? 'AMBIG' : 'OUT'; continue; }
+          status = cands.length > 1 ? 'AMBIG' : 'OK';
+          where = c;
+          at = (textOf(c)[Number(lineStr) - 1] || '').trim().slice(0, 58);
+          break;
+        }
+        rows.push({ doc: rel(f), docLine: idx + 1, ref: m[0], status, where, at });
+      }
+    });
+  }
+  const n = (s) => rows.filter((r) => r.status === s).length;
+  console.log(`引用台账：${files.length} 份文档，${rows.length} 条 file:line 引用`);
+  console.log(`  正常 ${n('OK')} ｜ 裸文件名多义 ${n('AMBIG')} ｜ 行号越界 ${n('OUT')} ｜ 文件不存在 ${n('MISSING')}`);
+  for (const r of rows.filter((x) => x.status !== 'OK')) {
+    console.log(`  [${r.status}] ${r.doc}:${r.docLine} → ${r.ref}${r.where ? ` （按 ${r.where} 收敛）` : ''}`);
+  }
+  const ok = rows.filter((r) => r.status === 'OK');
+  console.log(`\n=== 锚点指向的行（${ok.length} 条${all ? '' : '，只打印前 40 条；--all 打全部'}），供人工判"还指对吗" ===`);
+  for (const r of (all ? ok : ok.slice(0, 40))) console.log(`  ${r.ref}  |  ${r.at}`);
+  return rows;
 }
 
 // 9 引用 F2P「改前红 / 改后绿」的条数必须同句带证据文件名（B114② + B106 残余）：
@@ -317,6 +386,10 @@ if (SELF_TEST) {
   expect('锚点-作为反例被引用不许红', findStaleAnchors('原写 a.js:99 是坏锚点（已删）', resolve).bad.length, 0);
   expect('锚点-ignore 行不许红', findStaleAnchors('a.js:99 <!-- doc-lint:ignore -->', resolve).bad.length, 0);
   expect('锚点-文件不在的归悬空判据管', findStaleAnchors('见 gone.js:99', resolve).bad.length, 0);
+  // 豁免靠词表，词表漏一个同义词 = 把**照实引用烂锚**的好文档判红（本轮实测：第 8 条一扩到裸文件名，
+  // `docs/specs/09-*/task.md:146` 那句"旧引用 Sidebar.jsx:186 是烂锚"就红了 —— 原表只有「坏锚点」）
+  expect('锚点-同义词「烂锚/旧引用」也要放过',
+    findStaleAnchors('旧引用 Sidebar.jsx:186 是烂锚', (f) => (f === 'Sidebar.jsx' ? 165 : null)).bad.length, 0);
   // 分母可见性：放过的那几条必须被数出来，否则"0 越界"分不清是真干净还是判据写空
   expect('锚点-放过的反例要能报出分母', findStaleAnchors('原写 a.js:99 已删\n见 a.js:5 那行', resolve).scanned, 2);
   expect('锚点-死锚点词放过的条数单列', findStaleAnchors('原写 a.js:99 已删', resolve).skippedVocabulary, 1);
@@ -356,6 +429,17 @@ if (SELF_TEST) {
   expect('背景-非背景段不判', findUnanchoredFacts('## 二、验收\n\n- `articles` 表里没有 `score` 列\n').length, 0);
   expect('背景-作废标注行不判（§2.4 要求原文留着）',
     findUnanchoredFacts('## 一、背景\n\n> 已作废：旧写法「清理每天跑」\n').length, 0);
+  // 12 裸文件名锚点（B115②）：坏样本 = 只写 basename 且仓内多个同名；反向 = 写了全路径 / 仓根真有该文件
+  const BARE_ON = { exists: () => false, resolveBare: () => ['web/src/a/AlertsTab.jsx', 'web/src/b/AlertsTab.jsx'] };
+  expect('裸名-多义必须提示并带候选数', findBareAnchors('见 AlertsTab.jsx:591 那行', BARE_ON).bare[0].cands, 2);
+  expect('裸名-写了全路径的不算', findBareAnchors('见 web/src/a/AlertsTab.jsx:591 那行', BARE_ON).bare.length, 0);
+  expect('裸名-全路径也不进分母', findBareAnchors('见 web/src/a/AlertsTab.jsx:591 那行', BARE_ON).scanned, 0);
+  expect('裸名-ignore 行放过', findBareAnchors('AlertsTab.jsx:591 <!-- doc-lint:ignore -->', BARE_ON).bare.length, 0);
+  // 分母仍然要数到它：一条"仓根查不到"的引用即使哪都没有，也不能悄悄消失（坑 #41）
+  expect('裸名-哪儿都没有的仍计分母、但不提示（归悬空判据管）',
+    findBareAnchors('见 gone.jsx:9', { exists: () => false, resolveBare: () => [] }).bare.length, 0);
+  expect('裸名-仓根真有同名文件的不算裸名',
+    findBareAnchors('见 README.md:3 那行', { exists: (f) => f === 'README.md', resolveBare: () => ['README.md'] }).bare.length, 0);
   console.log(fails.length ? `doc-lint --self-test：${fails.length} 条不通过\n  ` + fails.join('\n  ')
     : `doc-lint --self-test：判据双向自证通过（${cases} 例，全过）`);
   process.exit(fails.length ? 1 : 0);   // 必须直接退出：只设 process.exitCode 会被后面的真实扫描段覆盖成"0 错 ⇒ 绿"
@@ -371,7 +455,55 @@ const resolveFile = (f) => {
   if (!lineCountCache.has(abs)) lineCountCache.set(abs, read(abs).split('\n').length);
   return lineCountCache.get(abs);
 };
-let anchorScanned = 0, anchorSkipped = 0;
+// basename → 仓内相对路径清单：第 12 条与 `--cites` 共用这一份（`_cite-audit.cjs` 原来自己建了一份，
+// 于是"锚点解析"有了两套事实 —— 那正是本项目反复判红的东西，所以这次是把那个一次性脚本**收进来**，不是并存）
+const INDEX_SKIP = new Set(['node_modules', '.git', 'dist', 'data', '.tmpchk', '.cluster', 'trash']);
+// 扩展名清单与上面 ANCHOR_RE 是同一份语义（改那边要改这里）：索引只收"可能被当锚点引用"的文件
+const INDEX_BARE_RE = /\.(?:js|jsx|cjs|mjs|ts|tsx|py|yml|yaml|md|css|json)$/;
+const BASE_INDEX = new Map();
+(function indexTree(dir) {
+  for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+    if (INDEX_SKIP.has(e.name)) continue;
+    const relp = dir ? `${dir}/${e.name}` : e.name;
+    if (e.isDirectory()) { indexTree(relp); continue; }
+    if (!INDEX_BARE_RE.test(e.name)) continue;
+    if (!BASE_INDEX.has(e.name)) BASE_INDEX.set(e.name, []);
+    BASE_INDEX.get(e.name).push(relp);
+  }
+})('');
+const resolveBare = (f) => BASE_INDEX.get(f) || [];
+// 只写尾段的半截路径（`scheduler/index.js:138` 这种）也要能收敛回来 —— 一次性探针原来有这条
+// `endsWith` 兜底，第一版搬丢了就会把"文件其实在"判成 MISSING（假警报方向）。
+const suffixHits = (f) => {
+  const base = f.split('/').pop();
+  return (BASE_INDEX.get(base) || []).filter((p) => p === f || p.endsWith('/' + f));
+};
+const existsRel = (f) => resolveFile(f) !== null;
+// 第 8 条原来的盲区：`resolveFile` 只按仓根相对路径查，裸文件名一律返回 null → 那条锚点
+// **既不判越界也不进分母**。这里补上"唯一候选才收敛"：多义的不猜（猜错会把好文档判红），
+// 实测补完抓到 1 条真越界（`docs/specs/09-.../task.md:146` 的 `Sidebar.jsx:186`，本轮一并改掉）。
+const resolveAny = (f) => {
+  const direct = resolveFile(f);
+  if (direct !== null) return direct;
+  const c = candidatesOf(f);
+  return c.length === 1 ? resolveFile(c[0]) : null;
+};
+// 台账用的候选解析：全路径直查 → 半截路径按尾段收敛 → 裸文件名按 basename 索引
+const candidatesOf = (f) => {
+  const clean = f.replace(/^(\.\.\/)+/, '').replace(/^\.\//, '');
+  if (resolveFile(clean) !== null) return [clean];
+  return f.includes('/') ? suffixHits(clean) : resolveBare(f);
+};
+
+if (process.argv.includes('--cites')) {
+  citeLedger(lintTargets, read, rel, {
+    candidatesOf, resolveFile, all: process.argv.includes('--all'),
+  });
+  // 台账是**取证面**（"锚点还指对吗"只有人能判），红线仍然是 `npm run lint:docs`：
+  // 这里退出码恒 0，免得一个只读报告被当成第二套门禁、天天与第 8 条抢着判红（坑 #64 规则①）。
+  process.exit(0);
+}
+let anchorScanned = 0, anchorSkipped = 0, bareScanned = 0;
 for (const f of lintTargets) {
   if (!fs.existsSync(f)) continue;
   const text = read(f);
@@ -379,9 +511,17 @@ for (const f of lintTargets) {
   const push = strict ? errors : warnings;
   for (const b of findTableBreaks(text)) push.push(`[表格] ${rel(f)}:${b.line} 该行 ${b.got} 格 > 表头 ${b.want} 格（裸竖线请写成 \\|）：${b.text}`);
   for (const b of findBrokenTableHeads(text)) push.push(`[表格断裂] ${rel(f)}:${b.line} 表头与分隔行被并成一行，整张表会脱离格数判据：${b.text}`);
-  const a = findStaleAnchors(text, resolveFile);
+  const a = findStaleAnchors(text, resolveAny);
   anchorScanned += a.scanned; anchorSkipped += a.skippedVocabulary + a.skippedIgnore;
   for (const s of a.bad) push.push(`[锚点越界] ${rel(f)}:${s.at} 指向 ${s.file}:${s.line}，该文件实有 ${s.lines} 行`);
+  const ba = findBareAnchors(text, { exists: existsRel, resolveBare });
+  bareScanned += ba.scanned;
+  // 只判**真多义**的那几条（B115② 的实测口径：审计当时点出的 8 条就是多义集）。
+  // 唯一候选的裸文件名只进分母不提示 —— 否则一版就新增 50+ 条提示，天天刷屏的提示等于没有提示（坑 #64 规则①）。
+  for (const s of ba.bare) {
+    if (s.cands < 2) continue;
+    warnings.push(`[裸文件名] ${rel(f)}:${s.at} 的 ${s.file}:${s.line} 没写全路径，仓内有 ${s.cands} 个同名文件（${s.sample} 等）—— 多义时按哪个收敛全凭运气`);
+  }
   for (const c of findUncitedF2pCounts(text)) push.push(`[F2P出处] ${rel(f)}:${c.line} 写了改前/改后条数却没带证据文件名：${c.text}`);
   for (const d of findDuplicateIds(text)) push.push(`[编号撞号] ${rel(f)}:${d.line} 的 ${d.id} 与第 ${d.first} 行同号 —— 两条不同事实共用一个号，之后按号引用必指错行`);
   // 11 只对**父 spec**（docs/specs/NN-*/spec.md）判，且只出提示（判据比前几条软，见函数注释）
@@ -389,7 +529,7 @@ for (const f of lintTargets) {
     for (const g of findUnanchoredFacts(text)) warnings.push(`[背景出处] ${rel(f)}:${g.line} 背景段的实测断言没带 B 编号也没指路：${g.text}`);
   }
 }
-warnings.push(`[锚点分母] 本次看到 ${anchorScanned} 条指向存在的 file:line 锚点，其中 ${anchorSkipped} 条按"死锚点信号词/ignore"放过（那是被当作反例引用的，不是漏判）`);
+warnings.push(`[锚点分母] 本次看到 ${anchorScanned} 条指向存在的 file:line 锚点，其中 ${anchorSkipped} 条按"死锚点信号词/ignore"放过（那是被当作反例引用的，不是漏判）；另有 ${bareScanned} 条只写裸文件名 —— 唯一候选的已由第 8 条按候选收敛后一起判越界，多义与查无此文件的**只进本条分母**（不猜文件，猜错会把好文档判红）`);
 }
 
 console.log(`doc-lint：${errors.length} 错 ${warnings.length} 警`);

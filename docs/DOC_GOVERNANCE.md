@@ -203,7 +203,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
     形如"从未/不存在/已存在/停在…"的条目没带 B 编号也没指路 → **提示级**（不判错）。
     故意只做提示：这是语义判据、比前几条软，一上来就判红只会逼人加 ignore。当前存量 2 条（spec 38）。
 12. **判据自身要能被证伪**：`npm run lint:docs:selftest`（同一份 `doc-lint` 的 `--self-test`）逐条喂
-    坏样本与反例，**双向** 31 例；`tests/regression-doc-lint-rules.test.js` L1~L4 把它钉进 `npm test`
+    坏样本与反例，**双向** 44 例；`tests/regression-doc-lint-rules.test.js` L1~L5 把它钉进 `npm test`
     （含"分母必须非空"与"不许有文件级 ignore 短路"两条，防判据被写成恒绿）。
 人工复核项（脚本查不了的）：范围声明与正文是否一致、同类事实是否只剩一处、归档指针是否可达、日期是否与内容改动相称。
 

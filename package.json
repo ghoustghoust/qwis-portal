@@ -12,6 +12,7 @@
     "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
     "lint:docs": "node tools/doc-lint.cjs",
     "lint:docs:selftest": "node tools/doc-lint.cjs --self-test",
+    "lint:cites": "node tools/doc-lint.cjs --cites",
     "eval:preflight": "node tools/eval-preflight.cjs",
     "eval:whitebox": "node tools/eval-whitebox.cjs",
     "eval:process": "node tools/eval-process-checks.cjs --self-test",

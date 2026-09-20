@@ -48,6 +48,24 @@ test('L3 分母可见：锚点判据确实看了上百条，不是写空（坑 #
     `放过的条数(${m[2]})不在 (0, 总数) 区间内 —— 要么死锚点豁免形同虚设，要么把所有锚点都放过了`);
 });
 
+test('L5 裸文件名判据与 `--cites` 台账在真实文档上不是写空的（B115②）', () => {
+  const r = lint([]);
+  const m = /另有 (\d+) 条只写裸文件名/.exec(r.out);
+  assert.ok(m, `没打印裸文件名分母：${r.out.split('\n').slice(0, 3).join(' | ')}`);
+  assert.ok(Number(m[1]) >= 20, `只扫到 ${m[1]} 条裸文件名引用 —— 覆盖面可疑（09-21 实测 60 条）`);
+  // 分母不是唯一证据：多义的那几条必须真被点出来（今天 3 条 `daily.js:274`，仓内 3 个同名文件）
+  assert.match(r.out, /\[裸文件名\].*仓内有 \d+ 个同名文件/, '一条多义裸名都没抓到 → 判据写空');
+  assert.equal(r.code, 0, `门禁因本条判红就是错的（它是提示级）：${r.out}`);
+
+  const c = lint(['--cites']);
+  assert.equal(c.code, 0, `--cites 是取证面，不该自带失败退出：${c.out.slice(0, 300)}`);
+  const t = /引用台账：(\d+) 份文档，(\d+) 条 file:line 引用/.exec(c.out);
+  assert.ok(t && Number(t[2]) >= 200, `台账只解析出 ${t ? t[2] : 0} 条引用：${c.out.slice(0, 300)}`);
+  // 台账必须真的分类（"文件不存在 ≥1" 是今天的实况：docs/ 里确实有 6 条这种引用）
+  assert.match(c.out, /正常 \d+ ｜ 裸文件名多义 \d+ ｜ 行号越界 \d+ ｜ 文件不存在 [1-9]\d*/,
+    `台账分类没跑起来：${c.out.slice(0, 300)}`);
+});
+
 test('L4 判据不许被"整份文件加 ignore"绕过：ignore 只在行内生效', () => {
   const fs = require('fs');
   const src = fs.readFileSync(CLI, 'utf8');
