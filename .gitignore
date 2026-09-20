@@ -56,3 +56,6 @@ __pycache__/
 .*-driver-*.cjs
 .*-fix-*.cjs
 .tmp-*-*.cjs
+# 主代理本轮的一次性取证脚手架目录（探针脚本 + 下载的 runner 日志 + 端点响应），整目录不入库：
+# 里面有 /api/* 响应与 GH Actions 日志，一次 `git add -A` 就会把外部产物混进提交（同 B113/放行清单 #14 的形状）
+.tmpchk/
