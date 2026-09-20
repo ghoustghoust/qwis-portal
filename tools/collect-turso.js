@@ -685,12 +685,12 @@ async function postRunAlerts(stats) {
 
 // ─── 模式：cleanup（数据清理，每日 04:13 北京） ───
 async function runCleanup() {
+  // 删除谓词的**唯一实现**在 `lib/retention.js`（spec43 D1/B102）：本文件与 `api/collect.js`、
+  // `server/services/datamgr.js` 三端共用同一份条件，改一处即改三处，不再各抄一遍。
+  const { cutoffIso, deleteSql } = require('../lib/retention');
   // 1) 热榜旧数据：固定 7 天（热榜是时效性内容，无保留价值）
-  const hotCutoff = new Date(Date.now() - 7 * 86400000).toISOString();
-  const r = await qRun(
-    `DELETE FROM articles WHERE source_id IN (SELECT id FROM sources WHERE type='hotlist') AND published_at < ? AND read_at IS NULL AND later=0`,
-    [hotCutoff]
-  );
+  const hotCutoff = cutoffIso(7);
+  const r = await qRun(deleteSql('runner', 'hotlist'), [hotCutoff]);
   log(`清理完成: 删除 ${r.changes} 条热榜旧数据`);
 
   // 2) 普通文章按保留天数（T4-1 Q4，用户决策 2026-09-13：默认 7 天）
@@ -698,13 +698,8 @@ async function runCleanup() {
   let retentionDeleted = 0;
   const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
   if (retentionDays > 0) {
-    const cutoff = new Date(Date.now() - retentionDays * 86400000).toISOString();
-    const rr = await qRun(
-      `DELETE FROM articles
-       WHERE published_at < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
-         AND source_id NOT IN (SELECT id FROM sources WHERE type='hotlist')`,
-      [cutoff]
-    );
+    const cutoff = cutoffIso(retentionDays);
+    const rr = await qRun(deleteSql('runner', 'retention'), [cutoff]);
     retentionDeleted = rr.changes;
     log(`保留天数清理: ${retentionDays} 天前未读未标记文章删除 ${retentionDeleted} 条`);
   }

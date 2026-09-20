@@ -350,6 +350,22 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
     `不再引用唯一实现的消费点：${JSON.stringify(r.missingImport)}（允许清单：${r.allowed.join('、')}）`);
 }
 
+// ── W17 删除/保留谓词三端只许一份（B102 / spec43 D1，2026-09-20）──
+// 判据与回归锁 tests/regression-retention.test.js R4 共用 lib/retention#findRetentionViolations
+// 那一份实现（坑 #58/#59：判据与自证各写一套 = 没有判据）。
+// 病根实测：`datamgr.CLEAN_TABLES` 曾含 articles+videos 且 `cleanup()` 无豁免，而 scheduler 每 24h
+// 调一次 → 本地起满一天删掉 91% 文章与全部视频播客（AGENTS §1 的三份实现里两份会删视频、一份连豁免都没有）。
+{
+  const { findRetentionViolations } = require('../lib/retention');
+  const r = findRetentionViolations(ROOT);
+  ok('W17', r.scanned > 100 && r.violations.length === 0 && r.videosDeletable.length === 0 && r.consumed.length >= 3,
+    `扫 ${r.scanned} 个源文件；第二份保留谓词（"时间列 < ?"却不经 lib/retention）：` +
+    `${JSON.stringify(r.violations.slice(0, 6).map((v) => `${v.file}:${v.line} ${v.table}`))}；` +
+    `把视频列入可删的作用域：${JSON.stringify(r.videosDeletable)}（2026-09-13 决策：永不删）；` +
+    `引用唯一实现的消费点应 >=3（本地/runner/云端手动端点），实得 ${r.consumed.length}：${r.consumed.join('、') || '无'}`);
+  if (r.exempt.length) notes.push(`  i W17：已记账待收口的第二份谓词 ${r.exempt.length} 处 —— ${Object.keys(require('../lib/retention').PENDING_UNIFY).join('、')}（豁免按**整文件**记账，所以该文件里新写的第二份谓词会被一起放过，收口前这条是已知空洞）`);
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

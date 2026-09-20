@@ -8,13 +8,12 @@ const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 
 // 恢复覆盖的八张表（顺序无依赖，全部同事务）
 const TABLES = ['sources', 'groups', 'articles', 'videos', 'pending_items', 'daily_reports', 'settings', 'credentials'];
-// 清理只动这四张内容表（订阅源/设置/登录态不删）
-const CLEAN_TABLES = [
-  { table: 'articles', col: "COALESCE(published_at, created_at)" },
-  { table: 'videos', col: "COALESCE(published_at, created_at)" },
-  { table: 'pending_items', col: 'imported_at' },
-  { table: 'daily_reports', col: 'generated_at' },
-];
+// 清理动哪张表、按什么条件 —— 不在本文件决定。全库唯一实现在 `lib/retention.js`（spec43 D1/B102）。
+// 本仓的角色是"开发与灾备"（AGENTS §1），所以 local 作用域里 **articles/videos 一律 skip**：
+// 旧版这里是裸的 `DELETE FROM <表> WHERE <时间列> < ?`（无豁免、含 videos），
+// 而 scheduler 每 24h 调一次 → 本地起满一天就会清空 91% 的文章与全部视频播客。
+const { scope: retentionScope, countSql: retentionCountSql, deleteSql: retentionDeleteSql } = require('../../lib/retention');
+const CLEAN_RULES = retentionScope('local');
 
 function backupName() {
   const t = new Date();
@@ -73,33 +72,36 @@ function cutoffIso(days) {
   return new Date(Date.now() - d * 86400e3).toISOString();
 }
 
-// 预览将删除的各表条数（与 cleanup 计数口径一致）
+// 预览将删除的各表条数（与 cleanup 计数口径一致：同一条 SQL 片段出自 lib/retention.js）
 function previewCleanup(days) {
   const cutoff = cutoffIso(days);
   const willDelete = {};
+  const skipped = {};
   let total = 0;
-  for (const { table, col } of CLEAN_TABLES) {
-    const n = db.prepare(`SELECT COUNT(*) c FROM ${table} WHERE ${col} < ?`).get(cutoff).c;
-    willDelete[table] = n;
-    total += n;
+  for (const r of CLEAN_RULES) {
+    if (r.action !== 'delete') { willDelete[r.table] = 0; skipped[r.table] = r.reason; continue; }
+    willDelete[r.table] = db.prepare(retentionCountSql('local', r.key)).get(cutoff).c;
+    total += willDelete[r.table];
   }
-  return { days: Number(days), cutoff, willDelete, total };
+  return { days: Number(days), cutoff, willDelete, skipped, total };
 }
 
-// 执行清理：只删内容四表老数据（同事务），返回删除数
+// 执行清理：只动 CLEAN_RULES 里 action='delete' 的表（同事务），返回删除数
 function cleanup(days) {
   const cutoff = cutoffIso(days);
   const deleted = {};
+  const skipped = {};
   let total = 0;
   const tx = db.transaction(() => {
-    for (const { table, col } of CLEAN_TABLES) {
-      const n = db.prepare(`DELETE FROM ${table} WHERE ${col} < ?`).run(cutoff).changes;
-      deleted[table] = n;
+    for (const r of CLEAN_RULES) {
+      if (r.action !== 'delete') { deleted[r.table] = 0; skipped[r.table] = r.reason; continue; }
+      const n = db.prepare(retentionDeleteSql('local', r.key)).run(cutoff).changes;
+      deleted[r.table] = n;
       total += n;
     }
   });
   tx();
-  return { days: Number(days), cutoff, deleted, total };
+  return { days: Number(days), cutoff, deleted, skipped, total };
 }
 
 // 库体积 + 各表条数
@@ -140,4 +142,4 @@ function saveUpload(name, buf) {
   return { file: name, sizeBytes: buf.length };
 }
 
-module.exports = { snapshot, restore, previewCleanup, cleanup, stats, list, saveUpload, _internals: { BACKUP_DIR, TABLES, CLEAN_TABLES } };
+module.exports = { snapshot, restore, previewCleanup, cleanup, stats, list, saveUpload, _internals: { BACKUP_DIR, TABLES, CLEAN_RULES } };

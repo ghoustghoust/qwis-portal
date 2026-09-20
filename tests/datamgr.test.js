@@ -28,21 +28,32 @@ function seed() {
   return { srcId };
 }
 
-test('cleanup: preview 与 cleanup 计数一致，只动内容四表，源/设置不动', () => {
+test('cleanup: 本地只清队列与日报，文章/视频一律不动（B102 收口，用户 09-20 定"本地不删内容"）', () => {
   seed();
   const preview = datamgr.previewCleanup(30);
-  assert.deepEqual(preview.willDelete, { articles: 2, videos: 1, pending_items: 1, daily_reports: 1 });
-  assert.equal(preview.total, 5);
+  // 旧版这里是 { articles: 2, videos: 1, ... } —— 那正是事故本身：本地库每 24h 会自我清空内容。
+  // 谓词的唯一实现在 lib/retention.js 的 local 作用域，articles/videos 都是 skip（跳过必须带理由）。
+  assert.deepEqual(preview.willDelete, { articles: 0, videos: 0, pending_items: 1, daily_reports: 1 });
+  assert.equal(preview.total, 2);
+  assert.equal(preview.skipped.articles.includes('灾备'), true, '跳过 articles 的理由没写出来 = 下轮会被当成漏接');
+  assert.ok(preview.skipped.videos);
 
   const r = datamgr.cleanup(30);
   assert.deepEqual(r.deleted, preview.willDelete);
   assert.equal(r.total, preview.total);
-  // 新内容保留
-  assert.equal(db.prepare('SELECT COUNT(*) c FROM articles').get().c, 1);
-  assert.equal(db.prepare('SELECT COUNT(*) c FROM videos').get().c, 1);
-  assert.equal(db.prepare("SELECT title FROM articles").get().title, '新文章');
+  // 内容一行不少（老文章也留着 —— 它是灾备副本）
+  assert.equal(db.prepare('SELECT COUNT(*) c FROM articles').get().c, 3);
+  assert.equal(db.prepare('SELECT COUNT(*) c FROM videos').get().c, 2);
+  assert.ok(db.prepare('SELECT title FROM articles WHERE title=?').get('老文章1'), '老文章被删了 = B102 复发');
+  // 队列与本地产物照旧清掉
+  assert.equal(db.prepare('SELECT COUNT(*) c FROM pending_items').get().c, 0);
   // 源不受影响
   assert.equal(db.prepare('SELECT COUNT(*) c FROM sources').get().c, 1);
+});
+
+test('cleanup: 保留天数不许是 0/负数（防"清空全库"被当成配置）', () => {
+  assert.throws(() => datamgr.cleanup(0), /正数/);
+  assert.throws(() => datamgr.cleanup(-7), /正数/);
 });
 
 test('snapshot/restore: 快照→删数据→恢复→数据完整回来（八表同事务清插）', async () => {
@@ -65,11 +76,12 @@ test('snapshot/restore: 快照→删数据→恢复→数据完整回来（八�
 
   // 恢复
   const r = datamgr.restore(snap.file);
-  assert.equal(r.restored.articles, 1);
+  // 快照里有 3 篇文章、2 条视频 —— cleanup 已不再动内容表（B102），所以这里的数与 seed 一致
+  assert.equal(r.restored.articles, 3);
   assert.equal(r.restored.sources, 1);
-  assert.equal(db.prepare('SELECT COUNT(*) c FROM articles').get().c, 1);
+  assert.equal(db.prepare('SELECT COUNT(*) c FROM articles').get().c, 3);
   assert.equal(db.prepare('SELECT later FROM articles WHERE title=?').get('新文章').later, 1);
-  assert.equal(db.prepare('SELECT COUNT(*) c FROM videos').get().c, 1);
+  assert.equal(db.prepare('SELECT COUNT(*) c FROM videos').get().c, 2);
   assert.equal(db.prepare('SELECT name FROM sources').get().name, '测试源');
 });
 
@@ -81,7 +93,9 @@ test('restore: 非法文件名/不存在的快照报错', () => {
 test('stats: 返回体积与八表条数', () => {
   const s = datamgr.stats();
   assert.ok(s.sizeBytes > 0);
-  assert.equal(s.tables.articles, 1);
+  // 与真实行数对账，不写死数字：B102 之后本地清理不再动内容表，写死的条数第二天就会假红/假绿
+  assert.equal(s.tables.articles, db.prepare('SELECT COUNT(*) c FROM articles').get().c);
+  assert.equal(s.tables.articles, 3, '样本前提：seed 的 3 篇文章都还在（本地不删内容）');
   assert.equal(s.tables.sources, 1);
   assert.equal(typeof s.tables.settings, 'number');
 });

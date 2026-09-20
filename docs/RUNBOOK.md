@@ -61,7 +61,9 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 ## 7. 数据管理
 
 - 整库快照/恢复/按天清理：管理台「数据」Tab（快照在 `data/backups/app-*.db`，支持上传导入；恢复为八表同事务整库回滚，有二次确认）
-- 保留天数：`settings.data.retentionDays`（默认 7，清理定时任务每 24h 执行，数据 Tab 改动即生效）
+- 保留天数：`settings.data.retentionDays`（默认 7，本地清理定时任务每 24h 执行，数据 Tab 改动即生效）。
+  **本地端只清队列与本地产物，不删内容**：`articles`/`videos` 在 `lib/retention.js` 的 `local` 作用域里是 `skip`（本地库的角色是灾备副本，AGENTS §1；B102 收口，用户 09-20 决定）。
+  删除/保留谓词**全库只有 `lib/retention.js` 一份**，三端（本地 / GH runner / 云端手动端点）都从它取，白盒 W17 扫"绕过它的第二份时间窗删除"。
 - 配置轻量迁移（仅 sources/groups/settings JSON）：管理台「公众号 RSS」Tab 底部——与整库快照用途不同，勿混淆
 - 搬机：拷贝 `data/` + `.env` + `config/customer-config.json`，新机器 `npm install && npm run build && npm start`
 - 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代

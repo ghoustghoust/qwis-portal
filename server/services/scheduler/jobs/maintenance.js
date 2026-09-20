@@ -10,7 +10,10 @@ function runDataCleanup() {
   const rd = Number((getSetting('data', {}) || {}).retentionDays);
   const retentionDays = Number.isFinite(rd) && rd >= 1 ? Math.floor(rd) : 7; // 下限 1 天，防误配清库
   const r = require('../../datamgr').cleanup(retentionDays);
-  log.info(`数据清理完成(保留 ${retentionDays} 天): 文章 ${r.deleted.articles}，视频 ${r.deleted.videos}，待解析 ${r.deleted.pending_items}，日报 ${r.deleted.daily_reports}`);
+  // 本地是灾备副本：articles/videos 按 lib/retention.js 一律跳过，日志必须把"跳过了、为什么"打出来，
+  // 否则"文章 0，视频 0"会被读成"今天恰好没有老数据"（B102 的教训就是没人注意到它在删）
+  const skipNote = Object.entries(r.skipped || {}).map(([t, why]) => `${t} 跳过(${why})`).join(' ');
+  log.info(`数据清理完成(保留 ${retentionDays} 天): 文章 ${r.deleted.articles}，视频 ${r.deleted.videos}，待解析 ${r.deleted.pending_items}，日报 ${r.deleted.daily_reports}${skipNote ? ` ｜ ${skipNote}` : ''}`);
   // P1-3（2026-09-05）：job_queue 历史任务一并清理（completed>24h / failed>7d），防无限膨胀
   try {
     require('../../queue/taskQueue').taskQueue.purgeDone();

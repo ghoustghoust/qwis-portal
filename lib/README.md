@@ -26,6 +26,7 @@
 | `daily-columns.js` | 每日早报栏目表的**唯一实现**（B10 / 不变量 15）。改栏目只改这里，四份写入器都从这里取 |
 | `daily-writers.js` | 「日报有哪几个写入点」的**派生**清单（不是手写清单），白盒 W14 与其负向探针共用（坑 #58：手工清单必漏） |
 | `src-spans.js` | 源码文本一次词法扫描出三视图（`code` / `masked` / 区间清单），文本型锁 I10/I13/I15 与 W14/W15 的唯一实现。**坑 #63 的地基**：判"代码里真写了这句话"必须走这里，别再用第二套剥注释正则 |
+| `retention.js` | 删除/保留谓词的**唯一实现**：每张表在每一端（`local` / `runner` / `cloudManual`）是 delete 还是 skip + 理由。白盒 W17 与回归锁 `tests/regression-retention.test.js` R4 共用 `findRetentionViolations` 这一份判据。B102 的落点：本地是灾备副本，`articles`/`videos` 一律 skip（旧版每 24h 会删掉 91% 文章与全部视频）；`videos` 在任何作用域都不许被列入可删（2026-09-13 决策）。`UNREAD_COND` 刻意保持 `read_at IS NULL`——云端 2.5 万行 `'null'` 污染（B15/BL10）在订正前不许变成可删 |
 | `ai-throttle.js` | AI 调用间隔的**唯一算术** `gapMs()`：缺键 / `0` / 空串 / `NaN` / 负数 / 低于 1s 一律回落默认 4000ms。BL8 的落点——`Number(缺键)=0` 就是"无间隔硬打 15RPM 免费池"，所以判据（`tools/eval-preflight.cjs`）和产品（`api/_ai.js`）必须共用它，不许各自 `Number()` |
 | `dirty-columns.js` | ⚠️ **未跟踪半成品**（`git status` 里是 `??`，不是现役文件）。意图是把 W15 的"可能被写成字面串 `'null'` 的文本列"从 DDL 派生，替掉手写 `POLLUTED = ['last_fetched_at']`；**尚未接线**，别按"已交付"引用它（虚假交付表述见 `docs/ISSUES.md` B101~B103 与追加分册①的更正） |
 

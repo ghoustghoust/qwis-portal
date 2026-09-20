@@ -394,12 +394,11 @@ async function runCollect(mode = 'collect') {
     // backfill: 补抓 thin content 条目（暂不实现，留给后续迭代）
     return { mode, stats: { ...stats, note: 'backfill not yet implemented in serverless' } };
   } else if (mode === 'cleanup') {
-    // cleanup: 删除 7 天前的旧数据（热榜类）
-    const days = 7;
-    const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+    // cleanup: 删除 7 天前的热榜旧数据 —— 条件与 runner 同一份实现（lib/retention.js，B102 收口）
+    const { cutoffIso, deleteSql } = require('../lib/retention');
     const result = await db.execute({
-      sql: `DELETE FROM articles WHERE source_id IN (SELECT id FROM sources WHERE type='hotlist') AND published_at < ? AND read_at IS NULL AND later=0`,
-      args: [cutoff],
+      sql: deleteSql('cloudManual', 'hotlist'),
+      args: [cutoffIso(7)],
     });
     return { mode, stats: { ...stats, deleted: result.rowsAffected } };
   } else {
