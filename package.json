@@ -20,6 +20,8 @@
     "setup:customer": "node tools/setup-customer.js",
     "migrate:turso": "node tools/migrate-to-turso.js",
     "snapshots": "node tools/generate-snapshots.js",
+    "dump:content": "node tools/dump-content.cjs",
+    "dump:gate": "node tools/dump-content.cjs --gate",
     "archive": "node tools/archive-articles.js",
     "pm2:start": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop qwis-server",

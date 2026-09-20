@@ -64,6 +64,10 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 - 保留天数：`settings.data.retentionDays`（默认 7，本地清理定时任务每 24h 执行，数据 Tab 改动即生效）。
   **本地端只清队列与本地产物，不删内容**：`articles`/`videos` 在 `lib/retention.js` 的 `local` 作用域里是 `skip`（本地库的角色是灾备副本，AGENTS §1；B102 收口，用户 09-20 决定）。
   删除/保留谓词**全库只有 `lib/retention.js` 一份**，三端（本地 / GH runner / 云端手动端点）都从它取，白盒 W17 扫"绕过它的第二份时间窗删除"。
+  **如实说明覆盖面**（09-21 复核）：`api/[...slug].js` 的 `ARTICLE_CLEAN_WHERE` 与 `tools/archive-articles.js` 的"搬进 `articles_archive` 再按 id 删"**两处还没收进来**，W17 对前者按整文件记账豁免、对后者因"DELETE 里没有 `< ?` 形状"而放过（分别记在 B102 残余与 B129）。所以"扫不到红"不等于"只有一份"。
+- **内容级转储与回放演练（B103，删除类改动的硬前置）**：`npm run dump:content -- --scope cloud`（增量；首轮加 `--full`）把 `articles`/`videos` 导成 gzip NDJSON 分片 + sha256 清单，落在 `data/content-dump/cloud/`（`/data/` 已 ignore）。
+  核对与演练：`npm run dump:content -- --scope cloud --verify` → `npm run dump:gate -- --max-age-hours 48`（`allowed:false` 即不许执行任何删除）→ `npm run dump:content -- --scope cloud --restore --mktarget --into data/rehearse/app.db`（把云端全量放回一个空库，用来证明"删得回来"）。
+  09-21 首轮实测：云端 59,832 文章 + 1,291 视频 = 161.6MB / 154 片，回放 17.6s 行数全等、抽样 12 行 × 23 列逐字段 0 不一致。⚠️ **它仍只是工具**：runner 的 `runCleanup` 还没在 DELETE 前调这道闸（接线随 B101）。
 - 配置轻量迁移（仅 sources/groups/settings JSON）：管理台「公众号 RSS」Tab 底部——与整库快照用途不同，勿混淆
 - 搬机：拷贝 `data/` + `.env` + `config/customer-config.json`，新机器 `npm install && npm run build && npm start`
 - 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代
