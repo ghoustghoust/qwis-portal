@@ -95,7 +95,7 @@ test('A3: 调度器数据清理引用 ../datamgr 并支持 retentionDays 覆盖�
 });
 
 // ---------- A4：全文补抓 SQL/日志 ----------
-test('A4: 全文补抓不再引用 updated_at 列、log.debug 与编号参数', () => {
+test('A4（坑 #10）：全文补抓不再引用 updated_at 列、log.debug 与编号参数', () => {
   const src = read('server/services/scheduler/index.js');
   assert.ok(!/updated_at\s*=\s*CURRENT_TIMESTAMP/.test(src), 'articles 表无 updated_at 列，SQL 不得写入它');
   assert.ok(!/log\s*\.\s*debug|log\[["']debug["']\]/.test(src), 'util/log 只有 info/warn/error');

@@ -11,7 +11,7 @@ const fs = require('fs');
 
 const srcOf = (...p) => fs.readFileSync(path.join(__dirname, '..', ...p), 'utf8').replace(/\r\n/g, '\n');
 
-test('1. runner 的 AI 版条目投影必须带 cover（/daily 的封面图只有这一个字段来源）', () => {
+test('1.（坑 #68）runner 的 AI 版条目投影必须带 cover（/daily 的封面图只有这一个字段来源）', () => {
   // 线上实测（新库 38 份 daily_reports 逐份数）：AI 版 3 份、条目带 cover 的行数 0；
   // 关键词版 33 份、带 cover 的 29 份。差别不在采集（候选 SQL 早已 SELECT a.cover），
   // 只在组装栏目的 fmt() 投影漏了这个字段。

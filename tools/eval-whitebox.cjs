@@ -149,16 +149,26 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   }
 }
 
-// ── W9 坑编号 ↔ 测试对账 ──
+// ── W9 坑编号 ↔ 测试对账（09-21 按放行清单 §三 #12 收紧；判据本体在 lib/pitfall-coverage.js）──
+// 旧写法是 `testText.includes('#N')`：注释里写一句、甚至别的编号里含这个子串都算"有锁"。
+// 本轮实测两种假覆盖都真实发生过——#64 一度靠两份锁文件的**头注**被算成已锁（B104），
+// 而我新写的锁头注里那句「放行清单 §三 #12」被它当成「坑 #12 有锁」（台账行号冒充坑号）。
+// 新判据只认**字符串字面量**（`test()` 标题或断言消息）里的 `#N`，且 `#N` 后不许紧跟数字。
 {
-  const ids = new Set();
-  for (const f of fs.readdirSync(path.join(ROOT, 'docs/pitfalls')).filter((x) => x.endsWith('.md') && x !== 'README.md'))
-    for (const m of read(`docs/pitfalls/${f}`).matchAll(/^### #(\w+)/gm)) ids.add(m[1]);
-  const testText = walk('tests').map(read).join('\n');
-  const uncovered = [...ids].filter((id) => /^\d+$/.test(id) && !knownW9.has(id) && !testText.includes(`#${id}`));
-  ok('W9', uncovered.length === 0, `新增坑无回归锁（坑 #N 必须被某个测试引用，坑 #13/#T2 反复复发的教训）：${JSON.stringify(uncovered)}`);
-  const noLock = [...ids].filter((id) => !testText.includes(id));
-  if (noLock.length) notes.push(`  i W9：${noLock.length} 条历史坑仍无测试字面引用（基线内，逐步补锁）`);
+  const pc = require('../lib/pitfall-coverage');
+  const mdTexts = fs.readdirSync(path.join(ROOT, 'docs/pitfalls'))
+    .filter((x) => x.endsWith('.md') && x !== 'README.md')
+    .map((f) => read(`docs/pitfalls/${f}`));
+  const ids = pc.pitfallIds(mdTexts);
+  const files = walk('tests').filter((f) => f.endsWith('.test.js')).map((f) => ({ file: f, src: read(f) }));
+  const r = pc.findPitfallCoverage(files, ids);
+  const uncovered = ids.filter((id) => !r.covered.has(id));
+  const fresh = uncovered.filter((id) => !knownW9.has(String(id)));
+  ok('W9', fresh.length === 0, `新增坑无回归锁（坑 #N 必须出现在 test() 标题或断言消息字符串里，注释不算）：${JSON.stringify(fresh)}`);
+  const prose = uncovered.filter((id) => r.outsideStrings.has(id));
+  if (prose.length) notes.push(`  i W9：${prose.length} 条历史坑的 #N 只出现在注释/代码里（${prose.map((n) => '#' + n).join(' ')}），基线内逐步补锁`);
+  const noLock = uncovered.filter((id) => !r.outsideStrings.has(id));
+  if (noLock.length) notes.push(`  i W9：${noLock.length} 条历史坑 tests/ 里连提都没提（基线内）`);
 }
 
 // ── W2 多写者产物表按档位读（不变量 12） ──

@@ -20,7 +20,7 @@ const READING_ENDS = ['server/routes/reading.js', 'api/[...slug].js'];
 
 test.after(() => cleanup());
 
-test('B60-1 单一实现：article 口径必须含 wemp（869 篇公众号此前不进计数）', () => {
+test('B60-1（坑 #37 的回归锁：同一个判定抄成 N 份）：article 口径必须含 wemp（869 篇公众号此前不进计数）', () => {
   const { readingTypeFilter, readingTypeCondSql, ARTICLE_SOURCE_TYPES } = require('../lib/reading-filters');
   assert.ok(ARTICLE_SOURCE_TYPES.includes('wemp'), 'ARTICLE_SOURCE_TYPES 漏 wemp');
   assert.match(readingTypeFilter('article').articleCond, /'wemp'/);

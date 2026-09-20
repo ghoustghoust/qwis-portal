@@ -142,7 +142,7 @@ test('8. queue.token 留空不覆盖', () => {
   assert.equal(r.dbv.queue.intervalMin, 15);
 });
 
-test('9. spotlightSourceIds 全量替换语义（名单外全部清零）', () => {
+test('9. spotlightSourceIds 全量替换语义（名单外全部清零）—— 坑 #17 的教训就在这一条', () => {
   const r = run('spotlight');
   assert.equal(r.status, 200, JSON.stringify(r.body));
   // 1 在名单内 → 1；2、3 不在 → 0。这条在本地库上判的就是"全量替换"这个危险语义本身，

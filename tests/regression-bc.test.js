@@ -14,7 +14,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 after(() => helpers.cleanup());
 
 // ---------- B15/B18：云端安全项（2026-09-19 重新锚定：portal 已独立成仓，锚点一律指向根树真实文件）----------
-test('B18: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限），双端同语义', () => {
+test('B18（坑 #1 图片防盗链）: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限），双端同语义', () => {
   // 三端一致约束（EVAL_GUIDE §4 W1）：本地与云端两份实现必须同等防护
   for (const f of ['server/util/safeimg.js', 'api/_safeimg.js']) {
     const src = read(f);

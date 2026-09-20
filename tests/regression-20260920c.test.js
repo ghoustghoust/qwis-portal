@@ -100,6 +100,13 @@ function runCloudDaily(tz, evaded) {
     const m = /^OUT (.+)$/m.exec(out);
     assert.ok(m, `子进程没打印读数（TZ=${tz}）：\n${out.slice(-500)}`);
     return JSON.parse(m[1]);
+  } catch (e) {
+    // 只改写**子进程失败**这一类错误；断言本身的失败要原样抛出（否则把真红伪装成环境红）
+    if (e.stdout === undefined && e.stderr === undefined && e.status === undefined) throw e;
+    // 失败必须带两侧读数：`Command failed` 这种裸错误无法定性（B105 那族"子进程在退出阶段崩溃"
+    // 就是靠状态码 + 尾行输出才判成 fail_flaky 的，坑 #53 第⑤条 / 坑 #41）。
+    const tail = (s) => String(s || '').split('\n').filter(Boolean).slice(-6).join(' ⏎ ') || '(空)';
+    throw new Error(`驱动子进程失败 TZ=${tz} status=${e.status} signal=${e.signal}\n  stdout: ${tail(e.stdout)}\n  stderr: ${tail(e.stderr)}`);
   } finally {
     try { fs.unlinkSync(driver); } catch { /* 已清 */ }
     // 变异副本落在 api/ 目录里（为了相对 require 能解析），必须删干净——否则会污染 W 类全目录扫描

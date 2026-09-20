@@ -36,7 +36,7 @@ function openingTagBounding(body, fieldExpr) {
   return { found: true, bounded: /max-w-\[/.test(head), tag: head.replace(/\s+/g, ' ').slice(0, 180) };
 }
 
-test('I1 B85：CompactRow 标题列必须有宽度下限，来源列必须有宽度上界', () => {
+test('I1 B85（坑 #54）：CompactRow 标题列必须有宽度下限，来源列必须有宽度上界', () => {
   const file = read('web', 'src', 'components', 'ColumnSection.jsx');
   const row = bodyOf(file, 'function CompactRow');
   assert.ok(row, '找不到 CompactRow，本条会退化成恒真');
