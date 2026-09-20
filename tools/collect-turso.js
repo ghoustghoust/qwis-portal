@@ -1156,7 +1156,7 @@ async function runDailyAi() {
   const sections = [];
   const fmt = (a) => ({
     id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name,
-    source_name: a.source_name, published_at: a.published_at,
+    source_name: a.source_name, published_at: a.published_at, cover: a.cover || null,
     totalScore: a.totalScore, score: a.totalScore, // score 兼容现有 Stars 组件
     scores: a.scores, kind: a.kind || 'article',
     reason: a.reason, summary: a.summary, quote: a.quote, points: a.points, tags: a.tags,

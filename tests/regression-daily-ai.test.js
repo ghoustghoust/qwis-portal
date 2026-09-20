@@ -97,3 +97,29 @@ test('4. 窗口计算：北京自然日边界', () => {
   assert.match(src, /function briefWindow\(\)[\s\S]{0,500}beijingDayStartMs\(\)/,
     'tools/collect-turso.js 的 briefWindow 不再走 lib/time-window（窗口算术又各自写了一份）');
 });
+
+test('5. AI 版日报条目投影必须带 cover（/daily 的封面图只有这一个字段来源）', () => {
+  // 线上实测（2026-09-20 新库 38 份 daily_reports 逐份数）：AI 策展版 3 份、条目带 cover 的行数 **0**；
+  // 关键词版 33 份、带 cover 的 29 份。差别不在采集（候选 SQL 早已 SELECT a.cover），
+  // 只在 runner 的 fmt() 投影漏了一个字段，而前端只认 item.cover → 整页 0 张图。
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'collect-turso.js'), 'utf8').replace(/\r\n/g, '\n');
+  // runDailyAi 与 runMyBrief 各有一份同名 fmt —— 必须先切到 runDailyAi 的作用域再取，否则锁的是错的那份
+  const scoped = src.slice(src.indexOf('async function runDailyAi('));
+  const grab = (text) => {
+    const m = /const fmt = \(a\) => \(\{([\s\S]*?)\}\);/.exec(text);
+    return m ? m[1] : null;
+  };
+  const hasCover = (body) => /\bcover\b/.test(body || '');
+  const body = grab(scoped);
+  assert.ok(body, '找不到 runDailyAi 的 fmt 投影 —— 改写了这段就必须同步改本锁，不许静默通过');
+  assert.ok(hasCover(body), 'runner 的 AI 版条目投影没带 cover → /daily 整页无图');
+
+  // 负向自证：从同一段投影里删掉 cover 属性，判据必须变红（不配这条就是"恒真的锁"，坑 #45）
+  const stripped = body.replace(/cover\s*:\s*[^,\n]+,?\s*/, '');
+  assert.ok(stripped !== body, '负向样本没构造出来（cover 的写法变了，本探针要跟着改）');
+  assert.ok(!hasCover(stripped), '删掉 cover 后判据仍为绿 → 这条断言恒真，等于没锁');
+
+  // 契约的另一端：前端确实按 item.cover 渲染 <img>，否则字段写了也没人读
+  const card = fs.readFileSync(path.join(__dirname, '..', 'web', 'src', 'components', 'ColumnSection.jsx'), 'utf8').replace(/\r\n/g, '\n');
+  assert.match(card, /item\.cover\s*\?[\s\S]{0,220}<img/, '前端 DailyCard 不再按 item.cover 渲染 <img> → 本锁与可见面脱钩');
+});
