@@ -1,0 +1,172 @@
+{
+ "at": "2026-09-20T22:21:44.722Z",
+ "baseRef": "b42e6f1e640cb160ecba84efb6835763aa71be52",
+ "headRef": "HEAD",
+ "baseSha": "b42e6f1e640cb160ecba84efb6835763aa71be52",
+ "headSha": "6c9a2c72990860f692a67bc4f4c68614f9649c47",
+ "files": [
+  "tests/regression-alert-events.test.js"
+ ],
+ "wantNames": [
+  "V1",
+  "V2",
+  "V3",
+  "V4",
+  "V5",
+  "V6",
+  "V7"
+ ],
+ "targets": [
+  "V1",
+  "V2",
+  "V3",
+  "V4",
+  "V5",
+  "V6",
+  "V7"
+ ],
+ "lockIntros": {
+  "V1": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V2": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V3": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V4": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V5": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V6": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ],
+  "V7": [
+   "6c9a2c72990860f692a67bc4f4c68614f9649c47"
+  ]
+ },
+ "headDirty": [
+  "M AGENTS.md",
+  " M api/[...slug].js",
+  " M archive/_eval/wechat-rss-plus",
+  " M docs/DEV_GUIDE.md",
+  " M docs/INDEX.md",
+  " M docs/RUNBOOK.md",
+  " M docs/archive/README.md",
+  " M docs/archive/debugging/2026-09-20-round-status-records.md",
+  " M docs/specs/10-my-reading/spec.md",
+  " M docs/specs/14-sources-write/plan.md",
+  " M docs/specs/14-sources-write/task.md",
+  " M docs/specs/19-my-brief/plan.md",
+  " M docs/specs/19-my-brief/task.md",
+  " M docs/specs/43-collect-retention-safety/spec.md",
+  " M tests/regression-content-dump.test.js",
+  " M tools/dump-content.cjs",
+  "?? .mybrief-tmp.json",
+  "?? archive/_diag/",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/content/report-20260919-142559.json",
+  "?? docs/eval/e2e/20260919T081631/",
+  "?? docs/eval/e2e/20260919T083030/",
+  "?? docs/eval/e2e/20260919T083126/",
+  "?? docs/eval/e2e/20260919T084509/",
+  "?? docs/eval/e2e/20260919T085015/",
+  "?? docs/eval/e2e/20260919T085140/",
+  "?? docs/eval/e2e/20260919T094856/",
+  "?? docs/eval/e2e/20260919T100056/",
+  "?? docs/eval/e2e/20260919T102242/",
+  "?? docs/eval/e2e/20260919T103639/",
+  "?? docs/eval/e2e/20260919T104810/",
+  "?? docs/eval/e2e/20260919T104908/",
+  "?? docs/eval/e2e/20260919T104944/",
+  "?? docs/eval/e2e/20260919T105143/",
+  "?? docs/eval/e2e/20260919T115420/",
+  "?? docs/eval/e2e/20260919T121006/",
+  "?? docs/eval/e2e/20260919T123438/",
+  "?? docs/eval/e2e/20260919T143903/",
+  "?? docs/eval/e2e/20260919T145627/",
+  "?? docs/eval/e2e/20260919T162930/",
+  "?? docs/eval/e2e/20260919T173518/screens/",
+  "?? docs/eval/e2e/20260919T185949/",
+  "?? docs/eval/e2e/20260919T190209/",
+  "?? docs/eval/e2e/20260919T191201/",
+  "?? docs/eval/e2e/20260919T214044/screens/",
+  "?? docs/eval/e2e/20260919T215110/screens/",
+  "?? docs/eval/e2e/20260920T112415/",
+  "?? docs/eval/e2e/20260920T212505/screens/",
+  "?? docs/eval/e2e/20260920T213346/screens/",
+  "?? docs/eval/f2p/2026-09-19114959.json",
+  "?? docs/eval/f2p/2026-09-19122458.json",
+  "?? docs/eval/f2p/2026-09-19141411.json",
+  "?? docs/eval/f2p/2026-09-19141414.json",
+  "?? docs/eval/f2p/2026-09-19141417.json",
+  "?? docs/eval/f2p/2026-09-19141420.json",
+  "?? docs/eval/f2p/2026-09-19172730.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? docs/specs/42-full-audit-2026-09/handoff-notice.md",
+  "?? docs/specs/42-full-audit-2026-09/quarantine/",
+  "?? lib/dirty-columns.js",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tests/regression-audit42-portal-channel.test.js",
+  "?? tools/doc-stamp.cjs"
+ ],
+ "headDirtyCount": 85,
+ "base": {
+  "tests": 7,
+  "pass": 0,
+  "fail": 7,
+  "failedNames": [
+   "V1 事件表在活代码里只剩一份：违规 0、分母够大、四个消费点真接上了",
+   "V2 负向自证：塞一份手写事件表必须红并点名；只写在注释/字符串里不许红",
+   "V3 反向：分散在两处的单键成员不许算成第二份表（判据第一版就是这么假红的）",
+   "V4 表本身的形状：并集 8 键、默认全开、说明齐全（不许有事件没说明）",
+   "V5 幽灵键不外露：落库里的 wemp_down 不进状态表，也不许有真事件被它顶掉（B109，零配置写）",
+   "V6 两端同源（B45 行为锁）：本地与云端 /api/alerts/config 的 eventMeta 键集都等于表，且开关改一个立刻跟着变",
+   "V7 分发真的读这份开关：勾掉的事件 dispatch 必须停在 disabled，没勾的必须走下一步（B45 另一半）"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/alert-events"
+  ]
+ },
+ "head": {
+  "tests": 7,
+  "pass": 7,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 7 条（7 个目标全中，实指 7 条锁），改后 7 条全绿；改前缺本次修复新建的文件 ../lib/alert-events"
+}

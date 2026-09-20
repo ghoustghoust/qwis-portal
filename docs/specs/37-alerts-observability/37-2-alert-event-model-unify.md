@@ -39,7 +39,7 @@ G2c 幽灵键清理：本地 `settings.alerts.events` 里的 `wemp_down/wemp_coo
 - ✅ **AC1（白盒 W19 已实装）**：判据 `lib/alert-events.js#findAlertEventCopies`，白盒与锁共用同一份。收口前 19 处手写成员 → 0。
 - ✅ **AC2（负向自证）**：V2 塞一份相邻成组的手写表 → 必红且点名 `file:line`；注释/字符串里的事件键不许红。
 - ✅ **AC3（回归锁 `tests/regression-alert-events.test.js` V1~V7）**：V3 是本批新加的反向锁 —— **分散在两处的单键不许算成第二份表**（判据第一版按整文件计数，把 `api/[...slug].js` 两处 settings 命名空间的 `mybrief:` 拼成假表，假红 2 处）；V6 是行为锁：同一份"最坏落库"（真事件只关一个 + 两个幽灵键 + 一个自定义标题）分别喂本地路由与云端 handler，两端 `eventMeta`/`events` 键集必须相同且等于表（**改前必红**：改前云端返回四个硬写的假键）；V7 断言 `dispatch` 真读开关。
-- ◐ **AC4（F2P）**：本轮排期未跑，下批补（基线缺本轮新建文件时不许判成"锁假了"）。
+- ✅ **AC4（F2P）**：`npm run eval:f2p -- --auto-base --tests tests/regression-alert-events.test.js --cases V1..V7` → 基线 `b42e6f1` 红 7/7、HEAD `6c9a2c7` 全绿（证据 `docs/eval/f2p/2026-09-20222144.json`）。锁用**惰性 require** 取 `lib/alert-events`，所以"基线缺本轮新建文件"被读成改前红而不是加载崩溃（坑 #64）。
 - ⬜ **AC5（端到端）**：后台剧本"事件勾选框数量 == 事件表条数，且勾选后重启仍生效"未加。
 
 ## 边界
