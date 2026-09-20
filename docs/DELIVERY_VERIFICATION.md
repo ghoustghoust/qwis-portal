@@ -188,6 +188,15 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 - `settings.cloud.collect` 心跳：每轮采集/日报/清理都会写，含 `lastRunAt` 和 stats
 - `sources` 表 `enabled=0 AND fail_count>=阈值` = 被熔断的源（YouTube 阈值 10，其他 3）
 
+**打印前的掩码纪律（坑 #69，2026-09-20 B110 实咬）**：任何直连库里 `settings` / `credentials` / 报警渠道的探针，
+**输出前必须过 `lib/secrets.js#maskDeep`**，并把"掩了几处、掩了哪些路径"一起打出来（静默少掩是这条纪律最危险的失败方向）。
+- 不许在一次性脚本里自写掩码：`settings.alerts.channels[].config.url` 的密钥在**嵌套层**，
+  只按顶层键名打码等于没打 —— 读层 09-12 就修过同一课（`api/[...slug].js` 注释自陈），
+  我在 `node -e` 探针里重犯过一次，一条含 token 的飞书 webhook 明文进了会话输出。
+- 落盘同理：产物文件里出现凭据，一次 `git add` 就进历史（B113）。门禁第 6 条现在**两面都扫**
+  （已跟踪 + 未跟踪且未被 ignore），模式表含飞书/钉钉/企微 webhook 与长 Bearer（原先只有 4 类，抓不到 webhook）。
+- 判据与自证同源：`lib/secrets.js` ↔ `tests/regression-secrets.test.js` S1~S8（含"普通 RSS 地址不许被吞"的反向样本）。
+
 ---
 
 ## 5. 网络限制与坑位速查（全部实战踩过）

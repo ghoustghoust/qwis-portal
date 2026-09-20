@@ -181,7 +181,12 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 3. `docs/` 下存在未被 `INDEX.md` 登记的 `.md`/`.json`（文件名或任一上级目录命中即算登记）→ 警
 4. `docs/archive/**` 缺 §2.4 头注字段 → **错**
 5. 活文档超长（ISSUES > 130 行 / ARCHITECTURE > 400 行 / NEXT-DEV-REQS > 260 行 / FEATURE_MATRIX > 200 行）→ 警，提示核销轮
-6. 明文密钥模式扫描（`ghp_` 前缀、`sk-` 前缀、Turso 带口令的 libsql 连接串、`*.libsql.cloud` 主机名），**只扫 git 跟踪文件**（本地未跟踪的 `docs/HANDOVER.md`/`.env` 属设计内）→ **错**，禁止提交
+6. 明文凭据扫描（判据本体 `lib/secrets.js`）：`ghp_` 前缀、`sk-` 前缀、Turso 带口令的 libsql 连接串、`*.libsql.cloud` 主机名，
+   **09-21 补三类 webhook（飞书/钉钉/企微）与长 Bearer 令牌** —— 报警渠道的密钥恰恰长在 webhook 里，原模式一类都不匹配。
+   **扫描面两块**：① git 已跟踪文件；② **未跟踪且没被 ignore** 的文件（B113 的形状：一次 `git add` 就进历史）。
+   本地设计内的凭据（`.env` / `docs/HANDOVER.md` / `data/`）由 `.gitignore` 挡在两面之外，不在此列。
+   每次运行打印分母（`[密钥分母] 已跟踪 N + 未跟踪未 ignore M，命中 X 处`）→ **错**，禁止提交。
+   配套纪律：探针打印 settings/credentials 前必须过 `lib/secrets.js#maskDeep`（坑 #69，锁 S1~S8）。
 7. **表格超格**（B126）：markdown 表里某行的格数**多于**表头（内容里的裸竖线把行撑破）→ **错**。
    少一格是合法 markdown（缺的尾格渲染成空），**不判**；转义写法 `\|` 不算多格。豁免只在行内 `<!-- doc-lint:ignore -->` 生效。
    **7b 表格断裂**：表头与分隔行被并成同一行（`| 号 | 判据 ||---|---|`）→ **错**。这不是渲染问题，而是

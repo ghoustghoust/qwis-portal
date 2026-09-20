@@ -5,7 +5,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+
 
 const ROOT = path.resolve(__dirname, '..');
 const DOCS = path.join(ROOT, 'docs');
@@ -117,20 +117,24 @@ for (const [f, max] of Object.entries(LIMITS)) {
   if (n > max) warnings.push(`[超长] ${f} ${n} 行 > ${max}，按 DOC_GOVERNANCE §3 Step4 做核销轮`);
 }
 
-// 6 明文密钥扫描（只扫 git 跟踪文件；本地未跟踪的 HANDOVER.md/.env 属设计内）
+// 6 明文密钥扫描（判据本体 `lib/secrets.js`，与锁 tests/regression-secrets.test.js 同源）
+//   扫描面**两块**：① git 已跟踪文件（提交出去的）② 未跟踪且没被 ignore 的文件 —— 后者是 B113 的形状：
+//   `docs/eval/audit/schedule.json` 里躺着真飞书 webhook，既未跟踪也未被忽略，一次 `git add docs/` 就进历史。
+//   本地设计内的凭据文件（.env / docs/HANDOVER.md / data/）由 .gitignore 挡在两块面之外，不在此列。
+const sec = require('../lib/secrets');
+const readRel = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 let tracked = [];
-try { tracked = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8', maxBuffer: 32e6 }).split('\n').filter(Boolean); }
+let others = [];
+try { tracked = sec.listTracked(ROOT); }
 catch (e) { warnings.push(`[跳过密钥扫描] git ls-files 失败：${e.message}`); }
-const SECRET = [/ghp_[\w]{20,}/, /sk-[\w]{20,}/, /libsql:\/\/[^/\s"']+:[^/\s"']+@/, /tokens\.[\w-]+\.libsql\.cloud/];
-for (const t of tracked) {
-  if (!/\.(md|json|js|cjs|jsx|yml|yaml|txt)$/.test(t)) continue;
-  const abs = path.join(ROOT, t);
-  if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) continue;
-  const text = read(abs);
-  for (const re of SECRET) {
-    if (re.test(text)) errors.push(`[密钥] ${t} 含疑似明文凭据 ${String(re).slice(1, 14)}…（凭据只能在 .env/Vercel env/GH Secrets 三处）`);
-  }
-}
+try { others = sec.listUntrackedNotIgnored(ROOT); }
+catch (e) { warnings.push(`[跳过未跟踪面扫描] git ls-files --others 失败：${e.message}`); }
+const secretHits = [
+  ...sec.scanFiles(tracked, readRel),
+  ...sec.scanFiles(others, readRel),
+];
+for (const h of secretHits) errors.push(`[密钥] ${h.file} 含 ${h.kind}（凭据只能在 .env / Vercel env / GH Secrets 三处；打印 settings 前必须过 lib/secrets#maskDeep —— 坑 #69）`);
+warnings.push(`[密钥分母] 扫描面：已跟踪 ${tracked.length} 份 + 未跟踪未 ignore ${others.length} 份，命中 ${secretHits.length} 处`);
 
 // ─── 7~9 三条判据（放行清单 §三 #12 的文档门禁扩面；纯函数，可被 --self-test 证伪）───
 // 为什么必须做成纯函数：一条"只扫真文档、没法喂坏样本"的判据，和 W14/W15 的教训一样 = 无法证明它有牙齿。
