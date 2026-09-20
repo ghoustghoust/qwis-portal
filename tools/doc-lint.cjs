@@ -144,6 +144,27 @@ const IGNORE_MARK = 'doc-lint:ignore';
 function splitCells(line) {
   return line.split(/(?<!\\)\|/).slice(1, -1);   // 去掉首尾空串
 }
+// 7b 表头与分隔行被挤成同一行 → 整张表**脱离判据**（这才是真正的隐性事故：不是渲染错位，而是
+//    `findTableBreaks` 认不出这是表，从此这张表怎么写都不红）。
+//    本轮我自己就这么坏过一次：一次 Edit 少写一个换行，把 `| 号 | … |` 与 `|---|---|` 并成一行，
+//    EVAL_GUIDE §4.2 整张表静默失去覆盖 —— 光靠"格数判据"永远发现不了，必须单独立一条。
+function findBrokenTableHeads(text) {
+  const isSep = (c) => /^\s*:?-{3,}:?\s*$/.test(c);
+  const out = [];
+  text.split('\n').forEach((line, i) => {
+    if (line.includes(IGNORE_MARK) || !/^\s*\|/.test(line) || !/\|\s*$/.test(line)) return;
+    const cells = splitCells(line);
+    const seps = cells.map((c) => isSep(c));
+    const lastSep = seps.lastIndexOf(true);
+    // 分隔行的特征是"整行都是分隔格"；只要**最后一个分隔格之前**出现过有内容的普通格，
+    // 就是"表头（或数据行）与分隔行被并成一行" —— 这种行会让整张表脱离格数判据。
+    if (lastSep >= 1 && cells.slice(0, lastSep).some((c, k) => !seps[k] && c.trim() !== '')) {
+      out.push({ line: i + 1, text: line.slice(0, 60) });
+    }
+  });
+  return out;
+}
+
 // 10 缺陷编号在**同一张登记表**里必须唯一（B124 的编号规范 + 本轮实测撞号）：
 //    09-21 一轮里我登记 B128（`lib/db.js` 少三列），并行会话同一时段也登记了 B128（零引用资产），
 //    两条不同事实共用一个号 —— 之后任何"按号引用"都会指错行。W 号位撞过（W18 被两处占用，
@@ -300,6 +321,12 @@ if (SELF_TEST) {
   expect('F2P-讲规则的散文不许红', findUncitedF2pCounts('- 症状：取证器对 5 个锁文件报 F2P 全绿，其实只跑到 2 个').length, 0);
   expect('F2P-明说"不套改前红"的行不许红（坑 #64 规则②）',
     findUncitedF2pCounts('本批属新增门禁，按坑 #64 规则②不套 F2P 改前红，证据 = 锁 D1~D10（10/10）').length, 0);
+  expect('表格断裂-头与分隔并成一行必须红', findBrokenTableHeads('| 号 | 判据 ||---|---|\n| W1 | x | y |\n').length, 1);
+  expect('表格断裂-正常分隔行不许红', findBrokenTableHeads('| 号 | 判据 |\n|---|---|\n| W1 | x |\n').length, 0);
+  expect('表格断裂-纯分隔行单独出现不算', findBrokenTableHeads('|---|---|\n').length, 0);
+  // 反向：断裂的那张表在格数判据下是"隐形"的 —— 这条要钉住，否则 7b 会被误以为多余
+  expect('表格断裂-格数判据确实看不见（所以必须单独立条）',
+    findTableBreaks('| 号 | 判据 ||---|---|\n| W1 | x | y | 多出来的一格 |\n').length, 0);
   // 10 编号唯一（粒度＝单张表）
   const TBL = (rows) => `| # | 问题 |\n|---|---|\n${rows}`;
   expect('编号-同表两行同号必须红', findDuplicateIds(TBL('| B12 | 甲 |\n| B12 | 乙 |\n')).length, 1);
@@ -337,6 +364,7 @@ for (const f of lintTargets) {
   const strict = strictOk(f) || rel(f).startsWith('docs/specs/');
   const push = strict ? errors : warnings;
   for (const b of findTableBreaks(text)) push.push(`[表格] ${rel(f)}:${b.line} 该行 ${b.got} 格 > 表头 ${b.want} 格（裸竖线请写成 \\|）：${b.text}`);
+  for (const b of findBrokenTableHeads(text)) push.push(`[表格断裂] ${rel(f)}:${b.line} 表头与分隔行被并成一行，整张表会脱离格数判据：${b.text}`);
   const a = findStaleAnchors(text, resolveFile);
   anchorScanned += a.scanned; anchorSkipped += a.skippedVocabulary + a.skippedIgnore;
   for (const s of a.bad) push.push(`[锚点越界] ${rel(f)}:${s.at} 指向 ${s.file}:${s.line}，该文件实有 ${s.lines} 行`);

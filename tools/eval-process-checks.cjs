@@ -203,6 +203,16 @@ function selfTest() {
 function runReport(p) {
   let run;
   try { run = JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { console.error('报告读取失败：' + e.message); return 2; }
+  // B127②：先验输入 schema。上一轮拿 e2e 的轮次报告喂这条命令，`check_screenshot_taken`
+  // 与 `check_report_generated` 双双报红、`code` 还是 fail_env —— 读起来像"评测产物不诚实"，
+  // 真相是喂错了文件。**喂错必须退 2 并说清认成了什么**，不许混进 fail_env 的结论里（坑 #41/#45）。
+  const { checkInputShape } = require('../lib/eval-artifacts');
+  const shape = checkInputShape(run);
+  if (!shape.ok) {
+    console.error(`输入 schema 不符（退 2，属"未评测"而不是"产品红"或"环境红"）：\n  ${shape.why}`);
+    console.error(`  你给的是：${p}`);
+    return 2;
+  }
   let failEnv = false, failProduct = false;
   for (const [name, fn] of Object.entries(CHECKS)) {
     const r = fn(run);
@@ -210,10 +220,11 @@ function runReport(p) {
     else console.log(`  ✓ ${name} — ${r.why}`);
     if (!r.ok) { if (r.code === 'fail_env') failEnv = true; else failProduct = true; }
   }
-  // 过程层不过 → 整次运行不算通过：产品缺陷优先，其次环境
+  // 过程层不过 → 整次运行不算通过：**产品缺陷退 1，运行条件不足退 2**
+  // （此前两者都退 1，等于把"没跑够"伪装成"锁假了"——F2P 那边同一族错误刚立过判据）
   if (failProduct) { console.log('过程检查：不通过（fail_product）'); return 1; }
-  if (failEnv) { console.log('过程检查：不通过（fail_env，重跑环境后再判）'); return 1; }
-  console.log('过程检查：全过');
+  if (failEnv) { console.log('过程检查：不通过（fail_env，重跑环境后再判）'); return 2; }
+  console.log(`过程检查：全过（输入 schema：${shape.why}）`);
   return 0;
 }
 

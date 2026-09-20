@@ -1194,7 +1194,9 @@ async function main() {
     consoleErrors: consoleErrs.slice(0, 10),
   };
   const reportPath = path.join(dir, 'report.json').replace(/\\/g, '/');
-  fs.writeFileSync(path.join(ROOT, reportPath), JSON.stringify({ target, startedAt, acceptance, summary, cases: results }, null, 2));
+  // `schema` 是给"拿错文件去喂过程层检查"准备的显式标记（B127②的另一半）
+  fs.writeFileSync(path.join(ROOT, reportPath), JSON.stringify(
+    { schema: require('../lib/eval-artifacts').E2E_REPORT_SCHEMA, target, startedAt, acceptance, summary, cases: results }, null, 2));
 
   console.log(`\n端到端评测（41-2）· 目标 ${target} · 线上 commit ${liveSha.slice(0, 7) || '-'} · 每剧本 ${repeat} 次`);
   for (const r of results) {
@@ -1225,8 +1227,10 @@ async function main() {
     root: ROOT,
   };
   let procProduct = false, procEnv = false;
+  const procEntries = [];
   for (const [name, fn] of Object.entries(CHECKS)) {
     const res = fn(run);
+    procEntries.push([name, res]);
     if (!res.ok) {
       console.log(`  ✗ 过程检查 ${name} [${res.code}] — ${res.why}`);
       if (res.code === 'fail_env') procEnv = true; else procProduct = true;
@@ -1237,6 +1241,18 @@ async function main() {
   // 非验收轮**永远不许 exit 0**（reviewer #2）：全绿但只跑了一条剧本，也不构成"端到端验过"
   if (!acceptance.ok && final === 0) final = 2;
   run.commands[0].exitCode = final;
+  // B127①：F1~F8 的**逐条轮内读数**必须落进 report.json。
+  // 旧形态是"只在判红时打一行控制台输出"，全绿时产物里什么都没有 ⇒ 事后无法证明过程层跑过，
+  // 只能翻当时的控制台（而控制台不入库）。现在它成了产物里的事实，交付说明可以直接引它。
+  const { buildProcessSection, E2E_REPORT_SCHEMA } = require('../lib/eval-artifacts');
+  const procSection = buildProcessSection(procEntries, final);
+  fs.writeFileSync(path.join(ROOT, reportPath), JSON.stringify({
+    schema: E2E_REPORT_SCHEMA,
+    target, startedAt, acceptance, summary, cases: results,
+    process: procSection,
+  }, null, 2));
+  console.log(`过程层已落账：${path.relative(ROOT, reportPath)} 的 process 字段（`
+    + `${procSection.passed}/${procSection.total} 条通过，final 退出码 ${final}）`);
   console.log(acceptance.ok
     ? '本轮为**验收轮**：全剧本 × ≥3 轮 × 真实云端，可作为交付证据。'
     : `NOT_ACCEPTANCE：${acceptance.reasons.join('；')} —— 只算探针跑，不得写进交付说明当端到端验收`);

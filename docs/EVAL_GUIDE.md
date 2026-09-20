@@ -185,21 +185,25 @@
 恰好漏掉出事形态），全量留在交付链的门禁轮跑；② 锁里再 spawn `node --test` 时**必须摘掉
 `NODE_TEST_CONTEXT`**，否则子进程被静默跳过、stdout 为空，"没跑到"会伪装成"没有红"（坑 #64 次生形态）。
 
-### 4.2 拟建白盒判据登记（W17~W22）—— 编号只在这里分配一次
+### 4.2 白盒判据登记（W17~W23）—— 编号只在这里分配一次；未实现的号一律标「（拟）」
 
 > 规则：**新判据的编号只在本表登记**，各 spec 只准写"见 §4.2 的 WNN"，不得在自己的小 spec 里顺手占一个新号。
 > 理由与实例：本轮 26 份小 spec 出炉后自查，发现 **W18 被两处各自占用**——`36-4`（观看写回的 SQL 谓词单实现）
 > 与 `36-7`/`37-7`/`B107`（噪声判定单实现）。各写各的编号 = 未来的白盒实现会撞号或漏做，与坑 #58「两套事实」同罪。
 > 下表把六条一次性定死，`36-4` 已改判为 **W22**。
+> **09-21 号位规则落地（B124 的三条全批）**：① 未实现的号一律在号位上标 **（拟）**（下表 W18~W22 已全部标注；
+> 实装的是 W17 与 W23）；② `W5`、`W8` **登记为已废弃、号位不复用**——`tools/eval-whitebox.cjs` 从未实现过它们
+> （旧文档写"观察 W1~W16"把它们算进去了，照号位找实现会找不到）；③ 台账里"一行打包多个号"的写法拆成一行一号
+> （`docs/archive/debugging/2026-09-21-release-approval-ledger.md` §三 已按此改）。
 
 | 号 | 判据（一句话） | 归属缺陷 / 由谁实现 | 来源 spec |
 |---|---|---|---|
 | W17 | "删除/保留谓词"三端只许一份（`retention` 单实现），出现第二份即红 | ✅ **已实现（09-20 B102 收口）**：判据在 `lib/retention.js#findRetentionViolations`，白盒与锁 `tests/regression-retention.test.js` R4 共用这一份；形状判据只认"时间列 < ?"，级联/按 id/注释反例自然不命中。**已知空洞**：`api/[...slug].js` 整文件按"已记账待收口"豁免（并行会话在改它），该文件里新写的第二份谓词会被一起放过，随放行表 #4/#8 那批收口。归属缺陷：B102（本地 `CLEAN_TABLES` 无豁免且含 videos） | `docs/specs/43-collect-retention-safety/spec.md` |
-| W18 | "噪声（hotlist/aggregator）判定"字面量全库只一份 | B107（实测手写 14 处，含变体 20 处；`/api/reading` 反而没用） | `36-7-source-spread-and-dedup.md`、`37-7` |
-| W19 | "报警事件枚举"两端代码 + 落库四处集合必须一致 | B45/B46/B109（幽灵键 `wemp_down/wemp_cookie_expired`、本地独有 `source_slow`） | `37-2-alert-event-model-unify.md` |
-| W20 | 同一份 system prompt 的字面量不许出现 ≥2 份（本地 settings / 云端文件+内嵌 / runner 常量） | B111（实测 3~4 份来源） | `39-6-translate-prompt-single-source.md` |
-| W21（或并入 W3c） | 新增 settings 键若每一处读点都长成都响应属性 → 判假开关（W3b 的加强版） | H10/B51/BL8 家族；`ai.minIntervalMs=0` 即现例 | `39-5-real-control-points.md` |
-| W22 | 观看/已读类**写回 SQL 谓词**在 `api/` 与 `server/` 只许一份（原误占 W18，已改号） | B62/36-4（云端 `videos.watched_at` 无写回，本地是唯一一份） | `36-4-cloud-video-watchback.md` |
+| W18（拟） | "噪声（hotlist/aggregator）判定"字面量全库只一份 | B107（实测手写 14 处，含变体 20 处；`/api/reading` 反而没用） | `36-7-source-spread-and-dedup.md`、`37-7` |
+| W19（拟） | "报警事件枚举"两端代码 + 落库四处集合必须一致 | B45/B46/B109（幽灵键 `wemp_down/wemp_cookie_expired`、本地独有 `source_slow`） | `37-2-alert-event-model-unify.md` |
+| W20（拟） | 同一份 system prompt 的字面量不许出现 ≥2 份（本地 settings / 云端文件+内嵌 / runner 常量） | B111（实测 3~4 份来源） | `39-6-translate-prompt-single-source.md` |
+| W21（拟，或并入 W3c） | 新增 settings 键若每一处读点都长成都响应属性 → 判假开关（W3b 的加强版） | H10/B51/BL8 家族；`ai.minIntervalMs=0` 即现例 | `39-5-real-control-points.md` |
+| W22（拟） | 观看/已读类**写回 SQL 谓词**在 `api/` 与 `server/` 只许一份（原误占 W18，已改号） | B62/36-4（云端 `videos.watched_at` 无写回，本地是唯一一份） | `36-4-cloud-video-watchback.md` |
 | W23 | 测试里出现**写方法**（POST/PUT/PATCH/DELETE）且**真碰云端层**（require `[...slug]` 或自建 `createClient`）时，必须已指 `TURSO_DATABASE_URL='file:'` 或 `require('./helpers')`，否则即红 | ✅ **已实现（09-21 B117 收口）**：判据在 `lib/test-isolation.js#findWriteWithoutIsolation`，白盒 W23 与锁 `tests/regression-test-isolation.test.js` T1~T7 同源；行为面另有 `tests/regression-cloud-writes-isolated.test.js` W-1~W-6（隔离库上真跑归档删除与 cleanup）。**已知空洞**：判据是**整文件**粒度（同文件里出现过一次 `file:` 就整份放过），与 W17 对 `api/[...slug].js` 的豁免同族，见 `lib/test-isolation.js` 末段 | `docs/specs/43-collect-retention-safety/spec.md` §六 |
 
 > 实现这些判据时的硬纪律（沿用坑 #58/#59/#63）：派生自事实而非手写名单、非空断言、**排除自身与 `tools/_` 探针**、
