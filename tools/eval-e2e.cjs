@@ -101,6 +101,7 @@ const SRC = resolveAll({
   hotTab: 'api/[...slug].js#fn=handleHot::const tab = q.tab',
   readingTab: 'api/[...slug].js#fn=handleReading::].includes(q.tab)',   // ['all','favorited','read']
   readingType: 'api/[...slug].js#fn=handleReading::].includes(q.type)', // ['all','article','video','podcast']
+  readingNoiseSwitch: 'api/[...slug].js#fn=handleReading::const includeNoisy', // B107：include_hot=1 才把噪声放回来
   articlesTab: 'api/[...slug].js#fn=handleArticles::const tab = q.tab',
   articlesSort: 'api/[...slug].js#fn=handleArticles::const sort = q.sort',
   videosTab: 'api/[...slug].js#fn=handleVideos::q.tab !== ',
@@ -696,6 +697,33 @@ const SCENARIOS = [
       net.length = 0;
       await goto(page, c, target + '/reading/', SEL.readingCard);
       assert(c, 'render', '我的阅读渲染出卡片', (await stableCount(page, SEL.readingCard)) > 0);
+      // ── B107（2026-09-21）：足迹默认排噪声 + 「含热榜」开关 ──
+      // N8/N9 已经在接口层钉住两端同口径；这一段要的是**浏览器层**的证据：
+      // 页面上那个 pill 真存在、点下去真换参数、DOM 真跟着换读数（否则等于只验收了后端）。
+      const noiseProbe = (extra) => api(page, c, '/api/reading?' + new URLSearchParams({ tab: 'all', type: 'all', ...extra }),
+        {
+          tab: { value: 'all', source: SRC.readingTab },
+          type: { value: 'all', source: SRC.readingType },
+          ...(extra.include_hot ? { include_hot: { value: extra.include_hot, source: SRC.readingNoiseSwitch } } : {}),
+        });
+      const noiseOff = await noiseProbe({});
+      const noiseOn = await noiseProbe({ include_hot: '1' });
+      const nOff = (noiseOff.json || {}).counts || {}; const nOn = (noiseOn.json || {}).counts || {};
+      assert(c, 'api', '含热榜两态 counts.all 都是有限数且"含"更多（默认确实排掉了热榜聚合噪声，B107）',
+        Number.isFinite(Number(nOff.all)) && Number.isFinite(Number(nOn.all)) && Number(nOn.all) > Number(nOff.all),
+        `默认=${JSON.stringify(nOff)} 含热榜=${JSON.stringify(nOn)}`);
+      net.length = 0;
+      assert(c, 'render', '点得到「含热榜」开关', await clickBtn(page, '含热榜'));
+      const hotOwn = await waitForApiWhere(net, (r) => r.url === '/api/reading' && ((r.params.include_hot || {}).value === '1'), RENDER);
+      assert(c, 'api', '点开开关后页面真的带 include_hot=1 重新请求（前端接到了参数，不是只改了后端）', !!hotOwn,
+        hotOwn ? `include_hot=1 响应已达（counts=${JSON.stringify((hotOwn.json || {}).counts)}）` : `等 ${RENDER / 1000}s 没等到带 include_hot 的响应`);
+      if (hotOwn) {
+        const hotItems = (hotOwn.json || {}).items || [];
+        assert(c, 'data', '点开含热榜后的 DOM 条数与该响应一致', countMatchesPage(await stableCount(page, SEL.readingCard), hotItems.length, PAGE_SIZE.reading),
+          `DOM=${await page.locator(SEL.readingCard).count()} API=${hotItems.length}`);
+      }
+      await clickBtn(page, '含热榜'); // 关回去，别把后面的 type 流程建在开关态上
+      await waitQuiet(net, '/api/reading');
       // 探针必须在 goto 之后发：page 还停在 about:blank 时 fetch 直接 status 0（会被误读成"接口挂了"）
       const probe = (type) => api(page, c, '/api/reading?' + new URLSearchParams({ tab: 'all', type }),
         { tab: { value: 'all', source: SRC.readingTab }, type: { value: type, source: SRC.readingType } });

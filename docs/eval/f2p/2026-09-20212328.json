@@ -1,0 +1,183 @@
+{
+ "at": "2026-09-20T21:23:28.756Z",
+ "baseRef": "73147de3c144c892e14de6535469d08602dcf528",
+ "headRef": "HEAD",
+ "baseSha": "73147de3c144c892e14de6535469d08602dcf528",
+ "headSha": "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0",
+ "files": [
+  "tests/regression-noise.test.js"
+ ],
+ "wantNames": [
+  "N1",
+  "N2",
+  "N3",
+  "N4",
+  "N5",
+  "N6",
+  "N7",
+  "N8",
+  "N9"
+ ],
+ "targets": [
+  "N1",
+  "N2",
+  "N3",
+  "N4",
+  "N5",
+  "N6",
+  "N7",
+  "N8",
+  "N9"
+ ],
+ "lockIntros": {
+  "N1": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N2": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N3": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N4": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N5": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N6": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N7": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N8": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ],
+  "N9": [
+   "99ba7939e8f439f78e8e7ae47b492cedd3a63ad0"
+  ]
+ },
+ "headDirty": [
+  "M AGENTS.md",
+  " M api/[...slug].js",
+  " M archive/_eval/wechat-rss-plus",
+  " M docs/DEV_GUIDE.md",
+  " M docs/INDEX.md",
+  " M docs/RUNBOOK.md",
+  " M docs/archive/README.md",
+  " M docs/archive/debugging/2026-09-20-round-status-records.md",
+  " M docs/specs/10-my-reading/spec.md",
+  " M docs/specs/14-sources-write/plan.md",
+  " M docs/specs/14-sources-write/task.md",
+  " M docs/specs/19-my-brief/plan.md",
+  " M docs/specs/19-my-brief/task.md",
+  " M docs/specs/43-collect-retention-safety/spec.md",
+  " M tests/regression-content-dump.test.js",
+  " M tools/dump-content.cjs",
+  "?? .mybrief-tmp.json",
+  "?? archive/_diag/",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\345\\221\\250\\346\\212\\245\\351\\241\\265\\351\\235\\242\\350\\256\\276\\350\\256\\241/\"",
+  "?? \"archive/\\346\\240\\267\\345\\233\\276/\\347\\203\\255\\347\\202\\271\\346\\246\\234/\"",
+  "?? docs/eval/content/report-20260919-142559.json",
+  "?? docs/eval/e2e/20260919T081631/",
+  "?? docs/eval/e2e/20260919T083030/",
+  "?? docs/eval/e2e/20260919T083126/",
+  "?? docs/eval/e2e/20260919T084509/",
+  "?? docs/eval/e2e/20260919T085015/",
+  "?? docs/eval/e2e/20260919T085140/",
+  "?? docs/eval/e2e/20260919T094856/",
+  "?? docs/eval/e2e/20260919T100056/",
+  "?? docs/eval/e2e/20260919T102242/",
+  "?? docs/eval/e2e/20260919T103639/",
+  "?? docs/eval/e2e/20260919T104810/",
+  "?? docs/eval/e2e/20260919T104908/",
+  "?? docs/eval/e2e/20260919T104944/",
+  "?? docs/eval/e2e/20260919T105143/",
+  "?? docs/eval/e2e/20260919T115420/",
+  "?? docs/eval/e2e/20260919T121006/",
+  "?? docs/eval/e2e/20260919T123438/",
+  "?? docs/eval/e2e/20260919T143903/",
+  "?? docs/eval/e2e/20260919T145627/",
+  "?? docs/eval/e2e/20260919T162930/",
+  "?? docs/eval/e2e/20260919T173518/screens/",
+  "?? docs/eval/e2e/20260919T185949/",
+  "?? docs/eval/e2e/20260919T190209/",
+  "?? docs/eval/e2e/20260919T191201/",
+  "?? docs/eval/e2e/20260919T214044/screens/",
+  "?? docs/eval/e2e/20260919T215110/screens/",
+  "?? docs/eval/e2e/20260920T112415/",
+  "?? docs/eval/f2p/2026-09-19114959.json",
+  "?? docs/eval/f2p/2026-09-19122458.json",
+  "?? docs/eval/f2p/2026-09-19141411.json",
+  "?? docs/eval/f2p/2026-09-19141414.json",
+  "?? docs/eval/f2p/2026-09-19141417.json",
+  "?? docs/eval/f2p/2026-09-19141420.json",
+  "?? docs/eval/f2p/2026-09-19172730.json",
+  "?? docs/screenshots/05-videos-page.png",
+  "?? docs/screenshots/06-reader-full.png",
+  "?? docs/specs/42-full-audit-2026-09/handoff-notice.md",
+  "?? docs/specs/42-full-audit-2026-09/quarantine/",
+  "?? lib/dirty-columns.js",
+  "?? opml/BestBlogs_RSS_Articles.opml",
+  "?? opml/BestBlogs_RSS_Doc.md",
+  "?? opml/BestBlogs_RSS_Twitters.opml",
+  "?? opml/BestBlogs_RSS_Videos.opml",
+  "?? opml/tidings-ai.opml",
+  "?? opml/tidings-all.opml",
+  "?? opml/tidings-blogs.opml",
+  "?? opml/tidings-chinese.opml",
+  "?? opml/tidings-communities.opml",
+  "?? opml/tidings-company-tech.opml",
+  "?? opml/tidings-engineering.opml",
+  "?? opml/tidings-news.opml",
+  "?? opml/tidings-podcasts.opml",
+  "?? opml/tidings-research.opml",
+  "?? opml/tidings-security.opml",
+  "?? opml/tidings-tech-media.opml",
+  "?? opml/tidings-top200.opml",
+  "?? opml/tidings-videos.opml",
+  "?? opml/tidings-wechat.opml",
+  "?? opml/tidings-weeklies.opml",
+  "?? \"opml/\\346\\234\\252\\346\\265\\213\\350\\257\\225\\350\\241\\245\\345\\205\\205\\346\\272\\220.txt\"",
+  "?? tests/regression-audit42-portal-channel.test.js",
+  "?? tools/doc-stamp.cjs"
+ ],
+ "headDirtyCount": 83,
+ "base": {
+  "tests": 10,
+  "pass": 0,
+  "fail": 10,
+  "failedNames": [
+   "N8 本地 /api/reading：默认排噪声、include_hot=1 放回来，且 11 个筛选组合都要有内容（AC4 + B134）",
+   "N9 云端 /api/reading 两条路径同口径：两段式快路径与带筛选慢路径都要排噪声（AC3/AC4）",
+   "N1 噪声轴在活代码里只剩一份：违规 0、分母够大、14 个消费点真接上了",
+   "N2 负向自证：任何一处分再手写噪声条件，W18 判据必须红且点名（四种形态）",
+   "N3 反向样本：提到 hotlist 但不是噪声判定的合法写法，一条都不许误红",
+   "N4 判据自身接线：把构造函数摘掉（消费点缺 require）也要红，且注释里的字面量不算",
+   "N5 新旧 SQL 写法逐行等价：三轴取值全组合下，AND 式 / NOT 式 / NOT EXISTS 式命中同一批行",
+   "N5b 已知边界：sources.extra 里放非 JSON 文本会让所有噪声判定抛错（不是回 NULL）",
+   "N6 计数与列表在两种开关状态下都自洽（AC4）：排噪声后 counts 必须等于列表实际条数",
+   "N7 JS 侧与 SQL 侧同判：同一批源行，isNoiseSource 与 WHERE 命中一致"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": [
+   "../lib/noise"
+  ]
+ },
+ "head": {
+  "tests": 10,
+  "pass": 10,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 10 条（9 个目标全中，实指 10 条锁），改后 10 条全绿；改前缺本次修复新建的文件 ../lib/noise"
+}
