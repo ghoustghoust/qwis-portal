@@ -1,0 +1,2235 @@
+{
+  "schema": "e2e-report/v1",
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-20T21:33:46.942Z",
+  "acceptance": {
+    "ok": true,
+    "reasons": [],
+    "nCases": 10,
+    "nAll": 10,
+    "repeat": 3,
+    "remote": true
+  },
+  "summary": {
+    "total": 10,
+    "pass": 9,
+    "failProduct": 1,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E1",
+      "title": "阅读器今日流：渲染 ↔ 页面自己拿到的 /api/articles 对账",
+      "status": "pass",
+      "why": "",
+      "assertions": 8,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面自身发出的 /api/articles 返回 200 且带 items",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "api",
+          "label": "每条含 id + 非空 title（B27 类字段形状漂移在此红）",
+          "ok": true,
+          "detail": "首条键=id,source_id,title,translated_title,url,author"
+        },
+        {
+          "kind": "render",
+          "label": "列表渲染出行（div.card.card-lift.p-3.cursor-pointer.relative）",
+          "ok": true,
+          "detail": "rows=30"
+        },
+        {
+          "kind": "render",
+          "label": "文章行选择器没有落到侧栏（防\"数错元素\"式假对账）",
+          "ok": true,
+          "detail": "侧栏内命中 0"
+        },
+        {
+          "kind": "render",
+          "label": "渲染文本不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "DOM 行数不超过响应条数（页面不得凭空多渲）",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "响应条目渲染到列表（缺失 ≤20%）",
+          "ok": true,
+          "detail": "缺 0/30"
+        },
+        {
+          "kind": "data",
+          "label": "列表每一行都能在响应里找到（无孤儿行）",
+          "ok": true,
+          "detail": "孤儿 0/30"
+        }
+      ],
+      "renderedText": "World news | The Guardian · 10分钟前 Australia news live: Albanese names former News Corp executive as consul-general in New York Get our breaking news email, free app or daily news podcast 1395 字 · 约 3 分钟\nBBC News — News · 16分钟前 Man, 82, dies after beach fight with 76-year-old over sunlounger in Greece One eyewitness said the scene was so chaotic that screaming could be heard from the other end of the beach. 107 字 · 约 1 分钟\nNPR Topics: World · 17分钟前 Defining global leadership in AI at Trump-Xi summit Former U.S. deputy national security advisor Anne Neuberger is watching for signs of competition and cooperation on artificial intelligence at President Trump and Chinese leader Xi Jinping's summit th 28 208 字 · 约 1 分钟\nBBC News — News · 1h German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on Exit polls show damaging losses for Merz's centre-right CDU party in the states of Berlin and Mecklenburg-Vorpommern. 117 字 · 约 1 分钟\nWorld news | The Guardian · 1h More than a dozen arrested in connection with 2021 assassination of Haitian president Jovenel Moïse, 53, was shot dead in July 2021 in a killing which sparked chaos in Haiti 440 字 · 约 1 分钟\nBBC News — News · 2h Sister of Pakistan's ex-PM Imran Khan arrested Aleema Khanum is accused of mobilising her brother’s supporters ahead of country-wide protests. 95 字 · 约 1 分钟\nWorld news | The Guardian · 2h Middle East braces for more violence as Iran claims US is planning to renew bombing campaign Tensions grow as Trump tells Fox News he is considering ‘wiping Iran out’ after attacks on Riyadh by Houthi rebels 657 字 · 约 2 分钟\nWorld news | The Guardian · 3h Friedrich Merz vows to stay in office after CDU ‘disaster’ in German state elections Far-right AfD wins in Mecklenburg-Western Pomerania and leftwing Die Linke on course for victory in Berlin 621 字 · 约 2 分钟\nAI Engineer(@aiDotEngineer) · 3h We're excited to announce our AI Engineer New York speaker lineup! Presented by @arizeai CEO @ExaA... We&#39;re excited to announce our AI Engineer New York speaker lineup!Presented by @arizeaiCEO @ExaAILabsCTO @tryrampCEO @ValsAICEO @RogoAICTO @modalCEO @trybasisCEO @SonarSourceCEO @runwaymlCTO @mint 1514 字 · 约 4 分钟\nThe Verge · 3h Kojima Productions disputes reports the studio is in trouble After it was announced that Sony was dropping Hideo Kojima's Physint, and that instead the Metal Gear Solid creator's latest title would be coming to Xbox, there were a flurry of rumors about the fall 682 字 · 约 2 分钟\nAl Jazeera – Breaking News, World News and Video from Al Jazeera · 3h Gaza artists honour Macklemore for supporting Palestine Artists in Gaza are painting murals on destroyed walls, honouring US rapper Macklemore for his support for Palestine. 117 字 · 约 1 分钟\nHacker News 首页 · 3h A Necessary History of the Oddest Letter: W Article URL: https://lithub.com/a-necessary-history-of-the-oddest-letter-w/ 160 字 · 约 1 分钟",
+      "assertTargets": "页面自身发出的 /api/articles 返回 200 且带 items status=200 n=30\n每条含 id + 非空 title（B27 类字段形状漂移在此红） 首条键=id,source_id,title,translated_title,url,author\n列表渲染出行（div.card.card-lift.p-3.cursor-pointer.relative） rows=30\n文章行选择器没有落到侧栏（防\"数错元素\"式假对账） 侧栏内命中 0\n渲染文本不是占位文案 \nDOM 行数不超过响应条数（页面不得凭空多渲） DOM=30 API=30\n响应条目渲染到列表（缺失 ≤20%） 缺 0/30\n列表每一行都能在响应里找到（无孤儿行） 孤儿 0/30",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/reader/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/status/daily-sources",
+          "status": 200,
+          "bytes": 563,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 21323,
+          "ms": 7,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-19T21:33:50.304Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 33551,
+          "ms": 202,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 772,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1849,
+          "ms": 32,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/2088074761607987200/25voc1vQ_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 159583,
+          "ms": 420,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSrfl3fWQAApfxr.png",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 16,
+          "params": {}
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 261,
+          "ms": 6,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E1-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E1-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 1723
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E2",
+      "title": "阅读器「视频」Tab：切过去渲染的是视频卡，文章行清零",
+      "status": "pass",
+      "why": "",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "切换前渲染的是文章流",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "点得到「视频」筛选",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/videos 返回 200 且带 items",
+          "ok": true,
+          "detail": "status=200 n=30"
+        },
+        {
+          "kind": "data",
+          "label": "视频网格渲染出卡片（不是文章行）",
+          "ok": true,
+          "detail": "div.card.card-lift.cursor-pointer.group.overflow-hidden ×28"
+        },
+        {
+          "kind": "render",
+          "label": "视频卡文本不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "视频卡数 ↔ 页面响应 items 数（±3 分页）",
+          "ok": true,
+          "detail": "DOM=28 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "切换后文章行已消失（两类列表没同时渲染）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "Adam Foroughi, Applovin CEO: Surviving a 92% Drawdown, Ads as ML 1.0 & the $50B Game Ad Market A All-In Podcast · 28分钟前\nThe billionaire collecting American history M My First Million · 7h\n🎧 播客 #730.Matt Pocock：AI时代软件基本功更重要 跨国串门儿计划 · 12h\n🎧 播客 The secret to mastering life's biggest transitions | Bruce Feiler TED Talks Daily · 15h\n🎧 播客 人类有望用意念去控制万物，并实现“数字永生”?丨两说 第一财经 · 21h\nThe best productivity advice nobody follows M My First Million · 1天\n🎧 播客 比永远更远，核周报 9.19 Ryoma,萝萝又卜卜,Nadya · 1天\n🎧 播客 How tech will (and won't) replace your doctor | Zack Abbott and Dhruv Khullar TED Talks Daily · 1天",
+      "assertTargets": "切换前渲染的是文章流 \n点得到「视频」筛选 \n页面发出的 /api/videos 返回 200 且带 items status=200 n=30\n视频网格渲染出卡片（不是文章行） div.card.card-lift.cursor-pointer.group.overflow-hidden ×28\n视频卡文本不是占位文案 \n视频卡数 ↔ 页面响应 items 数（±3 分页） DOM=28 API=30\n切换后文章行已消失（两类列表没同时渲染） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 12,
+          "params": {
+            "kind": {
+              "value": "video",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/videos",
+          "status": 200,
+          "bytes": 17740,
+          "ms": 27,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/VideoGrid.jsx:57"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 4940,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/XS1PBKUQo3k/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 7842,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/mj7w5cv0epM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9365,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/oTHAPnD14V4/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 13161,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/9R-bdXBAzgs/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 22184,
+          "ms": 3,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/SwBCPBNe_60/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20376,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Nvc6HWfoSoE/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 8736,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/4u7S7GFhUAE/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9095,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/8MS1x-pkkdA/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 19263,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/VTF6p0U98ek/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 21708,
+          "ms": 4,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/6748oCo7Z_M/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 15059,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bi23y0x-MhA/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 16818,
+          "ms": 196,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/A4Q7zAayW20/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12611,
+          "ms": 190,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Kr53CqKicoM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20988,
+          "ms": 192,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/JtomF4bGxHs/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 12562,
+          "ms": 193,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/68eKbz5-D5w/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17290,
+          "ms": 204,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/ONd2UNBmQ40/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E2-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E2-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 4175
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E3",
+      "title": "每日早报：栏目 pill 条数逐列 ↔ 页面响应 report.sections[].column",
+      "status": "pass",
+      "why": "",
+      "assertions": 14,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/daily 返回 200 且 report.sections 非空",
+          "ok": true,
+          "detail": "status=200 sections=4"
+        },
+        {
+          "kind": "api",
+          "label": "sections 形状是 {column, desc, items[]}（字段漂移会在这里红）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "report 带 schemaVersion（W2 读侧档位口径的前提字段）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "日报列表渲染",
+          "ok": true,
+          "detail": "div.cursor-pointer.flex.gap-3"
+        },
+        {
+          "kind": "render",
+          "label": "日报正文没有占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "≥3 个栏目 pill 在页面上带条数（档位分层可见，B39）",
+          "ok": true,
+          "detail": "可见 4/4：重点更新=15 , AI技术=15 , 其它重要=6 , 视频与播客=5"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「重点更新」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=15 API=15"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「AI技术」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=15 API=15"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「其它重要」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=6 API=6"
+        },
+        {
+          "kind": "data",
+          "label": "栏目「视频与播客」pill ↔ API items 数",
+          "ok": true,
+          "detail": "DOM=5 API=5"
+        },
+        {
+          "kind": "render",
+          "label": "日报行高受限（B85 曾有行撑到 594px）",
+          "ok": true,
+          "detail": "rows=30 maxH=110 minTitleW=160"
+        },
+        {
+          "kind": "render",
+          "label": "标题列宽度有下限（B85 根因＝标题列被挤到 0 宽）",
+          "ok": true,
+          "detail": "rows=30 maxH=110 minTitleW=160 带标题行=30"
+        },
+        {
+          "kind": "render",
+          "label": "800px 档：行尾不被裁切且行高受限",
+          "ok": true,
+          "detail": "800px 溢出 0/30 最长 146px"
+        },
+        {
+          "kind": "render",
+          "label": "1024px 档：行尾不被裁切且行高受限",
+          "ok": true,
+          "detail": "1024px 溢出 0/30 最长 146px"
+        }
+      ],
+      "renderedText": "1 用废旧零件组装的自制家庭服务器 Custom home server built from spare parts 用闲置零件组装家庭服务器的实操记录，对DIY爱好者有参考价值，但非重大技术突破。 DIY 家庭服务器 硬件 Hacker News 首页 · 5h\n2 通过广告收集器，ChatGPT 现已知晓你在其他网站的上网行为 ChatGPT now knows what you do on other websites via ad collector 隐私话题有热度，但缺乏正文内容，无法评估信息量与深度。 隐私 AI安全 Hacker News 首页 · 6h\n3 新加坡国家图书馆管理局推出微支付机制以培养阅读习惯 Singapore’s National Library Board offers micropayments to build reading habits 用金钱激励阅读是新加坡行为设计+公共文化服务的有趣实验，对国内图书馆运营有参考价值 新加坡 公共文化服务 行为经济学 Hacker News 首页 · 6h\n4 最新研究：日常生活压力可能损害心脏 权威机构发表的医学研究，揭示了压力→炎症→心脏损伤的新路径，数据详实，对关注健康人群有参考价值。 健康 医学研究 新华社 · 7h\n5 我已经让Codex帮我批量关闭大部分个人云文档了 提醒用户检查飞书文档公开权限，时效性强但信息量有限，适合快速获取警示。 飞书 隐私安全 AI产品黄叔(@PMbackttfuture) · 7h\n6 犹太人和穆斯林共处了几个世纪。锡安主义将他们撕裂了吗？ Jews and Muslims lived together for centuries. Did Zionism tear them apart? 探讨犹太教极端派反对锡安主义的历史根源，选题有社会学价值，但摘要信息有限。 中东政治 宗教研究 Al Jazeera – Breaking News, World News and Video from Al Jazeera · 7h\n7 特朗普 表示 ，他 计划 建造 的 凯旋门 将 兼作 弹药库 使用 。 Trump says his planned triumphal arch will double as a military complex to store ammunition 政治新闻而非科技领域，信息量有限但具话题性，适合关注美国政治动态的读者。 美国政治 特朗普 BBC News — News · 7h\n8 伊朗队荣获亚运会篮球项目铜牌，现场气氛感人 Iran win Asian Games basketball bronze amid emotional scenes 伊朗男篮亚运夺铜触发兵役豁免，社会文化背景值得了解，但报道过于简略。 体育 伊朗 Al Jazeera – Breaking News, World News and Video from Al Jazeera · 8h\n9 My Oracle Cloud PAYG upgrade eventually succeeded — now I can finally provision ARM for my self-hosted workloads Oracle Cloud升级实战经验分享，对遭遇同类问题的用户有参考价值，但深度和创新有限。 Oracle Cloud Self-Hosting Reddit · Linux, Self-Hosted, DevOps &amp; AI · 9h\n10 Our SQL IDE could silently save an edit to the wrong row. Root cause: JavaScript rounds integers past 2^53. 揭示JS精度陷阱如何导致真实数据写入错误，并提供完整修复思路，对DB工具开发者高度实用。 JavaScript 数据库 Reddit · Linux, Self-Hosted, DevOps &amp; AI · 9h",
+      "assertTargets": "页面发出的 /api/daily 返回 200 且 report.sections 非空 status=200 sections=4\nsections 形状是 {column, desc, items[]}（字段漂移会在这里红） \nreport 带 schemaVersion（W2 读侧档位口径的前提字段） \n日报列表渲染 div.cursor-pointer.flex.gap-3\n日报正文没有占位文案 \n≥3 个栏目 pill 在页面上带条数（档位分层可见，B39） 可见 4/4：重点更新=15 , AI技术=15 , 其它重要=6 , 视频与播客=5\n栏目「重点更新」pill ↔ API items 数 DOM=15 API=15\n栏目「AI技术」pill ↔ API items 数 DOM=15 API=15\n栏目「其它重要」pill ↔ API items 数 DOM=6 API=6\n栏目「视频与播客」pill ↔ API items 数 DOM=5 API=5\n日报行高受限（B85 曾有行撑到 594px） rows=30 maxH=110 minTitleW=160\n标题列宽度有下限（B85 根因＝标题列被挤到 0 宽） rows=30 maxH=110 minTitleW=160 带标题行=30\n800px 档：行尾不被裁切且行高受限 800px 溢出 0/30 最长 146px\n1024px 档：行尾不被裁切且行高受限 1024px 溢出 0/30 最长 146px",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/daily/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 33589,
+          "ms": 182,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1777,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/2028336270431453184/jRRpLAdG_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1773,
+          "ms": 2,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/1141385957234470912/iJMy6F7u_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 107901,
+          "ms": 206,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSqxBWCbIAANQj2.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 112839,
+          "ms": 407,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSqqniPbwAAfKQa.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 80654,
+          "ms": 411,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSqlznyagAAqZXU.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 88527,
+          "ms": 213,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSqVZ3fbMAAdnCp.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 32,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings/daily",
+          "status": 200,
+          "bytes": 100072,
+          "ms": 244,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E3-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E3-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2076,
+        "dailyRowGeo": "rows=30 maxH=110 minTitleW=160",
+        "rowSweep": "800px 溢出 0/30 最长 146px ; 1024px 溢出 0/30 最长 146px"
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E4",
+      "title": "热点榜三视图：每个 tab 渲染的确实是该 tab 的数据（B28 列表↔计数同源）",
+      "status": "pass",
+      "why": "",
+      "assertions": 13,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "热点榜默认视图渲染",
+          "ok": true,
+          "detail": "article.card.card-lift.cursor-pointer.p-4"
+        },
+        {
+          "kind": "api",
+          "label": "AI 精选：/api/hot?tab=featured 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=28"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 精选」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 精选」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=28"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 精选」每一行都出自这次响应（无接口没给的内容）",
+          "ok": true,
+          "detail": "漏 0/24（API=28）（窗口 5ms）"
+        },
+        {
+          "kind": "api",
+          "label": "AI 信息实时流：/api/hot?tab=all 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=200"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「AI 信息实时流」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「AI 信息实时流」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=200"
+        },
+        {
+          "kind": "data",
+          "label": "「AI 信息实时流」每一行都出自这次响应（无接口没给的内容）",
+          "ok": true,
+          "detail": "漏 0/60（API=200）（窗口 5ms）"
+        },
+        {
+          "kind": "api",
+          "label": "热搜事件：/api/hot/events 返回 200 且非空",
+          "ok": true,
+          "detail": "status=200 n=166"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「热搜事件」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "「热搜事件」页面自己的请求返回非空",
+          "ok": true,
+          "detail": "n=166"
+        },
+        {
+          "kind": "data",
+          "label": "「热搜事件」响应里的事件渲染到页面（缺少数 ≤20%）",
+          "ok": true,
+          "detail": "未出现 0/30（窗口 4ms）"
+        }
+      ],
+      "renderedText": "草梅友仁的博客 AI 评分 62/100 ♡ dependfix 与 caomei-ui 及 AI 套餐实测 | 2026 年第 38 周草梅周报 本文在 草梅友仁的博客 发布和更新，并在多个平台同步发布。如有更新，以博客上的版本为准。您也可以通过文末的 原文链接 查看最新版本。 推荐理由：dependfix解决多项目维护者的重复告警痛点，caomei-ui应对PrimeVue协议变更的方案有参考价值，AI开发效率实测数据直观。 @HITW93 AI 评分 62/100 ♡ 这段时间我在做一个“蠢事情”，或者也是 AI 时代工程师非常不愿意做的事情，非常重复的事。 为了让 Mole 的卸载软件更加彻底，清理残余的能力更加厉害，我整理了国内外 300 多款 Mac 软件，... 这段时间我在做一个“蠢事情”，或者也是 AI 时代工程师非常不愿意做的事情，非常重复的事。为了让 Mole 的卸载",
+      "assertTargets": "热点榜默认视图渲染 article.card.card-lift.cursor-pointer.p-4\nAI 精选：/api/hot?tab=featured 返回 200 且非空 status=200 n=28\n点得到「AI 精选」 \n「AI 精选」页面自己的请求返回非空 n=28\n「AI 精选」每一行都出自这次响应（无接口没给的内容） 漏 0/24（API=28）（窗口 5ms）\nAI 信息实时流：/api/hot?tab=all 返回 200 且非空 status=200 n=200\n点得到「AI 信息实时流」 \n「AI 信息实时流」页面自己的请求返回非空 n=200\n「AI 信息实时流」每一行都出自这次响应（无接口没给的内容） 漏 0/60（API=200）（窗口 5ms）\n热搜事件：/api/hot/events 返回 200 且非空 status=200 n=166\n点得到「热搜事件」 \n「热搜事件」页面自己的请求返回非空 n=166\n「热搜事件」响应里的事件渲染到页面（缺少数 ≤20%） 未出现 0/30（窗口 4ms）",
+      "requests": [
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=featured",
+          "status": 200,
+          "bytes": 18266,
+          "ms": 1598,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "api/[...slug].js:390"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "fullUrl": "/api/hot?tab=all",
+          "status": 200,
+          "bytes": 103287,
+          "ms": 1418,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:390"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "fullUrl": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 849,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 204,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 31,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 125,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 18266,
+          "ms": 206,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 18266,
+          "ms": 7,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 103287,
+          "ms": 434,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 103287,
+          "ms": 15,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/sources",
+          "status": 200,
+          "bytes": 6691,
+          "ms": 44,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 447,
+          "ms": 43,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 58,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 274,
+          "params": {
+            "domain": {
+              "value": "all",
+              "source": "web/src/components/HotEvents.jsx:192"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E4-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E4-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 3556
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E5",
+      "title": "我的阅读：type 筛选后 DOM 与 /api/reading 计数逐个同源（B60 四处口径）",
+      "status": "pass",
+      "why": "",
+      "assertions": 16,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的阅读渲染出卡片",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "含热榜两态 counts.all 都是有限数且\"含\"更多（默认确实排掉了热榜聚合噪声，B107）",
+          "ok": true,
+          "detail": "默认={\"all\":109,\"favorited\":3,\"read\":108} 含热榜={\"all\":216,\"favorited\":4,\"read\":215}"
+        },
+        {
+          "kind": "render",
+          "label": "点得到「含热榜」开关",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "点开开关后页面真的带 include_hot=1 重新请求（前端接到了参数，不是只改了后端）",
+          "ok": true,
+          "detail": "include_hot=1 响应已达（counts={\"all\":216,\"favorited\":4,\"read\":215}）"
+        },
+        {
+          "kind": "data",
+          "label": "点开含热榜后的 DOM 条数与该响应一致",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "api",
+          "label": "/api/reading 两种 type 均 200 且 counts.all 是有限数（有界重试后仍缺即红）",
+          "ok": true,
+          "detail": "all={\"all\":109,\"favorited\":3,\"read\":108} article={\"all\":108,\"favorited\":2,\"read\":108} 已重试 0ms"
+        },
+        {
+          "kind": "api",
+          "label": "type=article 的 counts.all 与 type=all 不同，且两侧都是数字（口径真的生效）",
+          "ok": true,
+          "detail": "article=108 all=109（NaN/缺数一律算红，不再拿\"没数据\"当\"不同\"）"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「文章」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "筛选后是真实标题而不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "点击后页面确实按 type=article 重新请求（筛选接到了参数）",
+          "ok": true,
+          "detail": "type=article 响应已达（counts={\"all\":108,\"favorited\":2,\"read\":108}）"
+        },
+        {
+          "kind": "data",
+          "label": "筛选后行数 ↔ 该响应的 items 数",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "三个 tab 的计数 pill 与同一份响应对账且不被翻掉（B60/B74）",
+          "ok": true,
+          "detail": "DOM={\"全部\":108,\"已收藏\":2,\"已读\":108} API={\"all\":108,\"favorited\":2,\"read\":108}（首判等 2ms，复查 2 次无翻转）"
+        },
+        {
+          "kind": "data",
+          "label": "响应的首屏条目都渲染出来了（无漏行）",
+          "ok": true,
+          "detail": "缺 0/30"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「视频」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "type=video 的接口口径与页面响应一致（探针↔页面同源）",
+          "ok": true,
+          "detail": "探针=1 页面响应=1"
+        },
+        {
+          "kind": "data",
+          "label": "视频筛选的 DOM 条数与该响应一致且不被翻掉（0 则必须是显式空态）",
+          "ok": true,
+          "detail": "DOM=1 API=1（首判等 3ms，复查 2 次无翻转）"
+        }
+      ],
+      "renderedText": "Australia news live: Albanese names former News Corp executive as consul-general in New York 文章 已读 World news | The Guardian · 2026-09-20 Get our breaking news email, free app or daily news podcast\nTwo killed in 'massive' Ukrainian drone attack on Moscow region, says Russia 文章 已读 BBC News — News · 2026-09-20 An oil refinery was also reportedly hit in Moscow, and flights were suspended at two capital airports.\nPlease stop with the FP4 inference engines for the love of god 文章 已读 Reddit · Linux, Self-Hosted, DevOps &amp; AI · 2026-09-20 Every day there&#39;s a new post of some optimized config or new inference engine that is just super good at one specifi\n让老游戏焕发新生命——gamescom 2026 育碧媒体区资讯汇总 文章 已读 机核 · 2026-09-12 在今年的科隆游戏展 ONL 会场上，育碧一口气公布了几个新消息。而且仿佛是商量好了一样，每一个新消息都和自家的老 IP 息息相关——它们分别是《魔法门之英雄无敌Ⅲ 重制版》、《彩虹六号：战术行动》，以及《雷曼：传奇再叙》。再结合前段时间刚刚\nShow HN: Graphify C# – Compiler-accurate Find Usages for coding agents 文章 已读 Hacker News 首页 · 2026-09-12 Article URL: https://github.com/zachsaw/graphify-csharp\nA AIHOT 日报 · 2026-09-12 — Anthropic 威胁报告披露 Claude 被用于间谍软件、导弹与无人机研发，中国实验室大规模蒸馏提取数据 文章 已读 AIHOT 日报 · 2026-09-12 Anthropic 威胁报告披露 Claude 被用于间谍软件、导弹与无人机研发，中国实验室大规模蒸馏提取数据 — 点击查看完整日报\nSome satellite companies still have an appetite for boutique launch services 文章 已读 Ars Technica · 2026-09-11 If you ask most satellite companies aside from SpaceX, they will tell you the world doesn't have enough capacity for lau\nAI researchers debate how close we are to recursive self-improvement 文章 已读 Hacker News 首页 · 2026-09-11 Article URL: https://www.dwarkesh.com/p/john-beren-charlie",
+      "assertTargets": "我的阅读渲染出卡片 \n含热榜两态 counts.all 都是有限数且\"含\"更多（默认确实排掉了热榜聚合噪声，B107） 默认={\"all\":109,\"favorited\":3,\"read\":108} 含热榜={\"all\":216,\"favorited\":4,\"read\":215}\n点得到「含热榜」开关 \n点开开关后页面真的带 include_hot=1 重新请求（前端接到了参数，不是只改了后端） include_hot=1 响应已达（counts={\"all\":216,\"favorited\":4,\"read\":215}）\n点开含热榜后的 DOM 条数与该响应一致 DOM=30 API=30\n/api/reading 两种 type 均 200 且 counts.all 是有限数（有界重试后仍缺即红） all={\"all\":109,\"favorited\":3,\"read\":108} article={\"all\":108,\"favorited\":2,\"read\":108} 已重试 0ms\ntype=article 的 counts.all 与 type=all 不同，且两侧都是数字（口径真的生效） article=108 all=109（NaN/缺数一律算红，不再拿\"没数据\"当\"不同\"）\n点得到类型筛选「文章」 \n筛选后是真实标题而不是占位文案 \n点击后页面确实按 type=article 重新请求（筛选接到了参数） type=article 响应已达（counts={\"all\":108,\"favorited\":2,\"read\":108}）\n筛选后行数 ↔ 该响应的 items 数 DOM=30 API=30\n三个 tab 的计数 pill 与同一份响应对账且不被翻掉（B60/B74） DOM={\"全部\":108,\"已收藏\":2,\"已读\":108} API={\"all\":108,\"favorited\":2,\"read\":108}（首判等 2ms，复查 2 次无翻转）\n响应的首屏条目都渲染出来了（无漏行） 缺 0/30\n点得到类型筛选「视频」 \ntype=video 的接口口径与页面响应一致（探针↔页面同源） 探针=1 页面响应=1\n视频筛选的 DOM 条数与该响应一致且不被翻掉（0 则必须是显式空态） DOM=1 API=1（首判等 3ms，复查 2 次无翻转）",
+      "requests": [
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all",
+          "status": 200,
+          "bytes": 24727,
+          "ms": 6402,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1063"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1064"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all&include_hot=1",
+          "status": 200,
+          "bytes": 24180,
+          "ms": 1217,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1063"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1064"
+            },
+            "include_hot": {
+              "value": "1",
+              "source": "api/[...slug].js:1069"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all",
+          "status": 200,
+          "bytes": 24727,
+          "ms": 4103,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1063"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1064"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=article",
+          "status": 200,
+          "bytes": 22267,
+          "ms": 698,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1063"
+            },
+            "type": {
+              "value": "article",
+              "source": "api/[...slug].js:1064"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=video",
+          "status": 200,
+          "bytes": 578,
+          "ms": 1314,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1063"
+            },
+            "type": {
+              "value": "video",
+              "source": "api/[...slug].js:1064"
+            }
+          }
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 578,
+          "ms": 2,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:98"
+            },
+            "type": {
+              "value": "video",
+              "source": "web/src/pages/MyReadingPage.jsx:98"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E5-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E5-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 5093,
+        "readingCountsWaitMs": 0,
+        "quietBeforeArticle": {
+          "quiet": true,
+          "waitedMs": 508,
+          "responses": 2
+        },
+        "pillSettleOk": true,
+        "readingResponses": [
+          {
+            "by": "page",
+            "type": "article",
+            "bytes": 22267,
+            "counts": {
+              "all": 108,
+              "favorited": 2,
+              "read": 108
+            }
+          }
+        ]
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E6",
+      "title": "我的早报 + 精选周刊：产物页渲染、渲染内容出自产物、无污染串",
+      "status": "fail_product",
+      "why": "api:页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空〔items=20 storylines=0〕 / data:周刊 storylines 出现在页面上（≥3 条）〔前 6 条命中 0〕",
+      "assertions": 12,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的早报渲染出内容卡",
+          "ok": true,
+          "detail": "article.card.card-lift.cursor-pointer.overflow-hidden ×15"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/mybrief 返回 200 且带 report",
+          "ok": true,
+          "detail": "status=200"
+        },
+        {
+          "kind": "data",
+          "label": "我的早报每张卡都出自产物（无孤儿卡）",
+          "ok": true,
+          "detail": "产物标题 25 条，孤儿卡 0/15"
+        },
+        {
+          "kind": "render",
+          "label": "视频/播客卡渲染条数 = 产物 media 条数",
+          "ok": true,
+          "detail": "DOM=5 API=5 art=5 emoji=0"
+        },
+        {
+          "kind": "render",
+          "label": "每张视频/播客卡左栏都有真实图形（B84）",
+          "ok": true,
+          "detail": "DOM=5 API=5 art=5 emoji=0"
+        },
+        {
+          "kind": "render",
+          "label": "整页不再用 emoji 冒充播放/收听图标（B84；此条与数据无关，永远会红）",
+          "ok": true,
+          "detail": "DOM=5 API=5 art=5 emoji=0"
+        },
+        {
+          "kind": "render",
+          "label": "周刊渲染出标题层级",
+          "ok": true,
+          "detail": "第 1 期 / 行业大变化 / 华为：基于昇腾超节点训练的星辰轻量级代码智能体大模型 Xing4.0-29B 发布"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空",
+          "ok": false,
+          "detail": "items=20 storylines=0"
+        },
+        {
+          "kind": "data",
+          "label": "周刊条数 ↔ report.items 条数（±4）",
+          "ok": true,
+          "detail": "DOM=20 API=20"
+        },
+        {
+          "kind": "data",
+          "label": "页面显示的期号 = API report.issue",
+          "ok": true,
+          "detail": "issue=1"
+        },
+        {
+          "kind": "data",
+          "label": "周刊 storylines 出现在页面上（≥3 条）",
+          "ok": false,
+          "detail": "前 6 条命中 0"
+        },
+        {
+          "kind": "render",
+          "label": "AI 产物无污染串（围栏残留 / undefined / NaN / [object Object]）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "TOP 1 来自你的关注 Hacker News 首页 75 Why Do We Need Human Mathematicians Anymore? 本文探讨AI时代人类数学家的不可替代性。陶哲轩指出，虽然AI能快速验证定理、生成证明，但数学研究的核心——提出正确的问题、建立概念框架、判断问题的重要性——仍依赖人类的直觉与创造力。文章同时分析了AI对数学研究方式的影响，以及数学家角色可能发生的转变。 推荐：菲尔兹奖得主陶哲轩直击AI时代人类数学家的独特价值，兼具思想深度与现实意义，值得深入阅读。 · AI擅长执行证明，但人类数学家负责提出关键问题与概念框架 · 数学研究的本质是选择与判断，而非单纯计算 · AI将改变数学家的工作方式，但不会取代数学家的核心角色 AI可以做很多数学工作，但它无法决定哪些问题是值得研究的。 AI与数学 陶哲轩 10h\nTOP 2 来自你的关注 Hacker News 首页 68 Prompts Aren't Real 《Prompts Aren't Real》探讨AI提示词的本质——提示词并非传统意义上的'指令'，而是触发模型内部涌现能力的开关。文章指出提示词工程的本质是对模型认知边界的试探与对齐，建议从'提示词设计'转向'能力引导'的新范式。 推荐：探讨提示词本质局限性的技术反思文章，HN热议话题，观点有启发性。 · 提示词工程的本质是对模型内部涌现模式的干预，而非传统意义上的指令编写 · 当前提示词框架过于依赖人工调优，忽视了模型的自组织特性 · 未来方向应从'设计提示'转向'创造触发条件'，让模型自主涌现所需能力 提示词不是对模型的'命令'，而是对模型能力的'触发器'——我们设计的不是指令，而是触发模式切换的开关。 AI提示词 大模型技术 5h\nTOP 3 来自你的关注 Hacker News 首页 65 Laya (OS Jev) on Mac M4 CoreML Offline (45 decisions per second) 开源项目 Laya (OS Jev) 在 Mac M4 芯片上通过 CoreML 实现离线推理，达到每秒 45 次决策，验证了 Apple Silicon 在本地 AI 推理场景的性能潜力。项目代码公开于 Gist，适合关注端侧部署的开发者参考。 推荐：展示 Laya 在 Mac M4 上实现 CoreML 离线推理，性能数据直观，对端侧 AI 开发者有参考价值 · Laya 开源项目在 M4 芯片上实现离线 AI 推理 · CoreML 性能表现：45 次决策/秒 · 端侧部署无需云端依赖，隐私与延迟优势明显 Mac M4 CoreML Offline (45 decisions per second) AI推理 AppleSilicon 端侧部署 5h\n来自你的关注 World news | The Guardian 65 One Nation-linked company built $56,000 shed on private property of Pauline Hanson’s right-hand man 护城河报独家披露：Pauline Hanson的右膀James Ashby作为One Nation全国主任，享受着政党的慷慨馈赠——公司为其私人房产建造价值5.6万澳元的棚屋，并获赠一辆新Ford Ranger皮卡。Ashby声称这些物资仅用于党派公务，但文件显示其个人受益明显。报道揭示了澳洲小众政党如何通过企业捐赠获取政治资源。 推荐：独家揭露One Nat",
+      "assertTargets": "我的早报渲染出内容卡 article.card.card-lift.cursor-pointer.overflow-hidden ×15\n页面发出的 /api/mybrief 返回 200 且带 report status=200\n我的早报每张卡都出自产物（无孤儿卡） 产物标题 25 条，孤儿卡 0/15\n视频/播客卡渲染条数 = 产物 media 条数 DOM=5 API=5 art=5 emoji=0\n每张视频/播客卡左栏都有真实图形（B84） DOM=5 API=5 art=5 emoji=0\n整页不再用 emoji 冒充播放/收听图标（B84；此条与数据无关，永远会红） DOM=5 API=5 art=5 emoji=0\n周刊渲染出标题层级 第 1 期 / 行业大变化 / 华为：基于昇腾超节点训练的星辰轻量级代码智能体大模型 Xing4.0-29B 发布\n页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空 items=20 storylines=0\n周刊条数 ↔ report.items 条数（±4） DOM=20 API=20\n页面显示的期号 = API report.issue issue=1\n周刊 storylines 出现在页面上（≥3 条） 前 6 条命中 0\nAI 产物无污染串（围栏残留 / undefined / NaN / [object Object]） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/weekly/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/weekly",
+          "status": 200,
+          "bytes": 16131,
+          "ms": 415,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 36,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 250254,
+          "ms": 406,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSlwWPtbIAARKwH?format=png&name=small",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 1,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E6-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E6-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 1977,
+        "mediaCards": "DOM=5 API=5 art=5 emoji=0"
+      },
+      "repeatStatuses": [
+        "fail_product",
+        "fail_product",
+        "fail_product"
+      ],
+      "knownGap": null,
+      "laterRoundFailures": [
+        {
+          "round": 2,
+          "why": "api:页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空〔items=20 storylines=0〕 / data:周刊 storylines 出现在页面上（≥3 条）〔前 6 条命中 0〕",
+          "evidence": "docs/eval/e2e/20260920T213346/screens/E6-r2.png"
+        },
+        {
+          "round": 3,
+          "why": "api:页面发出的 /api/weekly 返回 200 且 report.items/storylines 非空〔items=20 storylines=0〕 / data:周刊 storylines 出现在页面上（≥3 条）〔前 6 条命中 0〕",
+          "evidence": "docs/eval/e2e/20260920T213346/screens/E6-r3.png"
+        }
+      ],
+      "screenshots": 3
+    },
+    {
+      "id": "E7",
+      "title": "客户端路由与深链：点导航不整页刷新、刷新不丢位置（P0-5 / 38-3 前置）",
+      "status": "pass",
+      "why": "",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "点得到左栏「每日早报」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "URL 变 /daily/ 且日报行出现",
+          "ok": true,
+          "detail": "https://qwis-intel.vercel.app/daily/ rows=30"
+        },
+        {
+          "kind": "data",
+          "label": "点导航后 JS 上下文存活（window 标记还在 = 没有整页刷新）",
+          "ok": true,
+          "detail": "标记=alive"
+        },
+        {
+          "kind": "api",
+          "label": "点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次）",
+          "ok": true,
+          "detail": "document 响应 1 次：/reader/"
+        },
+        {
+          "kind": "api",
+          "label": "切页后页面自己重新取到 /api/daily",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "深链 + 刷新仍停在热点榜（有内容不是空壳）",
+          "ok": true,
+          "detail": "刷新后卡片 24 张，/api/hot 已到达(status=200, 18266B)，整页 6767 字"
+        },
+        {
+          "kind": "api",
+          "label": "刷新后公共数据链路仍活着（/api/settings 由 store 拉取）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n🔥 热点榜\n全源聚合 · 只呈现 AI 相关动态\nAI 精选\nAI 信息实时流\n热搜事件\n当前热点\n完整榜单 →\n1\n中美经贸磋商在美国纽约举行\n363 热度\n2\n比 Grok、Cursor 都狠？智谱ZCode“偷传代码”风波升级，企业发函追责\n83 热度\n3\nWTF is for me, to know what the agent just did.\n82 热度\n4\nOpus 5.2 与 Gemini 4 Pro 未经官宣已上线，前沿模型的发布流程正在被压缩\n79 热度\n5\n苹果 iPhone 安全神话被打破：币圈应用FomoPe",
+      "assertTargets": "点得到左栏「每日早报」 \nURL 变 /daily/ 且日报行出现 https://qwis-intel.vercel.app/daily/ rows=30\n点导航后 JS 上下文存活（window 标记还在 = 没有整页刷新） 标记=alive\n点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次） document 响应 1 次：/reader/\n切页后页面自己重新取到 /api/daily \n深链 + 刷新仍停在热点榜（有内容不是空壳） 刷新后卡片 24 张，/api/hot 已到达(status=200, 18266B)，整页 6767 字\n刷新后公共数据链路仍活着（/api/settings 由 store 拉取） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 8,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 125,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 18266,
+          "ms": 8,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 36,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 70273,
+          "ms": 8,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 125,
+          "ms": 0,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 18266,
+          "ms": 6,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 34,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E7-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E7-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2050
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": true,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录"
+        },
+        {
+          "kind": "data",
+          "label": "前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）",
+          "ok": true,
+          "detail": "{\"/reader/\":18395,\"/daily/\":6478,\"/hot/\":6767,\"/reading/\":5515,\"/weekly/\":6415,\"/mybrief/\":6232,\"/admin/\":211}"
+        },
+        {
+          "kind": "data",
+          "label": "后台登录门未白屏：有口令输入框且文案非空（实测 190 字）",
+          "ok": true,
+          "detail": "password 输入框 1 个，/admin/ 文本 211 字"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 \n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录\n前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红） {\"/reader/\":18395,\"/daily/\":6478,\"/hot/\":6767,\"/reading/\":5515,\"/weekly/\":6415,\"/mybrief/\":6232,\"/admin/\":211}\n后台登录门未白屏：有口令输入框且文案非空（实测 190 字） password 输入框 1 个，/admin/ 文本 211 字\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 251,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/admin/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 401,
+          "bytes": 35,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "emptyPages": {},
+        "settle": {
+          "/reader/": {
+            "settled": true,
+            "chars": 18395,
+            "waitedMs": 1621
+          },
+          "/daily/": {
+            "settled": true,
+            "chars": 6478,
+            "waitedMs": 810
+          },
+          "/hot/": {
+            "settled": true,
+            "chars": 6767,
+            "waitedMs": 871
+          },
+          "/reading/": {
+            "settled": true,
+            "chars": 5515,
+            "waitedMs": 809
+          },
+          "/weekly/": {
+            "settled": true,
+            "chars": 6415,
+            "waitedMs": 811
+          },
+          "/mybrief/": {
+            "settled": true,
+            "chars": 6232,
+            "waitedMs": 815
+          },
+          "/admin/": {
+            "settled": true,
+            "chars": 211,
+            "waitedMs": 1627
+          }
+        },
+        "pageApiArrived": {
+          "/reader/": {
+            "status": 200,
+            "bytes": 21323,
+            "ms": 10
+          },
+          "/daily/": {
+            "status": 200,
+            "bytes": 33589,
+            "ms": 199
+          },
+          "/hot/": {
+            "status": 200,
+            "bytes": 18266,
+            "ms": 7
+          },
+          "/reading/": {
+            "status": 200,
+            "bytes": 24727,
+            "ms": 12
+          },
+          "/weekly/": {
+            "status": 200,
+            "bytes": 16131,
+            "ms": 106
+          },
+          "/mybrief/": {
+            "status": 200,
+            "bytes": 19086,
+            "ms": 12
+          }
+        }
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E9",
+      "title": "点开一篇文章：详情正文渲染（B52 类\"接口 200 但页面空\"）",
+      "status": "pass",
+      "why": "",
+      "assertions": 9,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "列表有可点的行",
+          "ok": true,
+          "detail": "Australia ne"
+        },
+        {
+          "kind": "render",
+          "label": "点得到那篇文章所在的行",
+          "ok": true,
+          "detail": "Australia ne"
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的详情请求返回 200 且带非空 content_html",
+          "ok": true,
+          "detail": "/api/articles/304722 status=200 len=1862 键=id,source_id,title,url,author,cover"
+        },
+        {
+          "kind": "render",
+          "label": "详情展开后页面文本显著增长",
+          "ok": true,
+          "detail": "文本 18404→19969"
+        },
+        {
+          "kind": "render",
+          "label": "详情面板（article 元素）出现、含被点标题，且长度接得住正文",
+          "ok": true,
+          "detail": "面板=1560字 正文明文=1395字 found=true 标题头=Australia ne"
+        },
+        {
+          "kind": "render",
+          "label": "未选文章的提示已消失（不是还停在空态）",
+          "ok": true,
+          "detail": "selectHint 仍在=false"
+        },
+        {
+          "kind": "render",
+          "label": "面板内没有占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "接口给的正文出现在详情面板里（DOM↔详情响应对账，两侧都归一空白）",
+          "ok": true,
+          "detail": "来源=content_html 正文=1395字 面板=1560字 | 切片「n be recovered and put back to」 | 面板头「Australia news live: Albanese names former News Corp executive as consul-general in New York World news | The Guardian ·」"
+        },
+        {
+          "kind": "data",
+          "label": "详情标题与列表首条同源",
+          "ok": true,
+          "detail": "Australia ne"
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n1918\n检索\n4179\n稍后阅读\n3\n历史存档\n215\n分组\nai\n科技热榜\n17\n国际视野\n3\n文化生活\n27\n国际科技\n118\n生活方式\n国际观察\n社会文化\n创投\n财经\n科技\nAI\n公众号\n1039\n播客\n8\n人工智能\n189\n编程技术\n16\n新闻媒体\n130\n生活方式与文化\n68\n商业科技\n146\n金融经济\n86\n产品\n23\n效率成长\n1\n订阅源\n1A23 Studio\n2\n251 的魔法实验室\n30 for 30 Podcasts\n36氪\n76\n49th LunaSea\n61’s life\n9to5Mac\n32\n@Lenciel\n1\nA\nAAAS: Science: Table of Contents\nABB00717\n12\nAI Breakfast(@AiBreakfast)\nAI Engineer(@aiDotEngineer)\n10\nAI SDK(@aisdk)\nAI at Meta(@AIatMeta)\nAI 开发者日报\nAI产品黄叔(@PMbackttfuture)\n8\nAK(@_akhaliq)\n3\nA\nALBERTAZ\nA\nAWS Architecture Blog\n2\nA\nAWS Architecture Blog\nAWS Machine Learning Blog\n6\nAWS News Blog\nAadit Sheth(@aaditsh)\n4\nAbyss的小屋\nAdam D'Angelo(@adamdangelo)\nAkshay Kothari(@akothari)\n3\nAl Jazeera – Breaking News, World News and Video from Al Jazeera\n76\nAlberto De Bortoli\nAlex Albert(@ale",
+      "assertTargets": "列表有可点的行 Australia ne\n点得到那篇文章所在的行 Australia ne\n页面发出的详情请求返回 200 且带非空 content_html /api/articles/304722 status=200 len=1862 键=id,source_id,title,url,author,cover\n详情展开后页面文本显著增长 文本 18404→19969\n详情面板（article 元素）出现、含被点标题，且长度接得住正文 面板=1560字 正文明文=1395字 found=true 标题头=Australia ne\n未选文章的提示已消失（不是还停在空态） selectHint 仍在=false\n面板内没有占位文案 \n接口给的正文出现在详情面板里（DOM↔详情响应对账，两侧都归一空白） 来源=content_html 正文=1395字 面板=1560字 | 切片「n be recovered and put back to」 | 面板头「Australia news live: Albanese names former News Corp executive as consul-general in New York World news | The Guardian ·」\n详情标题与列表首条同源 Australia ne",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/reader/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/status/daily-sources",
+          "status": 200,
+          "bytes": 563,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 150,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 21323,
+          "ms": 16,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-19T21:41:39.958Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 1849,
+          "ms": 10,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/profile_images/2088074761607987200/25voc1vQ_normal.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 159583,
+          "ms": 8,
+          "params": {
+            "u": {
+              "value": "https://pbs.twimg.com/media/HSrfl3fWQAApfxr.png",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 33589,
+          "ms": 14,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 694,
+          "ms": 12,
+          "params": {}
+        },
+        {
+          "url": "/api/status",
+          "status": 200,
+          "bytes": 261,
+          "ms": 6,
+          "params": {}
+        },
+        {
+          "url": "/api/articles/304722",
+          "status": 200,
+          "bytes": 2811,
+          "ms": 31,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E9-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E9-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 2048,
+        "detailBodySource": "content_html",
+        "detailOrigChars": 1419,
+        "detailBodyChars": 1395
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E10",
+      "title": "未知路径 /videos/：渲染可见 404 兜底，且不得静默渲染成阅读器（B72 已修）",
+      "status": "pass",
+      "why": "",
+      "assertions": 4,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "未知路径出现 404 兜底块（且只有一块）",
+          "ok": true,
+          "detail": "notfound 块数=1"
+        },
+        {
+          "kind": "render",
+          "label": "不再静默渲染成阅读器（页面不含「加载更多/稍后阅读」）",
+          "ok": true,
+          "detail": "兜底页文本：阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n404\n\n没有这个页面：/videos/\n\n阅读器\n每日早报\n我"
+        },
+        {
+          "kind": "api",
+          "label": "兜底页不发起阅读器数据请求（/api/articles 调用数=0）",
+          "ok": true,
+          "detail": "实际 0 次："
+        },
+        {
+          "kind": "data",
+          "label": "document 仍是 200 HTML（服务端不 404，兜底由客户端负责）",
+          "ok": true,
+          "detail": "document status=200"
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n404\n\n没有这个页面：/videos/\n\n阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读",
+      "assertTargets": "未知路径出现 404 兜底块（且只有一块） notfound 块数=1\n不再静默渲染成阅读器（页面不含「加载更多/稍后阅读」） 兜底页文本：阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n404\n\n没有这个页面：/videos/\n\n阅读器\n每日早报\n我\n兜底页不发起阅读器数据请求（/api/articles 调用数=0） 实际 0 次：\ndocument 仍是 200 HTML（服务端不 404，兜底由客户端负责） document status=200",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/videos/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 2506,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 530221,
+          "ms": 30,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260920T213346/screens/E10-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260920T213346/screens/E10-r1.png",
+        "docs\\eval\\e2e\\20260920T213346/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 140
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    }
+  ],
+  "process": {
+    "ran": true,
+    "at": "2026-09-20T21:42:06.769Z",
+    "total": 8,
+    "passed": 8,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failedNames": [],
+    "finalExitCode": 1,
+    "results": [
+      {
+        "name": "check_screenshot_taken",
+        "ok": true,
+        "why": "10 张截图均可解析且落在运行窗口内"
+      },
+      {
+        "name": "check_report_generated",
+        "ok": true,
+        "why": "报告 10 条用例，与剧本清单一致"
+      },
+      {
+        "name": "check_assertions_executed",
+        "ok": true,
+        "why": "10 条用例均有断言"
+      },
+      {
+        "name": "check_no_stub_text",
+        "ok": true,
+        "why": "无占位/桩文案命中"
+      },
+      {
+        "name": "check_evidence_paths_resolve",
+        "ok": true,
+        "why": "10 个引用路径均可解析"
+      },
+      {
+        "name": "check_exit_code_honest",
+        "ok": true,
+        "why": "1 条命令都记了自己的退出码"
+      },
+      {
+        "name": "check_probe_params_sourced",
+        "ok": true,
+        "why": "参数均带 file:line 出处（抽样计数 3）"
+      },
+      {
+        "name": "check_assertion_kinds",
+        "ok": true,
+        "why": "10 条用例三类断言齐"
+      }
+    ]
+  }
+}
