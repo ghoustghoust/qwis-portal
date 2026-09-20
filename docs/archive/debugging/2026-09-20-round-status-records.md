@@ -350,3 +350,11 @@
 | 9 F2P | ⛔ 不适用 | 本批属"基线无对应形态"的新增门禁（`lib/retention.js` 是新建文件），按坑 #64 规则②以突变对照取证：R2 摘掉 `later = 0` 必须多删 2 条、R4 现场把 videos 列入可删必须被 `videosDeletable` 报出来 |
 | 10 `eval:e2e` | ⛔ 本批未跑 | 页面可见面未变（清理语义在 runner/定时任务里，前台无感）；随 #5 接回触发口那批一起跑验收轮 |
 | — 已知空洞（不藏） | 记录 | `api/[...slug].js` 的 `ARTICLE_CLEAN_WHERE` 是第三份谓词，该文件有并行会话在改，本轮没收；W17 对它按**整文件**豁免 ⇒ 那文件里新写的第二份谓词会被一起放过。收口随 #4/#8 |
+
+### 09-20 夜 · 换库后遗症修复（B119①，生产配置一次直写）
+
+> 触发：用户口径"优先修复换库后导致的问题，保证线上所有功能正常"。
+> 写入面：只有 `settings.daily.articleSourceIds`（87 → `[]`）；备份在本轮临时件 `.tmpchk/settings.daily.backup.json`（含改前整值），回滚 = 把该值原样 UPDATE 回去。
+> 一手读数：26h 窗口候选 82 条/9 源 → 1,939 条/308 源；`spotlight` 改前改后都是 53（未受影响，佐证"绕开 PUT /api/settings/daily"的选择）。
+> 未做的验证：不手动 `workflow_dispatch daily-ai`（免费 AI 池只打一遍），可见面等 21:30 批次出报后按 B120 的形态指纹复验（认 `reason`/`scores`/`schemaVersion`，不按"最新一行"）。
+> 探针自纠三次（同族坑 #59）：`/api/mybrief` 的 `sections` 是**对象**（top/featured/rest/media），第一版探针按数组取，报出"我的早报 items=0"的假红——线上实有 21 条。判"线上功能不正常"以前先看响应形状。
