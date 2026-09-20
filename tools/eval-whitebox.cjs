@@ -366,6 +366,21 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
   if (r.exempt.length) notes.push(`  i W17：已记账待收口的第二份谓词 ${r.exempt.length} 处 —— ${Object.keys(require('../lib/retention').PENDING_UNIFY).join('、')}（豁免按**整文件**记账，所以该文件里新写的第二份谓词会被一起放过，收口前这条是已知空洞）`);
 }
 
+// ── W23 测试里的写方法必须指隔离库（B117 / spec43 §六，2026-09-21）──
+// 判据与回归锁 tests/regression-test-isolation.test.js 共用 lib/test-isolation#findWriteWithoutIsolation。
+// 病根：`regression-20260918` 曾对生产发 `DELETE /api/weekly/archive/999999`（真 Bearer token），
+// 没删成只因为"999999 期恰好不存在"；`regression-20260913b` R6 曾对生产发 POST cleanup/preview。
+// 同族事故翻过车（坑 #17：一条测试把线上 8 个订阅源清零），而 B83 那句"全部搬完"就是说满了被 B117 推翻的。
+{
+  const { findWriteWithoutIsolation } = require('../lib/test-isolation');
+  const r = findWriteWithoutIsolation(ROOT);
+  ok('W23', r.scanned >= 50 && r.violations.length === 0 && r.isolated.length >= 4,
+    `扫 ${r.scanned} 份测试；写方法 + 真碰云端层 + 未隔离：${JSON.stringify(r.violations.map((v) => v.file))}；` +
+    `已隔离的写方法测试应 >=4 份，实得 ${r.isolated.length}：${r.isolated.join('、') || '无'}；` +
+    `只读碰云端（spec43 §六：允许）${r.readOnlyOnCloud.length} 份`);
+  notes.push('  i W23：判据是**整文件**粒度（同一文件里出现过 file: 就整份放过），已知空洞见 lib/test-isolation.js 末段');
+}
+
 const asJson = process.argv.includes('--json');
 if (asJson) console.log(JSON.stringify({ ok: fails.length === 0, fails, notes }, null, 1));
 else { for (const n of notes) console.log(n); for (const f of fails) console.log('  ✗ ' + f); console.log(`whitebox：${fails.length ? `${fails.length} 项不通过` : '全过'}`); }

@@ -261,10 +261,12 @@ const TOPLEVEL_LIB_ALLOW = {
   'source-axes.test.js': ['source-axes'],
 };
 // 坑 #67 点名的那份（顶层读 `.env` + require `api/_ai`）：它永远不能当契约锁的宿主。
-// 下面三份是本轮把扫描面扩到全量后**新抓出来的既存实例** —— 它们读 `.env` 是为了拿打云端 Turso 的
-// token，正是 B117/放行表 #13 那三份"仍绑生产"的测试；搬到隔离库是那条待办的动作，本轮不顺手改。
+// 下面两份是 09-20 把扫描面扩到全量时抓出来的既存实例。**09-21 B117 收口后名单已收回一份**：
+// `regression-20260918` 的两条写方法用例搬进 `regression-cloud-writes-isolated`（不再读 .env），
+// 剩下的两份（`20260913` / `20260913b`）现在只剩 GET —— 读生产按 spec43 §六 是可接受的取证方式，
+// 但它们仍读 .env 拿 token，所以豁免留着；真搬干净是 B83 的后续动作，别把这格当装饰养着。
 const ENV_READ_ALLOW = ['regression-daily-ai.test.js', 'regression-20260913.test.js',
-  'regression-20260913b.test.js', 'regression-20260918.test.js'];
+  'regression-20260913b.test.js'];
 const LAZY_HOSTS = ['regression-20260920b.test.js', 'regression-20260920c.test.js', 'regression-ai-throttle.test.js'];
 
 test('#64-1 锁文件不许在顶层 require 近期新建的模块（必须惰性取，否则 F2P 只能读成"锁假了"）', () => {

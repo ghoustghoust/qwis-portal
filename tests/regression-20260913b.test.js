@@ -85,14 +85,11 @@ test('R5 OPML 导出：结构/转义/分组嵌套', async () => {
   assert.match(d.headers['Content-Disposition'] || '', /attachment/);
 });
 
-test('R6 cleanup preview：视频恒 0 + 豁免语义（授权只读）', async () => {
-  const d = await call('POST', '/api/data/cleanup/preview', { days: 7 });
-  assert.strictEqual(d.status, 200);
-  const wd = d.body?.willDelete || {};
-  assert.equal(wd.videos, 0, '视频/播客不参与清理');
-  assert.ok(typeof wd.articles === 'number' && wd.articles >= 0);
-  assert.ok(d.body?.total >= wd.articles);
-});
+// R6（`POST /api/data/cleanup/preview {days:7}` 直打生产）已按 B117 搬走 ——
+// → `tests/regression-cloud-writes-isolated.test.js` W-5：在本地 libsql 文件库里种
+//   「老未读 / 老已读 / 老稍后读 / 老精选 / 新未读 + 一条老视频」，先断言 preview 只数出 1 条，
+//   再**真跑一次 cleanup**，断言存活的正是那四条豁免/窗口内的。原用例只断言"视频恒 0 + articles>=0"，
+//   恒真且押在生产只读上；本文件其余用例全是 GET（读生产是可接受的取证方式）。
 
 test('R7 周刊编辑综述：任务结构整段复述一票否决（specs/24 对抗案例）', async () => {
   const _ai2 = require('../api/_ai');

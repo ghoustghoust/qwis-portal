@@ -200,6 +200,7 @@
 | W20 | 同一份 system prompt 的字面量不许出现 ≥2 份（本地 settings / 云端文件+内嵌 / runner 常量） | B111（实测 3~4 份来源） | `39-6-translate-prompt-single-source.md` |
 | W21（或并入 W3c） | 新增 settings 键若每一处读点都长成都响应属性 → 判假开关（W3b 的加强版） | H10/B51/BL8 家族；`ai.minIntervalMs=0` 即现例 | `39-5-real-control-points.md` |
 | W22 | 观看/已读类**写回 SQL 谓词**在 `api/` 与 `server/` 只许一份（原误占 W18，已改号） | B62/36-4（云端 `videos.watched_at` 无写回，本地是唯一一份） | `36-4-cloud-video-watchback.md` |
+| W23 | 测试里出现**写方法**（POST/PUT/PATCH/DELETE）且**真碰云端层**（require `[...slug]` 或自建 `createClient`）时，必须已指 `TURSO_DATABASE_URL='file:'` 或 `require('./helpers')`，否则即红 | ✅ **已实现（09-21 B117 收口）**：判据在 `lib/test-isolation.js#findWriteWithoutIsolation`，白盒 W23 与锁 `tests/regression-test-isolation.test.js` T1~T7 同源；行为面另有 `tests/regression-cloud-writes-isolated.test.js` W-1~W-6（隔离库上真跑归档删除与 cleanup）。**已知空洞**：判据是**整文件**粒度（同文件里出现过一次 `file:` 就整份放过），与 W17 对 `api/[...slug].js` 的豁免同族，见 `lib/test-isolation.js` 末段 | `docs/specs/43-collect-retention-safety/spec.md` §六 |
 
 > 实现这些判据时的硬纪律（沿用坑 #58/#59/#63）：派生自事实而非手写名单、非空断言、**排除自身与 `tools/_` 探针**、
 > 剥注释、只认字符串字面量；每条新判据都要配"坏样本必红 + 只写在注释里不许红"的负向自证，且与它的 `tests/` 锁**同批**提交（坑 #61，否则 W9 会红——本轮 B104 就是前车之鉴）。
