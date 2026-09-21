@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<opml version="2.0">
+  <head>
+    <title>Tidings Curated RSS — Security</title>
+    <dateCreated>2026-08-13</dateCreated>
+    <dateModified>2026-08-13</dateModified>
+    <ownerName>Tidings RSS Community</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+  <body>
+    <outline text="🛡️ Security" title="🛡️ Security">
+      <outline text="CISA" title="CISA" type="rss" xmlUrl="https://www.cisa.gov/news.xml" htmlUrl="https://www.cisa.gov/news-events" />
+      <outline text="FreeBuf 网络安全行业门户" title="FreeBuf 网络安全行业门户" type="rss" xmlUrl="https://www.freebuf.com/feed" htmlUrl="https://www.freebuf.com/" />
+      <outline text="Krebs on Security" title="Krebs on Security" type="rss" xmlUrl="https://krebsonsecurity.com/feed/" htmlUrl="https://krebsonsecurity.com" />
+      <outline text="Schneier on Security" title="Schneier on Security" type="rss" xmlUrl="https://www.schneier.com/blog/index.rdf" htmlUrl="https://www.schneier.com/" />
+      <outline text="Security Affairs" title="Security Affairs" type="rss" xmlUrl="https://securityaffairs.co/wordpress/feed" htmlUrl="https://securityaffairs.com/" />
+      <outline text="ZDNET Security" title="ZDNET Security" type="rss" xmlUrl="https://www.zdnet.com/topic/security/rss.xml" htmlUrl="https://www.zdnet.com/" />
+      <outline text="安全客" title="安全客" type="rss" xmlUrl="https://api.anquanke.com/data/v1/rss" htmlUrl="https://www.anquanke.com" />
+      <outline text="腾讯玄武实验室" title="腾讯玄武实验室" type="rss" xmlUrl="https://wechat2rss.xlab.app/feed/923c0e2f33b6d39c8a826a90f185725f0edb10e8.xml" htmlUrl="https://wechat2rss.xlab.app/feed/923c0e2f33b6d39c8a826a90f185725f0edb10e8.xml" />
+    </outline>
+  </body>
+</opml>

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<opml version="2.0">
+  <head>
+    <title>Tidings Curated RSS — Technical Communities</title>
+    <dateCreated>2026-08-13</dateCreated>
+    <dateModified>2026-08-13</dateModified>
+    <ownerName>Tidings RSS Community</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+  <body>
+    <outline text="👥 Communities" title="👥 Communities">
+      <outline text="Ask HN" title="Ask HN" type="rss" xmlUrl="https://hnrss.org/ask" htmlUrl="https://news.ycombinator.com/ask" />
+      <outline text="Hacker News" title="Hacker News" type="rss" xmlUrl="https://news.ycombinator.com/rss" htmlUrl="https://news.ycombinator.com/" />
+      <outline text="Kubernetes · General Discussions" title="Kubernetes · General Discussions" type="rss" xmlUrl="https://discuss.kubernetes.io/c/general-discussions/6.rss?order=created" htmlUrl="https://discuss.kubernetes.io/c/general-discussions/6" />
+      <outline text="LINUX DO · 文档共建" title="LINUX DO · 文档共建" type="rss" xmlUrl="https://linuxdorss.longpink.com/wiki.xml" htmlUrl="https://linux.do/c/wiki/42" />
+      <outline text="Lobsters" title="Lobsters" type="rss" xmlUrl="https://lobste.rs/rss" htmlUrl="https://lobste.rs/" />
+      <outline text="NixOS Development" title="NixOS Development" type="rss" xmlUrl="https://discourse.nixos.org/c/dev/14.rss?order=created" htmlUrl="https://discourse.nixos.org/c/dev/14" />
+      <outline text="OpenAI Developer Community · API" title="OpenAI Developer Community · API" type="rss" xmlUrl="https://community.openai.com/c/api/7.rss?order=created" htmlUrl="https://community.openai.com/c/api/7" />
+      <outline text="Python Core Development" title="Python Core Development" type="rss" xmlUrl="https://discuss.python.org/c/core-dev/23.rss?order=created" htmlUrl="https://discuss.python.org/c/core-dev/23" />
+      <outline text="Reddit · Linux, Self-Hosted, DevOps &amp; AI" title="Reddit · Linux, Self-Hosted, DevOps &amp; AI" type="rss" xmlUrl="https://www.reddit.com/r/linux+selfhosted+devops+LocalLLaMA+MachineLearning/new/.rss" htmlUrl="https://www.reddit.com/r/linux+selfhosted+devops+LocalLLaMA+MachineLearning/new/" />
+      <outline text="Rust Internals · Language Design" title="Rust Internals · Language Design" type="rss" xmlUrl="https://internals.rust-lang.org/c/language-design/21.rss?order=created" htmlUrl="https://internals.rust-lang.org/c/language-design/21" />
+      <outline text="Show HN" title="Show HN" type="rss" xmlUrl="https://hnrss.org/show" htmlUrl="https://news.ycombinator.com/shownew" />
+      <outline text="V2EX" title="V2EX" type="rss" xmlUrl="https://v2ex.com/index.xml" htmlUrl="https://www.v2ex.com/" />
+      <outline text="V2EX · 创意" title="V2EX · 创意" type="rss" xmlUrl="https://www.v2ex.com/feed/tab/creative.xml" htmlUrl="https://www.v2ex.com/?tab=creative" />
+      <outline text="V2EX · 技术" title="V2EX · 技术" type="rss" xmlUrl="https://www.v2ex.com/feed/tab/tech.xml" htmlUrl="https://www.v2ex.com/?tab=tech" />
+    </outline>
+  </body>
+</opml>

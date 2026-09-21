@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<opml version="2.0">
+  <head>
+    <title>Tidings Curated RSS — Fresh News</title>
+    <dateCreated>2026-08-13</dateCreated>
+    <dateModified>2026-08-13</dateModified>
+    <ownerName>Tidings RSS Community</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+  <body>
+    <outline text="🛡️ Security" title="🛡️ Security">
+      <outline text="CISA" title="CISA" type="rss" xmlUrl="https://www.cisa.gov/news.xml" htmlUrl="https://www.cisa.gov/news-events" />
+      <outline text="FreeBuf 网络安全行业门户" title="FreeBuf 网络安全行业门户" type="rss" xmlUrl="https://www.freebuf.com/feed" htmlUrl="https://www.freebuf.com/" />
+      <outline text="Krebs on Security" title="Krebs on Security" type="rss" xmlUrl="https://krebsonsecurity.com/feed/" htmlUrl="https://krebsonsecurity.com" />
+      <outline text="Schneier on Security" title="Schneier on Security" type="rss" xmlUrl="https://www.schneier.com/blog/index.rdf" htmlUrl="https://www.schneier.com/" />
+      <outline text="Security Affairs" title="Security Affairs" type="rss" xmlUrl="https://securityaffairs.co/wordpress/feed" htmlUrl="https://securityaffairs.com/" />
+      <outline text="ZDNET Security" title="ZDNET Security" type="rss" xmlUrl="https://www.zdnet.com/topic/security/rss.xml" htmlUrl="https://www.zdnet.com/" />
+      <outline text="安全客" title="安全客" type="rss" xmlUrl="https://api.anquanke.com/data/v1/rss" htmlUrl="https://www.anquanke.com" />
+    </outline>
+    <outline text="📰 Technology Media" title="📰 Technology Media">
+      <outline text="36氪" title="36氪" type="rss" xmlUrl="https://www.36kr.com/feed" htmlUrl="http://36kr.com" />
+      <outline text="Ars Technica" title="Ars Technica" type="rss" xmlUrl="https://feeds.arstechnica.com/arstechnica/index" htmlUrl="https://arstechnica.com" />
+      <outline text="Engadget" title="Engadget" type="rss" xmlUrl="https://www.engadget.com/rss.xml" htmlUrl="https://www.engadget.com/" />
+      <outline text="IT之家" title="IT之家" type="rss" xmlUrl="https://www.ithome.com/rss/" htmlUrl="https://www.ithome.com/" />
+      <outline text="MIT Technology Review" title="MIT Technology Review" type="rss" xmlUrl="https://www.technologyreview.com/feed/" htmlUrl="https://www.technologyreview.com/" />
+      <outline text="TechCrunch" title="TechCrunch" type="rss" xmlUrl="https://techcrunch.com/feed/" htmlUrl="https://techcrunch.com/" />
+      <outline text="The Verge — News" title="The Verge — News" type="rss" xmlUrl="https://www.theverge.com/rss/index.xml" htmlUrl="https://www.theverge.com" />
+      <outline text="WIRED" title="WIRED" type="rss" xmlUrl="https://www.wired.com/feed/rss" htmlUrl="https://www.wired.com" />
+      <outline text="少数派" title="少数派" type="rss" xmlUrl="https://sspai.com/feed" htmlUrl="https://sspai.com" />
+      <outline text="爱范儿" title="爱范儿" type="rss" xmlUrl="https://www.ifanr.com/feed" htmlUrl="https://www.ifanr.com?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=" />
+    </outline>
+    <outline text="📮 Tech Newsletters &amp; Weeklies" title="📮 Tech Newsletters &amp; Weeklies">
+      <outline text="AIGC Weekly" title="AIGC Weekly" type="rss" xmlUrl="https://quaily.com/op7418/feed/atom" htmlUrl="https://quaily.com/op7418/feed/atom" />
+      <outline text="Golang Weekly" title="Golang Weekly" type="rss" xmlUrl="https://golangweekly.com/rss/" htmlUrl="https://golangweekly.com/" />
+      <outline text="大橘和朋友们的周刊" title="大橘和朋友们的周刊" type="rss" xmlUrl="https://rrorangeandfriends.de/feed.xml" htmlUrl="https://rrorangeandfriends.de" />
+      <outline text="潮流周刊" title="潮流周刊" type="rss" xmlUrl="https://weekly.tw93.fun/rss.xml" htmlUrl="https://weekly.tw93.fun/" />
+    </outline>
+    <outline text="🗞️ News" title="🗞️ News">
+      <outline text="Al Jazeera – Breaking News, World News and Video from Al Jazeera" title="Al Jazeera – Breaking News, World News and Video from Al Jazeera" type="rss" xmlUrl="https://www.aljazeera.com/xml/rss/all.xml" htmlUrl="https://www.aljazeera.com" />
+      <outline text="BBC News — News" title="BBC News — News" type="rss" xmlUrl="https://feeds.bbci.co.uk/news/world/rss.xml" htmlUrl="https://www.bbc.co.uk/news/world" />
+      <outline text="Cointelegraph.com News" title="Cointelegraph.com News" type="rss" xmlUrl="https://cointelegraph.com/rss/tag/blockchain" htmlUrl="https://cointelegraph.com" />
+      <outline text="HackerNews每日摘要 on SuperTechFans" title="HackerNews每日摘要 on SuperTechFans" type="rss" xmlUrl="https://www.supertechfans.com/cn/index.xml" htmlUrl="https://supertechfans.com/cn/" />
+      <outline text="InfoQ — News" title="InfoQ — News" type="rss" xmlUrl="https://feed.infoq.com/" htmlUrl="https://www.infoq.com" />
+      <outline text="InfoQ 推荐" title="InfoQ 推荐" type="rss" xmlUrl="https://plink.anyfeeder.com/infoq/recommend" htmlUrl="https://www.infoq.cn" />
+      <outline text="MIT 科技评论 - 本周热榜" title="MIT 科技评论 - 本周热榜" type="rss" xmlUrl="https://rsshub.bestblogs.dev/mittrchina/hot" htmlUrl="https://www.mittrchina.com/hot" />
+      <outline text="News from Google" title="News from Google" type="rss" xmlUrl="https://blog.google/rss" htmlUrl="https://blog.google/" />
+      <outline text="NPR Topics: World" title="NPR Topics: World" type="rss" xmlUrl="https://feeds.npr.org/1004/rss.xml" htmlUrl="https://www.npr.org/templates/story/story.php?storyId=1004" />
+      <outline text="NYT &gt; Technology" title="NYT &gt; Technology" type="rss" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml" htmlUrl="https://www.nytimes.com/section/technology" />
+      <outline text="NYT &gt; World News" title="NYT &gt; World News" type="rss" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/World.xml" htmlUrl="https://www.nytimes.com/section/world" />
+      <outline text="ProPublica" title="ProPublica" type="rss" xmlUrl="https://www.propublica.org/feeds/propublica/main" htmlUrl="https://www.propublica.org/" />
+      <outline text="Top stories - Google News" title="Top stories - Google News" type="rss" xmlUrl="https://news.google.com/rss" htmlUrl="https://news.google.com/?hl=en-US&amp;gl=US&amp;ceid=US:en" />
+      <outline text="World" title="World" type="rss" xmlUrl="https://feeds.washingtonpost.com/rss/world" htmlUrl="https://www.washingtonpost.com" />
+      <outline text="World news | The Guardian" title="World news | The Guardian" type="rss" xmlUrl="https://www.theguardian.com/world/rss" htmlUrl="https://www.theguardian.com/world" />
+      <outline text="World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India" title="World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India" type="rss" xmlUrl="https://timesofindia.indiatimes.com/rssfeeds/296589292.cms" htmlUrl="https://timesofindia.indiatimes.com/world" />
+      <outline text="奇客Solidot–传递最新科技情报" title="奇客Solidot–传递最新科技情报" type="rss" xmlUrl="https://www.solidot.org/index.rss" htmlUrl="https://www.solidot.org" />
+      <outline text="掘金本周最热" title="掘金本周最热" type="rss" xmlUrl="https://rsshub.bestblogs.dev/juejin/trending/all/weekly" htmlUrl="https://juejin.im/recommended?sort=weekly_hottest" />
+      <outline text="站长之家" title="站长之家" type="rss" xmlUrl="https://app.chinaz.com/?app=rss" htmlUrl="http://www.chinaz.com" />
+      <outline text="蓝点网" title="蓝点网" type="rss" xmlUrl="https://www.landiannews.com/feed" htmlUrl="https://www.landian.news" />
+      <outline text="虎嗅" title="虎嗅" type="rss" xmlUrl="https://rss.huxiu.com/" htmlUrl="https://www.huxiu.com" />
+      <outline text="钛媒体：引领未来商业与生活新知" title="钛媒体：引领未来商业与生活新知" type="rss" xmlUrl="https://www.tmtpost.com/feed" htmlUrl="http://www.tmtpost.com" />
+    </outline>
+    <outline text="👥 Communities" title="👥 Communities">
+      <outline text="V2EX" title="V2EX" type="rss" xmlUrl="https://v2ex.com/index.xml" htmlUrl="https://www.v2ex.com/" />
+    </outline>
+  </body>
+</opml>

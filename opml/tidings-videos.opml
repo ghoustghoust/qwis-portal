@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='utf-8'?>
+<opml version="2.0">
+  <head>
+    <title>Tidings Curated RSS — Video Channels</title>
+    <dateCreated>2026-08-13</dateCreated>
+    <dateModified>2026-08-13</dateModified>
+    <ownerName>Tidings RSS Community</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+  <body>
+    <outline text="🎬 Videos" title="🎬 Videos">
+      <outline text="3Blue1Brown" title="3Blue1Brown" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw" htmlUrl="https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw" />
+      <outline text="a16z" title="a16z" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC9cn0TuPq4dnbTY-CBsm8XA" htmlUrl="https://www.youtube.com/channel/UC9cn0TuPq4dnbTY-CBsm8XA" />
+      <outline text="Acquired" title="Acquired" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCyFqFYfTW2VoIQKylJ04Rtw" htmlUrl="https://www.youtube.com/channel/UCyFqFYfTW2VoIQKylJ04Rtw" />
+      <outline text="AI Engineer" title="AI Engineer" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCLKPca3kwwd-B59HNr-_lvA" htmlUrl="https://www.youtube.com/channel/UCLKPca3kwwd-B59HNr-_lvA" />
+      <outline text="AI Explained" title="AI Explained" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCNJ1Ymd5yFuUPtn21xtRbbw" htmlUrl="https://www.youtube.com/channel/UCNJ1Ymd5yFuUPtn21xtRbbw" />
+      <outline text="AI Master" title="AI Master" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC0yHbz4OxdQFwmVX2BBQqLg" htmlUrl="https://www.youtube.com/channel/UC0yHbz4OxdQFwmVX2BBQqLg" />
+      <outline text="AI Search" title="AI Search" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A" htmlUrl="https://www.youtube.com/channel/UCIgnGlGkVRhd4qNFcEwLL4A" />
+      <outline text="AICodeKing" title="AICodeKing" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC0m81bQuthaQZmFbXEY9QSw" htmlUrl="https://www.youtube.com/channel/UC0m81bQuthaQZmFbXEY9QSw" />
+      <outline text="Alex Kantrowitz" title="Alex Kantrowitz" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCye1YedIypHffYb8k6Gp9wg" htmlUrl="https://www.youtube.com/channel/UCye1YedIypHffYb8k6Gp9wg" />
+      <outline text="Ali Abdaal" title="Ali Abdaal" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCoOae5nYA7VqaXzerajD0lg" htmlUrl="https://www.youtube.com/channel/UCoOae5nYA7VqaXzerajD0lg" />
+      <outline text="All-In Podcast" title="All-In Podcast" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCESLZhusAkFfsNsApnjF_Cg" htmlUrl="https://www.youtube.com/channel/UCESLZhusAkFfsNsApnjF_Cg" />
+      <outline text="Andrej Karpathy" title="Andrej Karpathy" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCXUPKJO5MZQN11PqgIvyuvQ" htmlUrl="https://www.youtube.com/channel/UCXUPKJO5MZQN11PqgIvyuvQ" />
+      <outline text="Andrew Huberman" title="Andrew Huberman" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2D2CMWXMOVWx7giW1n3LIg" htmlUrl="https://www.youtube.com/channel/UC2D2CMWXMOVWx7giW1n3LIg" />
+      <outline text="Android Developers" title="Android Developers" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=androiddevelopers" htmlUrl="https://www.youtube.com/channel/UCVHFbqXqoYvEWM1Ddxl0QDg" />
+      <outline text="AssemblyAI" title="AssemblyAI" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCtatfZMf-8EkIwASXM4ts0A" htmlUrl="https://www.youtube.com/channel/UCtatfZMf-8EkIwASXM4ts0A" />
+      <outline text="BBC Earth" title="BBC Earth" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCwmZiChSryoWQCZMIQezgTg" htmlUrl="https://www.youtube.com/channel/UCwmZiChSryoWQCZMIQezgTg" />
+      <outline text="Beyond Coding" title="Beyond Coding" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCdMz6KKEDW_1Qqas-ya7S6w" htmlUrl="https://www.youtube.com/channel/UCdMz6KKEDW_1Qqas-ya7S6w" />
+      <outline text="Bloomberg Originals" title="Bloomberg Originals" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=Bloomberg" htmlUrl="https://www.youtube.com/channel/UCUMZ7gohGI9HcU9VNsr2FJQ" />
+      <outline text="Branch Education" title="Branch Education" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCdp4_l1vPmpN-gDbUwhaRUQ" htmlUrl="https://www.youtube.com/channel/UCdp4_l1vPmpN-gDbUwhaRUQ" />
+      <outline text="Business Insider" title="Business Insider" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=businessinsider" htmlUrl="https://www.youtube.com/channel/UCcyq283he07B7_KUX07mmtA" />
+      <outline text="ByteByteGo" title="ByteByteGo" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCZgt6AzoyjslHTC9dz0UoTw" htmlUrl="https://www.youtube.com/channel/UCZgt6AzoyjslHTC9dz0UoTw" />
+      <outline text="CNET" title="CNET" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=CNETTV" htmlUrl="https://www.youtube.com/channel/UCOmcA3f_RrH6b9NmcNa4tdg" />
+      <outline text="Computerphile" title="Computerphile" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA" htmlUrl="https://www.youtube.com/channel/UC9-y-6csu5WGm29I7JiwpnA" />
+      <outline text="Curious Refuge" title="Curious Refuge" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UClnFtyUEaxQOCd1s5NKYGFA" htmlUrl="https://www.youtube.com/channel/UClnFtyUEaxQOCd1s5NKYGFA" />
+      <outline text="DeepLearningAI — Video" title="DeepLearningAI — Video" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCcIXc5mJsHVYTZR1maL5l9w" htmlUrl="https://www.youtube.com/channel/UCcIXc5mJsHVYTZR1maL5l9w" />
+      <outline text="Dwarkesh Patel" title="Dwarkesh Patel" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCXl4i9dYBrFOabk0xGmbkRA" htmlUrl="https://www.youtube.com/channel/UCXl4i9dYBrFOabk0xGmbkRA" />
+      <outline text="Elizabeth Alli - DesignerUp" title="Elizabeth Alli - DesignerUp" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCw2R8kz3aotYtV9utqf0uaw" htmlUrl="https://www.youtube.com/channel/UCw2R8kz3aotYtV9utqf0uaw" />
+      <outline text="EO" title="EO" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UClWTCPVi-AU9TeCN6FkGARg" htmlUrl="https://www.youtube.com/channel/UClWTCPVi-AU9TeCN6FkGARg" />
+      <outline text="Fireship" title="Fireship" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA" htmlUrl="https://www.youtube.com/channel/UCsBjURrPoezykLs9EqgamOA" />
+      <outline text="freeCodeCamp.org" title="freeCodeCamp.org" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC8butISFwT-Wl7EV0hUK0BQ" htmlUrl="https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ" />
+      <outline text="Google" title="Google" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCK8sQmJBp8GCxrOtXWBpyEA" htmlUrl="https://www.youtube.com/channel/UCK8sQmJBp8GCxrOtXWBpyEA" />
+      <outline text="Google DeepMind" title="Google DeepMind" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCP7jMXSY2xbc3KCAE0MHQ-A" htmlUrl="https://www.youtube.com/channel/UCP7jMXSY2xbc3KCAE0MHQ-A" />
+      <outline text="Greg Isenberg" title="Greg Isenberg" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCPjNBjflYl0-HQtUvOx0Ibw" htmlUrl="https://www.youtube.com/channel/UCPjNBjflYl0-HQtUvOx0Ibw" />
+      <outline text="How I AI" title="How I AI" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCRYY7IEbkHLH_ScJCu9eWDQ" htmlUrl="https://www.youtube.com/channel/UCRYY7IEbkHLH_ScJCu9eWDQ" />
+      <outline text="Hung-yi Lee" title="Hung-yi Lee" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2ggjtuuWvxrHHHiaDH1dlQ" htmlUrl="https://www.youtube.com/channel/UC2ggjtuuWvxrHHHiaDH1dlQ" />
+      <outline text="Hussein Nasser" title="Hussein Nasser" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC_ML5xP23TOWKUcc-oAE_Eg" htmlUrl="https://www.youtube.com/channel/UC_ML5xP23TOWKUcc-oAE_Eg" />
+      <outline text="Invest Like The Best" title="Invest Like The Best" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCpQBb0fToph3jrDulwz1iUQ" htmlUrl="https://www.youtube.com/channel/UCpQBb0fToph3jrDulwz1iUQ" />
+      <outline text="Justin Sung" title="Justin Sung" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2Zs9v2hL2qZZ7vsAENsg4w" htmlUrl="https://www.youtube.com/channel/UC2Zs9v2hL2qZZ7vsAENsg4w" />
+      <outline text="Kurzgesagt – In a Nutshell" title="Kurzgesagt – In a Nutshell" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q" htmlUrl="https://www.youtube.com/channel/UCsXVk37bltHxD1rDPwtNM8Q" />
+      <outline text="LangChain" title="LangChain" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw" htmlUrl="https://www.youtube.com/channel/UCC-lyoTfSrcJzA1ab3APAgw" />
+      <outline text="Last Week in AI — Video" title="Last Week in AI — Video" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKARTq-t5SPMzwtft8FWwnA" htmlUrl="https://www.youtube.com/channel/UCKARTq-t5SPMzwtft8FWwnA" />
+      <outline text="leerob" title="leerob" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCZMli3czZnd1uoc1ShTouQw" htmlUrl="https://www.youtube.com/channel/UCZMli3czZnd1uoc1ShTouQw" />
+      <outline text="Lenny's Podcast" title="Lenny's Podcast" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6t1O76G0jYXOAoYCm153dA" htmlUrl="https://www.youtube.com/channel/UC6t1O76G0jYXOAoYCm153dA" />
+      <outline text="Lex Fridman" title="Lex Fridman" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA" htmlUrl="https://www.youtube.com/channel/UCSHZKyawb77ixDdsGog4iWA" />
+      <outline text="Liam Ottley" title="Liam Ottley" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg" htmlUrl="https://www.youtube.com/channel/UCui4jxDaMb53Gdh-AZUTPAg" />
+      <outline text="Linus Tech Tips" title="Linus Tech Tips" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=LinusTechTips" htmlUrl="https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw" />
+      <outline text="Luma" title="Luma" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC45T0I4p7A3dI0XvhivafZQ" htmlUrl="https://www.youtube.com/channel/UC45T0I4p7A3dI0XvhivafZQ" />
+      <outline text="Machine Learning Street Talk" title="Machine Learning Street Talk" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCMLtBahI5DMrt0NPvDSoIRQ" htmlUrl="https://www.youtube.com/channel/UCMLtBahI5DMrt0NPvDSoIRQ" />
+      <outline text="MacRumors" title="MacRumors" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=macrumors" htmlUrl="https://www.youtube.com/channel/UCaFGDBmGK_jw66u3av2Ysjw" />
+      <outline text="Marie Forleo" title="Marie Forleo" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=marieforleo" htmlUrl="https://www.youtube.com/channel/UCuoxrRDDgk3UUnxR4tlkJYQ" />
+      <outline text="Matt Wolfe" title="Matt Wolfe" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UChpleBmo18P08aKCIgti38g" htmlUrl="https://www.youtube.com/channel/UChpleBmo18P08aKCIgti38g" />
+      <outline text="Matthew Berman" title="Matthew Berman" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCawZsQWqfGSbCI5yjkdVkTA" htmlUrl="https://www.youtube.com/channel/UCawZsQWqfGSbCI5yjkdVkTA" />
+      <outline text="MrBeast" title="MrBeast" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCX6OQ3DkcsbYNE6H8uQQuVA" htmlUrl="https://www.youtube.com/channel/UCX6OQ3DkcsbYNE6H8uQQuVA" />
+      <outline text="mrblock 區塊先生" title="mrblock 區塊先生" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCN2hSM8fBcvZBa8OOKc24eg" htmlUrl="https://www.youtube.com/channel/UCN2hSM8fBcvZBa8OOKc24eg" />
+      <outline text="Nature on PBS" title="Nature on PBS" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCcBp_9YPyma4c3HTadmRJ3Q" htmlUrl="https://www.youtube.com/channel/UCcBp_9YPyma4c3HTadmRJ3Q" />
+      <outline text="nature video" title="nature video" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC7c8mE90qCtu11z47U0KErg" htmlUrl="https://www.youtube.com/channel/UC7c8mE90qCtu11z47U0KErg" />
+      <outline text="Naval" title="Naval" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCh_dVD10YuSghle8g6yjePg" htmlUrl="https://www.youtube.com/channel/UCh_dVD10YuSghle8g6yjePg" />
+      <outline text="Nick Saraev" title="Nick Saraev" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCbo-KbSjJDG6JWQ_MTZ_rNA" htmlUrl="https://www.youtube.com/channel/UCbo-KbSjJDG6JWQ_MTZ_rNA" />
+      <outline text="Nikhil Kamath" title="Nikhil Kamath" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCnC8SAZzQiBGYVSKZ_S3y4Q" htmlUrl="https://www.youtube.com/channel/UCnC8SAZzQiBGYVSKZ_S3y4Q" />
+      <outline text="NNgroup" title="NNgroup" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2oCugzU6W8-h95W7eBTUEg" htmlUrl="https://www.youtube.com/channel/UC2oCugzU6W8-h95W7eBTUEg" />
+      <outline text="No Priors: AI, Machine Learning, Tech, &amp; Startups" title="No Priors: AI, Machine Learning, Tech, &amp; Startups" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCSI7h9hydQ40K5MJHnCrQvw" htmlUrl="https://www.youtube.com/channel/UCSI7h9hydQ40K5MJHnCrQvw" />
+      <outline text="OpenAI" title="OpenAI" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCXZCJLdBC09xxGZ6gcdrc6A" htmlUrl="https://www.youtube.com/channel/UCXZCJLdBC09xxGZ6gcdrc6A" />
+      <outline text="Patrick Boyle" title="Patrick Boyle" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCASM0cgfkJxQ1ICmRilfHLw" htmlUrl="https://www.youtube.com/channel/UCASM0cgfkJxQ1ICmRilfHLw" />
+      <outline text="Pika Labs" title="Pika Labs" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC0SclYU4iiQRihtmDnak-gQ" htmlUrl="https://www.youtube.com/channel/UC0SclYU4iiQRihtmDnak-gQ" />
+      <outline text="PowerfulJRE" title="PowerfulJRE" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCzQUP1qoWDoEbmsQxvdjxgQ" htmlUrl="https://www.youtube.com/channel/UCzQUP1qoWDoEbmsQxvdjxgQ" />
+      <outline text="Product School" title="Product School" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6hlQ0x6kPbAGjYkoz53cvA" htmlUrl="https://www.youtube.com/channel/UC6hlQ0x6kPbAGjYkoz53cvA" />
+      <outline text="Real Engineering" title="Real Engineering" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCR1IuLEqb6UEA_zQ81kwXfg" htmlUrl="https://www.youtube.com/channel/UCR1IuLEqb6UEA_zQ81kwXfg" />
+      <outline text="Riley Brown" title="Riley Brown" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCMcoud_ZW7cfxeIugBflSBw" htmlUrl="https://www.youtube.com/channel/UCMcoud_ZW7cfxeIugBflSBw" />
+      <outline text="Runway" title="Runway" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCUBqu_z5uP0AZhYtuyFZB3g" htmlUrl="https://www.youtube.com/channel/UCUBqu_z5uP0AZhYtuyFZB3g" />
+      <outline text="Ryan Peterman" title="Ryan Peterman" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCzB7YGrrxDC_POenf86H3_Q" htmlUrl="https://www.youtube.com/channel/UCzB7YGrrxDC_POenf86H3_Q" />
+      <outline text="Sabin Civil Engineering" title="Sabin Civil Engineering" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCqZQJ4600a9wIfMPbYc60OQ" htmlUrl="https://www.youtube.com/channel/UCqZQJ4600a9wIfMPbYc60OQ" />
+      <outline text="Sequoia Capital" title="Sequoia Capital" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCWrF0oN6unbXrWsTN7RctTw" htmlUrl="https://www.youtube.com/channel/UCWrF0oN6unbXrWsTN7RctTw" />
+      <outline text="Silicon Valley Girl" title="Silicon Valley Girl" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCiq1FIgtEK7LRAOB1JXTPig" htmlUrl="https://www.youtube.com/channel/UCiq1FIgtEK7LRAOB1JXTPig" />
+      <outline text="SpaceX" title="SpaceX" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=spacexchannel" htmlUrl="https://www.youtube.com/channel/UCtI0Hodo5o5dUb67FeUjDeA" />
+      <outline text="Spring I/O" title="Spring I/O" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCLMPXsvSrhNPN3i9h-u8PYg" htmlUrl="https://www.youtube.com/channel/UCLMPXsvSrhNPN3i9h-u8PYg" />
+      <outline text="StatQuest with Josh Starmer" title="StatQuest with Josh Starmer" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCtYLUTtgS3k1Fg4y5tAhLbw" htmlUrl="https://www.youtube.com/channel/UCtYLUTtgS3k1Fg4y5tAhLbw" />
+      <outline text="Tao Prompts" title="Tao Prompts" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCc1qMq2UBJD9cSKbeBwGoZQ" htmlUrl="https://www.youtube.com/channel/UCc1qMq2UBJD9cSKbeBwGoZQ" />
+      <outline text="TED" title="TED" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug" htmlUrl="https://www.youtube.com/channel/UCAuUUnT6oDeKwE6v1NGQxug" />
+      <outline text="The AI Advantage" title="The AI Advantage" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCHhYXsLBEVVnbvsq57n1MTQ" htmlUrl="https://www.youtube.com/channel/UCHhYXsLBEVVnbvsq57n1MTQ" />
+      <outline text="The Futur" title="The Futur" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC-b3c7kxa5vU-bnmaROgvog" htmlUrl="https://www.youtube.com/channel/UC-b3c7kxa5vU-bnmaROgvog" />
+      <outline text="The Knowledge Project Podcast" title="The Knowledge Project Podcast" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA" htmlUrl="https://www.youtube.com/channel/UCLtTf_uKt0Itd0NG7txrwXA" />
+      <outline text="The Pragmatic Engineer" title="The Pragmatic Engineer" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCPbwhExawYrn9xxI21TFfyw" htmlUrl="https://www.youtube.com/channel/UCPbwhExawYrn9xxI21TFfyw" />
+      <outline text="The Verge — Video" title="The Verge — Video" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=TheVerge" htmlUrl="https://www.youtube.com/channel/UCddiUEpeqJcYeBxX1IVBKvQ" />
+      <outline text="Tina Huang" title="Tina Huang" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2UXDak6o7rBm23k3Vv5dww" htmlUrl="https://www.youtube.com/channel/UC2UXDak6o7rBm23k3Vv5dww" />
+      <outline text="Traversy Media" title="Traversy Media" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC29ju8bIPH5as8OGnQzwJyA" htmlUrl="https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA" />
+      <outline text="Web Dev Simplified" title="Web Dev Simplified" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCFbNIlppjAuEX4znoulh0Cw" htmlUrl="https://www.youtube.com/channel/UCFbNIlppjAuEX4znoulh0Cw" />
+      <outline text="Wes Roth" title="Wes Roth" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCqcbQf6yw5KzRoDDcZ_wBSw" htmlUrl="https://www.youtube.com/channel/UCqcbQf6yw5KzRoDDcZ_wBSw" />
+      <outline text="Y Combinator" title="Y Combinator" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCcefcZRL2oaA_uBNeo5UOWg" htmlUrl="https://www.youtube.com/channel/UCcefcZRL2oaA_uBNeo5UOWg" />
+      <outline text="Yannic Kilcher" title="Yannic Kilcher" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCZHmQk67mSJgfCCTn7xBfew" htmlUrl="https://www.youtube.com/channel/UCZHmQk67mSJgfCCTn7xBfew" />
+      <outline text="yobi321" title="yobi321" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCB_DbqNN9w30tnyWJSrIwyA" htmlUrl="https://www.youtube.com/channel/UCB_DbqNN9w30tnyWJSrIwyA" />
+      <outline text="一席YiXi" title="一席YiXi" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A" htmlUrl="https://www.youtube.com/channel/UCKFB_rVEFEF3l-onQGvGx1A" />
+      <outline text="一条Yit" title="一条Yit" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCulFhrW_YCwkq_BP16C82mA" htmlUrl="https://www.youtube.com/channel/UCulFhrW_YCwkq_BP16C82mA" />
+      <outline text="李永乐老师" title="李永乐老师" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCvNxfitQbWkmLuCd44UfrYQ" htmlUrl="https://www.youtube.com/channel/UCvNxfitQbWkmLuCd44UfrYQ" />
+    </outline>
+  </body>
+</opml>

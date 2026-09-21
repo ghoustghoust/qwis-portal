@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<opml version="2.0">
+  <head>
+    <title>Tidings Curated RSS — Podcasts</title>
+    <dateCreated>2026-08-13</dateCreated>
+    <dateModified>2026-08-13</dateModified>
+    <ownerName>Tidings RSS Community</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+  <body>
+    <outline text="🎧 Podcasts" title="🎧 Podcasts">
+      <outline text="30 for 30 Podcasts" title="30 for 30 Podcasts" type="rss" xmlUrl="https://feeds.megaphone.fm/ESP5765452710" htmlUrl="http://espnradio.espn.com/espnradio/index" />
+      <outline text="42章经 — Podcast" title="42章经 — Podcast" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/648b0b641c48983391a63f98" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/648b0b641c48983391a63f98" />
+      <outline text="AI炼金术 — Podcast" title="AI炼金术 — Podcast" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/63e9ef4de99bdef7d39944c8" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/63e9ef4de99bdef7d39944c8" />
+      <outline text="Darknet Diaries" title="Darknet Diaries" type="rss" xmlUrl="https://feeds.megaphone.fm/darknetdiaries" htmlUrl="https://darknetdiaries.com/" />
+      <outline text="Discovery" title="Discovery" type="rss" xmlUrl="https://podcasts.files.bbci.co.uk/p002w557.rss" htmlUrl="http://www.bbc.co.uk/programmes/p002w557" />
+      <outline text="Fragmented - AI Developer Podcast" title="Fragmented - AI Developer Podcast" type="rss" xmlUrl="https://feeds.simplecast.com/LpAGSLnY" htmlUrl="https://fragmentedpodcast.com/" />
+      <outline text="Gastropod" title="Gastropod" type="rss" xmlUrl="https://www.omnycontent.com/d/playlist/aaea4e69-af51-495e-afc9-a9760146922b/2a195077-f014-41d2-8313-ab190186b4c2/277bcd5c-0a05-4c14-8ba6-ab190186b4d5/podcast.rss" htmlUrl="https://gastropod.com/" />
+      <outline text="Hacking Humans" title="Hacking Humans" type="rss" xmlUrl="https://feeds.megaphone.fm/hacking-humans" htmlUrl="https://thecyberwire.com/podcasts/hacking-humans" />
+      <outline text="Hanselminutes with Scott Hanselman" title="Hanselminutes with Scott Hanselman" type="rss" xmlUrl="https://feeds.simplecast.com/gvtxUiIf" htmlUrl="https://www.hanselminutes.com" />
+      <outline text="Invest Like the Best with Patrick O'Shaughnessy" title="Invest Like the Best with Patrick O'Shaughnessy" type="rss" xmlUrl="https://investlikethebest.libsyn.com/rss" htmlUrl="https://colossus.com/" />
+      <outline text="Invisibilia" title="Invisibilia" type="rss" xmlUrl="https://feeds.npr.org/510307/podcast.xml" htmlUrl="https://www.npr.org/podcasts/510307/invisibilia" />
+      <outline text="Planet Money" title="Planet Money" type="rss" xmlUrl="https://feeds.npr.org/510289/podcast.xml" htmlUrl="https://www.npr.org/podcasts/510289/planet-money" />
+      <outline text="Reply All" title="Reply All" type="rss" xmlUrl="https://feeds.megaphone.fm/replyall" htmlUrl="http://gimletmedia.com/shows/reply-all" />
+      <outline text="The Cynical Developer" title="The Cynical Developer" type="rss" xmlUrl="https://cynicaldeveloper.com/feed/podcast" htmlUrl="https://cynical.dev/" />
+      <outline text="The Startup Junkies Podcast" title="The Startup Junkies Podcast" type="rss" xmlUrl="https://startupjunkie.libsyn.com/rss" htmlUrl="https://www.startupjunkie.org/podcast" />
+      <outline text="The Vergecast" title="The Vergecast" type="rss" xmlUrl="https://feeds.megaphone.fm/vergecast" htmlUrl="https://www.theverge.com/the-vergecast" />
+      <outline text="Throughline" title="Throughline" type="rss" xmlUrl="https://feeds.npr.org/510333/podcast.xml" htmlUrl="https://www.npr.org/podcasts/510333/throughline" />
+      <outline text="TIANYU2FM — 对谈未知领域" title="TIANYU2FM — 对谈未知领域" type="rss" xmlUrl="https://rsshub.xiaowuaiblog.com/xiaoyuzhou/podcast/5f22729f9504bbdb77253e46" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5f22729f9504bbdb77253e46" />
+      <outline text="What's Next｜科技早知道" title="What's Next｜科技早知道" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e74b52c418a84a046ecaceb" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e74b52c418a84a046ecaceb" />
+      <outline text="一席" title="一席" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e285326418a84a04627343f" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e285326418a84a04627343f" />
+      <outline text="三五环" title="三五环" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e280fab418a84a0461faa3c" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e280fab418a84a0461faa3c" />
+      <outline text="不合时宜" title="不合时宜" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e280fb8418a84a0461fd076" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e280fb8418a84a0461fd076" />
+      <outline text="东亚观察局" title="东亚观察局" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e9a4e25418a84a046bc6156" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e9a4e25418a84a046bc6156" />
+      <outline text="东腔西调" title="东腔西调" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5f72b66083c34e85dd14fde9" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5f72b66083c34e85dd14fde9" />
+      <outline text="乱翻书" title="乱翻书" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/61358d971c5d56efe5bcb5d2" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/61358d971c5d56efe5bcb5d2" />
+      <outline text="人民公园说AI" title="人民公园说AI" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/65257ff6e8ce9deaf70a65e9" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/65257ff6e8ce9deaf70a65e9" />
+      <outline text="保持偏见" title="保持偏见" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/663e3c95af1e22bb157dcee3" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/663e3c95af1e22bb157dcee3" />
+      <outline text="信号与噪声" title="信号与噪声" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6819d5a7e37664602a344e0e" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6819d5a7e37664602a344e0e" />
+      <outline text="凹凸电波" title="凹凸电波" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e2839ca418a84a0462431b7" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e2839ca418a84a0462431b7" />
+      <outline text="十字路口Crossing — Podcast" title="十字路口Crossing — Podcast" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/60502e253c92d4f62c2a9577" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/60502e253c92d4f62c2a9577" />
+      <outline text="半拿铁 | 商业沉浮录" title="半拿铁 | 商业沉浮录" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/62382c1103bea1ebfffa1c00" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/62382c1103bea1ebfffa1c00" />
+      <outline text="卫诗婕｜漫谈Light the Star" title="卫诗婕｜漫谈Light the Star" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6627fda4b56459544087d86a" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6627fda4b56459544087d86a" />
+      <outline text="商业就是这样" title="商业就是这样" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6022a180ef5fdaddc30bb101" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6022a180ef5fdaddc30bb101" />
+      <outline text="声东击西" title="声东击西" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e2831ed418a84a046231c00" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e2831ed418a84a046231c00" />
+      <outline text="声动早咖啡" title="声动早咖啡" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/60de7c003dd577b40d5a40f3" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/60de7c003dd577b40d5a40f3" />
+      <outline text="天真不天真" title="天真不天真" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/65cef9e3cace72dff8d98de3" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/65cef9e3cace72dff8d98de3" />
+      <outline text="屠龙之术" title="屠龙之术" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6507bc165c88d2412626b401" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6507bc165c88d2412626b401" />
+      <outline text="岩中花述" title="岩中花述" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/625635587bfca4e73e990703" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/625635587bfca4e73e990703" />
+      <outline text="开始连接 LinkStart" title="开始连接 LinkStart" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/63ff0da51b1faf8a0b70b337" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/63ff0da51b1faf8a0b70b337" />
+      <outline text="张小珺Jùn｜商业访谈录" title="张小珺Jùn｜商业访谈录" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/626b46ea9cbbf0451cf5a962" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/626b46ea9cbbf0451cf5a962" />
+      <outline text="忽左忽右" title="忽左忽右" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e4ee557418a84a0466737b7" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e4ee557418a84a0466737b7" />
+      <outline text="慢速生长" title="慢速生长" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/668d00c38fcadceb90158ac1" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/668d00c38fcadceb90158ac1" />
+      <outline text="捕蛇者说" title="捕蛇者说" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e2864f7418a84a04628f2da" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e2864f7418a84a04628f2da" />
+      <outline text="搞钱女孩" title="搞钱女孩" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/63d945ece725b5378a158d29" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/63d945ece725b5378a158d29" />
+      <outline text="文化有限" title="文化有限" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e4515bd418a84a046e2b11a" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e4515bd418a84a046e2b11a" />
+      <outline text="晚点聊 LateTalk" title="晚点聊 LateTalk" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/61933ace1b4320461e91fd55" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/61933ace1b4320461e91fd55" />
+      <outline text="李诞" title="李诞" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/65bb55f6513a776b57dedb32" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/65bb55f6513a776b57dedb32" />
+      <outline text="枫言枫语 — Podcast" title="枫言枫语 — Podcast" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e2864f5418a84a04628e249" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e2864f5418a84a04628e249" />
+      <outline text="此话当真" title="此话当真" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/646f194853a5e5ea1408d97c" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/646f194853a5e5ea1408d97c" />
+      <outline text="游荡集" title="游荡集" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6163ca67c8c1d14e83366b31" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6163ca67c8c1d14e83366b31" />
+      <outline text="牛油果烤面包" title="牛油果烤面包" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e7c8b2b418a84a046e3ecbc" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e7c8b2b418a84a046e3ecbc" />
+      <outline text="独树不成林" title="独树不成林" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/64acd33c7a3d479103fbd32d" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/64acd33c7a3d479103fbd32d" />
+      <outline text="疯投圈" title="疯投圈" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e280faf418a84a0461fbd39" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e280faf418a84a0461fbd39" />
+      <outline text="皮蛋漫游记" title="皮蛋漫游记" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6281264ad22bcf3950c80b56" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6281264ad22bcf3950c80b56" />
+      <outline text="看理想圆桌" title="看理想圆桌" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e4ff4c7418a84a046977618" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e4ff4c7418a84a046977618" />
+      <outline text="知行小酒馆" title="知行小酒馆" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6013f9f58e2f7ee375cf4216" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6013f9f58e2f7ee375cf4216" />
+      <outline text="硅谷101 — Podcast" title="硅谷101 — Podcast" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e5c52c9418a84a04625e6cc" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e5c52c9418a84a04625e6cc" />
+      <outline text="硬地骇客" title="硬地骇客" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/640ee2438be5d40013fe4a87" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/640ee2438be5d40013fe4a87" />
+      <outline text="科技乱炖" title="科技乱炖" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e4243cd418a84a0469573fb" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e4243cd418a84a0469573fb" />
+      <outline text="第一财经" title="第一财经" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/64c75555e8176c3ff81de98c" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/64c75555e8176c3ff81de98c" />
+      <outline text="纵横四海" title="纵横四海" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/62694abdb221dd5908417d1e" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/62694abdb221dd5908417d1e" />
+      <outline text="罗永浩的十字路口" title="罗永浩的十字路口" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/68981df29e7bcd326eb91d88" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/68981df29e7bcd326eb91d88" />
+      <outline text="肥话连篇" title="肥话连篇" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/61d50d72ee197a3aac3dac42" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/61d50d72ee197a3aac3dac42" />
+      <outline text="自习室 STUDY ROOM" title="自习室 STUDY ROOM" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/65a5fb7540d4ef949c0140ac" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/65a5fb7540d4ef949c0140ac" />
+      <outline text="自我进化论" title="自我进化论" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e5de5cb418a84a0467beb90" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e5de5cb418a84a0467beb90" />
+      <outline text="蒋方舟·一寸" title="蒋方舟·一寸" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/67c7eeb07ac3e30992e75a2f" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/67c7eeb07ac3e30992e75a2f" />
+      <outline text="诗梳风" title="诗梳风" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/696496f4db4738160d5fabde" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/696496f4db4738160d5fabde" />
+      <outline text="谭立人" title="谭立人" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/65a2d0f07242f9fc1c1df60a" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/65a2d0f07242f9fc1c1df60a" />
+      <outline text="起朱楼宴宾客" title="起朱楼宴宾客" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/61dd99a47b29652ff572257b" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/61dd99a47b29652ff572257b" />
+      <outline text="跨国串门儿计划" title="跨国串门儿计划" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/670f3da40d2f24f28978736f" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/670f3da40d2f24f28978736f" />
+      <outline text="随机波动StochasticVolatility" title="随机波动StochasticVolatility" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e7cc741418a84a046b0c2bd" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/5e7cc741418a84a046b0c2bd" />
+      <outline text="面基" title="面基" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/6388760f22567e8ea6ad070f" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/6388760f22567e8ea6ad070f" />
+      <outline text="高能量" title="高能量" type="rss" xmlUrl="https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/62c6ae08c4eaa82b112b9c84" htmlUrl="https://www.xiaoyuzhoufm.com/podcast/62c6ae08c4eaa82b112b9c84" />
+    </outline>
+  </body>
+</opml>
