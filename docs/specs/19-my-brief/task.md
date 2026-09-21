@@ -8,7 +8,7 @@
 | 修改 | `api/_alerts.js` | DEFAULT_EVENTS 增补 mybrief |
 | 修改 | `api/[...slug].js` | +handleMyBrief + 路由 + 公开白名单 |
 | 新建 | `web/src/pages/MyBriefPage.jsx` | 我的早报页（三态） |
-| 修改 | `web/src/App.jsx`、`web/src/components/Header.jsx`（或导航所在文件） | 路由 + 导航入口 |
+| 修改 | `web/src/App.jsx`、`web/src/components/Header.jsx`（或导航所在文件） | 路由 + 导航入口 | <!-- doc-lint:ignore：spec 19 已交付，其后 SPA 重构为 main.jsx/admin.jsx，本行是当时的事实 -->
 | 新建 | `tests/regression-my-brief.test.js` | 回归测试 |
 | 修改 | docs 三件 | 文档同步 |
 

@@ -206,7 +206,7 @@ test('D9 转储表白名单就是内容表，配置表另有 /api/backup（不�
   assert.deepEqual(Object.keys(cd().readManifest(out).tables).sort(), ['articles', 'videos']);
 });
 
-test('D10 清单必须带建表语句；--mktarget 用源库形状建回放场（本地 schema 少列时仍能证明"回得来"= B128）', () => {
+test('D10 清单必须带建表语句；--mktarget 用源库形状建回放场（本地 schema 少列时仍能证明"回得来"= B131）', () => {
   const src = makeSource();
   const out = path.join(path.dirname(src), 'dump');
   assert.equal(cli(['--scope', src, '--out', out, '--full']).code, 0);

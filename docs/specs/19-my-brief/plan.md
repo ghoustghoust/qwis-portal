@@ -74,7 +74,7 @@ tools/collect-turso.js        — +runMyBrief + runDailyAi 尾部调用 + 候选
 api/_alerts.js                — DEFAULT_EVENTS + mybrief
 api/[...slug].js              — +handleMyBrief + 路由 + 公开白名单
 web/src/pages/MyBriefPage.jsx — 新建
-web/src/App.jsx / Header.jsx  — 路由 + 导航
+web/src/App.jsx / Header.jsx  — 路由 + 导航 <!-- doc-lint:ignore：spec 19 已交付，其后 SPA 重构为 main.jsx/admin.jsx，本行是当时的事实 -->
 tests/regression-my-brief.test.js — 新建
 docs/ 同步
 ```

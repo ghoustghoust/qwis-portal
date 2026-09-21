@@ -1,6 +1,6 @@
 # 我的阅读（沉淀页）Spec
 
-> 来源设计稿：`archive/样图/4.png`（BestBlogs「我的阅读」页）。
+> 来源设计稿：`archive/样图/4.png`（BestBlogs「我的阅读」页）。<!-- doc-lint:ignore：09-13 样图清理后该图已不在，本行是"当时的事实"记录 -->
 > 承接：十期 spec(docs/specs/09）「不做的事」中推迟的本页。本期转入开发计划。
 
 ## 背景

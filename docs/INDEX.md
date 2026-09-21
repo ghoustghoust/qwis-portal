@@ -3,7 +3,7 @@
 > 所有有效文档的路径与用途速查，供 Agent 和开发者快速定位上下文。
 > **本文件是全量地图**：`docs/` 下任何 `.md`/`.json` 未在此登记即为失踪文档（`tools/doc-lint.cjs` 会报）。
 > 文档自身的清洁与归档规则 → `docs/DOC_GOVERNANCE.md`。
-> 最后更新：2026-09-18（文档清洁轮：重建全量索引、补 `archive/` 分类层、DELIVERY 流水下沉）
+> 最后更新：2026-09-20（登记 `STAMPS.md` 文档改动戳；另含上一轮未提交的 spec 42 目录登记）
 
 ---
 
@@ -33,6 +33,7 @@
 |---|---|
 | `INDEX.md` | 本文档（地图） |
 | `DOC_GOVERNANCE.md` | **文档清洁与归档规范**（六类分类 + SOP + 门禁） |
+| `STAMPS.md` | **文档改动戳**（机器件，勿手改）：每份 `.md` 的最近改动 = 短号 · 日期 时:分 · 提交主题。重跑 `node tools/doc-stamp.cjs`，规则见 §2.6 |
 | `CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
 | `FEATURE_MATRIX.md` | **功能矩阵 SSOT**（本地/云端/runner 三端能力矩阵） |
 | `ISSUES.md` | **活跃问题 SSOT**（活跃 bug / 观察中 / 挂案；已核销见 `deprecated/`、`archive/debugging/`） |
@@ -85,7 +86,10 @@
   `38-admin-ia-refactor/`（后台信息架构与功能隔离，取代 35D）、
   `39-ai-console/`（AI 能力台：env-only 裁决、假开关清除、模型枚举与耗时）、
   `40-brief-center-products/`（三报统一期/档位/历史 + 归档投影 + 脏数据订正）、
-  `41-e2e-whitebox-eval/`（端到端 + 白盒评测与去污染，验收流程升级）
+  `41-e2e-whitebox-eval/`（端到端 + 白盒评测与去污染，验收流程升级）、
+  `42-full-audit-2026-09/`（**已冻结，不作排期入口**：全量深度审计第一轮，用户 2026-09-21 否决——项目仍在开发阶段，不在该阶段做全体功能审计。
+  可达图/调度登记表等地基数据保留但属 09-19 快照（`rootHead 668e254`），重启前必须重跑分析器；其工具与分析产物已由并行会话隔离进
+  `docs/specs/42-full-audit-2026-09/quarantine/`（含还原清单 `MANIFEST.md`）。已执行且**不撤销**的动作：portal 项目下线/删除、2h 门户同步通道默认关闭）
 
 ## 接口契约（docs/contracts/）· 读层响应形状，改 API 必须同步
 
@@ -102,7 +106,7 @@
 
 ## 归档层
 
-- **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md` · `debugging/2026-09-19-delivery-evidence-ledger.md`（已修条目的逐条处置与 F2P/评测读数对账） · `debugging/2026-09-20-round-status-records.md`（AGENTS §3 交付链状态的轮次记录，含洁净轮记录）；`feature/` `optimization/` `integration/` `credentials/` 待用
+- **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md` · `debugging/2026-09-19-delivery-evidence-ledger.md`（已修条目的逐条处置与 F2P/评测读数对账） · `debugging/2026-09-20-round-status-records.md`（AGENTS §3 交付链状态的轮次记录，含洁净轮记录） · `debugging/2026-09-21-release-approval-ledger.md`（09-19 汇总的**放行清单整块**：15 行逐字原文 + 放行后落点表 + 三条随审计轮冻结的动作） · `debugging/2026-09-21-issues-closed-rows.md`（ISSUES 核销轮移出件：B27~B70 六域登记原文、🟡观察中整节、已核销单行、被改写的头部原文）；`feature/` `optimization/` `integration/` `credentials/` 待用
 - **`docs/deprecated/`（整篇作废，头注含替代指针）**：`ISSUES-resolved-2026-09-13.md` · `ISSUES-resolved-2026-09-14.md` · `AUDIT-2026-09-12.md` · `REFACTOR_GUIDE.md` · `MODULE_STATUS.md` · `PROJECT_STATUS.md` · `VERCEL_MIGRATION.md` · `PHASE6_REVIEW_REPORT.md` · `REPOWIKI_AUDIT_2026-09-06.md` · `1.CODE_REVIEW_2026-09-05.md` · `01/02/04` 三条已作废决策 · `AGENTS-generic-template.md` · `HEARTBEAT.md` `IDENTITY.md` `SOUL.md` `TOOLS.md` `USER.md`（早期 Agent 模板残留）
 - **仓库根 `archive/`**：`docs-deprecated/`（DEPLOYMENT、phase9-runbook、A_CLASS_FIX_REPORT 等历史件）+ 分析产物/样例/评测素材
 

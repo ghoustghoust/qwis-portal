@@ -27,6 +27,8 @@
 | 已修条目的逐条取证与 F2P 证据对账（09-19 两批） | `debugging/2026-09-19-delivery-evidence-ledger.md` | `docs/eval/f2p/*.json` |
 | 更早批次（09-11 settings 写、09-12 报警/我的早报/源写） | `docs/changes/archive/` | `docs/specs/13~16` |
 | ISSUES 已核销历史 | `docs/deprecated/ISSUES-resolved-2026-09-13.md`、`-09-14.md` | — |
+| 「这批改动当时等谁点头」「放行清单某行后来去了哪」「哪几条被冻结了」 | `debugging/2026-09-21-release-approval-ledger.md` §二 原文 + §三 落点表 | `docs/ISSUES.md`「✅ 放行清单」指针行 |
+| B27~B70 某条 09-19 的登记原话、W1~W16 观察项的原始读数、已核销行的原样措辞 | `debugging/2026-09-21-issues-closed-rows.md` §一~§九 | 对应域 spec `docs/specs/{36,37,38,39,40}-*/` |
 
 ## 已登记归档件
 
@@ -36,5 +38,7 @@
 | `debugging/2026-09-14-delivery.md` | 调试 | `docs/DELIVERY-2026-09-14.md` | 2026-09-18 |
 | `debugging/2026-09-19-delivery-evidence-ledger.md` | 调试 | `docs/ISSUES.md`「B8~B26 本轮处置」+「本轮已修（证据对账）」 | 2026-09-20 |
 | `debugging/2026-09-20-round-status-records.md` | 调试 | `docs/ISSUES.md` 三节轮次状态表（交付链×2 + 洁净轮记录） | 2026-09-20 |
+| `debugging/2026-09-21-release-approval-ledger.md` | 调试/授权台账 | `docs/ISSUES.md`「⛔ 待你点头的放行清单」15 行整块（用户 09-21 整表放行后出账） | 2026-09-21 |
+| `debugging/2026-09-21-issues-closed-rows.md` | 调试 | `docs/ISSUES.md` 四段整节（B27~B70 六域登记、🟡观察中、已关闭挂案、阻塞项已闭行）+ 19 条已核销单行 + 被改写的头部原文 | 2026-09-21 |
 
 > 新增归档件必须同时：①本表加一行；②`docs/INDEX.md` 指向本目录；③原现役位留指针。漏任一项，`tools/doc-lint.cjs` 会报。

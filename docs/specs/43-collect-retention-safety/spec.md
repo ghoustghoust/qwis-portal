@@ -103,7 +103,7 @@
 | 决策点 | 状态 | 一手读数与残余 |
 |---|---|---|
 | D3 内容级转储 | ✅ **已交付** | `lib/content-dump.js`（纯逻辑）+ `tools/dump-content.cjs`（`--full`/增量/`--verify`/`--gate`/`--restore`/`--mktarget`）。云端 59,832 文章 + 1,291 视频 = 161.6MB/154 片，逐片 sha256 校验通过；**真回放**进 `data/rehearse/app.db` 17.6s 放回全量、抽样 12 行 × 23 列逐字段 0 不一致；本地 `data/backups/app-20260921-014112.db`（715MB / 43,512 文章，逐表核非空）补上"本地一份新快照"。锁 `tests/regression-content-dump.test.js` D1~D10。**按坑 #64 规则②不套 F2P 改前红**（新增门禁无旧形态），证据 = D2~D6 五组突变对照必须红 |
-| D1/B102 残余 | 待做 | `api/[...slug].js:2010` 的第三份谓词仍未收进 `lib/retention.js`（W17 按整文件豁免它）；**本轮新查第四份**：`tools/archive-articles.js` 搬完 `articles_archive` 后按 id 删，绕开 W17 的形状判据，且少 `featured` 豁免 → 登记 B129 |
+| D1/B102 残余 | 待做 | `api/[...slug].js:2010` 的第三份谓词仍未收进 `lib/retention.js`（W17 按整文件豁免它）；**本轮新查第四份**：`tools/archive-articles.js` 搬完 `articles_archive` 后按 id 删，绕开 W17 的形状判据，且少 `featured` 豁免 → 登记 B132 |
 | D2/B101 触发口 + 删除接闸 | 待做（**先把数摆清再接**） | `collect.yml` 的 `cleanup` 触发口仍缺；**`deleteGate` 目前只是工具，不是强制路径**——runner `runCleanup` 与云端手动端点 DELETE 前调它、并配白盒判据（"有 DELETE 而未过闸即红"），随这一步一起做。**09-21 按现役库重算待删量：50,636 条 = 全库 84.6%**（热榜 26,361 / 普通 24,275 含 667MB 正文），而不是 §二 N1 登记的 10,733——旧数属被换掉的旧库。读数与取法：`docs/eval/bl10-null-audit-20260921.md` §三 |
-| 附带查出（本域之外） | 新登记 | **B128**：`lib/db.js` 的 `SCHEMA`（新建库路径）里 `articles` 少 `translated_title`/`translated_content`/`translation_provider` 三列 → 第一次真回放被逐列校验**正确挡下**；转储清单已改为自带源库 DDL（`--mktarget`）绕过，**真修（列并进 SCHEMA + 白盒"生产列集 == ensureSchema 列集"判据）待做** |
+| 附带查出（本域之外） | 新登记 | **B131**：`lib/db.js` 的 `SCHEMA`（新建库路径）里 `articles` 少 `translated_title`/`translated_content`/`translation_provider` 三列 → 第一次真回放被逐列校验**正确挡下**；转储清单已改为自带源库 DDL（`--mktarget`）绕过，**真修（列并进 SCHEMA + 白盒"生产列集 == ensureSchema 列集"判据）待做** |
 

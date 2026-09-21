@@ -1,6 +1,6 @@
 # 全网情报系统 · 开发者上手指南
 
-> 最后更新：2026-09-09（文档全面清洗后新建）
+> 最后更新：2026-09-20（清洁轮：删三个已不存在的"不要修改"路径、坑数不再写死、阅读顺序补 `AGENTS.md` 与 `CLOUD_PIPELINE_GUIDE.md` 以对齐 AGENTS §0）
 
 ---
 
@@ -58,14 +58,14 @@ Vercel Serverless（读层主部署）
 
 ## 四、快速上手 Checklist
 
-1. **读文档**：本文档 → `ARCHITECTURE.md` → `docs/RUNBOOK.md` → `docs/ISSUES.md`
+1. **读文档**：按 `AGENTS.md` §0 的固定顺序读（本文不复制那份顺序——它抄过一次就已经和 §0 不一致了）
 2. **本地启动**：`start-all.bat` → 浏览器 `http://localhost:3000/reader/`
 3. **管理后台**：`http://localhost:3000/admin/`
 4. **修改前端**：改 `web/src/` → `npm run build` → Ctrl+F5
 5. **修改后端（本地）**：改 `server/` → `restart-server.bat`
 6. **修改后端（Vercel）**：改 `api/` → `git push` 即可（✅ Vercel 与 GitHub 已连 Git 集成，push main 自动部署）
 7. **跑测试**：`npm test`（全绿才算完）
-8. **不要修改**：`src-admin/`、`admin.html`（根目录）、`vite.config.js`（根目录）— 这些是 portal 历史副本
+8. **portal 已退役（09-21）**：门户 Vercel 项目已下线、`portal/` gitlink 已从索引移除；本地调度里的门户同步通道默认关（`settings.portal.enabled` 显式置 true 才注册，锁 `tests/regression-audit42-portal-channel.test.js`），别再按它改行为
 
 ---
 
@@ -90,7 +90,7 @@ Vercel Serverless（读层主部署）
 
 ### 5.4 已知坑（必读）
 
-详见 `ARCHITECTURE.md` 第 5 节（24 条血泪史），精选：
+坑库在 `docs/pitfalls/`（按域一文件，条数不写死，`ARCHITECTURE.md` §5 只是它的索引）。精选：
 
 1. better-sqlite3 编号参数 `?1` 不支持位置绑定 → 用匿名 `?`
 2. 异步回调内同步 DB 操作必须 try/catch
@@ -104,7 +104,7 @@ Vercel Serverless（读层主部署）
 
 | 场景 | 阅读顺序 |
 |------|---------|
-| 新接手 | 本文档 → ARCHITECTURE.md → RUNBOOK.md → ISSUES.md |
+| 新接手 | `AGENTS.md` §0 固定顺序 → 本文档 → RUNBOOK.md → ISSUES.md |
 | 修 bug | ISSUES.md → ARCHITECTURE.md §5 → 对应模块 docs/features/ |
 | 新功能 | docs/features/ 相关模块 → ARCHITECTURE.md §3 → DEVELOPMENT_STANDARDS.md |
 | 排障 | RUNBOOK.md → ARCHITECTURE.md §5 |

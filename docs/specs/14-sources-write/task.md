@@ -7,7 +7,7 @@
 | 新建 | `api/_classify.js` | 分类目录/关键词兜底/落组/预览/执行（移植自 server/services/classify.js） |
 | 修改 | `api/[...slug].js` | 8 个 handler + 路由注册 |
 | 新建 | `tests/regression-cloud-sources.test.js` | 真实 handler 回归测试（test 数据用后即删） |
-| 修改 | `docs/HANDOVER.md` / `docs/FEATURE_MATRIX.md` / `docs/changes/2026-09-12-sources-write.md` | 文档同步义务 |
+| 修改 | `docs/HANDOVER.md` / `docs/FEATURE_MATRIX.md` / `docs/changes/archive/2026-09-12-sources-write.md` | 文档同步义务 |
 
 ## T1: api/_classify.js 移植
 

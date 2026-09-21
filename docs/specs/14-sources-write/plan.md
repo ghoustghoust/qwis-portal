@@ -78,7 +78,7 @@ api/[...slug].js                    — 8 handler + 路由注册
 tests/regression-cloud-sources.test.js — 新建：真实 handler 测试（test 源建后即删）
 docs/HANDOVER.md                    — §3.4 补端点
 docs/FEATURE_MATRIX.md              — P0-2 标完成
-docs/changes/2026-09-12-sources-write.md — 变更记录
+docs/changes/archive/2026-09-12-sources-write.md — 变更记录（09-13 大整理时移入 `archive/`）
 ```
 
 ## 技术决策

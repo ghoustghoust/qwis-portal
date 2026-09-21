@@ -73,7 +73,7 @@ async function columnsOf(src, table) {
   return cols;
 }
 
-/** 连建表语句一起带进清单：回放场的意义是"和源库同形状"，而不是"迁就本地库的列"（B128） */
+/** 连建表语句一起带进清单：回放场的意义是"和源库同形状"，而不是"迁就本地库的列"（B131） */
 async function ddlOf(src, table) {
   const rows = await src.all(`SELECT sql FROM sqlite_master WHERE type='table' AND name=?`, [table]);
   return rows.length ? rows[0].sql : null;
@@ -161,7 +161,7 @@ async function runRestore() {
     const { columns, chunks, ddl } = manifest.tables[table];
     const hasTable = (t) => db.prepare(`SELECT COUNT(*) c FROM sqlite_master WHERE type='table' AND name=?`).get(t).c > 0;
     if (arg('mktarget', false)) {
-      if (!ddl) throw new Error(`${table} 的清单里没有建表语句 —— 重跑一次转储即可带上（B128 之后新增的字段）`);
+      if (!ddl) throw new Error(`${table} 的清单里没有建表语句 —— 重跑一次转储即可带上（B131 之后新增的字段）`);
       if (!hasTable(table)) db.exec(ddl);
     }
     const present = new Set(db.prepare(`SELECT name FROM pragma_table_info(?)`).all(table).map((r) => r.name));
