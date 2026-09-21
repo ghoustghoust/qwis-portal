@@ -6,6 +6,7 @@ const { db, getSetting } = require('../db');
 const { mask } = require('../util/log');
 // B109：报警事件表唯一实现（健康摘要不再自带第三份事件键与默认值）
 const { eventsState } = require('../../lib/alert-events');
+const { usableChannels } = require('../../lib/alert-channels');
 
 const router = express.Router();
 
@@ -64,7 +65,11 @@ function getAlertSummary() {
       // B109：这里原来是第三份手写事件表（只挑 3 个键、还自带一份默认值）——
       // 现在整份状态由 lib/alert-events.js 出，健康摘要与后台/分发看到的是同一个键集
       eventsEnabled: eventsState(events),
+      // B69：「有出口」的判定全库只有 lib/alert-channels#usableChannels 一份（preflight 同源）；
+      // enabledChannelCount 只是「开着」，开着 ≠ 有出口（哨兵渠道 test-ch 就开着）
       enabledChannelCount: channels.filter((c) => c.enabled).length,
+      usableChannelCount: usableChannels(channels).length,
+      noExit: usableChannels(channels).length === 0,
       cooldownMin: Number(a.cooldownMin) || 120,
       recentLog,
     };

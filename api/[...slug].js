@@ -1713,9 +1713,19 @@ async function handleHealthStatus(req) {
   }).map((r) => ({ id: r.id, name: r.name, type: r.type }));
   // 云端特有：采集心跳（方案A runner 直采每轮写入）
   const collect = await getSetting('cloud.collect', null);
+  // B69：报警出口判定与本地端/preflight 同一份（usableChannels）；只出计数与投递态，不回显 URL
+  const alertsCfg = await getSetting('alerts', {});
+  const alertChannels = Array.isArray(alertsCfg.channels) ? alertsCfg.channels : [];
+  const usable = usableChannels(alertChannels).length;
+  const alertsSummary = {
+    enabledChannelCount: alertChannels.filter((c) => c && c.enabled !== false).length,
+    usableChannelCount: usable,
+    noExit: usable === 0,
+    delivery: deliveryState(Array.isArray(alertsCfg.recentLog) ? alertsCfg.recentLog : []),
+  };
   return jsonOk({
     sources: { total, enabled, error: errorSources, frozen },
-    frozenList, cookieIssues, collect, checkedAt: nowIso(),
+    frozenList, cookieIssues, collect, alerts: alertsSummary, checkedAt: nowIso(),
   });
 }
 
@@ -2028,6 +2038,7 @@ const CLEAN_TABLES = [
 // 所以并口径之后**本端点行为一字未变**，变的是一次实测差（见 lib/retention 注释与 ISSUES B101/B102）。
 const { countSql: retainCountSql, deleteSql: retainDeleteSql } = require('../lib/retention');
 const { credentialGate, CREDENTIAL_KEY, GATE_MAX_AGE_H } = require('../lib/content-dump');
+const { usableChannels, deliveryState } = require('../lib/alert-channels');
 async function cleanupArticles(cutoff, { preview = false } = {}) {
   return preview
     ? qOne(retainCountSql('cloudManual', 'retention'), [cutoff])
