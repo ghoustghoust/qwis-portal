@@ -1,0 +1,4 @@
+[submodule "archive/_eval/wechat-rss-plus"]
+	path = archive/_eval/wechat-rss-plus
+	url = https://github.com/JasonLongNew/wechat-rss-plus.git
+	ignore = dirty
