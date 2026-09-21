@@ -19,7 +19,7 @@ T2 「我的阅读·视频」tab 的语义先定后做：它指的是**收藏**�
 
 ## 改动点（批准后才写）
 
-1. 新增 `lib/video-watch.js`（或并入 `lib/reading-filters.js`）：`markWatched(db, videoId)` + `watchedCondSql()`，两端共用。
+1. 新增 `video-watch.js`（拟建，落在 `lib/` 下；或并入 `lib/reading-filters.js`）：`markWatched(db, videoId)` + `watchedCondSql()`，两端共用。
 2. `api/[...slug].js` 的 `/api/videos/:id`（及 `/play`）路径接入写回，语义与本地一致（**幂等**：只在 `watched_at IS NULL` 时写，避免刷新覆盖首次时间）。
 3. 是否给 `videos` 建 `watched_at` 之外的列（`score`/`translated_title`）→ 与 **B18 一起决策**，不在本包顺手建列。
 
@@ -27,7 +27,7 @@ T2 「我的阅读·视频」tab 的语义先定后做：它指的是**收藏**�
 
 - AC1 线上打开一个视频后，`GET /api/videos/:id` 返回体里 `watched_at` 非空，且该条目出现在「我的阅读·视频」；`npm run eval:e2e` 剧本要有这一条（目前无，属未覆盖面）。
 - AC2 幂等性：连开两次，`watched_at` 保持第一次的时刻（回归锁断言"第二次不覆盖"）。
-- AC3 **改前必红**（F2P）：基线上"云端打开视频后 watched_at 非空"必须红；注意按 B106 的教训——若该锁要读本轮新建的 `lib/video-watch.js`，改前构造必须用"回退修复点"而不是"文件不存在"，否则 F2P 判不出有效证据。
+- AC3 **改前必红**（F2P）：基线上"云端打开视频后 watched_at 非空"必须红；注意按 B106 的教训——若该锁要读本轮新建的 `video-watch.js`（拟建，落在 `lib/` 下），改前构造必须用"回退修复点"而不是"文件不存在"，否则 F2P 判不出有效证据。
 - AC4 三端一致性：白盒新增判据（**W22**，编号在 `docs/EVAL_GUIDE.md` §4.2 统一登记；本轮自查发现我此前在此处误占了 W18，与 `36-7` 的噪声判据撞号，已改）——同一份 SQL 谓词/写回不许在 `api/` 与 `server/` 各写一遍。
 
 ## 边界

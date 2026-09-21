@@ -34,7 +34,7 @@
 - AC2 `elapsedMs` 在页面上可见；e2e 剧本断言"页面显示的耗时 == 响应里的 `elapsedMs`"（DOM↔响应对账）。
 - AC3 **不落明文**：`GET /api/settings`、`/api/ai/config` 的响应、审计记录、日志里都不得出现完整 key（回归锁：把已知 key 塞进三处输出，断言全部掩码）。
 - AC4 T4 的下限保护必须**一份实现三端引用**；配白盒判据"出现第二处 `minIntervalMs` 阈值判断即红"。
-- AC5 F2P 按 **B106** 构造规则：新建文件（如 `lib/ai-providers.js`）在基线里不存在时，判 `env` 不判"锁假了"。
+- AC5 F2P 按 **B106** 构造规则：新建文件（如拟建的 `ai-providers.js`，落在 `lib/` 下）在基线里不存在时，判 `env` 不判"锁假了"。
 
 ## 边界
 

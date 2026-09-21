@@ -78,7 +78,7 @@
 1. sources.js:VIDEO_TYPES 改为 `require('../services/classify').VIDEO_TYPES`（删本地定义）;POST / INSERT 后 `try{require('../services/classify').autoClassifySourceId(r.lastInsertRowid)}catch{}`，响应 item 重读（带 group_id)
 2. wechat/index.js:syncOpml 的 insertStmt.run 后取 lastInsertRowid 同样挂接
 3. poller.js:resolvePending INSERT 后同样挂接
-4. daily.js:274 `FAMILIAR` → `getSetting('daily.cocoonFamiliar', DEFAULT_FAMILIAR)`(DEFAULT 从 classify 引；getSetting 已在依赖中）
+4. server/services/ai/daily.js:274 `FAMILIAR` → `getSetting('daily.cocoonFamiliar', DEFAULT_FAMILIAR)`(DEFAULT 从 classify 引；getSetting 已在依赖中）
 
 **验证：** T9 回归测试覆盖（建源自动入组断言）
 

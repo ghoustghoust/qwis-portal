@@ -25,8 +25,8 @@ spec30（2026-09-15）把 12 Tab 收成 5 Tab（源库/早报中心/热点榜策
 用户观感的逐条定量：
 
 - **「版面看着别扭」＝真 bug**：header 内层 `max-w-[1100px]` 且 padding 在内（`AdminPage.jsx:56-57`），main 的 padding 在外、内容宽 1160/960（`:83-84`）→ **左缘永久错位 54px（源库）/70px（其余 4 Tab）**，怎么调都调不齐。
-- **「保存要浮动」＝现状确实没有**：全后台零 `sticky/fixed` 保存条（唯一 fixed 是弹窗遮罩）；保存语义三种并存（BriefCenter/Hot/Alerts/Data 即时写、DailySettings 四区共用底部一个按钮、AiSettings 两个按钮）；**无 dirty 未保存提示**（全库 grep 零命中）。
-- **「组合层没有搜索」＝部分真实**：组合视图（`:301-376`）确无搜索框，但「检索」是同级常驻 pill 而非"点进文件夹才有"；真实痛点是**每次操作全量重拉 `/api/sources/library`**（`:137/205/217`）+ 组卡按 issueN 重排 → 点一下约 4s 且卡片跳位；调频/failover 用 `window.prompt`（3 prompt + 3 confirm）。
+- **「保存要浮动」＝现状确实没有**（出处：2026-09-19 批注轮实测，归 38-A，B 编号映射见 `docs/NEXT-DEV-REQS.md` T6 层级树）：全后台零 `sticky/fixed` 保存条（唯一 fixed 是弹窗遮罩）；保存语义三种并存（BriefCenter/Hot/Alerts/Data 即时写、DailySettings 四区共用底部一个按钮、AiSettings 两个按钮）；**无 dirty 未保存提示**（全库 grep 零命中）。
+- **「组合层没有搜索」＝部分真实**（出处：2026-09-19 批注轮实测，归 38-C，B 编号映射见 `docs/NEXT-DEV-REQS.md` T6 层级树）：组合视图（`:301-376`）确无搜索框，但「检索」是同级常驻 pill 而非"点进文件夹才有"；真实痛点是**每次操作全量重拉 `/api/sources/library`**（`:137/205/217`）+ 组卡按 issueN 重排 → 点一下约 4s 且卡片跳位；调频/failover 用 `window.prompt`（3 prompt + 3 confirm）。
 - **「我的早报要在源库设置」＝真实且更严重**：订阅轴唯一写入口在源库（组卡 `:329` / 批量条 `:532`），早报中心只有指路文字；**源库从不请求 `/api/settings`，而 `subscription.ids` 早已透出** → 界面看不到订阅现状；组卡「订阅」无计数、无退订分支；无「仅已订阅」筛选；线上 `ids:[]`，真生效靠 54 个 ☆ 兜底（→ 见 40 域）。
 - **四轴编辑入口割裂在 5 处**：`enabled` 三处可改、`reader_visible`/`muted` 只能批量或组卡、`subscription` 只在源库、**`spotlight` 在早报中心 `DailySettingsTab.jsx:96` 会被 `PUT /api/settings/daily` 全量替换**（会清掉非六类型的重点源）→ 潜伏双写冲突（B34）。
 - **「侧边栏」＝一致性收敛**：前台 5 页都用左栏 `IconRail`（`main.jsx:37-88`），admin 刻意不带（`AdminPage.jsx:41`）；且 `admin.jsx` 无 store/i18n Provider，需自建。Tab 态纯 `useState`，**刷新回源库、无深链**。

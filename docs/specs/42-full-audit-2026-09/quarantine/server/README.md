@@ -14,7 +14,7 @@
 | `services/` | 业务服务层。`scheduler/` 是调度中心（含 7 个 job 与 6 处定时器注册）、`collectors/` 是本地采集实现、`queue/` 是云端队列轮询、`ai/` 是日报与摘要、`realtime/` 是事件总线 |
 | `middleware/` | 鉴权中间件。**注册顺序是已知坑**：顺序写错会让 `/api` 整段绕过鉴权 |
 | `util/` | `log.js`（分级结构化日志 + `log.mask` 敏感字段脱敏）、`http.js`（代理与超时）、`safeimg.js`、`time.js` |
-| `cloud/` | `cloud/db.js`：设了 `TURSO_DATABASE_URL` 即切 Turso（`IS_CLOUD`），否则走 SQLite。其头注提到的那份 portal 侧副本已随 portal 退役而**不存在了**——若将来重启 Turso 迁移，别按那条注释去找文件 |
+| `cloud/` | `cloud/db.js`：设了 `TURSO_DATABASE_URL` 即切 Turso（`IS_CLOUD`），否则走 SQLite。<!-- doc-lint:ignore：09-19 快照，cloud/db.js 现已并入 lib/db.js -->其头注提到的那份 portal 侧副本已随 portal 退役而**不存在了**——若将来重启 Turso 迁移，别按那条注释去找文件 |
 
 ## ⚠️ 实况与文档不符
 

@@ -8,8 +8,8 @@
 
 | 原路径 | 现路径 | 说明 |
 |---|---|---|
-| `tools/audit-graph.cjs` | `…/quarantine/audit-graph.cjs` | 可达图 + 调度登记表地基工具 |
-| `tools/gen-dir-index.cjs` | `…/quarantine/gen-dir-index.cjs` | 目录索引看门人（只补骨架、只报待维护） |
+| `tools/audit-graph.cjs` | `…/quarantine/audit-graph.cjs` | 可达图 + 调度登记表地基工具 | <!-- doc-lint:ignore：左列是搬迁前旧路径，属"当时的事实" -->
+| `tools/gen-dir-index.cjs` | `…/quarantine/gen-dir-index.cjs` | 目录索引看门人（只补骨架、只报待维护） | <!-- doc-lint:ignore：左列是搬迁前旧路径，属"当时的事实" -->
 | `api/README.md` | `…/quarantine/api/README.md` | 以下 13 份均为**未入库**件，移出即从工作树消失 |
 | `archive/README.md` | `…/quarantine/archive/README.md` | |
 | `cloud/README.md` | `…/quarantine/cloud/README.md` | |

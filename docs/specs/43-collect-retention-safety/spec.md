@@ -46,7 +46,7 @@
 
 1. **单实现**：删除谓词收进 `lib/retention.js`，三端（`server/`、`api/`、`tools/`）引用同一份 SQL 片段；白盒新增 **W17**——从 DDL/字面量派生"存在不止一份删除谓词"即红（按坑 #58/#59：判据派生自事实、排除自身、剥注释、只认字符串字面量）。
 2. **回归锁（F2P，改前必红）**：造 4 行样本——已读 / 稍后读 / 精选 / 纯未读——断言本地 `cleanup()` 只删最后一行；再造 1 行 7 天前视频，断言删除数为 0。
-3. **负向自证探针**：`tools/_probe-w17-selftest.cjs` 三种摘法（删豁免 / 把 videos 放回 CLEAN_TABLES / 只在注释里留"已豁免"）必须全红且点名。
+3. **负向自证探针**：拟建 `_probe-w17-selftest.cjs`（落在 `tools/` 下）三种摘法（删豁免 / 把 videos 放回 CLEAN_TABLES / 只在注释里留"已豁免"）必须全红且点名。
 4. **文档同步**：`ARCHITECTURE.md`、`CLOUD_PIPELINE_GUIDE.md`、`RUNBOOK.md`、`FEATURE_MATRIX.md` 四处「04:13 清理」按实测口径改；`ISSUES.md` 立 N1/N2/N3 三条；`npm run lint:docs` 零错。
 5. **交付链**：本文件涉及的改动落地后，按 AGENTS §3 十一条逐条跑并如实标注「跑了/没跑」。
 

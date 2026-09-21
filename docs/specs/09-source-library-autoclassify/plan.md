@@ -68,7 +68,7 @@ CATEGORY_CATALOG = [
 |---|---|---|
 | `daily.cocoonFamiliar` | 破茧栏域内分组名数组 | 现有硬编码 11 项：`['AI','科技','科技热榜','国际科技','AI 模型','AI 产品','技巧观点','行业动态','公众号','播客','YouTube']` |
 
-daily.js:274 的 FAMILIAR 改为 `getSetting('daily.cocoonFamiliar', 默认值)`；自动分类落组时把组名并入该 setting（去重）——无 UI 编辑器（YAGNI）。
+server/services/ai/daily.js:274 的 FAMILIAR 改为 `getSetting('daily.cocoonFamiliar', 默认值)`；自动分类落组时把组名并入该 setting（去重）——无 UI 编辑器（YAGNI）。
 
 ### 接口契约
 
@@ -215,7 +215,7 @@ web/src/
 | 4 | 锁定存储 | extra.categoryLocked，不加列 | spec N5；与 aggregator/intervalMin 同模式（json_extract 判定） |
 | 5 | 锁定写入点 | 只挂 `POST /api/groups/move` | 所有人工作归入口（Sidebar 拖拽/源库下拉/批量移动）的汇聚点，单点收敛无遗漏 |
 | 6 | focus 批量写法 | 增量 UPDATE | 日报设置页 focusSourceIds 是全量替换语义，双写会互踩（spec F3 红线） |
-| 7 | 破茧栏名单 | settings 可配 + 落组时自动并集 | daily.js:274 硬编码与组名强耦合；不做 UI 编辑器（YAGNI） |
+| 7 | 破茧栏名单 | settings 可配 + 落组时自动并集 | server/services/ai/daily.js:274 硬编码与组名强耦合；不做 UI 编辑器（YAGNI） |
 | 8 | 单源启用/特别关注 | 复用 batch 接口（单 id 数组） | 避免维护两套通道；toggle 保留给现有 Tab 不动 |
 | 9 | 组复用 | 仅精确同名同 kind；不做近义模糊复用 | 「人工智能」≠现有「AI」组宁可新建，误并比重复更难收拾（用户可删组合并） |
 | 10 | batch 路由防截胡 | sourcelib.js 内自带 `/batch` `/autoclassify`，以 `app.use('/api/sources', sourcelib)` 挂在 sources.js **之前** | restore-all 的挂载顺序侥幸教训（审查 B2）；先挂先匹配，POST /batch 不会被任何现有路由截胡 |

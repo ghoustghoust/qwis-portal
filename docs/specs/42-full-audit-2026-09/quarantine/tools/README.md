@@ -23,7 +23,7 @@
 | `eval-e2e.cjs` | 端到端引擎（41-2）——"页面真的对用户生效"那一层的证据来源。注意 `--only`/`--fast` 跑出来的绿一律 `NOT_ACCEPTANCE` |
 | `eval-content.cjs`、`eval-content/` | AI 产物内容质量（41-8），真评需 `--judge` |
 | `eval-filter.js` | 评测过滤辅助 |
-| `audit-graph.cjs` | spec 42 审计地基：入口可达图 + 调度登记表。**`node tools/audit-graph.cjs` 直调，故意不挂 npm script**（避免与并行开发在 `package.json` 上冲突） |
+| `audit-graph.cjs` | spec 42 审计地基：入口可达图 + 调度登记表。**`node docs/specs/42-full-audit-2026-09/quarantine/audit-graph.cjs` 直调（隔离区现位），故意不挂 npm script**（避免与并行开发在 `package.json` 上冲突） |
 
 ## 现役 · 运维与对接
 

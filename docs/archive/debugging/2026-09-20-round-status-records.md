@@ -382,3 +382,19 @@
 | 11 `eval:content` | ⛔ 未跑 | 无 AI 产物变动 |
 | §2.9 文档改动戳 | ⛔ 未跑 `doc-stamp` | `tools/doc-stamp.cjs` 与 `docs/STAMPS.md` 是并行会话的**未落库**件（连同 AGENTS 新增那条义务），我不代跑、不代提交 |
 | 提交 | ⛔ 未提交 | `docs/INDEX.md`/`AGENTS.md`/`tools/doc-lint.cjs`/`docs/DOC_GOVERNANCE.md`/`api/[...slug].js` 均带并行会话在途内容，且他们此刻正在写 B103 的转储件（`lib/content-dump.js`）。等他们落定后一并提交，或用户单说一声我整批提 |
+
+### 09-21 晚 文档洁净第二轮（核销轮：ISSUES + NEXT-DEV-REQS；零生产代码改动）
+
+> 触发：用户「整理 doc 下的文件，按文档洁净进行清理」。门禁实况：lint 由 0 错 24 警 → **0 错 3 警**（剩 ISSUES 163>130 的超长警 + 两条分母信息行；ISSUES 残余均为活跃条目，再压就得归档"还活着的事"，违反 §1，故停）。ISSUES 234→162 行、NEXT-DEV-REQS 327→256 行（达标 ≤260）。两刀均走脚本切片 + 无损校验（97 + 76 行原文逐字可反查），新归档件 `2026-09-21-issues-round2-closed.md`、`feature/2026-09-21-nextdev-closed-rounds.md` 已在 INDEX 与 archive/README 双登记。
+
+| AGENTS §3 条目 | 本轮真值 | 说明 |
+|---|---|---|
+| 1 `npm test` | ✅ **544/544 退 0**（途中 L5/S6 两红，见下行判据变更） | L5/S6/台账条数三处断言与"工作区必然很脏"耦合（真库必须还有多义裸名、未跟踪面必须 >100 份、台账引用必须 ≥200 条），清洁到位后被自己的门禁误判红 |
+| — 判据变更（本轮一处，配自证） | 记录 | 三处断言改为相对锚（多义开火证明移给 `--self-test` 44 例坏样本、未跟踪分母与门禁自报数对账、台账下限改"引用数 ≥ 文档数"）；判据本体 `tools/doc-lint.cjs` 一字未动，检测能力由 self-test 与 S1~S5 样本继续钉住。坑 #45 的同族教训：判据不许钉"今天有几条违规"，要钉"有违规必抓得到" |
+| 2 `node smoke-test.js` | ⛔ 未跑 | 零生产代码改动（本轮只动 docs/ 与两份 tests/ 锁文件） |
+| 3 `build:vercel` | ⛔ 未跑 | `web/` 零改动 |
+| 4 `npm run lint:docs` | ✅ 0 错 3 警 | 修复 14 处悬空（拟建件改写为规范形态 7 处、quarantine 指路改真实位置或注 ignore 7 处）、裸文件名 `daily.js:274` 补全路径 3 处、spec 38 背景出处 2 处、GOVERNANCE §4.5 portal 旧规则改为已退役说明 |
+| 5 `eval:preflight` | ⛔ 未跑 | 环境前置未变（线上 commit 一致性由上午轮 9/9 判定，本轮无 push 以外的云端动作） |
+| 6 `eval:whitebox` | ⛔ 未跑 | 无生产代码改动 |
+| 7/9/10/11 | ⛔ 不适用/未跑 | 无评测运行、无新增锁的行为变更、页面可见面未变、无 AI 产物变动 |
+| 8 云端实测 | ⛔ 不适用 | 无代码改动 |

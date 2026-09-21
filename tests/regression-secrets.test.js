@@ -79,7 +79,12 @@ test('S6 真库两面都必须 0 命中，且分母非空（"0 处"必须同时�
   const tracked = sec().listTracked(ROOT);
   const others = sec().listUntrackedNotIgnored(ROOT);
   assert.ok(tracked.length > 1000, `已跟踪面只 ${tracked.length} 份，取法可疑`);
-  assert.ok(others.length > 100, `未跟踪未 ignore 面只 ${others.length} 份，取法可疑`);
+  // 未跟踪面的分母与门禁自报数对账（同一份 lib/secrets.js 取数，一致 = 没在扫空气）。
+  // 旧写法断言 >100，那是"工作区必然很脏"的暗含假设——09-21 清洁轮把 787 份收敛到个位数后它把清洁误判成红
+  const lintOut = require('child_process').execFileSync('node', ['tools/doc-lint.cjs'], { cwd: ROOT, encoding: 'utf8' });
+  const m = /未跟踪未 ignore (\d+) 份/.exec(lintOut);
+  assert.ok(m, '门禁没打印密钥分母');
+  assert.equal(Number(m[1]), others.length, `门禁看到的未跟踪面(${m[1]})与本锁(${others.length})不一致 → 取数口径漂移`);
   const hits = [...sec().scanFiles(tracked, readRel), ...sec().scanFiles(others, readRel)];
   assert.deepEqual(hits, [], `仓库里有明文凭据（含未跟踪产物）：${JSON.stringify(hits.slice(0, 5))}`);
 });

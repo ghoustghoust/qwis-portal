@@ -130,7 +130,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 2. **单一事实源**：调度表只存在于 `collect.yml`；功能矩阵只存在于 `FEATURE_MATRIX.md`；凭据位置只存在于 `HANDOVER.md` §1.5。
 3. **活文档只装"当前"**：ISSUES 只装未修复/观察中/挂案；已核销进 `docs/archive/debugging/ISSUES-resolved-<date>.md`。
 4. **指针式推荐**：`HANDOFF_PROMPT`/`RUNBOOK` 之类入口文档只指路，不复述内容。
-5. **portal/ 是副本不是权威**：`portal/docs/` 与根 `docs/` 分叉时**以根树为准**，同步工具停跑；任何文档修订不落到 portal。
+5. **portal/ 已退役（09-21）**：门户 Vercel 项目下线、gitlink 已从索引移除，本条仅作历史说明保留；若它复活，旧规则是「portal 副本不是权威，任何文档修订不落到 portal」。 <!-- doc-lint:ignore：本行刻意引用已删除路径 -->
 
 ### 4.1 洁净 = 精炼 + 去冗 + 归档（三条都做才算做过洁净，2026-09-20 用户口径）
 

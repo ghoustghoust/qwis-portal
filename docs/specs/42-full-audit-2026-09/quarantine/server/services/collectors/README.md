@@ -23,4 +23,4 @@
 
 **状态**：active / frozen / 归档候选 / unknown（没把握就写 unknown，禁止猜）
 
-<!-- 骨架由 node tools/gen-dir-index.cjs 生成；正文请人和 Agent 维护，机器不会覆盖本文件 -->
+<!-- 骨架由 node tools/gen-dir-index.cjs 生成；正文请人和 Agent 维护，机器不会覆盖本文件。doc-lint:ignore：生成时工具在 tools/，现位 quarantine/ -->

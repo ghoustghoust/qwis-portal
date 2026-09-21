@@ -21,7 +21,7 @@ G2 归档形态与周刊对齐，但**不把整份 report 存两遍**（避免�
 ## 改动点（批准后才写）
 
 1. 建 `settings['mybrief.archive']`：**只存摘要条目** `{issue, date, window, counts, tier, fingerprint}`，正文仍按 `issue` 存一条（或复用 `mybrief.byIssue.<issue>`），**禁止把最新期整体复制进 archive**——这条是 40-2 教训的硬约束。
-2. 期号来自 40-3 的 `lib/brief-issues.js`（同一函数、同一窗口指纹语义）。
+2. 期号来自 40-3 拟建的 `brief-issues.js`（落在 `lib/` 下）（同一函数、同一窗口指纹语义）。
 3. 保留策略：滚动保留 N 期（默认建议 8），超出丢弃**只丢正文、保留摘要条目**（时间线不断档，老期点开显示"正文已过期"）。
 4. 读层：`GET /api/brief/history` 的 `mybrief` 段从"单键摘要"扩成"列表 + 当期"，前端归档区同排显示（与周刊共用一套渲染）。
 5. 生成侧：runner 写完 `mybrief.latest` 后**同事务式**更新 archive 摘要（失败要出声，别静默只更 latest）。

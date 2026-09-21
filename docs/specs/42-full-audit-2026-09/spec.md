@@ -9,10 +9,10 @@
 > 关联坑：`docs/pitfalls/testing.md` #58/#59 | 取代关系：**不作废已执行的动作**（portal 下线/删除、2h 同步通道关闭），
 >   只冻结未开工的审计波次与其发现台账（AU-01~05）
 > 状态：**冻结，待用户明确重启**（不是作废）—— 里面的可达图/调度登记表数据是 09-19 的快照（`rootHead 668e254`），
->   重启前必须重跑 `tools/audit-graph.cjs`，不得当现状引用；活文档一律不再引用本文件排期。
+>   重启前必须重跑 `docs/specs/42-full-audit-2026-09/quarantine/audit-graph.cjs`（隔离区现位，旧路径 `tools/` 已随冻结撤出），不得当现状引用；活文档一律不再引用本文件排期。
 > 最后更新：2026-09-19
 > 状态：W0 地基已建成，停在 W0′ 检查点等用户复核
-> 关联代码：`tools/audit-graph.cjs`、`server/services/scheduler/index.js:132-137`、`tools/eval-whitebox.cjs:39`
+> 关联代码：`docs/specs/42-full-audit-2026-09/quarantine/audit-graph.cjs`、`server/services/scheduler/index.js:132-137`、`tools/eval-whitebox.cjs:39`
 > 取代：无（新增审计轮，不改既有 SSOT）
 
 ## 1. 范围与边界
@@ -38,7 +38,7 @@
 
 | 波 | 谁 | 内容 | 状态 |
 |---|---|---|---|
-| W0 | 主代理 | `tools/audit-graph.cjs` → `reach.json` / `schedule.json` / `dir-index-draft.md` | ✅ 完成 |
+| W0 | 主代理 | `audit-graph.cjs`（现位 `quarantine/`）→ `reach.json` / `schedule.json` / `dir-index-draft.md` | ✅ 完成 |
 | W0′ | 用户 | 复核地基数据、砍/调范围 | ⏳ 进行中 |
 | W1 | 6 只读子代理 | 六维度结构级扫描（死代码/调度/质量/安全/功能完整性/性能） | 待放行 |
 | W1.5 | 主代理 | 跑子代理提交的「待实测」探针 | — |
@@ -56,7 +56,7 @@
   `web/src/pages/{Admin,Daily}Page.jsx`、`server/services/ai/daily-ai.js`、`tools/_probe-*`/`_diag-*`、
   `tests/regression-20260919?.test.js`。
 - **本审计写入面**：仅新增 `docs/specs/42-full-audit-2026-09/*`、`docs/eval/audit/*`、
-  `tools/audit-graph.cjs`、`tests/regression-audit42-*.test.js`；共享文件只允许 `docs/INDEX.md` 单行追加。
+  `audit-graph.cjs`（现位 `quarantine/`）、`tests/regression-audit42-*.test.js`；共享文件只允许 `docs/INDEX.md` 单行追加。
 - 本轮已改的唯一既有文件：`server/services/scheduler/index.js`（AU-5 级默认值翻转，改前红/改后绿）。
 
 ## 5. W0 地基数据（`docs/eval/audit/reach.json`，rootHead 668e254）

@@ -22,7 +22,7 @@ G2 每条报警可定位：**哪个源 / 哪次运行 / 哪个模式 / 错误类
 1. 新建 `alert_events` 表（`lib/db.js` + `server/db.js` **同一份 DDL**，两库都建）：
    `id, at, event, severity, source_id?, run_id?, mode?, err_kind?, err_param?, code_ref?, suggestion?, self_heal_state?, delivered_channels?, raw_digest?`
    —— `recentLog` 保留一个周期做兼容读，但**不再是唯一事实**。
-2. `dispatch()` 统一入口写入 `alert_events`，字段来源固定：`err_kind/suggestion` 由 `classifyError` 出（分类器收进 `lib/alert-error-class.js` 一份，替换现在两端各写一遍的两份）。
+2. `dispatch()` 统一入口写入 `alert_events`，字段来源固定：`err_kind/suggestion` 由 `classifyError` 出（分类器收进拟建的 `alert-error-class.js`（落在 `lib/` 下）一份，替换现在两端各写一遍的两份）。
 3. `code_ref` 取值口径：**函数名 + 代码片段锚点**，不写 `file:行号`（坑 #62：手写行号每改必漂，第 6 次教训）。
 4. `self_heal_state` 由 spec 35A 的自愈记录出（未重试 / 已重试 N 次 / 冷却中 / 已恢复），使"报警—自愈"成闭环而不是两本账。
 5. 端点：`GET /api/alerts/log`（既有 `api/[...slug].js:1582` 附近）改为读 `alert_events`，支持 `event/sourceId/since` 过滤。
