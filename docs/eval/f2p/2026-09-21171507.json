@@ -1,0 +1,56 @@
+{
+ "at": "2026-09-21T17:15:07.672Z",
+ "baseRef": "306cc38c71d9ac718ba73294599b0786c19b40bc",
+ "headRef": "HEAD",
+ "baseSha": "306cc38c71d9ac718ba73294599b0786c19b40bc",
+ "headSha": "51ec81fae42358500187aa2b5bb19042946ccbe5",
+ "files": [
+  "tests/regression-archive-articles.test.js"
+ ],
+ "wantNames": [
+  "AR"
+ ],
+ "targets": [
+  "AR"
+ ],
+ "lockIntros": {
+  "AR": [
+   "6c210ba1d5ac96b298952d2654b6e323ef170b25"
+  ]
+ },
+ "headDirty": [],
+ "headDirtyCount": 0,
+ "base": {
+  "tests": 5,
+  "pass": 0,
+  "fail": 5,
+  "failedNames": [
+   "AR1 谓词与 lib/retention 同一份（源码级）：工具不再自带手写豁免条件（B132）",
+   "AR2 闸挡下：无转储且无凭证 → 一条不搬、退非 0、出声（B132/⑥b）",
+   "AR3 凭证放行：该搬的搬、豁免的一条不动、译文列跟着走（B132 核心行为）",
+   "AR4 归档表 DDL 取自建表源：lib/db.js SCHEMA 里的 articles_archive 必须带 translated_*（B132 防漂移）",
+   "AR5 articles_archive 进转储面，且源库没有它时 dump 跳过而不是报错（B132）"
+  ],
+  "envBroken": true,
+  "envPaths": [
+   ",/r/n  syscall: "
+  ],
+  "missingDeps": [],
+  "missingOwn": [
+   ".env"
+  ]
+ },
+ "head": {
+  "tests": 5,
+  "pass": 5,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "env",
+ "ok": false,
+ "why": "base 侧有环境类失败，不能当改前红证据（元凶：,/r/n  syscall: ）"
+}
