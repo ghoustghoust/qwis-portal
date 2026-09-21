@@ -69,7 +69,7 @@ function openSource(want) {
 async function columnsOf(src, table) {
   const rows = await src.all(`SELECT name FROM pragma_table_info(?) ORDER BY cid`, [table]);
   const cols = rows.map((r) => r.name);
-  if (cols.length === 0) throw new Error(`${table} 在源库里没有列 —— 表不存在？`);
+  // 空列清单 = 表在源库不存在；由调用方决定跳过（DUMP_TABLES 里允许常驻缺位的表，如 articles_archive）
   return cols;
 }
 
@@ -94,6 +94,16 @@ async function runDump() {
 
   for (const table of cd.DUMP_TABLES) {
     const columns = await columnsOf(src, table);
+    // 源库没有这张表（如 articles_archive 常态缺位）就跳过：不入清单、不算缺口（B132）
+    if (columns.length === 0) { delete manifest.tables[table]; log(`${table} 在源库不存在，跳过`); continue; }
+    // 0 行的表没有可备份内容：跳过并出声。注意保留「曾有内容」的陈旧条目——那批分片仍是唯一备份
+    const rowCnt = Number((await src.all(`SELECT COUNT(*) c FROM ${table}`))[0].c);
+    if (rowCnt === 0) {
+      const stale = manifest.tables[table];
+      if (stale && stale.rows > 0) { log(`${table} 源库现 0 行但清单里有 ${stale.rows} 行历史分片，保留旧条目`); continue; }
+      delete manifest.tables[table];
+      log(`${table} 源库 0 行，跳过（没有可备份的内容）`); continue;
+    }
     const ddl = await ddlOf(src, table);
     const prev = manifest.tables[table] || cd.emptyTableState(columns);
     if (!FULL && manifest.tables[table] && String(manifest.tables[table].columns.join()) !== columns.join()) {
@@ -110,7 +120,13 @@ async function runDump() {
     let seq = state.chunks.length, guard = 0;
     for (;;) {
       const { sql, args } = cd.keysetSql(table, columns, state.maxId, CHUNK_ROWS);
-      const rows = await src.all(sql, args);
+      // 慢查询（大分片实测 50s+/片）在途中会被中间设备断 socket（"other side closed"）——重试 3 次再认失败
+      let rows, lastErr;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try { rows = await src.all(sql, args); lastErr = null; break; }
+        catch (e) { lastErr = e; log(`${table} 分片拉取第 ${attempt} 次失败（${e.message}），${attempt < 3 ? '重试' : '放弃'}`); await new Promise((r) => setTimeout(r, attempt * 3000)); }
+      }
+      if (lastErr) throw lastErr;
       if (rows.length === 0) break;
       const rec = cd.writeChunk(OUT_DIR, table, ++seq, rows);
       state.chunks.push(rec);
@@ -123,6 +139,9 @@ async function runDump() {
     }
     manifest.tables[table] = state;
     log(`${table} 合计 ${state.rows} 行 / ${(state.bytes / 1048576).toFixed(1)}MB / ${state.chunks.length} 片`);
+  }
+  if (Object.keys(manifest.tables).length === 0) {
+    throw new Error('所有内容表都缺位或 0 行 —— 空转储不入清单（坑 #41：空跑不许读成成功）');
   }
   manifest.updatedAt = new Date().toISOString();
   cd.writeManifest(OUT_DIR, manifest);
@@ -203,4 +222,8 @@ async function runRestore() {
   else if (arg('gate', false)) runGate();
   else if (arg('restore', false)) await runRestore();
   else await runDump();
-})().catch((e) => { console.error(`转储失败: ${e.message}`); process.exit(1); });
+})().catch((e) => {
+  // 裸 message 不够排障（"terminated" 这种词没有定位力）——带堆栈与 cause（B105 同族教训）
+  console.error(`转储失败: ${e.stack || e.message}` + (e.cause ? `\ncause: ${e.cause.stack || e.cause.message || e.cause}` : ''));
+  process.exit(1);
+});

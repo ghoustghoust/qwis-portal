@@ -145,7 +145,7 @@ test('D5 空转储 / 缺清单 → 删除闸不许放行（"目录存在"不等�
   const out = path.join(path.dirname(src), 'dump');
   const r = cli(['--scope', src, '--out', out, '--full']);
   assert.notEqual(r.code, 0, '0 行的"转储"竟然退 0 —— 这正是坑 #41 说的把空跑读成成功');
-  assert.ok(/没有任何分片/.test(r.out), `应当出声说明是 0 行，而不是静悄悄：${r.out}`);
+  assert.ok(/没有任何分片|空转储|0 行/.test(r.out), `应当出声说明是 0 行，而不是静悄悄：${r.out}`);  // ⑥b 后空表在 dump 侧跳过并出声，文案换形态不换行为
   const g = cd().deleteGate(out, {});
   assert.equal(g.allowed, false, `0 行内容被判成"可删"：${g.reason}`);
 });
@@ -199,7 +199,7 @@ test('D8 回放目标的三条拒签：缺列 / 没表 / 目标是云端串', ()
 });
 
 test('D9 转储表白名单就是内容表，配置表另有 /api/backup（不重复一份事实源）', () => {
-  assert.deepEqual(cd().DUMP_TABLES, ['articles', 'videos']);
+  assert.deepEqual(cd().DUMP_TABLES, ['articles', 'videos', 'articles_archive']);  // B132：归档表同属「删了就回不来」的内容表
   const src = makeSource();
   const out = path.join(path.dirname(src), 'dump');
   assert.equal(cli(['--scope', src, '--out', out, '--full']).code, 0);

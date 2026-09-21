@@ -1,0 +1,52 @@
+{
+ "at": "2026-09-21T16:20:53.889Z",
+ "baseRef": "7b80501fbdf1918b3cbfacc36a6c0f5d5643ddc0",
+ "headRef": "HEAD",
+ "baseSha": "7b80501fbdf1918b3cbfacc36a6c0f5d5643ddc0",
+ "headSha": "306cc38c71d9ac718ba73294599b0786c19b40bc",
+ "files": [
+  "tests/regression-dump-credential.test.js"
+ ],
+ "wantNames": [
+  "DC"
+ ],
+ "targets": [
+  "DC"
+ ],
+ "lockIntros": {
+  "DC": [
+   "306cc38c71d9ac718ba73294599b0786c19b40bc"
+  ]
+ },
+ "headDirty": [],
+ "headDirtyCount": 0,
+ "base": {
+  "tests": 5,
+  "pass": 0,
+  "fail": 5,
+  "failedNames": [
+   "DC1 凭证闸放行：新鲜且自洽的凭证 → allowed 且理由带行数与指纹（⑥b）",
+   "DC2 凭证闸五种坏形状全挡：过期 / 未来 / 零行 / 缺指纹 / 非对象（⑥b）",
+   "DC3 deleteGateAny 磁盘优先、凭证兜底、两者皆无必挡（⑥b）",
+   "DC4 runner：磁盘没有转储目录时凭凭证放行并真删；无凭证一条不删（⑥b 双向）",
+   "DC5 云端 POST /api/data/cleanup：无凭证 409 + 审计行 + 一条不删；有凭证正常删（⑥b）"
+  ],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "head": {
+  "tests": 5,
+  "pass": 5,
+  "fail": 0,
+  "failedNames": [],
+  "envBroken": false,
+  "envPaths": [],
+  "missingDeps": [],
+  "missingOwn": []
+ },
+ "state": "ok",
+ "ok": true,
+ "why": "改前红 5 条（1 个目标全中，实指 5 条锁），改后 5 条全绿"
+}
