@@ -126,10 +126,22 @@ async function runDump() {
   }
   manifest.updatedAt = new Date().toISOString();
   cd.writeManifest(OUT_DIR, manifest);
-  src.close();
 
   const v = cd.verifyDump(OUT_DIR, { maxAgeHours: MAX_AGE_H });
   log(`校验：${v.ok ? '通过' : '不通过 ' + v.reasons.join('；')}`);
+  // ⑥b：校验全过的云端转储 → 凭证入库，runner/云端的删除闸改判它（它们没有本地盘）。
+  // 只在校验过后写；校验不过 = 旧凭证原地保留（它仍然指向上一份可用的转储）
+  if (v.ok && SCOPE === 'cloud' && src.kind === 'turso') {
+    // 凭证入库是唯一一处写；单独开连接写（源连接保持只读语义，见 openSource 头注）
+    const cred = cd.credentialFromManifest(manifest);
+    const { createClient } = require('@libsql/client');
+    const w = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
+    try {
+      await w.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)", args: [cd.CREDENTIAL_KEY, JSON.stringify(cred)] });
+      log(`转储凭证已入库（${cd.CREDENTIAL_KEY}）：${Object.values(cred.tables).reduce((a, t) => a + t.rows, 0)} 行 / 指纹 ${cred.manifestSha256.slice(0, 12)}…`);
+    } finally { w.close(); }
+  }
+  src.close();
   if (!v.ok) process.exitCode = 1;
 }
 

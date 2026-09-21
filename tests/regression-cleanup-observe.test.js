@@ -143,7 +143,7 @@ test('CO2 没有可用转储 = 一条都不删且必须出声（删除闸是强�
     const row = await readSetting(db, 'retention.pending');
     assert.ok(row, `cleanup 之后没有 settings['retention.pending']：${first.out.slice(0, 400)}`);
     assert.equal(row.gate.allowed, false, '没有转储却被判"放行" = 闸形同虚设');
-    assert.match(row.gate.reason, /没有内容级转储|不许执行删除/, `挡下的原因没写清：${row.gate.reason}`);
+    assert.match(row.gate.reason, /没有内容级转储|不许执行删除|没有转储凭证/, `挡下的原因没写清：${row.gate.reason}`);  // ⑥b 后无磁盘时会落到凭证腿，措辞随腿变
     const hb = await readSetting(db, 'cloud.collect');
     const last = hb.history[hb.history.length - 1];
     assert.equal(last.mode, 'cleanup');

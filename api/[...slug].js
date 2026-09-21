@@ -2026,6 +2026,7 @@ const CLEAN_TABLES = [
 // 时间列本来这里就是 `COALESCE(published_at, created_at)`，是 runner 那份只认 `published_at` ——
 // 所以并口径之后**本端点行为一字未变**，变的是一次实测差（见 lib/retention 注释与 ISSUES B101/B102）。
 const { countSql: retainCountSql, deleteSql: retainDeleteSql } = require('../lib/retention');
+const { credentialGate, CREDENTIAL_KEY, GATE_MAX_AGE_H } = require('../lib/content-dump');
 async function cleanupArticles(cutoff, { preview = false } = {}) {
   return preview
     ? qOne(retainCountSql('cloudManual', 'retention'), [cutoff])
@@ -2080,6 +2081,13 @@ async function handleDataCleanupPreview(req) {
 async function handleDataCleanup(req) {
   const body = req.body || {};
   if (body.confirm !== true) return { status: 400, body: jsonErr('需 confirm:true 确认执行') };
+  // 删除闸（⑥b/B103）：Vercel 没有本地转储目录，改判库里的转储凭证
+  //（只能由"本地校验全过的转储"写入）。不过闸 = 一条都不删 + 409 带原因 + 审计行。
+  const gate = credentialGate(await getSetting(CREDENTIAL_KEY, null), { maxAgeHours: GATE_MAX_AGE_H });
+  if (!gate.allowed) {
+    await auditRecord('data.cleanup.blocked', { detail: { reason: gate.reason } });
+    return { status: 409, body: jsonErr(`删除闸挡下：${gate.reason}`) };
+  }
   try {
     const cutoff = cutoffIso(body.days);
     const deleted = {};

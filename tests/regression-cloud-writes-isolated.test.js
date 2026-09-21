@@ -95,6 +95,10 @@ const daysAgo = (d) => new Date(Date.now() - d * 86400e3).toISOString();
     await ins('老稍后读', daysAgo(20), { later: 1 });
     await ins('老精选', daysAgo(20), { featured: 1 });
     await ins('新未读', daysAgo(1), {});
+    // ⑥b：云端手动清理端点已接删除闸，隔离库里要先放一条新鲜转储凭证（形态同 dump-content 写入的）
+    const cred = { at: new Date().toISOString(), scope: 'cloud', manifestSha256: 'lock-fixture',
+      tables: { articles: { rows: 5, maxId: 5, bytes: 1, chunks: 1 }, videos: { rows: 1, maxId: 1, bytes: 1, chunks: 1 } } };
+    await db.dbRun('INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)', 'retention.dumpCredential', JSON.stringify(cred));
     await db.dbRun("INSERT INTO videos(source_id,platform,title,url,published_at,created_at) VALUES(?,?,?,?,?,?)",
       sid, 'douyin', '老视频', 'https://iso.example.com/v1', daysAgo(20), daysAgo(20));
     r.preview = await call('POST', '/api/data/cleanup/preview', { days: 7 });

@@ -694,12 +694,11 @@ async function postRunAlerts(stats) {
 //   ② 把 B103 的删除闸从"可用工具"变成**强制路径**：拿不到可用转储就一条都不删，并且出声。
 // 计数 SQL 来自 `lib/retention#pendingPlan` —— 与删除用的是同一份 WHERE，
 // 否则"看着会删多少"与"真删多少"又是两件事（坑 #58/#62）。
-// ⚠️ **闸在 GH runner 上目前必然判"挡下"**（runner 没有本地转储目录，转储是本地盘的产物）。
-//    这是**安全方向**的默认，不是缺陷；但要让"定时清理真能删"，下一步得把转储证据搬进库里
-//    （manifest 摘要 + 校验和写一条 settings，runner 读它而不是读磁盘）—— 那半段与 B103 剩余项、
-//    `tools/dump-content.cjs` 的在途改动同批做，本轮不擅自替它定形态。
+// 闸的两条腿（⑥b 已接）：本地有转储目录走磁盘全量校验；runner 上没有目录 → 改判库里的
+//    转储凭证（settings['retention.dumpCredential']，只能由"本地校验全过的转储"写入，见
+//    tools/dump-content.cjs）。两腿都没有 = 挡下。
 //    2026-09-20T22:27Z 那一次清理就是在**没有这道闸**的情况下跑掉的（心跳：删 26,532 + 24,291 条，
-//    恰好等于本轮实测的待删量），所以本条从"接线"升成"必须"。
+//    恰好等于当时实测的待删量），所以这道闸是强制路径不是可选工具。
 const RETENTION_READOUT_KEY = 'retention.pending';
 const RETENTION_HISTORY_MAX = 14;
 // 转储目录必须与 `tools/dump-content.cjs` 的默认产出同一处：它按 scope 分子目录
@@ -712,7 +711,9 @@ async function retentionReadout() {
   const counts = {};
   for (const p of plan) counts[p.key] = Number(((await qOne(p.sql, [p.cutoff])) || {}).c || 0);
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const gate = require('../lib/content-dump').deleteGate(contentDumpDir());
+  const cd = require('../lib/content-dump');
+  const cred = await getSetting(cd.CREDENTIAL_KEY, null);
+  const gate = cd.deleteGateAny(contentDumpDir(), cred, { maxAgeHours: cd.GATE_MAX_AGE_H });
   let history = [];
   try {
     const prev = await getSetting(RETENTION_READOUT_KEY, {});
@@ -727,7 +728,7 @@ async function retentionReadout() {
   const row = {
     at: nowIso(), scope: 'runner', retentionDays, total, counts,
     plan: plan.map((p) => ({ key: p.key, table: p.table, days: p.days, reason: p.reason })),
-    gate: { allowed: !!gate.allowed, reason: gate.reason, dir: contentDumpDir() },
+    gate: { allowed: !!gate.allowed, reason: gate.reason, via: gate.via || 'disk', dir: contentDumpDir() },
     history,
   };
   await putSetting(RETENTION_READOUT_KEY, row);

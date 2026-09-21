@@ -274,3 +274,5 @@
 | B105 | （P0-1 行：scratch 驱动族退出段崩，已 3 例 fail_flaky） | ✅ 09-21 修复：共享 `tests/driver-runner.js#runDriver`（spawnSync，退出码与载荷分别判：载荷完整则退出段崩只记警告不翻红；无载荷则带 status+stderr 尾抛出），11 处调用点全部换用；锁 `tests/regression-driver-runner.test.js` DR1~DR5（含反向：无载荷/没配 payloadRe 必须抛）；全量套件连跑 2 轮 549/549。**如实说明**：native 退出段崩本身（libsql/Windows 拆卸期）没有修、也不再需要修——它不再能影响测试结果 |
 
 | B131 | （P0-2 行：SCHEMA 少 translated_* 三列，新机建库写入即抛） | ✅ 09-21 修复：三列并进 `lib/db.js` SCHEMA + ALTERS（老库补列），`server/db.js` 补 `translation_provider`；新白盒 **W24**（两份建表源可建列集不许分叉 + ALTERS 必进 SCHEMA 本体），锁 SC1~SC5 含三种坏形状负向样本；真库 10 张同名表比对 0 缺口、articles 23 列与生产一致 |
+
+| B101+B103 ⑥b | （P0-3 行：转储凭证未入库，runner/云端手动端点 DELETE 未改判凭证） | ✅ 09-21 交付：`lib/content-dump.js` 新增凭证三件套（`credentialFromManifest`/`credentialGate`/`deleteGateAny`，磁盘优先、凭证兜底）；`dump:content --scope cloud` 校验全过后自动把凭证写进 `settings['retention.dumpCredential']`（单独写连接，源连接保持只读）；runner `retentionReadout` 改判凭证、心跳带 `via`；云端 `POST /api/data/cleanup` 接闸（无凭证 409 + 审计行）。锁 `tests/regression-dump-credential.test.js` DC1~DC5（含「无凭证真删 0 行」反向）。B101 触发口不接是用户 09-21 裁定，保持不变；B103 残余「/api/backup 只三表」挂 P3-4 |
