@@ -213,20 +213,20 @@ async function handleArticles(req) {
 // ts 为空 = 建立基线（只回当前最新 sortKey，不计数）
 async function handleArticlesSince(req) {
   const q = req.query;
-  const NOISE = "s.type != 'hotlist' AND COALESCE(json_extract(COALESCE(s.extra,'{}'),'$.aggregator'),0) != 1" +
-    ' AND COALESCE(s.muted,0)=0 AND COALESCE(s.reader_visible,1)=1';
   const conds = [];
   const args = [];
   const ts = String(q.ts || '');
   if (ts) { conds.push('COALESCE(a.published_at, a.created_at) > ?'); args.push(ts); }
-  if (q.include_hot !== '1') conds.push(NOISE);
+  if (q.include_hot !== '1') conds.push(NOT_NOISE_READER);
   if (q.source_id) { conds.push('a.source_id=?'); args.push(Number(q.source_id)); }
   if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
   if (q.tab === 'later') conds.push('a.later=1');
   else if (q.tab === 'history') conds.push('a.read_at IS NOT NULL');
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const row = await qOne(
-    `SELECT COUNT(*) c, MAX(COALESCE(a.published_at, a.created_at)) latest
+    // NULLIF 排掉字面串 'null'：published_at/created_at 是 TEXT 列，文本序 `'null' > '2026-…'`，
+    // 一行脏数据就能让"最新一条"变成 null（B93 同族；W15 现在按 DDL 派生扫所有这类点）
+    `SELECT COUNT(*) c, MAX(COALESCE(NULLIF(a.published_at,'null'), NULLIF(a.created_at,'null'))) latest
      FROM articles a JOIN sources s ON s.id=a.source_id ${where}`, args);
   return jsonOk({ newCount: ts ? (row.c || 0) : 0, latest: row.latest || null });
 }
@@ -1461,7 +1461,7 @@ async function handleMeta(req) {
   const articles = (await qOne('SELECT COUNT(*) c FROM articles')).c;
   const videos = (await qOne('SELECT COUNT(*) c FROM videos')).c;
   const sources = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=1')).c;
-  const lastArticle = await qOne('SELECT MAX(created_at) t FROM articles');
+  const lastArticle = await qOne('SELECT MAX(NULLIF(created_at,\'null\')) t FROM articles');
   // 把"线上正跑着哪个 commit"变成一次 curl 就能查到的事实：
   // 本项目最大的历史故障就是"以为推上去了，其实线上没变"（AGENTS §2.1），
   // 光比对 git 与 origin 不够——还要比对 origin 与**正在服务的那个 deployment**。
