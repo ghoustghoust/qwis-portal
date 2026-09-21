@@ -269,6 +269,27 @@ const ENV_READ_ALLOW = ['regression-daily-ai.test.js', 'regression-20260913.test
   'regression-20260913b.test.js'];
 const LAZY_HOSTS = ['regression-20260920b.test.js', 'regression-20260920c.test.js', 'regression-ai-throttle.test.js'];
 
+// B133：「顶层读 .env」改走 src-spans 遮蔽视图——「顶层」用大括号深度判定而不是数缩进，
+// 字符串/注释里的 readFileSync('.env')（反例样本）在遮蔽视图里整段消失，不再误伤
+function topLevelEnvRead(code) {
+  const { scan } = require('../lib/src-spans');
+  const one = scan(code);
+  const depth = new Int32Array(code.length + 1);
+  let d = 0;
+  for (let i = 0; i < code.length; i++) {
+    const c = one.masked[i];
+    if (c === '{') d++;
+    else if (c === '}') d--;
+    depth[i] = d;
+  }
+  for (const m of one.masked.matchAll(/readFileSync\s*\(/g)) {
+    if (depth[m.index] !== 0) continue;
+    // 实参里的字符串字面量含 .env 才算（masked 里字符串是空白，要回 strings 查原文）
+    if (one.strings.some((sp) => sp.from > m.index && sp.from < m.index + 80 && /\.env\b/.test(sp.s))) return true;
+  }
+  return false;
+}
+
 test('#64-1 锁文件不许在顶层 require 近期新建的模块（必须惰性取，否则 F2P 只能读成"锁假了"）', () => {
   const { stripComments } = require('../lib/src-spans');
   const norm = (m) => m.replace(/\.js$/, '');
@@ -285,8 +306,7 @@ test('#64-1 锁文件不许在顶层 require 近期新建的模块（必须惰�
         hits.push(`${f} 顶层 require ../lib/${m}（改惰性：const x = () => require('../lib/${m}')）`);
       }
     }
-    const topLevelLines = code.split('\n').filter((l) => !/^\s/.test(l)).join('\n');
-    if (/\breadFileSync\([^)]*\.env/.test(topLevelLines) && !ENV_READ_ALLOW.includes(f)) {
+    if (topLevelEnvRead(code) && !ENV_READ_ALLOW.includes(f)) {
       hits.push(`${f} 顶层读 .env（坑 #67：基线树里没有 .env，它被 gitignore）`);
     }
   }
@@ -312,6 +332,19 @@ test('#64-1 锁文件不许在顶层 require 近期新建的模块（必须惰�
     '块注释里的反例被算成违规（坑 #63 与 #64 在这里咬合）');
   assert.deepStrictEqual(probe("const s = '}{)( '; const tw = () => require('../lib/time-window');\n"), [],
     '字符串里的括号把深度数搅乱 —— masked 等长不变量没起作用');
+});
+
+
+test('#64-1b 「顶层读 .env」换跨度视图后的双向（B133：反例样本不许红、真违规必须红）', () => {
+  // ① 字符串模板与注释里的 readFileSync('.env') 是教后来锁写的反例，不许判红
+  const sample = "const x = `const fs = require('fs');\nfs.readFileSync('.env');`;\n// fs.readFileSync('.env')\n";
+  assert.equal(topLevelEnvRead(sample), false, '字符串/注释里的 .env 读取被误判成违规');
+  // ② 顶层真读必须红
+  const bad = "const fs = require('fs');\nconst env = fs.readFileSync('.env', 'utf8');\n";
+  assert.equal(topLevelEnvRead(bad), true, '顶层真读 .env 没被抓到');
+  // ③ 函数体内读不算顶层（本条只判顶层）
+  const inner = "function f() {\n  const fs = require('fs');\n  return fs.readFileSync('.env', 'utf8');\n}\n";
+  assert.equal(topLevelEnvRead(inner), false, '函数体内的读取不该算顶层');
 });
 
 test('#64-2 顶层依赖 vs 惰性依赖：同一句断言必须给出"文件名级红"与"用例名级红"两态（可归因是分界）', () => {

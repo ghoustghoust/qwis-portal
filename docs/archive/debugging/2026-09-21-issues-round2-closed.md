@@ -282,3 +282,5 @@
 | B29 | （P1-1 行：类型口径三处错——播客按 douyin 恒 0 / 文章死值 wechat 漏 wemp / 视频只认 favorite=1 恒空） | ✅ 09-21 核销：前两处此前已被 B60/B62 的口径收敛修掉（`readingTypeFilter` 单实现含 wemp、播客走 `audioCoverSql`），本轮实测复核确认；残余第三处真修——「我的阅读」视频侧两端改认「收藏过或观看过」（`lib/reading-filters.js#READING_VIDEO_COND`，列表/计数/快路径三处同步，收藏数仍只认 favorite）。**连带揪出并修掉**：`watched_at` 列此前由 `server/routes/videos.js` 在加载时顺手 ALTER 创建（列创建长在路由文件里），两端建表源都没有它——已补进 `lib/db.js` 与 `server/db.js`（B131 同族，W24 现在管着这条）。锁：N8/N9 期望表加「已观看未收藏视频」样本；F2P=基线代码跑新期望 N8/N9 红 2/2 → 改后绿 |
 
 | B69 | （P1-2 行：「报警有出口」第二处实现，preflight 与健康面各说各话） | ✅ 09-21 收口：本地 `getAlertSummary` 与云端 `/api/health/status` 都改走 `lib/alert-channels.js#usableChannels`（与 preflight 同一份），各加 `usableChannelCount`/`noExit`（云端另带 `deliveryState` 投递态，不回显 URL）。锁 `tests/regression-alert-exit.test.js` AE1~AE3（含「哨兵渠道在场必须 noExit=true」与脱敏面） |
+
+| B133 | （P1-4 行：#64-1 判据用行首缩进近似「顶层」，误伤锁里的反例样本） | ✅ 09-21 修复：判据改走 `lib/src-spans` 遮蔽视图（大括号深度定「顶层」，字符串/注释里的样本整段消失），双向锁 `#64-1b`（反例样本不许红 / 顶层真读必须红 / 函数体内不判）——锁文件里又可以安全地放坏样本了（坑 #45 方向保住了） |
