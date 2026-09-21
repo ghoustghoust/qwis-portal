@@ -1,0 +1,501 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T08:45:09.897Z",
+  "acceptance": {
+    "ok": false,
+    "reasons": [
+      "只跑了 1/10 条剧本"
+    ],
+    "nCases": 1,
+    "nAll": 10,
+    "repeat": 3,
+    "remote": true
+  },
+  "summary": {
+    "total": 1,
+    "pass": 1,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": true,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录"
+        },
+        {
+          "kind": "data",
+          "label": "前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）",
+          "ok": true,
+          "detail": "{\"/reader/\":7819,\"/daily/\":5594,\"/hot/\":8766,\"/reading/\":6813,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":211}"
+        },
+        {
+          "kind": "data",
+          "label": "后台登录门未白屏：有口令输入框且文案非空（实测 190 字）",
+          "ok": true,
+          "detail": "password 输入框 1 个，/admin/ 文本 211 字"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 \n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录\n前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红） {\"/reader/\":7819,\"/daily/\":5594,\"/hot/\":8766,\"/reading/\":6813,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":211}\n后台登录门未白屏：有口令输入框且文案非空（实测 190 字） password 输入框 1 个，/admin/ 文本 211 字\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 321,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/reader/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 29,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 226,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 23156,
+          "ms": 228,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T08:45:16.538Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/daily/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 0,
+          "ms": 121,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 206,
+          "params": {}
+        },
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 89151,
+          "ms": 219,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527363,
+          "ms": 784,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 2,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 147103,
+          "ms": 663,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/reading/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 25522,
+          "ms": 17,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            },
+            "type": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527363,
+          "ms": 36,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/weekly/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/weekly",
+          "status": 200,
+          "bytes": 33364,
+          "ms": 568,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527363,
+          "ms": 34,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/mybrief/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 3,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527363,
+          "ms": 32,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/mybrief",
+          "status": 200,
+          "bytes": 24009,
+          "ms": 416,
+          "params": {}
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 17289,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/fYyzlv1byOM/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 9231,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/eURc55MsNPc/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 24417,
+          "ms": 7,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/Kof2VcHTjrk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 10787,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/2z-7pIj57f8/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 20488,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/FQNftquDDaI/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 16230,
+          "ms": 5,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/o1CogAtWdBk/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 14070,
+          "ms": 6,
+          "params": {
+            "u": {
+              "value": "https://i.ytimg.com/vi/bbNTY8O0GTY/hqdefault.jpg",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/admin/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 401,
+          "bytes": 35,
+          "ms": 4,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 3,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T084509/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T084509/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T084509/report.json"
+      ],
+      "metrics": {
+        "emptyPages": {}
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    }
+  ]
+}

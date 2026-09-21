@@ -1,0 +1,415 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T09:48:56.504Z",
+  "acceptance": {
+    "ok": false,
+    "reasons": [
+      "只跑了 2/10 条剧本"
+    ],
+    "nCases": 2,
+    "nAll": 10,
+    "repeat": 3,
+    "remote": true
+  },
+  "summary": {
+    "total": 2,
+    "pass": 2,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E7",
+      "title": "客户端路由与深链：点导航不整页刷新、刷新不丢位置（P0-5 / 38-3 前置）",
+      "status": "pass",
+      "why": "",
+      "assertions": 7,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "点得到左栏「每日早报」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "URL 变 /daily/ 且日报行出现",
+          "ok": true,
+          "detail": "https://qwis-intel.vercel.app/daily/ rows=37"
+        },
+        {
+          "kind": "data",
+          "label": "点导航后 JS 上下文存活（window 标记还在 = 没有整页刷新）",
+          "ok": true,
+          "detail": "标记=alive"
+        },
+        {
+          "kind": "api",
+          "label": "点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次）",
+          "ok": true,
+          "detail": "document 响应 1 次：/reader/"
+        },
+        {
+          "kind": "api",
+          "label": "切页后页面自己重新取到 /api/daily",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "深链 + 刷新仍停在热点榜（有内容不是空壳）",
+          "ok": true,
+          "detail": "刷新后卡片 31 张，/api/hot 已到达(status=200, 147168B)，整页 9127 字"
+        },
+        {
+          "kind": "api",
+          "label": "刷新后公共数据链路仍活着（/api/settings 由 store 拉取）",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n🔥 热点榜\n全源聚合 · 只呈现 AI 相关动态\nAI 精选\nAI 信息实时流\n热搜事件\n当前热点\n完整榜单 →\n1\n沙特首都利雅得遭空袭\n636 热度\n2\n四川攀枝花泥石流\n262 热度\n3\nGoogle says its Gemini AI model hacked three other companies\n115 热度\n4\n商务部新闻发言人就中美经贸磋商有关问题答记者问\n110 热度\n5\n特朗普宣布美国丹麦达成格陵兰协议，美将获该岛“永久安全控制权”\n109 热度\n检索\nAI·前沿\n132\nTop200 精选\n120\nX·AI推",
+      "assertTargets": "点得到左栏「每日早报」 \nURL 变 /daily/ 且日报行出现 https://qwis-intel.vercel.app/daily/ rows=37\n点导航后 JS 上下文存活（window 标记还在 = 没有整页刷新） 标记=alive\n点「每日早报」没重新拉 HTML（document 请求仍只有首屏那一次） document 响应 1 次：/reader/\n切页后页面自己重新取到 /api/daily \n深链 + 刷新仍停在热点榜（有内容不是空壳） 刷新后卡片 31 张，/api/hot 已到达(status=200, 147168B)，整页 9127 字\n刷新后公共数据链路仍活着（/api/settings 由 store 拉取） ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 96892,
+          "ms": 397,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527933,
+          "ms": 35,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 147168,
+          "ms": 407,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/hot/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {}
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/hot/events",
+          "status": 200,
+          "bytes": 96892,
+          "ms": 10,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527933,
+          "ms": 36,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/hot/groups",
+          "status": 200,
+          "bytes": 425,
+          "ms": 1,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:171"
+            }
+          }
+        },
+        {
+          "url": "/api/hot",
+          "status": 200,
+          "bytes": 147168,
+          "ms": 17,
+          "params": {
+            "tab": {
+              "value": "featured",
+              "source": "web/src/pages/HotPage.jsx:217"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T094856/screens/E7-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T094856/screens/E7-r1.png",
+        "docs\\eval\\e2e\\20260919T094856/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 3643
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    },
+    {
+      "id": "E8",
+      "title": "七个页面：无 JS pageerror、无裸 i18n key 泄漏、后台登录门本地化（B71）",
+      "status": "pass",
+      "why": "",
+      "assertions": 6,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "七个页面都没有未挂 Provider 造成的裸 key 泄漏",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "七个页面均无 JS pageerror",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "后台登录按钮是本地化文案（不是 `login.submit`）",
+          "ok": true,
+          "detail": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录"
+        },
+        {
+          "kind": "data",
+          "label": "前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红）",
+          "ok": true,
+          "detail": "{\"/reader/\":7771,\"/daily/\":5594,\"/hot/\":9127,\"/reading/\":6815,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":211}"
+        },
+        {
+          "kind": "data",
+          "label": "后台登录门未白屏：有口令输入框且文案非空（实测 190 字）",
+          "ok": true,
+          "detail": "password 输入框 1 个，/admin/ 文本 211 字"
+        },
+        {
+          "kind": "api",
+          "label": "未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩）",
+          "ok": true,
+          "detail": "status=401"
+        }
+      ],
+      "renderedText": "源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录",
+      "assertTargets": "七个页面都没有未挂 Provider 造成的裸 key 泄漏 \n七个页面均无 JS pageerror \n后台登录按钮是本地化文案（不是 `login.submit`） 源库 | 早报中心 | 热点榜策展 | AI 能力 | 系统 | 组合 | 问题源 | 检索 | 平台接入 | 登录\n前台六页各有 >500 字内容或显式空态（白屏与半空壳仍算红） {\"/reader/\":7771,\"/daily/\":5594,\"/hot/\":9127,\"/reading/\":6815,\"/weekly/\":8036,\"/mybrief/\":7168,\"/admin/\":211}\n后台登录门未白屏：有口令输入框且文案非空（实测 190 字） password 输入框 1 个，/admin/ 文本 211 字\n未登录时 /api/auth/me 返回 401/403（登录门是真门槛，不是只有前端遮罩） status=401",
+      "requests": [
+        {
+          "url": "/api/auth/me",
+          "fullUrl": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 308,
+          "params": {}
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/admin/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/sources/library",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 8,
+          "params": {}
+        },
+        {
+          "url": "/api/auth/me",
+          "status": 401,
+          "bytes": 35,
+          "ms": 2,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T094856/screens/E8-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T094856/screens/E8-r1.png",
+        "docs\\eval\\e2e\\20260919T094856/report.json"
+      ],
+      "metrics": {
+        "emptyPages": {},
+        "settle": {
+          "/reader/": {
+            "settled": true,
+            "chars": 7771,
+            "waitedMs": 812
+          },
+          "/daily/": {
+            "settled": true,
+            "chars": 5594,
+            "waitedMs": 812
+          },
+          "/hot/": {
+            "settled": true,
+            "chars": 9127,
+            "waitedMs": 820
+          },
+          "/reading/": {
+            "settled": true,
+            "chars": 6815,
+            "waitedMs": 1614
+          },
+          "/weekly/": {
+            "settled": true,
+            "chars": 8036,
+            "waitedMs": 808
+          },
+          "/mybrief/": {
+            "settled": true,
+            "chars": 7168,
+            "waitedMs": 813
+          },
+          "/admin/": {
+            "settled": true,
+            "chars": 211,
+            "waitedMs": 1634
+          }
+        },
+        "pageApiArrived": {
+          "/reader/": {
+            "status": 200,
+            "bytes": 23703,
+            "ms": 38
+          },
+          "/daily/": {
+            "status": 200,
+            "bytes": 36551,
+            "ms": 141
+          },
+          "/hot/": {
+            "status": 200,
+            "bytes": 147168,
+            "ms": 19
+          },
+          "/reading/": {
+            "status": 200,
+            "bytes": 25522,
+            "ms": 14
+          },
+          "/weekly/": {
+            "status": 200,
+            "bytes": 33364,
+            "ms": 463
+          },
+          "/mybrief/": {
+            "status": 200,
+            "bytes": 24009,
+            "ms": 211
+          }
+        }
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    }
+  ]
+}

@@ -1,0 +1,470 @@
+{
+ "at": "2026-09-19T06:25:59Z",
+ "golden": {
+  "created_at": "2026-09-19T00:41:34Z",
+  "n": 6,
+  "base_url": "https://qwis-intel.vercel.app"
+ },
+ "axis_weights": {
+  "factual_correctness": 0.3,
+  "consistency": 0.25,
+  "clarity": 0.2,
+  "redundancy": 0.15,
+  "readability": 0.1
+ },
+ "judge_prompt_version": "2026-09-19.1",
+ "counts_as_judgment": false,
+ "warnings_advisory": true,
+ "n_products": 6,
+ "n_judged": 0,
+ "mean_score": null,
+ "products": [
+  {
+   "id": "daily-1656675",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  },
+  {
+   "id": "daily-1614504",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  },
+  {
+   "id": "daily-1637638",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  },
+  {
+   "id": "daily-1645164",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  },
+  {
+   "id": "daily-1628510",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  },
+  {
+   "id": "daily-1637641",
+   "kind": "daily_item",
+   "score": 0.5,
+   "axis_norm": {
+    "clarity": 0.5,
+    "factual_correctness": 0.5,
+    "consistency": 0.5,
+    "redundancy": 0.5,
+    "readability": 0.5
+   },
+   "axis_raw": {
+    "clarity": 3.0,
+    "factual_correctness": 3.0,
+    "consistency": 3.0,
+    "redundancy": 3.0,
+    "readability": 3.0
+   },
+   "counted_axes": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "axis_alerts": [
+    "clarity",
+    "factual_correctness",
+    "consistency",
+    "redundancy",
+    "readability"
+   ],
+   "product_alert": true,
+   "note": "",
+   "feedback": "stub（未调用模型，只验证管线）",
+   "engine": "stub",
+   "counts_as_judgment": false
+  }
+ ],
+ "warnings": [
+  {
+   "id": "daily-1656675",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1656675",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1656675",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1656675",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1656675",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1656675",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1614504",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637638",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1645164",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1628510",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "clarity",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "factual_correctness",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "consistency",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "redundancy",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "readability",
+   "norm": 0.5,
+   "threshold": 0.6
+  },
+  {
+   "id": "daily-1637641",
+   "axis": "*",
+   "norm": 0.5,
+   "threshold": 0.7
+  }
+ ],
+ "errors": []
+}

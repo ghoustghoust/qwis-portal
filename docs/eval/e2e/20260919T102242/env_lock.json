@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-09-19T10:22:42.925Z",
+  "target": "https://qwis-intel.vercel.app",
+  "proxy": "http://127.0.0.1:12000",
+  "liveCommit": "e3790177745a3061ae8dd293d9054780bf6ff407",
+  "originMain": "e3790177745a3061ae8dd293d9054780bf6ff407",
+  "node": "v24.14.1",
+  "playwright": "1.62.1",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "repeat": 1,
+  "scenarios": [
+    "E5"
+  ],
+  "argv": [
+    "--only",
+    "E5",
+    "--fast"
+  ],
+  "acceptance": {
+    "ok": false,
+    "reasons": [
+      "只跑了 1/10 条剧本",
+      "每剧本 1 轮（<3，flaky 判不出来）"
+    ],
+    "nCases": 1,
+    "nAll": 10,
+    "repeat": 1,
+    "remote": true
+  },
+  "gaps": [
+    {
+      "id": "E10",
+      "ref": "B72",
+      "ok": true
+    }
+  ]
+}

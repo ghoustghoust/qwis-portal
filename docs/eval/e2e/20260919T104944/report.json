@@ -1,0 +1,229 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T10:49:44.212Z",
+  "acceptance": {
+    "ok": false,
+    "reasons": [
+      "只跑了 1/10 条剧本"
+    ],
+    "nCases": 1,
+    "nAll": 10,
+    "repeat": 3,
+    "remote": true
+  },
+  "summary": {
+    "total": 1,
+    "pass": 1,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E9",
+      "title": "点开一篇文章：详情正文渲染（B52 类\"接口 200 但页面空\"）",
+      "status": "pass",
+      "why": "",
+      "assertions": 9,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "列表有可点的行",
+          "ok": true,
+          "detail": "Building an "
+        },
+        {
+          "kind": "render",
+          "label": "点得到那篇文章所在的行",
+          "ok": true,
+          "detail": "Building an "
+        },
+        {
+          "kind": "api",
+          "label": "页面发出的详情请求返回 200 且带非空 content_html",
+          "ok": true,
+          "detail": "/api/articles/1798216 status=200 len=1440 键=id,source_id,title,url,author,cover"
+        },
+        {
+          "kind": "render",
+          "label": "详情展开后页面文本显著增长",
+          "ok": true,
+          "detail": "文本 8964→10077"
+        },
+        {
+          "kind": "render",
+          "label": "详情面板（article 元素）出现、含被点标题，且长度接得住正文",
+          "ok": true,
+          "detail": "面板=1108字 正文明文=953字 found=true 标题头=Building an "
+        },
+        {
+          "kind": "render",
+          "label": "未选文章的提示已消失（不是还停在空态）",
+          "ok": true,
+          "detail": "selectHint 仍在=false"
+        },
+        {
+          "kind": "render",
+          "label": "面板内没有占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "data",
+          "label": "接口给的正文出现在详情面板里（DOM↔详情响应对账，两侧都归一空白）",
+          "ok": true,
+          "detail": "来源=content_html 正文=953字 面板=1108字 | 切片「ean account. I specifically di」 | 面板头「Building an app has become easy. Deploying it properly is still painful. So I built something for that Reddit · Linux, S」"
+        },
+        {
+          "kind": "data",
+          "label": "详情标题与列表首条同源",
+          "ok": true,
+          "detail": "Building an "
+        }
+      ],
+      "renderedText": "阅读器\n每日早报\n我的早报\n精选周刊\n热点榜\n我的阅读\n文章\n视频\n今日\n2526\n检索\n11517\n稍后阅读\n1\n历史存档\n25161\n分组\n科技博客\n135\nX·AI推主\n627\nTop200 精选\n3196\nAI·前沿\n1377\n中文科技\n672\n工程实践\n621\n公司技术团队\n研究\n31\nai\n科技热榜\n23\n国际视野\n4\n文化生活\n45\n国际科技\n265\n生活方式\n国际观察\n社会文化\n创投\n财经\n科技\nAI\n公众号\n1578\n播客\n26\n人工智能\n45\n编程技术\n28\n新闻媒体\n1025\n生活方式与文化\n64\n商业科技\n304\n金融经济\n249\n产品\n28\n效率成长\n订阅源\nAIHOT 日报\n3\nAIHOT 热榜\n1150\nAIHOT 精选全文\n20\n阮一峰的网络日志\n1\n今日\n合并\n筛选\n30\n今日早报\n14h\n读全文 →\n从Claude入侵OpenAI到AI Agent工具生态爆发。\n1.基于复杂网络和事故数据的地铁运营事故关键风险因素综合分析方法 · PLOS One\n2.AI时代下电视剧要怎么变：AI混制重构剧集工作流 · 窄播\n3.多家A股公司，被立案 · 第一财经\nReddit · Linux, Self-Hosted, DevOps &amp; AI\n·\n20分钟前\nBuilding an app has become easy. Deploying it properly is still painful. So I built something for that\nI’ve been building something called The Deployer and I’m looking for feedback from people who actually work with infra. The basic idea is that ",
+      "assertTargets": "列表有可点的行 Building an \n点得到那篇文章所在的行 Building an \n页面发出的详情请求返回 200 且带非空 content_html /api/articles/1798216 status=200 len=1440 键=id,source_id,title,url,author,cover\n详情展开后页面文本显著增长 文本 8964→10077\n详情面板（article 元素）出现、含被点标题，且长度接得住正文 面板=1108字 正文明文=953字 found=true 标题头=Building an \n未选文章的提示已消失（不是还停在空态） selectHint 仍在=false\n面板内没有占位文案 \n接口给的正文出现在详情面板里（DOM↔详情响应对账，两侧都归一空白） 来源=content_html 正文=953字 面板=1108字 | 切片「ean account. I specifically di」 | 面板头「Building an app has become easy. Deploying it properly is still painful. So I built something for that Reddit · Linux, S」\n详情标题与列表首条同源 Building an ",
+      "requests": [],
+      "observedRequests": [
+        {
+          "url": "/reader/",
+          "status": 200,
+          "bytes": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 1,
+          "params": {
+            "kind": {
+              "value": "article",
+              "source": "web/src/components/Sidebar.jsx:27"
+            }
+          }
+        },
+        {
+          "url": "/api/groups",
+          "status": 200,
+          "bytes": 3213,
+          "ms": 2,
+          "params": {}
+        },
+        {
+          "url": "/api/daily",
+          "status": 200,
+          "bytes": 36551,
+          "ms": 205,
+          "params": {}
+        },
+        {
+          "url": "/api/articles",
+          "status": 200,
+          "bytes": 24272,
+          "ms": 17,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "sort": {
+              "value": "smart",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "since": {
+              "value": "2026-09-18T10:49:47.525Z",
+              "source": "web/src/components/ArticleList.jsx:89"
+            },
+            "dedup": {
+              "value": "1",
+              "source": "web/src/components/ArticleList.jsx:89"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 59529,
+          "ms": 27,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM70SddjBlb2JNTkJkvWI3gFru3DNArTToFgePibyg6cJWg/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/img",
+          "status": 200,
+          "bytes": 50635,
+          "ms": 15,
+          "params": {
+            "u": {
+              "value": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6CRL0IbOnOf9n66mYHko2JKkv3662EoCZHd9K3rhVia1Q/0",
+              "source": "web/src/util.js:9"
+            }
+          }
+        },
+        {
+          "url": "/api/settings",
+          "status": 200,
+          "bytes": 6585,
+          "ms": 0,
+          "params": {}
+        },
+        {
+          "url": "/api/sources",
+          "status": 200,
+          "bytes": 527932,
+          "ms": 659,
+          "params": {
+            "enabled": {
+              "value": "1",
+              "source": "web/src/components/Sidebar.jsx:28"
+            }
+          }
+        },
+        {
+          "url": "/api/articles/1798216",
+          "status": 200,
+          "bytes": 2458,
+          "ms": 5,
+          "params": {}
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T104944/screens/E9-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T104944/screens/E9-r1.png",
+        "docs\\eval\\e2e\\20260919T104944/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 3311,
+        "detailBodySource": "content_html",
+        "detailOrigChars": 987,
+        "detailBodyChars": 953
+      },
+      "repeatStatuses": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 3
+    }
+  ]
+}

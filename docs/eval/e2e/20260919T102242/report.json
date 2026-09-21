@@ -1,0 +1,224 @@
+{
+  "target": "https://qwis-intel.vercel.app",
+  "startedAt": "2026-09-19T10:22:42.925Z",
+  "acceptance": {
+    "ok": false,
+    "reasons": [
+      "只跑了 1/10 条剧本",
+      "每剧本 1 轮（<3，flaky 判不出来）"
+    ],
+    "nCases": 1,
+    "nAll": 10,
+    "repeat": 1,
+    "remote": true
+  },
+  "summary": {
+    "total": 1,
+    "pass": 1,
+    "failProduct": 0,
+    "failEnv": 0,
+    "failFlaky": 0,
+    "uncoveredKinds": [],
+    "knownGaps": [],
+    "consoleErrors": []
+  },
+  "cases": [
+    {
+      "id": "E5",
+      "title": "我的阅读：type 筛选后 DOM 与 /api/reading 计数逐个同源（B60 四处口径）",
+      "status": "pass",
+      "why": "",
+      "assertions": 12,
+      "assertionKinds": [
+        "render",
+        "api",
+        "data"
+      ],
+      "uncoveredKinds": [],
+      "detail": [
+        {
+          "kind": "render",
+          "label": "我的阅读渲染出卡片",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "/api/reading 两种 type 均 200 且 counts.all 是有限数（有界重试后仍缺即红）",
+          "ok": true,
+          "detail": "all={\"all\":25160,\"favorited\":1,\"read\":25160} article={\"all\":7300,\"favorited\":1,\"read\":7300} 已重试 0ms"
+        },
+        {
+          "kind": "api",
+          "label": "type=article 的 counts.all 与 type=all 不同，且两侧都是数字（口径真的生效）",
+          "ok": true,
+          "detail": "article=7300 all=25160（NaN/缺数一律算红，不再拿\"没数据\"当\"不同\"）"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「文章」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "render",
+          "label": "筛选后是真实标题而不是占位文案",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "点击后页面确实按 type=article 重新请求（筛选接到了参数）",
+          "ok": true,
+          "detail": "type=article 响应已达（counts={\"all\":7300,\"favorited\":1,\"read\":7300}）"
+        },
+        {
+          "kind": "data",
+          "label": "筛选后行数 ↔ 该响应的 items 数",
+          "ok": true,
+          "detail": "DOM=30 API=30"
+        },
+        {
+          "kind": "data",
+          "label": "三个 tab 的计数 pill 与同一份响应对账且不被翻掉（B60/B74）",
+          "ok": true,
+          "detail": "DOM={\"全部\":7300,\"已收藏\":1,\"已读\":7300} API={\"all\":7300,\"favorited\":1,\"read\":7300}（首判等 4ms，复查 2 次无翻转）"
+        },
+        {
+          "kind": "data",
+          "label": "响应的首屏条目都渲染出来了（无漏行）",
+          "ok": true,
+          "detail": "缺 0/30"
+        },
+        {
+          "kind": "render",
+          "label": "点得到类型筛选「视频」",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "kind": "api",
+          "label": "type=video 的接口口径与页面响应一致（探针↔页面同源）",
+          "ok": true,
+          "detail": "探针=0 页面响应=0"
+        },
+        {
+          "kind": "data",
+          "label": "视频筛选的 DOM 条数与该响应一致且不被翻掉（0 则必须是显式空态）",
+          "ok": true,
+          "detail": "DOM=0 API=0（首判等 3ms，复查 2 次无翻转）"
+        }
+      ],
+      "renderedText": "Deadly shark attack prompts rare kill order in Western Australia 文章 已读 BBC News — News · 2026-09-19 Police boats and helicopters are patrolling Perth's beaches as authorities continue their search for the swimmer's body,\nNAZA: Why are old Gaza allegations causing new fury in Israel? 文章 已读 Al Jazeera – Breaking News, World News and Video from Al Jazeera · 2026-09-19 Israeli soldiers&#039; Gaza testimony causes backlash across much of the country&#039;s political establishment.\nBrazilian police capture suspected serial killer disguised as a woman 文章 已读 Al Jazeera – Breaking News, World News and Video from Al Jazeera · 2026-09-19 Brazilian police say they will reopen dozens of cases after they arrested a self-confessed serial killer.\nUS and Denmark reach deal to build US military presence in Greenland 文章 已读 NPR Topics: World · 2026-09-19 President Donald Trump says he has a deal with Denmark to bolster the U.S. military presence in Greenland. The announcem\nThe Nepal floods question: When the Himalayas collapse, who gets warned? 文章 已读 Al Jazeera – Breaking News, World News and Video from Al Jazeera · 2026-09-19 The floods raised concerns about cross-border warnings that experts say can no longer be ignored.\nBuilding a flight simulator guided by an implanted fly brain to hit a ship [P] 文章 已读 Reddit · Linux, Self-Hosted, DevOps &amp; AI · 2026-09-19 The concept is to make fly guided anti ship missile. The Front legs of the fly grip the flight stick while its middle le\n配速：下午的判断力，是上午花掉的 文章 已读 创见思考——怎样度过这一生 · 2026-09-19 人对自己状态下滑的解释，往往取最省事的那一个：下午三四点做不动了，是年纪上来了；晚上看不进书，是这一天太累。这类解释听着顺理成章，也确实不假，只是它把问题算在了总量上——干得太多，所以不行了。\n三星海外机型将于 9 月 30 日起取消微软 OneDrive 集成，改用谷歌 Google Photos 同步 文章 已读 IT之家 · 2026-09-18 IT之家 9 月 19 日消息，据博主 @i冰宇宙 透露，由于三星与微软 OneDrive 合作到期，三星海外机型照片应用（Gallery）将于 9 月 30 日取消集成 OneDrive 原生相册，谷歌正在开发基于 Google Phot",
+      "assertTargets": "我的阅读渲染出卡片 \n/api/reading 两种 type 均 200 且 counts.all 是有限数（有界重试后仍缺即红） all={\"all\":25160,\"favorited\":1,\"read\":25160} article={\"all\":7300,\"favorited\":1,\"read\":7300} 已重试 0ms\ntype=article 的 counts.all 与 type=all 不同，且两侧都是数字（口径真的生效） article=7300 all=25160（NaN/缺数一律算红，不再拿\"没数据\"当\"不同\"）\n点得到类型筛选「文章」 \n筛选后是真实标题而不是占位文案 \n点击后页面确实按 type=article 重新请求（筛选接到了参数） type=article 响应已达（counts={\"all\":7300,\"favorited\":1,\"read\":7300}）\n筛选后行数 ↔ 该响应的 items 数 DOM=30 API=30\n三个 tab 的计数 pill 与同一份响应对账且不被翻掉（B60/B74） DOM={\"全部\":7300,\"已收藏\":1,\"已读\":7300} API={\"all\":7300,\"favorited\":1,\"read\":7300}（首判等 4ms，复查 2 次无翻转）\n响应的首屏条目都渲染出来了（无漏行） 缺 0/30\n点得到类型筛选「视频」 \ntype=video 的接口口径与页面响应一致（探针↔页面同源） 探针=0 页面响应=0\n视频筛选的 DOM 条数与该响应一致且不被翻掉（0 则必须是显式空态） DOM=0 API=0（首判等 3ms，复查 2 次无翻转）",
+      "requests": [
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=all",
+          "status": 200,
+          "bytes": 24819,
+          "ms": 1860,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "all",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=article",
+          "status": 200,
+          "bytes": 22357,
+          "ms": 13798,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "article",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        },
+        {
+          "url": "/api/reading",
+          "fullUrl": "/api/reading?tab=all&type=video",
+          "status": 200,
+          "bytes": 82,
+          "ms": 1574,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "api/[...slug].js:1023"
+            },
+            "type": {
+              "value": "video",
+              "source": "api/[...slug].js:1024"
+            }
+          }
+        }
+      ],
+      "observedRequests": [
+        {
+          "url": "/api/reading",
+          "status": 200,
+          "bytes": 82,
+          "ms": 2,
+          "params": {
+            "tab": {
+              "value": "all",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            },
+            "type": {
+              "value": "video",
+              "source": "web/src/pages/MyReadingPage.jsx:93"
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "screenshot",
+          "path": "docs/eval/e2e/20260919T102242/screens/E5-r1.png"
+        }
+      ],
+      "evidence": [
+        "docs/eval/e2e/20260919T102242/screens/E5-r1.png",
+        "docs\\eval\\e2e\\20260919T102242/report.json"
+      ],
+      "metrics": {
+        "navigateMs": 3424,
+        "readingCountsWaitMs": 0,
+        "quietBeforeArticle": {
+          "quiet": true,
+          "waitedMs": 503,
+          "responses": 1
+        },
+        "pillSettleOk": true,
+        "readingResponses": [
+          {
+            "by": "page",
+            "type": "article",
+            "bytes": 22357,
+            "counts": {
+              "all": 7300,
+              "favorited": 1,
+              "read": 7300
+            }
+          }
+        ]
+      },
+      "repeatStatuses": [
+        "pass"
+      ],
+      "knownGap": null,
+      "screenshots": 1
+    }
+  ]
+}
