@@ -685,25 +685,86 @@ async function postRunAlerts(stats) {
   }
 }
 
-// ─── 模式：cleanup（数据清理，每日 04:13 北京） ───
+// ─── B101 观测：删除触发口**未**点亮，先把"今天有多少条满足删除谓词"落成每日读数 ───
+// 用户 09-21 裁定「先只接观测，不动触发口」。背景读数（现役库，不是旧库那个已作废的 10,733）：
+// 7 天窗口 + 现有豁免一次会删 50,636 条 = 全库 59,832 篇的 84.6%（热榜 26,361 / 普通 24,275，
+// 普通那批带 667MB 正文），取法 `lib/retention#whereFor('runner',…)` 原样谓词 + `cutoffIso(7)`，
+// 逐条记在 `docs/eval/bl10-null-audit-20260921.md` §三。所以本函数**只做两件事，都不删数据**：
+//   ① 把待删量与删除闸状态写进 `settings['retention.pending']`（带最近 14 条），给人看趋势；
+//   ② 把 B103 的删除闸从"可用工具"变成**强制路径**：拿不到可用转储就一条都不删，并且出声。
+// 计数 SQL 来自 `lib/retention#pendingPlan` —— 与删除用的是同一份 WHERE，
+// 否则"看着会删多少"与"真删多少"又是两件事（坑 #58/#62）。
+// ⚠️ **闸在 GH runner 上目前必然判"挡下"**（runner 没有本地转储目录，转储是本地盘的产物）。
+//    这是**安全方向**的默认，不是缺陷；但要让"定时清理真能删"，下一步得把转储证据搬进库里
+//    （manifest 摘要 + 校验和写一条 settings，runner 读它而不是读磁盘）—— 那半段与 B103 剩余项、
+//    `tools/dump-content.cjs` 的在途改动同批做，本轮不擅自替它定形态。
+//    2026-09-20T22:27Z 那一次清理就是在**没有这道闸**的情况下跑掉的（心跳：删 26,532 + 24,291 条，
+//    恰好等于本轮实测的待删量），所以本条从"接线"升成"必须"。
+const RETENTION_READOUT_KEY = 'retention.pending';
+const RETENTION_HISTORY_MAX = 14;
+// 转储目录必须与 `tools/dump-content.cjs` 的默认产出同一处：它按 scope 分子目录
+// （`data/content-dump/cloud` / `.../local`）。指到父目录会永远判"没有转储"= 闸恒挡（假安全）。
+const contentDumpDir = () => process.env.CONTENT_DUMP_DIR || path.join(__dirname, '..', 'data', 'content-dump', 'cloud');
+async function retentionReadout() {
+  const { pendingPlan } = require('../lib/retention');
+  const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
+  const plan = pendingPlan('runner', retentionDays);
+  const counts = {};
+  for (const p of plan) counts[p.key] = Number(((await qOne(p.sql, [p.cutoff])) || {}).c || 0);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const gate = require('../lib/content-dump').deleteGate(contentDumpDir());
+  let history = [];
+  try {
+    const prev = await getSetting(RETENTION_READOUT_KEY, {});
+    if (Array.isArray(prev.history)) history = prev.history.slice(-(RETENTION_HISTORY_MAX - 1));
+  } catch { /* 首次无历史 */ }
+  const today = nowIso().slice(0, 10);
+  // 历史按**天**去重（顶层 `at/total/counts` 每次都刷新，所以"今天有多少条待删"始终是当前值）。
+  // 不去重的话：collect 每 15 分钟跑一次读数，14 条历史只覆盖 3.5 小时 —— 那是抖动，不是趋势。
+  const last = history[history.length - 1];
+  if (!last || String(last.at).slice(0, 10) !== today) history.push({ at: nowIso(), retentionDays, total, counts, gateAllowed: !!gate.allowed });
+  else history[history.length - 1] = { at: nowIso(), retentionDays, total, counts, gateAllowed: !!gate.allowed };
+  const row = {
+    at: nowIso(), scope: 'runner', retentionDays, total, counts,
+    plan: plan.map((p) => ({ key: p.key, table: p.table, days: p.days, reason: p.reason })),
+    gate: { allowed: !!gate.allowed, reason: gate.reason, dir: contentDumpDir() },
+    history,
+  };
+  await putSetting(RETENTION_READOUT_KEY, row);
+  return row;
+}
+
+// 每个批次结束后再刷一次读数，让 `retention.pending` 始终是**当前值**：
+// cleanup 也在内 —— 删除前那次读数留在 `gate`/心跳里，删除后再刷一次才是"现在还有多少条待删"。
+async function refreshRetentionReadout() {
+  try { await retentionReadout(); } catch (e) { log(`保留读数失败（不阻断）: ${e.message}`); }
+}
+
+// ─── 模式：cleanup（数据清理；09-20T22:27Z 已实跑过一轮，删 50,823 条 —— 见 docs/ISSUES.md B101） ───
 async function runCleanup() {
   // 删除谓词的**唯一实现**在 `lib/retention.js`（spec43 D1/B102）：本文件与 `api/collect.js`、
   // `server/services/datamgr.js` 三端共用同一份条件，改一处即改三处，不再各抄一遍。
-  const { cutoffIso, deleteSql } = require('../lib/retention');
-  // 1) 热榜旧数据：固定 7 天（热榜是时效性内容，无保留价值）
-  const hotCutoff = cutoffIso(7);
-  const r = await qRun(deleteSql('runner', 'hotlist'), [hotCutoff]);
-  log(`清理完成: 删除 ${r.changes} 条热榜旧数据`);
+  const { cutoffIso, deleteSql, HOTLIST_DAYS } = require('../lib/retention');
+  const readout = await retentionReadout();
+  log(`保留读数: ${readout.retentionDays} 天窗口下待删 ${readout.total} 条（${JSON.stringify(readout.counts)}）｜删除闸 ${readout.gate.allowed ? '放行' : '挡下'}：${readout.gate.reason}`);
 
-  // 2) 普通文章按保留天数（T4-1 Q4，用户决策 2026-09-13：默认 7 天）
-  //    豁免：已读/稍后读/精选标记（入过报与用户交互过的都不删）；视频/播客永不清理
+  let deleted = 0;
   let retentionDeleted = 0;
-  const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
-  if (retentionDays > 0) {
-    const cutoff = cutoffIso(retentionDays);
-    const rr = await qRun(deleteSql('runner', 'retention'), [cutoff]);
-    retentionDeleted = rr.changes;
-    log(`保留天数清理: ${retentionDays} 天前未读未标记文章删除 ${retentionDeleted} 条`);
+  if (!readout.gate.allowed) {
+    // 前置条件没满足 = 什么都不删，但**不许静默**：日志 + 心跳都带 blocked 原因
+    log(`保留清理被删除闸挡下（本轮一条都不删）：${readout.gate.reason}`);
+  } else {
+    // 1) 热榜旧数据：固定 7 天（热榜是时效性内容，无保留价值），天数与读数同源（HOTLIST_DAYS）
+    const r = await qRun(deleteSql('runner', 'hotlist'), [cutoffIso(HOTLIST_DAYS)]);
+    deleted = r.changes;
+    log(`清理完成: 删除 ${deleted} 条热榜旧数据（转储证据：${readout.gate.reason}）`);
+    // 2) 普通文章按保留天数（T4-1 Q4，用户决策 2026-09-13：默认 7 天）
+    //    豁免：已读/稍后读/精选标记（入过报与用户交互过的都不删）；视频/播客永不清理
+    if (readout.retentionDays > 0) {
+      const rr = await qRun(deleteSql('runner', 'retention'), [cutoffIso(readout.retentionDays)]);
+      retentionDeleted = rr.changes;
+      log(`保留天数清理: ${readout.retentionDays} 天前未读未标记文章删除 ${retentionDeleted} 条`);
+    }
   }
 
   // 3) 熔断源自动恢复（T4-1 Q7）：冻结超 48h 自动重新启用（错峰），连续自动恢复 3 次仍熔断则冷却延长到 7 天
@@ -751,10 +812,16 @@ async function runCleanup() {
     if (autoAdj) log(`频率自适应: 调整 ${autoAdj} 个源的 intervalMin`);
   } catch (e) { log(`频率自适应失败（不阻断）: ${e.message}`); }
 
-  await writeHeartbeat('cleanup', { deleted: r.changes, retentionDeleted, resumed, autoAdj });
+  await writeHeartbeat('cleanup', {
+    deleted, retentionDeleted, resumed, autoAdj,
+    // 读数与"为什么没删"进心跳：监控面看一眼就知道触发口是暗的、挡在哪一步
+    blocked: readout.gate.allowed ? null : 'delete-gate',
+    pendingDeleted: readout.total,
+    gateReason: readout.gate.allowed ? null : readout.gate.reason,
+  });
   // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
   try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
-  return { deleted: r.changes, retentionDeleted, resumed };
+  return { blocked: !readout.gate.allowed, deleted, retentionDeleted, resumed, pendingDeleted: readout.total };
 }
 
 // ─── 模式：weekly（20-weekly-picks：精选周刊，周五 18:03 北京，窗口=前7天） ───
@@ -1945,8 +2012,12 @@ async function runTranslate() {
     if (MODE === 'daily' || MODE === 'daily-ai' || MODE === 'weekly' || MODE === 'mybrief') {
       try { await require('../api/_alerts').dailyFailed(`${MODE}: ${err.message}`); } catch { /* 隔离 */ }
     }
+    // B101 观测：批次**失败时更要**留下这条读数（连着失败的那几天正是最需要看待删量的时候）。
+    // 放在 process.exit 之前 —— exit 会立刻终止进程，finally 不会跑。
+    await refreshRetentionReadout();
     process.exit(1);
   }
+  await refreshRetentionReadout();
   // 有序收尾：关连接后自然退出（process.exit 会触发 libuv UV_HANDLE_CLOSING 断言，exit 127）
   try { if (_db) _db.close(); } catch { /* 忽略 */ }
   try { if (proxyAgent) await proxyAgent.close(); } catch { /* 忽略 */ }
