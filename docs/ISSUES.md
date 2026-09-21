@@ -3,40 +3,40 @@
 > 只装**现在还坏着 / 等你决定 / 等复验**的事；每条只答两个问题：**现在坏着什么、下一步是谁的什么动作**。
 > 已核销（修好且验证过）一律不进本文件——历史按症状反查 `docs/archive/README.md`。编号不连续是正常的：出账的号不占位。
 > 功能需求见 `docs/NEXT-DEV-REQS.md`；每条登记必须带取证命令（坑 #50）。
-> 最后更新：2026-09-21（结构重排：出账公告与归档指针全部撤出正文；被改写/撤出行原文逐字在 `docs/archive/debugging/2026-09-21-issues-round2-closed.md` §九）
+> 最后更新：2026-09-21（结构重排 + 待开发队列按阻塞级重排：P0 挡验收链/数据安全 → P3 长尾，✅=09-21 已放行可即做、⏳=等你逐条点头；被改写/撤出行原文逐字在 `docs/archive/debugging/2026-09-21-issues-round2-closed.md` §九）
 
 ## 进度速览
 
-- **正在做（无需你）**：⑥b 转储凭证入库 → runner 与云端手动端点接同一道删除闸（B101/B103 残余）；随后 B131（SCHEMA 补三列）、B132（archive-articles 收编）
-- **已拍板待开发**：B17 周刊预筛降量 · B18 videos 建 `score` 列 · B21+H13 早报期号与归档 · B23/B24 排在 35B 滚动窗口之后
+- **待开发队列按阻塞级排序，逐条等你放行**（✅=09-21 已放行可即做 / ⏳=等你点头）：P0 = B105  flaky 测试族 → B131 SCHEMA 补列 → ⑥b 删除闸接凭证 → B132 第四份删除路径收编；全表见下
+- **已拍板待开发**：B23/B24（35B 滚动窗口）· B17 周刊预筛降量 · B18 videos 建 `score` 列 · B21+H13 早报期号与归档
 - **等一次真实复验**：B16/B121（下一次 weekly 跑批）· B19/B20（下一批 daily-ai）· B11（浏览器）· B14（现役库）
 - **等你操作**：B79 后台重勾订阅 · B118+B122+B125+B80 凭据轮换（一批四处，三处同步）· B119② Turso 平台 token · B119③ 公众号路线
 - **等你裁决**：B81+B128 死代码三件套（复活或删，摘清单与删文件必须同批）· B125② 鉴权兜底改「缺 env 即 401」
 
-## 🔴 未修 / 待开发
+## 🔴 未修 / 待开发（按阻塞级排序，你逐条审、批一条我做一条）
 
-| # | 现在坏着什么 | 下一步 |
-|---|---|---|
-| B101 | 保留清理的触发口仍缺（`collect.yml` 的 `mode` 选项没有 cleanup）；现行裁定「先只接观测，不动触发口」，观测读数 + 强制删除闸已交付（CO1~CO5） | ⑥b：转储凭证入库后，runner 与云端手动端点 DELETE 前改判凭证——两件必须同批，接半份等于把云端手动清理永久挡死 |
-| B103 | 内容级转储/回放已就位（D1~D10，云端全量回放逐字段 0 不一致）；仍欠：转储凭证未入库、`/api/backup` 仍只三张配置表 | 凭证形态随 ⑥b 一起定 |
-| B131 | `lib/db.js` 的 `SCHEMA`（全新建库路径）里 `articles` 少 `translated_title/translated_content/translation_provider` 三列——新机按 `ensureSchema()` 建库，AI 译文写入即抛 `no such column` | 三列并进 SCHEMA 本体 + 白盒「生产列集 == ensureSchema 列集」判据 |
-| B132 | `tools/archive-articles.js` 是第四份删除路径，绕开 `lib/retention.js` 且少 `featured` 豁免（实测从未真跑，休眠弹药） | 改读 `lib/retention.js` 同一份条件；`articles_archive` 纳入转储面 |
-| B17 | 周刊初筛窗 24min ≪ 全量 ≈2.2h，周刊只策展了 `published_at DESC` 前缀，不是全周内容 | 已拍板：预筛降量（六维分门槛），不抬配额 |
-| B18 | `videos` 表无 `score`/`translated_title` 列，视频条目拿不到评分与译文 | 已拍板：只建 `score` 列并接进评分管线（schema + 三端采集语义同步），放弃视频翻译 |
-| B21 | 每日早报缺「本期索引」；切回 `/daily/` 有卡顿（chunk 冷加载 vs 46 卡重排未定位） | 已拍板：期号/归档并入 H13 + 40-4 立项（先建 `mybrief.archive` 再谈期号） |
-| B23 | `/api/health/source-stats` 的「成功率」是布尔伪装（`ok?100:0`），比没有数字更误导 | 已拍板：先做 35B 滚动窗口补分母，再改端点；禁止继续用 100/0 冒充概率 |
-| B24 | 采集心跳 168 条只覆盖 25h、`failures[]` 截断 20 且无正样本，逐源算不出分母 | 已拍板：35B 每源定长滚动窗口替代 |
-| B8 | 综述/文章详情无块级排版（`mdInlineParse` 不支持列表/标题/空行分段） | T5-5 / spec 32；另欠一条真含 md 标记的线上样本 |
-| B10 | 早报 AI 版仍显示旧关键词栏目注解（线上 `settings.daily.columns` 是回声文案） | 后台点「恢复默认栏目」，或授权我改这一条（生产写，排在转储之后） |
-| B29 | 类型口径三处错：播客=`s.type='douyin'`（云端 0 篇）、文章类型表用死值 `'wechat'` 漏掉 wemp、视频只认 `favorite=1` → 恒空 | 无 spec 落点，归 36 域 |
-| B69 | 「报警有出口」仍有第二处实现（`server/routes/health.js:67`），与 preflight 各说各话 | health 端改引 `lib/alert-channels.js#usableChannels`，云端等价 handler 同步 |
-| B70 | 对抗审查遗留 5 条：judge prompt 未定界（可被正文注入操纵分数）、`trend.json` 非原子、golden 集存第三方正文入 git、`tools/_test-api.cjs` 掩码在 key 未加载时原样打印、3 处纯文本形状锁 | 按性价比逐条做；原则「不锁形状锁行为」 |
-| B73 | `/api/reading` 带筛选端到端可达 26s（预算 2s） | 36 域 + 35 观测，与 B31 同批治理 |
-| B86 | 本地端日报结构性缺播客条目（云端有）；视频条目已补 `source_avatar` | 引 `lib/media.js#audioCoverSql` 补齐，排期待定 |
-| B87 | B 站线上探针随测试搬迁消失，上游响应漂移现在没有任何自动化会红 | 候选：形状探针进 `tools/audit-cloud.js` 或 e2e 加观测判据；先记账 |
-| B105 | 「execFileSync + 根目录 scratch 驱动」族测试在全量套件里偶发 `0xC0000005` 退出段崩（载荷正确），已 3 例，判 `fail_flaky` | 已放行待做：退出码与断言载荷分开判 + 排查并发资源冲突 |
-| B123 | 早报页头恒写「关键词规则排序」，AI 策展版也这么显示（`DailyHeader.jsx` 不读 schemaVersion） | 一行修法：按 `schemaVersion===2`/`degraded` 出文案 + 静态锁；可与 B119① 同批 |
-| B133 | `#64-1` 判据用行首缩进近似「顶层」，会把锁文件里的反例样本误判成违规 | 判据变更（待放行后做）：改走 `lib/src-spans` 跨度视图 + 两条负向样本 |
+> P0 挡验收链与数据安全 · P1 口径错误/假数据 · P2 用户可见体验 · P3 长尾。审查列：✅=09-21 整表已放行（可直接开工）· ⏳=等你点头。
+
+| 序 | # | 现在坏着什么 | 下一步 | 审查 |
+|---|---|---|---|---|
+| P0-1 | B105 | 「execFileSync + 根目录 scratch 驱动」族测试在全量套件偶发 `0xC0000005` 退出段崩（载荷正确），已 3 例——它随机红 = `npm test` 读数不可信 = 所有交付验收都被它挡 | 退出码与断言载荷分开判 + 排查并发资源冲突 | ✅ |
+| P0-2 | B131 | `lib/db.js` 的 `SCHEMA`（全新建库路径）少 `translated_*` 三列：新机建库 AI 译文写入即抛 `no such column`，回放/灾备语义同受影响 | 三列并进 SCHEMA 本体 + 白盒「生产列集 == ensureSchema 列集」判据 | ✅（09-21 #12 同批） |
+| P0-3 | B101+B103 ⑥b | 删除安全链剩最后半段：转储凭证未入库，runner 与云端手动端点的 DELETE 还没改判凭证 | 凭证形态（manifest 摘要+校验和写 settings）→ 两端接闸，两件必须同批 | ⏳ 形态待你审 |
+| P0-4 | B132 | `tools/archive-articles.js` 是第四份删除路径，绕开 `lib/retention.js` 且少 `featured` 豁免（从未真跑，休眠弹药） | 改读同一份条件 + `articles_archive` 纳入转储面 | ⏳ |
+| P1-1 | B29 | 类型口径三处错（播客=`s.type='douyin'` 云端 0 篇 / 文章类型死值 `'wechat'` 漏 wemp / 视频只认 `favorite=1`）→ 三个筛选恒空 | 归 36 域，按现役库实测改口径 | ⏳ |
+| P1-2 | B69 | 「报警有出口」仍有第二处实现（`server/routes/health.js:67`），与 preflight 各说各话 | 改引 `lib/alert-channels.js#usableChannels`，云端等价 handler 同步 | ⏳ |
+| P1-3 | B23+B24 | 「成功率」是 `ok?100:0` 布尔伪装；心跳 168 条只覆盖 25h 且 `failures[]` 截断无正样本，逐源分母物理上算不出 | 已拍板：35B 每源定长滚动窗口先行补分母，再改端点 | ✅ |
+| P1-4 | B133 | `#64-1` 判据按行首缩进近似「顶层」，会把锁文件里的反例样本误判成违规 | 改走 `lib/src-spans` 跨度视图 + 两条负向样本（判据变更） | ⏳ |
+| P2-1 | B73 | `/api/reading` 带筛选端到端可达 26s（预算 2s） | 36 域 + 35 观测，与 B31 同批治理 | ⏳ |
+| P2-2 | B8 | 综述/文章详情无块级排版（列表/标题/空行分段不渲染） | spec 32；另欠一条真含 md 标记的线上样本 | ⏳ |
+| P2-3 | B10 | 早报 AI 版仍显示旧关键词栏目注解（线上 `settings.daily.columns` 是回声文案） | 你后台点「恢复默认栏目」，或授权我改这一条（生产写） | ⏳ |
+| P2-4 | B123 | 早报页头恒写「关键词规则排序」，AI 策展版也这么显示（组件不读 schemaVersion） | 按 `schemaVersion===2`/`degraded` 出文案 + 静态锁；可与 B119① 同批 | ⏳ |
+| P2-5 | B17 | 周刊初筛窗 24min ≪ 全量 ≈2.2h，周刊只策展了 `published_at DESC` 前缀 | 已拍板：预筛降量（六维分门槛），不抬配额 | ✅ |
+| P2-6 | B18 | `videos` 表无 `score` 列，视频条目拿不到评分 | 已拍板：只建 `score` 列并接进评分管线（schema + 三端采集语义同步） | ✅ |
+| P2-7 | B21+H13 | 早报无期号无归档（`mybrief.latest` 单键覆盖写）、缺本期索引、切回 `/daily/` 卡顿 | 已拍板：先建 `mybrief.archive` 再谈期号，40-4 立项 | ✅ |
+| P3-1 | B87 | B 站线上探针随测试搬迁消失，上游响应漂移现在没有任何自动化会红 | 形状探针进 `tools/audit-cloud.js` 或 e2e 加观测判据 | ⏳ |
+| P3-2 | B70 | 对抗审查遗留 5 条（judge prompt 可注入 / trend 非原子 / golden 集入 git / `_test-api.cjs` 掩码漏洞 / 3 处形状锁） | 按性价比逐条做 | ⏳ |
+| P3-3 | B86 | 本地端日报结构性缺播客条目（云端有；视频条目已补 `source_avatar`） | 引 `lib/media.js#audioCoverSql` 补齐 | ⏳ |
 
 ## 🟡 观察中（代码已落地，等一次真实复验）
 
