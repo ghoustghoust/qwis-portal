@@ -6,7 +6,7 @@
 > 已知局限：① 本表按路径查历史，**文件改名/搬家前的历史不跟随**（`--follow` 只能逐文件跑），搬过的文档其提交史从搬家那次起算。② 本表读已提交历史，**正在提交的这一次必然不进表**（显式滞后一轮，配合 `⚠` 可见），下一轮重跑即补上。
 > 未跟踪件不入表：如本地文件 `docs/HANDOVER.md` 按设计永不提交，本就没有提交史可记。
 
-**统计**：底层文档 一致 6 · 待判 10 · 头部超前 2 · 缺头注 0　|　不要求头注 236 份　|　工作区未提交 13 份　|　总计 254 份
+**统计**：底层文档 一致 5 · 待判 12 · 头部超前 1 · 缺头注 0　|　不要求头注 251 份　|　工作区未提交 2 份　|　总计 269 份
 
 ### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（18 份）
 
@@ -17,21 +17,21 @@
 | docs/ANDROID_SUBMIT_GUIDE.md | 2026-09-05 | 待判 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | docs/CLOUD_PIPELINE_GUIDE.md | 2026-09-20 | 一致 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条<br>`e856f6c` 2026-09-20 12:17 docs(换库收口): 登记 B118/B119 + 本轮交付链十一条状态，并把"配额是墙钟事件"落成不变量 19 与坑 #D4<br>`530a5f4` 2026-09-20 07:14 docs(specs+落账): 36/37/39/40 四域小 spec 补齐（26 份）+ 叫停轮的只读取证全部落档，未 push |
 | docs/DELIVERY_VERIFICATION.md | 2026-09-18 | 待判 | `73147de` 2026-09-21 04:27 feat(B113/B110)+test(S1~S8)+坑#69: 凭据卫生收成一份共享实现，密钥扫描面从"只已跟踪"扩成两面<br>`ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`608d1fa` 2026-09-11 17:16 docs: 新增交付验证手册(生产环境验证全流程) + 索引收录 |
-| docs/DEV_GUIDE.md | 2026-09-20 | 头部超前 ⚠ | `ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计)<br>`45fd9ac` 2026-09-11 12:52 docs: P1-10 真根因记录(中间件死锁)+P1-15 Vercel Git 集成未连接(link:null)<br>`927a8e2` 2026-09-11 11:25 docs: 方案A 文档同步 + 全库文档时效性审计 |
+| docs/DEV_GUIDE.md | 2026-09-20 | 待判 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计)<br>`45fd9ac` 2026-09-11 12:52 docs: P1-10 真根因记录(中间件死锁)+P1-15 Vercel Git 集成未连接(link:null) |
 | docs/DEVELOPMENT_STANDARDS.md | 2026-09-09 | 待判 | `82a33d0` 2026-09-19 04:13 fix(ai-console): 修 B53——删 runner 里定义了没人调的 llmChat 通道，去掉 AI 设置页把接口地址截成半截域名的 slice，清 Agencs 错字（归属 39-2）<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计)<br>`b0c3b50` 2026-09-09 20:22 feat: 文档清洗+日报修复+AI设置集成+全面复检 (2026-09-09) |
 | docs/DOC_GOVERNANCE.md | 2026-09-20 | 待判 | `9262379` 2026-09-21 07:36 feat(B115②/门禁扩面收尾)+test(L5): 裸文件名判据 + `npm run lint:cites` 常驻引用台账<br>`73147de` 2026-09-21 04:27 feat(B113/B110)+test(S1~S8)+坑#69: 凭据卫生收成一份共享实现，密钥扫描面从"只已跟踪"扩成两面<br>`ab4118d` 2026-09-21 04:15 feat(B127)+test(A1~A7): 过程层读数落进产物 + --report 先验输入 schema（喂错退 2，fail_env 也退 2） |
 | docs/EVAL_GUIDE.md | 2026-09-19 | 待判 | `24e76bf` 2026-09-21 07:15 feat(B111/39-6)+test(PR1~PR7)+feat(W20)+坑#71: 翻译 prompt 收成 lib/ai-prompts.js 一份，三种键名归一<br>`6c9a2c7` 2026-09-21 06:20 feat(B109/B45)+test(V1~V7)+feat(W19): 报警事件表收成 lib/alert-events.js 一份，云端后台四个假开关拔掉<br>`99ba793` 2026-09-21 05:22 feat(B107)+test(N1~N9)+feat(W18): 噪声判定收成 lib/noise.js 一份（50 处命中→0），「我的阅读」两端默认排噪声 |
-| docs/FEATURE_MATRIX.md | 2026-09-20 | 待判 | `7088e30` 2026-09-21 15:05 feat(B115/⑥a 谓词并一份)+test(R5): 管理台第三份删除谓词收进 lib/retention，W17 整文件豁免同日摘掉<br>`01f2a2b` 2026-09-21 13:27 feat(B101/观测+强制闸)+test(CO1~CO5)+坑#72: 待删量落成每日读数，删除闸接成 DELETE 前的强制路径<br>`9262379` 2026-09-21 07:36 feat(B115②/门禁扩面收尾)+test(L5): 裸文件名判据 + `npm run lint:cites` 常驻引用台账 |
+| docs/FEATURE_MATRIX.md | 2026-09-20 | 待判 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`7088e30` 2026-09-21 15:05 feat(B115/⑥a 谓词并一份)+test(R5): 管理台第三份删除谓词收进 lib/retention，W17 整文件豁免同日摘掉<br>`01f2a2b` 2026-09-21 13:27 feat(B101/观测+强制闸)+test(CO1~CO5)+坑#72: 待删量落成每日读数，删除闸接成 DELETE 前的强制路径 |
 | docs/HANDOFF_PROMPT.md | 2026-09-18 | 一致 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`6e8d635` 2026-09-13 03:17 docs: 09-11~12 交叉审核报告(实现逻辑/验证矩阵/bug/风险/优化) + INDEX/接手快照同步<br>`eb6c350` 2026-09-12 09:39 docs: 13-settings-write 收尾回写(ISSUES核销/总spec标完成/进度快照/changes记录) |
-| docs/INDEX.md | 2026-09-20 | 一致 ⚠ | `c183413` 2026-09-20 17:00 docs(§4.1 补全定义): 洁净=精炼+去冗+归档；INDEX 登记两份新归档件（只提交我自己的 hunk）<br>`44073de` 2026-09-19 03:07 fix(eval+regression): 阻塞项 BL1 闭环 + 白盒评测查出 9 处真实缺陷，并落 3 处三端收敛<br>`4f87120` 2026-09-19 02:28 docs(eval): 评测规范补第三层——内容质量 LLM-as-a-Judge 五维 + 过程性二值检查 |
-| docs/ISSUES.md | 2026-09-21 | 一致 ⚠ | `7088e30` 2026-09-21 15:05 feat(B115/⑥a 谓词并一份)+test(R5): 管理台第三份删除谓词收进 lib/retention，W17 整文件豁免同日摘掉<br>`b56fd53` 2026-09-21 13:28 docs(B101 验收入账): F2P 改前红 5/5 → 改后全绿 + 证据随批<br>`01f2a2b` 2026-09-21 13:27 feat(B101/观测+强制闸)+test(CO1~CO5)+坑#72: 待删量落成每日读数，删除闸接成 DELETE 前的强制路径 |
+| docs/INDEX.md | 2026-09-20 | 待判 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`c183413` 2026-09-20 17:00 docs(§4.1 补全定义): 洁净=精炼+去冗+归档；INDEX 登记两份新归档件（只提交我自己的 hunk）<br>`44073de` 2026-09-19 03:07 fix(eval+regression): 阻塞项 BL1 闭环 + 白盒评测查出 9 处真实缺陷，并落 3 处三端收敛 |
+| docs/ISSUES.md | 2026-09-21 | 一致 | `a5b5815` 2026-09-21 15:17 docs(B102 ⑥a 验收入账): 两侧同一分钟各取一次都是 7000 条 + F2P 改前红 1/1<br>`7088e30` 2026-09-21 15:05 feat(B115/⑥a 谓词并一份)+test(R5): 管理台第三份删除谓词收进 lib/retention，W17 整文件豁免同日摘掉<br>`b56fd53` 2026-09-21 13:28 docs(B101 验收入账): F2P 改前红 5/5 → 改后全绿 + 证据随批 |
 | docs/NEXT-DEV-REQS.md | 2026-09-18 | 待判 | `1bf7084` 2026-09-20 16:57 docs(§4.1 洁净=精炼+去冗+归档): ISSUES 从 471 行降到 292 行，轮次记录与证据对账外迁归档<br>`6a6e932` 2026-09-19 09:23 fix(eval): 取证器的红因分类补上 ENOENT，并修掉一个"跨行匹配造出假路径"的分类器 bug（坑 #44）<br>`f3172b2` 2026-09-19 08:32 docs(37-1, t6): 出 BL7 恢复的可执行小 spec（快照→同步→回读送达→哨兵守卫→噪声控制），并把第 1.5 步执行结果落账 |
 | docs/ROADMAP-2026-09.md | 2026-09-18 | 一致 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`d601202` 2026-09-12 12:06 docs: 早报体系三级产品落档(每日早报/我的早报/精选周刊) + 阅读体验修复 + 翻译多轮管线 + InfoQ语料<br>`e003216` 2026-09-12 10:39 docs: 日报设置UI可读性补充 + 管理后台UX整改提升为独立专项P2-4 |
-| docs/RUNBOOK.md | 2026-09-20 | 待判 ⚠ | `138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容<br>`2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| docs/RUNBOOK.md | 2026-09-20 | 待判 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容 |
 | docs/X_SETUP_GUIDE.md | 2026-09-18 | 一致 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | README.md | 2026-09-16 | 待判 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1f2f253` 2026-09-16 18:40 docs(screenshots): 替换用户提供的 4 张截图 + 热点榜拆为 AI精选/AI实时流/热搜事件 三栏展示<br>`88b4381` 2026-09-16 18:29 docs(readme): 重写 README + 线上生产截图更新（2026-09-16）——新增我的早报/精选周刊/热搜事件/我的阅读/管理后台早报中心/系统管理 6 张截图，功能描述同步源四轴/早报体系/AI增强等最新进展 |
 
-### 其余受管文档（列最近 2 次）（236 份）
+### 其余受管文档（列最近 2 次）（251 份）
 
 | 文档 | 头部声明 | 判定 | 提交史（短号 · 日期 时:分 · 主题） |
 |---|---|---|---|
@@ -98,10 +98,10 @@
 | docs/archive/debugging/2026-09-13-reader-pagination-and-content-fixes.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
 | docs/archive/debugging/2026-09-14-delivery.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
 | docs/archive/debugging/2026-09-19-delivery-evidence-ledger.md | — | 不要求头注 | `1bf7084` 2026-09-20 16:57 docs(§4.1 洁净=精炼+去冗+归档): ISSUES 从 471 行降到 292 行，轮次记录与证据对账外迁归档 |
-| docs/archive/debugging/2026-09-20-round-status-records.md | — | 不要求头注 ⚠ | `4608b3a` 2026-09-20 23:40 docs(换库后遗症 B119①): 日报候选池放开并落一手对账 —— 26h 窗口 82 条/9 源 → 1,939 条/308 源<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容 |
+| docs/archive/debugging/2026-09-20-round-status-records.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`4608b3a` 2026-09-20 23:40 docs(换库后遗症 B119①): 日报候选池放开并落一手对账 —— 26h 窗口 82 条/9 源 → 1,939 条/308 源 |
 | docs/archive/debugging/2026-09-21-issues-closed-rows.md | — | 不要求头注 | `6c9a2c7` 2026-09-21 06:20 feat(B109/B45)+test(V1~V7)+feat(W19): 报警事件表收成 lib/alert-events.js 一份，云端后台四个假开关拔掉<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌 |
 | docs/archive/debugging/2026-09-21-release-approval-ledger.md | — | 不要求头注 | `0a1c567` 2026-09-21 04:16 docs(放行台账 §三 #12): 勾掉已交付的 W9/B127/B124，只留 B115② 与 lint:cites 两条待做<br>`2dd6808` 2026-09-21 03:03 feat(门禁扩面)+test(L1~L4): doc-lint 加 5 条判据并给它做双向自证 —— 编号撞号那条是本轮自己咬出来的 |
-| docs/archive/README.md | — | 不要求头注 ⚠ | `1bf7084` 2026-09-20 16:57 docs(§4.1 洁净=精炼+去冗+归档): ISSUES 从 471 行降到 292 行，轮次记录与证据对账外迁归档<br>`ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
+| docs/archive/README.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`1bf7084` 2026-09-20 16:57 docs(§4.1 洁净=精炼+去冗+归档): ISSUES 从 471 行降到 292 行，轮次记录与证据对账外迁归档 |
 | docs/BESTBLOGS_BORROW.md | 2026-09-18 | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1750845` 2026-09-11 21:54 docs: BestBlogs 调研借鉴清单(10项范式映射进总spec) |
 | docs/changes/2026-09-11-runner-direct-collect.md | — | 不要求头注 | `146352b` 2026-09-11 15:46 docs: AI 上云状态更正——Agnes key 云端 401(IP 绑定),待 DEEPSEEK_API_KEY 启用;不借 starhub,独立配置<br>`57dec47` 2026-09-11 13:17 feat(ai): 翻译上云 —— collect-turso.js 新增 translate 模式,每轮采集后自动翻译英文文章 |
 | docs/changes/archive/2026-09-11-settings-write.md | — | 不要求头注 | `60901a4` 2026-09-13 18:01 docs: 文档大整理——归档制/大清洗/T3 需求定稿（2026-09-13 晚） |
@@ -150,7 +150,7 @@
 | docs/specs/09-source-library-autoclassify/plan.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/09-source-library-autoclassify/spec.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/09-source-library-autoclassify/task.md | — | 不要求头注 | `a08b77c` 2026-09-20 07:50 docs(锚点审计): 第 4 轮只读复核——254 条 file:line 引用扫出 5 条烂锚，登记 B115<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| docs/specs/10-my-reading/spec.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
+| docs/specs/10-my-reading/spec.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/11-advanced-filter-views/checklist.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/11-advanced-filter-views/plan.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/11-advanced-filter-views/spec.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
@@ -161,9 +161,9 @@
 | docs/specs/13-settings-write/spec.md | — | 不要求头注 | `2b66b76` 2026-09-12 09:27 feat(settings): 13-settings-write 设置写API上云 |
 | docs/specs/13-settings-write/task.md | — | 不要求头注 | `2b66b76` 2026-09-12 09:27 feat(settings): 13-settings-write 设置写API上云 |
 | docs/specs/14-sources-write/checklist.md | — | 不要求头注 | `6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
-| docs/specs/14-sources-write/plan.md | — | 不要求头注 ⚠ | `6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
+| docs/specs/14-sources-write/plan.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
 | docs/specs/14-sources-write/spec.md | — | 不要求头注 | `6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
-| docs/specs/14-sources-write/task.md | — | 不要求头注 ⚠ | `6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
+| docs/specs/14-sources-write/task.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`6baa0c8` 2026-09-12 09:56 feat(sources): 14-sources-write 源写API上云 |
 | docs/specs/15-cloud-alerts/checklist.md | — | 不要求头注 | `2d790c1` 2026-09-12 10:20 fix(admin): 日报设置Tab崩溃(loading初始false首帧穿透) + 管理后台UX整改需求落档 |
 | docs/specs/15-cloud-alerts/plan.md | — | 不要求头注 | `2d790c1` 2026-09-12 10:20 fix(admin): 日报设置Tab崩溃(loading初始false首帧穿透) + 管理后台UX整改需求落档 |
 | docs/specs/15-cloud-alerts/spec.md | — | 不要求头注 | `2d790c1` 2026-09-12 10:20 fix(admin): 日报设置Tab崩溃(loading初始false首帧穿透) + 管理后台UX整改需求落档 |
@@ -181,9 +181,9 @@
 | docs/specs/18-daily-ai-v2/spec.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | docs/specs/18-daily-ai-v2/task.md | — | 不要求头注 | `7fc66bc` 2026-09-20 13:20 docs(B120/B121 收口): 交付链十一条按真实退出码逐条更新，端到端验收轮 9/10 的读数与证据一并入账<br>`c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | docs/specs/19-my-brief/checklist.md | — | 不要求头注 | `2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
-| docs/specs/19-my-brief/plan.md | — | 不要求头注 ⚠ | `2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
+| docs/specs/19-my-brief/plan.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
 | docs/specs/19-my-brief/spec.md | — | 不要求头注 | `2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
-| docs/specs/19-my-brief/task.md | — | 不要求头注 ⚠ | `2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
+| docs/specs/19-my-brief/task.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`2aedc6c` 2026-09-13 01:21 feat(mybrief): 19-my-brief 我的早报 |
 | docs/specs/20-weekly-picks/checklist.md | — | 不要求头注 | `6dd4175` 2026-09-13 02:47 feat(weekly): 20-weekly-picks 精选周刊 |
 | docs/specs/20-weekly-picks/plan.md | — | 不要求头注 | `6dd4175` 2026-09-13 02:47 feat(weekly): 20-weekly-picks 精选周刊 |
 | docs/specs/20-weekly-picks/spec.md | — | 不要求头注 | `6dd4175` 2026-09-13 02:47 feat(weekly): 20-weekly-picks 精选周刊 |
@@ -253,12 +253,27 @@
 | docs/specs/41-e2e-whitebox-eval/41-7-process-binary-checks.md | 2026-09-19 | 不要求头注 | `5aa8118` 2026-09-19 03:41 fix(reading): 修 B60/B61——同一分类判定全库 6 份手写副本收敛为 1 份，白盒新增 W10 判重 |
 | docs/specs/41-e2e-whitebox-eval/coverage-matrix-20260919.md | — | 不要求头注 | `d5a66a4` 2026-09-20 07:23 docs(评测覆盖): 手工核对的 e2e 功能格矩阵（39 格 ✅3/◐8/⛔28），并撤销对 knownGaps 的过度解读 |
 | docs/specs/41-e2e-whitebox-eval/spec.md | 2026-09-19 | 不要求头注 | `912c13e` 2026-09-20 07:40 docs(取证对账): 新登记 B114——文档里的 F2P 红/绿条数与证据 JSON 不符，改为逐份证据对账表<br>`d5a66a4` 2026-09-20 07:23 docs(评测覆盖): 手工核对的 e2e 功能格矩阵（39 格 ✅3/◐8/⛔28），并撤销对 knownGaps 的过度解读 |
+| docs/specs/42-full-audit-2026-09/handoff-notice.md | 2026-09-19 | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/api/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/archive/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/cloud/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/MANIFEST.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/opml/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/server/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/server/routes/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/server/services/collectors/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/server/services/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/tests/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/tools/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/web/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
+| docs/specs/42-full-audit-2026-09/quarantine/web/src/components/README.md | — | 不要求头注 | `f6cd1e4` 2026-09-21 20:39 docs(spec42 冻结入账)+test(AU-2): 全量审计轮按用户 09-21 否决冻结,spec/handoff-notice/quarantine(可达图与目录索引工具、13 份目录 README)与 _diag 取证件入库存档;门户通道默认关的回归锁正式入库 |
 | docs/specs/42-full-audit-2026-09/spec.md | — | 不要求头注 | `2dd6808` 2026-09-21 03:03 feat(门禁扩面)+test(L1~L4): doc-lint 加 5 条判据并给它做双向自证 —— 编号撞号那条是本轮自己咬出来的 |
-| docs/specs/43-collect-retention-safety/spec.md | — | 不要求头注 ⚠ | `16a957d` 2026-09-21 01:56 docs(B101 拦一下)+docs(BL10 复核): 待删量按现役库重算是 50,636 条（84.6%），不是旧库那 10,733<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌 |
+| docs/specs/43-collect-retention-safety/spec.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`16a957d` 2026-09-21 01:56 docs(B101 拦一下)+docs(BL10 复核): 待删量按现役库重算是 50,636 条（84.6%），不是旧库那 10,733 |
 | docs/specs/P1-12-401-handling-fix.md | — | 不要求头注 | `fb3bc95` 2026-09-09 21:24 fix(P0-1,P0-3,P0-7,P1-12): 阅读沉淀页数据+热点榜筛选+全部已读+401处理 |
-| lib/README.md | — | 不要求头注 | `5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容<br>`2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| lib/README.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容 |
 | memory/2026-09-02.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | memory/README.md | — | 不要求头注 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| opml/BestBlogs_RSS_Doc.md | — | 不要求头注 | `4d7fc7c` 2026-09-21 20:50 chore(资产入账): opml/ 18 份订阅源清单(DEV_GUIDE/HANDOVER/NEXT-DEV-REQS 与 spec 09 已引用)与 archive/样图 两个设计参考目录(周报页面设计/热点榜)入库,消除工作区悬浮件 |
 | prompts/daily-analyze.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | prompts/daily-theme.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | prompts/filter.md | — | 不要求头注 | `9a287ae` 2026-09-13 23:14 feat(defense): T4-2 R4 七层防御入报——L3 配额/L4 广告降权/L5 权威加权+低曝光保护位/L6 MMR（阻塞清单第 5 批续，specs/23 L2-L6 完成）<br>`180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |
