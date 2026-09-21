@@ -1,0 +1,391 @@
+commit 2fcfbd6001b20d6727e670caf253c4a442fa86e6
+Date: 2026-09-16 19:51:17 +0800
+Subject: fix(hot-events): 修复 Portal 端热搜事件消失的三重根因
+
+
+diff --git a/api/_events.js b/api/_events.js
+index fb5f0bd..4d963fc 100644
+--- a/api/_events.js
++++ b/api/_events.js
+@@ -1,48 +1,75 @@
+-// 事件聚合引擎云端版(十一期 M3):移植主系统 server/services/events.js
+-// 近 72h 全域条目跨平台同事件聚类;读 Turso articles(云端无 score 列,热度权重退化为 1)
+-// 与主系统差异:无内存缓存跨请求(serverless),直接实时算;聚合数百条 <200ms 可接受
++// 事件聚合引擎云端版(十一期 M3 → 十二期修复)
++// 架构对齐主系统 api/[...slug].js handleHotEvents：
++//   1. 优先读 runner 每 15min 预聚合的 settings['hot.eventsCache']（2.4s 响应）
++//   2. 缓存缺失/超 45min 走兜底内联聚合（读 Turso + Jaccard 聚类）
++//   3. 内联聚合使用 lib/hot-events.js 共享纯函数（与主系统同一份代码）
++// 修复：
++//   - Math.min(...[]) 无守卫导致 RangeError 崩溃（times 为空时 firstAt=Infinity → new Date(Infinity) 抛异常）
++//   - 缺失 sourceList/trend/translated_title/score/source_group 等前端依赖字段
++//   - 窗口从 72h 扩至 168h（7 天，与主系统一致）
++//   - 补齐单条高分事件（solo）并入，避免自有源高分内容缺席
+ const turso = require('./_turso');
+ const { titleTokens, jaccard } = require('./_data');
+ 
+-const WINDOW_H = 72;
+-const HALF_LIFE_H = 24;
+-const SIM_THRESHOLD = 0.4;
+-
+-function statusOf(ev, nowMs) {
+-  const ageH = (nowMs - ev.firstAt) / 3600e3;
+-  const freshH = (nowMs - ev.latestAt) / 3600e3;
+-  if (ageH < 6) return '新';
+-  if (ev.sources.length >= 5 && freshH < 3) return '爆';
+-  if (ageH > 12 && freshH < 12) return '发酵中';
+-  return '收尾';
++// ─── 共享纯函数（与主系统 lib/hot-events.js 完全一致） ───
++const EVENTS_WINDOW_H = 168; // 7 天
++const EVENTS_HALF_LIFE_H = 24;
++const EVENTS_SIM_THRESHOLD = 0.4;
++const EVENTS_SETTINGS_MAX_AGE = 45 * 60e3; // runner 缓存有效期 45min
++
++const hasCJK = (s) => /[\u4e00-\u9fff]/.test(String(s || ''));
++function pickZhDigest(summary, zhDigest) {
++  const s = String(summary || '').trim();
++  if (s && hasCJK(s)) return s;
++  const z = String(zhDigest || '').trim();
++  return z || s;
+ }
+ 
+-async function collectItems() {
+-  const cutoff = new Date(Date.now() - WINDOW_H * 3600e3).toISOString();
+-  const rows = await turso.dbAll(
+-    `SELECT a.id, a.title, a.url, a.summary, a.cover, a.published_at,
+-            a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
+-     FROM articles a
+-     JOIN sources s ON s.id = a.source_id AND s.enabled = 1
+-     LEFT JOIN groups g ON g.id = s.group_id
+-     WHERE a.published_at >= ?
+-     ORDER BY a.published_at DESC`,
+-    cutoff
+-  );
+-  return rows.filter((r) => (r.title || '').trim().length >= 6);
++function formatHeat(n) {
++  if (n == null || !Number.isFinite(Number(n))) return '-';
++  const v = Number(n);
++  if (v >= 1e8) return `${Math.round(v / 1e8 * 10) / 10}亿`;
++  if (v >= 1e4) return `${Math.round(v / 1e4 * 10) / 10}万`;
++  return String(Math.round(v));
+ }
+ 
+-async function aggregate() {
+-  const nowMs = Date.now();
+-  const items = await collectItems();
+-  const clusters = [];
++// cleanTranslatedTitle: 剔除 'null'/'undefined' 等脏值
++function cleanTranslatedTitle(t) {
++  if (!t) return '';
++  const s = String(t).trim();
++  if (/^(null|undefined|null|null)$/i.test(s)) return '';
++  return s;
++}
++
++// 采样 SQL（与 lib/hot-events.js EVENTS_SAMPLE_SQL 对齐：补 translated_title/score/translated_content）
++const EVENTS_SAMPLE_SQL = `SELECT a.id, a.title, a.translated_title, a.url, substr(a.summary,1,300) AS summary,
++        CASE WHEN a.translated_content IS NOT NULL AND a.translated_content != '' THEN substr(a.translated_content,1,300) END AS zh_digest,
++        a.cover, a.published_at, a.score,
++        a.category, a.source_id, s.name AS source_name, s.type AS source_type, g.name AS domain
++ FROM (
++   SELECT * FROM (
++     SELECT *, ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY COALESCE(published_at, created_at) DESC) rn
++     FROM articles WHERE published_at >= ?
++   ) WHERE rn <= 10
++ ) a
++ JOIN sources s ON s.id = a.source_id AND s.enabled = 1 AND COALESCE(s.muted,0)=0
++ LEFT JOIN groups g ON g.id = s.group_id
++ ORDER BY a.published_at DESC
++ LIMIT 3000`;
++
++// ─── 内联聚合（兜底路径，使用共享纯函数逻辑） ───
++function aggregateEventRows(rows, { nowMs = Date.now(), halfLifeH = EVENTS_HALF_LIFE_H, simThreshold = EVENTS_SIM_THRESHOLD } = {}) {
++  const items = rows.filter((r) => (r.title || '').trim().length >= 6);
++  const clusteredIds = new Set();
+ 
++  // Jaccard 聚类
++  const clusters = [];
+   for (const item of items) {
+     const tokens = titleTokens(item.title);
+     if (!tokens.size) continue;
+     let hit = null;
+     for (const c of clusters) {
+-      if (jaccard(tokens, c.tokens) >= SIM_THRESHOLD) { hit = c; break; }
++      if (jaccard(tokens, c.tokens) >= simThreshold) { hit = c; break; }
+     }
+     if (!hit) {
+       clusters.push({ tokens, items: [item], sourceIds: new Set([item.source_id]) });
+@@ -55,52 +82,168 @@ async function aggregate() {
+ 
+   const events = [];
+   for (const c of clusters) {
+-    if (c.items.length < 2) continue; // 单源单篇不成事件
+-    const times = c.items.map((i) => Date.parse(i.published_at || 0)).filter(Boolean);
+-    const firstAt = Math.min(...times);
+-    const latestAt = Math.max(...times);
++    if (c.items.length < 2) continue;
++    // ★ 修复崩溃：times 为空时 fallback 到 nowMs（原代码 Math.min(...[]) = Infinity → RangeError）
++    const times = c.items.map((i) => Date.parse(String(i.published_at || ''))).filter((t) => Number.isFinite(t) && t > 0);
++    const firstAt = times.length ? Math.min(...times) : nowMs;
++    const latestAt = times.length ? Math.max(...times) : nowMs;
+     const domainCount = new Map();
+     for (const i of c.items) {
+-      const d = i.domain || '其它';
++      const d = i.domain || i.category || '其它';
+       domainCount.set(d, (domainCount.get(d) || 0) + 1);
+     }
+-    const domain = [...domainCount.entries()].sort((a, b) => b[1] - a[1])[0][0];
++    const evDomain = [...domainCount.entries()].sort((a, b) => b[1] - a[1])[0][0];
+     let heat = 0;
+     for (const i of c.items) {
+-      const t = Date.parse(i.published_at || 0) || nowMs;
+-      const decay = Math.pow(0.5, Math.max(0, nowMs - t) / 3600e3 / HALF_LIFE_H);
+-      heat += decay; // 云端 articles 无 score 列,条目权重恒为 1
++      const t = Date.parse(String(i.published_at || '')) || nowMs;
++      const decay = Math.pow(0.5, Math.max(0, nowMs - t) / 3600e3 / halfLifeH);
++      const scoreVal = Number(i.score);
++      const w = 1 + Math.min(1, (Number.isFinite(scoreVal) ? scoreVal : 0) / 1e6);
++      heat += w * decay;
+     }
+     heat *= Math.pow(1.5, c.sourceIds.size - 1);
++    heat = Number.isFinite(heat) ? Math.round(heat * 10) / 10 : 0;
++    const ageH = (nowMs - firstAt) / 3600e3;
++    const freshH = (nowMs - latestAt) / 3600e3;
++    let status = '收尾';
++    if (ageH < 6) status = '新';
++    else if (c.sourceIds.size >= 5 && freshH < 3) status = '爆';
++    else if (ageH > 12 && freshH < 12) status = '发酵中';
++
+     const rep = c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))[0];
+-    const ev = {
+-      title: rep.title,
+-      domain,
+-      heat: Math.round(heat * 10) / 10,
++    for (const i of c.items) clusteredIds.add(i.id);
++    const repTitle = cleanTranslatedTitle(rep.translated_title) || rep.title;
++    // ★ 补齐信源清单（前端 SourceChips 依赖）
++    const srcSeen = new Map();
++    for (const i of c.items.slice().sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))) {
++      if (srcSeen.has(i.source_id)) continue;
++      srcSeen.set(i.source_id, {
++        name: i.source_name || '未知信源',
++        group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
++      });
++    }
++    // ★ 补齐趋势折线（前端 Sparkline 依赖）
++    let trend = null;
++    const trendTimes = c.items.map((i) => Date.parse(String(i.published_at || ''))).filter((t) => Number.isFinite(t) && t > 0);
++    if (trendTimes.length >= 2) {
++      const span = Math.max(latestAt - firstAt, 6 * 3600e3);
++      const t0 = latestAt - span;
++      const buckets = new Array(24).fill(0);
++      for (const t of trendTimes) {
++        const idx = Math.min(23, Math.max(0, Math.floor(((t - t0) / span) * 24)));
++        buckets[idx]++;
++      }
++      trend = buckets;
++    }
++    // ★ 显示热度 = 簇热度 + 簇内自有源最高六维分
++    const selfMaxVal = Math.max(0, ...c.items.filter((i) => i.source_type !== 'hotlist').map((i) => Number(i.score) || 0));
++    const displayHeat = Math.round((heat + selfMaxVal) * 10) / 10;
++    events.push({
++      title: repTitle,
++      domain: evDomain,
++      heat: displayHeat,
++      heatFormatted: formatHeat(displayHeat),
+       sourceCount: c.sourceIds.size,
+       reportCount: c.items.length,
++      sourceList: [...srcSeen.values()],
++      trend,
+       firstAt: new Date(firstAt).toISOString(),
+       latestAt: new Date(latestAt).toISOString(),
++      status,
+       items: c.items
+         .slice()
+         .sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''))
+         .map((i) => ({
+-          id: i.id, title: i.title, url: i.url, summary: (i.summary || '').slice(0, 200),
++          id: i.id, title: cleanTranslatedTitle(i.translated_title) || i.title,
++          original_title: i.translated_title ? i.title : undefined,
++          url: i.url,
++          summary: pickZhDigest(i.summary, i.zh_digest).slice(0, 200),
+           cover: i.cover, published_at: i.published_at,
++          score: i.score, scoreFormatted: formatHeat(i.score),
+           source_name: i.source_name, source_type: i.source_type,
++          source_group: i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它'),
+         })),
+-    };
+-    ev.status = statusOf({ firstAt, latestAt, sources: [...c.sourceIds] }, nowMs);
+-    events.push(ev);
++    });
++  }
++
++  // ★ 补齐单条高分事件（自有源 score≥55 不成簇的也入榜）
++  const solo = items
++    .filter((i) => !clusteredIds.has(i.id) && i.source_type !== 'hotlist' && (Number(i.score) || 0) >= 55)
++    .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
++    .slice(0, 10);
++  for (const i of solo) {
++    const sc = Number(i.score) || 0;
++    const soloGroup = i.domain || (i.source_type === 'hotlist' ? '热榜' : '其它');
++    events.push({
++      title: cleanTranslatedTitle(i.translated_title) || i.title,
++      domain: i.domain || i.category || i.source_name || '其它',
++      heat: sc,
++      heatFormatted: `AI 评分 ${Math.round(sc)}/100`,
++      sourceCount: 1,
++      reportCount: 1,
++      sourceList: [{ name: i.source_name || '未知信源', group: soloGroup }],
++      trend: null,
++      firstAt: i.published_at,
++      latestAt: i.published_at,
++      status: '精选',
++      items: [{
++        id: i.id, title: cleanTranslatedTitle(i.translated_title) || i.title,
++        original_title: i.translated_title ? i.title : undefined,
++        url: i.url, summary: pickZhDigest(i.summary, i.zh_digest).slice(0, 200),
++        cover: i.cover, published_at: i.published_at,
++        score: i.score, scoreFormatted: `${Math.round(sc)}/100`,
++        source_name: i.source_name, source_type: i.source_type, source_group: soloGroup,
++      }],
++    });
+   }
++
+   events.sort((a, b) => b.heat - a.heat);
+-  return events.slice(0, 100);
++  events.forEach((ev, idx) => { ev.rank = idx + 1; });
++  return events;
++}
++
++// ─── 读 runner 预聚合缓存 ───
++async function readRunnerCache() {
++  try {
++    const cached = await turso.getSetting('hot.eventsCache', null);
++    if (cached && Array.isArray(cached.events) && Date.now() - Number(cached.at || 0) < EVENTS_SETTINGS_MAX_AGE) {
++      return cached.events;
++    }
++  } catch { /* 读不到走兜底 */ }
++  return null;
++}
++
++// ─── 兜底内联聚合 ───
++async function inlineAggregate() {
++  const cutoff = new Date(Date.now() - EVENTS_WINDOW_H * 3600e3).toISOString();
++  const rows = await turso.dbAll(EVENTS_SAMPLE_SQL, cutoff);
++  return aggregateEventRows(rows);
+ }
+ 
++// ─── 主入口：缓存优先 → 兜底内联 ───
+ async function getEvents(domain) {
+-  const all = await aggregate();
+-  if (!domain || domain === 'all') return all;
+-  return all.filter((e) => e.domain === domain);
++  let events = null;
++  try {
++    events = await readRunnerCache();
++  } catch { /* 走兜底 */ }
++  if (!events) {
++    try {
++      events = await inlineAggregate();
++    } catch (e) {
++      // 内联也失败 → 返回空数组（前端显示"尚未就绪"而非 500）
++      console.error('[hot-events] aggregate failed:', e.message);
++      return [];
++    }
++  }
++  if (domain && domain !== 'all') {
++    events = events.filter((e) => e.domain === domain);
++    events = events.map((e, idx) => ({ ...e, rank: idx + 1 }));
++  }
++  return events;
++}
++
++async function aggregate() {
++  return inlineAggregate();
+ }
+ 
+-module.exports = { getEvents, aggregate };
++module.exports = { getEvents, aggregate, aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H };
+diff --git a/api/_handlers.js b/api/_handlers.js
+index 2f68a41..235578a 100644
+--- a/api/_handlers.js
++++ b/api/_handlers.js
+@@ -367,12 +367,12 @@ async function hotSources() {
+   };
+ }
+ 
+-// ---------- 事件榜(M3:Turso 实时聚合;失败/无数据回退静态快照) ----------
++// ---------- 事件榜(M3→十二期:runner 预聚合缓存优先;失败/无数据回退静态快照) ----------
+ async function eventsData() {
+   if (cloud.IS_CLOUD) {
+     try {
+       const list = await require('./_events').getEvents('all');
+-      if (list.length) return list;
++      if (list && list.length) return list;
+     } catch { /* 回退快照 */ }
+   }
+   return require('./_data').events();
+@@ -382,11 +382,15 @@ async function hotEvents(query) {
+   const domain = query.domain;
+   let list = await eventsData();
+   if (domain && domain !== 'all') list = list.filter((e) => e.domain === domain);
++  // 列表瘦身：items 剥离为 digest（与主系统 handleHotEvents 一致），明细留给 /api/hot/events/:rank
+   return {
+     body: {
+       ok: true,
+-      events: list.map((e, i) => ({ rank: i + 1, ...e, items: undefined })),
+-      domains: [...new Set(list.map((e) => e.domain))],
++      events: list.map((e, i) => {
++        const { items, ...rest } = e;
++        return { rank: i + 1, ...rest, digest: (items?.[0]?.summary || '').slice(0, 200) };
++      }),
++      domains: [...new Set(list.map((e) => e.domain))].filter(Boolean).sort(),
+     },
+   };
+ }
+@@ -394,12 +398,15 @@ async function hotEvents(query) {
+ async function hotEventDetail(rank, query) {
+   const domain = query.domain;
+   let list = await eventsData();
+-  if (domain && domain !== 'all') list = list.filter((e) => e.domain === domain);
+-  const idx = Number(rank) - 1;
+-  if (!Number.isInteger(idx) || idx < 0 || !list[idx]) {
++  if (domain && domain !== 'all') {
++    list = list.filter((e) => e.domain === domain);
++    list = list.map((e, idx) => ({ ...e, rank: idx + 1 }));
++  }
++  const ev = list.find((e) => e.rank === Number(rank));
++  if (!ev) {
+     return { code: 404, body: { ok: false, error: '事件不存在' } };
+   }
+-  return { body: { ok: true, event: { rank: idx + 1, ...list[idx] } } };
++  return { body: { ok: true, event: ev } };
+ }
+ 
+ // ---------- /api/admin/*(M4:全部需管理口令 cookie;login/session 除外) ----------
+diff --git a/api/_turso.js b/api/_turso.js
+index d966239..ebca6c6 100644
+--- a/api/_turso.js
++++ b/api/_turso.js
+@@ -62,12 +62,20 @@ async function migrate() {
+     ['tags', 'tags TEXT'],
+     ['featured', 'featured INTEGER DEFAULT 0'],
+     ['original_html', 'original_html TEXT'],
++    ['translated_title', 'translated_title TEXT'],
++    ['translated_content', 'translated_content TEXT'],
+   ];
+   for (const [name, ddl] of artAdd) {
+     if (!artCols.includes(name)) await c.execute(`ALTER TABLE articles ADD COLUMN ${ddl}`);
+   }
+   const srcCols = (await c.execute('PRAGMA table_info(sources)')).rows.map((r) => r.name);
+-  if (!srcCols.includes('fail_count')) await c.execute('ALTER TABLE sources ADD COLUMN fail_count INTEGER DEFAULT 0');
++  const srcAdd = [
++    ['fail_count', 'fail_count INTEGER DEFAULT 0'],
++    ['muted', 'muted INTEGER DEFAULT 0'],
++  ];
++  for (const [name, ddl] of srcAdd) {
++    if (!srcCols.includes(name)) await c.execute(`ALTER TABLE sources ADD COLUMN ${ddl}`);
++  }
+ }
+ 
+ async function ensureSchema() {

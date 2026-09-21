@@ -1,0 +1,25 @@
+const { chromium } = require('playwright');
+const { CLOUD_SITE } = require('../lib/cloud-site');
+(async () => {
+  const b = await chromium.launch({ proxy: { server: process.env.PROXY || 'http://127.0.0.1:12000' } });
+  const p = await (await b.newContext()).newPage();
+  await p.goto(CLOUD_SITE + '/reader/', { waitUntil: 'domcontentloaded', timeout: 90000 });
+  const j = async (u) => p.evaluate(async (x) => { const r = await fetch(x); return await r.json(); }, u);
+  const brief = await j('/api/daily');
+  console.log('daily.report keys:', Object.keys(brief.report || {}).join(','));
+  console.log('  sections?', JSON.stringify((brief.report?.sections || []).map((s) => ({ k: Object.keys(s).join('|'), t: s.title || s.name, n: (s.items || []).length }))).slice(0, 700));
+  const mb = await j('/api/mybrief');
+  console.log('mybrief.report keys:', Object.keys(mb.report || {}).join(','), ' digest keys:', Object.keys(mb.digest || {}).join(','));
+  const wk = await j('/api/weekly');
+  console.log('weekly.report keys:', Object.keys(wk.report || {}).join(','));
+  console.log('  sample:', JSON.stringify(wk.report).slice(0, 500));
+  const st = await j('/api/status');
+  console.log('status keys:', Object.keys(st).join(',').slice(0, 400));
+  const rd = await j('/api/reading?tab=all&type=article');
+  console.log('reading article:', (rd.items || []).length, JSON.stringify(rd.counts));
+  const rda = await j('/api/reading?tab=all&type=all');
+  console.log('reading all:', (rda.items || []).length, JSON.stringify(rda.counts));
+  const art = await j('/api/articles?sort=smart&tab=all');
+  console.log('articles counts field:', JSON.stringify(art.counts), 'n=', (art.items || []).length, 'item0 keys=', Object.keys((art.items || [])[0] || {}).join(',').slice(0, 200));
+  await b.close();
+})().catch((e) => { console.log('ERR', String(e.message).split('\n')[0]); process.exit(2); });

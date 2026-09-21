@@ -69,3 +69,4 @@ docs/eval/audit/
 # 所以这一行只挡住「今后新增的」误加，不撤销历史。要提交常驻探针须显式 `git add -f`，
 # 而真正常驻的判据应按 #14 选项①做成 npm 子命令，而不是留 `_` 前缀脚本
 tools/_*.cjs
+archive/_diag/portal-quarantine/vercel-env-production.local  # 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
