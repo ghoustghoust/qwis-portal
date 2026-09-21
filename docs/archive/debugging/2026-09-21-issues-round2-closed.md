@@ -272,3 +272,5 @@
 | # | 核销行原文 | 交付与证据 |
 |---|---|---|
 | B105 | （P0-1 行：scratch 驱动族退出段崩，已 3 例 fail_flaky） | ✅ 09-21 修复：共享 `tests/driver-runner.js#runDriver`（spawnSync，退出码与载荷分别判：载荷完整则退出段崩只记警告不翻红；无载荷则带 status+stderr 尾抛出），11 处调用点全部换用；锁 `tests/regression-driver-runner.test.js` DR1~DR5（含反向：无载荷/没配 payloadRe 必须抛）；全量套件连跑 2 轮 549/549。**如实说明**：native 退出段崩本身（libsql/Windows 拆卸期）没有修、也不再需要修——它不再能影响测试结果 |
+
+| B131 | （P0-2 行：SCHEMA 少 translated_* 三列，新机建库写入即抛） | ✅ 09-21 修复：三列并进 `lib/db.js` SCHEMA + ALTERS（老库补列），`server/db.js` 补 `translation_provider`；新白盒 **W24**（两份建表源可建列集不许分叉 + ALTERS 必进 SCHEMA 本体），锁 SC1~SC5 含三种坏形状负向样本；真库 10 张同名表比对 0 缺口、articles 23 列与生产一致 |

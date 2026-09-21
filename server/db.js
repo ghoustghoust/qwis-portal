@@ -148,6 +148,7 @@ try { db.exec('ALTER TABLE articles ADD COLUMN word_count INTEGER'); } catch { /
 // AI 翻译列：translated_title（翻译标题）、translated_content（翻译正文 HTML）
 try { db.exec('ALTER TABLE articles ADD COLUMN translated_title TEXT'); } catch { /* 已存在 */ }
 try { db.exec('ALTER TABLE articles ADD COLUMN translated_content TEXT'); } catch { /* 已存在 */ }
+try { db.exec('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
 // T47：大列表常用过滤/排序补索引（千级数据量实测见 docs/RUNBOOK.md）
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_articles_read_at ON articles(read_at);

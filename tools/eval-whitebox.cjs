@@ -427,6 +427,18 @@ const knownW9 = new Set(BASELINE.w9_pitfalls_without_test_lock || []);
     + '遍历一个**字符串**得到的是逐字符、`undefined` 一律 continue → 判据恒绿。坏样本先跑一次红才算数（坑 #71）');
 }
 
+// ── W24 两份建表源的「可建列集」不许分叉（B131，2026-09-21）──
+// 判据与回归锁 tests/regression-schema-columns.test.js 共用 lib/schema-columns#findSchemaGaps。
+// 病根：lib/db.js 的 SCHEMA 少 translated_* 三列（生产靠 runner 自愈 ALTER 补上），
+// 新机按 ensureSchema() 建库后 AI 译文写入即抛 no such column——回放演练第一次就是被列校验正确挡下的。
+{
+  const { findSchemaGaps } = require('../lib/schema-columns');
+  const r = findSchemaGaps(ROOT);
+  ok('W24', r.tables >= 8 && r.violations.length === 0,
+    `同名表比对 ${r.tables} 张；列集缺口：${JSON.stringify(r.violations.slice(0, 6)) || '无'}`);
+  notes.push('  i W24：两条腿——server 端可建列 ⊆ lib 端可建列（同名表）；lib 的 ALTERS 补的列必须已在 SCHEMA 本体。只读 DDL 字符串，端独有的表不判');
+}
+
 // ── W23 测试里的写方法必须指隔离库（B117 / spec43 §六，2026-09-21）──
 // 判据与回归锁 tests/regression-test-isolation.test.js 共用 lib/test-isolation#findWriteWithoutIsolation。
 // 病根：`regression-20260918` 曾对生产发 `DELETE /api/weekly/archive/999999`（真 Bearer token），

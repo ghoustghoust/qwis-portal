@@ -1,0 +1,17 @@
+{
+  "case": "B131",
+  "date": "2026-09-21",
+  "note": "锁文件本轮新建、判据本体 lib/schema-columns.js 同轮新建——eval:f2p --auto-base 无引入提交可反查，按 spec 36-4/B106 规则改用「回退修复点」人工构造：判据(工作区)喂基线 schema(git show HEAD:lib/db.js + HEAD:server/db.js)",
+  "base": {
+    "ref": "HEAD(1ab00b5)",
+    "violations": [
+      "articles.translated_title：server/db.js 可建而 lib/db.js 建不出",
+      "articles.translated_content：server/db.js 可建而 lib/db.js 建不出"
+    ]
+  },
+  "after": {
+    "ref": "工作区",
+    "violations": []
+  },
+  "verdict": "改前红 2/2（两条缺口被点名）→ 改后绿 0；另 translation_provider 一列在基线两侧都缺（生产靠 runner 自愈 ALTER），本轮一并补进 lib/db.js 与 server/db.js"
+}
