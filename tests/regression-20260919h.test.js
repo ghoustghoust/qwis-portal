@@ -17,7 +17,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `b76-mybrief-${process.pid}.db`).replace(/\\/g, '/');
@@ -26,7 +26,7 @@ const DB_FILE = path.join(os.tmpdir(), `b76-mybrief-${process.pid}.db`).replace(
 const DRIVER = path.join(ROOT, `.b76-driver-${process.pid}.cjs`);
 
 function call(caseName) {
-  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE], { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const out = runDriver(DRIVER, [caseName, DB_FILE], { timeout: 120000, payloadRe: /BODY / });
   const m = /BODY (.*)$/.exec(out.trim().split('\n').pop() || '');
   assert.ok(m, `子进程没打印响应体（${caseName}）：\n${out}`);
   return JSON.parse(m[1]);

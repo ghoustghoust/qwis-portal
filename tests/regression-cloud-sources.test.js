@@ -14,7 +14,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `cloud-sources-${process.pid}.db`).replace(/\\/g, '/');
@@ -22,8 +22,8 @@ const DB_FILE = path.join(os.tmpdir(), `cloud-sources-${process.pid}.db`).replac
 const DRIVER = path.join(ROOT, `.cloud-sources-driver-${process.pid}.cjs`);
 
 function run(caseName) {
-  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE],
-    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const out = runDriver(DRIVER, [caseName, DB_FILE],
+    { timeout: 120000, payloadRe: /^OUT /m });
   const line = out.trim().split('\n').filter((l) => l.startsWith('OUT ')).pop();
   assert.ok(line, `子进程没打印结果（${caseName}）：\n${out}`);
   return JSON.parse(line.slice(4));

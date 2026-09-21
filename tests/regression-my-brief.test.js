@@ -15,7 +15,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `mybrief-local-${process.pid}.db`).replace(/\\/g, '/');
@@ -25,8 +25,8 @@ const FAKE = { date: '2026-09-12', theme: '测试导语', keywords: ['AI'],
   sections: { top: [{ id: 1, title: '甲题' }], featured: [], rest: [] } };
 
 function call(caseName) {
-  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE],
-    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const out = runDriver(DRIVER, [caseName, DB_FILE],
+    { timeout: 120000, payloadRe: /^BODY /m });
   const line = out.trim().split('\n').filter((l) => l.startsWith('BODY ')).pop();
   assert.ok(line, `子进程没打印响应体（${caseName}）：\n${out}`);
   return JSON.parse(line.slice(5));

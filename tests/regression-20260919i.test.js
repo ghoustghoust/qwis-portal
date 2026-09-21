@@ -284,7 +284,7 @@ test('I14 坑 #60 / B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「
   // 判据是行为不是字面量：种一个真时间戳 + 一个 'null'，端点必须回那个真时间戳。
   // 本锁的 F2P 只能手动回拨基线取 `6665087`（修复与锁落在了相邻两个提交，--auto-base 会误判"锁是假的"）——
   // 流程教训见坑 #61：**锁必须与它保护的修复同批提交**。
-  const { execFileSync } = require('child_process');
+  const { runDriver } = require('./driver-runner');
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'i14-b93-'));
   const driver = path.join(ROOT, `.i14-driver-${process.pid}.cjs`);
   fs.writeFileSync(driver, `
@@ -311,8 +311,8 @@ test('I14 坑 #60 / B93：字面串 \'null\' 的 last_fetched_at 不得毒掉「
     });
   `);
   try {
-    const out = execFileSync(process.execPath, [driver],
-      { cwd: ROOT, encoding: 'utf8', env: { ...process.env, APP_DATA_DIR: tmpDir }, timeout: 120000 });
+    const out = runDriver(driver, [],
+      { env: { ...process.env, APP_DATA_DIR: tmpDir }, timeout: 120000, payloadRe: /^OUT /m });
     const m = /^OUT (.+)$/m.exec(out);
     assert.ok(m, '子进程没打印读数：\n' + out.slice(-400));
     const got = JSON.parse(m[1]);

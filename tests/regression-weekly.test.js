@@ -11,7 +11,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `weekly-local-${process.pid}.db`).replace(/\\/g, '/');
@@ -31,8 +31,8 @@ function classify(item) {
 }
 
 function call(query) {
-  const out = execFileSync(process.execPath, [DRIVER, query || '', DB_FILE],
-    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const out = runDriver(DRIVER, [query || '', DB_FILE],
+    { timeout: 120000, payloadRe: /^BODY /m });
   const line = out.trim().split('\n').filter((l) => l.startsWith('BODY ')).pop();
   assert.ok(line, `子进程没打印响应体（${query}）：\n${out}`);
   return JSON.parse(line.slice(5));

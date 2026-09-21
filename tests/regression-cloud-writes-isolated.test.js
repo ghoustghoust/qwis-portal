@@ -13,7 +13,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `cloud-writes-${process.pid}.db`).replace(/\\/g, '/');
@@ -22,7 +22,7 @@ const DRIVER = path.join(ROOT, `.cloud-writes-driver-${process.pid}.cjs`);
 function run(caseName) {
   const env = { ...process.env };
   delete env.NODE_TEST_CONTEXT; // 嵌套 node 会因子进程的测试上下文被静默跳过（坑：删掉才有真退出码）
-  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE], { cwd: ROOT, encoding: 'utf8', env, timeout: 180000 });
+  const out = runDriver(DRIVER, [caseName, DB_FILE], { env, timeout: 180000, payloadRe: /^OUT /m });
   const line = out.trim().split('\n').filter((l) => l.startsWith('OUT ')).pop();
   assert.ok(line, `子进程没打印结果（${caseName}）：\n${out}`);
   return JSON.parse(line.slice(4));

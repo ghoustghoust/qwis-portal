@@ -19,7 +19,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
@@ -95,8 +95,8 @@ function runCloudDaily(tz, evaded) {
     })().catch((e) => { console.log('OUT ' + JSON.stringify({ err: e.message })); process.exitCode = 3; });
   `);
   try {
-    const out = execFileSync(process.execPath, [driver],
-      { cwd: ROOT, encoding: 'utf8', env: { ...process.env, TZ: tz }, timeout: 180000 });
+    const out = runDriver(driver, [],
+      { env: { ...process.env, TZ: tz }, timeout: 180000, payloadRe: /^OUT /m });
     const m = /^OUT (.+)$/m.exec(out);
     assert.ok(m, `子进程没打印读数（TZ=${tz}）：\n${out.slice(-500)}`);
     return JSON.parse(m[1]);

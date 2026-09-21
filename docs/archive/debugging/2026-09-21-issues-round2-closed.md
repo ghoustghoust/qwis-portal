@@ -266,3 +266,9 @@
 | B123 | 早报页头恒写「关键词规则排序」，AI 策展版也这么显示（`DailyHeader.jsx` 不读 schemaVersion） | 一行修法：按 `schemaVersion===2`/`degraded` 出文案 + 静态锁；可与 B119① 同批 |
 | B133 | `#64-1` 判据用行首缩进近似「顶层」，会把锁文件里的反例样本误判成违规 | 判据变更（待放行后做）：改走 `lib/src-spans` 跨度视图 + 两条负向样本 |
 ```
+
+## §十一 P 队列交付核销
+
+| # | 核销行原文 | 交付与证据 |
+|---|---|---|
+| B105 | （P0-1 行：scratch 驱动族退出段崩，已 3 例 fail_flaky） | ✅ 09-21 修复：共享 `tests/driver-runner.js#runDriver`（spawnSync，退出码与载荷分别判：载荷完整则退出段崩只记警告不翻红；无载荷则带 status+stderr 尾抛出），11 处调用点全部换用；锁 `tests/regression-driver-runner.test.js` DR1~DR5（含反向：无载荷/没配 payloadRe 必须抛）；全量套件连跑 2 轮 549/549。**如实说明**：native 退出段崩本身（libsql/Windows 拆卸期）没有修、也不再需要修——它不再能影响测试结果 |

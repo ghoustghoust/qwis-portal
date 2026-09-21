@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
-const { execFileSync } = require('child_process');
+const { runDriver } = require('./driver-runner');
 
 const ROOT = path.join(__dirname, '..');
 const DB_FILE = path.join(os.tmpdir(), `bilibili-${process.pid}.db`).replace(/\\/g, '/');
@@ -23,8 +23,8 @@ const DRIVER = path.join(ROOT, `.bilibili-driver-${process.pid}.cjs`);
 const bili = require('../api/_bilibili'); // 只有纯函数 signWbi 在本进程判，不碰任何库
 
 function run(caseName) {
-  const out = execFileSync(process.execPath, [DRIVER, caseName, DB_FILE],
-    { cwd: ROOT, encoding: 'utf8', timeout: 120000 });
+  const out = runDriver(DRIVER, [caseName, DB_FILE],
+    { timeout: 120000, payloadRe: /^OUT /m });
   const line = out.trim().split('\n').filter((l) => l.startsWith('OUT ')).pop();
   assert.ok(line, `子进程没打印结果（${caseName}）：\n${out}`);
   return JSON.parse(line.slice(4));
