@@ -375,7 +375,7 @@ const { beijingDayStartMs, beijingDayStartIso, beijingNow, beijingDateStr, beiji
 // B58（2026-09-19）：热点榜六类与分类映射与本地服务层共用一份实现
 const hotCats = require('../lib/hot-categories');
 // B60（2026-09-19）：「我的阅读」type 口径与本地端、与列表/计数共用一份实现
-const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../lib/reading-filters');
+const { readingTypeFilter, readingTypeCondSql, READING_VIDEO_COND, withReadingKinds } = require('../lib/reading-filters');
 // B107（2026-09-21）：噪声（热榜/聚合）判定的轴只有一份实现。本文件此前自己写了 7 份，
 // 其中 `handleArticlesReadAll` 那份**少两轴**（只排热榜/聚合，不排 muted/未收录）→
 // "全部标已读"会标掉列表里根本看不见的条目。现在三处阅读器口径共用下面这一个常量。
@@ -1095,7 +1095,8 @@ async function handleReading(req) {
   // 视频侧条件
   const vConds = [];
   const vArgs = [];
-  if (tab === 'all') vConds.push('v.favorite = 1');
+  // B29：tab=all 认「交互过」（收藏或观看过），favorited 仍只认收藏
+  if (tab === 'all') vConds.push(READING_VIDEO_COND);
   else if (tab === 'favorited') vConds.push('v.favorite = 1');
   if (!T.includeVideos) vConds.push('0');
   if (searchQ && T.includeVideos) {
@@ -1147,12 +1148,12 @@ async function handleReading(req) {
     const vQCond = qLike ? ' AND (v.title LIKE ? OR s.name LIKE ?)' : '';
     const vCountArgs = qLike ? [qLike, qLike] : [];
     const vRow = await qOne(`
-      SELECT COUNT(*) AS c FROM videos v LEFT JOIN sources s ON s.id = v.source_id
-      WHERE v.favorite = 1 ${vQCond}
+      SELECT COUNT(*) AS c, SUM(CASE WHEN v.favorite = 1 THEN 1 ELSE 0 END) AS fav FROM videos v LEFT JOIN sources s ON s.id = v.source_id
+      WHERE ${READING_VIDEO_COND} ${vQCond}
     `, vCountArgs);
     const c = vRow?.c || 0;
     counts.all += c;
-    counts.favorited += c;
+    counts.favorited += (vRow?.fav || 0);
   }
 
   // T3-3 快路径（2026-09-13 实测 9-13s→~350ms）：无筛选时两段式——
@@ -1172,7 +1173,7 @@ async function handleReading(req) {
         FROM articles a WHERE a.later = 1 AND a.read_at IS NULL ${noiseCond}
         UNION ALL
         SELECT v.id, v.published_at AS sort_key, 'video'
-        FROM videos v WHERE v.favorite = 1
+        FROM videos v WHERE ${READING_VIDEO_COND}
       ) ${narrowWhere}
       ORDER BY sort_key DESC, id DESC
       LIMIT ${PAGE_SIZE + 1}

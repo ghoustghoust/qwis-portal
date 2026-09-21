@@ -47,9 +47,11 @@ const ARTICLES = [
   { title: '播客稍后读', src: 'normal', later: true, cover: PODCAST_COVER }, // 稍后读 tab 与播客 type 的双料样本
 ];
 const VIDEO_TITLE = 'B107 收藏视频';
+// B29：观看过但未收藏的视频也算「交互过」，要进 tab=all（此前两端只认 favorite=1 → 视频区恒空）
+const WATCHED_TITLE = 'B107 已观看视频';
 const T = (x) => `B107 ${x}`;
-const KEEP_DEFAULT = [T('普通已读'), T('屏蔽源已读'), T('未收录已读'), T('孤儿已读'), T('播客稍后读'), VIDEO_TITLE];
-const KEEP_ALL = [T('普通已读'), T('热榜已读'), T('聚合已读'), T('屏蔽源已读'), T('未收录已读'), T('孤儿已读'), T('播客稍后读'), VIDEO_TITLE];
+const KEEP_DEFAULT = [T('普通已读'), T('屏蔽源已读'), T('未收录已读'), T('孤儿已读'), T('播客稍后读'), VIDEO_TITLE, WATCHED_TITLE];
+const KEEP_ALL = [T('普通已读'), T('热榜已读'), T('聚合已读'), T('屏蔽源已读'), T('未收录已读'), T('孤儿已读'), T('播客稍后读'), VIDEO_TITLE, WATCHED_TITLE];
 
 // 查询串 → 期望标题集合。**本地与云端跑同一张表**：两端不一致会先在这里露头
 // （B134 就是这么抓出来的 —— 本地除 all/all 外每个筛选组合都返回空列表）
@@ -62,8 +64,8 @@ const COMBOS = [
   ['tab=favorited&type=all&include_hot=1', [T('播客稍后读'), VIDEO_TITLE]],
   ['tab=all&type=article', [T('普通已读'), T('屏蔽源已读'), T('未收录已读'), T('播客稍后读')]],
   ['tab=all&type=article&include_hot=1', [T('普通已读'), T('聚合已读'), T('屏蔽源已读'), T('未收录已读'), T('播客稍后读')]],
-  ['tab=all&type=video', [VIDEO_TITLE]],
-  ['tab=all&type=video&include_hot=1', [VIDEO_TITLE]],
+  ['tab=all&type=video', [VIDEO_TITLE, WATCHED_TITLE]],
+  ['tab=all&type=video&include_hot=1', [VIDEO_TITLE, WATCHED_TITLE]],
   ['tab=all&type=podcast', [T('播客稍后读')]],
 ];
 const articleRows = (ids, t) => ARTICLES.map((a) => ({
@@ -83,6 +85,8 @@ function seedLocal(db, t) {
   for (const r of articleRows(ids, t)) insArt.run(r.source_id, r.title, r.url, t, r.read_at, r.later, r.cover);
   db.prepare('INSERT INTO videos(source_id,title,url,published_at,favorite) VALUES(?,?,?,?,1)')
     .run(ids.normal, VIDEO_TITLE, 'http://b107/v/1', t);
+  db.prepare('INSERT INTO videos(source_id,title,url,published_at,favorite,watched_at) VALUES(?,?,?,?,0,?)')
+    .run(ids.normal, WATCHED_TITLE, 'http://b107/v/2', t, t);
   return ids;
 }
 
@@ -147,6 +151,8 @@ test('N9 云端 /api/reading 两条路径同口径：两段式快路径与带筛
     await libdb.dbRun('INSERT INTO articles(source_id,title,url,published_at,read_at,later,cover) VALUES(?,?,?,?,?,?,?)',
       r.source_id, r.title, r.url, t, r.read_at, r.later, r.cover);
   }
+  await libdb.dbRun('INSERT INTO videos(source_id,title,url,published_at,favorite,watched_at) VALUES(?,?,?,?,0,?)',
+    ids.normal, WATCHED_TITLE, 'http://b107/v/2', t, t);
   await libdb.dbRun('INSERT INTO videos(source_id,title,url,published_at,favorite) VALUES(?,?,?,?,1)',
     ids.normal, VIDEO_TITLE, 'http://b107/v/1', t);
 

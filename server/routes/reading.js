@@ -5,7 +5,7 @@
 const express = require('express');
 const { db } = require('../db');
 const { nowIso } = require('../util/time');
-const { readingTypeFilter, readingTypeCondSql, withReadingKinds } = require('../../lib/reading-filters');
+const { readingTypeFilter, readingTypeCondSql, withReadingKinds, READING_VIDEO_COND } = require('../../lib/reading-filters');
 // B107（2026-09-21 批准口径）：足迹默认排除热榜/聚合噪声，`include_hot=1` 才把它们带回来。
 // 只用两轴 —— 屏蔽(muted)/未收录是另一件事，批准里没说，不顺手扩。
 // 轴只有一份，见 lib/noise.js；形态选 NOT EXISTS 而不是 JOIN：源已删除的孤儿条目要留在足迹里
@@ -55,7 +55,9 @@ function buildFilters(query) {
   if (!T.includeVideos || tab === 'read') {
     vConds.push('0');
   } else {
-    if (tab === 'all' || tab === 'favorited') vConds.push('v.favorite = 1');
+    // B29：tab=all 认「交互过」（收藏或观看过），favorited 仍只认收藏
+    if (tab === 'all') vConds.push(READING_VIDEO_COND);
+    else if (tab === 'favorited') vConds.push('v.favorite = 1');
     if (q) {
       vConds.push('(v.title LIKE ? OR s.name LIKE ?)');
       vArgs.push(`%${q}%`, `%${q}%`);
@@ -101,13 +103,13 @@ function calcCounts(type, q, includeNoisy) {
     try {
       const args = qLike ? [qLike, qLike] : [];
       const row = db.prepare(`
-        SELECT COUNT(*) AS c
+        SELECT COUNT(*) AS c, SUM(CASE WHEN v.favorite = 1 THEN 1 ELSE 0 END) AS fav
         FROM videos v LEFT JOIN sources s ON s.id = v.source_id
-        WHERE v.favorite = 1 ${vQCond}
+        WHERE ${READING_VIDEO_COND} ${vQCond}
       `).get(...args);
       const c = row?.c || 0;
       counts.all += c;
-      counts.favorited += c;
+      counts.favorited += (row?.fav || 0);
       // read tab 不含视频
     } catch { /* 表不存在等异常 */ }
   }
