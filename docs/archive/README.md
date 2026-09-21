@@ -42,7 +42,7 @@
 | `debugging/2026-09-20-round-status-records.md` | 调试 | `docs/ISSUES.md` 三节轮次状态表（交付链×2 + 洁净轮记录） | 2026-09-20 |
 | `debugging/2026-09-21-release-approval-ledger.md` | 调试/授权台账 | `docs/ISSUES.md`「⛔ 待你点头的放行清单」15 行整块（用户 09-21 整表放行后出账） | 2026-09-21 |
 | `debugging/2026-09-21-issues-closed-rows.md` | 调试 | `docs/ISSUES.md` 四段整节（B27~B70 六域登记、🟡观察中、已关闭挂案、阻塞项已闭行）+ 19 条已核销单行 + 被改写的头部原文 | 2026-09-21 |
-| `debugging/2026-09-21-issues-round2-closed.md` | 调试 | `docs/ISSUES.md` 第二轮核销：B1~B26 判定轮表、15 条已交付 B 行、B71~B85 已修 11 行、H9/H10/H17、BL2/BL4/BL8/BL10/BL11、产品选择裁定表 | 2026-09-21 |
+| `debugging/2026-09-21-issues-round2-closed.md` | 调试 | `docs/ISSUES.md` 第二轮核销 + 同日结构重排（§九）：判定轮表、已交付/已修 B 行、裁定表、已核销挂案与阻塞项、瘦身行原文 | 2026-09-21 |
 | `feature/2026-09-21-nextdev-closed-rounds.md` | 功能 | `docs/NEXT-DEV-REQS.md`：T2 存档、T4-1/T4-2、T5 已完成行、T6 第 0/1/1.5 步执行原文 | 2026-09-21 |
 
 > 新增归档件必须同时：①本表加一行；②`docs/INDEX.md` 指向本目录；③原现役位留指针。漏任一项，`tools/doc-lint.cjs` 会报。

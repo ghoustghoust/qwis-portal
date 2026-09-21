@@ -145,7 +145,11 @@ test('G9 B74 阅读页必须有"晚到的旧响应不得覆盖新筛选"的序�
 });
 
 test('G8 B71~B83 已登记且判据没有反向迁就现状（坑 #48）', () => {
-  const iss = read('docs/ISSUES.md');
+  // 登记面 = 活文档 + 归档层调试件：09-21 结构重排后，已核销条目按用户口径撤出 ISSUES 正文
+  // （「已归档 = 不再出现在现在的文档里」），但登记必须可追溯——活文档与归档层都查无某号仍红
+  const archDir = path.join(ROOT, 'docs', 'archive', 'debugging');
+  const iss = read('docs/ISSUES.md') + '\n' +
+    fs.readdirSync(archDir).filter((f) => f.endsWith('.md')).map((f) => read(path.join('docs', 'archive', 'debugging', f))).join('\n');
   for (const id of ['B71', 'B72', 'B73', 'B74', 'B75', 'B76', 'B77', 'B78', 'B79', 'B80', 'B81', 'B82', 'B83']) {
     assert.ok(iss.includes('**' + id + '**'), `docs/ISSUES.md 缺 ${id}`);
   }
