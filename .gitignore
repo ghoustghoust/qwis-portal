@@ -69,7 +69,8 @@ docs/eval/audit/
 # 所以这一行只挡住「今后新增的」误加，不撤销历史。要提交常驻探针须显式 `git add -f`，
 # 而真正常驻的判据应按 #14 选项①做成 npm 子命令，而不是留 `_` 前缀脚本
 tools/_*.cjs
-archive/_diag/portal-quarantine/vercel-env-production.local  # 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
+# 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
+archive/_diag/portal-quarantine/vercel-env-production.local
 
 # e2e 截图不入库（b42e6f1 起惯例：只提交 report.json/env_lock.json；649 张 PNG ≈130MB 留本地）
 # 历史已跟踪的 255 张不撤销，本行只挡今后新增
