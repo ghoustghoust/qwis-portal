@@ -2021,12 +2021,15 @@ const CLEAN_TABLES = [
   { table: 'daily_reports', col: 'generated_at' },
 ];
 
-// 文章保留清理：豁免用户交互过的（已读/稍后读/精选标记）与热榜（热榜由 runner cleanup 固定 7 天规则处理）
-const ARTICLE_CLEAN_WHERE = `COALESCE(published_at, created_at) < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
-       AND source_id NOT IN (SELECT id FROM sources WHERE ${hotlistCondSql('')})`;
+// 文章保留清理：**09-21 起本文件不再自带一份谓词**（⑥a / B102 残余 / W17 的整文件豁免同日摘掉）。
+// 条件与豁免全部来自 `lib/retention` 的 `cloudManual` 作用域，与 runner 逐字同源；
+// 时间列本来这里就是 `COALESCE(published_at, created_at)`，是 runner 那份只认 `published_at` ——
+// 所以并口径之后**本端点行为一字未变**，变的是一次实测差（见 lib/retention 注释与 ISSUES B101/B102）。
+const { countSql: retainCountSql, deleteSql: retainDeleteSql } = require('../lib/retention');
 async function cleanupArticles(cutoff, { preview = false } = {}) {
-  if (preview) return qOne(`SELECT COUNT(*) c FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);
-  return qRun(`DELETE FROM articles WHERE ${ARTICLE_CLEAN_WHERE}`, [cutoff]);
+  return preview
+    ? qOne(retainCountSql('cloudManual', 'retention'), [cutoff])
+    : qRun(retainDeleteSql('cloudManual', 'retention'), [cutoff]);
 }
 
 function cutoffIso(days) {

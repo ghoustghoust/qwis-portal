@@ -137,3 +137,62 @@ test('R4 W17 派生判据自证：坏形态必红、级联与注释里的反例�
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// ⑥a（B102 残余 / W17 豁免摘除）：管理台那份谓词并进 `POLICY.cloudManual` 之后，
+// **必须逐行证明"云端行为一字未变"** —— 并口径最容易骗人的地方就是"看起来只是搬了个常量"。
+// 所以这里不是文本比对：拿同一批夹具，用**改前那份 SQL** 与**改后 lib 生成的 SQL**各查一次，
+// 选中的行集合必须完全相同（旧文本是本轮从 `api/[...slug].js` 里原样抄出来的，改错了这里就红）。
+test('R5 ⑥a 行为锁：云端「内容清理」并一份谓词后，选中的行与改前逐行相同，且 W17 豁免已摘', () => {
+  const r = ret();
+  const OLD_TEXT = `COALESCE(published_at, created_at) < ? AND read_at IS NULL AND later=0 AND COALESCE(featured,0)=0
+       AND source_id NOT IN (SELECT id FROM sources WHERE type='hotlist')`;
+  const cutoff = daysAgoIso(7);
+  db.exec('BEGIN');
+  try {
+    db.prepare("INSERT OR REPLACE INTO sources(id,name,type) VALUES(98001,'R5 热榜','hotlist'),(98002,'R5 普通','rss')").run();
+    const rows = [
+      // id, source, published_at, created_at, read_at, later, featured —— 第 3 条是这次并口径的关键：
+      // 缺 published_at 但 created_at 已过期（旧口径 NULL < ? 不成立 → 永不删；COALESCE 口径 → 删）
+      [98101, 98002, daysAgoIso(9), daysAgoIso(9), null, 0, 0],
+      [98102, 98002, daysAgoIso(9), daysAgoIso(9), daysAgoIso(1), 0, 0],
+      [98103, 98002, null, daysAgoIso(9), null, 0, 0],
+      [98104, 98002, daysAgoIso(9), daysAgoIso(9), null, 1, 0],
+      [98105, 98002, daysAgoIso(9), daysAgoIso(9), null, 0, 1],
+      [98106, 98001, daysAgoIso(9), daysAgoIso(9), null, 0, 0],
+      [98107, 98002, daysAgoIso(2), daysAgoIso(2), null, 0, 0],
+    ];
+    const cols = '(id,source_id,published_at,created_at,read_at,later,featured)';
+    for (const a of rows) {
+      db.prepare(`INSERT OR REPLACE INTO articles ${cols} VALUES (?,?,?,?,?,?,?)`).run(...a);
+    }
+    const idsOf = (sql) => db.prepare(sql).all(cutoff).map((x) => x.id).sort();
+    const before = idsOf(`SELECT id FROM articles WHERE ${OLD_TEXT}`);
+    const after = idsOf(r.countSql('cloudManual', 'retention').replace('COUNT(*) c', 'id'));
+    assert.deepEqual(after, before, `并一份谓词后云端选中的行变了：改前 ${JSON.stringify(before)} / 改后 ${JSON.stringify(after)}`);
+    assert.ok(before.includes(98101) && before.includes(98103),
+      `夹具没覆盖到关键行（老未读 98101 与缺发布时间 98103 都该被选中）：${JSON.stringify(before)}`);
+    assert.ok(!before.includes(98102) && !before.includes(98104) && !before.includes(98105),
+      `豁免行被选中了：${JSON.stringify(before)}`);
+    assert.ok(!before.includes(98106), '热榜源不该出现在普通保留清理分支（与热榜分支重复删同一批）');
+    // 三端时间列必须同一条（漂的就是这个）
+    for (const key of ['hotlist', 'retention']) {
+      assert.match(r.deleteSql('runner', key), /COALESCE\(published_at, created_at\) < \?/,
+        `runner ${key} 分支的时间列又不是 COALESCE 了 —— 两份口径会重新分叉`);
+      assert.equal(r.deleteSql('cloudManual', key), r.deleteSql('runner', key),
+        `cloudManual/${key} 与 runner/${key} 分叉（AGENTS §1）`);
+    }
+  } finally {
+    db.prepare('DELETE FROM articles WHERE id BETWEEN 98101 AND 98107').run();
+    db.prepare('DELETE FROM sources WHERE id IN (98001,98002)').run();
+    db.exec('ROLLBACK');
+  }
+  // 豁免摘掉 + 判据仍不红（红了就等于把第二份谓词放回来了）
+  const root = path.join(__dirname, '..');
+  const v = r.findRetentionViolations(root);
+  assert.deepEqual(Object.keys(r.PENDING_UNIFY), [], 'W17 还有整文件豁免 —— 那个文件里新写的第二份谓词会被一起放过');
+  assert.deepEqual(v.violations.map((x) => `${x.file}:${x.line}`), [], `派生扫描抓到未走唯一实现的删除点：${JSON.stringify(v.violations)}`);
+  assert.ok(!v.pending.includes('api/[...slug].js'), 'api/[...slug].js 仍在 pending 清单里');
+  const slug = fs.readFileSync(path.join(root, 'api', '[...slug].js'), 'utf8');
+  assert.ok(!/ARTICLE_CLEAN_WHERE/.test(slug), '管理台又自带了一份 ARTICLE_CLEAN_WHERE');
+  assert.match(slug, /require\('\.\.\/lib\/retention'\)/, 'api/[...slug].js 不再引用 lib/retention = 唯一实现成了空话');
+});
