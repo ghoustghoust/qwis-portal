@@ -1,144 +1,178 @@
 {
   "report": {
-    "id": 53,
-    "generated_at": "2026-09-20T06:04:04.101Z",
-    "window_hours": 24,
+    "id": 56,
+    "generated_at": "2026-09-21T06:01:46.352Z",
+    "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
+        "items": [
+          {
+            "id": 298487,
+            "title": "这篇文章，让我看到了美国市场的新机会",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654908559&idx=1&sn=93a1ec56f0cfb8e9ca8e3de23664917c",
+            "source": "笔记侠",
+            "published_at": "2026-09-20T14:13:00.000Z",
+            "score": null,
+            "summary": "在去年的笔记侠PPE（政经哲）课程美国站，一位斯坦福经济学教授说：“中国企业真正能抓住的是中美之间仍然存在的结构性缝隙：需求在美国，供应链和运营能力在中国。”",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=24717501&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8b91BQ8yFl0ibdvMpQTZxaavaKrDU3dX8P0A4sx9oBWt7Y3ACt18OsR39rQ9LcMNOh23aUUNHrubIwzlVZ63K7e078XP3ZAYwDQqIkyzND3I%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 272731,
-            "title": "Does AI need an antitrust exemption so it doesn’t kill everyone????",
-            "url": "https://www.theverge.com/podcast/997382/openai-microsoft-anthropic-elon-musk-cartel-ai-competition",
-            "source": "The Verge",
-            "source_name": "The Verge",
-            "published_at": "2026-09-19T14:00:00.000Z",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/DCD_2026-09-19_Kanter.jpg?quality=90&strip=all&crop=0,0,100,100",
-            "totalScore": 61,
-            "score": 61,
-            "scores": {
-              "选题": 8,
-              "内容": 6,
-              "深度": 7,
-              "实用": 4,
-              "创新": 7,
-              "表达": 6
-            },
-            "kind": "article",
-            "reason": "反垄断与AI监管的前沿碰撞，前司法部高官视角解读巨头卡特尔风险，话题热度与政策敏感度高",
-            "summary": "The Verge播客访谈美国司法部前反垄断负责人Jonathan Kanter，探讨AI巨头要求反垄断豁免以协调安全标准背后的监管俘获、卡特尔化风险。Anthropic、Google DeepMind研究者陆续离职警示AI威胁，部分CEO呼吁放慢发展并寻求豁免，引发市场对其借机规避IPO压力的质疑。",
-            "quote": "antitrust exemptions so they can all coordinate on safety issues",
-            "points": [
-              "AI巨头以安全为由请求反垄断豁免，被指可能构成监管俘获和卡特尔行为",
-              "Anthropic、Google DeepMind研究者以离职方式警示AI安全风险",
-              "市场对科技CEO诉求的动机存疑，或借此规避投资者压力与IPO预期"
-            ],
-            "tags": [
-              "AI监管",
-              "反垄断"
-            ],
-            "translated": false
+            "id": 306877,
+            "title": "DIY Jev",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wlu9rd/diy_jev/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:59:59.000Z",
+            "score": null,
+            "summary": "So this jev thingy is getting kind of big... tbh it seems overhyped by a large margin, but here we are. Not that its bad, just feels like we usually ignored larger things...",
+            "cover": "https://preview.redd.it/5t9y5uqczqqh1.png?width=140&height=53&auto=webp&s=53c55c8c5f6c66d88d41589823f84a9f05790a99"
           },
           {
-            "id": 272733,
-            "title": "The AI regulation smackdown isn’t over",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/997706/the-ai-regulation-smackdown-isnt-over",
-            "source": "The Verge",
-            "source_name": "The Verge",
-            "published_at": "2026-09-19T13:00:00.000Z",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/STK481_STK432_CONGRESS_GOVERNMENT_CIVRGINIA_C.jpg?quality=90&strip=all&crop=0,0,100,100",
-            "totalScore": 56,
-            "score": 56,
-            "scores": {
-              "选题": 7,
-              "内容": 6,
-              "深度": 5,
-              "实用": 5,
-              "创新": 6,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "AI头部企业集体转向支持监管，标志性事件，适合关注政策风向的读者。",
-            "summary": "本周AI行业格局出现微妙转变：Anthropic CEO Dario Amodei提出三步走监管方案，获Sam Altman、Demis Hassabis、Elon Musk等多位科技巨头公开支持。第三方评估介入实验室、行业协同与国际协议成为共识方向，AI治理进入加速期。",
-            "quote": "At the start of this week, the who's-who of AI seemed - at least tentatively - on the side of AI regulation.",
-            "points": [
-              "Anthropic提出三步监管计划，核心是嵌入第三方评估员",
-              "OpenAI、Google DeepMind、SpaceX CEO公开支持监管框架",
-              "AI行业从技术竞速转向治理共识，政策窗口正在打开"
-            ],
-            "tags": [
-              "AI监管",
-              "科技政策"
-            ],
-            "translated": false
+            "id": 306878,
+            "title": "Success running Qwen 3.8 27B EXL3 on RTX 3060 + 5060 Ti",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wlu9pd/success_running_qwen_38_27b_exl3_on_rtx_3060_5060/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:59:57.000Z",
+            "score": 65,
+            "summary": "Average tk/s: 50, and this is using MTP so it varies a lot between 40 and 60 but it mostly floats at 50. Without MTP it goes down to 22 tk/s.",
+            "cover": null
           },
           {
-            "id": 272867,
-            "title": "AIHOT 日报 · 2026-09-19 — Qwen 发布 Qwen3.8-LiveTranslate 实时同传模型，LAAL 降至 2.3 秒",
-            "url": "https://aihot.news/daily/2026-09-19",
-            "source": "AIHOT 日报",
-            "source_name": "AIHOT 日报",
-            "published_at": "2026-09-19T00:00:11.000Z",
-            "cover": null,
-            "totalScore": 38,
-            "score": 38,
-            "scores": {
-              "选题": 7,
-              "内容": 2,
-              "深度": 2,
-              "实用": 3,
-              "创新": 5,
-              "表达": 4
-            },
-            "kind": "article",
-            "reason": "Qwen实时同传模型刷新LAAL纪录，技术突破明确，但正文仅含链接，无实质内容解析，信息密度严重不足。",
-            "summary": "阿里通义千问团队发布Qwen3.8-LiveTranslate实时同传模型，将首词延迟（LAAL）降至2.3秒，接近人类同传水平。该日报为AIHOT每日资讯汇总，正文仅提供原文链接，缺乏技术细节、应用场景及行业影响分析，读者需跳转外部链接获取完整信息。",
-            "quote": "LAAL 降至 2.3 秒",
-            "points": [
-              "Qwen发布实时同传模型，核心指标LAAL达2.3秒",
-              "日报形式为资讯聚合，非独立深度分析",
-              "原文内容极度简略，仅引导跳转链接"
-            ],
-            "tags": [
-              "同传翻译",
-              "模型更新"
-            ],
-            "translated": false
+            "id": 306879,
+            "title": "My AI Memory system has been fully updated after a few months",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wltze2/my_ai_memory_system_has_been_fully_updated_after/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:48:13.000Z",
+            "score": null,
+            "summary": "My memory system has been fully upgraded to version 2.0, making it full in parity with the internal current memory system.",
+            "cover": null
           },
           {
-            "id": 272735,
-            "title": "Virginia governor creates an AI task force and moves to restrain data centers",
-            "url": "https://www.theverge.com/policy/997573/virginia-governor-spanberger-data-center-ai-task-force",
-            "source": "The Verge",
-            "source_name": "The Verge",
-            "published_at": "2026-09-18T18:29:17.000Z",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2295948062.jpg?quality=90&strip=all&crop=0,0,100,100",
-            "totalScore": 54,
-            "score": 54,
-            "scores": {
-              "选题": 7,
-              "内容": 6,
-              "深度": 5,
-              "实用": 4,
-              "创新": 5,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "弗吉尼亚州全球数据中心之都的政策转向值得关注，但报道偏资讯罗列，缺乏深度分析。",
-            "summary": "弗吉尼亚州州长Abigail Spanberger签署行政命令22号，成立AI特遣队并限制数据中心扩张，赋予地方政府更多话语权。措施包括禁止官员签署保密协议、加速噪音监管、审查备用发电设施，反映AI基础设施扩张引发的政策博弈。",
-            "quote": "Virginia is already home to the data center capital of the world.",
-            "points": [
-              "弗吉尼亚州为全球数据中心最密集区域，政策转向具有标杆意义",
-              "行政命令22号禁止官员签署数据中心项目保密协议",
-              "新设AI特遣队评估政府对AI风险应对策略"
-            ],
-            "tags": [
-              "AI政策",
-              "数据中心"
-            ],
-            "translated": false
+            "id": 316670,
+            "title": "Albanese launches bid for UN security council seat and names former Murdoch aide to top diplomatic post",
+            "url": "https://www.theguardian.com/australia-news/2026/sep/21/anthony-albanese-un-security-council-bid-siobhan-mckenna-news-corp-consul-general-ntwnfb",
+            "source": "World news | The Guardian",
+            "published_at": "2026-09-20T21:45:37.000Z",
+            "score": null,
+            "summary": "Australia and Finland are vying for a spot on the council, and the PM needs two thirds of member states to back him",
+            "cover": null
+          },
+          {
+            "id": 314393,
+            "title": "Poison suspected in deaths of ten lions in game reserve in Tanzania",
+            "url": "https://www.npr.org/2026/09/20/nx-s1-5975478/poison-suspected-in-deaths-of-ten-lions-in-game-reserve-in-tanzania",
+            "source": "NPR Topics: World",
+            "published_at": "2026-09-20T21:39:24.000Z",
+            "score": null,
+            "summary": "The lions were found dead inside the Ngorongoro Conservation Area, a popular wildlife reserve in Tanzania. Deaths raise concerns over wildlife poisonings in East Africa.",
+            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5266x3511+0+0/resize/5266x3511!/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F11%2F81%2F8aa962b54221ad8ec82e05992ed3%2Fap652341088737.jpg"
+          },
+          {
+            "id": 309071,
+            "title": "早知天下事〔2026.09.21〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650239936&idx=1&sn=05ba9c4e0fca94dbf434d2f7ecba8b74",
+            "source": "新华社",
+            "published_at": "2026-09-20T21:30:00.000Z",
+            "score": null,
+            "summary": "中共中央办公厅、国务院办公厅印发《关于分类推进高校改革的意见》，对分类推进高校改革作出系统部署。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c540f875&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIQQGgRJtIfg5ARqSobKOgqZNGYlSpcZpzrwCm3ibqPoTA2eye9kK3gGoQay3iaKEMdxZnhbKA2ppWPGNOkgdn40FrEuUJKjtGSFg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 304722,
+            "title": "Australia news live: Albanese names former News Corp executive as consul-general in New York",
+            "url": "https://www.theguardian.com/australia-news/live/2026/sep/21/anthony-albanese-new-york-jim-chalmers-intergenerational-report-coalition-one-nation-ntwnfb",
+            "source": "World news | The Guardian",
+            "published_at": "2026-09-20T21:23:13.000Z",
+            "score": null,
+            "summary": "Get our breaking news email, free app or daily news podcast",
+            "cover": null
+          },
+          {
+            "id": 305852,
+            "title": "Man, 82, dies after beach fight with 76-year-old over sunlounger in Greece",
+            "url": "https://www.bbc.co.uk/news/articles/cqm27pnyd294o?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-09-20T21:17:22.000Z",
+            "score": null,
+            "summary": "One eyewitness said the scene was so chaotic that screaming could be heard from the other end of the beach.",
+            "cover": null
+          },
+          {
+            "id": 306881,
+            "title": "Speed-up Kimi K3(2.8T) on a 16x GB10 Cluster — 30 t/s coding throughput, 136 t/s concurrency peak.",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wlt577/speedup_kimi_k328t_on_a_16x_gb10_cluster_30_ts/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:14:05.000Z",
+            "score": null,
+            "summary": "​I wanted to share a quick update and performance video running the full Moonshot AI Kimi K3 (moonshotai/Kimi-K3) model across my 16x GB10 cluster.",
+            "cover": "https://external-preview.redd.it/NGFscDlwdDVycXFoMe1KrUT1Ky-V_6gR0jQRgYzrTVkCct41JKiKPrxLse5m.jpeg?width=640&crop=smart&auto=webp&s=c0e751f91e288a0230ccc07f60f072610e5600c4"
+          },
+          {
+            "id": 306882,
+            "title": "Ling 3.0 Tiny vs. Gemma 26B-A4B MoE",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wlt33y/ling_30_tiny_vs_gemma_26ba4b_moe/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:11:51.000Z",
+            "score": null,
+            "summary": "My audiobook pipeline has to decide who speaks each line of dialogue in a novel, so the TTS can cast a voice per character. It runs on Gemma 4 26B-A4B (QAT Q4) with the experts parked in system RAM. L",
+            "cover": null
+          },
+          {
+            "id": 306883,
+            "title": "Simple optimization in Linux 7.4 improves VFS do_open() (open a file for reading) performance by up to 39%",
+            "url": "https://www.reddit.com/r/linux/comments/1wlt2yp/simple_optimization_in_linux_74_improves_vfs_do/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:11:42.000Z",
+            "score": null,
+            "summary": "&#32; submitted by &#32; /u/anh0516 &#32; to &#32; r/linux [link] &#32; [comments]",
+            "cover": null
+          },
+          {
+            "id": 306884,
+            "title": "gzip 1.15 released",
+            "url": "https://www.reddit.com/r/linux/comments/1wlt0f9/gzip_115_released/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:08:59.000Z",
+            "score": null,
+            "summary": "&#32; submitted by &#32; /u/anh0516 &#32; to &#32; r/linux [link] &#32; [comments]",
+            "cover": null
+          },
+          {
+            "id": 310469,
+            "title": "Nobody pays for FOSS, we can force them to",
+            "url": "https://seldo.com/posts/nobody-pays-for-open-source-we-can-force-them-to/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-09-20T21:04:32.000Z",
+            "score": null,
+            "summary": "Article URL: https://seldo.com/posts/nobody-pays-for-open-source-we-can-force-them-to/",
+            "cover": null
+          },
+          {
+            "id": 306885,
+            "title": "Postulate: Context compaction is good for Quantized models",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wlss89/postulate_context_compaction_is_good_for/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-20T21:00:17.000Z",
+            "score": null,
+            "summary": "For quantized models, the quantization error propagates across the context size.",
+            "cover": "https://preview.redd.it/kq59lruflqqh1.png?width=320&crop=smart&auto=webp&s=05be5ee06166c11488e05b4f6e0aaecaa8ddb5b5"
+          },
+          {
+            "id": 310919,
+            "title": "Qatar PM urges Gulf security framework with Iran",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/20/qatar-pm-urges-gulf-security-framework-with-iran?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-20T21:00:15.000Z",
+            "score": null,
+            "summary": "Qatar’s PM says, the Gulf won&#039;t be the same unless there&#039;s a framework ensuring no one is a threat to each other.",
+            "cover": null
           }
         ]
       },
@@ -147,105 +181,134 @@
         "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
         "items": [
           {
-            "id": 272978,
-            "title": "27B模型分分钟交付网页，Qwen 3.8还是太能了",
-            "url": "https://www.qbitai.com/2026/09/492573.html",
-            "source": "量子位博客",
-            "source_name": "量子位博客",
-            "published_at": "2026-09-19T11:43:12.000Z",
-            "cover": null,
-            "totalScore": 40,
-            "score": 40,
-            "scores": {
-              "选题": 6,
-              "内容": 4,
-              "深度": 3,
-              "实用": 5,
-              "创新": 6,
-              "表达": 6
-            },
-            "kind": "article",
-            "reason": "选题紧跟大模型应用热点，但内容过于简略，信息密度不足，缺乏深度分析与实用细节。",
-            "summary": "报道Qwen 3.8（27B参数）在网页设计与前端开发上的能力，可快速生成完整页面，但需开发者自行补充后端逻辑。",
-            "quote": "设计、前端一口气全干了，结果后端没来上班",
-            "points": [
-              "Qwen 3.8 具备从设计到前端的完整网页生成能力",
-              "27B参数模型可在短时间内交付可用页面",
-              "前后端分离场景下仍需人工介入后端开发"
-            ],
-            "tags": [
-              "大模型",
-              "前端开发",
-              "Qwen"
-            ],
-            "translated": false
+            "id": 312681,
+            "title": "Show HN: AgentTrace–Observability and runtime self-healing engine for AI agents",
+            "url": "https://github.com/mohitkumar188/AgentTrace",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-20T21:24:17.000Z",
+            "score": null,
+            "summary": "Article URL: https://github.com/mohitkumar188/AgentTrace",
+            "cover": null
           },
           {
-            "id": 272768,
-            "title": "AI hallucination nearly triggers US military operation",
-            "url": "https://techcrunch.com/2026/09/18/ai-hallucination-nearly-triggers-us-military-operation/",
-            "source": "TechCrunch",
-            "source_name": "TechCrunch",
-            "published_at": "2026-09-18T23:12:32.000Z",
-            "cover": null,
-            "totalScore": 38,
-            "score": 38,
-            "scores": {
-              "选题": 9,
-              "内容": 4,
-              "深度": 3,
-              "实用": 5,
-              "创新": 4,
-              "表达": 4
-            },
-            "kind": "article",
-            "reason": "AI幻觉险些触发美军行动的稀缺事件，但文章篇幅过短、信息密度不足，缺乏深度分析。",
-            "summary": "GovAI研究学者警告称，服务成员需了解大语言模型固有的不确定性。该文报道了一起因AI幻觉几乎导致美国军事行动的事件，突显了AI在高风险决策场景中的潜在风险。",
-            "quote": "It’s important for service members to understand the uncertainty inherent to LLMs",
-            "points": [
-              "AI幻觉可能引发真实军事风险",
-              "大语言模型存在固有不确定性",
-              "军方需提高对AI局限性的认知"
-            ],
-            "tags": [
-              "AI安全",
-              "国防科技"
-            ],
-            "translated": false
+            "id": 303216,
+            "title": "Show HN: Openmsg, agent-to-agent talk while they run, Claude<>Codex<>OpenCode",
+            "url": "https://github.com/marciob/openmsg",
+            "source": "Show HN",
+            "published_at": "2026-09-20T20:10:39.000Z",
+            "score": 52,
+            "summary": "Article URL: https://github.com/marciob/openmsg",
+            "cover": null
           },
           {
-            "id": 272772,
-            "title": "World model companies are keeping a lot of secrets",
-            "url": "https://techcrunch.com/2026/09/18/world-model-companies-are-keeping-a-lot-of-secrets/",
-            "source": "TechCrunch",
-            "source_name": "TechCrunch",
-            "published_at": "2026-09-18T20:18:14.000Z",
-            "cover": null,
-            "totalScore": 34,
+            "id": 312495,
+            "title": "Why MCP Was Always a Bad Idea?",
+            "url": "https://maharship.com/blog/why-mcp-was-always-a-bad-idea/",
+            "source": "Hacker News",
+            "published_at": "2026-09-20T19:44:40.000Z",
+            "score": null,
+            "summary": "Comments",
+            "cover": null
+          },
+          {
+            "id": 303222,
+            "title": "Show HN: Agentic OS: one Rust Linux binary, one SQLite and sandbox per actor",
+            "url": "https://github.com/mmeyerlein/meclaw/",
+            "source": "Show HN",
+            "published_at": "2026-09-20T19:07:07.000Z",
+            "score": null,
+            "summary": "Article URL: https://github.com/mmeyerlein/meclaw/",
+            "cover": null
+          },
+          {
+            "id": 304568,
+            "title": "Gear - 让 Agent 用 Jev 的价格达成 Astra 的性能",
+            "url": "https://www.v2ex.com/t/1243493#reply0",
+            "source": "V2EX · 技术",
+            "published_at": "2026-09-20T16:25:12.000Z",
+            "score": null,
+            "summary": "尝试写了一个自进化的基建 Gear - General Evolution ARchitecture ，只要给定一个 benchmark ，Gear 就会自动优化出一套最适合当前场景的 harness 。",
+            "cover": null
+          },
+          {
+            "id": 293563,
+            "title": "我就说 tw93 老师有匠人精神，德艺双馨，没错吧！",
+            "url": "https://x.com/vista8/status/2101701540696485901",
+            "source": "向阳乔木(@vista8)",
+            "published_at": "2026-09-20T15:54:29.000Z",
+            "score": 62,
+            "summary": "我就说 tw93 老师有匠人精神，德艺双馨，没错吧！Tw93@HiTw93这段时间我在做一个“蠢事情”，或者也是 AI 时代工程师非常不愿意做的事情，非常重复的事。为了让 Mole 的卸载软件更加彻底，清理残余的能力更加厉害，我整理了国内外 300 多款 Mac 软件，下载下来差不多 100 多个 G，分成 30 组，让我的最强 Extra High Fast 模型每次 10 个借助 comput",
+            "cover": "https://pbs.twimg.com/profile_images/1960753219115868169/EOxKSK4w_normal.jpg"
+          },
+          {
+            "id": 293564,
+            "title": "可以让Codex帮你安装插件和脚本：https://t.co/wfm1mDvX8L",
+            "url": "https://x.com/vista8/status/2101695605525672169",
+            "source": "向阳乔木(@vista8)",
+            "published_at": "2026-09-20T15:30:54.000Z",
             "score": 34,
-            "scores": {
-              "选题": 6,
-              "内容": 4,
-              "深度": 3,
-              "实用": 3,
-              "创新": 5,
-              "表达": 5
-            },
-            "kind": "article",
-            "reason": "切入世界模型行业保密现状的观察角度新颖，但正文过于简略，缺乏实质信息支撑。",
-            "summary": "文章指出World Model领域公司普遍高度保密，创始人乃至数据供应商都拒绝透露具体产品细节，反映了该赛道资本热度高但透明度低的矛盾现象。",
-            "quote": "Everyone in the world-models space is sitting on a pile of cash and a ton of buzz, but good luck getting anyone — from the founders to their own data suppliers — to tell you what they're actually buil",
-            "points": [
-              "World Model赛道公司普遍资金充裕、话题热度高",
-              "从创始人到数据供应商均拒绝透露实际产品内容",
-              "行业整体处于高度保密状态"
-            ],
-            "tags": [
-              "世界模型",
-              "AI行业",
-              "商业保密"
-            ],
-            "translated": false
+            "summary": "可以让Codex帮你安装插件和脚本：github.com/joeseesun/qiao…💬0🔄1❤️4👀620📊1⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 301127,
+            "title": "因果结构模型简论",
+            "url": "https://dreams.plus/blog/2026/0005-yin-guo-jie-gou-mo-xing-jian-lun",
+            "source": "Lex Blog",
+            "published_at": "2026-09-20T15:05:13.000Z",
+            "score": 67,
+            "summary": "为什么概率论不足以回答因果问题？设 X,YX, Y 为两个随机变量，概率论所能给出的全部工具是联合分布 P(X,Y)P(X,Y)、条件分布 P(Y∣X)P(Y\\mid X)，以及由此导出的独立性关系 X⊥ ⁣ ⁣ ⁣⊥YX \\perp\\!\\!\\!\\perp Y。这套语言在数学上是自洽的，但存在一个根本性的表达力缺陷：概率分布对「对称性」是不敏感的。若已知 P(X,Y)P(X,Y)，则 P(Y∣X)",
+            "cover": null
+          },
+          {
+            "id": 312246,
+            "title": "All about GIS · 23",
+            "url": "http://127.0.0.1:5201/post/all-about-gis--23",
+            "source": "GISerlab · 地理空间",
+            "published_at": "2026-09-20T14:54:04.000Z",
+            "score": null,
+            "summary": "**All about GIS** 一个关于GIS的开源信息合集。 仓库[^1] 网站[^2] --- [TOC] ## 文章 ### 基于PI的跨设备AutoResearch Agent：底座搭建与试...",
+            "cover": null
+          },
+          {
+            "id": 291466,
+            "title": "OpenAgent：一个 exe 就能跑的自托管 AI Agent 平台， Windows 上不用 Docker 也不用 WSL",
+            "url": "https://www.v2ex.com/t/1243479#reply0",
+            "source": "V2EX · 创意",
+            "published_at": "2026-09-20T14:48:29.000Z",
+            "score": 52,
+            "summary": "自我介绍一下：我是 Casbin 开源社区的，OpenAgent 是我们在做的一个自托管 AI Agent 平台，Go + React ，Apache 2.0 ，现在 5.6k star 。",
+            "cover": null
+          },
+          {
+            "id": 293567,
+            "title": "发现大家还是喜欢看AI相关的内容，机器人都觉得还早...\r\n\r\n但看官方的直播和演示视频，又觉得很厉害，感觉很奇妙。\r\n\r\n大模型看来还远远没卷到头，没真正覆盖到具身智能。",
+            "url": "https://x.com/vista8/status/2101680577422451194",
+            "source": "向阳乔木(@vista8)",
+            "published_at": "2026-09-20T14:31:11.000Z",
+            "score": null,
+            "summary": "发现大家还是喜欢看AI相关的内容，机器人都觉得还早...但看官方的直播和演示视频，又觉得很厉害，感觉很奇妙。大模型看来还远远没卷到头，没真正覆盖到具身智能。向阳乔木@vista8x.com/i/article/2101…🔗 View Quoted Tweet💬2🔄0❤️1👀1907📊2⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg"
+          },
+          {
+            "id": 291554,
+            "title": "这段时间我在做一个“蠢事情”，或者也是 AI 时代工程师非常不愿意做的事情，非常重复的事。\r\n\r\n为了让 Mole 的卸载软件更加彻底，清理残余的能力更加厉害，我整理了国内外 300 多款 Mac 软件，...",
+            "url": "https://x.com/HiTw93/status/2101676087222964545",
+            "source": "Tw93(@HiTw93)",
+            "published_at": "2026-09-20T14:13:21.000Z",
+            "score": 62,
+            "summary": "这段时间我在做一个“蠢事情”，或者也是 AI 时代工程师非常不愿意做的事情，非常重复的事。为了让 Mole 的卸载软件更加彻底，清理残余的能力更加厉害，我整理了国内外 300 多款 Mac 软件，下载下来差不多 100 多个 G，分成 30 组，让我的最强 Extra High Fast 模型每次 10 个借助 computer use 的能力去对应官网下载，然后依次安装到我的电脑，检查目录、检查",
+            "cover": null
+          },
+          {
+            "id": 291509,
+            "title": "[酷工作] [北/上/深] 顶级 vc+AI 独角兽高薪招聘 大模型/agent 算法、infra、评测",
+            "url": "https://www.v2ex.com/t/1243473#reply0",
+            "source": "V2EX",
+            "published_at": "2026-09-20T14:07:08.000Z",
+            "score": null,
+            "summary": "顶级 vc 投资，全球知名 AI 科学院带队 AGI 创业公司。 团队均来自大厂和 ai 头部公司核心团队，精英文化，扁平做事。 创始人具备成功的 ai 产品研究和落地经验。 地点：北、上、深 邮箱： jxiao@hiringby.com wei：15210750729",
+            "cover": null
           }
         ]
       },
@@ -254,319 +317,115 @@
         "desc": "",
         "items": [
           {
-            "id": 272740,
-            "title": "FCC lets Paramount sell 49.5% equity stake to Saudi Arabia, UAE, and Qatar",
-            "url": "https://arstechnica.com/tech-policy/2026/09/fcc-lets-paramount-sell-49-5-equity-stake-to-saudi-arabia-uae-and-qatar/",
-            "source": "Ars Technica",
-            "source_name": "Ars Technica",
-            "published_at": "2026-09-18T17:57:41.000Z",
-            "cover": null,
-            "totalScore": 72,
-            "score": 72,
-            "scores": {
-              "选题": 8,
-              "内容": 7,
-              "深度": 5,
-              "实用": 6,
-              "创新": 7,
-              "表达": 8
-            },
-            "kind": "article",
-            "reason": "FCC罕见批准近50%外资持股，中东资本深度介入美国主流媒体，折射地缘政治与传媒格局双重变局，信息量充足且时效性强。",
-            "summary": "FCC批准Paramount Skydance向沙特、阿联酋、卡塔尔主权财富基金出售49.5%股权，外资持股比例突破美国广播法25%上限。此举系Paramount收购Warner Bros. Discovery（1110亿美元）融资方案的一部分，目前该并购案仍面临州诉讼阻挠，但司法部已批准。",
-            "quote": "Under US law, companies with licenses to run broadcast stations need FCC approval to have direct or indirect foreign ownership exceeding 25 percent of the company's stock.",
-            "points": [
-              "FCC批准Paramount突破25%外资持股上限，间接外资将高达49.5%",
-              "交易资金部分来源于沙特、阿联酋、卡塔尔主权财富基金",
-              "Paramount拟1110亿美元收购Warner Bros. Discovery，并购案仍面临州诉讼挑战"
-            ],
-            "tags": [
-              "传媒并购",
-              "中东资本"
-            ],
-            "translated": false
+            "id": 292534,
+            "title": "苹果 iPhone 安全神话被打破：币圈应用FomoPeek沙盒逃逸读取了其他APP私钥",
+            "url": "https://blog.renfei.net/posts/1626402130325676145",
+            "source": "任霏的个人博客网站",
+            "published_at": "2026-09-20T14:20:11.000Z",
+            "score": 78,
+            "summary": "2026 年 9 月 19 日，慢雾联合 OKX 安全团队披露：iOS 应用 FomoPeek 1.1、1.2 版本内置一套 iOS 内核攻击框架，可突破沙盒读取并解密系统 Keychain，导致私钥、助记词、登录凭证泄露。受影响 iOS 版本为 12.0～18.7 与 26.0～26.1。",
+            "cover": null
           },
           {
-            "id": 272741,
-            "title": "Finding the cells that put our brain to sleep",
-            "url": "https://arstechnica.com/science/2026/09/finding-the-cells-that-put-our-brain-to-sleep/",
-            "source": "Ars Technica",
-            "source_name": "Ars Technica",
-            "published_at": "2026-09-18T17:49:50.000Z",
-            "cover": null,
-            "totalScore": 66,
-            "score": 66,
-            "scores": {
-              "选题": 8,
-              "内容": 7,
-              "深度": 6,
-              "实用": 4,
-              "创新": 8,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "Nature新研究推翻睡眠经典认知，发现大脑皮层中存在可自主触发睡眠的特殊神经元群，颠覆性显著。",
-            "summary": "传统观点认为睡眠由大脑深部区域控制，皮层仅被动响应。Nature最新研究发表在《自然》上，Al伯特·爱因斯坦医学院Geoffrey Terral团队发现，大脑皮层中仅占抑制性神经元约1%的一群特殊细胞，一旦被激活，即可在小鼠身上直接引发睡眠。这表明皮层不仅能感知慢波节律，还能自主发起并促成睡眠，彻底改写了对睡眠调控机制的理解。",
-            "quote": "What our work shows is that the cortex can not only see this rhythm but also initiate it by itself, and this is sufficient to promote sleep.",
-            "points": [
-              "大脑皮层中发现一类仅需激活即可触发睡眠的特殊抑制性神经元",
-              "该发现颠覆了睡眠由深部脑区单向控制的经典理论",
-              "这类细胞仅占皮层抑制性神经元的约1%，却足以独立启动睡眠"
-            ],
-            "tags": [
-              "睡眠科学",
-              "神经科学"
-            ],
-            "translated": false
+            "id": 291917,
+            "title": "I said \"auto-regressive LLMs, in and of themselves, will not lead human-level AI\" \r\nThat statement is...",
+            "url": "https://x.com/ylecun/status/2101674561930510740",
+            "source": "Yann LeCun(@ylecun)",
+            "published_at": "2026-09-20T14:07:17.000Z",
+            "score": 78,
+            "summary": "I said &quot;auto-regressive LLMs, in and of themselves, will not lead human-level AI&quot; That statement is still totally true.First, the reasoning abilities of current AI systems are based non-auto",
+            "cover": null
           },
           {
-            "id": 272955,
-            "title": "《消逝的光芒：困兽》迎来一周年庆典，确认推出实体版",
-            "url": "https://www.gcores.com/articles/219854",
-            "source": "机核",
-            "source_name": "机核",
-            "published_at": "2026-09-18T16:00:00.000Z",
-            "cover": "https://image.gcores.com/265e330126ff34eb4d3b98e0a5f2c1db-1920-1080.jpg?x-oss-process=image/resize,limit_1,m_fill,w_626,h_292/quality,q_90",
-            "totalScore": 62,
+            "id": 295747,
+            "title": "为什么四成中国电车消费者非它不选？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU5ODU1Mjg5Nw==&mid=2247835038&idx=1&sn=4a58e1acecc9350aa8692d2a940c4ab6",
+            "source": "凤凰网财经",
+            "published_at": "2026-09-20T13:44:00.000Z",
+            "score": 75,
+            "summary": "2026年的中国车市，已经很少再谈&#34;新能源转型&#34;了 —— 转型正在进入收官阶段。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5e5fe931&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F7gwW91hORpqlmK9Kib3pNfhC5RZFscuYMJIe06UC1GnPrlkr3QYPviaOOB7jfd1su8FO8A8hSw7yuicnY1h7kUI2QCUCQsmEicjqnhibqeeBNnTs%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 296531,
+            "title": "广州储能龙头半年大赚超8亿元，同比暴增1025%",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjI3Njc0NTk4MQ==&mid=2650645835&idx=2&sn=4f2241beeb777ed092849a7b11c47530",
+            "source": "21世纪经济报道",
+            "published_at": "2026-09-20T15:04:00.000Z",
+            "score": 68,
+            "summary": "据ICC鑫椤数据，2026年上半年全球储能电池出货量达507.8GWh，同比增长97.5%。在这轮周期里，上半年鹏辉能源（300438.SZ）的营业收入增长了155.27%。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ef0f71df&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlXk9HhZzYAcQibiaYqwhibUoVV8pvliaqh4LUP8s15EZeLLG7DnY5cSCeX31oZWE5JoouR8ibo8gmNQNxUQu9jQibtl0PpSQZLsWsC1wONicMMYzzA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 296750,
+            "title": "方盒子成救市神器？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDU1Mzg3Mw==&mid=2651755387&idx=1&sn=20f171819eae542fde7b1dd4f7024c99",
+            "source": "中国新闻周刊",
+            "published_at": "2026-09-20T14:50:00.000Z",
+            "score": 68,
+            "summary": "近年来的各大车展上，新能源轿车、SUV、MPV的扎堆亮相已经不足为奇，各个细分市场赛道都十分拥挤。如今，硬派方盒子SUV赛道又异军突起。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fe78f148&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FoGLk9FLlibHc22csPRGwZrhzmxwKVT9RWvDXoFTIAicABBpJdEo0xZSlk1CL5Up16mHHRWYH94nW1BzIKbz8WH5TKI2P5nSq8jy46deiaD92MI%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 296533,
+            "title": "牛津经济研究院彭天琛：中短期看多科技股、生物医药，看空消费板块",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjI3Njc0NTk4MQ==&mid=2650645824&idx=2&sn=a2b1f315d393c63f1d4b77ae563b7626",
+            "source": "21世纪经济报道",
+            "published_at": "2026-09-20T14:32:00.000Z",
+            "score": 68,
+            "summary": "美联储三年来首次加息之后，美国劳动力市场又释放出韧性信号。美国劳工部9月17日公布的数据显示，截至9月12日当周，首次申请失业救济人数降至19.6万人，较前一周减少1万人，低于市场预期的20.8万人。尽管劳动节假期可能放大了单周数据的波动，但整体来看，美国企业裁员仍处于较低水平。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=87730d27&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlXk9HhZzYAeyPeH9buISCzIqkPScGxIzcciaUhzoa8rfFMCCepiax5WzOn77It04TzE4e6bqiaHVc9h9iaHcMVApJxR57r2H8icDfr0mPZjSunN0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 296527,
+            "title": "四年关店超800家！温州“皮鞋大王”实控人套现近4亿元，接盘方火线成立仅13天",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjI3Njc0NTk4MQ==&mid=2650645851&idx=1&sn=b2cc887d16506ccb5031d4126c0af146",
+            "source": "21世纪经济报道",
+            "published_at": "2026-09-20T15:46:00.000Z",
+            "score": 63,
+            "summary": "近日，温州“皮鞋大王”奥康国际（603001.SH）一连发了四份公告，将公司实控人的股权转让交易推至舆论的聚光灯下。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9e016306&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlXk9HhZzYAdJkxsMfHoriavDWJr8uJ12R1Oss8nuahglIKLDk3QhtbEY9icLu8gw1rTGuagPHAmyqmopTsTV38wGcsQPTrA5o3XcxhIvrQjTU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 291200,
+            "title": "Your AI agent failed. The model might not be the problem.",
+            "url": "https://thenewstack.io/nvidia-agent-debugging-safe/",
+            "source": "The New Stack",
+            "published_at": "2026-09-20T14:04:00.000Z",
+            "score": 63,
+            "summary": "As AI agents move into production, the path between a request and its result is becoming less predictable. An agent can choose its own tools and change course as it works, which makes failures harder ",
+            "cover": "https://cdn.thenewstack.io/media/2026/09/002a40b6-philippe-oursel-zaf-rhuyesy-unsplash-1024x683.jpg"
+          },
+          {
+            "id": 296528,
+            "title": "米酒成茶饮界网红爆款，湖北小城销售额猛增90%",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjI3Njc0NTk4MQ==&mid=2650645851&idx=2&sn=0009efb62c2484cd17106511eda21fa3",
+            "source": "21世纪经济报道",
+            "published_at": "2026-09-20T15:46:00.000Z",
             "score": 62,
-            "scores": {
-              "选题": 6,
-              "内容": 7,
-              "深度": 4,
-              "实用": 8,
-              "创新": 3,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "实体版确认+周年活动详览，信息完整、决策参考明确，适合玩家入手指南",
-            "summary": "《消逝的光芒：困兽》一周年确认推出三款实体版（标准版/SRG限量版/周年版），9月18日起在Super Rare Games开放预购。同时启动三周年庆典活动：双倍经验预热、社区目标解锁限定外观与武器、每日登录赠礼，数字版史低5折促销至9月26日。",
-            "quote": "现在正是游玩《消逝的光芒：困兽》的最佳时机。",
-            "points": [
-              "Techland与Super Rare Games合作推出三款实体版本，限量版含金属外盒与编号认证",
-              "三周年庆典活动含社区目标解锁、每日登录赠礼、周五专属武器领取",
-              "数字版全平台史低5折，系列合集包最高7折，促销至9月26日"
-            ],
-            "tags": [
-              "游戏",
-              "实体版"
-            ],
-            "translated": false
+            "summary": "9月16日，21世纪经济报道记者随“活力中国调研行”活动走进湖北孝感的米酒生产车间。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ab68e617&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlXk9HhZzYAcXZbSoubTiaTBH0gDic3aJgtCw67GmxJU5DCunvcpXejxxqa65py4VMq6cg3RhH6yKDzl1SaC0oOkxNN4JRTqHWsJDKeDw6OlYg%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 272806,
-            "title": "Forget the AI Slowdown—the Vulnerability Explosion Is Already Happening",
-            "url": "https://www.wired.com/story/kernel-panic-ai-vulnerability-explosion/",
-            "source": "Wired",
-            "source_name": "Wired",
-            "published_at": "2026-09-19T11:00:00.000Z",
-            "cover": null,
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 9,
-              "内容": 6,
-              "深度": 7,
-              "实用": 5,
-              "创新": 8,
-              "表达": 8
-            },
-            "kind": "article",
-            "reason": "直击AI安全盲区：当业界争论AI发展速度时，AI已在加速漏洞发现，选题精准且具预警价值。",
-            "summary": "文章指出AI实验室正考虑放慢开发节奏的行业协议，但与此同时，公开的AI聊天机器人已在帮助安全研究者们揭开大规模安全漏洞的浪潮，揭示了一个被忽视的现实风险。",
-            "quote": "Meanwhile, widely available AI chatbots are already helping uncover a tidal wave of security flaws.",
-            "points": [
-              "AI发展放缓讨论正火热，但AI安全影响已悄然加速",
-              "开源/公开AI工具正在降低漏洞发现门槛",
-              "安全行业面临双重变局：既受AI影响又因AI而变"
-            ],
-            "tags": [
-              "AI安全",
-              "漏洞爆发",
-              "Wired"
-            ],
-            "translated": false
-          },
-          {
-            "id": 272739,
-            "title": "FAA tees up $875M AI tool to help manage air traffic congestion",
-            "url": "https://arstechnica.com/ai/2026/09/faa-tees-up-875m-ai-tool-to-help-manage-air-traffic-congestion/",
-            "source": "Ars Technica",
-            "source_name": "Ars Technica",
-            "published_at": "2026-09-18T19:20:50.000Z",
-            "cover": null,
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 7,
-              "内容": 6,
-              "深度": 5,
-              "实用": 4,
-              "创新": 6,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "FAA首个AI空中交通管理系统部署进展，政府AI落地的标志性事件，关注后续全国推广节奏。",
-            "summary": "FAA计划9月21日起在华盛顿特区三大机场试点AI系统SMART，用于预测航班流量、识别潜在冲突。该系统综合航班时刻、天气、机场容量等因素辅助空管决策，成功后将覆盖全美2900万平方英里空域。专家评价分阶段推进是正确策略。",
-            "quote": "The decision to launch SMART in a limited scope before going nationwide is the 'right call.'",
-            "points": [
-              "SMART系统将在华盛顿特区三机场率先试点，逐步扩展至全国空域",
-              "AI模型用于预测航班流量并识别潜在冲突",
-              "分阶段部署策略获前FAA顾问认可"
-            ],
-            "tags": [
-              "AI应用",
-              "航空安全"
-            ],
-            "translated": false
-          },
-          {
-            "id": 272826,
-            "title": "一位卧底谷歌分析师成功渗透进一伙臭名昭著的供应链黑客团伙",
-            "original_title": "An Undercover Google Analyst Infiltrated a Notorious Supply-Chain Hacking Gang",
-            "url": "https://www.wired.com/story/an-undercover-google-analyst-infiltrated-a-notorious-supply-chain-hacking-gang/",
-            "source": "Wired",
-            "source_name": "Wired",
-            "published_at": "2026-09-18T16:00:00.000Z",
-            "cover": null,
-            "totalScore": 58,
-            "score": 58,
-            "scores": {
-              "选题": 9,
-              "内容": 8,
-              "深度": 7,
-              "实用": 5,
-              "创新": 7,
-              "表达": 8
-            },
-            "kind": "article",
-            "reason": "Wired独家报道Google渗透TeamPCP供应链黑客组织，网络安全领域重磅内幕，极具阅读价值。",
-            "summary": "Google威胁情报小组成功渗透进臭名昭著的TeamPCP黑客组织内部，该组织曾实施史上最严重的软件供应链攻击，入侵数千家企业。文章揭示了Google如何使用卧底分析师搜集情报、瓦解这一网络犯罪集团的全过程。",
-            "quote": "TeamPCP pulled off the worst-ever software supply-chain hacking spree and breached thousands of companies.",
-            "points": [
-              "Google通过卧底分析师潜入TeamPCP核心圈子获取关键情报",
-              "TeamPCP实施了史上最严重的软件供应链攻击事件之一",
-              "该黑客组织入侵了数千家企业的系统"
-            ],
-            "tags": [
-              "网络安全",
-              "Google"
-            ],
-            "translated": true
-          },
-          {
-            "id": 272760,
-            "title": "Petlibro’s new AI-powered feeder is a game changer for multi-cat homes",
-            "url": "https://techcrunch.com/2026/09/19/petlibros-new-ai-powered-feeder-is-a-game-changer-for-multi-cat-homes/",
-            "source": "TechCrunch",
-            "source_name": "TechCrunch",
-            "published_at": "2026-09-19T15:00:00.000Z",
-            "cover": null,
-            "totalScore": 46,
-            "score": 46,
-            "scores": {
-              "选题": 6,
-              "内容": 5,
-              "深度": 4,
-              "实用": 6,
-              "创新": 6,
-              "表达": 7
-            },
-            "kind": "article",
-            "reason": "多猫家庭精准喂食痛点明确，AI识别+称重功能具实用性，但订阅付费模式削弱产品吸引力。",
-            "summary": "Petlibro推出Granary 2智能喂食器，内置称重传感器和AI摄像头，可追踪每只猫的进食量与时间。高端健康监控功能需额外订阅，适合多猫家庭的饮食管理需求。",
-            "quote": "Petlibro's new Granary 2 smart feeders use a built-in scale and (on pricier models) an AI camera to track exactly how much your cat is eating and when.",
-            "points": [
-              "AI摄像头+称重实现多猫精准分餐",
-              "高端健康监测功能需额外付费订阅",
-              "多猫家庭饮食管理场景定位清晰"
-            ],
-            "tags": [
-              "宠物智能硬件",
-              "AI识别"
-            ],
-            "translated": false
-          }
-        ]
-      },
-      {
-        "column": "视频与播客",
-        "desc": "窗口内新视频/播客，点开即可播放收听",
-        "items": [
-          {
-            "id": 266540,
-            "ref_id": 266540,
-            "kind": "podcast",
-            "title": "比永远更远，核周报 9.19",
-            "url": "https://www.gcores.com/radios/219595",
-            "source": "机核游戏频道",
-            "source_name": "机核游戏频道",
-            "published_at": "2026-09-19T15:00:00.000Z",
-            "audio_url": "http://alioss.gcores.com/uploads/audio/d01d310b-6b69-4487-9abd-8c76ae2f81af.mp3",
-            "cover": null,
-            "source_avatar": "https://alioss.gcores.com/download/podcast/gadio.png?v=1"
-          },
-          {
-            "id": 262437,
-            "ref_id": 262437,
-            "kind": "podcast",
-            "title": "科技会（以及不会）取代你的医生 | Zack Abbott 与 Dhruv Khullar",
-            "original_title": "How tech will (and won't) replace your doctor | Zack Abbott and Dhruv Khullar",
-            "url": "http://go.ted.com/zackanddhruv",
-            "source": "TED Talks Daily",
-            "source_name": "TED Talks Daily",
-            "published_at": "2026-09-19T15:00:00.000Z",
-            "audio_url": "https://sphinx.acast.com/p/open/s/67587e77c705e441797aff96/e/6aad5d477aa361c6129253f0/media.mp3",
-            "cover": null,
-            "source_avatar": "https://assets.pippa.io/shows/67587e77c705e441797aff96/show-cover.png"
-          },
-          {
-            "id": 272499,
-            "ref_id": 272499,
-            "kind": "podcast",
-            "title": "地沟油做的背包，是零碳创新还是新营销？|无限进化69",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6aae1bed0916f6f8b445a893",
-            "source": "第一财经",
-            "source_name": "第一财经",
-            "published_at": "2026-09-19T05:31:58.000Z",
-            "audio_url": "https://media.xyzcdn.net/64c75555e8176c3ff81de98c/lkwCeulng_xdI0LVLeuD0ovAmAqU.m4a",
-            "cover": null,
-            "source_avatar": "https://image.xyzcdn.net/Fnx_1DU2Nog_nuuuNl6RLYXuQ2Rk.jpg@small"
-          },
-          {
-            "id": 260440,
-            "ref_id": 260440,
-            "kind": "podcast",
-            "title": "Domino's披萨追踪器的万物理论",
-            "original_title": "The Domino’s Pizza Tracker Theory of Everything",
-            "url": "https://www.npr.org/2026/09/18/nx-s1-5974101/dominos-pizza-tracker-labor-illusion",
-            "source": "Planet Money",
-            "source_name": "Planet Money",
-            "published_at": "2026-09-18T20:00:00.000Z",
-            "audio_url": "https://tracking.swap.fm/track/XvDEoI11TR00olTUO8US/prfx.byspotify.com/e/play.podtrac.com/npr-510289/npr.simplecastaudio.com/43b5acee-463e-4612-95ad-d2596d9dd337/episodes/015802bf-f8a4-4fdc-8b55-f82788d39640/audio/128/default.mp3?awCollectionId=43b5acee-463e-4612-95ad-d2596d9dd337&awEpisodeId=015802bf-f8a4-4fdc-8b55-f82788d39640&feed=hvWWWzRv&t=podcast&e=nx-s1-5974101&p=510289&d=1942&size=31077025",
-            "cover": null,
-            "source_avatar": "https://media.npr.org/assets/img/2022/10/24/pm_new_tile_2022_sq-e543deddd0a46a98be481b46e6a72efa6b52236f.jpg?s=1400&c=66&f=jpg"
+            "id": 294247,
+            "title": "dependfix 与 caomei-ui 及 AI 套餐实测 | 2026 年第 38 周草梅周报",
+            "url": "https://blog.cmyr.ltd/archives/2026-38-caomei-weekly-dependfix-caomei-ui-ai-plan.html",
+            "source": "草梅友仁的博客",
+            "published_at": "2026-09-20T15:11:27.000Z",
+            "score": 62,
+            "summary": "本文在 草梅友仁的博客 发布和更新，并在多个平台同步发布。如有更新，以博客上的版本为准。您也可以通过文末的 原文链接 查看最新版本。",
+            "cover": "https://oss.cmyr.dev/images/20260920212600906.png"
           }
         ]
       }
     ],
     "stats": {
-      "schemaVersion": 2,
-      "theme": null,
-      "degraded": false,
-      "themes": [],
-      "candidates": 54,
-      "articles": 54,
-      "videos": 8,
-      "gateDropped": 17,
-      "filterStats": {
-        "candidates": 54,
-        "passed": 54,
-        "analyzed": 23
-      },
+      "schemaVersion": 1,
+      "candidates": 493,
+      "articles": 493,
       "sections": 4,
-      "totalItems": 18,
-      "elapsedMin": 1.4
+      "totalItems": 39
     }
   },
-  "generated_at": "2026-09-20T06:36:04.801Z"
+  "generated_at": "2026-09-21T06:42:47.330Z"
 }
