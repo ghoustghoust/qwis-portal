@@ -30,6 +30,12 @@ export default function MyBriefPage() {
   const [type, setType] = useState('all');
   const [studyItem, setStudyItem] = useState(null);
 
+  const [archive, setArchive] = useState(null);
+  const loadArchive = () => {
+    if (archive !== null) return;
+    api.get('/api/mybrief/archive').then((d) => setArchive(d.issues || [])).catch(() => setArchive([]));
+  };
+
   const load = () => {
     setErr(null);
     setData(undefined);
@@ -38,7 +44,7 @@ export default function MyBriefPage() {
     api.get('/api/mybrief').then(setData).catch((e) => setErr(String(e?.message || e)));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); loadArchive(); }, []);
 
   const report = data?.report;
   const digest = data?.digest;
@@ -88,7 +94,9 @@ export default function MyBriefPage() {
             <>
               {/* 大日期 + 编辑导语 */}
               <header>
-                <div className="text-[11px] tracking-widest t-accent font-medium">我的早报 · 来自你的关注</div>
+                <div className="text-[11px] tracking-widest t-accent font-medium">
+                  我的早报 · 来自你的关注{report.issue ? ` · 第 ${report.issue} 期` : ''}
+                </div>
                 <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
                   {Number(report.date.slice(5, 7))}月{Number(report.date.slice(8, 10))}日
                 </h1>
@@ -107,6 +115,20 @@ export default function MyBriefPage() {
                 )}
                 {report.degraded && (
                   <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
+                )}
+                {archive !== null && archive.length > 0 && (
+                  <section className="mt-10 border-t t-border pt-4">
+                    <div className="text-[11px] tracking-widest t-muted">往期早报</div>
+                    <ul className="mt-2 space-y-1.5">
+                      {archive.slice(0, 30).map((x) => (
+                        <li key={x.issue} className="text-[12.5px] t-muted">
+                          第 {x.issue} 期 · {x.date}
+                          {x.theme ? ` · ${String(x.theme).slice(0, 40)}` : ''}
+                          {x.counts ? `（${(x.counts.top || 0) + (x.counts.featured || 0) + (x.counts.rest || 0)} 条）` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 )}
               </header>
               <ThemePanorama themes={report.themes} />

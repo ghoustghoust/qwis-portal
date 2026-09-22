@@ -86,7 +86,7 @@ async function setSetting(key, val) {
 const PUBLIC_GET_PATHS = new Set([
   '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
   '/api/groups', '/api/sources', '/api/status', '/api/status/daily-sources', '/api/settings', '/api/settings/daily',
-  '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/weekly',
+  '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/mybrief/archive', '/api/weekly',
   '/api/hot/events', '/api/hot/categories', '/api/hot/sources', '/api/hot/groups',
   '/api/opml/export',
 ]);
@@ -805,6 +805,13 @@ async function enrichDailyTranslated(sections) {
   return sections;
 }
 
+// B21：日报期号 = 该报告是第几个「有报告的北京日」（裸 id 混着非 AI 兜底批次，不能当期号）
+async function dailyIssueOf(row) {
+  const day = String(row.generated_at || '').slice(0, 10);
+  const r = await qOne('SELECT COUNT(DISTINCT substr(generated_at,1,10)) c FROM daily_reports WHERE substr(generated_at,1,10) <= ?', [day]);
+  return r ? r.c : null;
+}
+
 async function handleDaily(req) {
   // 2026-09-18 修复：不再只取最新一行。collect.yml 的 daily-report（非 AI，09:03 北京）与下面的
   // 内联兜底都会插入 window_hours=30、无 theme/themes/六维 的裸报告，一旦它比 daily-ai 产物更晚，
@@ -829,6 +836,7 @@ async function handleDaily(req) {
       return jsonOk({
         report: {
           id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats,
+          issue: await dailyIssueOf(row),
           // 18-daily-ai-v2：透出 v2 字段
           theme: stats.theme || null,
           schemaVersion: stats.schemaVersion || 1,
@@ -862,7 +870,7 @@ async function handleDaily(req) {
   try { stats = JSON.parse(row.stats || '{}'); } catch { /* 无效 JSON */ }
   sections = await enrichDailyTranslated(sections);
   return jsonOk({
-    report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats },
+    report: { id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats, issue: await dailyIssueOf(row) },
     stale: true,
   });
 }
@@ -2787,6 +2795,16 @@ async function enrichBriefTitles(report) {
   return report;
 }
 
+// GET /api/mybrief/archive — 期号归档列表（H13；公开读，只出索引字段不带全量条目）
+async function handleMyBriefArchive(req) {
+  const archive = (await getSetting('mybrief.archive', [])) || [];
+  const issues = archive.map((x) => ({
+    issue: x.issue, date: x.date, generatedAt: x.generatedAt, theme: x.theme || null,
+    counts: x.sections ? { top: (x.sections.top || []).length, featured: (x.sections.featured || []).length, rest: (x.sections.rest || []).length } : null,
+  })).sort((a, b) => (b.issue || 0) - (a.issue || 0));
+  return jsonOk({ issues, total: issues.length });
+}
+
 // GET /api/mybrief — 我的早报（19-my-brief；公开读，三态响应）
 async function handleMyBrief(req) {
   // 27b：订阅集合 = settings subscription.ids（原 focus=1 语义已迁移；键缺失时兜底 spotlight 集合）
@@ -2977,6 +2995,7 @@ async function dispatch(req) {
     if (path === '/api/status') return handleStatus(req);
     if (path === '/api/status/daily-sources') return handleStatusDailySources();
     if (path === '/api/settings/daily') return handleDailySettingsGet(req);
+    if (path === '/api/mybrief/archive') return handleMyBriefArchive(req);
     if (path === '/api/mybrief') return handleMyBrief(req);
     if (path === '/api/weekly/archive' && method === 'GET') return jsonOk({ archive: (await getSetting('weekly.archive', [])) || [] });
     if (path === '/api/weekly') return handleWeekly(req);

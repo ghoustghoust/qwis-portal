@@ -1551,8 +1551,18 @@ async function runMyBrief(analyzed) {
     // 空簇（Jaccard≥0.45 的 ≥2 条簇不足）与 AI 命名失败是两种不同病因，必须能区分。
     if (!themes.length) log(`我的早报主题全景: 0 簇（候选 ${mine.length} 条，标题相似度聚不到 ≥2 条的簇或 AI 命名全失败）`);
   } catch (e) { log(`我的早报主题全景失败（不阻断）: ${e.message}`); }
-  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections, themes };
+  // H13/B21：期号与归档——单键覆盖写让历史期直接丢失（用户 09-18 标注）。
+  // 同北京日重跑原地替换（修码重跑不另算新期）；空态不占期号（那是状态不是期）。
+  const { resolveMyBriefIssue } = require('../lib/brief-guards');
+  const prevArch = (await getSetting('mybrief.archive', [])) || [];
+  const issueInfo = resolveMyBriefIssue(prevArch, dateStr);
+  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections, themes, issue: issueInfo.issue };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
+  const entry = { issue: issueInfo.issue, date: dateStr, generatedAt: report.generatedAt, theme: report.theme, keywords, degraded: false, sections, themes };
+  const nextArch = prevArch.slice();
+  if (issueInfo.replaceIndex >= 0) nextArch[issueInfo.replaceIndex] = entry;
+  else nextArch.push(entry);
+  await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.archive', ?)", args: [JSON.stringify(nextArch.slice(-30))] });
   log(`mybrief 生成完成: top ${sections.top.length} / featured ${sections.featured.length} / rest ${sections.rest.length}, 主题: ${theme || '(无)'}`);
   // 飞书推送（导语 + 头条 3 条；pushEnabled 默认 true）
   const pushCfg = await getSetting('mybrief', {});

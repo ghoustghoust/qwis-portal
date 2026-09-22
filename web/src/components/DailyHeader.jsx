@@ -14,7 +14,7 @@ export default function DailyHeader({ report, regenerating, onRegenerate }) {
   const degradedMark = report?.degraded ? ' · 降级' : '';
 
   const meta = valid
-    ? `${formatDateTime(generatedAt)} 生成 · ${sortLabel}${degradedMark} · ${formatDateTime(new Date(genTime - windowHours * 3600 * 1000).toISOString())} 至 ${formatDateTime(generatedAt)}`
+    ? `${report?.issue ? `第 ${report.issue} 期 · ` : ''}${formatDateTime(generatedAt)} 生成 · ${sortLabel}${degradedMark} · ${formatDateTime(new Date(genTime - windowHours * 3600 * 1000).toISOString())} 至 ${formatDateTime(generatedAt)}`
     : '尚未生成日报';
 
   return (
