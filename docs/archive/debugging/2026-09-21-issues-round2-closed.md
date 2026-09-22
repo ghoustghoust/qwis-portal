@@ -316,3 +316,5 @@
 | BL3 | 采集尝试流水不存在，成功率物理上算不出来 | ✅ 已随 35B 交付核销（`lib/source-health.js` 滚动窗口 + `/api/health/source-stats` 真值，锁 SH1~SH5）——09-22 从阻塞项表出账 |
 
 | B81/B128 | （⚪ 待裁决行：零引用资产三处） | ✅ 09-22 按你「同意」执行**摘掉+删（同批）**：`tools/eval-whitebox.cjs` W1 清单与 `tests/regression-20260919b.test.js` 引用面摘除 `lib/collectors/fetcher.js`，并删除 `lib/collectors/{fetcher,repo}.js` 与 `web/src/snapshot.js`；锁 DC128/DC128b（文件不在 + 引用面干净，注释记录不算引用）；F2P=基线红 → 改后绿。quarantine 内引用关系按 B128 原判属正常形态不动。doc-lint 因 ISSUES 行引用已删文件而报的 1 错随行出账消失 |
+
+| BL7 | 报警出口恢复后残余：旧库哨兵 settings + 渠道形状无回归锁 | ✅ 09-22 补锁核销：`tests/regression-alert-sentinel.test.js` BL7-1（只读生产：渠道 URL 不许 undefined 形态 / 不许 127.0.0.1:1 哨兵 / usableChannels≥1）+ BL7-2 负向自证；当前生产两条全过。属测试面新增，不动白盒工具面 |
