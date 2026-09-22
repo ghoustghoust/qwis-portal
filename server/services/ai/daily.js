@@ -10,6 +10,7 @@ const { htmlToText } = require('./summary');
 const { DAILY_SCHEMA_VERSION } = require('../../../lib/brief-guards');
 // B107：聚合器轴唯一实现（候选条目带出 source_aggregator 供去重时"一手源优先"）
 const { aggregatorFlagSql } = require('../../../lib/noise');
+const { audioCoverSql } = require('../../../lib/media');
 
 // 默认四栏目 + 入报源类型（B10：唯一实现在 lib/daily-columns.js，本地/runner/云端三端共用）
 // 本文件此前自带一份 desc 写成「Codex、Claude、豆包…等动向」的关键词复述版，
@@ -311,6 +312,38 @@ async function generate(windowHours) {
     if (col.desc) sec.desc = col.desc;
     sections.push(sec);
   }
+
+  // B86：本地端补「视频与播客」栏（云端同栏见 api/[...slug].js 日报组装）。
+  // 播客判定唯一口径 lib/media.js#audioCoverSql（B61：少一个 .opus 的副本曾把 opus 单集关在栏外）。
+  // 此前本地端只有 kind:'video' 条目混进关键词栏、结构性缺播客。
+  try {
+    const mediaItems = [];
+    const mediaCutoff = new Date(Date.now() - win * 3600e3).toISOString();
+    const vids = db.prepare(
+      `SELECT v.id, v.title, v.url, v.cover, v.intro, v.duration, v.published_at, s.name AS source_name, s.avatar AS source_avatar
+       FROM videos v JOIN sources s ON s.id = v.source_id
+       WHERE v.published_at >= ? AND s.enabled = 1
+       ORDER BY v.published_at DESC LIMIT 6`).all(mediaCutoff);
+    for (const v of vids) {
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title || '', url: v.url,
+        source_name: v.source_name || '', source: v.source_name || '', published_at: v.published_at,
+        cover: v.cover || '', summary: v.intro || undefined, duration: v.duration || null,
+        source_avatar: v.source_avatar || null });
+    }
+    const pods = db.prepare(
+      `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name, s.avatar AS source_avatar
+       FROM articles a JOIN sources s ON s.id = a.source_id
+       WHERE a.published_at >= ? AND s.enabled = 1 AND ${audioCoverSql('a.cover')}
+       ORDER BY a.published_at DESC LIMIT 4`).all(mediaCutoff);
+    for (const a of pods) {
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title || '', url: a.url,
+        source_name: a.source_name || '', source: a.source_name || '', published_at: a.published_at,
+        audio_url: a.cover, cover: null, source_avatar: a.source_avatar || null });
+    }
+    if (mediaItems.length) {
+      sections.push({ column: '视频与播客', col_id: 'media', desc: '窗口内新视频/播客，点开即可播放收听', items: mediaItems });
+    }
+  } catch { /* 媒体栏失败不阻断日报 */ }
 
   const stats = {
     // B112：AI 增强跑出来的那份要能被读层认出来（pickDailyReport 靠档位优先选 AI 版）

@@ -294,3 +294,5 @@
 | B73 | （P2-1 行：/api/reading 带筛选可达 26s） | ✅ 09-21 收尾：26s 是 09-19 旧库读数，现役库实测基线 6.5s 冷 / 1.2~3.8s 热；本轮把串行 Turso 往返改并行 + 快路径三组查询合成一次 batch，线上实测 **热 1.0~1.3s / 冷 2.9s**（预算 2s 内热达标）。残余 = Vercel 冷启动与 Turso 延迟地板，再压需要缓存层（不属本条）。锁：N8/N9 跨端对账；并行化一度引入快路径双计，被 N9 当场抓住后修正（IIFE 创建即执行） |
 
 | B8 | （P2-2 行：综述/详情无排版，块级结构不渲染） | ✅ 09-22 交付：`md-inline.js` 加 `mdBlocks` 块级切分（### 标题 / - 无序 / 1. 有序 / 空行分段；纯文本零变化），新组件 `MdRich`（块内仍走 MdText 同一份内联解析，无 HTML 注入面）；换用点：周刊 theme/editorNote/narrative/weeklySummary、日报 theme、热点详情 summary ×2；样式类 md-h/md-ul/md-ol/md-p 入 index.css。锁 MB1~MB4。**欠的复验**：一条「真含 md 标记的线上样本」（下一次 weekly/daily 出报后看一眼排版） |
+
+| B86 | （P3-3 行：本地端日报结构性缺播客条目） | ✅ 09-22 交付：本地日报补「视频与播客」栏（窗口内新视频 6 + 播客音频 4，与云端同栏同字段形状；播客判定走 `lib/media.js#audioCoverSql` 唯一口径，opus 不再漏）。锁 BM1~BM3（行为：栏里真有视频+播客且带 audio_url；边界：无媒体不出空栏；形态：不自带第四份判定）。顺手躲过一颗雷：初版引用的是 collectCandidates 内部的 cutoff（generate 作用域里不存在），静默 catch 吃掉 = 栏永远不出——BM1 的「栏必须真出现」断言就是用来挡这种假接线的 |

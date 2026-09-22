@@ -25,7 +25,6 @@
 | P3-1 | B87 | B 站线上探针随测试搬迁消失，上游响应漂移现在没有任何自动化会红 | 形状探针进 `tools/audit-cloud.js` 或 e2e 加观测判据 | ✅（09-21 确认） |
 | P3-2 | B70 | 对抗审查遗留 5 条（judge prompt 可注入 / trend 非原子 / golden 集入 git / `_test-api.cjs` 掩码漏洞 / 3 处形状锁） | 按性价比逐条做 | ✅（09-21 确认） |
 | P3-4 | B103② | `/api/backup` 只导出 sources/groups/settings 三张配置表，内容表的恢复路径只有内容级转储 | 待定：backup 扩面或文档明示「转储即备份」 | ✅ |
-| P3-3 | B86 | 本地端日报结构性缺播客条目（云端有；视频条目已补 `source_avatar`） | 引 `lib/media.js#audioCoverSql` 补齐 | ✅（09-21 确认） |
 
 ## 🟡 观察中（代码已落地，等一次真实复验）
 
