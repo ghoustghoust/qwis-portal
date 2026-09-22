@@ -22,7 +22,6 @@
 | P2-5 | B17 | 周刊初筛窗 24min ≪ 全量 ≈2.2h，周刊只策展了 `published_at DESC` 前缀 | 已拍板：预筛降量（六维分门槛），不抬配额 | ✅ |
 | P2-6 | B18 | `videos` 表无 `score` 列，视频条目拿不到评分 | 已拍板：只建 `score` 列并接进评分管线（schema + 三端采集语义同步） | ✅ |
 | P2-7 | B21+H13 | 早报无期号无归档（`mybrief.latest` 单键覆盖写）、缺本期索引、切回 `/daily/` 卡顿 | 已拍板：先建 `mybrief.archive` 再谈期号，40-4 立项 | ✅ |
-| P3-2 | B70 | 对抗审查遗留 5 条（judge prompt 可注入 / trend 非原子 / golden 集入 git / `_test-api.cjs` 掩码漏洞 / 3 处形状锁） | 按性价比逐条做 | ✅（09-21 确认） |
 | P3-4 | B103② | `/api/backup` 只导出 sources/groups/settings 三张配置表，内容表的恢复路径只有内容级转储 | 待定：backup 扩面或文档明示「转储即备份」 | ✅ |
 
 ## 🟡 观察中（代码已落地，等一次真实复验）

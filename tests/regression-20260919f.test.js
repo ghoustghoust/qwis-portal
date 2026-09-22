@@ -48,6 +48,10 @@ test('41-8 Python 侧自检必须全绿（探针数 = 通过数，且不少于 4
   for (const [pass, total] of counts) assert.equal(pass, total, `有一层自检没全过（${pass}/${total}）`);
   const probes = counts.reduce((a, [, t2]) => a + t2, 0);
   assert.ok(probes >= 40, `自检探针只有 ${probes} 项，覆盖退化（41-8 要求每轴锚定事故 + stub/真评/对齐三类判据）`);
+  // B70⑤：计数可以被恒真项凑满——关键防自欺探针必须具名在场（缺了任何一条，计数再高也是假覆盖）
+  for (const name of ['缺轴必须抛错', '无参照物时事实轴不计分母', '对齐样本不足 3 对']) {
+    assert.ok(out.includes(name), `自检缺了关键探针「${name}」——计数 ${probes} 也是空泛`);
+  }
 });
 
 test('41-8 stub 轮次绝不算一次评测：报告必须带 counts_as_judgment=false 与 warnings_advisory=true', (t) => {
@@ -90,11 +94,26 @@ test('41-8 五轴与权重：文档 §5.1/§5.2 与 scoring.py 必须是同一�
   assert.match(sec, /norm\(v\) = \(v - 1\) \/ 4/, '归一化公式必须与 scoring.norm 一致');
 });
 
-test('41-8 judge 纪律落进代码：默认不打模型、打模型要记模型与 prompt 版本', () => {
+test('41-8 judge 纪律落进代码：默认不打模型、打模型要记模型与 prompt 版本', (t) => {
   const judge = fs.readFileSync(path.join(PY_DIR, 'judge.py'), 'utf8');
+  const py = python();
+  if (!py) { t.skip('没 python，属 fail_env（未评测）'); return; }
   assert.match(judge, /allow_network: bool = False/, '默认必须不联网（judge 花 AI 配额，BL8/坑 #A1）');
   assert.match(judge, /"temperature": 0/, 'judge 必须 temperature=0（§5.3 第 1 条）');
   assert.match(judge, /JUDGE_PROMPT_VERSION = /, 'prompt 版本必须是常量并进报告');
-  assert.match(judge, /不许退化成 stub 假装评过/, '缺凭据时必须抛错，不许悄悄退回 stub');
-  assert.match(judge, /api_fingerprint/, 'Key 只回显指纹');
+  // B70⑤：后两条原来是"注释里有这句话就算过"——改成行为断言
+  const probe = spawnSync(py, ['-c',
+    "import sys; sys.path.insert(0, 'tools/eval-content'); import judge\n" +
+    "try:\n" +
+    "  judge.judge_once({'kind':'daily','output':'x'}, allow_network=True)\n" +
+    "  print('NO-RAISE')\n" +
+    "except RuntimeError as e:\n" +
+    "  print('RAISED:' + str(e))\n" +
+    "fp = judge.api_fingerprint('sk-abc123456789')\n" +
+    "print('FP:' + fp)"], { cwd: ROOT, encoding: 'utf8', env: { ...process.env, AGNES_API_KEY: '', PYTHONIOENCODING: 'utf-8' } });
+  const out = String(probe.stdout || '') + String(probe.stderr || '');
+  assert.ok(out.includes('RAISED:'), '缺凭据+allow_network=True 竟然没抛错（悄悄退回 stub 了）：' + out.slice(-200));
+  assert.ok(out.includes('不许退化成 stub'), '抛错原因不是「不许退化成 stub」：' + out.slice(-200));
+  const fp = (/FP:(.+)/.exec(out) || [])[1] || '';
+  assert.ok(fp && !fp.includes('abc123'), '指纹里含原始 key 片段：' + fp);
 });

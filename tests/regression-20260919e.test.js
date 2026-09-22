@@ -104,7 +104,8 @@ test('B65-3 巡检计数与退出码是行为，不是源码字面量（对抗�
 
 test('B66-1 巡检不许断言不存在的契约：/api/articles 无 dedup 语义，只能明说未验收', () => {
   const src = fs.readFileSync(path.join(ROOT, 'tools/audit-cloud.js'), 'utf8');
-  assert.doesNotMatch(src, /b\.deduped === true/, '`deduped` 字段在云端读层根本不存在（api/[...slug].js 只有日报内 dailyDedup 与 POST /api/sources/dedupe）');
+  // B70⑤：负向形态不能写死一种写法——`deduped == true` / `x.deduped===true` 同样是断言不存在的契约
+  assert.doesNotMatch(src, /deduped\s*[=!]==?\s*true/, '`deduped` 字段在云端读层根本不存在（api/[...slug].js 只有日报内 dailyDedup 与 POST /api/sources/dedupe）');
   assert.match(src, /SKIP:云端无 dedup 契约/, '这条必须显式记为未验收（B66），不许静默删除');
   const route = fs.readFileSync(path.join(ROOT, 'api/[...slug].js'), 'utf8');
   assert.doesNotMatch(route, /query\.dedup|searchParams\.get\(['"]dedup/, '若云端真的实现了 dedup 参数，本锁要连同 B66 一起改判');
