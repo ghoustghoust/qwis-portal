@@ -308,3 +308,5 @@
 | B21+H13 | （P2-7 行：早报无期号无归档 + 缺本期索引） | ✅ 09-22 交付：`mybrief.archive` 期号归档（同北京日重跑原地替换、新日 max+1、封顶 30 期、空态不占期号——期号解析与周刊同语义的 `resolveMyBriefIssue`）；新公开端点 `/api/mybrief/archive`（期号倒序索引）；我的早报页头显「第 N 期」+ 页尾「往期早报」懒加载列表；日报期号读时按「有报告的北京日去重计数」（裸 id 混非 AI 兜底批次不能当期号），页头 meta 带「第 N 期」；**本期索引查实已有**（DailyPage 吸顶栏目 pill 导航带锚点滚动，无需重建）。锁 HA1~HA5 |
 
 | B122 | 🔴 凭据卫生：AGNES_API_KEY 明文进过会话输出一次 | ✅ 09-22 已轮换：新 key 三处同步（本地 `.env` / Vercel env（CLI 先 rm 后 add）/ GH Actions Secrets（git 凭据 + libsodium sealed box 走 API））；Agnes 直连鉴权 **HTTP 200**；空提交 `da515be` 触发部署已应用新 env。旧 key 由 Agnes 控制台侧自然失效 |
+
+| B119③ 公众号源路线（09-22 修复执行） | wemp 893 篇停在 09-04、65 源空转 | 实测排除三条路：公共 RSSHub（Cloudflare 403）/ 直抓公众号主页（微信客户端限制）/ 搜狗微信搜索（JS 壳+反爬）。最终方案=公共 wechat2rss 目录源直接接线：**恢复 40/65**——33 个账号库里本就有 bestblogs.dev 现役源（375 个该系源当日在采，抽查 数字生命卡兹克 当日新文在库），7 个（量子位/差评/PaperWeekly/夕小瑶科技说/新智元/机器之心/极客公园）接线 wechat2rss.xlab.app 公共目录 feed；剩 25 个全库无源（苍何、博物、冷兔等），停用并标 retired（备份 `docs/eval/b119-wemp-sources-backup.json`）。接线列表经「同名现役源 + URL 唯一」双重去重 |
