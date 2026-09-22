@@ -741,14 +741,14 @@ async function generateDailyInline() {
   try {
     const mediaItems = [];
     const mediaVids = await qAll(
-      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, s.name AS source_name, s.avatar AS source_avatar
+      `SELECT v.id, v.title, v.url, v.cover, v.published_at, v.intro, v.duration, v.score, s.name AS source_name, s.avatar AS source_avatar
        FROM videos v JOIN sources s ON s.id=v.source_id
        WHERE v.published_at >= ? AND v.published_at <= ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`,
       [cutoff, cutoffEnd]
     );
     for (const v of mediaVids) {
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null, source_avatar: cleanNull(v.source_avatar) });
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title, url: v.url, source: v.source_name, source_name: v.source_name, published_at: v.published_at, cover: v.cover, summary: v.intro || undefined, duration: v.duration || null, score: v.score ?? null, source_avatar: cleanNull(v.source_avatar) });
     }
     // B61：这里曾是第四份「音频封面」判定，且比别处少一个 .opus —— opus 单集进不了日报「视频与播客」栏
     const mediaPods = await qAll(

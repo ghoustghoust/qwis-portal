@@ -151,6 +151,7 @@ try { db.exec('ALTER TABLE articles ADD COLUMN translated_content TEXT'); } catc
 try { db.exec('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
 // 观看时间列（此前由 server/routes/videos.js 在加载时顺手补——列创建不该长在路由文件里）
 try { db.exec('ALTER TABLE videos ADD COLUMN watched_at TEXT'); } catch { /* 已存在 */ }
+try { db.exec('ALTER TABLE videos ADD COLUMN score INTEGER'); } catch { /* 已存在 */ }
 // T47：大列表常用过滤/排序补索引（千级数据量实测见 docs/RUNBOOK.md）
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_articles_read_at ON articles(read_at);

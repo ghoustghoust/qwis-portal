@@ -1103,11 +1103,7 @@ async function buildReadingDigest() {
 // T4-2 R4 配套（2026-09-14）：六维评分回写 articles.score——此前评分只存快照 JSON，
 // 热点榜精选/权威加权/score_min 全部无米下锅。视频条目（'v' 前缀）跳过。
 async function persistScores(analyzed) {
-  const rows = (analyzed || []).filter((a) => typeof a.id === 'number' && Number.isFinite(a.totalScore));
-  for (const a of rows) {
-    await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(a.totalScore), a.reason || null, a.id]);
-  }
-  return rows.length;
+  return require('../lib/score-persist').persistScores(analyzed, qRun);
 }
 
 async function runDailyAi() {
@@ -1974,6 +1970,8 @@ async function runTranslate() {
   log(`=== collect-turso 模式=${MODE} ===`);
   // 17-translate：translation_provider 列迁移（已存在则忽略）
   try { await getDb().execute('ALTER TABLE articles ADD COLUMN translation_provider TEXT'); } catch { /* 已存在 */ }
+  // B18：videos.score 列迁移（已存在则忽略）
+  try { await getDb().execute('ALTER TABLE videos ADD COLUMN score INTEGER'); } catch { /* 已存在 */ }
   // 21-bilibili-runner：videos.vid 唯一索引（INSERT OR IGNORE 去重依赖）
   try { await getDb().execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_vid ON videos(vid)'); } catch { /* 已存在/空表兼容 */ }
   // T3-3 读层性能索引（与 Turso/server/db.js 三处同步，2026-09-13）
