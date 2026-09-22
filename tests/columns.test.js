@@ -103,7 +103,7 @@ test('generate: 分栏正确（spotlight 全收时间倒序/关键词命中/fall
   assert.equal(report.stats.sortMode, 'keyword'); // N7：无 AI → 关键词规则排序
 
   // 栏目按配置顺序完整保留（含空栏）
-  assert.deepEqual(report.sections.map((s) => s.column), ['培训课程发布', '重点更新', 'AI技术', '其它重要']);
+  assert.deepEqual(report.sections.map((s) => s.column), ['培训课程发布', '重点更新', 'AI技术', '其它重要', '视频与播客']);  // B86：窗口内有视频 → 媒体栏在列
 
   const byName = Object.fromEntries(report.sections.map((s) => [s.column, s.items]));
   // 培训课程发布：只有「新训练营招募启动」
@@ -117,8 +117,8 @@ test('generate: 分栏正确（spotlight 全收时间倒序/关键词命中/fall
   );
   // 其它重要：兜底
   assert.deepEqual(byName['其它重要'].map((i) => i.title), ['周末随笔']);
-  // 无 AI：无摘要、无重要度评分
-  for (const s of report.sections) {
+  // 无 AI：关键词栏目无摘要、无重要度评分（B86 媒体栏是窗内直接列出的条目，summary 是 intro 不是 AI 摘要）
+  for (const s of report.sections.filter((x) => x.col_id !== 'media')) {
     for (const i of s.items) {
       assert.equal(i.summary, '');
       assert.equal(i.score, undefined);
@@ -135,7 +135,7 @@ test('generate: aiEnabled=true 但无 Key 时仍整体降级（N7），日报正
   const report = await daily.generate(48);
   assert.equal(report.stats.sortMode, 'keyword');
   assert.equal(report.stats.candidates, 6);
-  assert.equal(report.sections.length, 4);
+  assert.equal(report.sections.length, 5); // 4 栏目 + B86 媒体栏（窗口内有视频）
 });
 
 test('generate: 空栏保留——全部内容都命中时其它栏目仍在 sections 中且 items 为空', async () => {
@@ -146,7 +146,7 @@ test('generate: 空栏保留——全部内容都命中时其它栏目仍在 sec
     { id: 'fb', name: '兜底', special: 'fallback' },
   ]);
   const report = await daily.generate(48);
-  assert.deepEqual(report.sections.map((s) => s.column), ['全部命中栏', '永远空栏', '兜底']);
+  assert.deepEqual(report.sections.map((s) => s.column), ['全部命中栏', '永远空栏', '兜底', '视频与播客']);  // B86：媒体栏与自定义栏目并存
   const empty = report.sections.find((s) => s.column === '永远空栏');
   assert.ok(empty, '空栏应保留在 sections 中');
   assert.deepEqual(empty.items, []);

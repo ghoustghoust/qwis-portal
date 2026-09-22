@@ -325,10 +325,9 @@ async function generate(windowHours) {
        WHERE v.published_at >= ? AND s.enabled = 1
        ORDER BY v.published_at DESC LIMIT 6`).all(mediaCutoff);
     for (const v of vids) {
-      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', title: v.title || '', url: v.url,
+      mediaItems.push({ id: 'v' + v.id, ref_id: v.id, kind: 'video', source_avatar: v.source_avatar || null, title: v.title || '', url: v.url,
         source_name: v.source_name || '', source: v.source_name || '', published_at: v.published_at,
-        cover: v.cover || '', summary: v.intro || undefined, duration: v.duration || null,
-        source_avatar: v.source_avatar || null });
+        cover: v.cover || '', summary: v.intro || undefined, duration: v.duration || null });
     }
     const pods = db.prepare(
       `SELECT a.id, a.title, a.translated_title, a.url, a.cover, a.published_at, s.name AS source_name, s.avatar AS source_avatar
@@ -336,9 +335,9 @@ async function generate(windowHours) {
        WHERE a.published_at >= ? AND s.enabled = 1 AND ${audioCoverSql('a.cover')}
        ORDER BY a.published_at DESC LIMIT 4`).all(mediaCutoff);
     for (const a of pods) {
-      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', title: a.translated_title || a.title || '', url: a.url,
+      mediaItems.push({ id: a.id, ref_id: a.id, kind: 'podcast', source_avatar: a.source_avatar || null, title: a.translated_title || a.title || '', url: a.url,
         source_name: a.source_name || '', source: a.source_name || '', published_at: a.published_at,
-        audio_url: a.cover, cover: null, source_avatar: a.source_avatar || null });
+        audio_url: a.cover, cover: null });
     }
     if (mediaItems.length) {
       sections.push({ column: '视频与播客', col_id: 'media', desc: '窗口内新视频/播客，点开即可播放收听', items: mediaItems });
