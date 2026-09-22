@@ -70,7 +70,7 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
   09-21 首轮实测：云端 59,832 文章 + 1,291 视频 = 161.6MB / 154 片，回放 17.6s 行数全等、抽样 12 行 × 23 列逐字段 0 不一致。⚠️ **它仍只是工具**：runner 的 `runCleanup` 还没在 DELETE 前调这道闸（接线随 B101）。
 - 配置轻量迁移（仅 sources/groups/settings JSON）：管理台「公众号 RSS」Tab 底部——与整库快照用途不同，勿混淆
 - 搬机：拷贝 `data/` + `.env` + `config/customer-config.json`，新机器 `npm install && npm run build && npm start`
-- 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代
+- 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代。**内容表（articles/videos/articles_archive）的云端备份 = 内容级转储**（`npm run dump:content -- --scope cloud`，回放 `--restore`，凭证 `settings['retention.dumpCredential']`）——`/api/backup` 只覆盖配置，别再按「全量备份」理解（B103②）
 
 ## 8. 源管理要点
 

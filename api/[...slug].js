@@ -2044,7 +2044,10 @@ async function handleBackup(req) {
   const payload = { version: 1, at: nowIso(), sources, groups, settings };
   await setSetting('backup.latest', { name, at: nowIso(), counts, data: payload });
   await auditRecord('backup.create', { target: name, detail: counts });
-  return jsonOk({ file: name, sizeBytes: JSON.stringify(payload).length, counts });
+  // B103②：本端点只覆盖配置（sources/groups/settings）。内容表（articles/videos/articles_archive）
+  // 的备份与回放由内容级转储覆盖（npm run dump:content -- --scope cloud），响应里明说，别再按"全量备份"理解
+  return jsonOk({ file: name, sizeBytes: JSON.stringify(payload).length, counts,
+    contentBackup: '配置之外的内容表由内容级转储覆盖：npm run dump:content -- --scope cloud（--restore 可回放）' });
 }
 
 // GET /api/backup/latest

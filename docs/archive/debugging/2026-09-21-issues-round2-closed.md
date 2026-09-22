@@ -302,3 +302,5 @@
 | B70 | （P3-2 行：对抗审查遗留 5 条） | ✅ 09-22 五条全清：①judge 外部内容进 `external-untrusted-content` 定界块（块内只有数据没有指令）+ 截断留痕（BT5）；②trend.json 改 tmp+replace 原子写、损坏改名 .corrupt 保留现场（BT6）；③golden 正文快照不再进 git（`docs/eval/content/golden-*.json` 入 .gitignore，与 e2e 截图同取舍；历史两份不动，BT7）；④`_test-api.cjs` 掩码改按参数名遮值（env 未加载时不掩码的旧写法会原样打印，BT4）；⑤三条形状锁改行为判据：B66-1 负向形态放宽为 `deduped\s*[=!]==?\s*true`、judge 纪律两条改 python 行为断言（缺凭据必须抛「不许退化成 stub」、指纹不得含 key 片段）、覆盖项数补三条具名探针防恒真凑数 |
 
 | B18 | （P2-6 行：videos 无 score 列，视频条目拿不到评分） | ✅ 09-22 交付：`videos.score` 列进两份建表源（生产已 ALTER）；回写链路打通——视频深析条目（`v`+id 前缀）回写进 `lib/score-persist.js` 唯一实现（此前 persistScores 只认 number id，视频条目整批跳过 = 分打了没落库）；云端媒体栏查询带 score 显示。锁 SC18-1~3。视频翻译按 09-21 拍板明确不做 |
+
+| B103② | （P3-4 行：/api/backup 只导出三张配置表） | ✅ 09-22 按「明示」收口（不扩面）：内容级恢复路径已由内容级转储承担（B103 本体已交付、回放已验证），把语义写明白而不是再建第二份备份——`/api/backup` 响应带 `contentBackup` 指路字段 + RUNBOOK 备份段写明「/api/backup 只覆盖配置」 |
