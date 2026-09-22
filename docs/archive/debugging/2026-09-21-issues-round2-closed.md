@@ -292,3 +292,5 @@
 | B10（09-21 晚从活跃表挪观察段） | 早报 AI 版显示关键词版栏目注解 | 根属实测：线上读的是**字面键** `daily.columns`（不是 daily 对象里的字段），其值是旧的回声文案；已把 `lib/daily-columns.js#DEFAULT_COLUMNS` 写回该键（备份+回读随批）。可见面等下一批日报出报复验 |
 
 | B73 | （P2-1 行：/api/reading 带筛选可达 26s） | ✅ 09-21 收尾：26s 是 09-19 旧库读数，现役库实测基线 6.5s 冷 / 1.2~3.8s 热；本轮把串行 Turso 往返改并行 + 快路径三组查询合成一次 batch，线上实测 **热 1.0~1.3s / 冷 2.9s**（预算 2s 内热达标）。残余 = Vercel 冷启动与 Turso 延迟地板，再压需要缓存层（不属本条）。锁：N8/N9 跨端对账；并行化一度引入快路径双计，被 N9 当场抓住后修正（IIFE 创建即执行） |
+
+| B8 | （P2-2 行：综述/详情无排版，块级结构不渲染） | ✅ 09-22 交付：`md-inline.js` 加 `mdBlocks` 块级切分（### 标题 / - 无序 / 1. 有序 / 空行分段；纯文本零变化），新组件 `MdRich`（块内仍走 MdText 同一份内联解析，无 HTML 注入面）；换用点：周刊 theme/editorNote/narrative/weeklySummary、日报 theme、热点详情 summary ×2；样式类 md-h/md-ul/md-ol/md-p 入 index.css。锁 MB1~MB4。**欠的复验**：一条「真含 md 标记的线上样本」（下一次 weekly/daily 出报后看一眼排版） |

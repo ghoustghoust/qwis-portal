@@ -16,6 +16,32 @@ export function looksLikeHtml(text) {
   return HTML_TAG_RE.test(String(text == null ? '' : text));
 }
 
+// 块级切分（B8）：内联标记之外的另一半。按空行分段；连续 `- `/`* ` 行 = 无序表、
+// `1. ` / `1、` 起 = 有序表、`#`~`####` 起 = 标题；其余行并入当前段落。
+// 输出 [{ t:'p'|'h'|'ul'|'ol', ... }]；纯文本旧数据 = 单段落（零变化）。
+export function mdBlocks(text) {
+  const lines = String(text ?? '').split('\n');
+  const out = [];
+  let para = [];
+  let list = null;
+  const flushPara = () => { if (para.length) { out.push({ t: 'p', v: para.join('\n') }); para = []; } };
+  const flushList = () => { if (list) { out.push(list); list = null; } };
+  for (const line of lines) {
+    const h = /^\s*(#{1,4})\s+(.+)$/.exec(line);
+    const ul = /^\s*[-*]\s+(\S[\s\S]*)$/.exec(line);
+    const ol = /^\s*\d+[.、]\s+(\S[\s\S]*)$/.exec(line);
+    if (h) { flushPara(); flushList(); out.push({ t: 'h', level: h[1].length, v: h[2].trim() }); continue; }
+    if (ul) { flushPara(); if (!list || list.t !== 'ul') { flushList(); list = { t: 'ul', items: [] }; } list.items.push(ul[1]); continue; }
+    if (ol) { flushPara(); if (!list || list.t !== 'ol') { flushList(); list = { t: 'ol', items: [] }; } list.items.push(ol[1]); continue; }
+    if (!line.trim()) { flushPara(); flushList(); continue; }
+    flushList();
+    para.push(line);
+  }
+  flushPara(); flushList();
+  if (!out.length) return [{ t: 'p', v: '' }];
+  return out;
+}
+
 export function mdInlineParse(text) {
   const s = String(text ?? '');
   if (!s) return [{ t: 'text', v: s }];

@@ -8,6 +8,7 @@ import { imgUrl, relativeTime } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
 import MdText from '../components/ui/MdText.jsx';
+import MdRich from '../components/ui/MdRich.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import { DocIcon } from '../components/icons.jsx';
 
@@ -123,7 +124,7 @@ export default function WeeklyPage() {
                   {report.coverTheme ? `本周必看 ${report.items?.length || 0} 条 · ` : ''}{report.dateStart} ~ {report.dateEnd}
                 </div>
                 {report.theme && (
-                  <p className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted"><MdText text={report.theme} /></p>
+                  <MdRich text={report.theme} className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted" />
                 )}
                 {report.degraded && <div className="mt-2 text-[11px] t-muted">
                   {report.spineMissing
@@ -151,7 +152,7 @@ export default function WeeklyPage() {
               {report.editorNote && (
                 <section className="mt-8 card p-5 sm:p-6">
                   <div className="text-[11px] tracking-widest t-accent font-medium">编辑综述</div>
-                  <p className="serif mt-3 text-[15px] sm:text-base leading-loose t-text whitespace-pre-line"><MdText text={report.editorNote} /></p>
+                  <MdRich text={report.editorNote} className="serif mt-3 text-[15px] sm:text-base leading-loose t-text" />
                 </section>
               )}
 
@@ -163,7 +164,7 @@ export default function WeeklyPage() {
                     <h2 className="serif text-lg sm:text-2xl font-bold t-text flex-1 min-w-0">{sl.title}</h2>
                     <span className="flex-none text-[11px] t-muted tabular-nums">{sl.items.length} 条</span>
                   </div>
-                  {sl.narrative && <p className="mt-2 text-[13.5px] leading-relaxed t-muted"><MdText text={sl.narrative} /></p>}
+                  {sl.narrative && <MdRich text={sl.narrative} className="mt-2 text-[13.5px] leading-relaxed t-muted" />}
                   <div className="mt-4 flex flex-col gap-4">
                     {sl.items.map((it) => (
                       <WeeklyCard key={it.id} item={it} onOpen={setStudyItem} />
@@ -231,7 +232,7 @@ export default function WeeklyPage() {
               {report.weeklySummary && (
                 <footer className="mt-10 card p-4 sm:p-5">
                   <div className="text-[11px] tracking-widest t-accent font-medium">本周总结</div>
-                  <p className="mt-2 text-[13.5px] leading-relaxed t-text"><MdText text={report.weeklySummary} /></p>
+                  <MdRich text={report.weeklySummary} className="mt-2 text-[13.5px] leading-relaxed t-text" />
                 </footer>
               )}
             </>
