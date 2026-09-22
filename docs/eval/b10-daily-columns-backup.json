@@ -1,0 +1,43 @@
+{
+  "at": "2026-09-22T03:14:15.445Z",
+  "key": "daily.columns",
+  "before": [
+    {
+      "id": "c1",
+      "name": "培训课程发布",
+      "desc": "课程/训练营/社群招募/项目培训/技术培训发布或预告",
+      "keywords": [
+        "课程",
+        "训练营",
+        "社群",
+        "招募",
+        "培训"
+      ]
+    },
+    {
+      "id": "focus",
+      "name": "重点更新",
+      "special": "focus"
+    },
+    {
+      "id": "c2",
+      "name": "AI技术",
+      "desc": "Codex、Claude、豆包、Agent、模型、自动化、RAG、MCP 等动向",
+      "keywords": [
+        "Codex",
+        "Claude",
+        "豆包",
+        "Agent",
+        "模型",
+        "自动化",
+        "RAG",
+        "MCP"
+      ]
+    },
+    {
+      "id": "fallback",
+      "name": "其它重要",
+      "special": "fallback"
+    }
+  ]
+}

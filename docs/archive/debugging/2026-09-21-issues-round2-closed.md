@@ -288,3 +288,5 @@
 | B23+B24 | （P1-3 行：成功率布尔伪装 + 心跳 25h 无正样本撑不起分母） | ✅ 09-21 交付 35B 数据地基：`lib/source-health.js` 唯一实现（三态尝试窗口 n/e/f 定长 40 滚动 + 时间衰减 + Beta 平滑 + 样本不足 null，口径常量版本化随响应回显）；三端写入口全接（runner `updateSourceOk/Error`、Vercel `api/collect.js`、本地 `fetcher.js`/`store.js`，系统性故障不进分母）；`/api/health/source-stats` 改真值（rate=null 标 unknown，不再有布尔冒充百分比）。锁 SH1~SH5（公式精确值/封顶滑窗类别过期/端点真值/三端同源）。**如实说明**：窗口从部署起才开始累积，源的前 3 轮尝试内 rate 仍是 null（W<3 设计如此）；B23 的端点显示侧属 35C（前端面板），不在本条 |
 
 | B123 | （P2-4 行：早报页头恒写「关键词规则排序」，AI 策展版也这么显示） | ✅ 09-21 修复：`DailyHeader.jsx` 读 `stats.schemaVersion`（≥2 出「AI 策展排序」）+ `degraded` 加「降级」标；锁 DH1/DH2（两档分支在 + 无条件字面量不在） |
+
+| B10（09-21 晚从活跃表挪观察段） | 早报 AI 版显示关键词版栏目注解 | 根属实测：线上读的是**字面键** `daily.columns`（不是 daily 对象里的字段），其值是旧的回声文案；已把 `lib/daily-columns.js#DEFAULT_COLUMNS` 写回该键（备份+回读随批）。可见面等下一批日报出报复验 |
