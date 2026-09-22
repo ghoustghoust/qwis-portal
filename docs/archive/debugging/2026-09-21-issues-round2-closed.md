@@ -306,3 +306,5 @@
 | B103② | （P3-4 行：/api/backup 只导出三张配置表） | ✅ 09-22 按「明示」收口（不扩面）：内容级恢复路径已由内容级转储承担（B103 本体已交付、回放已验证），把语义写明白而不是再建第二份备份——`/api/backup` 响应带 `contentBackup` 指路字段 + RUNBOOK 备份段写明「/api/backup 只覆盖配置」 |
 
 | B21+H13 | （P2-7 行：早报无期号无归档 + 缺本期索引） | ✅ 09-22 交付：`mybrief.archive` 期号归档（同北京日重跑原地替换、新日 max+1、封顶 30 期、空态不占期号——期号解析与周刊同语义的 `resolveMyBriefIssue`）；新公开端点 `/api/mybrief/archive`（期号倒序索引）；我的早报页头显「第 N 期」+ 页尾「往期早报」懒加载列表；日报期号读时按「有报告的北京日去重计数」（裸 id 混非 AI 兜底批次不能当期号），页头 meta 带「第 N 期」；**本期索引查实已有**（DailyPage 吸顶栏目 pill 导航带锚点滚动，无需重建）。锁 HA1~HA5 |
+
+| B122 | 🔴 凭据卫生：AGNES_API_KEY 明文进过会话输出一次 | ✅ 09-22 已轮换：新 key 三处同步（本地 `.env` / Vercel env（CLI 先 rm 后 add）/ GH Actions Secrets（git 凭据 + libsodium sealed box 走 API））；Agnes 直连鉴权 **HTTP 200**；空提交 `da515be` 触发部署已应用新 env。旧 key 由 Agnes 控制台侧自然失效 |
