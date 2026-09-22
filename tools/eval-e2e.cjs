@@ -118,7 +118,7 @@ const SRC = resolveAll({
   feHotSources: 'web/src/pages/HotPage.jsx:183',
   feHotEvents: 'web/src/pages/HotPage.jsx:200',
   feDaily: 'web/src/pages/DailyPage.jsx:68',
-  feMybrief: 'web/src/pages/MyBriefPage.jsx:38',
+  feMybrief: 'web/src/pages/MyBriefPage.jsx:39',
   feWeekly: 'web/src/pages/WeeklyPage.jsx:33',
   feCommon: 'web/src/store.jsx:24',
   feRealtime: 'web/src/hooks/useRealtime.js:32',
