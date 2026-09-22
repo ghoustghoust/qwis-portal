@@ -84,7 +84,7 @@ test('坑#35: 熔断阈值三端必须走 lib/source-breaker 同一实现', () =
   assert.equal(shouldPauseOnFail('youtube', 9), false);
   assert.equal(shouldPauseOnFail('youtube', 10), true);
   assert.equal(shouldPauseOnFail('rss', 3), true);
-  for (const f of ['server/services/collectors/store.js', 'api/collect.js', 'tools/collect-turso.js', 'lib/collectors/fetcher.js']) {
+  for (const f of ['server/services/collectors/store.js', 'api/collect.js', 'tools/collect-turso.js']) {
     assert.match(read(f), /source-breaker/, `${f} 必须引用唯一实现`);
   }
 });

@@ -36,7 +36,9 @@ const THREE = ['server/services/collectors/store.js', 'api/collect.js', 'tools/c
 
 // ── W1b UA 一致（坑 #19：自定义 UA 被 newsnow 拒 → 必须浏览器 UA） ──
 {
-  const files = ['tools/collect-turso.js', 'api/collect.js', 'lib/collectors/fetcher.js', 'server/services/collectors/fetcher.js'].filter(exists);
+  // B81/B128（09-22 裁决：摘掉+删）：lib/collectors/fetcher.js 已从清单摘除并删除文件——
+  // 它是「Serverless 兼容副本」但生产零调用，留在清单里会让永不运行的代码单独制造 W1 假红
+  const files = ['tools/collect-turso.js', 'api/collect.js', 'server/services/collectors/fetcher.js'].filter(exists);
   const uas = [];
   for (const f of files) {
     const src = read(f);
