@@ -343,7 +343,9 @@ async function saveVideos(sourceId, videos) {
 }
 
 // ─── 源状态更新 ───
-async function updateSourceOk(sourceId, extra, intervalMin) {
+async function updateSourceOk(sourceId, extra, intervalMin, outcome) {
+  const { recordAttempt } = require('../lib/source-health');
+  extra = recordAttempt(extra, outcome === 'e' ? 'e' : 'n', null, Date.now());
   const db = getDb();
   const now = nowIso();
   const next = new Date(Date.now() + intervalMin * 60000).toISOString();
@@ -355,6 +357,8 @@ async function updateSourceOk(sourceId, extra, intervalMin) {
 
 async function updateSourceError(sourceId, extra, errMsg, sourceType) {
   const db = getDb();
+  const { recordAttempt, classifyErr } = require('../lib/source-health');
+  extra = recordAttempt(extra, 'f', classifyErr(errMsg), Date.now());
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
   await db.execute({
@@ -443,7 +447,7 @@ async function runCollect(mode = 'collect') {
       if (extra.lastError) { delete extra.lastError; delete extra.lastErrorAt; }
 
       const intervalMin = Number(extra.intervalMin) || (source.type === 'bilibili' ? 60 : (source.type === 'hotlist' ? 30 : 60));
-      await updateSourceOk(source.id, extra, intervalMin);
+      await updateSourceOk(source.id, extra, intervalMin, (addedA + addedV) > 0 ? 'n' : 'e');
       stats.success++;
     } catch (err) {
       const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);

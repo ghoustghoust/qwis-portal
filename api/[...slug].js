@@ -1770,15 +1770,30 @@ async function handleBriefHistory(req) {
 
 // GET /api/health/source-stats — 云端无 job_queue 历史，用 sources 当前状态近似
 async function handleHealthSourceStats(req) {
+  // 35B/B23：rate 改由每源滚动窗口的真分母算出（lib/source-health 唯一实现）；
+  // 样本不足 rate=null + unknown=true（前端显示「—」），永不再用状态布尔冒充百分比
   const rows = await qAll(
-    'SELECT id, name, type, status, fail_count FROM sources ORDER BY fail_count DESC LIMIT 500'
+    'SELECT id, name, type, status, fail_count, extra FROM sources ORDER BY fail_count DESC LIMIT 500'
   );
-  const items = rows.map((r) => ({
-    source_id: r.id, name: r.name, type: r.type,
-    total: null, success: null, failed: r.fail_count || 0,
-    rate: r.status === 'ok' ? 100 : 0,
-  }));
-  return jsonOk({ items, days: Number(req.query.days) || 7 });
+  const items = rows.map((r) => {
+    let extra = {};
+    try { extra = JSON.parse(r.extra || '{}'); } catch { /* 非法 JSON 按无窗口处理 */ }
+    const sr = successRate(extra);
+    return {
+      source_id: r.id, name: r.name, type: r.type,
+      total: sr ? sr.n : null, success: null, failed: r.fail_count || 0,
+      rate: sr ? sr.p : null,
+      unknown: !sr,
+      W: sr ? sr.W : null,
+      dominantErr: sr ? sr.dominantErr : null,
+      consecutiveFails: sr ? sr.consecutiveFails : null,
+      lastOkAt: sr ? sr.lastOkAt : null,
+    };
+  });
+  return jsonOk({
+    items, days: Number(req.query.days) || 7,
+    caliber: { v: SH_VERSION, halfLifeH: SH_HALF_LIFE_H, emptyWeight: SH_EMPTY_W, prior: SH_PRIOR, wmin: SH_WMIN, windowN: SH_WINDOW_N },
+  });
 }
 
 // POST /api/health/unfreeze-all — 批量解冻（restore-all 别名，保持本地前端兼容）
@@ -2039,6 +2054,7 @@ const CLEAN_TABLES = [
 const { countSql: retainCountSql, deleteSql: retainDeleteSql } = require('../lib/retention');
 const { credentialGate, CREDENTIAL_KEY, GATE_MAX_AGE_H } = require('../lib/content-dump');
 const { usableChannels, deliveryState } = require('../lib/alert-channels');
+const { successRate, VERSION: SH_VERSION, HALF_LIFE_H: SH_HALF_LIFE_H, EMPTY_W: SH_EMPTY_W, PRIOR: SH_PRIOR, WMIN: SH_WMIN, WINDOW_N: SH_WINDOW_N } = require('../lib/source-health');
 async function cleanupArticles(cutoff, { preview = false } = {}) {
   return preview
     ? qOne(retainCountSql('cloudManual', 'retention'), [cutoff])

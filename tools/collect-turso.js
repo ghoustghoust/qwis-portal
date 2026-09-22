@@ -397,7 +397,10 @@ async function saveVideos(sourceId, videos) {
 }
 
 // ─── 源状态 ───
-async function updateSourceOk(sourceId, extra, intervalMin) {
+// 35B：每次「真抓了」都在 extra.health 里记一笔三态（n/e/f），成功率的真分母（B23/B24）
+async function updateSourceOk(sourceId, extra, intervalMin, outcome) {
+  const { recordAttempt } = require('../lib/source-health');
+  extra = recordAttempt(extra, outcome === 'e' ? 'e' : 'n', null, Date.now());
   const now = nowIso();
   const next = new Date(Date.now() + intervalMin * 60000).toISOString();
   await qRun(
@@ -409,6 +412,11 @@ async function updateSourceOk(sourceId, extra, intervalMin) {
 async function updateSourceError(sourceId, extra, errMsg, sourceType, systemic) {
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
+  // 35B：系统性故障（出口/代理挂）不是源的错，不进窗口；其余失败记 f + 粗类
+  if (!systemic) {
+    const { recordAttempt, classifyErr } = require('../lib/source-health');
+    extra = recordAttempt(extra, 'f', classifyErr(errMsg), Date.now());
+  }
   // F6 系统性故障抑制（lib/source-breaker.js 判）：一轮里大批源同时报同一个网络/环境类错误，
   // 说明是我们出不去，不是这些源死了 → 只记 status/lastError 供排障，
   // **不累加 fail_count、不熔断**。否则一次代理故障就把几百个活源集体关进牢房（坑 #35 的 458 源事故）。
@@ -453,8 +461,9 @@ async function collectOne(source, stats) {
     if (result.skipped) { stats.skipped++; return; }
 
     // 21-bilibili-runner：视频走 videos 表（vid 去重），文章走 articles 表
+    let vAdded = 0;
     if (Array.isArray(result.videos)) {
-      const vAdded = await saveVideos(source.id, result.videos);
+      vAdded = await saveVideos(source.id, result.videos);
       stats.videos = (stats.videos || 0) + vAdded;
     }
     const added = await saveArticles(source.id, result.articles || [], { marksFeatured: !!extra.marksFeatured });
@@ -475,7 +484,7 @@ async function collectOne(source, stats) {
     // 2026-09-11：RSS 默认间隔 480→60min。runner 容量充足（全量一轮几分钟），
     // ETag 304 使重复拉取几乎免费；8h 间隔会导致公众号新文章延迟大半天才入流。
     const intervalMin = Number(extra.intervalMin) || (source.type === 'hotlist' ? 30 : 60);
-    await updateSourceOk(source.id, extra, intervalMin);
+    await updateSourceOk(source.id, extra, intervalMin, (added + vAdded) > 0 ? 'n' : 'e');
     stats.success++;
     (stats.outcomes || (stats.outcomes = [])).push({ ok: true });
   } catch (err) {

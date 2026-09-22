@@ -284,3 +284,5 @@
 | B69 | （P1-2 行：「报警有出口」第二处实现，preflight 与健康面各说各话） | ✅ 09-21 收口：本地 `getAlertSummary` 与云端 `/api/health/status` 都改走 `lib/alert-channels.js#usableChannels`（与 preflight 同一份），各加 `usableChannelCount`/`noExit`（云端另带 `deliveryState` 投递态，不回显 URL）。锁 `tests/regression-alert-exit.test.js` AE1~AE3（含「哨兵渠道在场必须 noExit=true」与脱敏面） |
 
 | B133 | （P1-4 行：#64-1 判据用行首缩进近似「顶层」，误伤锁里的反例样本） | ✅ 09-21 修复：判据改走 `lib/src-spans` 遮蔽视图（大括号深度定「顶层」，字符串/注释里的样本整段消失），双向锁 `#64-1b`（反例样本不许红 / 顶层真读必须红 / 函数体内不判）——锁文件里又可以安全地放坏样本了（坑 #45 方向保住了） |
+
+| B23+B24 | （P1-3 行：成功率布尔伪装 + 心跳 25h 无正样本撑不起分母） | ✅ 09-21 交付 35B 数据地基：`lib/source-health.js` 唯一实现（三态尝试窗口 n/e/f 定长 40 滚动 + 时间衰减 + Beta 平滑 + 样本不足 null，口径常量版本化随响应回显）；三端写入口全接（runner `updateSourceOk/Error`、Vercel `api/collect.js`、本地 `fetcher.js`/`store.js`，系统性故障不进分母）；`/api/health/source-stats` 改真值（rate=null 标 unknown，不再有布尔冒充百分比）。锁 SH1~SH5（公式精确值/封顶滑窗类别过期/端点真值/三端同源）。**如实说明**：窗口从部署起才开始累积，源的前 3 轮尝试内 rate 仍是 null（W<3 设计如此）；B23 的端点显示侧属 35C（前端面板），不在本条 |

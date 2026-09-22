@@ -40,6 +40,8 @@ async function fetchSourceInner(source) {
       latestTitle: latest?.title || '',
     });
   }
+  // 35B：每次真抓都记一笔三态（addedArticles+addedVideos 定 n/e），成功率分母同源 lib/source-health
+  extra = require('../../../lib/source-health').recordAttempt(extra, (addedArticles + addedVideos) > 0 ? 'n' : 'e', null, Date.now());
   // ETag/Last-Modified 写回 extra，供下次条件请求；同时清除上次错误标记
   if (result.etag || result.lastModified) {
     if (result.etag) extra.etag = result.etag;

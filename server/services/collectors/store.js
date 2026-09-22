@@ -24,6 +24,8 @@ function markSourceError(source, errMsg, opts = {}) {
   let extra = {};
   try { extra = JSON.parse(source.extra || '{}'); } catch { /* 非法 JSON 按无处理 */ }
   // ✅ 使用 log.mask() 脱敏敏感信息（Token/Cookie/API Key）
+  extra = require('../../../lib/source-health').recordAttempt(extra, 'f',
+    require('../../../lib/source-health').classifyErr(errMsg), Date.now());
   extra.lastError = log.mask(String(errMsg || '未知错误')).slice(0, 300);
   extra.lastErrorAt = nowIso();
   db.prepare("UPDATE sources SET status='error', fail_count=COALESCE(fail_count,0)+1, extra=? WHERE id=?")
