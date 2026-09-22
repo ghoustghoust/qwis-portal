@@ -320,10 +320,23 @@ def main(argv: list[str]) -> int:
 
 def _append_trend(rep: dict[str, Any]) -> None:
     tp = OUT_DIR / "trend.json"
-    trend = json.loads(tp.read_text(encoding="utf-8")) if tp.exists() else []
+    # B70②：读-改-写非原子且损坏会抛在报告落盘之后——先临时文件再原子替换，
+    # 且旧 trend.json 损坏时保留现场（改名 .corrupt）而不是直接炸掉
+    if tp.exists():
+        try:
+            trend = json.loads(tp.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            bad = tp.with_suffix(".corrupt")
+            tp.replace(bad)
+            print(f"⚠ trend.json 已损坏，现场保留为 {bad.name}，重新起一份")
+            trend = []
+    else:
+        trend = []
     trend.append({"at": rep["at"], "mean_score": rep["mean_score"], "n": rep["n_judged"],
                   "judge_prompt_version": rep["judge_prompt_version"]})
-    tp.write_text(json.dumps(trend, ensure_ascii=False, indent=1), encoding="utf-8")
+    tmp = tp.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(trend, ensure_ascii=False, indent=1), encoding="utf-8")
+    tmp.replace(tp)
 
 
 if __name__ == "__main__":

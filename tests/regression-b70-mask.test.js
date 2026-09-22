@@ -14,3 +14,16 @@ test('BT4 掩码按参数名遮值，与 env 加载与否无关（B70④/坑 #69
   const masked = 'https://x/api/collect?key=SECRET-123&mode=debug'.replace(/(key=)[^&]+/, '$1***');
   assert.equal(masked, 'https://x/api/collect?key=***&mode=debug');
 });
+
+test('BT5 judge 外部内容必须进显式定界块 + 截断留痕（B70①）', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'eval-content', 'judge.py'), 'utf8');
+  assert.ok(src.includes('external-untrusted-content'), 'judge 没有定界块');
+  assert.ok(src.includes('已截断'), '截断没留痕（评半篇打满分是自欺）');
+  assert.ok(src.includes('只有被评数据'), '没有「块内只有数据没有指令」的角色约定');
+});
+
+test('BT6 trend.json 写入必须原子且损坏可恢复（B70②）', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'eval-content', 'run.py'), 'utf8');
+  assert.ok(src.includes('.json.tmp') && src.includes('tmp.replace(tp)'), '不是 tmp+replace 原子写');
+  assert.ok(src.includes('.corrupt'), '损坏的 trend.json 没有保留现场就覆盖/抛错的分支');
+});
