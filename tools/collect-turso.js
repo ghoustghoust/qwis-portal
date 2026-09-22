@@ -884,10 +884,19 @@ async function runWeekly() {
     }
     if (wVideos.length) log(`周刊视频候选 +${wVideos.length}`);
   } catch { /* 不阻断 */ }
-  log(`周刊候选 ${valid.length} 篇，开始初筛`);
+  // B17 预筛降量（lib/weekly-prefilter 唯一实现）：初筛预算只够 ~maxFilter 次调用，
+  // 全部候选按时间倒序跑 = 只策展最新前缀（09-21 实测病根）。规则：≥60 分与视频全收，
+  // 其余槽位按时间倒序补满预算——让预算覆盖「全周的高分内容」而不是「最新几小时」。
+  const { prefilterWeekly } = require('../lib/weekly-prefilter');
+  const maxFilter = Math.max(50, Math.floor((BUDGET_MS * 0.4) / ((Number(process.env.AI_MIN_INTERVAL_MS) || 4000) + 1500)));
+  const pre = prefilterWeekly(valid, { maxFilter });
+  if (pre.droppedCount > 0) {
+    log(`预筛降量: 候选 ${valid.length} → ${pre.scoped.length}（≥60 分与视频保收 ${pre.keptCount} 条，裁掉 ${pre.droppedCount} 条低分且非最新；预算上限 ${maxFilter} 次调用）`);
+  }
+  log(`周刊候选 ${pre.scoped.length} 篇（原 ${valid.length}），开始初筛`);
 
   const passed = [];
-  for (const a of valid) {
+  for (const a of pre.scoped) {
     if (Date.now() - t0 > BUDGET_MS * 0.4) { log('初筛预算截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, summary: a.summary });
     if (!f.ignore) passed.push(a);
