@@ -314,3 +314,5 @@
 | B119③ 收尾（09-22 你裁定） | 25 个全库无源的休眠 wemp 行 | **已删除**：苍何、博物、冷兔等 25 行（备份 `docs/eval/b119-wemp-sources-backup.json` 全量留存）；24 篇历史孤儿文章读层 JOIN 自然隐藏，无需清表。最终公众号覆盖 = 33（bestblogs.dev 现役）+ 7（xlab 公共目录接线）= 40 个 |
 
 | BL3 | 采集尝试流水不存在，成功率物理上算不出来 | ✅ 已随 35B 交付核销（`lib/source-health.js` 滚动窗口 + `/api/health/source-stats` 真值，锁 SH1~SH5）——09-22 从阻塞项表出账 |
+
+| B81/B128 | （⚪ 待裁决行：零引用资产三处） | ✅ 09-22 按你「同意」执行**摘掉+删（同批）**：`tools/eval-whitebox.cjs` W1 清单与 `tests/regression-20260919b.test.js` 引用面摘除 `lib/collectors/fetcher.js`，并删除 `lib/collectors/{fetcher,repo}.js` 与 `web/src/snapshot.js`；锁 DC128/DC128b（文件不在 + 引用面干净，注释记录不算引用）；F2P=基线红 → 改后绿。quarantine 内引用关系按 B128 原判属正常形态不动。doc-lint 因 ISSUES 行引用已删文件而报的 1 错随行出账消失 |
