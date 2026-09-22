@@ -8,8 +8,13 @@ export default function DailyHeader({ report, regenerating, onRegenerate }) {
   const genTime = generatedAt ? new Date(generatedAt).getTime() : NaN;
   const valid = !Number.isNaN(genTime);
 
+  // B123：排序口径必须读产物真实档位（此前无条件写「关键词规则排序」，AI 策展版也这么显示）
+  const sv = Number(report?.stats?.schemaVersion || 1);
+  const sortLabel = sv >= 2 ? 'AI 策展排序' : '关键词规则排序';
+  const degradedMark = report?.degraded ? ' · 降级' : '';
+
   const meta = valid
-    ? `${formatDateTime(generatedAt)} 生成 · 关键词规则排序 · ${formatDateTime(new Date(genTime - windowHours * 3600 * 1000).toISOString())} 至 ${formatDateTime(generatedAt)}`
+    ? `${formatDateTime(generatedAt)} 生成 · ${sortLabel}${degradedMark} · ${formatDateTime(new Date(genTime - windowHours * 3600 * 1000).toISOString())} 至 ${formatDateTime(generatedAt)}`
     : '尚未生成日报';
 
   return (
