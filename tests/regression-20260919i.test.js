@@ -158,8 +158,9 @@ test('I9 B8：两种正文来源的分流必须是可测行为（不是文本断
     assert.ok(src.replace(/\s+/g, ' ').includes(mark), `${f} 的取值链变了，本锁需同步改判`);
   }
   const hot = read('web', 'src', 'components', 'HotDetail.jsx');
-  assert.ok(/<MdText text=\{summary\}/.test(hot) && /<MdText text=\{reason\}/.test(hot),
-    '热点详情的 AI 导读/推荐理由仍是裸文本（B8 的"重点标注丢失"面）');
+  // B8 交付后：summary（长文、可能含列表/标题块）走 MdRich，reason（一行）仍走 MdText
+  assert.ok(/<MdRich text=\{summary\}/.test(hot) && /<MdText text=\{reason\}/.test(hot),
+    '热点详情的 AI 导读应走 MdRich（块级）、推荐理由走 MdText（行内）——裸文本才是 B8 复发');
 });
 
 test('I10 B26：/api/status 首屏不得内联重统计，重统计走独立端点（两端都要有）', () => {
