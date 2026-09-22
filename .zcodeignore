@@ -1,0 +1,107 @@
+node_modules/
+/data/
+.env
+web/dist/
+portal/dist/
+portal/dist-admin/
+*.log
+
+# 敏感凭据
+cloud/token.json
+tools/.auth-probe.*
+tools/.leak-probe.*
+
+# PHP 便携测试运行时
+tools/.php-runtime/
+
+# AI 工具内部状态
+.qoder/
+.autoclaw/
+.opencode/
+
+# 归档子项目的 node_modules
+archive/_eval/wechat-rss-plus/node_modules/
+archive/_eval/wechat-rss-plus/.vscode/
+
+# 门户独立 git 仓库内部
+portal/.vercel/
+
+# 数据库文件（运行时生成）
+db
+db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# 验证截图（统一归档目录）
+验证截图/
+
+# Vercel 本地缓存
+.vercel/
+
+# 构建产物内部
+archive/_eval/wechat-rss-plus/
+
+# 含敏感凭据的交接文档，勿提交（GitHub 会扫描吊销 PAT）
+docs/HANDOVER.md
+
+# Python 侧评测工具（41-8）的字节码缓存
+__pycache__/
+*.pyc
+
+# 回归测试的子进程驱动（B77/B83 模板：测试在仓库根写一个 .<用例>-driver-<pid>.cjs 再 spawn，
+# 正常由 after() 删掉；被中断时会留在那里）。这些文件里带本地文件库路径与自签 token，
+# 且是一次性产物——不忽略就等于让下一次 git add -A 有机会把中断残留提交上去。
+.-*-driver-*.cjs
+.*-driver-*.cjs
+.*-fix-*.cjs
+.tmp-*-*.cjs
+# 主代理本轮的一次性取证脚手架目录（探针脚本 + 下载的 runner 日志 + 端点响应），整目录不入库：
+# 里面有 /api/* 响应与 GH Actions 日志，一次 `git add -A` 就会把外部产物混进提交（同 B113/放行清单 #14 的形状）
+.tmpchk/
+
+# 审计图产物整目录（B113）：`tools/audit-graph.cjs` 把 `dbState.settings[*].value` 原样落盘，
+# 里面含真实飞书 webhook 明文，而该路径此前既未跟踪也未被忽略 → 一次 `git add docs/` 就连凭据一起提交
+docs/eval/audit/
+
+# 一次性诊断/取证探针（放行清单 #14 选项②）。实测边界必须写清：本模式之前
+# 已有 22 份 `tools/_*.cjs` 被跟踪并进了历史（含 FEATURE_MATRIX 引用的 _probe-*-selftest.cjs），
+# 所以这一行只挡住「今后新增的」误加，不撤销历史。要提交常驻探针须显式 `git add -f`，
+# 而真正常驻的判据应按 #14 选项①做成 npm 子命令，而不是留 `_` 前缀脚本
+tools/_*.cjs
+# 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
+archive/_diag/portal-quarantine/vercel-env-production.local
+
+# e2e 截图不入库（b42e6f1 起惯例：只提交 report.json/env_lock.json；649 张 PNG ≈130MB 留本地）
+# 历史已跟踪的 255 张不撤销，本行只挡今后新增
+docs/eval/e2e/*/screens/
+
+# ===== ↑ 以上同步自 .gitignore（「从 .gitignore 同步」只重写以上部分）=====
+.git/
+.hg/
+.svn/
+bower_components/
+jspm_packages/
+site-packages/
+venv/
+coverage/
+htmlcov/
+lcov-report/
+cmakefiles/
+cmake-build-*/
+bazel-*/
+pods/
+deriveddata/
+storybook-static/
+playwright-report/
+test-results/
+allure-results/
+allure-report/
+cdk.out/
+*.egg-info/
+*.dist-info/
+eggs/
+pip-wheel-metadata/
+wheels/
+# ----- ↑ 以上为 ZCode 默认排除规则（自定义规则请写在本行下方，不会被同步/恢复改动）-----
+# 自定义规则写在下方（本行提示可删除）

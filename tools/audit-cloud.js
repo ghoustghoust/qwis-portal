@@ -23,7 +23,7 @@ async function probe(name, url, check, opts = {}) {
   try {
     // 必须走 lib/cloud-site#cloudFetch：本机直连 vercel.app 不通，而全局 fetch 会静默忽略
     // undici 的 ProxyAgent → 症状是"19/19 fetch failed"，被读成云端挂了（实为脚本没走代理）。
-    const r = await cloudFetch(BASE + url, { headers: UA, signal: AbortSignal.timeout(20000), ...opts });
+    const r = await cloudFetch(/^https?:\/\//.test(url) ? url : BASE + url, { headers: UA, signal: AbortSignal.timeout(20000), ...opts });
     const ms = Date.now() - t0;
     let body = null;
     try { body = await r.json(); } catch { /* 非 JSON */ }
@@ -41,6 +41,15 @@ async function main() {
   await probe('热点页', '/hot/', (r) => r.ok);
   await probe('管理页', '/admin/', (r) => r.ok);
   await probe('meta', '/api/meta', (r, b) => b && b.ok && b.articles > 0 ? true : 'articles 计数异常');
+  // B87：B 站上游响应形状哨兵——上游字段漂移时它先红，而不是等采集静默失败
+  //（regression-bilibili 搬迁后全仓没有任何自动化盯真实 B 站协议面）
+  await probe('B站上游 nav 形状', 'https://api.bilibili.com/x/web-interface/nav', (r, b) => {
+    if (!r.ok) return `上游 HTTP ${r.status}`;
+    if (!b || typeof b.code !== 'number' || typeof b.data !== 'object' || b.data === null) {
+      return `上游 nav 形状变了：keys=${b ? Object.keys(b).slice(0, 6) : '非 JSON'}`;
+    }
+    return true;
+  });
   // B26：状态面拆成"轻投影 + 按需重统计"两端，两条都要长期盯——
   // 只验轻的那条会漏掉"拆分后重统计根本取不到"，只验重的会漏掉"首屏又被塞回 heavy 字段"。
   await probe('状态轻投影', '/api/status', (r, b) => {

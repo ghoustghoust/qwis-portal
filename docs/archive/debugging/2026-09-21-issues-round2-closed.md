@@ -296,3 +296,5 @@
 | B8 | （P2-2 行：综述/详情无排版，块级结构不渲染） | ✅ 09-22 交付：`md-inline.js` 加 `mdBlocks` 块级切分（### 标题 / - 无序 / 1. 有序 / 空行分段；纯文本零变化），新组件 `MdRich`（块内仍走 MdText 同一份内联解析，无 HTML 注入面）；换用点：周刊 theme/editorNote/narrative/weeklySummary、日报 theme、热点详情 summary ×2；样式类 md-h/md-ul/md-ol/md-p 入 index.css。锁 MB1~MB4。**欠的复验**：一条「真含 md 标记的线上样本」（下一次 weekly/daily 出报后看一眼排版） |
 
 | B86 | （P3-3 行：本地端日报结构性缺播客条目） | ✅ 09-22 交付：本地日报补「视频与播客」栏（窗口内新视频 6 + 播客音频 4，与云端同栏同字段形状；播客判定走 `lib/media.js#audioCoverSql` 唯一口径，opus 不再漏）。锁 BM1~BM3（行为：栏里真有视频+播客且带 audio_url；边界：无媒体不出空栏；形态：不自带第四份判定）。顺手躲过一颗雷：初版引用的是 collectCandidates 内部的 cutoff（generate 作用域里不存在），静默 catch 吃掉 = 栏永远不出——BM1 的「栏必须真出现」断言就是用来挡这种假接线的 |
+
+| B87 | （P3-1 行：B 站线上探针随测试搬迁消失，上游漂移无自动化会红） | ✅ 09-22 交付：`tools/audit-cloud.js` 加「B站上游 nav 形状」哨兵探针（`api.bilibili.com/x/web-interface/nav` 的 `{code, data}` 契约，失败理由不算通过）；probe() 支持绝对 URL（云端相对路径不受影响）。本轮实测：探针 200 通过、全量巡检 21/22。锁 BP1/BP2 |
