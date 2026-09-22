@@ -312,3 +312,5 @@
 | B119③ 公众号源路线（09-22 修复执行） | wemp 893 篇停在 09-04、65 源空转 | 实测排除三条路：公共 RSSHub（Cloudflare 403）/ 直抓公众号主页（微信客户端限制）/ 搜狗微信搜索（JS 壳+反爬）。最终方案=公共 wechat2rss 目录源直接接线：**恢复 40/65**——33 个账号库里本就有 bestblogs.dev 现役源（375 个该系源当日在采，抽查 数字生命卡兹克 当日新文在库），7 个（量子位/差评/PaperWeekly/夕小瑶科技说/新智元/机器之心/极客公园）接线 wechat2rss.xlab.app 公共目录 feed；剩 25 个全库无源（苍何、博物、冷兔等），停用并标 retired（备份 `docs/eval/b119-wemp-sources-backup.json`）。接线列表经「同名现役源 + URL 唯一」双重去重 |
 
 | B119③ 收尾（09-22 你裁定） | 25 个全库无源的休眠 wemp 行 | **已删除**：苍何、博物、冷兔等 25 行（备份 `docs/eval/b119-wemp-sources-backup.json` 全量留存）；24 篇历史孤儿文章读层 JOIN 自然隐藏，无需清表。最终公众号覆盖 = 33（bestblogs.dev 现役）+ 7（xlab 公共目录接线）= 40 个 |
+
+| BL3 | 采集尝试流水不存在，成功率物理上算不出来 | ✅ 已随 35B 交付核销（`lib/source-health.js` 滚动窗口 + `/api/health/source-stats` 真值，锁 SH1~SH5）——09-22 从阻塞项表出账 |
