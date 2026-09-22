@@ -5,7 +5,9 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 
-const { prefilterWeekly } = require('../lib/weekly-prefilter');
+// 惰性取（#64-1）：F2P 回基线时本模块不存在，顶层 require 会让整份锁加载即崩
+const WP = () => require('../lib/weekly-prefilter');
+const prefilterWeekly = (...a) => WP().prefilterWeekly(...a);
 
 const mk = (n, score) => ({ id: n, score, published_at: new Date(Date.now() - n * 3600e3).toISOString() });
 
