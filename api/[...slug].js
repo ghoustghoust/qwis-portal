@@ -1114,9 +1114,51 @@ async function handleReading(req) {
   // 文章侧计数（B60：与列表同一个表达式，此前这里是手写的第二份副本）
   const aTypeCond = readingTypeCondSql(type);
   const aQCond = qLike ? ' AND (a.title LIKE ? OR s.name LIKE ?)' : '';
-  // B73：文章/视频两组计数互不依赖——并行（串行时每组一个 Turso 往返，端点整段被拖成 3~6s）
+  // B73：快路径把「文章计数 + 视频计数 + 窄查询」合成一次 batch（一次 Turso 往返替代三段串行）；
+  // 慢路径（带筛选）两组计数并行
+  const isFastPath = noUserFilter && tab === 'all' && type === 'all';
+  let narrowPre = null;
+  if (isFastPath) {
+    const narrowConds = [];
+    const narrowArgs = [];
+    if (q.cursor) { narrowConds.push('sort_key < ?'); narrowArgs.push(String(q.cursor)); }
+    const narrowWhere = narrowConds.length ? 'WHERE ' + narrowConds.join(' AND ') : '';
+    const [aCountRes, vCountRes, narrowRes] = await getDb().batch([
+      { sql: `
+        SELECT
+          (SELECT COUNT(*) FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond})
+            + (SELECT COUNT(*) FROM articles a WHERE a.later=1 AND a.read_at IS NULL ${noiseCond}) AS total,
+          (SELECT COUNT(*) FROM articles a WHERE a.later=1 ${noiseCond}) AS fav,
+          (SELECT COUNT(*) FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond}) AS rd
+      `, args: [] },
+      { sql: `SELECT COUNT(*) AS c, SUM(CASE WHEN v.favorite = 1 THEN 1 ELSE 0 END) AS fav
+        FROM videos v LEFT JOIN sources s ON s.id = v.source_id WHERE ${READING_VIDEO_COND} `, args: [] },
+      { sql: `
+      SELECT id, sort_key, item_type FROM (
+        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article' AS item_type
+        FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond}
+        UNION ALL
+        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article'
+        FROM articles a WHERE a.later = 1 AND a.read_at IS NULL ${noiseCond}
+        UNION ALL
+        SELECT v.id, v.published_at AS sort_key, 'video'
+        FROM videos v WHERE ${READING_VIDEO_COND}
+      ) ${narrowWhere}
+      ORDER BY sort_key DESC, id DESC
+      LIMIT ${PAGE_SIZE + 1}
+      `, args: narrowArgs },
+    ], 'read');
+    const arow = aCountRes.rows[0] || {};
+    counts.all += Number(arow.total || 0);
+    counts.favorited += Number(arow.fav || 0);
+    counts.read += Number(arow.rd || 0);
+    const vrow = vCountRes.rows[0] || {};
+    counts.all += Number(vrow.c || 0);
+    counts.favorited += Number(vrow.fav || 0);
+    narrowPre = narrowRes.rows;
+  }
   const countJobs = [];
-  if (aTypeCond !== 'AND 0') {
+  if (!isFastPath && aTypeCond !== 'AND 0') {
     const countArgs = qLike ? [qLike, qLike] : [];
     countJobs.push((async () => {
       if (!qLike && aTypeCond === '') {
@@ -1148,7 +1190,7 @@ async function handleReading(req) {
   }
 
   // 视频侧计数
-  if (T.includeVideos) {
+  if (!isFastPath && T.includeVideos) {
     const vQCond = qLike ? ' AND (v.title LIKE ? OR s.name LIKE ?)' : '';
     const vCountArgs = qLike ? [qLike, qLike] : [];
     countJobs.push((async () => {
@@ -1161,30 +1203,14 @@ async function handleReading(req) {
       counts.favorited += (vRow?.fav || 0);
     })());
   }
-  await Promise.all(countJobs);
+  if (!isFastPath) await Promise.all(countJobs);
 
   // T3-3 快路径（2026-09-13 实测 9-13s→~350ms）：无筛选时两段式——
   // ①窄查询只取 id/sort_key（表达式覆盖索引 idx_*_sk，不触碰宽行）②按 id 取 31 条全列
   // ⚠️ 仅 tab=all 且 type=all（对抗性审查：type=video 时快路径曾泄漏文章——快路径不解析 type）
-  if (noUserFilter && tab === 'all' && type === 'all') {
-    const narrowConds = [];
-    const narrowArgs = [];
-    if (q.cursor) { narrowConds.push('sort_key < ?'); narrowArgs.push(String(q.cursor)); }
-    const narrowWhere = narrowConds.length ? 'WHERE ' + narrowConds.join(' AND ') : '';
-    const narrow = await qAll(`
-      SELECT id, sort_key, item_type FROM (
-        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article' AS item_type
-        FROM articles a WHERE a.read_at IS NOT NULL ${noiseCond}
-        UNION ALL
-        SELECT a.id, COALESCE(a.published_at, a.created_at) AS sort_key, 'article'
-        FROM articles a WHERE a.later = 1 AND a.read_at IS NULL ${noiseCond}
-        UNION ALL
-        SELECT v.id, v.published_at AS sort_key, 'video'
-        FROM videos v WHERE ${READING_VIDEO_COND}
-      ) ${narrowWhere}
-      ORDER BY sort_key DESC, id DESC
-      LIMIT ${PAGE_SIZE + 1}
-    `, narrowArgs);
+  // B73：快路径的计数与窄查询已在上方随一次 batch 完成（narrowPre）
+  if (isFastPath) {
+    const narrow = narrowPre;
 
     const rowsFull = [];
     const aIds = narrow.filter((r) => r.item_type === 'article').map((r) => Number(r.id));
