@@ -13,7 +13,9 @@ for (const line of envContent.split('\n')) {
 
 async function testCollect() {
   const url = `${CLOUD_SITE}/api/collect?key=${process.env.COLLECT_KEY}&mode=debug`;
-  console.log('Testing:', url.replace(process.env.COLLECT_KEY, '***'));
+  // B70④：掩码不得依赖 env 已加载——key 未加载时 replace(undefined) 会把密钥原样打印（B110/坑 #69 同族）。
+  // 直接按参数名遮值，与 env 加载与否无关
+  console.log('Testing:', url.replace(/(key=)[^&]+/, '$1***'));
   
   try {
     const ctrl = new AbortController();
