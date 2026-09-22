@@ -27,3 +27,10 @@ test('BT6 trend.json 写入必须原子且损坏可恢复（B70②）', () => {
   assert.ok(src.includes('.json.tmp') && src.includes('tmp.replace(tp)'), '不是 tmp+replace 原子写');
   assert.ok(src.includes('.corrupt'), '损坏的 trend.json 没有保留现场就覆盖/抛错的分支');
 });
+
+test('BT7 golden 正文快照不再进 git（B70③：第三方正文逐轮累积的收敛口径）', () => {
+  const gi = fs.readFileSync(path.join(__dirname, '..', '.gitignore'), 'utf8');
+  assert.ok(gi.includes('docs/eval/content/golden-*.json'), '.gitignore 没收 golden 快照');
+  // 报告 JSON 不在忽略面内（它是入库的那一半）
+  assert.ok(!/report-\*\.json/.test(gi), '报告 JSON 被误伤');
+});

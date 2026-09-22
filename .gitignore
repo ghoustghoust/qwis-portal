@@ -75,3 +75,7 @@ archive/_diag/portal-quarantine/vercel-env-production.local
 # e2e 截图不入库（b42e6f1 起惯例：只提交 report.json/env_lock.json；649 张 PNG ≈130MB 留本地）
 # 历史已跟踪的 255 张不撤销，本行只挡今后新增
 docs/eval/e2e/*/screens/
+
+# golden 冻结集是第三方正文快照（单条最长 8000 字，逐轮累积，B70③）——
+# 与 e2e 截图同一取舍：报告 JSON 入库，正文快照留本地
+docs/eval/content/golden-*.json
