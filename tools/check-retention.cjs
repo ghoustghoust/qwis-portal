@@ -21,7 +21,10 @@ const { createClient } = require('@libsql/client');
 const { pendingPlan, HOTLIST_DAYS } = require('../lib/retention');
 
 const ROOT = path.join(__dirname, '..');
-for (const line of fs.readFileSync(path.join(ROOT, '.env'), 'utf8').split(/\r?\n/)) {
+// .env 不在 = 环境变量已由外部环境注入（CI 即如此）；缺文件不该是致命错误
+const envFile = path.join(ROOT, '.env');
+const envTxt = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
+for (const line of envTxt.split(/\r?\n/)) {
   const m = /^([A-Z_][A-Z0-9_]*)=(.*)$/.exec(line.trim());
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
 }

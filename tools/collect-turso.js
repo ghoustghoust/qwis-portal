@@ -69,10 +69,13 @@ if (process.env.HTTPS_PROXY) {
 let _db = null;
 function getDb() {
   if (!_db) {
-    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+    const url = process.env.TURSO_DATABASE_URL;
+    // file: 本地文件库不需要 authToken——隔离测试的驱动正是靠"清空 token"证明不碰生产
+    // （此前要求两者都在：本地有 .env 时测试靠 .env 回填真 token 才过，CI 无 .env 必红）
+    if (!url || (!url.startsWith('file:') && !process.env.TURSO_AUTH_TOKEN)) {
       throw new Error('缺少 TURSO_DATABASE_URL / TURSO_AUTH_TOKEN');
     }
-    _db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
+    _db = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
   }
   return _db;
 }

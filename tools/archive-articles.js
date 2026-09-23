@@ -15,8 +15,9 @@
 const path = require('path');
 const fs = require('fs');
 
-// 手动加载 .env
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
+// 手动加载 .env（文件不在 = 环境变量已由外部环境注入，CI 即如此；缺文件不该是致命错误）
+const envFile = path.join(__dirname, '..', '.env');
+const envTxt = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
 for (const line of envTxt.split(/\r?\n/)) {
   const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();

@@ -19,6 +19,8 @@ if (HAS_ENV) {
   before(async () => {
     const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: '' });
     await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
+    // 假 key 只为让 _providerChain 非空（空链直接抛"未配置 AI API Key"）——AI 调用全打桩，绝不会真用
+    await db.execute({ sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)', args: ['ai', JSON.stringify({ apiKey: 'ci-fake-key', model: 'stub' })] });
     await db.close();
   });
 }
