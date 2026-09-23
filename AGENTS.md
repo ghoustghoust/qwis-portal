@@ -1,6 +1,6 @@
 # AGENTS.md — 全网情报系统 · Agent 协作规则
 
-> 最后更新：2026-09-20（新增 §2.9 文档改动戳：改完 `.md` 跑 `node tools/doc-stamp.cjs` 刷新 `docs/STAMPS.md`，并禁止把 commit 号手写进文档头部；§3 的 10 条清单至今仍未提交）
+> 最后更新：2026-09-23（§3 用户重订：白盒/e2e/F2P/process/content/preflight 降级为按需工具，交付链改为 npm test → push → CI+Actions → 云端实测 → 冒烟 → 对抗审查 → 文档同步，锁的纪律三条不可协商；§2.9 文档改动戳不变）
 > 任何 AI Agent 接手本项目前**必读**。本文件是项目级强制约束，优先级高于其它文档。
 > 原则：**文档从真实环境逆推，不是约束；线上实测是唯一验收标准。**
 ## 品味
@@ -50,24 +50,27 @@
 7. **不动刀原则**：没读懂现有实现前不改写；不重写能修的东西；不引入需要无头浏览器的云端功能。
 8. **文档改动要有时间和版本**：改完任何 `.md` 跑 `node tools/doc-stamp.cjs` 刷新 `docs/STAMPS.md`（每份文档的最近改动 = 短号 · 日期 时:分 · 提交主题），产物随同提交。**不许**把 commit 号手写进各文档头部——写戳那次提交会立刻让它滞后，且 `git log -1` 会把"只改头注/只改错别字"的元提交冒充成内容改动（机制与实测样本见 `docs/DOC_GOVERNANCE.md` §2.6）。
 
-## 3. 测试约定
+## 3. 测试约定（2026-09-23 用户重订）
 
-- 验收 = 下面每条都跑并留证据（口径与判据见 `docs/EVAL_GUIDE.md`）：
-  1. `npm test` 全绿（条数唯一写死处见 `docs/FEATURE_MATRIX.md` §1.5，本文件不复制；引用 server/* 的测试文件先 require tests/helpers）
+> **本轮变更（用户 2026-09-23 裁定）**：白盒 / e2e / eval:process / F2P / eval:content / eval:preflight **从"每轮必过的门"降级为"按需工具"**。
+> 理由（用户原意）：① 这些层当时只是随心想法、没有真正的 harness，却长期依赖"写代码的 agent 自己判卷"——门禁分不出"世界变了"和"有人作弊"，红了只能改锁迁就（BL13 三条语料规模锁误红实证）；② 它们锁的多是未稳定的产品意图，与迭代中的功能频繁对抗，平白增加大量开发时间。
+> 处置：脚本与产物**全部保留可跑**（改到它们守护的区域时建议运行，例如动采集三端语义跑 `eval:whitebox`）；**系统稳定后再按新口径重建正式验收测试**——重建从 `tests/` 的行为锁里长，不从产品意图锁里长。判据口径文档 `docs/EVAL_GUIDE.md` 保留作工具说明，不再作验收强制。
+
+- **锁的纪律（不可协商）**：
+  - 每条锁的 diff 必须带"为什么"——指到用户的一句话（裁决/新要求）或一个实测数字；指不到 = 红灯。对抗审查必查这一条。
+  - 锁红了 = 报给用户三选一（修代码 / 修锁 / 摘锁记理由），**agent 不许自己改锁消红**。
+  - 文档改动是交付物不是嫌疑人；要被审查的只有锁。
+- 验收 = 下面每条都跑并留证据：
+  1. `npm test` 全绿（硬门；条数唯一写死处见 `docs/FEATURE_MATRIX.md` §1.5，本文件不复制；引用 server/* 的测试文件先 require tests/helpers）
   2. `node smoke-test.js` 冒烟（生产库副本，零副作用）
   3. `npm run build:vercel` 无错
-  4. `npm run lint:docs` 零错（文档门禁，规则见 `docs/DOC_GOVERNANCE.md`）
-  5. `npm run eval:preflight` 环境前置（代理 / **线上 commit == origin/main** / Turso / 测试隔离 / BL7-BL9 配置告警）——红则先修环境，不许跳过去跑剧本
-  6. `npm run eval:whitebox` 全过（**号位与项数不在文档枚举** —— 以 `tools/eval-whitebox.cjs` 实存为准（§2 第 5 条单一事实源；09-23 实测 24 项，历史文档曾同时存在 W1~W9 / W1~W11 / W9~W21 三种互相矛盾的写法）。覆盖面例如：三端常量、假开关与"只被回显"的 settings、null 序列化、动态 WHERE、路由面、重复判定、**入口 Provider 完整性**、删除谓词只一份、建表源列集不分叉…；只准变好，新增缺口须进 `docs/eval/whitebox-baseline.json`）
-  7. `npm run eval:process` 全过（这次评测运行可不可信 F1~F8：截图/报告/断言数/占位文案/证据路径/退出码/参数出处/**断言三类覆盖**；任一不过本轮不算通过——产物不诚实判 `fail_product`、运行条件不足判 `fail_env`，两者都不许当"验收过"）
-  8. 云端实测：按 `docs/DELIVERY_VERIFICATION.md` 打真实线上端点，curl/截图才算证据；**只有在第 5 条判「线上一致」时才算数**
-  9. F2P：本轮每条修复出 `npm run eval:f2p -- --auto-base --tests <锁文件> --cases <本轮锁名前缀>`（基线由锁的引入提交反查，**必须逐条点名**——"文件里有红"不算证据，坑 #45），证据落 `docs/eval/f2p/*.json`；改前不红的锁一律删或重写（禁止型断言须配正向探针，见 EVAL_GUIDE §4.1）。**退出码 1=锁假了（可删/重写），2=未评测（基线错、没跑到、没点名）只许修输入，禁止删用例**（坑 #41/#45）
-  10. `npm run eval:e2e` **全过（41-2 已交付，与白盒同级的自检验收层级）**：默认打线上、每剧本连跑 3 次（§3.4 口径），产出 `docs/eval/e2e/<轮次>/{report.json,env_lock.json,screens/}`；退出码 1=产品红、2=环境/flaky/空跑。**它就是"页面真的对用户生效"这一层的证据来源**，未跑不得声称交付完成；确实没覆盖到的面（如需登录态的后台闭环剧本）必须显式记为未验收，不许用"接口 200"代替。
-     - **验收轮 vs 探针轮（EVAL_GUIDE §3.7）**：只有「全剧本 × ≥3 轮 × 真实云端」才允许 exit 0；用 `--only`/`--fast`/本地目标跑出来的绿一律退 2 并打 `NOT_ACCEPTANCE`，**写进交付说明前先看 `env_lock.json` 的 `acceptance.ok`**。跑过 ≠ 验收过。
-  11. `npm run eval:content`（41-8，✅ 已交付：三层自检 `--self-test` 必须全绿；真评需 `--judge` 且人工对齐够 3 条产物才写趋势；stub 轮次不算已验收）——AI 产物**内容质量**仍属人工兜底，不与 e2e 混计
-- **固定交付链（一轮都不许跳，用户 2026-09-19 重申）**：
-  改完 → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`collect.yml` 最近批次无红且本 commit 的 job 日志无新报错（⚠️ 当前**没有 push-CI**，`npm test`/`lint:docs` 只在本地跑；要"Actions 报不报错"成为可检查项需补 `.github/workflows/ci.yml`，见 FEATURE_MATRIX §1.5 末行）→ **Vercel 真实云端实测**（先 `/api/meta` 的 `commit == origin/main`，再打端点/截图）→ **冒烟测试 `node smoke-test.js`** → **对抗性审查**（不能只靠自己复查：至少一个独立 reviewer 看这批改动，见坑 #45 第⑤条）→ **白盒评测 `npm run eval:whitebox`** → **端到端评测 `npm run eval:e2e`（已就位：没跑 = 这轮没做完，不许用"接口 200"代替）** → **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号 / spec 状态），最后 `npm run lint:docs` 收口。
-  跳过其中任何一步都必须在交付说明里写明"没做"及原因（本轮就发生过：漏跑 `smoke-test.js`、文档未同步 FEATURE_MATRIX 就被用户问出来）。
+  4. `npm run lint:docs` 零错 + `node tools/doc-stamp.cjs` 刷新 STAMPS（文档门禁规则见 `docs/DOC_GOVERNANCE.md`）
+  5. 云端实测：先 `/api/meta` 的 `commit == origin/main`，再按 `docs/DELIVERY_VERIFICATION.md` 打真实端点（需代理 + `--ssl-no-revoke`），curl/截图才算证据
+  6. 对抗性审查：不能只靠自己复查——至少一个独立 reviewer 看这批改动（范围含锁 diff 的"为什么"）
+  7. 数据链路改动配一次性只读探针直读生产真值，产物落 `docs/eval/`（过去两周最大的 bug 都是探针抓的，比门禁诚实）
+- **固定交付链（一轮都不许跳，用户 2026-09-23 重订）**：
+  改完 → **`npm test`** → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`ci.yml` push-CI 绿（2026-09-23 新增，判卷权外移 GitHub）+ `collect.yml` 最近批次无红 → **Vercel 真实云端实测** → **冒烟测试 `node smoke-test.js`** → **对抗性审查** → **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号），最后 `npm run lint:docs` + `node tools/doc-stamp.cjs` 收口。
+  跳过其中任何一步都必须在交付说明里写明"没做"及原因。
 - 每个线上修过的 bug 必须有回归测试
 
 ## 4. 常用入口
@@ -78,4 +81,4 @@
 | 手动触发采集 | GH Actions → Run workflow，或 `POST /api/rss/refresh`（标记到期） |
 | 凭据/密钥 | `docs/HANDOVER.md` §1.5（本地文件） |
 | 待开发清单 | `docs/FEATURE_MATRIX.md` §2 |
-| 评测/门禁命令全清单 | `docs/FEATURE_MATRIX.md` §1.5（唯一清单；§3 的十条验收按它跑） |
+| 评测/门禁命令全清单 | `docs/FEATURE_MATRIX.md` §1.5（唯一清单；§3 的验收按它跑——其中 `eval:*` 各命令 09-23 起为按需工具） |

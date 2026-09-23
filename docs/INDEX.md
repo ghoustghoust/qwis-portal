@@ -49,12 +49,14 @@
 | `ANDROID_SUBMIT_GUIDE.md` | 对接·现役：安卓 HTTP Shortcuts 提交链路（`tools/setup-customer.js` 指名引用） |
 | `X_SETUP_GUIDE.md` | 对接·现役：RSSHub 自建 + X cookie 配置 |
 | `BESTBLOGS_BORROW.md` | BestBlogs 范式借鉴清单（T3 需求源头；T3 收尾后下沉 `archive/feature/`） |
+| `RSS高质量信息流系统设计参考文档 (1).md` | **RSS 高质量信息流设计参考（权威版，09-23 用户定稿）**：零模型额度预筛五级阶梯 / 视频播客一套架构两套参数 / 六维评分 / 分配层 / 反茧房 / 22 条纪律 checklist。同名无 `(1)` 旧版已判历史，不据它立论 |
 
 ## 变更记录（docs/changes/）
 
 | 文件 | 用途 |
 |---|---|
 | `changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH runner 直写 Turso（P0 必读，根因链全在里头；文中「每 30min」已被 09-11 后续加密为 15min，以 `collect.yml` 为准） |
+| `changes/2026-09-23-rss-pipeline-discussion-handoff.md` | RSS 设计文档 × 现状逐条对边界：用户 9 条页面标注核实 / P0-1 候选池 / P0-2 初筛失灵（**09-23 晚已修复交付**）/ P0-3 分配层两处相反（未开）/ 三个取舍（**09-23 晚已定**） |
 | `changes/archive/` | 已完结变更归档（09-11 settings-write、09-12 cloud-alerts / my-brief / sources-write、09-13 delivery-emergency-fixes）：读 `FEATURE_MATRIX.md` 即可，不逐篇维护 |
 
 ## 踩坑库（docs/pitfalls/）· 语义权威，只累积不归档

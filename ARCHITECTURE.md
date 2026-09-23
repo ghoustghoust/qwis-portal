@@ -1,7 +1,7 @@
 # 全网情报系统 · 架构文档
 
 > 所有 Agent 的共用上下文。改架构/流程/凭据位置时必须同步更新本文档。文档自身的清洁规则见 `docs/DOC_GOVERNANCE.md`。
-> 最后更新:2026-09-23(09-23 只读复核轮：§1 图下「清理 04:13 从未触发」加注经生产心跳实测推翻 —— cleanup 已实跑两轮删 59,306 行,已就地改写并标出两件仍未定项;specs 35~43 作废的锚点在 docs/ISSUES.md。承接上轮 2026-09-19(夜·只读复核轮：图下加注「清理 04:13 当前从未触发」的实测依据与心跳判据,见 B101;09-18 文档清洁轮：调度改指针、pitfalls 索引补 #D2、日期订正;方案A 采集移入 GH runner 直写 Turso 见 2026-09-11)
+> 最后更新:2026-09-23(§3.6 加注:cron-job.org 8430047 已于 09-20 自动停用(死 PAT),双保险暂按一档读,处置见 ISSUES B136;上轮:09-23 只读复核轮 §1 清理加注被实测推翻并就地改写;specs 35~43 作废锚点在 docs/ISSUES.md)
 
 ## 0. 部署方向决策(2026-09-11 方案A)
 
@@ -67,7 +67,7 @@
 3. **catch-all serverless**:Vercel Hobby 限 12 个函数,portal/api/[...slug].js 单函数路由全部 /api/*。
 4. **云端读 Turso 优先,静态 JSON 快照兜底**(portal/public/data/)。
 5. **管理后台是独立 bundle**(admin.html),不随读者前端分发;云端 /admin/ 有口令(httpOnly cookie)。
-6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso。**cron 具体值唯一事实源 = `.github/workflows/collect.yml:24-36`**（现 7 条 cron / 9 个 job：采集、日报、AI 早报×2、我的早报、周刊、快照、清理；AGENTS.md §2.5 禁止在本文档写死），本行只记语义：采集每 15min 全量到期源，**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。**09-11 采集语义新规**:RSS 云端间隔 60min;热榜时间戳按名次递减 60s 排列(fix-hotlist-times.js)。
+6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso。**cron 具体值唯一事实源 = `.github/workflows/collect.yml:24-36`**（现 7 条 cron / 9 个 job：采集、日报、AI 早报×2、我的早报、周刊、快照、清理；AGENTS.md §2.5 禁止在本文档写死），本行只记语义：采集每 15min 全量到期源，**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。**⚠️ 09-23 实测：8430047 因内嵌死 PAT 连跪已于 09-20 自动停用，当前只剩 schedule 一档在撑（全天仅 2 轮 collect）——现状与处置见 `docs/ISSUES.md` B136，恢复前本条的"双保险"按一档读**。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。**09-11 采集语义新规**:RSS 云端间隔 60min;热榜时间戳按名次递减 60s 排列(fix-hotlist-times.js)。
 7. **前端无感刷新:60s 轮询 `/api/articles/since`**(2026-09-11):SSE 长连接在 Vercel serverless 不支持(函数 30s 超时即断),已废弃 `server/routes/events-sse.js` 的云端路径,前端改为每 60s 轮询增量端点拉新。
 8. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
 9. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
