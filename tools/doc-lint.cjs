@@ -23,6 +23,11 @@ const FOUNDATION = [
   'docs/pitfalls/README.md', 'docs/HANDOVER.md',
 ];
 
+// 本地设计内文件（gitignore 且永不入库）：docs/HANDOVER.md = 凭据速查（DOC_GOVERNANCE §2.1 登记的本地文件）、
+// cloud/token.json = PHP 队列运行时生成的令牌。文档引用它们是制度不是悬空；CI 上没有这两个文件属正常，
+// 第 1、2 条对它们一律豁免（别处别再各自开口子）。
+const LOCAL_BY_DESIGN = new Set(['docs/HANDOVER.md', 'cloud/token.json']);
+
 const walk = (dir, out = []) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
@@ -38,7 +43,10 @@ const docsFiles = walk(DOCS).filter((f) => /\.(md|json)$/.test(f));
 // 1 底层文档必须有「最后更新：YYYY-MM-DD」头注
 for (const f of FOUNDATION) {
   const abs = path.join(ROOT, f);
-  if (!fs.existsSync(abs)) { errors.push(`[缺失] 底层文档不存在：${f}`); continue; }
+  if (!fs.existsSync(abs)) {
+    if (LOCAL_BY_DESIGN.has(f)) continue; // 本地设计内文件：CI 上没有属正常（gitignore 永不入库）
+    errors.push(`[缺失] 底层文档不存在：${f}`); continue;
+  }
   const head = read(abs).slice(0, 1200);
   if (!/最后更新[:：]\s*20\d\d-\d\d-\d\d/.test(head)) errors.push(`[头注] ${f} 缺「> 最后更新：YYYY-MM-DD」`);
 }
@@ -73,6 +81,7 @@ for (const f of lintTargets) {
   for (const r of extractRefs(read(f))) {
     const clean = r.replace(/:\d+.*$/, '');
     if (/[<…]/.test(clean) || /xxx|XXX/.test(clean)) continue;
+    if (LOCAL_BY_DESIGN.has(clean)) continue; // 本地设计内文件（凭据/令牌），CI 上不存在属正常
     const cands = [path.join(ROOT, clean), path.join(path.dirname(f), clean)];
     if (cands.some((c) => fs.existsSync(c))) continue;
     const msg = `[悬空] ${rel(f)} 引用了不存在的 ${clean}`;

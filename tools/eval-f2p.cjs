@@ -498,9 +498,11 @@ function selfTest() {
     })()],
     ['--tests 越出仓库必须拒；能折回仓库内的要先归一（旧版 `../…/AGENTS.md` 会让 copy 目标解析回主树）', (() => {
       const okPath = scopeFiles('tests/regression-20260919c.test.js');
-      const norm = scopeFiles('../全网情报系统/AGENTS.md');
+      // 折回路径与绝对路径都不能写死主机形态：本机目录叫「全网情报系统」、CI 检出叫 qwis-portal；
+      // 'D:/…' 在 Linux 上不是绝对路径。都从运行时环境现算。
+      const norm = scopeFiles(`../${path.basename(ROOT)}/AGENTS.md`);
       const esc = scopeFiles('../../outside/x.test.js');
-      const abs = scopeFiles('D:/Windows/win.ini');
+      const abs = scopeFiles(path.join(require('os').tmpdir(), 'f2p-outside-x.test.js'));
       return okPath.files[0] === 'tests/regression-20260919c.test.js'
         && norm.files && norm.files[0] === 'AGENTS.md'
         && !!esc.error && !!abs.error;
