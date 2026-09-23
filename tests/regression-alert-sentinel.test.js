@@ -20,7 +20,7 @@ const prodEnv = () => {
 };
 
 test('BL7-1 生产 settings.alerts 的渠道不许有哨兵/未定义 URL（只读）', async () => {
-  if (!prodEnv()) return;
+  if (!prodEnv()) { console.warn('[CI] 无 .env 凭据，BL7-1 只读生产用例空转放行'); return; }
   const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN || '' });
   const r = await db.execute("SELECT value FROM settings WHERE key='alerts'");
   assert.ok(r.rows[0], 'settings.alerts 不存在');

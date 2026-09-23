@@ -44,6 +44,8 @@ test('退役守卫: wemp 管线无活跃引用', () => {
 });
 
 test('退役守卫: .env 无 WEMP_* 残留', () => {
+  // CI 无 .env（凭据不入库）：文件不存在 = 不可能有 WEMP_* 残留，空转放行（语义等价，非跳过）
+  if (!fs.existsSync(path.join(ROOT, '.env'))) return;
   const env = read('.env');
   assert.ok(!/^WEMP_/m.test(env), '.env 不得残留 WEMP_* 变量');
 });
