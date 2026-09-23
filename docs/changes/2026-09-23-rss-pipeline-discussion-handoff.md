@@ -2,9 +2,10 @@
 
 > **⚠️ 09-23 晚·进展追记（先于下文一切"待办"读）**：
 > - **§4 三个取舍已由用户裁定**：① 先修字数上限、观察两期，再动级3；② 初筛失败 → **发报警渠道进后台（飞书），前端页面不显示**（用户原话：这种提示是给管理者看的，这就是日志板块的意义）；③ 每源 cap 定 **≤2**（AIHOT 是聚合源、内容与本站热榜重叠，砍到 2 不是损失——"早报变空"是上一任 Agent 的误测，用户从未担心过）。
-> - **P0-2 已修复交付**（commit 见 `git log`：filter maxTokens 128→512；失败/解析失败返 `failed:true`；失败与预算截断计数落 `stats.filterStats`；失败率 ≥20% 或截断经 `lib/filter-observe.js` 判据发飞书报警；回归锁 `tests/regression-filter-observe.test.js` F1~F5；周刊初筛日志同步补失败数）。**观察期读数**：今晚 21:30（北京）晚间批与下一期，读 剔除率 / failed / truncated / 深析完成数。
-> - **验收交付链已重订（AGENTS §3）**：白盒/e2e/F2P/process/content/preflight 降级为按需工具；新链 = npm test → push → ci.yml+Actions → 云端实测 → 冒烟 → 对抗审查 → 文档同步；锁的纪律三条（diff 带 why / 红了报用户三选一 / agent 不许自消）。
-> - **新发现（已登记 ISSUES B136）**：cron-job.org 主力触发器 8430047 因内嵌死 PAT 连跪已于 09-20 自动停用，采集只剩 GH schedule 一档（全天仅 2 轮、370 源到期未抓）——等用户轮换 PAT 后重新启用。
+> - **P0-2 已修复交付**（commit 见 `git log`：filter maxTokens 128→512；失败/解析失败返 `failed:true`；失败与预算截断计数落 `stats.filterStats`；失败率 ≥20% 或截断经 `lib/filter-observe.js` 判据发飞书报警；回归锁 `tests/regression-filter-observe.test.js` F1~F5；周刊初筛日志同步补失败数）。
+> - **两期观察已读完（09-23 晚，均为真跑）**：期一 id63（dispatch）`候选500 筛233 剔60(25.8%) 败29(12.4%) truncated=true 深析117 入报45`；期二 id64（晚间批）`候选500 筛355 剔130(36.6%) 败24(6.8%) truncated=true 深析134 入报46`。结论：①修复达标——初筛真工作、失败可数、两期都真响了报警（飞书）；②**预算截断两期稳定复现 = 结构性问题**：512 后每篇 ~7.6-11.6s，500 篇需 63~97min > 90min 总预算；待用户拍板：总预算 90→150min（Agent 倾向，一行）/ 单篇 512→384 / 砍候选量。③级3（≤2 已裁定）注意：实测 570 篇比 500 更多，不能指望它解截断，须与预算方案同上。
+> - **验收交付链已重订（AGENTS §3）**：白盒/e2e/F2P/process/content/preflight 降级为按需工具；新链 = npm test → push → ci.yml+Actions → 云端实测 → 冒烟 → 对抗审查 → 文档同步；锁的纪律三条（diff 带 why / 红了报用户三选一 / agent 不许自消）。push-CI 已落地并首绿（四轮修红：node 钉 24.14.1 / PHP 用例守卫 / getDb file: 免 token / doc-lint LOCAL_BY_DESIGN / F2P 探针平台化）。
+> - **B136 已核销**：用户轮换 PAT，cron-job 8430047 换钥重启用，15min 心跳恢复（13:01~15:45Z 连续成功）。
 > - **BL13 已核销**（裁定③：语料规模不是锁能拥有的属性）。**P0-3 仍未开**，其中 L5b 补一条加重证据：`totalScore ≥75` 判的是被 L5a 权威加权**之后**的分（`tools/collect-turso.js` L5a 段原地改写 `a.totalScore`），小源连进保护位都先被 ×0.8。
 
 > 最后更新：2026-09-23（新会话接续用。本文件只装三样东西：**用户的原意**、**已实测到的一手数字**、**尚未回答的取舍**。凡标「Agent 观察」的都是待裁输入，不是结论 —— 用户明确要求：接续讨论时以他的判断为主，Agent 的观点不是最重要的。）
