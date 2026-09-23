@@ -1,177 +1,161 @@
 {
   "report": {
-    "id": 59,
-    "generated_at": "2026-09-22T05:57:19.499Z",
+    "id": 62,
+    "generated_at": "2026-09-23T05:41:23.959Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "新公开的课程、训练营与社群招募",
-        "items": [
-          {
-            "id": 329439,
-            "title": "有关 CISP 培训考试的一些疑问？",
-            "url": "https://www.v2ex.com/t/1243777#reply1",
-            "source": "V2EX · 技术",
-            "published_at": "2026-09-21T15:13:04.000Z",
-            "score": null,
-            "summary": "今年公司发了个通知，要求每个人都要有网络安全相关资质，用于公司招投标用的，强制要求我们考证 我报了个 CISP ，但是发现机构的培训视频根本没时间看，而且还是长篇的理论，所以想请教之前考过的前辈们 这个考试能不能纯背题库就能去考试，还是说机构的题库只是部分原题，剩下的要全靠对知识点概念的理解做题呢？",
-            "cover": null
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 342638,
-            "title": "UK to give support to Saudi jets in attempt to counter Houthi fighters",
-            "url": "https://www.theguardian.com/politics/2026/sep/21/uk-to-give-support-to-saudi-jets-in-attempt-to-counter-houthi-fighters",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-21T21:33:09.000Z",
+            "id": 371926,
+            "title": "My local llm when I tell it to do any changes to my vLLM service",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wnn6ui/my_local_llm_when_i_tell_it_to_do_any_changes_to/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-22T21:51:36.000Z",
             "score": null,
-            "summary": "Andy Burnham seeks stability in Middle East to bring down prices at home as first meeting with Trump looms",
+            "summary": "I&#39;ve been running Qwen 3.8 Flash Next and it&#39;s a great driver for Hermes and Pi. I told it to add CUDA_DISABLE_PERF_BOOST=1 to reduce my server&#39;s idle power draw",
+            "cover": "https://preview.redd.it/bgfyphdg75rh1.gif?width=320&crop=smart&s=b96f6137c8c6322aadf21187099a561426c8972b"
+          },
+          {
+            "id": 371927,
+            "title": "SeriousSportSync, a self-hosted sports calendar and addon for Nuvio/Stremio",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wnn6rh/serioussportsync_a_selfhosted_sports_calendar_and/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-22T21:51:30.000Z",
+            "score": null,
+            "summary": "Hey r/selfhosted! After a lot of tinkering, I’ve released v1 of SeriousSportSync 🎉",
+            "cover": "https://preview.redd.it/wl4g9k2i75rh1.png?width=140&height=140&auto=webp&s=d2b7c8653b723e14510cb46afbee030fe13e823c"
+          },
+          {
+            "id": 371928,
+            "title": "Finally have my family using my server!",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1wnn68x/finally_have_my_family_using_my_server/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-22T21:50:53.000Z",
+            "score": null,
+            "summary": "I just finished setting up a portal for my family to use, and wanted to show it off.",
+            "cover": "https://preview.redd.it/jph15h3k75rh1.jpeg?width=640&crop=smart&auto=webp&s=2aeacdc7b27dca5bd64176ed0d2b0c481b03519c"
+          },
+          {
+            "id": 371929,
+            "title": "M5 ultra AI test results",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wnmu2l/m5_ultra_ai_test_results/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-22T21:37:18.000Z",
+            "score": null,
+            "summary": "- Prompt processing is up to 4 / 4.5 times faster than M3 ultra depending on how long the context is - tok/s is around 1.5x faster.",
             "cover": null
           },
           {
-            "id": 342630,
-            "title": "World leaders address climate crisis before UN meet amid record-breaking El Niño",
-            "url": "https://www.theguardian.com/environment/2026/sep/21/world-leaders-climate-crisis-el-nino",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-21T21:26:55.000Z",
+            "id": 370425,
+            "title": "US to build two military bases in Greenland under new deal with Denmark",
+            "url": "https://www.bbc.co.uk/news/articles/c9dr74g32g8go?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-09-22T21:36:55.000Z",
             "score": null,
-            "summary": "Prime ministers of Australia and Iceland discuss effects on their countries even as some shy away in face of war and inflation",
+            "summary": "The defence deal signed at the UN General Assembly also re-affirms Denmark's sovereignty over its semi-autonomous Arctic territory.",
             "cover": null
           },
           {
-            "id": 339822,
-            "title": "AI and autonomous weapons are high on the agenda at the UN General Assembly",
-            "url": "https://www.npr.org/2026/09/21/nx-s1-5974200/ai-and-autonomous-weapons-are-high-on-the-agenda-at-the-un-general-assembly",
+            "id": 363326,
+            "title": "Palestinian Americans meet US lawmakers as Trump seeks $2.8bn for Israel",
+            "url": "https://www.aljazeera.com/news/2026/9/22/palestinian-americans-meet-us-lawmakers-as-trump-seeks-2-8bn-for-israel?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-09-22T21:30:51.000Z",
+            "score": null,
+            "summary": "Organisers say more than 300 constituents met with House and Senate members from 26 states to demand US policy shift.",
+            "cover": null
+          },
+          {
+            "id": 366679,
+            "title": "The United Nations General Assembly is meeting. Is it accomplishing anything?",
+            "url": "https://www.npr.org/2026/09/22/nx-s1-5955445/the-united-nations-general-assembly-is-meeting-is-it-accomplishing-anything",
             "source": "NPR Topics: World",
-            "published_at": "2026-09-21T21:18:10.000Z",
+            "published_at": "2026-09-22T21:23:48.000Z",
             "score": null,
-            "summary": "As world leaders gather for the U.N. General Assembly's annual general debate, Colombia's former president and Nobel Peace Prize laureate discusses the growing risks of autonomous weapons and AI",
+            "summary": "NPR's Mary Louise Kelly speaks with Michael Froman, Council on Foreign Relations president, at the UN General Assembly.",
             "cover": null
           },
           {
-            "id": 336985,
-            "title": "How thousands of migrants stranded in Ceuta are surviving",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/21/how-thousands-of-migrants-stranded-in-ceuta-are-surviving?traffic_source=rss",
+            "id": 369025,
+            "title": "Iran and US have held talks on sidelines of UN summit, says Donald Trump",
+            "url": "https://www.theguardian.com/world/2026/sep/22/iran-us-talks-sidelines-un-summit-trump-israel-us",
+            "source": "World news | The Guardian",
+            "published_at": "2026-09-22T21:21:59.000Z",
+            "score": null,
+            "summary": "Senior Iranian official indicates willingness to reopen strait of Hormuz if US takes steps to ease pressure on Tehran",
+            "cover": null
+          },
+          {
+            "id": 371930,
+            "title": "Is jev, text embeddings but without chunks? (results included)",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wnmav6/is_jev_text_embeddings_but_without_chunks_results/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-09-22T21:16:21.000Z",
+            "score": null,
+            "summary": "Everything in the title, Is jev, text embeddings but without chunks? and a confidence score? Without a ranking or reranking (that part I haven&#39;t tested yet)? EDIT: After thinking about it, I shoul",
+            "cover": null
+          },
+          {
+            "id": 367682,
+            "title": "Tune caching for your application: \r\n\r\n– Choose which prompt prefixes to reuse with explicit cache bre...",
+            "url": "https://x.com/OpenAIDevs/status/2102506712590918001",
+            "source": "OpenAI Developers(@OpenAIDevs)",
+            "published_at": "2026-09-22T21:13:57.000Z",
+            "score": null,
+            "summary": "Tune caching for your application: – Choose which prompt prefixes to reuse with explicit cache breakpoints. – Adjust reasoning effort and tool availability while preserving cached context. – Prewarm s",
+            "cover": null
+          },
+          {
+            "id": 367683,
+            "title": "We’ve improved prompt caching in the API for GPT-6, helping agents run faster and cost less.\r\n\r\nHigher...",
+            "url": "https://x.com/OpenAIDevs/status/2102506476401258678",
+            "source": "OpenAI Developers(@OpenAIDevs)",
+            "published_at": "2026-09-22T21:13:01.000Z",
+            "score": null,
+            "summary": "We’ve improved prompt caching in the API for GPT-6, helping agents run faster and cost less.Higher cache-hit rates by default mean more input tokens benefit from cached-input discounts of up to 90%.Yo",
+            "cover": null
+          },
+          {
+            "id": 367684,
+            "title": "See what’s being reused and what’s preventing cache hits.\r\n\r\nTrack cache-hit rates in the new Prompt C...",
+            "url": "https://x.com/OpenAIDevs/status/2102506477764436191",
+            "source": "OpenAI Developers(@OpenAIDevs)",
+            "published_at": "2026-09-22T21:13:01.000Z",
+            "score": null,
+            "summary": "See what’s being reused and what’s preventing cache hits.Track cache-hit rates in the new Prompt Caching Dashboard on platform.openai.com. Use the diagnostics API to identify changes that prevented re",
+            "cover": "https://pbs.twimg.com/media/HS2RumpaEAALVgK.jpg"
+          },
+          {
+            "id": 363327,
+            "title": "US signs ‘tremendous’ security deal with Denmark and Greenland",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/22/us-signs-tremendous-security-deal-with-denmark-and-greenland?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T21:04:44.000Z",
+            "published_at": "2026-09-22T21:11:47.000Z",
             "score": null,
-            "summary": "Authorities estimate that at least 10,000 people remain in the enclave of Ceuta after a record surge in July.",
+            "summary": "Trump and leaders of Greenland and Denmark have signed a deal allowing an expanded US military presence in Greenland.",
             "cover": null
           },
           {
-            "id": 336986,
-            "title": "Former ‘death squad’ leader appears in military trial in The Gambia",
-            "url": "https://www.aljazeera.com/news/2026/9/21/former-death-squad-leader-appears-in-military-trial-in-the-gambia?traffic_source=rss",
+            "id": 363328,
+            "title": "Qatari Emir says country won’t ‘limit’ itself as Gulf ‘mediator’",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/22/qatari-emir-says-country-wont-limit-itself-as-gulf?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:57:43.000Z",
+            "published_at": "2026-09-22T21:09:23.000Z",
             "score": null,
-            "summary": "Sanna Manjang faces court for deserting army in 2017 after end of Jammeh&#039;s 20-year rule.",
+            "summary": "Qatari Emir Sheikh Tamim bin Hamad Al Thani told the UN General Assembly that Qatar is more than a mediator.",
             "cover": null
           },
           {
-            "id": 336987,
-            "title": "Trump speech inaudible as US networks boycott White House event",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/21/trump-speech-inaudible-as-us-networks-boycott-white-house-event?traffic_source=rss",
+            "id": 363329,
+            "title": "Macron: France won’t ‘yield an inch’ on Ukraine support",
+            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/22/macron-france-wont-yield-an-inch-on-ukraine-support?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:38:51.000Z",
+            "published_at": "2026-09-22T21:09:03.000Z",
             "score": null,
-            "summary": "US President Trump unveiled a new White House helicopter pad as major US TV networks stayed away in protest.",
-            "cover": null
-          },
-          {
-            "id": 336305,
-            "title": "California tightens rules on AI data center energy and water use",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/998453/california-ai-data-center-bills",
-            "source": "The Verge",
-            "published_at": "2026-09-21T20:29:45.000Z",
-            "score": 42,
-            "summary": "California Gov. Gavin Newsom has signed seven bills designed to prevent AI data centers from passing utility costs onto residents, as reported earlier by the Los Angeles Times. The package of laws req",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2286055476.jpg?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 336988,
-            "title": "Putin’s party wins supermajority in Russia’s parliamentary election",
-            "url": "https://www.aljazeera.com/news/2026/9/21/pro-putin-party-wins-supermajority-amid-ramped-up-ukrainian-attacks?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:17:39.000Z",
-            "score": null,
-            "summary": "Victory of United Russia party strengthens Putin&#039;s hand even as the war with Ukraine grows more unpopular.",
-            "cover": null
-          },
-          {
-            "id": 336546,
-            "title": "Xiaomi MiMo v2.6",
-            "url": "https://mimo.xiaomi.com/mimo-v2-6",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-21T20:12:12.000Z",
-            "score": null,
-            "summary": "Article URL: https://mimo.xiaomi.com/mimo-v2-6",
-            "cover": null
-          },
-          {
-            "id": 336989,
-            "title": "UN Chief Guterres calls for ban on ‘killer robots’",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/21/un-chief-guterres-calls-for-ban-on-killer?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:07:23.000Z",
-            "score": null,
-            "summary": "In this episode of On the Record, UN Secretary-General António Guterres calls for ban on autonomous ‘killer robots’.",
-            "cover": null
-          },
-          {
-            "id": 336990,
-            "title": "US man convicted in 2023 shooting of three Palestinian students in Vermont",
-            "url": "https://www.aljazeera.com/news/2026/9/21/us-man-convicted-in-2023-shooting-of-three-palestinian-students-in-vermont?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:05:07.000Z",
-            "score": null,
-            "summary": "Jason Eaton faces up to life in prison after a jury rejected his insanity defence.",
-            "cover": null
-          },
-          {
-            "id": 336991,
-            "title": "FAA halts flights to major US East Coast airports amid outage",
-            "url": "https://www.aljazeera.com/economy/2026/9/21/faa-halts-flights-to-major-us-east-coast-airports-amid-outage?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T20:01:37.000Z",
-            "score": null,
-            "summary": "FAA halts East Coast flights due to equipment outage, affecting major US airports like JFK, Newark, and Philadelphia.",
-            "cover": null
-          },
-          {
-            "id": 341301,
-            "title": "What a Trump order to put political appointees in charge of NIH funding would mean for science",
-            "url": "https://www.scientificamerican.com/article/what-a-trump-order-to-put-political-appointees-in-charge-of-nih-funding-would-mean-for-science/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-09-21T19:58:00.000Z",
-            "score": null,
-            "summary": "Advocates and scientists warn that giving political appointees power over research grants would &ldquo;upend&rdquo; U.S. science",
-            "cover": null
-          },
-          {
-            "id": 336992,
-            "title": "Embattled Gianni Infantino says he is open to talks over FIFA reform",
-            "url": "https://www.aljazeera.com/sports/2026/9/21/embattled-gianni-infantino-says-he-is-open-to-talks-over-fifa-reform?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T19:50:13.000Z",
-            "score": null,
-            "summary": "FIFA president proposes &#039;consultation&#039; with members to reform world football governing body&#039;s decision-making process.",
-            "cover": null
-          },
-          {
-            "id": 336993,
-            "title": "UK prosecutors charge first person for Rwanda genocide",
-            "url": "https://www.aljazeera.com/news/2026/9/21/uk-prosecutors-charge-first-person-for-rwanda-genocide?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-21T19:48:58.000Z",
-            "score": null,
-            "summary": "Vincent Brown is &#039;alleged to have directed and incited acts of murder and genocide carried out by others&#039;.",
+            "summary": "French President Emmanuel Macron says the “coalition of the willing&quot; will not back down in its support of Ukraine.",
             "cover": null
           }
         ]
@@ -181,154 +165,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 342668,
-            "title": "[推广] Huiai 代充 ChatGPT/Claude/Gemini,可开票",
-            "url": "https://www.v2ex.com/t/1243790#reply0",
-            "source": "V2EX",
-            "published_at": "2026-09-21T21:39:52.000Z",
-            "score": null,
-            "summary": "Plus 折扣码 HUIAIV25 立减 5 元 Pro 5x 折扣 HUIAIV215 立减 15 元 Pro 20x 折扣 HUIAIV230 立减 30 元 ChatGPT Plus / Pro , Claude Pro / Max 、Gemini Pro / Ultra 微信、支付宝付款，不用海外信用卡付款后自动开通，订单进度和售后都能查开通失败全额退;开上之后出问题优先修 下单:http",
-            "cover": null
-          },
-          {
-            "id": 338854,
-            "title": "Lasso: AI Watermarks Change How Agents Act",
-            "url": "https://techstrong.ai/features/lasso-ai-watermarks-change-how-agents-act/",
+            "id": 365176,
+            "title": "Show HN: Jade Email. Unlimited emails for your domain plus AI Agent support",
+            "url": "https://jade.email/",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-09-21T21:16:26.000Z",
+            "published_at": "2026-09-22T21:46:57.000Z",
             "score": null,
-            "summary": "Article URL: https://techstrong.ai/features/lasso-ai-watermarks-change-how-agents-act/",
+            "summary": "Hello HN!I've spent the last 4 years building Jade.email, an email service, and it's now better than any email service I've used. I'm incredibly proud of it and have a small group of paying customers ",
             "cover": null
           },
           {
-            "id": 342529,
-            "title": "Meta’s Muse AI Agent Triggers Intel, Chip Stock Rally. AMD Hits $1T Market Cap. - Barron's",
-            "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5SSTIydHlWS0FFdS1GRHczbHByd0d5aXU0OEF5X1lkTUdVTjlldTlVdEYwZHNxR0Z3M0RvWnU2TXBKV2R3NDViTFoxZDlVV3RfQ0NaZVQ4VXhFdmdpVXh6eER2YjlhOTRrRVktQ3h5Ykd2THBmcmZiTVI0YTNWdw?oc=5",
-            "source": "Top stories - Google News",
-            "published_at": "2026-09-21T20:39:00.000Z",
+            "id": 365177,
+            "title": "Meta's New Muse AI Agent Read My Private Messages. I Never Asked It To",
+            "url": "https://www.inc.com/jason-aten/metas-new-muse-ai-agent-read-my-private-messages-i-never-asked-it-to/91408202",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-09-22T21:43:04.000Z",
             "score": null,
-            "summary": "Meta’s Muse AI Agent Triggers Intel, Chip Stock Rally. AMD Hits $1T Market Cap.&nbsp;&nbsp;Barron'sAMD Set to Top $1 Trillion in Market Value as Chip Stocks Soar&nbsp;&nbsp;bloomberg.comChip stocks in",
+            "summary": "Article URL: https://www.inc.com/jason-aten/metas-new-muse-ai-agent-read-my-private-messages-i-never-asked-it-to/91408202",
             "cover": null
           },
           {
-            "id": 342315,
-            "title": "Grok Build vs. Claude Code: I tested which one has the better memory",
-            "url": "https://thenewstack.io/grok-build-vs-claude-code-memory/",
-            "source": "The New Stack",
-            "published_at": "2026-09-21T20:04:18.000Z",
-            "score": null,
-            "summary": "On September 16, xAI announced memory in Grok Build, its terminal coding agent. The pitch was that Grok “keeps notes on the conventions, decisions, and project facts that come up,” and “later sessions",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/d366d70a-logan-voss-opnssaxft6y-unsplash-1024x576.jpg"
-          },
-          {
-            "id": 342545,
-            "title": "Nano Banana 2.5 正式上线：用顶尖模型性能与极速生成能力，打造专业级 AI 图像创作工具",
-            "url": "https://www.v2ex.com/t/1243788#reply2",
-            "source": "V2EX · 创意",
-            "published_at": "2026-09-21T19:21:39.000Z",
-            "score": null,
-            "summary": "2026 年，新一代 AI 图像生成模型 Nano Banana 2.5 正式对外上线，凭借突出的综合能力迅速获得广大创作者的关注。作为 AI 图像创作领域的全新迭代产品，Nano Banana 2.5 依托优化升级的底层模型架构，融合顶尖模型性能与闪电般的极速生成能力，打造专业级 AI 图像创作工具，为用户带来更高级的智能生成能力与精细化的创作控制权。",
-            "cover": null
-          },
-          {
-            "id": 343482,
-            "title": "Recommended reading. This offers a solid set of ideas for where you can place Jev in your agent harn...",
-            "url": "https://x.com/omarsar0/status/2102113906529538496",
+            "id": 370087,
+            "title": "Great prompt from Anthropic.\r\n\r\nIt helps steer long runs when using Opus 5.5 in Claude Code. \r\n\r\nApparen...",
+            "url": "https://x.com/omarsar0/status/2102506755037306925",
             "source": "elvis(@omarsar0)",
-            "published_at": "2026-09-21T19:13:05.000Z",
+            "published_at": "2026-09-22T21:14:07.000Z",
             "score": null,
-            "summary": "Recommended reading. This offers a solid set of ideas for where you can place Jev in your agent harness. It&#39;s cool to see ideas I have shared before, like approval gates, MCP/tool-calling routing,",
-            "cover": "https://pbs.twimg.com/profile_images/1650708125685800960/7k6r0UZg_normal.jpg"
+            "summary": "Great prompt from Anthropic.It helps steer long runs when using Opus 5.5 in Claude Code. Apparently, on long-running tasks, the model sometimes stops to report instead of continuing. I&#39;ve noticed ",
+            "cover": "https://pbs.twimg.com/media/HS2ZwZTW4AAjvH3.jpg"
           },
           {
-            "id": 329200,
-            "title": "AWS open-sources an AI agent it says is 45% cheaper than Claude Code and Codex",
-            "url": "https://thenewstack.io/aws-strands-harness-agent/",
-            "source": "The New Stack",
-            "published_at": "2026-09-21T18:30:16.000Z",
-            "score": null,
-            "summary": "Amazon Web Services (AWS) is lifting the lid on a new open source, general-purpose AI agent, designed to give developers a ready-made foundation they can run locally or deploy to the cloud.",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/aadba645-ubaid-e-alyafizi-hqmj4z9kizm-unsplash-1024x768.jpg"
-          },
-          {
-            "id": 328631,
-            "title": "Show HN: Four-Leaf MCP, open-source job search and interview prep",
-            "url": "https://github.com/fourleafai/clover-public",
+            "id": 369273,
+            "title": "Show HN: Morloc - a typed polyglot compiler for CLI/API/MCP generation",
+            "url": "https://github.com/morloc-project/morloc",
             "source": "Show HN",
-            "published_at": "2026-09-21T18:13:11.000Z",
+            "published_at": "2026-09-22T21:02:44.000Z",
             "score": null,
-            "summary": "Article URL: https://github.com/fourleafai/clover-public",
+            "summary": "Article URL: https://github.com/morloc-project/morloc",
             "cover": null
           },
           {
-            "id": 331612,
-            "title": "有人做了一个\"星际争霸\"AI 对战测试（Brood War Bench），让当下主流大模型互相打即时战略，结果所有模型的水平都没超过新手。\r\n\r\n《星际争霸：母巢之战》是 1998 年的经典即时战略游戏，...",
-            "url": "https://x.com/dotey/status/2102098652680302967",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-21T18:12:28.000Z",
+            "id": 369277,
+            "title": "Show HN: ToolHub – Hierarchical nav for 30 MCP tools without context bloat",
+            "url": "https://github.com/Talos-popcorn/toolhub",
+            "source": "Show HN",
+            "published_at": "2026-09-22T20:34:13.000Z",
             "score": null,
-            "summary": "有人做了一个&quot;星际争霸&quot;AI 对战测试（Brood War Bench），让当下主流大模型互相打即时战略，结果所有模型的水平都没超过新手。《星际争霸：母巢之战》是 1998 年的经典即时战略游戏，也是 AI 研究的老朋友，2019 年 DeepMind 的 AlphaStar 就曾在这款游戏里击败职业选手。但那是专门训练的强化学习 AI。这次测试不同，它让通用大模型以 AI 智",
-            "cover": "https://pbs.twimg.com/media/HSwnEZ6WYAAA2fm.jpg"
-          },
-          {
-            "id": 340662,
-            "title": "Building On-Device AI Agents on Android with Google ADK — Part 3: Demystifying ToolContext —…",
-            "url": "https://proandroiddev.com/building-on-device-ai-agents-on-android-with-google-adk-part-3-demystifying-toolcontext-f578992168cb?source=rss----c72404660798---4",
-            "source": "ProAndroidDev - Medium",
-            "published_at": "2026-09-21T18:06:15.000Z",
-            "score": null,
-            "summary": "Go deep into the engine. Learn how ToolContext allows tools to inspect the active session, read user metadata, and save versioned&#x2026;",
-            "cover": "https://cdn-images-1.medium.com/max/1536/1*MjaP2XUikX7oNYHxyznm2w.png"
-          },
-          {
-            "id": 331613,
-            "title": "SpaceXAI 今天正式发布 Grok 4.7，价格和速度和上一代 4.6 完全一样。\r\n\r\n这个模型跳票了好几次。马斯克 9 月初说\"10 天后发布\"，结果 9 月 11 号又说\"还需要几天\"，中间甚...",
-            "url": "https://x.com/dotey/status/2102089012483706936",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-21T17:34:10.000Z",
-            "score": null,
-            "summary": "SpaceXAI 今天正式发布 Grok 4.7，价格和速度和上一代 4.6 完全一样。这个模型跳票了好几次。马斯克 9 月初说&quot;10 天后发布&quot;，结果 9 月 11 号又说&quot;还需要几天&quot;，中间甚至跳过 4.7 直接预告了更大的 4.8。拖延的原因是强化学习阶段出了问题：模型在难题面前容易过早放弃，自我检查也不够严格。今天发布的版本显然修好了这些——官方强调",
-            "cover": "https://pbs.twimg.com/profile_images/2074224934159876096/aelorWHq_normal.jpg"
-          },
-          {
-            "id": 330612,
-            "title": "Grok 4.7 by @SpaceXAI just dropped. Looking at how past Grok versions have trended on Agent Arena's ...",
-            "url": "https://x.com/arena/status/2102080801462689999",
-            "source": "lmarena.ai(@lmarena_ai)",
-            "published_at": "2026-09-21T17:01:32.000Z",
-            "score": null,
-            "summary": "Grok 4.7 by @SpaceXAI just dropped. Looking at how past Grok versions have trended on Agent Arena&#39;s net improvement score, where do you think 4.7 lands? Poll below.Scores coming soon as you vote o",
-            "cover": "https://pbs.twimg.com/media/HSwWqqnaAAAPTkt.png"
-          },
-          {
-            "id": 330613,
-            "title": "Grok 4.7 by @SpaceXAI and @elonmusk is now in the Agent Arena!\r\n\r\nYour votes drive the @arena leaderbo...",
-            "url": "https://x.com/arena/status/2102074819743453410",
-            "source": "lmarena.ai(@lmarena_ai)",
-            "published_at": "2026-09-21T16:37:46.000Z",
-            "score": null,
-            "summary": "Grok 4.7 by @SpaceXAI and @elonmusk is now in the Agent Arena!Your votes drive the @arena leaderboards, head over and bring your toughest prompts.In Agent Arena, we measure models on millions of real-",
-            "cover": "https://pbs.twimg.com/media/HSwRKFgaEAI91i3.jpg"
-          },
-          {
-            "id": 330614,
-            "title": "Test out Grok 4.7 in Battle Mode and Agent Mode at: https://t.co/jFTd7gG8UU",
-            "url": "https://x.com/arena/status/2102074822008377627",
-            "source": "lmarena.ai(@lmarena_ai)",
-            "published_at": "2026-09-21T16:37:46.000Z",
-            "score": null,
-            "summary": "Test out Grok 4.7 in Battle Mode and Agent Mode at: arena.ai💬0🔄0❤️13👀2772📊1⚡ Powered by xgo.ing",
+            "summary": "Article URL: https://github.com/Talos-popcorn/toolhub",
             "cover": null
           },
           {
-            "id": 331614,
-            "title": "OpenAI 内部的 AI 模型已经基本能自动化新实验模型的训练流程了——包括编写 GPU 内核代码（GPU kernel，即直接控制显卡进行高性能计算的底层程序）和优化训练代码。\r\n\r\n据 The In...",
-            "url": "https://x.com/dotey/status/2102074357723881729",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-21T16:35:56.000Z",
+            "id": 369279,
+            "title": "Show HN: Cross-platform governed memory for a fleet of agents",
+            "url": "https://github.com/oren198/Strata",
+            "source": "Show HN",
+            "published_at": "2026-09-22T20:27:18.000Z",
             "score": null,
-            "summary": "OpenAI 内部的 AI 模型已经基本能自动化新实验模型的训练流程了——包括编写 GPU 内核代码（GPU kernel，即直接控制显卡进行高性能计算的底层程序）和优化训练代码。据 The Information 报道，研究人员现在只需给 AI 一个优化示例，它就能自己花几周时间去实现和测试类似的改进。更值得注意的是，OpenAI 内部的多个 AI 智能体已经开始互相协作解决问题，不再需要人类参",
-            "cover": "https://pbs.twimg.com/profile_images/1691846947857178624/oZp5wB4r_normal.jpg"
+            "summary": "I found myself using the handoff skill too much — between sessions in different roles, and between different platforms (Codex and Claude for me). So, like programmers do, I wrote a solution for it: a ",
+            "cover": null
+          },
+          {
+            "id": 370089,
+            "title": "Impressive paper showing how much the harness changes a coding agent's results.\r\n\r\nHarnesses do play a...",
+            "url": "https://x.com/omarsar0/status/2102485592420606054",
+            "source": "elvis(@omarsar0)",
+            "published_at": "2026-09-22T19:50:02.000Z",
+            "score": null,
+            "summary": "Impressive paper showing how much the harness changes a coding agent&#39;s results.Harnesses do play a huge role in what you are getting out of the models.GPT-5.5 was run inside both Claude Code and C",
+            "cover": "https://pbs.twimg.com/media/HS2HgLeagAAoH8d.png"
+          },
+          {
+            "id": 368772,
+            "title": "Claude Opus 5.5 wants to finish your coding tasks, not just start them",
+            "url": "https://thenewstack.io/claude-opus-5-5-lifecycle/",
+            "source": "The New Stack",
+            "published_at": "2026-09-22T19:49:55.000Z",
+            "score": null,
+            "summary": "Anthropic wants developers to use Claude and its family of tools to handle complete coding tasks. The company introduced Claude Opus 5.5 on Tuesday to span more of the software application development",
+            "cover": "https://cdn.thenewstack.io/media/2026/09/004be713-getty-images-ojbgdr5rpci-unsplash-1024x576.jpg"
+          },
+          {
+            "id": 367076,
+            "title": "𝗪𝗲 𝗶𝗻𝘁𝗲𝗴𝗿𝗮𝘁𝗲𝗱 𝗝𝗲𝘃 𝗶𝗻𝘁𝗼 𝘁𝗵𝗿𝗲𝗲 𝗼𝗽𝗲𝗻-𝘀𝗼𝘂𝗿𝗰𝗲 𝗽𝗿𝗼𝗷𝗲𝗰𝘁𝘀 𝘁𝗼 ...",
+            "url": "https://x.com/milvusio/status/2102476524909916321",
+            "source": "Milvus(@milvusio)",
+            "published_at": "2026-09-22T19:14:00.000Z",
+            "score": null,
+            "summary": "𝗪𝗲 𝗶𝗻𝘁𝗲𝗴𝗿𝗮𝘁𝗲𝗱 𝗝𝗲𝘃 𝗶𝗻𝘁𝗼 𝘁𝗵𝗿𝗲𝗲 𝗼𝗽𝗲𝗻-𝘀𝗼𝘂𝗿𝗰𝗲 𝗽𝗿𝗼𝗷𝗲𝗰𝘁𝘀 𝘁𝗼 𝘁𝗲𝘀𝘁 𝘁𝗵𝗮𝘁 𝗶𝗱𝗲𝗮.First, in 𝗗𝗲𝗲𝗽𝗦𝗲𝗮𝗿𝗰𝗵𝗲𝗿, we used Jev to decide whether an Agentic",
+            "cover": "https://pbs.twimg.com/tweet_video_thumb/HS0F-CTaMAATLhw.jpg"
+          },
+          {
+            "id": 363969,
+            "title": "Claude Opus 5.5 by @AnthropicAI is now available in Cosmos!\r\n\r\nAgentic tasks running on Opus 5.5 are c...",
+            "url": "https://x.com/augmentcode/status/2102476374766407768",
+            "source": "Augment Code(@augmentcode)",
+            "published_at": "2026-09-22T19:13:24.000Z",
+            "score": null,
+            "summary": "Claude Opus 5.5 by @AnthropicAI is now available in Cosmos!Agentic tasks running on Opus 5.5 are completed at 40% of the cost Opus 5, making it a must-have upgrade for Claude power users!We&#39;re exc",
+            "cover": null
+          },
+          {
+            "id": 363350,
+            "title": "onPanda\r\n\r\nEfficient Annotation of On-Policy Alignment Data for LLMs and Agents via Token-Level Correc...",
+            "url": "https://x.com/_akhaliq/status/2102474190335234301",
+            "source": "AK(@_akhaliq)",
+            "published_at": "2026-09-22T19:04:43.000Z",
+            "score": null,
+            "summary": "onPandaEfficient Annotation of On-Policy Alignment Data for LLMs and Agents via Token-Level Correctionpaper: huggingface.co/papers/2609.24…💬4🔄0❤️14👀4382📊5⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HS19BOoa0AAS2V_.jpg"
+          },
+          {
+            "id": 364288,
+            "title": "Claude Opus 5.5 is available today. What will you explore?",
+            "url": "https://x.com/claudeai/status/2102471892099866883",
+            "source": "Claude(@claudeai)",
+            "published_at": "2026-09-22T18:55:35.000Z",
+            "score": null,
+            "summary": "Claude Opus 5.5 is available today. What will you explore?💬25🔄4❤️153👀29362📊32⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 364289,
+            "title": "A thread of early explorations with Claude Opus 5.5:\r\n\r\nA short story about a watermelon created by @k...",
+            "url": "https://x.com/claudeai/status/2102471866635919731",
+            "source": "Claude(@claudeai)",
+            "published_at": "2026-09-22T18:55:29.000Z",
+            "score": null,
+            "summary": "A thread of early explorations with Claude Opus 5.5:A short story about a watermelon created by @kevin_t_ngo.Your browser does not support the video tag.🔗 View on Twitter💬124🔄175❤️4192👀258289📊574",
+            "cover": null
+          },
+          {
+            "id": 370060,
+            "title": "Test GPT-6 Sol and GPT-6 Luna in Battle Mode and Agent Mode at: https://t.co/jFTd7gG8UU",
+            "url": "https://x.com/arena/status/2102470068890382340",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-22T18:48:21.000Z",
+            "score": null,
+            "summary": "Test GPT-6 Sol and GPT-6 Luna in Battle Mode and Agent Mode at: arena.ai💬0🔄1❤️11👀3088📊1⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 370061,
+            "title": "GPT-6 Sol and GPT-6 Luna by @OpenAI are now in the Arena!\r\n\r\nHead to Agent Arena to test them out, and...",
+            "url": "https://x.com/arena/status/2102470066784854177",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-09-22T18:48:20.000Z",
+            "score": null,
+            "summary": "GPT-6 Sol and GPT-6 Luna by @OpenAI are now in the Arena!Head to Agent Arena to test them out, and your votes will shape their evaluations. Scores coming soon.In Agent Arena, we measure models on mill",
+            "cover": "https://pbs.twimg.com/media/HS14oCWbQAAkioQ.jpg"
           }
         ]
       },
@@ -337,115 +321,115 @@
         "desc": "",
         "items": [
           {
-            "id": 337163,
-            "title": "The loudest voices stoking fears about AI dangers have made tremendous headway in the past two weeks...",
-            "url": "https://x.com/AndrewYNg/status/2102140576498065758",
-            "source": "Andrew Ng(@AndrewYNg)",
-            "published_at": "2026-09-21T20:59:03.000Z",
-            "score": 68,
-            "summary": "The loudest voices stoking fears about AI dangers have made tremendous headway in the past two weeks. AI technology has not taken some unexpected, dangerous turn, but the hype around it — propelled by",
+            "id": 353303,
+            "title": "普洱采茶：杀青烫手，和我那杯叫不响的永川秀芽",
+            "url": "https://macin.org/2026/09/22/pu-er-cai-cha/",
+            "source": "Macin",
+            "published_at": "2026-09-22T16:50:03.492Z",
+            "score": 62,
+            "summary": "",
             "cover": null
           },
           {
-            "id": 337195,
-            "title": "Apple shares hit record high after iPhone Duo and Siri AI success",
-            "url": "https://appleinsider.com/articles/26/09/21/apple-shares-hit-record-high-after-iphone-duo-and-siri-ai-success?utm_source=rss",
-            "source": "AppleInsider News",
-            "published_at": "2026-09-21T20:03:04.000Z",
-            "score": 58,
-            "summary": "Apple shares closed at a new record high of $338.98 after investors responded both to how improved Siri AI is, and how much attention the firm has had for its iPhone Duo.Apple stocks closed at a new r",
-            "cover": "https://media.appleinsider.com/gallery/69028-145625-Stock-high-xl.jpg"
-          },
-          {
-            "id": 336777,
-            "title": "AI coding platform Bitrig adds iPhone Duo support with interactive 3D simulator",
-            "url": "https://9to5mac.com/2026/09/21/ai-coding-platform-bitrig-adds-iphone-duo-support-with-interactive-3d-simulator/",
-            "source": "9to5Mac",
-            "published_at": "2026-09-21T21:01:08.000Z",
-            "score": 56,
-            "summary": "Following the release of Xcode 27.1 beta 1 last week, Bitrig has added support for building and testing iPhone Duo apps, complete with an interactive 3D simulator that lets developers fold, tilt, rota",
-            "cover": "https://9to5mac.com/wp-content/uploads/sites/6/2026/09/bitrig-iphone-duo.jpg?quality=82&strip=all&w=1600"
-          },
-          {
-            "id": 329559,
-            "title": "希望这个 Photoshop 插件（标注插件_UXP 架构）不是我空想的需求",
-            "url": "https://www.v2ex.com/t/1243779#reply0",
-            "source": "V2EX · 创意",
-            "published_at": "2026-09-21T15:30:49.000Z",
+            "id": 359359,
+            "title": "Reviewing Your Blog Post with an LLM",
+            "url": "https://writethatblog.substack.com/p/reviewing-your-blog-post-llm",
+            "source": "Hacker News - Newest: &quot;LLM&quot;",
+            "published_at": "2026-09-22T17:50:48.000Z",
             "score": 50,
-            "summary": "折腾了一段时间，终于把一个“小轮子”搓出来了。起因其实挺烦人的，做游戏 UI 的朋友应该有体会，不管现在设计工具更新得多快，因为团队和项目管线的关系，很多时候主战场依然是 Photoshop 。PS 的插件体系现在更新到了新的 UXP 架构，老插件全报废。为了用旧版插件，就需要把 PS 以 Rosetta 兼容模式下跑（我是 Mac 用户），既吃性能，新版的一堆特性也用不上。既然市面上没人针对新架",
+            "summary": "Article URL: https://writethatblog.substack.com/p/reviewing-your-blog-post-llm",
             "cover": null
           },
           {
-            "id": 336255,
-            "title": "OpenAI forms math advisory group as its AI resolves more than 100 open problems",
-            "url": "https://techcrunch.com/2026/09/21/openai-forms-math-advisory-group-as-its-ai-resolves-more-than-100-open-problems/",
-            "source": "TechCrunch",
-            "published_at": "2026-09-21T20:15:58.000Z",
-            "score": 42,
-            "summary": "The group won't be given leeway to slow down or redirect OpenAI's ongoing mathematical research.",
+            "id": 353672,
+            "title": "Astronomers detect radio signals coming from an exoplanet for the first time",
+            "url": "https://phys.org/news/2026-09-astronomers-radio-exoplanet.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-22T16:40:07.000Z",
+            "score": 48,
+            "summary": "Exoplanets are exotic worlds orbiting distant stars far beyond our solar system. Ever since the first ones were discovered in the 1990s, astronomers have turned their attention to these distant worlds",
             "cover": null
           },
           {
-            "id": 336781,
-            "title": "Report: AI glasses shipments surged 263% in H1 2026 as Apple prepares to enter the market",
-            "url": "https://9to5mac.com/2026/09/21/report-ai-glasses-shipments-surged-263-in-h1-2026-as-apple-prepares-to-enter-the-market/",
-            "source": "9to5Mac",
-            "published_at": "2026-09-21T19:55:41.000Z",
-            "score": 42,
-            "summary": "Counterpoint Research says global AI glasses shipments surged 263% during the first half of 2026, with Meta comfortably leading the display-less segment amid growing privacy concerns. Here are the det",
-            "cover": "https://9to5mac.com/wp-content/uploads/sites/6/2024/12/Ray-Ban-Meta-smart-glasses-could-get-a-display-next-year.webp?w=1500"
-          },
-          {
-            "id": 329468,
-            "title": "Tiny US Office Strikes Secret Deals to Push Deportations - Newser",
-            "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNUVJ0eVlUTlh4bTdWWXZOeGFXZXdIVWoyOFNwaDEyYVIwc01YSm11dnRDeVNZdHZDdXNaMy1GbVdDX0ZkZG4zR3R4TlV0WmRvOFp2TlRJMkFXTWRta0xuSmxKOWZaZE1iOGdDTmZyTGlKN3JyODVrbHdZWENkbnhEMGVESExjMzBGMG1zbzluODZXLWcyaV9zd2lEakhjUQ?oc=5",
-            "source": "Top stories - Google News",
-            "published_at": "2026-09-21T15:23:00.000Z",
-            "score": 38,
-            "summary": "Tiny US Office Strikes Secret Deals to Push Deportations&nbsp;&nbsp;NewserHow Trump turned a refugee bureau into a $410 million deportation operation&nbsp;&nbsp;The Washington PostBanished to alien la",
+            "id": 353675,
+            "title": "Emissions from the past decade have made Europe's recent heat waves worse",
+            "url": "https://phys.org/news/2026-09-emissions-decade-europe-worse.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-22T16:20:02.000Z",
+            "score": 46,
+            "summary": "Recent heat waves in Europe have been intensified by the greenhouse gases emitted since nations committed to limiting global warming under the 2015 Paris Agreement, according to a Sep. 22 study publis",
             "cover": null
           },
           {
-            "id": 329821,
-            "title": "Kansas rancher earns half his income from 50 wind turbines on his ranch",
-            "url": "https://timesofindia.indiatimes.com/world/us/kansas-rancher-peter-ferrell-has-50-wind-turbines-on-his-flint-hills-ranch-and-they-now-provide-half-his-income-and-help-him-pass-it-to-his-children/articleshow/134388671.cms",
-            "source": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
-            "published_at": "2026-09-21T15:50:00.000Z",
-            "score": 37,
-            "summary": "",
-            "cover": "https://timesofindia.indiatimes.com/photo/134388671.cms"
+            "id": 354781,
+            "title": "Show HN: Hindsight: Automated Work Timeline",
+            "url": "https://apps.apple.com/us/app/hindsight-work-timeline/id6806331002?mt=12",
+            "source": "Show HN",
+            "published_at": "2026-09-22T16:15:34.000Z",
+            "score": 46,
+            "summary": "Tired of trying to remember what you worked on yesterday for daily scrum? Me too. So I used a VLM to automate it — it quietly captures what you do and builds a timeline. Your choice of model, and with",
+            "cover": null
           },
           {
-            "id": 329816,
-            "title": "He made a work presentation that morning: Family of Bangladeshi-origin AI scientist seeks probe into Irfan Al-Hussaini's July death in Pao Alto, says something is not adding up",
-            "url": "https://timesofindia.indiatimes.com/world/us/he-made-a-work-presentation-that-morning-family-of-bangladeshi-origin-ai-scientist-seeks-probe-into-irfan-al-hussainis-july-death-in-pao-alto-says-something-is-not-adding-up/articleshow/134392996.cms",
-            "source": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
-            "published_at": "2026-09-21T15:45:51.000Z",
-            "score": 36,
-            "summary": "",
-            "cover": "https://timesofindia.indiatimes.com/photo/134392996.cms"
+            "id": 353673,
+            "title": "Day and night get equal billing on Tuesday. A guide to the fall equinox",
+            "url": "https://phys.org/news/2026-09-day-night-equal-billing-tuesday.html",
+            "source": "Phys.org - latest science and technology news stories",
+            "published_at": "2026-09-22T16:40:04.000Z",
+            "score": 45,
+            "summary": "The fall equinox is Tuesday, when light and darkness split the day evenly. It marks the beginning of fall for the Northern Hemisphere and the beginning of spring in the Southern Hemisphere.",
+            "cover": null
           },
           {
-            "id": 338046,
-            "title": "How to turn off your Google location history",
-            "url": "https://www.engadget.com/2261383/how-to-turn-off-google-location-history/",
-            "source": "Engadget",
-            "published_at": "2026-09-21T22:00:00.000Z",
-            "score": null,
-            "summary": "Google Maps&#39; Timeline feature is great for looking back at your past travels, but it&#39;s also discomforting to see all that history in one place.",
-            "cover": "https://www.engadget.com/img/gallery/how-to-turn-off-your-google-location-history/intro-1789661432.jpg"
+            "id": 353054,
+            "title": "This 'fire amoeba' pushes the limit of what's possible for complex life",
+            "url": "https://www.npr.org/2026/09/22/nx-s1-5977044/fire-amoeba-extremophile-eukaryote-life",
+            "source": "NPR Topics: Environment",
+            "published_at": "2026-09-22T16:17:37.000Z",
+            "score": 43,
+            "summary": "Scientists have found a species they've named the fire amoeba, which is capable of reproducing at 145°F and continuing to move up to temperatures of 147°F — a record for complex eukaryotic life.",
+            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/1021x656+0+0/resize/1021x656!/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F98%2F97%2F5d98a1b647ebab46a93dc60e8c2c%2Fcopy-of-cell-alt-cover.jpg"
+          },
+          {
+            "id": 354091,
+            "title": "improve(android): keep tool activity in one compact disclosure (#155765)",
+            "url": "https://github.com/openclaw/openclaw/commit/8363348fa1496f69580feed68536113a1b0342b2",
+            "source": "Recent Commits to openclaw:main",
+            "published_at": "2026-09-22T16:49:14.000Z",
+            "score": 34,
+            "summary": "improve(android): keep tool activity in one compact disclosure (#155765) Keep Android live and completed tools in one compact disclosure while preserving command output, live diffs, failure status, an",
+            "cover": null
+          },
+          {
+            "id": 355700,
+            "title": "[职场话题] 刚开完会，感觉这个世界有点草台班子",
+            "url": "https://www.v2ex.com/t/1244088#reply0",
+            "source": "V2EX",
+            "published_at": "2026-09-22T16:48:43.000Z",
+            "score": 34,
+            "summary": "作为一个资深 infra ，配置一个 couchbase ，按照同事的文档来，5 台机器，2 个 index 3 个 data ，结果发现：",
+            "cover": null
+          },
+          {
+            "id": 352753,
+            "title": "tokens too cheap to meter",
+            "url": "https://jyn.dev/tokens-too-cheap-to-meter/",
+            "source": "Lobsters",
+            "published_at": "2026-09-22T16:28:45.000Z",
+            "score": 34,
+            "summary": "Comments",
+            "cover": null
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 494,
-      "articles": 494,
-      "sections": 4,
-      "totalItems": 41
+      "candidates": 497,
+      "articles": 497,
+      "sections": 3,
+      "totalItems": 40
     }
   },
-  "generated_at": "2026-09-22T06:30:26.933Z"
+  "generated_at": "2026-09-23T06:15:25.918Z"
 }
