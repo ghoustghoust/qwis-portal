@@ -1,0 +1,26 @@
+# push-CI（2026-09-23 新增）：把"测试过没过"的证据从 agent 自报搬进 GitHub 日志。
+# 背景：AGENTS §3 交付链第 2 步此前没有可查对象（仓库只有 collect.yml），
+# 且门禁长期是"写代码的自己判卷"——本 workflow 由 GitHub 跑，判卷权外移。
+# 口径与本地一致：npm test + lint:docs。云端凭据不入库（.env 不在 CI），
+# 依赖生产凭据的用例按 tests/ 内的 skip 标记跳过（用例名带「CI 无 .env 凭据，跳过」）。
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      # better-sqlite3 需要原生构建（server/db.js 与本地隔离库测试用），不能用 --ignore-scripts
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint:docs

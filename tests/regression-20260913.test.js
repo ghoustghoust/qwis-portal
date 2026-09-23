@@ -9,11 +9,14 @@ const fs = require('fs');
 
 require('./helpers'); // APP_DATA_DIR 隔离——必须先于任何 server/* require
 
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
+// CI 无 .env（凭据不入库）：本地照旧读生产凭据；CI 下云端用例整组 skip（用例名带标记，不许静默消失）
+const HAS_ENV = fs.existsSync(path.join(__dirname, '..', '.env'));
+const envTxt = HAS_ENV ? fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8') : '';
 for (const line of envTxt.split(/\r?\n/)) {
   const m = /^([A-Z_]+)=(.*)$/.exec(line.trim());
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
 }
+const cloudTest = HAS_ENV ? test : (name, fn) => test(`${name}（CI 无 .env 凭据，跳过）`, { skip: true }, fn);
 
 // ─── F3：翻译输出清洗（纯函数，无网络） ───
 const _ai = require('../api/_ai');
@@ -125,7 +128,7 @@ async function call(url) {
   return res._body;
 }
 
-test('F1-1 阅读器分页：第一页游标为 ISO 文本格式且翻页持续推进', async () => {
+cloudTest('F1-1 阅读器分页：第一页游标为 ISO 文本格式且翻页持续推进', async () => {
   const p1 = await call('/api/articles?sort=new&tab=all');
   assert.strictEqual(p1.ok, true);
   assert.ok(Array.isArray(p1.items) && p1.items.length === 30, `第一页应 30 条，实际 ${p1.items?.length}`);
@@ -148,7 +151,7 @@ test('F1-1 阅读器分页：第一页游标为 ISO 文本格式且翻页持续�
   assert.ok(p2.items.every((a) => !ids1.has(a.id)), '两页不得出现重复条目');
 });
 
-test('F1-2 热点榜全部动态分页：游标可翻页', async () => {
+cloudTest('F1-2 热点榜全部动态分页：游标可翻页', async () => {
   const p1 = await call('/api/hot?tab=all');
   assert.strictEqual(p1.ok, true);
   assert.ok(Array.isArray(p1.items) && p1.items.length > 0);
@@ -163,7 +166,7 @@ test('F1-2 热点榜全部动态分页：游标可翻页', async () => {
 });
 
 // 2026-09-14 三阶段修正：精选=自有源六维≥60 且 AI 相关；热榜源不再混入（热度百万级越过旧门槛 10000 的量纲失误）
-test('F3 热点榜精选：全部为六维≥60 的自有源条目', async () => {
+cloudTest('F3 热点榜精选：全部为六维≥60 的自有源条目', async () => {
   const p1 = await call('/api/hot?tab=featured');
   assert.strictEqual(p1.ok, true);
   assert.ok(Array.isArray(p1.items), '精选必须返回数组');

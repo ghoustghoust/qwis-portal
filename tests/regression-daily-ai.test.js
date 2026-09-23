@@ -4,10 +4,23 @@ const assert = require('node:assert');
 const path = require('path');
 const fs = require('fs');
 
-const envTxt = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
-for (const line of envTxt.split(/\r?\n/)) {
-  const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
-  if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+// CI 无 .env（凭据不入库）：退到 file: 本地库（AI 全部打桩，库只承 settings 读写，表在 before 里建）
+const HAS_ENV = fs.existsSync(path.join(__dirname, '..', '.env'));
+if (HAS_ENV) {
+  for (const line of fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8').split(/\r?\n/)) {
+    const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+  }
+} else {
+  process.env.TURSO_DATABASE_URL = `file:${path.join(require('os').tmpdir(), `daily-ai-ci-${process.pid}.db`).replace(/\\/g, '/')}`;
+  process.env.TURSO_AUTH_TOKEN = '';
+  const { before } = require('node:test');
+  const { createClient } = require('@libsql/client');
+  before(async () => {
+    const db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: '' });
+    await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
+    await db.close();
+  });
 }
 const _ai = require('../api/_ai');
 

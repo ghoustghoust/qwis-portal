@@ -1,0 +1,106 @@
+// P0-2 回归锁（2026-09-23）：初筛间歇性静默失效修复 + 失败可观测
+// 背景：agnes-2.5-flash 是推理模型，filter 的 maxTokens=128 常全烧在思考上 → finish=length
+//   → 无 content → 抛错 → 失败放行 50 分（>门槛 30）。近 11 期剔除率在 0%↔13.8% 随机跳，
+//   且"0 剔除"与"初筛根本没工作"数据同形不可判别（第 22 期=用户截图那期即 0 剔除）。
+// 修复三件事：① maxTokens 128→512（对齐 _ai.js :69 推理模型默认线）；
+//   ② 失败/解析失败返回 failed:true（此前失败不落任何数，"筛没筛"在原理上算不出来）；
+//   ③ 失败率 ≥20% 或预算截断 → 飞书报警（判据唯一实现 lib/filter-observe.js）。
+// 打桩口径与 regression-ai-infra 相同：provider 全桩 + fetch 打死 + file: 本地库，零真实出口。
+'use strict';
+const { test, before, after } = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { runDriver } = require('./driver-runner');
+
+const ROOT = path.join(__dirname, '..');
+const DB_FILE = path.join(os.tmpdir(), `filter-observe-${process.pid}.db`).replace(/\\/g, '/');
+const DRIVER = path.join(ROOT, `.filter-observe-driver-${process.pid}.cjs`);
+
+function run(caseName) {
+  const out = runDriver(DRIVER, [caseName, DB_FILE], { timeout: 120000, payloadRe: /^OUT /m });
+  const line = out.trim().split('\n').filter((l) => l.startsWith('OUT ')).pop();
+  assert.ok(line, `子进程没打印结果（${caseName}）：\n${out}`);
+  return JSON.parse(line.slice(4));
+}
+
+before(() => {
+  fs.writeFileSync(DRIVER, `
+process.env.TURSO_DATABASE_URL = 'file:' + process.argv[3];
+process.env.TURSO_AUTH_TOKEN = '';
+process.env.AGNES_API_KEY = '';
+process.env.DEEPSEEK_API_KEY = '';
+// 本文件所有 AI 用例都走 _setProviderOverride 打桩：真 fetch 一旦被打到就是测试写坏了，直接判红
+globalThis.fetch = async () => { throw new Error('filter-observe 用例不应有真实网络调用'); };
+const { createClient } = require('@libsql/client');
+const _ai = require(${JSON.stringify(path.join(ROOT, 'api', '_ai.js'))});
+const CASE = process.argv[2];
+(async () => {
+  const db = createClient({ url: process.env.TURSO_DATABASE_URL });
+  await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
+  const put = (k, v) => db.execute({ sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)', args: [k, v] });
+  await put('ai', JSON.stringify({ apiKey: 'local-fake-key', model: 'stub' }));
+  const out = {};
+  if (CASE === 'fail') {
+    _ai._setProviderOverride(async () => { throw new Error('模拟 Agnes 全挂'); });
+    out.r = await _ai.filterArticle({ title: 't', source: 's', summary: 'x' });
+  } else if (CASE === 'maxtokens') {
+    let seen = null;
+    _ai._setProviderOverride(async (p, messages, opts) => { seen = opts; return '{"score": 42, "reason": "ok"}'; });
+    out.r = await _ai.filterArticle({ title: 't', source: 's', summary: 'x' });
+    out.maxTokens = seen && seen.maxTokens;
+  } else if (CASE === 'parsefail') {
+    _ai._setProviderOverride(async () => '这根本不是 JSON，是模型的散文');
+    out.r = await _ai.filterArticle({ title: 't', source: 's', summary: 'x' });
+  }
+  console.log('OUT ' + JSON.stringify(out));
+  process.exitCode = 0;
+})().catch((e) => { console.error('DRIVER-FATAL', e && e.stack || e); process.exitCode = 3; });
+`);
+});
+
+after(() => {
+  try { fs.rmSync(DRIVER, { force: true }); } catch { /* 尽力清理 */ }
+  try { fs.rmSync(DB_FILE, { force: true }); } catch { /* 尽力清理 */ }
+});
+
+test('F1 初筛调用失败 → 返回 failed:true（放行语义不变：score 50 / ignore false）', () => {
+  const { r } = run('fail');
+  assert.equal(r.failed, true, '失败必须带 failed 标记，否则调用方无法计数（P0-2 的不可判别就是这么来的）');
+  assert.equal(r.score, 50);
+  assert.equal(r.ignore, false);
+});
+
+test('F2 初筛 maxTokens ≥ 512（推理模型要留思考空间，128 会全烧在思考上）', () => {
+  const { r, maxTokens } = run('maxtokens');
+  assert.equal(r.failed, undefined, '桩正常返回时不许误标 failed');
+  assert.equal(r.score, 42);
+  assert.ok(Number(maxTokens) >= 512, `filter maxTokens=${maxTokens} —— 低于 512 推理模型会把字数全烧在思考上（P0-2 根因）`);
+});
+
+test('F3 模型答了但掏不出 JSON → 同样 failed:true（"没筛成"要可数）', () => {
+  const { r } = run('parsefail');
+  assert.equal(r.failed, true);
+  assert.equal(r.ignore, false);
+});
+
+test('F4 报警判据表：失败率 ≥20% 或预算截断才报警（lib/filter-observe.js 唯一实现）', () => {
+  const { filterAlert, FILTER_FAIL_ALERT_RATE } = require('../lib/filter-observe');
+  assert.equal(FILTER_FAIL_ALERT_RATE, 0.2);
+  assert.equal(filterAlert({ attempted: 500, failed: 0 }).alert, false);
+  assert.equal(filterAlert({ attempted: 500, failed: 99 }).alert, false, '19.8% 不报——免费模型日常抖动不该叫人');
+  const hit = filterAlert({ attempted: 500, failed: 100 });
+  assert.equal(hit.alert, true, '20% 必须报');
+  assert.match(hit.text, /失败 100\/500/);
+  assert.equal(filterAlert({ attempted: 0, failed: 0 }).alert, false, '一次都没跑不许报');
+  const tr = filterAlert({ attempted: 300, failed: 0, truncated: true });
+  assert.equal(tr.alert, true, '预算截断=部分候选根本没被筛，必须报');
+  assert.match(tr.text, /截断/);
+});
+
+test('F5 filterStats 落库形状：failed/truncated 两键真写进 stats（防"记了但不落"）', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
+  assert.ok(/filterStats:\s*\{[^}]*failed:\s*filterFailed/.test(src), 'filterStats 缺 failed 键');
+  assert.ok(/filterStats:\s*\{[^}]*truncated:\s*filterTruncated/.test(src), 'filterStats 缺 truncated 键');
+});

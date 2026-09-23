@@ -896,12 +896,16 @@ async function runWeekly() {
   log(`周刊候选 ${pre.scoped.length} 篇（原 ${valid.length}），开始初筛`);
 
   const passed = [];
+  let filterFailed = 0;
   for (const a of pre.scoped) {
     if (Date.now() - t0 > BUDGET_MS * 0.4) { log('初筛预算截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, summary: a.summary });
+    if (f.failed) filterFailed++;
     if (!f.ignore) passed.push(a);
   }
-  log(`初筛通过 ${passed.length}，开始深析（预算 ≤150 篇）`);
+  // 2026-09-23（P0-2 配套）：周刊与日报共用 filterArticle——失败数必须出现在日志里，
+  // 否则 B16/B121 复验读本周日志时仍分不清"0 剔除"和"初筛没工作"
+  log(`初筛通过 ${passed.length}（失败 ${filterFailed}），开始深析（预算 ≤150 篇）`);
 
   const analyzed = [];
   let consecFail = 0;
@@ -1141,14 +1145,26 @@ async function runDailyAi() {
   const valid = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a)).slice(0, AI_LIMIT);
   log(`候选 ${valid.length} 篇，开始两阶段初筛`);
 
-  // 阶段 1：初筛
+  // 阶段 1：初筛（2026-09-23 P0-2 配套：失败/截断计数落 filterStats，异常发报警——判据唯一实现 lib/filter-observe.js）
   const passed = [];
+  let filterFailed = 0, filterRejected = 0, filterTruncated = false;
   for (const a of valid) {
-    if (Date.now() - t0 > BUDGET_MS * 0.5) { log('初筛预算过半，截断'); break; }
+    if (Date.now() - t0 > BUDGET_MS * 0.5) { filterTruncated = true; log('初筛预算过半，截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, category: null, summary: a.summary });
+    if (f.failed) filterFailed++;
     if (!f.ignore) passed.push({ ...a, filterScore: f.score, filterReason: f.reason });
+    else filterRejected++;
   }
-  log(`初筛通过 ${passed.length}/${valid.length}，开始深析`);
+  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}），开始深析`);
+  // "失败但没全挂"此前是盲区：全挂有 _ai 的 consecFail≥3 报警，部分失败谁都不说——
+  // 用户 2026-09-23 裁定：这类异常发报警渠道给管理者（飞书），不上前台页面
+  try {
+    const fa = require('../lib/filter-observe').filterAlert({ attempted: passed.length + filterRejected, failed: filterFailed, truncated: filterTruncated });
+    if (fa.alert) {
+      log(`初筛异常：${fa.text}`);
+      await require('../api/_alerts').aiFailed(`早报初筛异常：${fa.text}。候选 ${valid.length} 篇，本期评分偏松`);
+    }
+  } catch (e) { log(`初筛异常报警失败（不阻断）: ${e.message}`); }
 
   // 降级判定：首批深析连败 3 次 → AI 链路全挂
   const analyzed = [];
@@ -1356,7 +1372,7 @@ async function runDailyAi() {
   const stats = {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
-    filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length },
+    filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
     sections: sections.length, totalItems: allItems.length,
     elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
   };

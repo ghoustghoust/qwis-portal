@@ -10,7 +10,9 @@ const path = require('path');
 const { createClient } = require('@libsql/client');
 
 const prodEnv = () => {
-  for (const line of fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8').split(/\r?\n/)) {
+  const envFile = path.join(__dirname, '..', '.env');
+  if (!fs.existsSync(envFile)) return false; // CI 无 .env：只读生产的用例空转放行（本地照旧）
+  for (const line of fs.readFileSync(envFile, 'utf8').split(/\r?\n/)) {
     const m = /^([A-Z_]+)=(.+)$/.exec(line.trim());
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
   }

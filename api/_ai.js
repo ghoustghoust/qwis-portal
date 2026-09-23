@@ -258,15 +258,20 @@ async function filterArticle(meta) {
   const threshold = Number(await getSetting('ai.filterThreshold', 30));
   const tpl = await loadPrompt('filter');
   const input = `标题：${meta.title || ''}\n来源：${meta.source || ''}\n分类：${meta.category || ''}\n摘要：${String(meta.summary || '').slice(0, 200)}`;
-  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 待评内容\n\n${input}` }], { kind: 'filter', maxTokens: 128, temperature: 0.2 });
-  if (!r.ok) return { score: 50, ignore: false, reason: `初筛失败放行: ${r.error}` }; // 失败放行（宁多勿漏）
+  // 2026-09-23（P0-2）：agnes 是推理模型，128 常全烧在思考上 → 无 content → 抛错 → 放行 50 分，
+  // 初筛间歇性静默失效（剔除率 0%↔13.8% 随机跳，且"0 剔除"与"初筛没工作"数据同形不可判别）。
+  // 512 对齐本文件 :69 的推理模型默认线；观察两期后若仍见 finish=length 再抬。
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 待评内容\n\n${input}` }], { kind: 'filter', maxTokens: 512, temperature: 0.2 });
+  // failed 标记给调用方计数：失败此前不落任何数（stats 不记、报警不发），"今天筛没筛"在原理上算不出来
+  if (!r.ok) return { score: 50, ignore: false, failed: true, reason: `初筛失败放行: ${r.error}` }; // 失败放行（宁多勿漏）
   const m = r.reply.match(/\{[\s\S]*\}/);
   try {
     const j = JSON.parse(m[0]);
     const score = Math.max(0, Math.min(100, Number(j.score) || 0));
     return { score, ignore: score < threshold || !!j.ignore, reason: String(j.reason || '').slice(0, 100) };
   } catch {
-    return { score: 50, ignore: false, reason: '解析失败放行' };
+    // 模型答了但掏不出 JSON = 这次也没筛成，同样要可数
+    return { score: 50, ignore: false, failed: true, reason: '解析失败放行' };
   }
 }
 
