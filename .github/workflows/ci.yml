@@ -18,7 +18,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          # 精确钉 24.14.1（与本机一致）：24.21.0 上 better-sqlite3 在进程退出段触发
+          # RemoveEnvironmentCleanupHook 断言崩溃（SIGABRT），32 个测试文件整组假红
+          node-version: 24.14.1
           cache: npm
       # better-sqlite3 需要原生构建（server/db.js 与本地隔离库测试用），不能用 --ignore-scripts
       - run: npm ci

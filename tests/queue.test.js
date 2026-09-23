@@ -13,6 +13,9 @@ const { spawn } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const PHP_EXE = path.join(ROOT, 'tools', '.php-runtime', 'php.exe');
+// CI 无便携 PHP（tools/.php-runtime 不入库）：PHP 依赖用例整组标记跳过（用例名带标记，不许静默消失）
+const HAS_PHP = fs.existsSync(PHP_EXE);
+const phpTest = HAS_PHP ? test : (name, fn) => test(`${name}（CI 无 php-runtime，跳过）`, { skip: true }, fn);
 const TOKEN = 'test-token-3f9a1c7e5b2d4806aa11cc22dd33ee44ff556677'; // 测试专用 Token
 
 let php = null;
@@ -57,6 +60,7 @@ async function api(endpoint, { method = 'GET', token = TOKEN, action, body } = {
 }
 
 before(async () => {
+  if (!HAS_PHP) return; // CI 无便携 PHP：用例已整组 skip，这里不得再 spawn（ENOENT 会变 uncaughtException）
   // 1. 拷贝 cloud/ 到临时 docroot，写测试 token.json
   docroot = fs.mkdtempSync(path.join(require('os').tmpdir(), 'qwis-cloud-'));
   for (const f of ['_queue_lib.php', 'wechat-rss-queue.php', 'bilibili-video-queue.php', 'douyin-video-queue.php']) {
@@ -79,7 +83,7 @@ after(() => {
   cleanup();
 });
 
-test('Token 鉴权：无 Token / 错误 Token 一律 403 bad token（N3）', async () => {
+phpTest('Token 鉴权：无 Token / 错误 Token 一律 403 bad token（N3）', async () => {
   for (const ep of ['wechat-rss-queue.php', 'bilibili-video-queue.php', 'douyin-video-queue.php']) {
     const noToken = await api(ep, { token: null });
     assert.equal(noToken.status, 403, `${ep} 无 token 应 403`);
@@ -90,7 +94,7 @@ test('Token 鉴权：无 Token / 错误 Token 一律 403 bad token（N3）', asy
   }
 });
 
-test('push → pull(count 正确) → clear → 再 pull(count=0) 全流程（三端点）', async () => {
+phpTest('push → pull(count 正确) → clear → 再 pull(count=0) 全流程（三端点）', async () => {
   const cases = [
     { ep: 'wechat-rss-queue.php', url: 'https://mp.weixin.qq.com/s/abc123', name: '某公众号文章' },
     { ep: 'bilibili-video-queue.php', url: 'https://space.bilibili.com/546195', name: '某UP主' },
@@ -119,7 +123,7 @@ test('push → pull(count 正确) → clear → 再 pull(count=0) 全流程（�
   }
 });
 
-test('type 校验：端点拒绝不属于本平台的链接（400）', async () => {
+phpTest('type 校验：端点拒绝不属于本平台的链接（400）', async () => {
   // 公众号队列拒绝 B站链接
   const r1 = await api('wechat-rss-queue.php', { method: 'POST', body: { token: TOKEN, url: 'https://www.bilibili.com/video/BV1xx411c7mD' } });
   assert.equal(r1.status, 400);
@@ -136,7 +140,7 @@ test('type 校验：端点拒绝不属于本平台的链接（400）', async () 
   assert.equal(r4.json.error, 'missing url');
 });
 
-test('Token 放 POST body 同样通过鉴权', async () => {
+phpTest('Token 放 POST body 同样通过鉴权', async () => {
   // body 里带 token（query 无 token），push 应成功
   const res = await fetch(`${baseUrl}/wechat-rss-queue.php`, {
     method: 'POST',
@@ -148,7 +152,7 @@ test('Token 放 POST body 同样通过鉴权', async () => {
   await api('wechat-rss-queue.php', { action: 'clear' });
 });
 
-test('本地 poller.syncQueue(wechat)：云端两条 → 导入 pending_items → 云端清空', async () => {
+phpTest('本地 poller.syncQueue(wechat)：云端两条 → 导入 pending_items → 云端清空', async () => {
   const { db, setSetting } = require('../server/db');
   const poller = require('../server/services/queue/poller');
   setSetting('queue', { baseUrl, token: TOKEN, intervalMin: 10, enabled: true });
@@ -176,7 +180,7 @@ test('本地 poller.syncQueue(wechat)：云端两条 → 导入 pending_items �
   assert.equal(db.prepare("SELECT COUNT(*) c FROM pending_items WHERE type='wechat'").get().c, 2);
 });
 
-test('poller：未配置地址/Token 时 syncQueue 抛出明确错误', async () => {
+phpTest('poller：未配置地址/Token 时 syncQueue 抛出明确错误', async () => {
   const { setSetting } = require('../server/db');
   const poller = require('../server/services/queue/poller');
   setSetting('queue', { baseUrl: '', token: '', enabled: false });
