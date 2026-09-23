@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 41-2 端到端评测引擎（要求正文 docs/EVAL_GUIDE.md §3，父 spec docs/specs/41-e2e-whitebox-eval/spec.md）
+ * 41-2 端到端评测引擎（要求正文 docs/EVAL_GUIDE.md §3 —— 该文件即现行唯一事实源；原父 spec 已于 09-23 作废删除，锚点见 docs/ISSUES.md）
  *
  * 它回答的问题和白盒不同：**页面真的对用户生效了吗**。本项目反复出现过这类缺陷——
  * 接口 200、字段齐、白盒全绿，页面上却仍是旧口径或直接空：

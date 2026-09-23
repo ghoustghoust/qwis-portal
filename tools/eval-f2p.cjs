@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 41-3 F2P/P2P「改前必红」取证器（要求正文 docs/EVAL_GUIDE.md §6，小 spec docs/specs/41-e2e-whitebox-eval/spec.md 41-3）
+ * 41-3 F2P/P2P「改前必红」取证器（要求正文 docs/EVAL_GUIDE.md §6 —— 该节即现行唯一事实源；「41-3」现为历史编号，其小 spec 已于 09-23 作废删除，锚点见 docs/ISSUES.md）
  *
  * 为什么要有它：本轮每条修复都得证明"这个测试在没修之前会红"。手工做连踩两个坑——
  *   ① 第一版探针脚本把判定写反了（改前也通过却打印"改前就通过"）；

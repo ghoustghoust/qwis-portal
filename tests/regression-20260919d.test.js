@@ -57,7 +57,7 @@ test('B39-3 档位投影：AI 增强 / 裸关键词必须由 brief-guards 单一
   assert.match(ui, /windowDays|window_days/, '前端应读接口回传的窗口天数');
 });
 
-// ── B53 零碎死码与错字（归属 39-2，见 docs/specs/38-admin-ia-refactor/spec.md 头部订正）──
+// ── B53 零碎死码与错字（原归属 39-2，出处 38 号 spec 头部订正；09-23 该批 spec 已作废删除，锚点见 docs/ISSUES.md）──
 // 实测：AiSettingsTab.jsx:252 把 API 地址 .slice(0,20) 截成 "apihub.agnes-ai.com/"（看着像坏了）；
 //       「Agencs」错字散在标题与根规范文档；tools/collect-turso.js:1637 llmChat() 定义后全仓零调用。
 

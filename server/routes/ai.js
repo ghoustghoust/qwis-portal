@@ -49,7 +49,8 @@ router.put('/config', (req, res) => {
   // apiKey 留空不覆盖（敏感字段惯例）
   if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
   setSetting('ai', next);
-  // B51：假开关（写了只回显给同一个界面、无任何行为读取）已摘除，见 docs/specs/39-ai-console/spec.md 39-2
+  // B51：假开关（写了只回显给同一个界面、无任何行为读取）已摘除；原判据出处 39-2 已随 39 号 spec 作废删除（锚点见 docs/ISSUES.md），
+  // 现在这条不变量由白盒 W3/W3 的子判据守着（号位以 tools/eval-whitebox.cjs 实存为准）。
   log.info('[AI] 配置已更新');
   res.json({ ok: true });
 });

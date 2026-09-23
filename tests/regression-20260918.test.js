@@ -5,7 +5,7 @@
 //   → `tests/regression-cloud-writes-isolated.test.js` W-1~W-6（本地 libsql 文件库 + 正负两条行为断言）。
 // 搬走的理由不是"它们删了东西"（实测没有：`handleWeeklyArchiveDelete` 在读到不存在的期号时先 return 404，
 // `setSetting` 在其后），而是**安全性押在"999999 这个期号恰好不存在"的夹具选择上，而不是押在隔离上**，
-// 且一条打生产的 DELETE 换来的信息只有"路由可达"。规格见 `docs/specs/43-collect-retention-safety/spec.md` §六。
+// 且一条打生产的 DELETE 换来的信息只有"路由可达"。原规格在 43 号 spec §六（09-23 该批 spec 已作废删除，锚点见 docs/ISSUES.md）。
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert');

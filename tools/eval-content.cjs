@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 41-8 内容质量评测的 Node 侧转发（正文 docs/EVAL_GUIDE.md §5，小 spec docs/specs/41-e2e-whitebox-eval/spec.md 41-8）
+ * 41-8 内容质量评测的 Node 侧转发（要求正文 docs/EVAL_GUIDE.md §5；「41-8」现为历史编号 —— 其小 spec 已于 09-23 作废删除，锚点见 docs/ISSUES.md）
  *
  * 为什么要一层 Node：
  *  1) 云端域名只有一个真值来源（lib/cloud-site.js）。Python 侧再写一遍就是第 6 份副本——

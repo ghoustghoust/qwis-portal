@@ -54,7 +54,7 @@
   ③ **恢复前必须先探活**，探活失败就延长冷却，不许无条件放回（现 `restore-all` 是无差别解冻，且不清 `frozenAt/resumeCount`）；
   ④ **三端自愈必须同一份实现**（落 `lib/`，`server/`、`api/`、`tools/collect-turso.js` 三端引用）——本条正是"同一个源在本地永不恢复、在云端 48h 后恢复"的分叉代价；
   ⑤ 自愈必须留痕并在后台可见，否则用户看到的"源自己好了又自己坏了"比手动点更不可信。
-- 案例：2026-09-18 熔断存量 云端 210（youtube 100/rss 67/x 39/hotlist 3/bili 1）+ 本地 584；方案见 `docs/specs/35-selfheal-admin-console/`（35A 自愈引擎 / 35B 成功率数据地基），问题挂 `docs/ISSUES.md` H14/H15/H16。
+- 案例：2026-09-18 熔断存量 云端 210（youtube 100/rss 67/x 39/hotlist 3/bili 1）+ 本地 584（**09-18 读数，未复测**；09-23 现役库熔断中 = 11 个源）；原方案 35 号 spec（35A 自愈引擎 / 35B 成功率数据地基）**已于 09-23 作废删除**，锚点见 `docs/ISSUES.md`「specs 35~43 作废」行；问题挂 `docs/ISSUES.md` H14/H15/H16 —— 其中 **H16 半边已交付**（`lib/source-breaker.js#detectSystemicFailure` 只在 `tools/collect-turso.js` 生效，另两端未接）。
 
 ### #39 大规模失败要先分清「我们出不去」还是「源真死了」，否则抑制器会变成永久免死金牌（2026-09-19）
 - 症状：一次代理故障把 458 个本地源集体记为失败并逐个熔断，第二天后台一片红，用户只能一个个手动解冻（`docs/ISSUES.md` 坑 #35 的同一事故面）。

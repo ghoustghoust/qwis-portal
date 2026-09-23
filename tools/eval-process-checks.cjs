@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 41-7 过程性二值检查器（要求正文 docs/EVAL_GUIDE.md §3.6，小 spec docs/specs/41-e2e-whitebox-eval/41-7-process-binary-checks.md）
+ * 41-7 过程性二值检查器（要求正文 docs/EVAL_GUIDE.md §3.6 —— 该节即现行唯一事实源；原小 spec 已于 09-23 作废删除，锚点见 docs/ISSUES.md）
  *
  * 它只回答一个问题：**这次评测运行可信吗？** 不判断业务对不对。
  * 为什么先要它而不是先要端到端引擎：41-2 最大的风险不是跑不起来，是"跑绿了却什么都没测"。

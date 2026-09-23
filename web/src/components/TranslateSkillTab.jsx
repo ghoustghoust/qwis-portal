@@ -97,7 +97,7 @@ export default function TranslateSkillTab() {
         <div className="t-danger">翻译配置端点不可用：{loadError}</div>
         <div className="t-muted text-xs">
           <code>/api/ai/translate/*</code> 目前只由本地 Express（<code>server/routes/ai.js</code>）提供，云端读层未实现该路由；
-          在本地端打开本 Tab 才能编辑提示词。云端化改造见 <code>docs/specs/39-ai-console/spec.md</code> 的 39-6。
+          在本地端打开本 Tab 才能编辑提示词。云端化改造的原排期（39-6）已作废，待重新立项，见 <code>docs/ISSUES.md</code>。
         </div>
       </div>
     );
