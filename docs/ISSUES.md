@@ -76,6 +76,8 @@
 
 | H23 | **`runDaily`（裸报告）的 `stats.candidates` 是门槛后口径且从不写 `gateDropped`**，破不变量12「五份写入器 candidates 统一 = 进门槛前候选数」。不是本轮引入：`git show 6c40812^` 那一行同样缺；B20（09-19）给它接上门槛时只接了过滤、没同步 stats。生产实测指纹确认：id **67/62/59/56** 的 stats 键集恰为 `schemaVersion,candidates,articles,sections,totalItems`（无 `gateDropped`、无 `filterStats`），`candidates` = 473/497/494/493（门槛后），而同窗 AI 行 id 66/65/61 恒为 500 且带 `gateDropped=46/60/139`。影响面：统计卡与后台"每日早报"读的是同一个字段名、两种群体（09-19 独立审查统一过一次，这一份漏了） | **故意不在步1 里修**：它会让裸报告的 `candidates` 读数跳变，与级3 的效果混在同一批里就归因不清（用户 09-23「先修一个变量、观察两期」同一条理由）。修法两行：`candidates: valid.length + gateDropped` 并把 `gateDropped` 写进 stats；配一条锁（照 F5 的形状锁）。取证：`SELECT id,stats FROM daily_reports ORDER BY id DESC LIMIT 30` 看键集 |
 
+| H24 | **`ai_failed` 冷却键是单一全局位 `ai_failed:global`（默认 120min），把两类不同的异常合并抑制**：P0-2 的「本期初筛没筛（失败率≥20% 或预算截断）」与 `_ai.js` 的「AI 通道连败≥3 次」都走 `aiFailed()` → 同一个 `coolKey`。后果实测坐实：09-23 那三期内 id65（19:18Z，`truncated=true`、失败 49/274=17.9%）与 id66（21:06Z，失败 **136/318=42.8%**）两条都满足报警条件，但 19:00~23:59Z 整个窗口 `audit_log` 里只有 **一条** `ai_failed`（22:59Z）——前一条被 120min 冷却吞掉。且 `alerts.dispatch` 的 `detail` 只存 `{event,title,sent,total}`，**报警正文不落库**，事后无法分辨那条到底是"初筛异常"还是"通道全挂" | 两个小改（都不在步1 内，避免与级3 读数混批）：① 冷却键按子因分位（`ai_failed:filter` / `ai_failed:channel`）；② `audit_log.detail` 带上正文摘要（现有 `title` 是固定 emoji 标题）。取证：`SELECT at,detail FROM audit_log WHERE action='alerts.dispatch' AND at BETWEEN '2026-09-23T19:00Z' AND '2026-09-23T23:59Z'` + `settings['alerts.cooldowns']` 的 `ai_failed:global` |
+
 ### specs 35~43 作废（09-23 整批删除 · 逐字反查锚点） <!-- doc-lint:ignore -->
 > 用户裁定：这批是上一版排期的产物，「不能用前朝的剑斩本朝的官」，当前系统的问题需**重新列举**，故连带目录一起清除。作废的**不是需求本身**，是它们携带的优先级表、✅⏸ 状态标记与 09-13~09-21 的实测读数 —— 后者已被 09-22 的约 20 个交付提交与 09-20 换库双重推翻。
 >
