@@ -463,12 +463,19 @@ async function generateWeeklyEditorNote(items, storylines) {
   return body.slice(0, 800); // 设计 500-700 字，硬上限 800
 }
 
-async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme');
+async function generateThemeDetailed(items) {
+  const tpl = await loadPrompt('daily-theme');
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
   const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
-  if (!r.ok) return null;
-  // 推理模型会把思考过程混进输出：剥掉分析行，取最后一个像导语的句子
-  const lines = r.reply.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (!r.ok) return { theme: null, why: 'ai_failed', err: String(r.error || 'no error').slice(0, 160) };
+  return pickThemeReply(r.reply);
+}
+// 纯函数：从模型回复里挑"像导语的那句"，挑不出必须说清为什么（why）。
+// 为什么要改形状：线上 16 期 AI 档有 15 期 theme 为空，而原来三条 `return null` 出口在日志与库里都不留痕，
+// 于是"模型没答上"与"答了但被污染判据否决"永远分不清 —— 见 docs/ISSUES.md H30。
+// 判定规则本身一字未动（那是三轮真实污染喂出来的），只把出口换成可归因的形状。
+function pickThemeReply(reply) {
+  const lines = String(reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
   const isAnalysis = (l) =>
     /^(用户要求|让我|我来|分析|首先|然后|所以|这[几些]|###|\d+\.|[-*•])/.test(l) ||
     /^(Let me|The user|I need|First|Then|So |Looking|Analyzing|Reviewing|Summarizing|Now |Here|The dominant|Overall|These|Based on|As the|I should)/i.test(l) ||
@@ -481,21 +488,27 @@ async function generateTheme(items) {  const tpl = await loadPrompt('daily-theme
     /^(我|我们|咱|本人)/.test(l) ||
     /[::：]\s*$/.test(l) || l.length > 120;
   const candidates = lines.filter((l) => !isAnalysis(l));
-  // 2026-09-13：全部行都是分析文本时直接放弃（返回 null → 前端无导语展示），
+  // 2026-09-13：全部行都是分析文本时直接放弃（theme 为 null → 前端无导语展示），
   // 不得回退取分析行——实测曾把英文思维链整段当导语写入 mybrief
-  if (!candidates.length) return null;
+  if (!candidates.length) return { theme: null, why: 'all_lines_rejected', lines: lines.length };
   // prompt 约定样式「从 X，到 Y，再到 Z，判断 W」（≤60 字）：优先取形状匹配的行
   const shaped = candidates.filter((l) => /^从/.test(l) && /[，,]/.test(l) && l.length <= 70);
   const picked = (shaped[shaped.length - 1] || candidates[candidates.length - 1])
     .replace(/^(导语应该是|导语|今日主题|主题导语|主题)[:：]?\s*/g, '')
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
   // 第一人称/写作过程元文本一票否决（三轮实测污染：英文思维链句/角色复述/「我想到一个更好的方式来组织这个叙事」）
-  if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到|需要|必须|应该|要|强调)|叙事|让我|输出|写作|这个方式/.test(picked)) return null;
-  return picked + '。';
+  if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到|需要|必须|应该|要|强调)|叙事|让我|输出|写作|这个方式/.test(picked)) {
+    return { theme: null, why: 'picked_vetoed', lines: lines.length, detail: String(picked || '').slice(0, 60), len: String(picked || '').length };
+  }
+  return { theme: picked + '。' };
+}
+// 旧契约原样保留（周刊/我的早报两个调用方只要字符串）；新增的 detailed 版只给日报写入器用来落归因。
+async function generateTheme(items) {
+  return (await generateThemeDetailed(items)).theme;
 }
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
-  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
+  refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateThemeDetailed, pickThemeReply, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };

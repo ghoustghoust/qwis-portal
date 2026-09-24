@@ -1398,7 +1398,14 @@ async function runDailyAi() {
 
   // 主题导语
   const allItems = sections.flatMap((s) => s.items);
-  const theme = await _ai.generateTheme(allItems).catch((e) => { log(`每日早报导语生成失败（本期无导语）: ${e.message}`); return null; });
+  // H30（09-24 实测）：库里 16 期 AI 档有 15 期 theme 为空，而原来三条 null 出口在日志与库里都不留痕
+  // —— "模型没答"与"答了但被污染判据否决"分不清。改用 detailed 版把**归因**随本期一起落库。
+  const th = await _ai.generateThemeDetailed(allItems).catch((e) => {
+    log(`每日早报导语生成失败（本期无导语）: ${e.message}`);
+    return { theme: null, why: 'throw', err: String(e.message || '').slice(0, 160) };
+  });
+  const theme = th.theme;
+  if (!theme) log(`本期无导语，归因=${th.why || '(未标)'}${th.err ? `：${th.err}` : ''}${th.lines != null ? `（回复 ${th.lines} 行）` : ''}`);
 
   // 统计卡契约（B2 修复）：StatCards 读 candidates/articles/videos——daily-ai 候选全是文章，
   // 视频数取窗口内 videos 表新增（T4-3 视频入报后此处口径随之升级）
@@ -1408,6 +1415,9 @@ async function runDailyAi() {
   } catch { /* 统计失败不阻断 */ }
   const stats = {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
+    // 导语为空时的归因（H30）：'ai_failed' 模型没答 / 'all_lines_rejected' 答了但每行都像污染元文本 /
+    // 'picked_vetoed' 挑出来的那句被一票否决 / 'throw' 调用抛错。有 theme 时该键不落（null 不留噪声键）。
+    ...(theme ? {} : { themeSkip: { why: th.why || 'unlabeled', err: th.err, detail: th.detail, lines: th.lines } }),
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
     //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，

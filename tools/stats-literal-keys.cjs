@@ -39,8 +39,36 @@ function topLevelKeys(objText) {
     if (ch === '/' && objText[i + 1] === '/') { const nl = objText.indexOf('\n', i); i = nl < 0 ? objText.length : nl - 1; continue; }
     if (ch === '/' && objText[i + 1] === '*') { const e = objText.indexOf('*/', i); if (e < 0) break; i = e + 1; continue; }
     if (/\s/.test(ch)) continue;
-    if (ch === '{' || ch === '[' || ch === '(') { depth++; prev = ch; continue; }
-    if (ch === '}' || ch === ']' || ch === ')') { if (depth > 0) depth--; prev = ch; continue; }
+    // 展开写法 `...(cond ? {} : { k: 1 })` 里的键**同样是本层写出去的字段**（日报 AI 档的 themeSkip 就是这么来的）。
+    // 只取每个分支对象的第一层，展开式本身吃掉 —— 否则嵌套值的键会被当成顶层键混进来。
+    if (ch === '.' && objText[i + 1] === '.' && objText[i + 2] === '.' && depth === 1) {
+      let j = i + 3, d = 0;
+      while (j < objText.length) {
+        const c = objText[j];
+        if (c === "'" || c === '"' || c === '`') { j = skipString(objText, j); }
+        else if (c === '(' || c === '[' || c === '{') d++;
+        else if (c === ')' || c === ']' || c === '}') d--;
+        else if (c === ',' && d === 0) break;
+        j++;
+      }
+      const expr = objText.slice(i + 3, j);
+      // 逐个找"分支对象"：展开式常写成 `...(cond ? {} : { k: 1 })`，**圆括号要当透明**
+      // （否则括号一入栈，分支对象就永远在"深度 1"，键会被漏掉 —— 09-24 第一版就是这么漏的 themeSkip）
+      let d2 = 0;
+      for (let k = 0; k < expr.length; k++) {
+        const c = expr[k];
+        if (c === "'" || c === '"' || c === '`') { k = skipString(expr, k); continue; }
+        if (c === '[') d2++;
+        else if (c === ']') d2--;
+        else if (c === '{' && d2 === 0) {
+          const inner = objectLiteralAt(expr, k);
+          if (inner) { keys.push(...topLevelKeys(inner)); k += inner.length - 1; }
+        }
+      }
+      i = j - 1; prev = ','; continue;
+    }
+    if ('{[('.includes(ch)) { depth++; prev = ch; continue; }
+    if ('}])'.includes(ch)) { if (depth > 0) depth--; prev = ch; continue; }
     if (ch === ',') { prev = ch; continue; }
     if (depth === 1 && (prev === '{' || prev === ',') && /[A-Za-z_$]/.test(ch)) {
       const m = /^([A-Za-z_$][A-Za-z0-9_$]*)/.exec(objText.slice(i));

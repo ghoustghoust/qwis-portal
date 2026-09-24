@@ -58,6 +58,16 @@
               }
             },
             "analyzeNoBody": { "type": "integer", "description": "深析时正文取空仍被打分的条数（09-24 起有；更早的行缺键不是回归，见 ISSUES H25 取证）" },
+            "themeSkip": {
+              "type": "object",
+              "description": "**仅 AI 档位且仅当 theme 为空时才有**（H30：线上 16 期 AI 档 15 期无导语，而原来三条 return null 出口在日志与库里都不留痕）。why=ai_failed 模型没答 / all_lines_rejected 答了但每行都被污染判据否决 / picked_vetoed 挑出的那句被一票否决 / throw 调用抛错 / unlabeled 未标（不该出现，出现即判据要补）",
+              "properties": {
+                "why": { "type": "string", "enum": ["ai_failed", "all_lines_rejected", "picked_vetoed", "throw", "unlabeled"] },
+                "err": { "type": "string", "description": "ai_failed / throw 时的原因片段" },
+                "detail": { "type": "string", "description": "picked_vetoed 时被否决那句的前 60 字" },
+                "lines": { "type": "integer", "description": "模型回复的有效行数" }
+              }
+            },
             "elapsedMin": { "type": "number" },
             "theme": { "type": ["string", "null"], "description": "仅 AI 版：导语" },
             "degraded": { "type": "boolean", "description": "仅 AI 版：AI 链路降级标记" },

@@ -224,12 +224,15 @@ test('P12 契约必须数得出四份云端写入器 stats 字面量里的每一
     gateDropped,
     str: "c: 8 { d: 7 }",
     arr: [ { e: 4 } ],
+    ...(flag ? {} : { spreadKey: { why: 'x', n: 1 } }),
     totalItems: list.reduce((n, s) => n + s.items.length, 0),
   };`;
   assert.deepStrictEqual(
     topLevelKeys(objectLiteralAt(fixture, fixture.indexOf('{'))),
-    ['a', 'nested', 'ternary', 'gateDropped', 'str', 'arr', 'totalItems'],
-    '提取器自检失败：上面这组键是唯一正确答案'
+    ['a', 'nested', 'ternary', 'gateDropped', 'str', 'arr', 'spreadKey', 'totalItems'],
+    '提取器自检失败：上面这组键是唯一正确答案。'
+    + '特别注意 `...(flag ? {} : { spreadKey: … })` —— 条件展开里的键同样是本层写出去的字段，'
+    + '漏了它就会有"代码在写、契约没记、锁还恒绿"的第三种形态（09-24 实测：themeSkip 就是这么混过 P12 的）'
   );
 
   const contract = JSON.parse(src('docs/contracts/daily-report.json'));
