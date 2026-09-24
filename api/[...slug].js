@@ -687,8 +687,9 @@ async function generateDailyInline() {
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
   // 级3 每源预配额（44 号 spec 步1，与 runner/云端 cron 共用 lib/prescreen 唯一实现）：
-  // 宽池 2000 轻量行 → 每源限量 → 截 500。列写死而非 `a.*`：本函数只消费 title/summary/score/cover/
-  // source_spotlight，而 content_html 两千行一次取会撞 libsql HTTP 链路（同 tools/collect-turso.js runWeekly 的教训）。
+  // 宽池取 CANDIDATE_POOL_READ（09-24 由 2000 抬到 6000，唯一写死处见 lib/prescreen.js）轻量行 → 每源限量 → 截 500。
+  // 列写死而非 `a.*`：本函数只消费 title/summary/score/cover/source_spotlight，而 content_html 两千行一次取
+  // 会撞 libsql HTTP 链路（同 tools/collect-turso.js runWeekly 的教训）。
   let sql = `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, a.score, a.cover, a.translated_title,
                     s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id

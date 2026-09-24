@@ -167,6 +167,13 @@
 `GET /api/daily` 的兜底分支（只在"今日无报告"且北京 hour≥1 时走），以及 `POST /api/daily/regenerate`；
 后者会先 `DELETE FROM daily_reports WHERE generated_at ∈ [北京今日]` 再重建 —— 也就是**会抹掉今早那份 AI 早报（id=68）**，
 这超出"授权一次 `POST /api/daily-generate`"的范围，没有单独点头就不按。现状＝该函数只有静态锁（P6/P8/P9 计它一份接线）。
+>
+> **09-24 09:29Z 更新：这一份现在有活体执行证据了，但不是在 Vercel 运行时里**。新增执行锁
+> `tests/regression-inline-exec.test.js` **I1~I3**：用 mock `req/res` 把整个 catch-all handler 跑在 `file:` 临时库上，
+> 走 `GET /api/daily` 的兜底分支真调 `generateDailyInline()` —— 真路由、真 SQL、真级3、**零生产写**。
+> I1 读数 `pool=2300 / poolSources=406 / kept=500` 且 `gateDropped` 落库；I2 是同数据下的因果对照
+> （cap=2 的覆盖 ≫ 不限量臂）；I3 锁住"驱动必须绑 `file:` + 真 fetch 打死 + 文本里不许出现云端点"。
+> 仍然缺的那一半：**Vercel 运行时里的那一遍** —— 要它就得授权 `/api/daily/regenerate`（会删今日报告行）。
 
 ## 十四、仍待补
 
