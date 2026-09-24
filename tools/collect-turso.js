@@ -1128,7 +1128,14 @@ async function persistScores(analyzed) {
 
 async function runDailyAi() {
   const _ai = require('../api/_ai');
-  const BUDGET_MS = 90 * 60e3;
+  // 夜间预算（用户 09-24 裁定：「时间长一点都可以，给各个边界一些缓冲，毕竟我们时间有 9 小时」）。
+  // 依据是 12 期真实读数：初筛 8.0~11.8 s/篇、深析 12.6~18.6 s/篇，峰值日 3,381 篇 → 级3 后 500 篇进初筛。
+  //   500×11.8 + 325×18.6 ≈ 98 + 101 = 199min，再加栏目/主题/评分回写与免费池抖动 → 总预算 300min，
+  //   夜窗 00:00→09:00 = 540min 留 240min 余量；GitHub 单 job 硬上限 6h，故 collect.yml 的 timeout-minutes 同步抬到 330。
+  const BUDGET_MS = 300 * 60e3;
+  // 初筛段单独给上限，而不是"总预算的一半"：原式 BUDGET_MS*0.5 会让"抬总预算"连带把深析段的份额也抬走，
+  //   两段抢同一个池子的账就永远算不清（09-24 之前 45min 截断就是这么来的）。
+  const FILTER_BUDGET_MS = 130 * 60e3;
   const t0 = Date.now();
 
   const { startUtc, endUtc, label } = briefWindow();
@@ -1165,14 +1172,16 @@ async function runDailyAi() {
   // 阶段 1：初筛（2026-09-23 P0-2 配套：失败/截断计数落 filterStats，异常发报警——判据唯一实现 lib/filter-observe.js）
   const passed = [];
   let filterFailed = 0, filterRejected = 0, filterTruncated = false;
+  const tFilter0 = Date.now();
   for (const a of valid) {
-    if (Date.now() - t0 > BUDGET_MS * 0.5) { filterTruncated = true; log('初筛预算过半，截断'); break; }
+    if (Date.now() - tFilter0 > FILTER_BUDGET_MS) { filterTruncated = true; log('初筛段预算耗尽，截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, category: null, summary: a.summary });
     if (f.failed) filterFailed++;
     if (!f.ignore) passed.push({ ...a, filterScore: f.score, filterReason: f.reason });
     else filterRejected++;
   }
-  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}），开始深析`);
+  const filterMs = Date.now() - tFilter0;
+  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}、耗时 ${(filterMs / 60000).toFixed(1)}min），开始深析`);
   // "失败但没全挂"此前是盲区：全挂有 _ai 的 consecFail≥3 报警，部分失败谁都不说——
   // 用户 2026-09-23 裁定：这类异常发报警渠道给管理者（飞书），不上前台页面
   try {
@@ -1186,6 +1195,7 @@ async function runDailyAi() {
   // 降级判定：首批深析连败 3 次 → AI 链路全挂
   const analyzed = [];
   let consecFail = 0, analyzeNoBody = 0;
+  const tAnalyze0 = Date.now();
   for (const a of passed) {
     if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
     // 正文按 id 单取（级3 之后宽池不再携带 content_html；只有过了初筛的幸存者也才值得付这个字节数）
@@ -1211,10 +1221,13 @@ async function runDailyAi() {
     consecFail = 0;
     analyzed.push({ ...a, ...r });
   }
-  log(`深析完成 ${analyzed.length} 篇，组装栏目`);
+  const analyzeMs = Date.now() - tAnalyze0;
+  log(`深析完成 ${analyzed.length} 篇（耗时 ${(analyzeMs / 60000).toFixed(1)}min），组装栏目`);
 
   // T4-3 视频入报（2026-09-13）：窗口内视频取最近 20 条直接深析并入同池；
   // id 加 v 前缀防与文章 id 冲突（report 条目 kind='video'，前端点开走外链）
+  const tMedia0 = Date.now();
+  let mediaMs = 0;
   try {
     const videoRows = await qAll(
       `SELECT v.id, v.source_id, v.title, v.url, v.intro, v.cover, v.published_at, s.name AS source_name, s.spotlight AS source_spotlight
@@ -1233,6 +1246,7 @@ async function runDailyAi() {
       vCount++;
     }
     if (vCount) log(`视频入报: 深析 ${vCount}/${videoRows.length} 条`);
+    mediaMs = Date.now() - tMedia0;
   } catch (e) { log(`视频入报失败（不阻断）: ${e.message}`); }
 
   // T3-1 R0c 主题全景：深析条目按标题聚类（Jaccard≥0.45，簇≥2），每簇 1 次 AI 调用出
@@ -1395,7 +1409,19 @@ async function runDailyAi() {
   const stats = {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
-    filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
+    // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
+    //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，
+    //   单篇耗时只能给区间。真值在运行时是 passed.length + filterRejected，此前只喂给报警、没入账（W14 同族）。
+    filterStats: { candidates: valid.length, attempted: passed.length + filterRejected, passed: passed.length, rejected: filterRejected, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
+    // 三段各自耗时（分钟，一位小数）+ 两段上限：合在 elapsedMin 里就一直分不清"是初筛慢还是深析慢"，
+    //   而预算到底给够没有，只有拆开才答得出（用户 09-24：「给各个边界一些缓冲」）。
+    timeSplit: {
+      filterMin: Math.round(filterMs / 6000) / 10,
+      analyzeMin: Math.round(analyzeMs / 6000) / 10,
+      mediaMin: Math.round(mediaMs / 6000) / 10,
+      filterCapMin: Math.round(FILTER_BUDGET_MS / 6000) / 10,
+      budgetMin: Math.round(BUDGET_MS / 6000) / 10,
+    },
     analyzeNoBody,
     prescreen: prescreenRead,
     sections: sections.length, totalItems: allItems.length,

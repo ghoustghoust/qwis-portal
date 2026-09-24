@@ -2329,6 +2329,15 @@ async function handleSettingsPut(req) {
   if (body.data) { await mergeSetting('data', body.data); sections.push('data'); }
   if (body.mybrief) { await mergeSetting('mybrief', body.mybrief); sections.push('mybrief'); }
   if (body.weekly) { await mergeSetting('weekly', body.weekly); sections.push('weekly'); }
+  // prescreen 后台写入口（44 号 spec 步1 的遗留项，用户 09-24：「要能让功能正式可以使用，而不是验证一半、未开发一半」）：
+  // 消费方读的是**点分键** `prescreen.perSourceCap`（runner 两份 + 本文件内联 + api/daily-generate.js），
+  // 而本 handler 过去只给 opml.* / reader.* 这类手写分支落点分键 → "配额可配"只是注释上的承诺，实际只能直改库。
+  if (body.prescreen && body.prescreen.perSourceCap !== undefined) {
+    const n = Number(body.prescreen.perSourceCap);
+    if (!Number.isInteger(n) || n < 1 || n > 100) return { status: 400, body: jsonErr('prescreen.perSourceCap 必须是 1~100 的整数') };
+    await setSetting('prescreen.perSourceCap', n);
+    sections.push('prescreen');
+  }
   if (body.views !== undefined) { await setSetting('reader.views', body.views); sections.push('views'); }
   if (body.bilibili && body.bilibili.cookie) {
     await qRun(

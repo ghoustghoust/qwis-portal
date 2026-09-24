@@ -103,4 +103,34 @@ test('F5 filterStats 落库形状：failed/truncated 两键真写进 stats（防
   const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
   assert.ok(/filterStats:\s*\{[^}]*failed:\s*filterFailed/.test(src), 'filterStats 缺 failed 键');
   assert.ok(/filterStats:\s*\{[^}]*truncated:\s*filterTruncated/.test(src), 'filterStats 缺 truncated 键');
+  // 09-24 追加（用户裁定「补这两个字段」）：attempted/rejected 不落库，"这期筛了几篇"就算不出来 ——
+  // 失败放行的条目同时在 passed 与 failed 里，拿 passed+failed 当尝试数是重复计数（我上一轮就这么错过一次）。
+  assert.ok(/filterStats:\s*\{[^}]*attempted:/.test(src), 'filterStats 缺 attempted 键');
+  assert.ok(/filterStats:\s*\{[^}]*rejected:\s*filterRejected/.test(src), 'filterStats 缺 rejected 键');
+  // 三段耗时拆开：合在 elapsedMin 里就永远分不清"初筛慢还是深析慢"，预算给没给够也就无从判断
+  assert.ok(/timeSplit:\s*\{[^}]*filterMin:/.test(src), 'stats 缺 timeSplit.filterMin');
+  assert.ok(/timeSplit:\s*\{[^}]*analyzeMin:/.test(src), 'stats 缺 timeSplit.analyzeMin');
+  assert.ok(/timeSplit:\s*\{[^}]*mediaMin:/.test(src), 'stats 缺 timeSplit.mediaMin');
+});
+
+test('F6 夜间预算三段自洽：初筛段 < 总预算 < GitHub job 超时（抬一个不抬另一个=把另一段挤掉）', () => {
+  // 为什么（用户 09-24）：「时间长一点都可以，给各个边界一些缓冲，毕竟我们时间有 9 小时」。
+  // 实测外推的峰值最坏值：初筛 500 篇 × 11.8s ≈ 98min，深析 325 篇 × 18.6s ≈ 101min → 两段合计 ~200min，
+  // 所以预算取 300min（夜窗 540min 留一半余量），job 超时取 330min（GitHub 单 job 硬上限 6h）。
+  const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
+  // 必须按**函数体**取数：`const BUDGET_MS` 全库有两份（runWeekly 那份是 60min），
+  // 上一版判据用裸正则取第一个匹配，读到的其实是周刊的预算 —— 自己就成了假量具。
+  const i = src.indexOf('async function runDailyAi(');
+  assert.ok(i >= 0, 'runDailyAi 不在了');
+  const j = src.indexOf('\nasync function', i + 1);
+  const body = src.slice(i, j < 0 ? undefined : j);
+  const budget = Number(/const BUDGET_MS = (\d+) \* 60e3/.exec(body)?.[1]);
+  const filterCap = Number(/const FILTER_BUDGET_MS = (\d+) \* 60e3/.exec(body)?.[1]);
+  assert.ok(Number.isFinite(budget) && Number.isFinite(filterCap), '两个预算常数任一被改名/改成表达式 —— 判据要跟着改，别让它哑');
+  assert.ok(filterCap < budget, `初筛段 ${filterCap}min 必须小于总预算 ${budget}min，否则深析一段被挤空`);
+  assert.ok(budget >= 240, `总预算 ${budget}min 撑不住峰值最坏值（初筛 98 + 深析 101 ≈ 200min）`);
+  const yml = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'collect.yml'), 'utf8');
+  const timeouts = [...yml.matchAll(/timeout-minutes:\s*(\d+)/g)].map((m) => Number(m[1]));
+  assert.ok(Math.max(...timeouts) >= budget + 15,
+    `job 超时 ${Math.max(...timeouts)}min 必须 ≥ 总预算 ${budget}min + 15min 缓冲，否则批次会被 GitHub 中途杀掉（比截断更糟：一行不落）`);
 });

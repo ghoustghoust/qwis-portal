@@ -108,7 +108,7 @@ jobs:
   daily-ai-evening:
     if: github.event.schedule == '30 13 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'daily-ai-evening')
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -133,7 +133,7 @@ jobs:
   daily-ai:
     if: github.event.schedule == '32 16 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'daily-ai')
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

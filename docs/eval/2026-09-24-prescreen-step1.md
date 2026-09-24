@@ -188,5 +188,30 @@
 4. ~~读层 HTTP 实测~~ → **08:22Z 已做完，见 §十**（代理恢复；此前记的"待补"与次级 GitHub 侧证据一并作废为本节实测）。
 5. **读层两份生成器没有活体实测**（本节实测的边界，别把 §十 读成"读层全部验过"）：本轮改了
    `api/daily-generate.js` 与 `api/[...slug].js#generateDailyInline`，但 `GET /api/daily` 只读已存在的报告，
-   走不到这两份。活体验证只有一次 `POST /api/daily-generate` = **生产写一条报告 + 真烧约 337 次初筛调用**，
+   走不到这两份。活体验证只有一次 `POST /api/daily-generate` = 一次 `POST /api/daily-generate`（**09-24 09:12Z 已按授权打过：200/33s → 写 `id=69`，且实测零模型调用**；本条原先写的"真烧约 337 次初筛调用"是我估错的，更正见 §十二）。
    须用户授权后才做。现状＝静态接线锁（P6/P8）+ runner 生产模式执行锁（E1~E3，跑的是 `tools/collect-turso.js` 不是 Vercel）。
+   → 09-24 12:44Z 更新：内联那份也有执行锁了（`tests/regression-inline-exec.test.js` I1~I3，mock req/res 跑整个 handler）。
+
+## 十五、库体积与读放大归因（09-24 12:47Z 只读探针；回答"什么在大量读 Turso / 170MB 是谁"）
+
+口径先说清：`LENGTH(text)` 在 SQLite 返回**字符数不是字节数**（中文一字 3 字节），下表是字符量，
+真实字节更多；170MB 是 Turso 压缩后的物理值，两者不矛盾。
+
+| 对象 | 读数 | 判读 |
+|---|---|---|
+| 全库文本列合计 | **541.0M 字符** | —— |
+| `articles.content_html` | **521.6M 字符 / 34,521 行**（平均 15.1k 字符/篇）= **96.4%** | 体积主因就是这一列 |
+| 第二名 `articles.original_html` | 3.8M | 差两个数量级 |
+| `daily_reports`/`settings`/`sources`/`videos` 及其余各表 | 各 ≤1.2M | 不是体积问题 |
+| `articles_archive` | **探针没出行数**（表内 0 行） | 归档工具 `tools/archive-articles.js`（>90 天迁出主表、谓词与 `lib/retention.js` 同一份实现）在 `.github/workflows/` 与 FEATURE_MATRIX 里**都搜不到引用 → 从没被调度过** |
+
+读放大侧（谁在扫这一列）：
+
+| 位置 | 形态 | 量级 |
+|---|---|---|
+| `api/[...slug].js:142` 阅读器搜索 | `a.title LIKE ? OR a.content_html LIKE ?` | **每次搜索全表扫那一列**，游标翻页每页再扫一次 |
+| `api/[...slug].js:477` 空摘要兜底 | `substr(a.content_html,1,500)` | 每页 30 行都要读该列 |
+| `tools/collect-turso.js:1991` 翻译批 | 按 `TRANSLATE_LIMIT`（默认 10）逐行取 | 小，但每轮采集都跑 |
+| 级3 宽池读（四处候选层） | 已改为不取 `content_html` 的轻量列 | 步1 已收 |
+
+结论：**要腾体积/降读放大，动的是"归档排期 + 搜索别扫正文"，不是再压候选量**。登记为 ISSUES **H26**（本文件只量不做）。

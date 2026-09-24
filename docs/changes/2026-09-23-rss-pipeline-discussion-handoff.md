@@ -1,6 +1,24 @@
 # 交接：RSS 高质量信息流设计 × 现状逐条对边界（2026-09-23）
 
-> **⚠️ 09-24 09:20Z·两件事按裁定落地（先读本节；下面「傍晚」节的"待拍板 ①②"里 ① 已做完、② 已核销）**
+> **⚠️ 09-24 13:00Z·预算重排 + 两段耗时字段 + 体积归因（接手前先读这节，它决定后面几步的顺序）**
+>
+> 1. **夜间预算按峰值重排**：`BUDGET_MS` 90→**300min**、初筛段独立上限 `FILTER_BUDGET_MS=130min`（不再用"总预算一半"，
+>    那样抬总会把深析段挤掉）、两个 `daily-ai*` job 的 `timeout-minutes` 120→**330**。依据 12 期真实读数
+>    （初筛 8.0~11.8 s/篇、深析 12.6~18.6 s/篇）+ 峰值日 3,381 篇 → 最坏 199min，夜窗 540min。**锁 F6** 钉三者自洽。
+> 2. **补了两个算不出来的数**：`filterStats.{attempted,rejected}`（过去只有 passed/failed，而失败放行的条目两边都算，
+>    拿 `passed+failed` 当尝试数是重复计数 —— 我上一轮的"9.0 s/篇"就是这么错的，已在 eval §十二标注）、
+>    `stats.timeSplit.{filterMin,analyzeMin,mediaMin}`（三段耗时拆开）。
+> 3. **一个真"半接线"补上了**：`prescreen.perSourceCap` 之前只能直改库（消费方读点分键，而 `PUT /api/settings` 没这个分支）
+>    → 现在可写（1~100 校验）；**后台 UI 那一格还没做**，已进 FEATURE_MATRIX §2 待开发。
+> 4. **170MB 是谁（只读探针，eval §十五 / ISSUES H26）**：`articles.content_html` 一列 **521.6M 字符 / 34,521 行 = 全库文本 96.4%**，
+>    而把它迁出主表的 `tools/archive-articles.js` **从没被排期跑过**（workflows 与 FEATURE_MATRIX 均无引用，`articles_archive` 0 行）；
+>    读放大侧是阅读器搜索 `a.content_html LIKE '%q%'` 全表扫。**结论：腾体积靠"归档排期 + 搜索别扫正文"，不是再压候选量。**
+> 5. **下一步不在代码里**：贝叶斯/TF-IDF 要不要上线，取决于**误砍率**（你标"留"却被砍），
+>    标注清单已生成 → `docs/eval/2026-09-24-prescreen-labels.md`（53 条，按源日均产能分层）。**等你勾完再决定采用/改特征/放弃。**
+
+
+>
+> **⚠️ 09-24 09:20Z·两件事按裁定落地（本节被上一节续写：A 项已实测兑现，C 项的"没测到"已被上面第 2/3 条部分推进）**
 >
 > **A. H25 已核销：宽池读 2000 → 6000**（提交 `e468b3b`，`npm test` 622/622、push-CI `test=success`、冒烟 20/20、`build:vercel` ✓）。
 > 单一取值写死在 `lib/prescreen.js#CANDIDATE_POOL_READ`，runner + 两份 api 同取此数，新增锁 **P9** 钉"四处不分叉"

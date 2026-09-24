@@ -144,6 +144,13 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
    **2026-09-18 追加**：`workflow_dispatch` 现在带 `inputs.mode`（choice，默认 `collect`）。
    cron-job.org 不传 inputs → 取默认 `collect` → **仍然只跑 collect job，本不变量不被破坏**。
    AI 批次 job 的 `if` 都要求 mode 精确等于各自名字才会触发，取值缺失/为空时恒不成立（fail-safe）。
+   **夜间预算（09-24 重排，用户裁定"时间长一点都可以，各边界留缓冲"）**：`runDailyAi` 的 `BUDGET_MS = 300min`、
+   初筛段独立上限 `FILTER_BUDGET_MS = 130min`（原来是"总预算的一半"，抬总预算会连带把深析段的份额也挪走），
+   两个 `daily-ai*` job 的 `timeout-minutes` 同步 120 → **330**（GitHub 单 job 硬上限 6h）。
+   依据是 12 期真实读数：初筛 8.0~11.8 s/篇、深析 12.6~18.6 s/篇，峰值日 3,381 篇 → 级3 后 500 篇进初筛，
+   最坏 ≈ 98 + 101 = 199min，夜窗 00:00→09:00 = 540min 留一半余量。
+   三段耗时现在落 `stats.timeSplit.{filterMin,analyzeMin,mediaMin}`，预算够不够只有拆开才答得出；
+   常数与 job 超时的自洽由锁 `tests/regression-filter-observe.test.js` **F6** 盯着（不许只抬一边）。
    人工「Run workflow」选 `daily-ai` / `daily-ai-evening` / `mybrief` / `weekly` 即可单独补跑
    ——周刊此前每周只有周五那一次 schedule 且完全不可补跑，是本周断更的直接成因。
 
