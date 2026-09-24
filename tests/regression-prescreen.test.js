@@ -166,3 +166,17 @@ test('P9 宽池读只有一个数：runner 字面量 == lib/prescreen.CANDIDATE_
     assert.ok(/CANDIDATE_POOL_READ/.test(rawSrc(f)), `${f} 的候选层宽池读没引用单一取值 —— 截断常数一旦改名这里会静默回 500/2000`);
   }
 });
+
+test('P10 配额键三头对齐：读端点分键 == 写分支 == GET 透出 == 后台取的是同一个键', () => {
+  // 为什么（用户 09-24）：「要能让功能正式的可以使用……而不是验证一半、停摆一半未开发」。
+  // 这个键此前正是半接线：四处消费方读点分键 prescreen.perSourceCap，而 PUT 没分支、GET 不返回、后台没格子
+  // ——「可配」只存在于注释里。三头任缺其一都会退回"只能直改库"，所以按同一把键名锁在一起。
+  const raw = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const slug = raw('api/[...slug].js');
+  assert.ok(/getSetting\('prescreen\.perSourceCap'/.test(raw('tools/collect-turso.js')), 'runner 不再读这个键 —— 键名换了，另三头要一起换');
+  assert.ok(/setSetting\('prescreen\.perSourceCap'/.test(slug), 'PUT /api/settings 缺 prescreen 分支（写不进去）');
+  assert.ok(/prescreen:\s*\{\s*perSourceCap:/.test(slug), 'GET /api/settings 不透出 prescreen.perSourceCap（后台读不到现值 = 半接线）');
+  const tab = raw('web/src/components/DailySettingsTab.jsx');
+  assert.ok(/prescreen:\s*\{\s*perSourceCap:/.test(tab), '早报设置页没有这一格');
+  assert.ok(/api\.put\('\/api\/settings'/.test(tab), "后台保存没走 PUT /api/settings（会写到别的键上去）");
+});

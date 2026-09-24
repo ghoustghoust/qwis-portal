@@ -1059,6 +1059,10 @@ async function handleSettings(req) {
     weekly: { ...weeklyCfg },
     hot: { enabled: hot.enabled !== false },
     views,
+    // 级3 每源配额透出：回的是**归一后的值**（坏值/缺键 → 2），与四个消费方实际执行的数一模一样。
+    // 为什么不透出：UI 上有格子却读不到现值 = 半接线（用户 09-24「要能让功能正式可以使用，而不是验证一半、未开发一半」）。
+    // 这里只回一个整数，不涉及任何凭据（本响应里 ai 段历来只回布尔/是否已配置）。
+    prescreen: { perSourceCap: require('../lib/prescreen').prescreenCapOf(await getSetting('prescreen.perSourceCap', null)) },
     bilibili: { cookieConfigured: credSet.has('bilibili') },
     douyin: { cookieConfigured: credSet.has('douyin') },
     wechat: {

@@ -13,6 +13,9 @@ export default function DailySettingsTab() {
   const [focusA, setFocusA] = useState([]);
   const [focusV, setFocusV] = useState([]);
   const [columns, setColumns] = useState([]);
+  // 级3 每源配额：独立于 form —— 它落在 settings 的点分键 prescreen.perSourceCap（不走 /api/settings/daily）
+  const [capVal, setCapVal] = useState(2);
+  const [capSaving, setCapSaving] = useState(false);
 
   const list = (d) => (Array.isArray(d) ? d : d?.items || d?.sources || []);
 
@@ -20,6 +23,8 @@ export default function DailySettingsTab() {
     setLoading(true);
     try {
       const s = await api.get('/api/settings/daily');
+      // 配额回显单独取（后端透出的是**归一后的值**，与四个消费方实际执行的那个数为同一条实现）
+      api.get('/api/settings').then((g) => setCapVal(g?.prescreen?.perSourceCap ?? 2)).catch(() => {});
       // 后端返回的是扁平结构，不是 { ok: true, settings: {...} }
       const d = s || {};
       let aSrc = d.articleSources;
@@ -187,6 +192,47 @@ export default function DailySettingsTab() {
               onChange={(e) => patch({ time: e.target.value })}
             />
           </div>
+        </div>
+      </section>
+
+      {/* 级3 每源配额（44 号 spec 步1）：独立保存，不跟底部「保存设置」按钮走（它写的是另一个键） */}
+      <section>
+        <div className="text-base font-bold t-text mb-1">每源每日配额（进模型前先削减）</div>
+        <div className="text-[11px] t-muted mb-3">
+          初筛的职责是削减、不是理解：每个源每天最多送 N 篇进模型，其余按源丢弃。
+          日更 ≤N 的小源完全不受影响。改这个数不改变送模型总量（仍截 500 篇），改的是这 500 篇覆盖多少个源。
+        </div>
+        <div className="flex items-end gap-3">
+          <div className="w-48">
+            <label className="text-[13px] font-medium t-text">每源最多篇数（1~100）</label>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              className="input mt-2"
+              value={capVal}
+              onChange={(e) => setCapVal(e.target.value)}
+            />
+          </div>
+          <button
+            className="btn-primary"
+            disabled={capSaving}
+            onClick={async () => {
+              setCapSaving(true);
+              try {
+                await api.put('/api/settings', { prescreen: { perSourceCap: Number(capVal) } });
+                const g = await api.get('/api/settings');
+                setCapVal(g?.prescreen?.perSourceCap ?? 2); // 回读归一值：填 0/1.5/abc 会被后端退回默认，界面不骗人
+                toast('每源配额已保存');
+              } catch (e) {
+                toast(e.message);
+              } finally {
+                setCapSaving(false);
+              }
+            }}
+          >
+            {capSaving ? '保存中…' : '保存配额'}
+          </button>
         </div>
       </section>
 
