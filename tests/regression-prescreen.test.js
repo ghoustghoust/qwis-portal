@@ -167,6 +167,28 @@ test('P9 宽池读只有一个数：runner 字面量 == lib/prescreen.CANDIDATE_
   }
 });
 
+test('P11 stats 形状已进接口契约：契约数得出 prescreen / timeSplit / filterStats.attempted', () => {
+  // 为什么（AGENTS §2.3「改 API 必须同步契约」）：本轮三次往 `daily_reports.stats` 加键
+  //   （prescreen → filterStats.attempted/rejected → timeSplit），而 docs/contracts/daily-report.json
+  //   一直停在"云端只有 candidates/articles/sections/totalItems、无 AI 增强"那版。
+  //   没有任何机器校验读它，所以它漂了没人发现 —— 本条把"契约必须数得出这些键"变成会红的判据。
+  const c = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'contracts', 'daily-report.json'), 'utf8'));
+  const st = c.properties.report.properties.stats.properties;
+  for (const k of ['schemaVersion', 'gateDropped', 'filterStats', 'prescreen', 'timeSplit', 'analyzeNoBody']) {
+    assert.ok(st[k], `契约 stats 缺 ${k} —— 代码在写、契约没记，按契约对接的人会以为它不存在`);
+  }
+  for (const k of ['attempted', 'rejected', 'passed', 'failed', 'truncated']) {
+    assert.ok(st.filterStats.properties[k], `契约 filterStats 缺 ${k}`);
+  }
+  for (const k of ['cap', 'pool', 'poolSources', 'kept', 'keptSources']) {
+    assert.ok(st.prescreen.properties[k], `契约 prescreen 缺 ${k}`);
+  }
+  for (const k of ['filterMin', 'analyzeMin', 'mediaMin']) {
+    assert.ok(st.timeSplit.properties[k], `契约 timeSplit 缺 ${k}`);
+  }
+  assert.match(c.description, /schemaVersion/, '契约顶层描述没写"两档 + 按档位优先"：读层最容易踩的就是按 generated_at 取最新');
+});
+
 test('P10 配额键三头对齐：读端点分键 == 写分支 == GET 透出 == 后台取的是同一个键', () => {
   // 为什么（用户 09-24）：「要能让功能正式的可以使用……而不是验证一半、停摆一半未开发」。
   // 这个键此前正是半接线：四处消费方读点分键 prescreen.perSourceCap，而 PUT 没分支、GET 不返回、后台没格子

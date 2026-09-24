@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GET /api/daily 响应结构",
-  "description": "日报接口——本地 Express 与 Vercel qwis-intel 两侧均须遵循此契约。以云端 api/[...slug].js handleDaily 实际返回为准；标注「仅本地」的字段云端不返回。云端日报由 runner 每日北京 09:03 生成，无 AI 增强（Agnes 401）。",
+  "description": "日报接口——本地 Express 与 Vercel qwis-intel 两侧均须遵循此契约。以云端 api/[...slug].js handleDaily 实际返回为准；标注「仅本地」的字段云端不返回。云端有两档：关键词裸报由 runner daily-report job（北京 09:03）生成，AI 增强版由 daily-ai-evening（北京 21:30）/ daily-ai（00:32 备跑）生成 —— ⚠️ 09-24 实测这两个 AI 点位的**自动**触发未兑现（schedule 投递率≈12%，见 docs/ISSUES.md H27），现存 AI 行多由人工/外部 dispatch 产出。读层必须按 schemaVersion 档位优先，不按 generated_at 最新。",
   "type": "object",
   "required": ["ok", "report"],
   "properties": {
@@ -14,12 +14,54 @@
         "window_hours": { "type": "number", "description": "读库返回时存在；云端即时自动生成时无此字段" },
         "stats": {
           "type": "object",
-          "description": "云端实际字段为 candidates/articles/sections/totalItems；windowHours/sortMode 等仅本地",
+          "description": "云端按档位分两种形状：schemaVersion=2（AI 增强版，runner daily-ai* 生成）字段为 candidates/articles/videos/gateDropped/filterStats/prescreen/timeSplit/analyzeNoBody/sections/totalItems/elapsedMin/theme/degraded/themes；schemaVersion=1（关键词裸报）只有 candidates/articles/sections/totalItems（+ 内联兜底那份另带 prescreen/gateDropped）。⚠️ elapsedMin 在 09-24 之前落库的行是真实值的 1/10（B137 已修，旧行不重写）。windowHours/sortMode 等标「仅本地」的字段云端不返回",
           "properties": {
             "candidates": { "type": "integer" },
             "articles": { "type": "integer" },
             "sections": { "type": "integer" },
             "totalItems": { "type": "integer" },
+            "schemaVersion": { "type": "integer", "description": "1=关键词裸报，2=AI 增强版；读层按此优先挑档位，不许按 generated_at 最新" },
+            "gateDropped": { "type": "integer", "description": "入报门槛剔掉的条数；candidates = 进门槛前候选数（五份写入器同口径）" },
+            "filterStats": {
+              "type": "object",
+              "description": "仅 AI 版。attempted = passed + rejected 必须自洽（失败放行的条目同时在 passed 与 failed 里，passed+failed 是重复计数）",
+              "properties": {
+                "candidates": { "type": "integer" },
+                "attempted": { "type": "integer" },
+                "passed": { "type": "integer" },
+                "rejected": { "type": "integer" },
+                "analyzed": { "type": "integer" },
+                "failed": { "type": "integer" },
+                "truncated": { "type": "boolean" }
+              }
+            },
+            "prescreen": {
+              "type": "object",
+              "description": "级3 每源预配额读数（44 号 spec 步1）。cap=实际生效值、pool/poolSources=宽池读到的行数与源数、kept/keptSources=配额后送模型的行数与源数",
+              "properties": {
+                "cap": { "type": "integer" },
+                "pool": { "type": "integer" },
+                "poolSources": { "type": "integer" },
+                "kept": { "type": "integer" },
+                "keptSources": { "type": "integer" }
+              }
+            },
+            "timeSplit": {
+              "type": "object",
+              "description": "夜间预算三段拆账（分钟，一位小数）。三段之和必须 ≤ elapsedMin；filterCapMin/budgetMin 是当时生效的上限",
+              "properties": {
+                "filterMin": { "type": "number" },
+                "analyzeMin": { "type": "number" },
+                "mediaMin": { "type": "number" },
+                "filterCapMin": { "type": "number" },
+                "budgetMin": { "type": "number" }
+              }
+            },
+            "analyzeNoBody": { "type": "integer", "description": "深析时正文取空仍被打分的条数（09-24 起有；更早的行缺键不是回归，见 ISSUES H25 取证）" },
+            "elapsedMin": { "type": "number" },
+            "theme": { "type": ["string", "null"], "description": "仅 AI 版：导语" },
+            "degraded": { "type": "boolean", "description": "仅 AI 版：AI 链路降级标记" },
+            "themes": { "type": "array", "description": "仅 AI 版：主题全景簇" },
             "videos": { "type": "integer", "description": "仅本地" },
             "windowHours": { "type": "number", "description": "仅本地" },
             "sortMode": { "type": "string", "description": "仅本地" },
