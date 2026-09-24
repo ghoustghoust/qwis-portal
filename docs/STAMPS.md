@@ -131,7 +131,7 @@
 | docs/deprecated/TOOLS.md | — | 不要求头注 | `ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/deprecated/USER.md | — | 不要求头注 | `b0c3b50` 2026-09-09 20:22 feat: 文档清洗+日报修复+AI设置集成+全面复检 (2026-09-09) |
 | docs/deprecated/VERCEL_MIGRATION.md | — | 不要求头注 | `b0c3b50` 2026-09-09 20:22 feat: 文档清洗+日报修复+AI设置集成+全面复检 (2026-09-09) |
-| docs/eval/2026-09-24-prescreen-step1.md | 2026-09-24 | 不要求头注 | `93786ba` 2026-09-24 14:32 docs(取证·级3 改前真值与交付证据): docs/eval/2026-09-24-prescreen-step1.md（AGENTS §3 第7条） |
+| docs/eval/2026-09-24-prescreen-step1.md | 2026-09-24 | 不要求头注 ⚠ | `93786ba` 2026-09-24 14:32 docs(取证·级3 改前真值与交付证据): docs/eval/2026-09-24-prescreen-step1.md（AGENTS §3 第7条） |
 | docs/eval/bl10-null-audit-20260921.md | — | 不要求头注 | `16a957d` 2026-09-21 01:56 docs(B101 拦一下)+docs(BL10 复核): 待删量按现役库重算是 50,636 条（84.6%），不是旧库那 10,733<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌 |
 | docs/eval/citation-audit-20260919.md | — | 不要求头注 | `a08b77c` 2026-09-20 07:50 docs(锚点审计): 第 4 轮只读复核——254 条 file:line 引用扫出 5 条烂锚，登记 B115 |
 | docs/features/collectors.md | 2026-09-05 | 不要求头注 | `ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计)<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
@@ -211,7 +211,7 @@
 | docs/specs/32-content-typography/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
 | docs/specs/33-misc-fixes/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
 | docs/specs/34-misc-fixes/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
-| docs/specs/44-prescreen-tier/spec.md | 2026-09-24 | 不要求头注 ⚠ | `ed96b46` 2026-09-24 14:50 fix(对抗审查抓出的五处): runDaily 顺序与漏落 stats、缺正文静默打分、cap 无声降级、两条判据空洞<br>`93786ba` 2026-09-24 14:32 docs(取证·级3 改前真值与交付证据): docs/eval/2026-09-24-prescreen-step1.md（AGENTS §3 第7条） |
+| docs/specs/44-prescreen-tier/spec.md | 2026-09-24 | 不要求头注 | `58d4b40` 2026-09-24 14:51 docs(spec44 遗留三条): perSourceCap 无后台写入口（PUT /api/settings 不含 prescreen 段）/ 历史行耗时不可比 / 步1 后仍会截断属预期<br>`ed96b46` 2026-09-24 14:50 fix(对抗审查抓出的五处): runDaily 顺序与漏落 stats、缺正文静默打分、cap 无声降级、两条判据空洞 |
 | docs/specs/P1-12-401-handling-fix.md | — | 不要求头注 | `fb3bc95` 2026-09-09 21:24 fix(P0-1,P0-3,P0-7,P1-12): 阅读沉淀页数据+热点榜筛选+全部已读+401处理 |
 | lib/README.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容 |
 | memory/2026-09-02.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |

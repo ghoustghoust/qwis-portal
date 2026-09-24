@@ -59,11 +59,12 @@
 |---|---|
 | `npm test` | **621 / 621**，EXIT=0（步1 前基线 609） |
 | push-CI（`ci.yml`） | `6c40812` `test` conclusion=**success**；`d2eefda` `test` conclusion=**success** |
-| `collect.yml` 最近批次 | schedule 轮 `completed/success`；dispatch 轮各 AI job 按 `if` 正确 `skipped` |
-| Vercel 部署 | deployments 最新一条 state=**success**（含 `6c40812`+`d2eefda` 的 `dc57332`） |
-| `node smoke-test.js` | 通过 **20** / 失败 **0** |
+| `collect.yml` 最近批次 | 12 次（05:01Z~06:45Z）**非 success = 0**；其中 06:30Z/06:45Z 两批已跑在改过的 `tools/collect-turso.js` 上（`dc57332`）→ 该文件在 runner 里能正常装载执行，只是未走 daily-ai 分支 |
+| Vercel 部署 | `ed96b46`（审查修复）与 `58d4b40`（spec 遗留）两条 Production deployment 均 **state=success**；此前 `6c40812`/`d2eefda`/`dc57332` 同样 success |
+| `node smoke-test.js` | 通过 **20** / 失败 **0** / EXIT=0 —— **在审查修复之后重跑过**（第一次跑在 `ed96b46` 之前，那个数不作数） |
 | `npm run lint:docs` | **0 错** 3 警（唯一实质警 = 步2 拟新增 `lib/filter-rules.js` 尚未创建） |
 | 执行锁 E1~E3 | 真 `spawn` 生产模式：E2 同样 12 个坑、不配额覆盖 **3 源** → cap=2 覆盖 **9 源**；E3 深析请求含正文标记、初筛请求不含 |
+| 对抗审查（独立 reviewer） | 无阻断缺陷，五条该修**全部已修并推送 `ed96b46`**：runDaily 改「先安检再配额」+ 补落 `prescreen`；深析缺正文计数 `analyzeNoBody` 落库；`prescreenCapOf` 真出声（此前只是注释承诺）；P6 改按**函数**计调用次数（原判据删掉一份接线仍会绿）+ 用掩码视图；P8 改判调用形状与两常量关系（原判据 grep 的字面量已被模板串取代而变哑）；E3 改 `every` + 独占测量。修后 `npm test` **621/621** 复跑绿 |
 
 ## 六、待补（本文件留口，下轮回填）
 
