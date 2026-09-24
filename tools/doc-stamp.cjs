@@ -99,7 +99,9 @@ const row = (rel) => {
   if (uncommitted.has(rel)) marks.push('工作区有未提交改动');
   const h = list
     .slice(0, FOUNDATION.has(rel) ? HISTORY_DEPTH : 2)
-    .map((e) => `\`${e.sha}\` ${e.when} ${e.subject}`)
+    // 提交主题里出现 `|` 会把 STAMPS 那一行撑成多余的表格单元（09-24 夜实测：我自己一条写"裸 ||"的提交
+    // 主题就把 docs/STAMPS.md 撑出两条 [表格] 警告）。生成物必须自己合格，别让门禁去怪被记录的提交。
+    .map((e) => `\`${e.sha}\` ${e.when} ${String(e.subject).replace(/\|/g, '\\|')}`)
     .join('<br>');
   return `| ${rel} | ${hdr} | ${verdict(rel)}${marks.length ? ' ⚠' : ''} | ${h || '—'} |`;
 };

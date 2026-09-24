@@ -27,19 +27,10 @@ const FOUNDATION = [
 // cloud/token.json = PHP 队列运行时生成的令牌。文档引用它们是制度不是悬空；CI 上没有这两个文件属正常，
 // 第 1、2 条对它们一律豁免（别处别再各自开口子）。
 const LOCAL_BY_DESIGN = new Set(['docs/HANDOVER.md', 'cloud/token.json']);
-
-// 派生版"本地设计内"：`tools/*.cjs` 取证脚本只要**自己去读凭据文件**（HANDOVER），就永远不该入库（本仓是公开仓），
-// 于是文档引用它也不算悬空。为什么走派生而不是往上那个清单里加名字：加清单 = 每来一支新脚本都要改一次门禁（必漏），
-// 而"读不读凭据文件"这个事实写在脚本自己体内，可机械判定。09-24 夜实测：三支 AI 批对账脚本正是这一类。
-const CRED_FILE_MARK = /HANDOVER/;
-const credExempt = [];
-const credLocal = (clean) => {
-  if (!clean.startsWith('tools/')) return false;
-  const abs = path.join(ROOT, clean);
-  if (!fs.existsSync(abs)) return false;
-  if (GIT_VISIBLE ? GIT_VISIBLE.has(clean) : true) return false; // 已入库的不豁免（那属正常引用）
-  try { return CRED_FILE_MARK.test(fs.readFileSync(abs, 'utf8')); } catch { return false; }
-};
+// ⚠️ 09-24 夜实测过的一个坑，别再犯：曾在这里加过"派生豁免"（引用未入库的取证脚本时，
+// 若该脚本本地存在且体内出现 HANDOVER 就豁免）。它在本地是 0 错，但 CI 树上那支脚本**根本不存在**
+// ⇒ existsSync 假 ⇒ 判悬空 ⇒ push-CI 红（sha 0a73f14）。凡是"判据依赖只在本地存在的东西"都会这样分裂：
+// 要么把引用改成不指向文件（现在这么做），要么把事实落成被跟踪的清单（要生成就得连生成器一起入库）。
 
 const walk = (dir, out = []) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -113,7 +104,6 @@ for (const f of lintTargets) {
     const clean = r.replace(/:\d+.*$/, '');
     if (/[<…]/.test(clean) || /xxx|XXX/.test(clean)) continue;
     if (LOCAL_BY_DESIGN.has(clean)) continue; // 本地设计内文件（凭据/令牌），CI 上不存在属正常
-    if (credLocal(clean)) { credExempt.push(`${rel(f)} → ${clean}`); continue; } // 读凭据的取证脚本：按制度不入库
     const cands = [path.join(ROOT, clean), path.join(path.dirname(f), clean)];
     if (cands.some((c) => refExists(c))) continue;
     const msg = `[悬空] ${rel(f)} 引用了不存在的 ${clean}${fs.existsSync(cands[0]) ? '（工作树里有，但 git 不会带走 = CI 上必悬空）' : ''}`;
@@ -176,8 +166,6 @@ const secretHits = [
 ];
 for (const h of secretHits) errors.push(`[密钥] ${h.file} 含 ${h.kind}（凭据只能在 .env / Vercel env / GH Secrets 三处；打印 settings 前必须过 lib/secrets#maskDeep —— 坑 #69）`);
 warnings.push(`[密钥分母] 扫描面：已跟踪 ${tracked.length} 份 + 未跟踪未 ignore ${others.length} 份，命中 ${secretHits.length} 处`);
-// 豁免也要报分母：不入库的取证脚本被引用了几处（"0 悬空"必须同时说"看了多少、放过了多少"）
-warnings.push(`[凭据脚本分母] 引用了"读 HANDOVER 的本地取证脚本"共 ${credExempt.length} 处而豁免${credExempt.length ? '：' + credExempt.join('；') : ''}（判据是派生的：脚本体内出现 HANDOVER 且未进 git）`);
 
 // ─── 7~9 三条判据（放行清单 §三 #12 的文档门禁扩面；纯函数，可被 --self-test 证伪）───
 // 为什么必须做成纯函数：一条"只扫真文档、没法喂坏样本"的判据，和 W14/W15 的教训一样 = 无法证明它有牙齿。
