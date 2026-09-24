@@ -223,4 +223,20 @@ test('E3 正文按 id 单取真的生效（Pass2 每条都拿到正文，Pass1 �
   const rep = await latestReport();
   assert.equal(typeof rep.stats.analyzeNoBody, 'number', 'stats.analyzeNoBody 没落库 —— 取空又变成看不见的形状');
   assert.equal(rep.stats.analyzeNoBody, 0, `有 ${rep.stats.analyzeNoBody} 条深析是拿空正文打的分`);
+
+  // E3-补（用户 09-24「补这两个字段」）：attempted/rejected 与三段耗时必须在**真跑出来的行**里，
+  // 而不是只在源码里 —— F5 那类形态锁只能证明"写了"，证明不了"跑起来会落库"（P0-2 当年就是形态对、运行时不落数）。
+  const fs2 = rep.stats.filterStats;
+  assert.equal(typeof fs2.attempted, 'number', 'filterStats.attempted 没落库');
+  assert.equal(typeof fs2.rejected, 'number', 'filterStats.rejected 没落库');
+  // 算术自洽：attempted 必须真等于 passed+rejected（过去只有 passed/failed，失败放行两边都算 → 尝试数算不出来）
+  assert.equal(fs2.attempted, fs2.passed + fs2.rejected,
+    `attempted=${fs2.attempted} ≠ passed(${fs2.passed})+rejected(${fs2.rejected}) —— 口径又漂了`);
+  assert.ok(fs2.attempted <= fs2.candidates, `尝试数 ${fs2.attempted} 大于候选 ${fs2.candidates}，不可能是真值`);
+  const ts = rep.stats.timeSplit;
+  assert.ok(ts && typeof ts.filterMin === 'number' && typeof ts.analyzeMin === 'number' && typeof ts.mediaMin === 'number',
+    'stats.timeSplit 三段没落库 —— 预算够不够又只能靠猜');
+  assert.ok(ts.filterMin >= 0 && ts.analyzeMin >= 0 && ts.mediaMin >= 0, `出现负耗时：${JSON.stringify(ts)}`);
+  assert.ok(ts.filterMin + ts.analyzeMin + ts.mediaMin <= Number(rep.stats.elapsedMin) + 0.5,
+    `三段之和 ${ts.filterMin + ts.analyzeMin + ts.mediaMin}min 超过总耗时 ${rep.stats.elapsedMin}min —— 计时器套错位置（拆账比合账还假）`);
 });

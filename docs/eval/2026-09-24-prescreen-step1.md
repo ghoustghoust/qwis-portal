@@ -215,3 +215,11 @@
 | 级3 宽池读（四处候选层） | 已改为不取 `content_html` 的轻量列 | 步1 已收 |
 
 结论：**要腾体积/降读放大，动的是"归档排期 + 搜索别扫正文"，不是再压候选量**。登记为 ISSUES **H26**（本文件只量不做）。
+
+## 十六、新字段的真执行证据（不等生产批次的那一半）
+
+执行锁 `tests/regression-prescreen-exec.test.js` **E3** 扩展后真跑通（spawn 生产模式 `daily-ai --rolling24`，`file:` 临时库 + AI 桩）：
+`filterStats.attempted === passed + rejected`、`attempted ≤ candidates`、`timeSplit.{filterMin,analyzeMin,mediaMin}` 三项成数、
+且**三段之和 ≤ 总耗时**（这条专门防"计时器套错位置导致拆账比合账还假"）。
+形态锁 F5 只能证明源码里写了这些键，E3 证明的是"跑起来真会落进那一行"。
+生产那一版的读数（`stats.timeSplit` 出现在真实早报行里）等 UTC 13:30 自动批 `daily-ai-evening`（cron `30 13 * * *`，北京 21:30）落库后即可回读。
