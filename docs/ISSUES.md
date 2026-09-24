@@ -74,6 +74,8 @@
 | H21 | **翻译候选 SQL 没有任何源过滤**：`tools/collect-turso.js:1946` 只判「无译文 + 有 content_html + 标题英文」，不看 type、不接 `notNoiseSql`、不看正文长度。实测当前池内 1,548 条英文候选里有 **151 条**是 `fix()`/`test()`/`refactor()` 形标题（单 `openclaw` 一条源占 9.8%）。目前**只真翻过 1 篇**（源 974 共 390 篇），靠的是 P1~P4 优先级把 P7 挤掉的队列饥饿，不是制度 | 候选层加零成本规则（与级4 同一条判据，一处挡两头）；取证：复刻该 SQL 按 conventional-commit 正则计数 |
 | H22 | **本地灾备端有三样能力从未移植云端，且级3 有意不跟它对齐**：`related` 同主题合并 / 破茧栏 / 正文参与栏目匹配只存在于 `server/services/ai/daily.js`（api/ 与 runner 各 0 处），与 `FEATURE_MATRIX:155`「开发完成必须当日移植云端并实测」相反。09-24 用户裁定 A：级3（策展策略）不接本地端（不在部署面，`.vercelignore` 排除 `server/`），入报门槛（安全阀）仍接——两类风险等级不共用同一个"逐个接线"的面 | 移植与否是产品决定，需单独立项；漂移由锁 `regression-prescreen.test.js` P6/P6b 盯（`.vercelignore` 一旦不再排除 server/，豁免自动判红）；取证：`grep -c related server/services/ai/daily.js api/*.js` |
 
+| H23 | **`runDaily`（裸报告）的 `stats.candidates` 是门槛后口径且从不写 `gateDropped`**，破不变量12「五份写入器 candidates 统一 = 进门槛前候选数」。不是本轮引入：`git show 6c40812^` 那一行同样缺；B20（09-19）给它接上门槛时只接了过滤、没同步 stats。生产实测指纹确认：id **67/62/59/56** 的 stats 键集恰为 `schemaVersion,candidates,articles,sections,totalItems`（无 `gateDropped`、无 `filterStats`），`candidates` = 473/497/494/493（门槛后），而同窗 AI 行 id 66/65/61 恒为 500 且带 `gateDropped=46/60/139`。影响面：统计卡与后台"每日早报"读的是同一个字段名、两种群体（09-19 独立审查统一过一次，这一份漏了） | **故意不在步1 里修**：它会让裸报告的 `candidates` 读数跳变，与级3 的效果混在同一批里就归因不清（用户 09-23「先修一个变量、观察两期」同一条理由）。修法两行：`candidates: valid.length + gateDropped` 并把 `gateDropped` 写进 stats；配一条锁（照 F5 的形状锁）。取证：`SELECT id,stats FROM daily_reports ORDER BY id DESC LIMIT 30` 看键集 |
+
 ### specs 35~43 作废（09-23 整批删除 · 逐字反查锚点） <!-- doc-lint:ignore -->
 > 用户裁定：这批是上一版排期的产物，「不能用前朝的剑斩本朝的官」，当前系统的问题需**重新列举**，故连带目录一起清除。作废的**不是需求本身**，是它们携带的优先级表、✅⏸ 状态标记与 09-13~09-21 的实测读数 —— 后者已被 09-22 的约 20 个交付提交与 09-20 换库双重推翻。
 >

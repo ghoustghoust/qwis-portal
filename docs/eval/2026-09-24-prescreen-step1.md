@@ -66,7 +66,15 @@
 | 执行锁 E1~E3 | 真 `spawn` 生产模式：E2 同样 12 个坑、不配额覆盖 **3 源** → cap=2 覆盖 **9 源**；E3 深析请求含正文标记、初筛请求不含 |
 | 对抗审查（独立 reviewer） | 无阻断缺陷，五条该修**全部已修并推送 `ed96b46`**：runDaily 改「先安检再配额」+ 补落 `prescreen`；深析缺正文计数 `analyzeNoBody` 落库；`prescreenCapOf` 真出声（此前只是注释承诺）；P6 改按**函数**计调用次数（原判据删掉一份接线仍会绿）+ 用掩码视图；P8 改判调用形状与两常量关系（原判据 grep 的字面量已被模板串取代而变哑）；E3 改 `every` + 独占测量。修后 `npm test` **621/621** 复跑绿 |
 
-## 六、待补（本文件留口，下轮回填）
+## 六、发现但**故意不在步1 修**
+
+- **H23**：`runDaily`（裸报告）从不写 `gateDropped`、`candidates` 是门槛后口径 —— 破不变量 12。
+  改动前一版（`git show 6c40812^`）即如此，非本轮引入。生产指纹：id 67/62/59/56 键集为
+  `schemaVersion,candidates,articles,sections,totalItems`（candidates 473/497/494/493），
+  同期 AI 行 id 66/65/61 恒 500 且带 `gateDropped=46/60/139`。
+  **不在步1 修的理由**：它会让裸报告 `candidates` 跳变，与级3 的效果混在一批就归因不清。
+
+## 七、待补（本文件留口，下轮回填）
 
 1. **改后生产真值**：run `35964421731`（`daily-ai-evening`，06:25:34Z 起，`in_progress`）跑完后直读
    `daily_reports.stats.prescreen` —— 预期 `keptSources` 从 ~94 显著抬升；
