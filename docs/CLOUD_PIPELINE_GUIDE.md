@@ -183,6 +183,11 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     ②**旧库永不自作主张删**（读封锁会随配额重置解除，它是唯一的回读来源；本轮 `weekly.archive` 就是这么丢的）；
     ③换存储 = **不变量 1 的三处同步**（`.env` / Vercel env / GH Secrets）外加**一次 workflow_dispatch 复验 runner 真写进新库**，
     只验 `/api/meta` 会漏掉整条写链路。排查与止血步骤见 `docs/RUNBOOK.md` §10.9。
+    ④**配额的另一半是自己**（H29，2026-09-24 实测）：`retention.dumpCredential` 的 TTL 是 48h、续期是**本地人工动作**，
+    而 runner 的"磁盘转储腿"在临时文件系统上结构性永不成立 → 人工一断，`cleanup` 就变成"每天跑、一条都不删"，
+    库只涨不删；Turso 按 **rows read** 计，表每大一天，**一次全扫的行读单价同比例上涨**。
+    所以"闸门挡住"必须像配额一样**出声**（报警未接＝H29 待拍板①），而 UI 侧三个扫描入口（精选栏 `CAST(score)`／
+    正文 `LIKE` 搜索／`/api/daily` 的 `SELECT *`×20）才是行读的真正买家。逐条读数与算法：`docs/eval/2026-09-24-turso-read-amp.md`。
 
 20. **早报候选层的每源配额只许一份实现**（44 号 spec 步1，2026-09-24）：`lib/prescreen.js`
     （`applySourceQuota` / `prescreenCapOf` / `prescreenStats`）是部署面四份日报生成器
