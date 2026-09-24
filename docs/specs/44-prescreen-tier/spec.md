@@ -1,8 +1,9 @@
 # 设计 44：零额度预筛层（级3 每源配额 + 初筛改二元三问）
 
-> 最后更新：2026-09-24（立项待用户批准。**本文件只立 spec，不含代码**；批准后才动 `plan/task`。）
-> 前身：`docs/specs/23-information-overload-defense.md`（七层防御 L1~L7）。本 spec 补的是 23 完全没有的一层：**进模型之前的零额度预筛**。
-> 判据文档：`docs/RSS高质量信息流系统设计参考文档 (1).md` §1.6 / §4。
+> 最后更新：2026-09-24（**步1 已交付**：HEAD `6c40812`，`npm test` 621/621、push-CI success、冒烟 20/20、
+> 执行锁 E1~E3 真跑过生产模式；**步2 未开工**。前身 `docs/specs/23-information-overload-defense.md`，
+> 本 spec 补的是 23 完全没有的一层：**进模型之前的零额度预筛**。判据文档：
+> `docs/RSS高质量信息流系统设计参考文档 (1).md` §1.6 / §4。）
 
 ## 一、因果链（为什么是这一刀）
 
@@ -33,7 +34,12 @@
 - 唯一实现**拟新增**（本 spec 批准后才会创建）`lib/prescreen.js`，导出纯函数 `applySourceQuota(rows, {cap, limit})`：按池内既有顺序（时间序）对每源取前 `cap` 篇，再截 `limit`。**不写进 SQL**——三端方言不同（libsql / better-sqlite3），且窗口函数写三遍必漂（AGENTS §1 三端语义 + 坑 #59）。代价：候选查询 LIMIT 从 500 抬到 2000（轻量列、不取 `content_html`，与 `tools/collect-turso.js:872` 同形）。
 - `cap` 取 `settings['prescreen.perSourceCap']`，默认 2；缺键/坏值回 2 并出声（同 `lib/brief-guards.js#dailyMinScoreOf` 口径）。选篇信号本期只做「最新」。
 - 小源（日更 ≤cap）天然全额通过，不需例外分支。
-- 接入三处：`tools/collect-turso.js:1145`（主链）、`api/daily-generate.js:109`、`api/[...slug].js:699`。
+- 接入**部署面四处**（行号为 09-24 交付时读数）：`tools/collect-turso.js:1157`（daily-ai 主链）、
+  `tools/collect-turso.js:1720`（09:03 裸报告 `runDaily`）、`api/daily-generate.js:121`、`api/[...slug].js:713`（读层内联兜底）。
+- **本地灾备端 `server/services/ai/daily.js` 有意不接**（用户 09-24 裁定 A）：它不在部署面（`.vercelignore` 排除
+  `server/`，注释「已由 api/ 替代」），且功能集早已分叉（`related` 同主题合并 / 破茧栏 / 正文参与栏目匹配都没有云端版）。
+  入报门槛（安全阀）仍必须接——**安全阀与策展策略不共用同一个「逐个接线」的面**。
+  该豁免由锁 `regression-prescreen.test.js` P6b 盯前提：`.vercelignore` 一旦不再排除 `server/`，豁免自动判红。
 
 ### 步2 —— 词表代码化 + Pass 1 改二元三问
 

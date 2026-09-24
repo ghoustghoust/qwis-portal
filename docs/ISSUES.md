@@ -69,6 +69,11 @@
 
 | H18 | **生产 `settings` 表里躺着 5 个测试写入键**：`test` · `test_key` · `test_setting` · `test_setting_1` · `test_x`（09-23 全键枚举实测，`SELECT key,length(value) FROM settings` 共 32 键）。白盒 W23 现在绿，说明**当前测试不再泄漏**，但这批残留是泄漏过之后没人清 —— 与 `bl10-null-audit` 那类脏数据同族，会污染任何"按 key 前缀扫配置"的逻辑 | ①确认这 5 个键确无消费方（扫读侧 `getSetting('test`）；②一次性清理并配一条"生产 settings 不得有 test* 键"的断言。属生产写，**需授权** |
 
+| H19 | **黄金集没有真实语料负例，`eval:filter` 的准确率对初筛改动无判别力**：`tests/fixtures/daily-golden.json` 20 条（10 好/10 坏）全是手写漫画式样本（"震惊！…不看后悔一辈子！"），而 09-24 抽查 42 篇抓到的真实漏放是"平静但跑题"那一类（预告片 38 分 / 海事 38 / 游戏快讯 38 / 政治 52 / 两党制 55）——一条都不在黄金集里。拿它验收等于让判据只测"词表是否命中我们自己写进 prompt 的词" | 把上面 5 条 + commit 形 4 条 + V2EX 生活帖 1 条真实负例补进黄金集（标题摘要逐字取自生产库，非虚构）；`node tools/eval-filter.js` 取证 |
+| H20 | **跨源重复信号在入库层就被销毁，文档 §1.6 级1/级2 的前提在本库不成立**：`articles.url` UNIQUE + `saveArticles` 的 `INSERT OR IGNORE`，实测「同一 url 被 ≥2 源发过」= **0 组**（去参数后 28 组里最大一组还是 `mp.weixin.qq.com/s` 截断伪信号）；24h 候选标题近重复 ≥3 源的通稿簇仅 14 个 / 66 篇 = **1.9%**。文档写"级2 削 30–50%、削减量最大的一级"，那前提是通稿满天飞的语料 | 想做爆发检测必须先改入库层把重复"记账"（事件表或 url 计数列，动 Turso schema → 四处对齐）；取证：`SELECT url,COUNT(DISTINCT source_id) c FROM articles GROUP BY url HAVING c>1` |
+| H21 | **翻译候选 SQL 没有任何源过滤**：`tools/collect-turso.js:1946` 只判「无译文 + 有 content_html + 标题英文」，不看 type、不接 `notNoiseSql`、不看正文长度。实测当前池内 1,548 条英文候选里有 **151 条**是 `fix()`/`test()`/`refactor()` 形标题（单 `openclaw` 一条源占 9.8%）。目前**只真翻过 1 篇**（源 974 共 390 篇），靠的是 P1~P4 优先级把 P7 挤掉的队列饥饿，不是制度 | 候选层加零成本规则（与级4 同一条判据，一处挡两头）；取证：复刻该 SQL 按 conventional-commit 正则计数 |
+| H22 | **本地灾备端有三样能力从未移植云端，且级3 有意不跟它对齐**：`related` 同主题合并 / 破茧栏 / 正文参与栏目匹配只存在于 `server/services/ai/daily.js`（api/ 与 runner 各 0 处），与 `FEATURE_MATRIX:155`「开发完成必须当日移植云端并实测」相反。09-24 用户裁定 A：级3（策展策略）不接本地端（不在部署面，`.vercelignore` 排除 `server/`），入报门槛（安全阀）仍接——两类风险等级不共用同一个"逐个接线"的面 | 移植与否是产品决定，需单独立项；漂移由锁 `regression-prescreen.test.js` P6/P6b 盯（`.vercelignore` 一旦不再排除 server/，豁免自动判红）；取证：`grep -c related server/services/ai/daily.js api/*.js` |
+
 ### specs 35~43 作废（09-23 整批删除 · 逐字反查锚点） <!-- doc-lint:ignore -->
 > 用户裁定：这批是上一版排期的产物，「不能用前朝的剑斩本朝的官」，当前系统的问题需**重新列举**，故连带目录一起清除。作废的**不是需求本身**，是它们携带的优先级表、✅⏸ 状态标记与 09-13~09-21 的实测读数 —— 后者已被 09-22 的约 20 个交付提交与 09-20 换库双重推翻。
 >

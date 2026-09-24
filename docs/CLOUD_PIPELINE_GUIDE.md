@@ -177,6 +177,17 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     ③换存储 = **不变量 1 的三处同步**（`.env` / Vercel env / GH Secrets）外加**一次 workflow_dispatch 复验 runner 真写进新库**，
     只验 `/api/meta` 会漏掉整条写链路。排查与止血步骤见 `docs/RUNBOOK.md` §10.9。
 
+20. **早报候选层的每源配额只许一份实现**（44 号 spec 步1，2026-09-24）：`lib/prescreen.js`
+    （`applySourceQuota` / `prescreenCapOf` / `prescreenStats`）是部署面四份日报生成器
+    （`runDailyAi`、`runDaily`、`api/daily-generate.js`、读层内联兜底）共用的唯一出处，
+    配额值唯一写死处是 `settings['prescreen.perSourceCap']`（缺省 2，坏值回默认并出声）。
+    **为什么收成一条**：实测 `ORDER BY published_at DESC LIMIT 500` 在 24h 窗口 2,688 篇 / 469 源的池子里
+    只覆盖 94 源——500 个坑里 352 个是同一批高频源的"第 3 篇以后"；这一刀不削减 AI 调用量，只把覆盖换回来。
+    两条附带硬约束：① 宽池 2000 行**不许携带 `content_html`**（同不变量里 weekly 那条 libsql HTTP 掐断教训），
+    正文一律到深析阶段按 id 单取；② `stats.prescreen` 必须落库，否则"配额有没有生效"又变成不可判别
+    （P0-2 那一族）。本地灾备端 `server/` **不在本面内**（不在部署面，见 `docs/ISSUES.md` H22），
+    但入报门槛照旧必接。对账锁：`tests/regression-prescreen.test.js` P6/P6b/P8 + 执行锁 E1~E3。
+
 ## 3. 改代码时的检查清单
 
 - [ ] 改了采集语义（过滤/清洗/去重/熔断/UA）？→ **四处同步检查**：
