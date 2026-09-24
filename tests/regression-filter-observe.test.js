@@ -134,3 +134,52 @@ test('F6 夜间预算三段自洽：初筛段 < 总预算 < GitHub job 超时（
   assert.ok(Math.max(...timeouts) >= budget + 15,
     `job 超时 ${Math.max(...timeouts)}min 必须 ≥ 总预算 ${budget}min + 15min 缓冲，否则批次会被 GitHub 中途杀掉（比截断更糟：一行不落）`);
 });
+
+// ─── F7/F8（H35，09-24 夜）：失败"是哪一种"必须可分类、可落库、且分类器不许自说自话 ───
+// 为什么要有这一层：09-24 线上量到一期初筛失败 171/500=34.2%，但只有总数 ⇒ 该抬 maxTokens、
+// 该加退避、还是提示词的事，三件事谁都不知道。修法完全不同的一类问题被一个数字压扁了。
+const WHY_TABLE = [
+  // [期望键, 真实串, 串出自哪里]
+  ['parse', '解析失败放行', 'api/_ai.js:274（模型答了但掏不出 JSON）'],
+  ['reasoning_only', 'agnes 仅含 reasoning 无 content(finish=length, head=用户希望我…)', 'api/_ai.js:88'],
+  ['reasoning_only', 'agnes 输出为思维链/分析文本', 'api/_ai.js:190'],
+  ['no_key', '未配置 AI API Key', 'api/_ai.js:113'],
+  ['rate_limited', '初筛失败放行: agnes HTTP 429', 'api/_ai.js:75（429 会重试，仍失败才到这）'],
+  ['server', '初筛失败放行: agnes HTTP 503', 'api/_ai.js:75'],
+  ['client', '初筛失败放行: agnes HTTP 401', 'api/_ai.js:75'],
+  ['timeout', '初筛失败放行: This operation was aborted', 'api/_ai.js:71 的 AbortSignal.timeout(30s)'],
+  ['transport', '初筛失败放行: fetch failed', 'undici 连不上（代理挂了/ DNS）'],
+  ['transport', '初筛失败放行: ECONNRESET', '同上'],
+];
+
+test('F7 失败因由分类表：每一条真实串都要落到对的桶，认不出的必须进 other', () => {
+  const { classifyFilterFail, FILTER_FAIL_WHY } = require('../lib/filter-observe');
+  assert.ok(WHY_TABLE.length >= 10, `分类表只有 ${WHY_TABLE.length} 行 —— 分母塌了这条就是恒绿`);
+  for (const [want, str, from] of WHY_TABLE) {
+    assert.equal(classifyFilterFail(str), want, `串「${str}」（${from}）应判 ${want}，实际判了 ${classifyFilterFail(str)}`);
+  }
+  // 空/垃圾串必须进 other，**不许被任何一条宽松正则吃掉**（把未知伪装成已知，比没归因更坏）
+  for (const bad of ['', null, undefined, '完全没见过的错误形状', 'HTTP', 'init']) {
+    assert.equal(classifyFilterFail(bad), 'other', `「${JSON.stringify(bad)}」被认成了 ${classifyFilterFail(bad)} —— 宽松正则越界，会把未知塞进已知`);
+  }
+  // 每一个声明过的桶都得有样本能命中（否则它是死桶：线上永远数不到，等于没分类）
+  const hit = new Set(WHY_TABLE.map(([k]) => k));
+  for (const [k] of FILTER_FAIL_WHY) assert.ok(hit.has(k), `FILTER_FAIL_WHY 声明了 ${k} 却没有任何样本串能命中 ⇒ 这条正则是死代码`);
+  // 顺序敏感：timeout 必须排在 transport 之前（"This operation was aborted" 两个都像）
+  assert.equal(classifyFilterFail('This operation was aborted'), 'timeout', 'timeout/transport 顺序被改动 ⇒ 超时会被记成网络故障，修的方向就错了');
+});
+
+test('F8 分类桶集合与契约枚举双向相等，且两处计数点真的都在 tally', () => {
+  const { FILTER_FAIL_WHY } = require('../lib/filter-observe');
+  const EXITS = require('../docs/contracts/daily-report.json')
+    .properties.report.properties.stats.properties.filterStats.properties.failWhy.propertyNames.enum;
+  const impl = [...FILTER_FAIL_WHY.map(([k]) => k), 'other'];
+  assert.ok(EXITS.length >= 9 && impl.length >= 9, `契约 ${EXITS.length} 条 / 实现 ${impl.length} 条 —— 有一侧塌了`);
+  for (const k of impl) assert.ok(EXITS.includes(k), `实现有桶 ${k} 而契约没有 ⇒ 线上会出现契约外键（消费侧按契约读就会漏）`);
+  for (const k of EXITS) assert.ok(impl.includes(k), `契约声明了 ${k} 而实现没有 ⇒ 那一格永远不会出现，契约在说谎`);
+  // 两个计数点：日报 AI 档（落 stats）与周刊（只进日志）—— 共用 filterArticle，漏一处就是一本糊涂账
+  const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
+  const n = (src.match(/tallyFilterFailWhy\(/g) || []).length;
+  assert.ok(n >= 2, `全仓只扫到 ${n} 处 tallyFilterFailWhy ⇒ 有一处计数点没接归因（周刊 :905 一带 与 日报 AI 档 :1189 一带）`);
+  assert.ok(/failWhy: \w+/.test(src), 'filterStats 里没有 failWhy 这个键 ⇒ 分类算完了但没落库');
+});

@@ -32,7 +32,12 @@
                 "rejected": { "type": "integer" },
                 "analyzed": { "type": "integer" },
                 "failed": { "type": "integer" },
-                "truncated": { "type": "boolean" }
+                "truncated": { "type": "boolean" },
+                "failWhy": {
+                  "type": "object",
+                  "description": "仅 AI 版（H35，09-24 夜补）：failed 只有总数，拍不出该怎么修 —— 这里按出口分类各记一笔，不变式 Σ(failWhy) == failed（运行时由锁 E5 钉、单元层由 F7/F8 钉）。分类唯一实现在 lib/filter-observe.js#FILTER_FAIL_WHY，每条正则都指向 api/_ai.js 里真实存在的抛错串。键只在发生时出现（不写 0）：reasoning_only=推理模型只吐思考不吐正文（该抬 maxTokens 或换模型，见 H33）/ timeout=AbortSignal 超时 / rate_limited=HTTP 429 / server=HTTP 5xx / client=其它 4xx / transport=连不上（fetch failed、ECONNRESET 等）/ parse=模型答了但掏不出 JSON / no_key=没配凭据 / other=认不出（**故意留的兜底桶，不许把未知塞进已知类别**）",
+                  "propertyNames": { "enum": ["reasoning_only", "timeout", "rate_limited", "server", "client", "transport", "parse", "no_key", "other"] }
+                }
               }
             },
             "prescreen": {

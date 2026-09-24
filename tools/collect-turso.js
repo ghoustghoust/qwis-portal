@@ -904,12 +904,17 @@ async function runWeekly() {
 
   const passed = [];
   let filterFailed = 0;
+  const weeklyFilterWhy = {}; // 同 H35 口径：周刊只有日志、不落 stats，但"哪一种失败"同样要能读出来
   for (const a of pre.scoped) {
     if (Date.now() - t0 > BUDGET_MS * 0.4) { log('初筛预算截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, summary: a.summary });
-    if (f.failed) filterFailed++;
+    if (f.failed) { filterFailed++; require('../lib/filter-observe').tallyFilterFailWhy(weeklyFilterWhy, f.reason); }
     if (!f.ignore) passed.push(a);
   }
+  // 2026-09-23（P0-2 配套）：周刊与日报共用 filterArticle——失败数必须出现在日志里，
+  // 否则 B16/B121 复验读本周日志时仍分不清"0 剔除"和"初筛没工作"
+  log(`初筛通过 ${passed.length}（失败 ${filterFailed}），开始深析（预算 ≤150 篇）`
+    + (filterFailed ? `；失败因由 ${Object.entries(weeklyFilterWhy).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}=${v}`).join(' ')}` : ''));
   // 2026-09-23（P0-2 配套）：周刊与日报共用 filterArticle——失败数必须出现在日志里，
   // 否则 B16/B121 复验读本周日志时仍分不清"0 剔除"和"初筛没工作"
   log(`初筛通过 ${passed.length}（失败 ${filterFailed}），开始深析（预算 ≤150 篇）`);
@@ -1187,20 +1192,22 @@ async function runDailyAi() {
   // 阶段 1：初筛（2026-09-23 P0-2 配套：失败/截断计数落 filterStats，异常发报警——判据唯一实现 lib/filter-observe.js）
   const passed = [];
   let filterFailed = 0, filterRejected = 0, filterTruncated = false;
+  const filterWhy = {}; // H35：失败"是多少"不够，还得是"哪一种"（分类口径唯一实现在 lib/filter-observe.js）
   const tFilter0 = Date.now();
   for (const a of valid) {
     if (Date.now() - tFilter0 > FILTER_BUDGET_MS) { filterTruncated = true; log('初筛段预算耗尽，截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, category: null, summary: a.summary });
-    if (f.failed) filterFailed++;
+    if (f.failed) { filterFailed++; require('../lib/filter-observe').tallyFilterFailWhy(filterWhy, f.reason); }
     if (!f.ignore) passed.push({ ...a, filterScore: f.score, filterReason: f.reason });
     else filterRejected++;
   }
   const filterMs = Date.now() - tFilter0;
-  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}、耗时 ${(filterMs / 60000).toFixed(1)}min），开始深析`);
+  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}、耗时 ${(filterMs / 60000).toFixed(1)}min），开始深析`
+    + (filterFailed ? `；失败因由 ${Object.entries(filterWhy).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}=${v}`).join(' ')}` : ''));
   // "失败但没全挂"此前是盲区：全挂有 _ai 的 consecFail≥3 报警，部分失败谁都不说——
   // 用户 2026-09-23 裁定：这类异常发报警渠道给管理者（飞书），不上前台页面
   try {
-    const fa = require('../lib/filter-observe').filterAlert({ attempted: passed.length + filterRejected, failed: filterFailed, truncated: filterTruncated });
+    const fa = require('../lib/filter-observe').filterAlert({ attempted: passed.length + filterRejected, failed: filterFailed, truncated: filterTruncated, why: filterWhy });
     if (fa.alert) {
       log(`初筛异常：${fa.text}`);
       await require('../api/_alerts').aiFailed(`早报初筛异常：${fa.text}。候选 ${valid.length} 篇，本期评分偏松`);
@@ -1443,7 +1450,10 @@ async function runDailyAi() {
     // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
     //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，
     //   单篇耗时只能给区间。真值在运行时是 passed.length + filterRejected，此前只喂给报警、没入账（W14 同族）。
-    filterStats: { candidates: valid.length, attempted: passed.length + filterRejected, passed: passed.length, rejected: filterRejected, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
+    filterStats: { candidates: valid.length, attempted: passed.length + filterRejected, passed: passed.length, rejected: filterRejected, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated,
+      // H35（09-24）：failed 只有总数 ⇒ "34% 失败"拍不出该抬 maxTokens 还是该加退避。
+      // failWhy 按 lib/filter-observe.js 的唯一分类把每次失败落到一个键上，不变式 Σ(failWhy) == failed（锁 E5 在运行时钉、F7/F8 在单元层钉）。
+      failWhy: filterWhy },
     // 三段各自耗时（分钟，一位小数）+ 两段上限：合在 elapsedMin 里就一直分不清"是初筛慢还是深析慢"，
     //   而预算到底给够没有，只有拆开才答得出（用户 09-24：「给各个边界一些缓冲」）。
     timeSplit: {

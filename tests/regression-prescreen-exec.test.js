@@ -10,8 +10,11 @@
 //   ① 数据库：TURSO_DATABASE_URL=file:<临时库>。脚本的 .env 加载是「只填空缺」
 //      （`collect-turso.js:26` 的 `if (m && !process.env[m[1]])`），已设的非空值不会被真凭据回填；
 //      `file:` 免 token（:77 的判据）。⚠️ 哑值必须**非空**：设成空串会被判成"没设"→ 被 .env 灌回真 key。
-//   ② AI 出口：`settings.ai.apiBase` 指向本机桩服务；`_ai.js` 用全局 fetch，本仓无
-//      `setGlobalDispatcher`（已核）→ 不经代理。
+//   ② AI 出口：`settings.ai.apiBase` 指向本机桩服务。**但"产品只用 global fetch"这句此前是错的**
+//      （09-24 22:46Z 实测推翻）：`tools/collect-turso.js:59-68` 在 `HTTPS_PROXY` 存在时改用
+//      **undici 自己的 fetch + ProxyAgent**，所以包 `globalThis.fetch` 那道闸看不见 AI 流量。
+//      现在把子进程的 `HTTPS_PROXY` 指到**桩自己**：任何非本机目标都会以绝对 URL 落到桩手上并记进
+//      出网台账（`egressLines()`），"零真实出口"从此有可读证据；驱动里那道 global-fetch 闸降级为纵深。
 //   ③ 报警出口：`api/_alerts.js` 的通道配置读的是**库里的 settings**（:11 同一个连接），
 //      临时库不塞 webhook = 无处可发；且本用例失败率 0、不截断，判据本身也不触发。
 //
@@ -20,7 +23,7 @@
 //   本进程事件循环，跑在同一个进程里的 HTTP 服务因此永远无法应答，子调AI 调用挂到超时、
 //   实测表现是「0 次调用 + ETIMEDOUT」，看着像产品代码坏了。桩独立成进程后才对。
 'use strict';
-const { test, before, after } = require('node:test');
+const { test, todo, before, after } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -37,6 +40,8 @@ const DB = TMP('db');
 const STUB = TMP('stub.cjs').replace(/\\/g, '/');
 const DRIVER = path.join(ROOT, `.prescreen-exec-driver-${process.pid}.cjs`);
 const LOG = TMP('prompts.jsonl');
+const MODE = TMP('mode'); // 注入开关（0/缺省 = 不注入），桩每个请求现读
+const EGR = TMP('egress.log'); // 出网台账（桩兼作代理时写）：非本机的目标 = 一行记录
 
 const LIMIT = 12; // DAILY_AI_LIMIT：两次跑同样 12 个坑，只差 cap —— 覆盖差才是"免费"换来的
 const BIG = 3;
@@ -51,17 +56,42 @@ function startStub() {
 const http = require('http');
 const fs = require('fs');
 const LOG = process.argv[2];
+const MODE = process.argv[3]; // 每个请求现读：测试想注入失败时写个数字（0/缺省 = 不注入）
+const EGR = process.argv[4]; // 出网台账：桩同时当代理用，凡"以绝对 URL 打进来、目标又不是本机桩"的一律记一行
 let THEME_CALLS = 0; // 主题命名这一发的计数（交替回两种形状用）
+let FILTER_CALLS = 0;
+const modeNum = () => { try { return Number(fs.readFileSync(MODE, 'utf8').trim()) || 0; } catch { return 0; } }
 fs.writeFileSync(LOG, '');
+fs.writeFileSync(EGR, '');
 const server = http.createServer((req, res) => {
   let raw = '';
   req.on('data', (c) => { raw += c; });
   req.on('end', () => {
+    // 桩同时当代理用（子进程的 HTTPS_PROXY 指到本桩）：绝对形式的请求 = 客户端想去别的地方。
+    // 为什么需要这一步（09-24 22:46Z 实测）：产品侧 AI 调用走的是 **undici 自己的 fetch + ProxyAgent**
+    // （tools/collect-turso.js:59-68 明写"外部 undici 的 ProxyAgent 与 Node 内置 fetch 的 dispatcher 不兼容"），
+    // 所以只在驱动里包 globalThis.fetch 那道闸**看不见这些请求** —— 用它当"零真实出口"的证据是假的。
+    // 让桩自己当代理，任何非本机的目标都会以绝对 URL 落到这里 ⇒ 台账文件就是可判定的证据。
+    if (/^https?:\\/\\//.test(req.url)) {
+      const mine = /^https?:\\/\\/(127\\.0\\.0\\.1|localhost)(:\\d+)?(\\/|$)/.test(req.url);
+      if (!mine) { fs.appendFileSync(EGR, req.url + '\\n'); res.writeHead(403); res.end('blocked-by-test-stub'); return; }
+      req.url = req.url.replace(/^https?:\\/\\/[^/]+/, '/') || '/'; // 本机自代理：削回路径形式，照常应答
+    }
     if (req.url === '/__reset') { fs.writeFileSync(LOG, ''); res.end('ok'); return; }
     fs.appendFileSync(LOG, raw + '\\n');
     let content = '{"score":42,"ignore":false,"reason":"桩"}';
     if (raw.includes('待评内容')) {
-      content = '{"score":42,"ignore":false,"reason":"桩：值得深析"}';
+        // 初筛：默认全部正常回分。MODE 文件写 N>0 时，每第 N 次回一段**掏不出 JSON** 的答复
+      // ⇒ filterArticle 走 _ai.js:274 的「解析失败放行」⇒ failed 真非零，failWhy 的算式才有东西可加
+      //   （本轮教训：不在 0 上验算式）。为什么只注入 parse 这一类 —— 注入 ok:false 那一族会触发
+      //   _ai.js 的供应商 failover，而 deepseek 的 base 是写死在代码里的，那一发会**真出网**
+      //   （会被桩兼作代理的出网台账当场记下一行：见 E5/E6 的 egressLines 断言）。
+      // ⚠️ 这一段注释里不许出现反引号：它在生成桩源码的模板串内部（详见 E4 上方那条同族记录）。
+      FILTER_CALLS++;
+      const every = modeNum();
+      content = (every > 0 && FILTER_CALLS % every === 0)
+        ? '这段回答里没有花括号，模型答歪了'
+        : '{"score":42,"ignore":false,"reason":"桩：值得深析"}';
     } else if (raw.includes('待评文章')) {
       content = '{"scores":{"选题":8,"内容":8,"深度":8,"实用":7,"创新":6,"表达":8},'
         + '"totalScore":88,"reason":"桩给的推荐理由","summary":"桩摘要",'
@@ -87,9 +117,17 @@ const server = http.createServer((req, res) => {
   });
 });
 server.listen(0, '127.0.0.1', () => { console.log('PORT ' + server.address().port); });
+// CONNECT 也要记：undici 的 ProxyAgent 对 **https** 目标是先发 CONNECT（E6 第一版就是栽在这里 ——
+// 只认绝对形式，结果台账一行没记，红得对）。目标是别处 ⇒ 记台账 + 拆掉 socket；
+// 目标是本机桩自己 ⇒ 同样拆掉（本用例不需要 TLS 隧道，绝对形式那条路已覆盖 http 目标）。
+server.on('connect', (req, socket) => {
+  const host = String(req.url || '');
+  if (!/^(127\\.0\\.0\\.1|localhost)(:\\d+)?$/.test(host)) fs.appendFileSync(EGR, 'CONNECT ' + host + '\\n');
+  try { socket.destroy(); } catch { /* 已拆 */ }
+});
 setTimeout(() => process.exit(0), 300000); // 兜底自杀，防测试异常退出后留孤儿
 `);
-    stubChild = spawn(process.execPath, [STUB, LOG], { cwd: ROOT });
+    stubChild = spawn(process.execPath, [STUB, LOG, MODE, EGR], { cwd: ROOT });
     stubChild.stdout.on('data', (buf) => {
       const m = /PORT (\d+)/.exec(String(buf));
       if (m) resolve(Number(m[1]));
@@ -150,12 +188,19 @@ function runDailyAi() {
       AGNES_API_KEY: 'stub-unused',
       DEEPSEEK_API_KEY: 'stub-unused',
       NO_PROXY: '127.0.0.1,localhost',
+      // 把"代理"指向桩自己 ⇒ 产品侧无论走 global fetch 还是 undici fetch，想去任何非本机目标都会以
+      // 绝对 URL 落到桩手上（见 startStub 里的出网台账分支）。必须**非空**：.env 加载是"只填空缺"。
+      HTTPS_PROXY: `http://127.0.0.1:${port}`,
+      HTTP_PROXY: `http://127.0.0.1:${port}`,
       DAILY_AI_LIMIT: String(LIMIT),
     },
   });
 }
 
 const readPrompts = () => (fs.existsSync(LOG) ? fs.readFileSync(LOG, 'utf8').split('\n').filter(Boolean) : []);
+// 出网台账（桩兼作代理写的）：每一行都是"产品真试图去的一个非本机 URL"
+const egressLines = () => (fs.existsSync(EGR) ? fs.readFileSync(EGR, 'utf8').split('\n').filter(Boolean) : []);
+const clearEgress = () => { try { fs.writeFileSync(EGR, ''); } catch { /* 桩还没起 */ } };
 const latestReport = async () => {
   const rows = await exec('SELECT id, stats, sections FROM daily_reports ORDER BY id DESC LIMIT 1');
   if (!rows.length) return null;
@@ -173,15 +218,29 @@ before(async () => {
   await exec("INSERT OR REPLACE INTO settings(key,value) VALUES('ai.minIntervalMs',?)", ['1000']);
   await exec("INSERT OR REPLACE INTO settings(key,value) VALUES('daily',?)", ['{}']);
   fs.writeFileSync(DRIVER, `
+// 出网闸（09-24 第七轮之后补）：本用例宣称"零真实出口"，但隔离此前**只覆盖了 agnes 这一跳** ——
+// _ai.js 的供应商链在 ok:false 时会 failover 到 deepseek，而 deepseek 的 base 写死在代码里
+// （api/_ai.js:_providerChain），只要注入任何一次调用失败就会真出网。闸放在这里而不是指望 env：
+// DEEPSEEK_API_KEY 必须留非空哑值（.env 加载是"只填空缺"，设成空串会被真凭据灌回来）。
+const REAL_FETCH = globalThis.fetch;
+let egressBlocked = 0;
+globalThis.fetch = (...args) => {
+  const u = String((args[0] && args[0].url) || args[0] || '');
+  if (!/127\\.0\\.0\\.1|localhost/.test(u)) {
+    egressBlocked++;
+    return Promise.reject(new Error('ISOLATION-EGRESS-BLOCKED: ' + u.slice(0, 60)));
+  }
+  return REAL_FETCH(...args);
+};
 process.argv[2] = 'daily-ai'; process.argv[3] = '--rolling24';
 require(${JSON.stringify(path.join(ROOT, 'tools', 'collect-turso.js'))});
-console.log('EXITING OK');
+console.log('EXITING OK EGRESS-BLOCKED ' + egressBlocked);
 `);
 });
 
 after(() => {
   try { stubChild && stubChild.kill(); } catch { /* 已退 */ }
-  for (const f of [STUB, LOG, DB, `${DB}-wal`, `${DB}-shm`]) { try { fs.rmSync(f, { force: true }); } catch { /* 无 */ } }
+  for (const f of [STUB, LOG, MODE, EGR, DB, `${DB}-wal`, `${DB}-shm`]) { try { fs.rmSync(f, { force: true }); } catch { /* 无 */ } }
   try { fs.rmSync(DRIVER, { force: true }); } catch { /* 无 */ }
 });
 
@@ -308,4 +367,80 @@ test('E4 主题全景归因真落库，且 named + 四条命名出口丢弃 == �
     assert.ok(rep.stats.themeSkip && ['ai_failed', 'all_lines_rejected', 'picked_vetoed', 'throw', 'unlabeled'].includes(rep.stats.themeSkip.why),
       'theme 为空却没有可区分的 why（H30 原本的症状）');
   }
+});
+
+// E5（H35，用户 09-24「补这两个字段……我们要让功能正式的可以使用」）：初筛失败必须**可归因**。
+// `filterStats.failed` 只回答"多少"，答不了"哪一种"，而修法天差地别（reasoning_only 抬 maxTokens /
+// timeout 抬 timeoutMs / rate_limited 加退避 / parse 是提示词的事）。09-24 线上量到一期 34.2% 失败，
+// 就因为只有总数而拍不动 H33 —— 这条把"分类真落库"钉成执行级证据。
+// 注入用 parse 这一族（模型答了但掏不出 JSON）：注入 ok:false 那一族会触发 _ai.js 的供应商 failover，
+// deepseek 的 base 写死在代码里 ⇒ 那一发会真出网。出网闸（驱动里的 fetch 包装）负责把这件事变成断言。
+test('E5 初筛失败真落库可归因：Σ(failWhy)==failed、注入的那一类真被认出来', async () => {
+  fs.writeFileSync(MODE, '7'); // 每第 7 次初筛回一段掏不出 JSON 的答复
+  // 为什么取 7 而不取 5（也不要取 2 或 1）：**本跑的分母不是生产的 500，而是 DAILY_AI_LIMIT=12**
+  //   （实测读数见 E5-INJECT-READOUT：attempted=12 / failed=2）。报警线是 failed/attempted ≥ 20%
+  //   （lib/filter-observe.js#FILTER_FAIL_ALERT_RATE），12 条里注入 2~3 条就是 17%~25%，**恰好压在报警线上**；
+  //   判据阈值与被测常数是同一族数字时最容易互相伪装（本轮第 N 次踩同族），所以这里刻意取一个
+  //   "分母多少都大概率落在个位数失败"的间隔，并且**不断言具体次数**（跨用例累计，断具体值就是 flaky 源）。
+  clearEgress(); // 出网台账只判本跑（E1~E4 也在同一桩进程里跑过）
+  let out = '';
+  try { out = runDailyAi(); } finally { fs.writeFileSync(MODE, '0'); }
+  assert.match(out, /EXITING OK/, '脚本没跑到正常收尾');
+  // ⚠️ 这里**故意不断言**"出网台账为空"：09-24 23:06Z 实测该台账**看不见 https 目标**
+  //   （undici ProxyAgent 对 https 先发 CONNECT，Node 的 connect 事件这条我没走通 —— E6 里详录），
+  //   拿一个会漏检的装置报"0 次"，等于把"检测不到"冒充成"没有发生"。⇒ 只在日志里留读数，
+  //   主张降级到 ISSUES H39（含三条待选处置），E6 以 todo 形式留在这里等拍板。
+  if (egressLines().length) console.log('E5-EGRESS-LEDGER ' + egressLines().slice(0, 3).join(' ; '));
+  const rep = await latestReport();
+  const fs2 = rep.stats.filterStats || {};
+  assert.ok(fs2.failWhy, 'stats.filterStats.failWhy 没落库 ⇒ H35 还是"只知道失败多少"');
+  assert.ok(Number(fs2.failed) >= 1, `failed=${fs2.failed} ⇒ 注入根本没生效，下面的算式又是在 0 上验（本轮反复踩的那类假绿）`);
+  const WHY_EXITS = require('../docs/contracts/daily-report.json')
+    .properties.report.properties.stats.properties.filterStats.properties.failWhy.propertyNames.enum;
+  assert.ok(WHY_EXITS.length >= 9, `契约 failWhy 枚举只剩 ${WHY_EXITS.length} 条 ⇒ 分母塌了`);
+  const why = fs2.failWhy;
+  for (const k of Object.keys(why)) assert.ok(WHY_EXITS.includes(k), `failWhy 出现契约外键 ${k} ⇒ 分类器加了新桶没进契约`);
+  const sum = Object.values(why).reduce((a, b) => a + Number(b || 0), 0);
+  // 把真读数打进日志：文档里"注入了多少次失败"这种数字必须能从一次运行里复算，不能靠估算
+  console.log('E5-INJECT-READOUT ' + JSON.stringify({ attempted: fs2.attempted, failed: fs2.failed, sum, why }));
+  assert.equal(sum, Number(fs2.failed), `Σ(failWhy)=${sum} ≠ failed=${fs2.failed} ⇒ 有一条失败没被归类（H35 的账又缺一格）`);
+  // 注入的这一族必须被**认出来**，而不是全塞进 other（塞进 other 也算"有归因"，但等于没归因）
+  assert.ok(Number(why.parse) >= 1, `注入的是"答了但掏不出 JSON"，failWhy.parse 却是 ${why.parse} ⇒ 分类器没接上或串变了`);
+  assert.equal(why.other, undefined, `未知桶 other 被用了（${why.other}）⇒ 有一批失败连分类器都认不出，先把串补进 FILTER_FAIL_WHY 再谈修法`);
+  // ⚠️ 这里**故意不写** `attempted == passed + rejected`：attempted 在源码里就是按 passed+rejected 算的，
+  //   断言它等于自己（同源自证，第六轮审查在 E4 上刚判过一类同样的毛病）。要写就写独立可证伪的：
+  assert.ok(Number(fs2.failed) < Number(fs2.attempted), `failed=${fs2.failed} 等于 attempted=${fs2.attempted} ⇒ 注入把整批都打挂了，"筛没筛"与"全挂"又会同形`);
+  assert.ok(Number(fs2.passed) >= 1 && Number(fs2.analyzed) >= 1, `passed=${fs2.passed} analyzed=${fs2.analyzed} ⇒ 注入连带把主链路打断了，本用例只该证明归因，不该改变成败`);
+});
+
+// E6（E5 那条"一次都没真出网"的**反向证明**）：出网闸是这套隔离的安全装置本身，装置没人踩过就等于没有。
+// 把 settings.ai.apiBase 指到非本机域名跑一次 ⇒ 每一发都必须被闸挡下并计数；跑完把 settings 还原，
+// 免得后面的用例（同进程共享临时库）读到被污染的基址。
+// H39：这条现在**跑必红**（台账对 CONNECT 漏检），按纪律以 todo 保留、不改它的判据去迁就装置。
+// 等用户三选一：(a) 修台账让它真能看见 CONNECT（需要处理 TLS 隧道）；(b) 把'零真实出口'降级成
+// '只覆盖 http 目标'并同步所有文档；(c) 换检测层（在 undici dispatcher 上装，而不是在网络边界上装）。
+todo('E6 出网台账自己要被踩过一次：AI 基址指到非本机 https 域名时，台账必须记到那一发（待 H39 拍板）', async () => {
+  const prev = await exec("SELECT value FROM settings WHERE key='ai'");
+  assert.ok(prev.length === 1, '取不到 settings.ai ⇒ 前置状态就不对，别往下测');
+  await exec("INSERT OR REPLACE INTO settings(key,value) VALUES('ai',?)",
+    [JSON.stringify({ apiKey: 'stub-key', apiBase: 'https://egress-canary.invalid/v1', model: 'stub-model', dailyMinScore: 30 })]);
+  clearEgress();
+  let out = '';
+  try { out = runDailyAi(); }
+  finally { await exec("INSERT OR REPLACE INTO settings(key,value) VALUES('ai',?)", [String(prev[0].value)]); }
+  assert.match(out, /EXITING OK/, '被挡之后脚本必须仍能收尾（闸是"拒绝这一次调用"，不是把进程杀掉）');
+  const egr = egressLines();
+  assert.ok(egr.length >= 1, `基址已经是非本机域名，出网台账却一行都没有（${egr.length}）⇒ 台账这条路是假的，E5 那句"没出网"不作数\n`
+    + `--- settings.ai 写入后回读 ---\n${JSON.stringify((await exec("SELECT value FROM settings WHERE key='ai'")).map((r) => String(r.value)))}\n`
+    + `--- 驱动 stdout 尾 900 字（含每期"失败因由"分布，能看出请求到底撞到哪儿失败的）---\n${out.slice(-900)}`);
+  assert.ok(egr.some((l) => l.includes('egress-canary.invalid')),
+    `台账里有 ${egr.length} 行但没有 canary 那一发（前 3 行：${egr.slice(0, 3).join(' ; ')}）⇒ 检出的不是我们注入的那次，判据对不上`);
+  // 顺带把"failover 会不会打到写死的 deepseek"这件事变成**可见**而不是断言：
+  // 台账里出现 api.deepseek.com 就说明 _ai.js 的失败换供应商会去外部基址 —— 现在它被桩接住并 403，
+  // 不再偷偷出网（这正是 H37 的内容；要不要在产品侧允许 failover 出网，是另一件事，等用户拍）。
+  const failedOver = egr.filter((l) => l.includes('api.deepseek.com')).length;
+  console.log(`E6-READOUT 出网台账 ${egr.length} 行，其中 canary ${egr.filter((l) => l.includes('egress-canary.invalid')).length} 行、deepseek failover ${failedOver} 行`);
+  // 还原证据：下一发必须重新打得通桩（否则 E6 把后面用例弄脏了却没人发现）
+  const after = await exec("SELECT value FROM settings WHERE key='ai'");
+  assert.equal(String(after[0].value), String(prev[0].value), 'settings.ai 没还原 ⇒ 后续用例会读到假基址');
 });
