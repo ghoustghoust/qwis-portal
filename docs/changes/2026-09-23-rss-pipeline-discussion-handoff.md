@@ -16,8 +16,12 @@
 >    `analyzeNoBody`（该计数由 `ed96b46` 引入，晚于那次 snapshot 提交）→ **不是回归**，下一期起才有读数。
 > 5. 生产配置真值：`settings` **无** `prescreen.perSourceCap` 行 → 跑的是代码默认 2；`daily.articleSourceIds=[]` → 白名单不收窄池。
 >
-> **仍未做（不许用别的绿替代）**：读层 HTTP 实测（`/api/meta` commit 对比、`/api/daily` 出报形状）——
-> 本机代理 `127.0.0.1:12000` 到 07:5xZ 仍拒连、`*.vercel.app` 直连超时，**待用户开 Clash 后补测**。
+> **读层 HTTP 实测：08:22~08:24Z 代理恢复后已补做（此前本节记的"未做"作废）**
+> `GET /api/meta` → `commit=930272e42dd…`（== `origin/main`）、`lastUpdated=08:16Z`；
+> `GET /api/daily` → 200 / 36,976 B，`report.id=68`、5 栏 46 条、`stale=false`，
+> 且响应里的 `stats.prescreen` 与直读库的 §八 读数**逐字段一致**（读层没另算一套、也没吞新字段）。
+> 明细见 `docs/eval/2026-09-24-prescreen-step1.md` §十。顺带登记一条**未定性**读数：
+> `GET /api/articles?limit=2`/`?limit=5` 都返回 30 条 —— 没查清前不当 bug（疑缓存键未带 query），列为待查项。
 
 > **⚠️ 09-24 午后·步1 已交付 + 四处读数更正（它取代下面「09-24 凌晨快照」的第五、六节；其中二·①③ 已被上面「傍晚」节更正）**
 >

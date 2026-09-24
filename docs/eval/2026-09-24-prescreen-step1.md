@@ -127,17 +127,22 @@
 对照 id66 同预算下 454 次 = **5.9 s/篇**。→ 免费池抖动一次，45 分钟就少筛 1/3 的篇数。
 这条读数直接喂给被暂缓的预算/gap 议题：**即便候选只有 337，45 分钟也只筛得完 300 上下**。
 
-## 十、仍待补
+## 十、读层 HTTP 实测（08:22~08:24Z 代理恢复后补做，本条取代 §十-1 的"待补"）
 
-1. **读层 HTTP 实测**（`/api/meta` commit == origin/main、`/api/daily` 出报形状）：
-   09-24 06:25Z 起本机代理不可用（`127.0.0.1:12000` 拒连，7890/7897/10809/8118 亦不通；
-   `*.vercel.app` 直连不通而 `api.github.com` 通），**待代理恢复后补测**——这一步没做就是没做，不许用 CI 绿替代。
-   本期再次实测：直连 `curl -m12 https://qwis-intel.vercel.app/api/meta` 超时、走 `127.0.0.1:12000` 拒连；
-   `api.vercel.com` 可达（401/403 级）但仓库内无 Vercel token，且制度禁止交互式 login → **没有合法替代证据**，只有侧写不算实测。
-   08:10Z 复测：`12000/7890/7897/10809/8118/10808` 六个端口全部不通，直连仍超时。
-   - **次级证据（不是实测，只补"部署面 == origin/main"这一半）**：GitHub 上 `b1e3f71` 的提交状态
-     `ctx=Vercel state=success / "Deployment has completed"`，且 `deployments` 列表首条 =
-     `id 6633018370, env=Production, sha=b1e3f71`。→ 证明**读层那次部署构建完成在 main 最新提交上**；
-     **不证明** `/api/meta` 返回体、不证明 `/api/daily` 出报形状、不证明读层代码真跑过。这两半不能互相替代。
-2. **`analyzeNoBody` 的生产读数**：要等下一次 `daily-ai` 批次（代码已在 `ed96b46` 起入库，本期 sha 早于它）。
-3. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 ① 的推论走。
+| 端点 | 读数 | 判读 |
+|---|---|---|
+| `GET /api/meta` | `commit=930272e42dd…`、`commitRef=main`、`articles=32433 videos=2873 sources=1131 lastUpdated=08:16:02Z` | **线上 commit == origin/main**（AGENTS §3 第 5 条的入口判据），且 `lastUpdated` 是 5 分钟内 → 采集心跳正常 |
+| `GET /api/daily` | HTTP 200 / 36,976 B，`report.id=68`、`generated_at=2026-09-24T07:53:19Z`、`sections=5`、`items=46`、`stale=false`；栏目名 `培训课程发布/重点更新/AI技术/其它重要/视频与播客`（字段是 `column`，不是 `name`） | 级3 那一期**就是用户早上打开的那一版**；出报形状没被步1 打坏 |
+| 同响应里的 `stats` | `candidates=337 elapsedMin=87.4 gateDropped=34 prescreen={cap:2,pool:2000,poolSources:202,kept:337,keptSources:202} filterStats={candidates:337,passed:229,analyzed:137,failed:70,truncated:true}` | 与 §八 直读库的**逐字段一致** → 读层没有另算一套，也没有把新字段吞掉 |
+
+**顺带一条未定性的读数（不是本轮改的，只登记不下结论）**：`GET /api/articles?limit=2` 与 `?limit=5` 都返回 **30 条**。
+`api/[...slug].js` 里确有 `limit = Math.min(Number(req.query.limit) || …, …)` 的写法，所以"参数被吃"可能是**缓存键没带 query**，
+也可能是我打到的不是 `handleArticles`。**没查清之前不许写成 bug** —— 待查项：`grep -n 'handleArticles' -A20 api/[...slug].js` 对上路由，
+再按 `?limit=2` / `?limit=2&page=1` 两次取回比条数。
+
+## 十一、仍待补
+
+1. **`analyzeNoBody` 的生产读数**：要等下一次 `daily-ai` 批次（代码已在 `ed96b46` 起入库，本期 sha `dc57332` 早于它）。
+2. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 §九① 的推论走。
+3. **上一条 `/api/articles` limit 读数定性**。
+4. ~~读层 HTTP 实测~~ → **08:22Z 已做完，见 §十**（代理恢复；此前记的"待补"与次级 GitHub 侧证据一并作废为本节实测）。
