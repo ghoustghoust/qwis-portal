@@ -46,12 +46,13 @@
 
 ### 步2 —— 词表代码化 + Pass 1 改二元三问
 
-- 新增 `lib/filter-rules.js`（**步2 待建，本 spec 批准前该文件不存在**）：纯函数 `ruleReject({title, summary, sourceUrl})` → `{hit, why}`。承接三类**零判断**判据：① `prompts/filter.md:18` 的强制压分负例词表（从 prompt 搬进代码）；② commit / changelog 形标题与 `github.com/*/commits/*` 流；③ 纯链接列表薄正文。命中即**不发模型**（这才叫级4 零 token）。
+- 新增 `lib/filter-rules.js`（**步2 待建，本 spec 批准前该文件不存在**） <!-- doc-lint:ignore：拟建文件，见 DOC_GOVERNANCE §2 精炼红线「状态词不许压成路径」；豁免只在同行生效 -->
+  ：纯函数 `ruleReject({title, summary, sourceUrl})` → `{hit, why}`。承接三类**零判断**判据：① `prompts/filter.md:18` 的强制压分负例词表（从 prompt 搬进代码）；② commit / changelog 形标题与 `github.com/*/commits/*` 流；③ 纯链接列表薄正文。命中即**不发模型**（这才叫级4 零 token）。
   **⚠️ 09-24 14:33Z 用库里 246 条行为正样本（`read_at`/`later`）回测后，③ 这类"长度判据"被否决**：
   ②（形态类）**误砍 0/246 = 0%**、近 7 天拦 176 篇 → 纯赚；而"正文<600字"**误砍 40.2%**、"标题<12字"**误砍 9.8%**，
   两者合计把近 7 天 **75.9%** 的池子拦掉、代价是**四成多你真正点开过的**一起被砍（误砍样本全是 AIHOT 热榜/豆瓣热门/Product Hunt 的短条目——
   **正文短 ≠ 没营养，榜单卡片式条目本来就是短的**）。所以判据清单改成：**只上"形态类"（②、①里的负例词表），
-  不上"长度/字数类"**；取证与逐条数字见 `docs/eval/2026-09-24-prescreen-labels.md` 末尾的「行为正样本回测」节。 <!-- doc-lint:ignore：拟建文件，见 DOC_GOVERNANCE §2 精炼红线「状态词不许压成路径」-->
+  不上"长度/字数类"**；取证与逐条数字见 `docs/eval/2026-09-24-prescreen-labels.md` 的「行为正样本回测」节。
 - `prompts/filter.md` 重写为 §4.1② 的**二元三问**（是否原创信息增量 / 是否纯复述已知新闻 / 是否有硬伤），不再要 0-100 分。
 - **返回契约保持不变**：`filterArticle` 仍回 `{score, ignore, reason, failed}`；`ignore` 由三问合成，`score` 降为派生占位值。这是**有意的兼容层**——一次护住 `tests/regression-filter-observe.test.js:102`（F5 落库形状）与 `tests/regression-ai-infra.test.js:142`（脏 JSON 兜底），不当历史包袱删。
 - 同步 `lib/ai-prompts.js` 里 `EMBEDDED.filter` 那份兜底文本，否则复现 B51/H10「后台改了主链路不生效」。
