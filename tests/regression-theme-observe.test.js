@@ -85,6 +85,24 @@ test('T6 读层每一处 report 字面量的**顶层**必须带 theme/schemaVers
   assert.ok(sites >= 5, `部署面只扫到 ${sites} 处 report 字面量（<5），判据已空转 —— 写法变了或文件变了就要同步这里`);
 });
 
+test('T7 提取器自证：注释与字符串里的 `report: {` 不算返回点', () => {
+  // 为什么（09-24 第四轮审查实测）：上一版 `objectLiteralKeysAt` 不认注释 ⇒ 一个洞两种坏：
+  //   ① 注释里写一行"旧写法 report: { sections, stats }"就被判成缺字段的返回点（假红）；
+  //   ② 反过来能用注释把 `sites>=5` 这条防空转的担保凑满（假绿）。
+  //   坏样本就在这里喂：三行注释/字符串里的锚点必须全部不算，真返回点必须算且键读对。
+  const { objectLiteralKeysAt } = require('../tools/stats-literal-keys.cjs');
+  const fixture = [
+    'const a = jsonOk({ report: { sections, stats, theme: null, schemaVersion: 1, degraded: false } });',
+    '// 旧写法 report: { sections, stats } 已经废了',
+    '/* 文档里的样例 report: { sections } */',
+    'const u = "https://example.com/report: {not-a-site}";',
+  ].join('\n');
+  const got = objectLiteralKeysAt(fixture, 'report: {');
+  assert.equal(got.length, 1, `注释/字符串里的锚点被当成返回点了：实得 ${got.length} 处（应为 1）`);
+  assert.deepEqual(got[0].keys, ['sections', 'stats', 'theme', 'schemaVersion', 'degraded'],
+    '真返回点的顶层键读错 ⇒ T6 整把锁的判据不可信');
+});
+
 test('T5 全仓扫：每一处 generateThemeDetailed 调用都必须投影 .theme 或落归因（防"别处用错形状还全绿"）', () => {
   const SKIP = new Set(['node_modules', '.git', 'dist', 'data', 'archive']);
   const hits = [];

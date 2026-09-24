@@ -1,8 +1,13 @@
 // stats 字面量顶层键提取器（回归锁 P12 的判据来源）
 // 为什么要单独一个文件而不写在测试里：这是一段**手工的源码扫描**，按本项目踩过的老规矩
 // （`docs/eval/` 里多条"静态形态判据第一版必错"的记录），它自己必须有坏样本喂着才可信 —— 能单独 require 才能单独喂样本。
-// 已知不做的：不求值、不解析 ES6 计算属性名（`[k]:`）与展开（`...x`，按设计跳过），
-// 只回答"这个对象字面量写了哪些顶层键"。
+// 已知边界（09-24 第四轮审查后重写 —— 原话"展开按设计跳过"与本文件的实现相反，是一句会误导人的注释）：
+//   · 裸展开 `...x`（标识符/成员访问）拿不到键，确实跳过；
+//   · **条件展开 `...(c ? { a } : { b })` 的两个分支对象第一层键会被收进来** —— 这是 P12 需要的行为
+//     （runner 的 `...(theme ? {} : { themeSkip: … })` 必须被看得见），但对 T6 就是**假绿来源**；
+//   · 不求值、不解析计算属性名 `[k]:`、不认访问器/方法简写（`get theme(){}`、`fmt(){}`）⇒ 真值有、提取器没有（会假红）。
+//   这些洞中只有"值取错来源/写死"这一类在执行锁 I4 上有牙，且**只对 stats 带非默认值的臂有牙**（新鲜/过期两支）；
+//   关键词档那几臂 stats 本来就没 theme ⇒ 写死 null 照样过（09-24 自己 F2P 出来的，见 I4 注释），不许当已收口。
 'use strict';
 
 function skipString(t, i) {
@@ -115,13 +120,44 @@ function statsLiterals(text) {
 // 为什么单独要这份：读层"响应同形"判据第一版是"取锚点后 700 字符看有没有 `theme:` 字样" ——
 // 注释里写一句就满足，字段嵌进子对象也满足，而紧邻的下一处返回点的字段会被算进这一处（09-24 第三轮审查实测）。
 // 复用 objectLiteralAt（括号配平、跳字符串/注释）+ topLevelKeys（只取深度 1），这三条假绿一次堵掉。
+//
+// ⚠️ 已知盲区（09-24 第四轮审查实测 + 自己 F2P 复测，别把这把锁当"证明"）：
+//   ① 条件展开 `...(c ? {} : { theme… })` 的假绿：topLevelKeys 会把分支对象的键算进来（P12 需要的正是这个行为）；
+//   ② `get theme(){}` / 方法简写：真 `Object.keys` 有这一项而提取器给不出 ⇒ **会假红**；
+//   ③ 值里带正则字面量 `/a}/`：括号配平被截断 ⇒ **会假红**。
+//   执行锁 I4 只在"stats 有非默认值"的臂上能兜住①那类（新鲜/过期两支）；关键词档三支的 stats 本来就没 theme，
+//   写死 `theme: null` 在 I4 上也过得去（09-24 实测：改第 5 处 → I4 仍绿）⇒ ①②③ 目前**无人兜**，不许当已收口。
+function nonCodeRanges(text) {
+  // 单遍扫描：注释（`//`、块注释）与**字符串/模板串本体**都算"非代码区间"——
+  // 字符串里的 `report: {…}` 也不是返回点（`"https://x/report: {a}"` 实测会被当成一处 0 键的假站点）。
+  const out = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === "'" || ch === '"' || ch === '`') { const end = skipString(text, i); out.push([i, end + 1]); i = end; continue; }
+    if (ch === '/' && text[i + 1] === '/') {
+      const end = text.indexOf('\n', i);
+      const stop = end < 0 ? text.length : end;
+      out.push([i, stop]); i = stop; continue;
+    }
+    if (ch === '/' && text[i + 1] === '*') {
+      const end = text.indexOf('*/', i + 2);
+      const stop = end < 0 ? text.length : end + 2;
+      out.push([i, stop]); i = stop - 1; continue;
+    }
+  }
+  return out;
+}
+
 function objectLiteralKeysAt(text, anchor) {
   const out = [];
+  const dead = nonCodeRanges(text);
+  const inDead = (pos) => dead.some(([a, b]) => pos >= a && pos < b);
   for (let i = text.indexOf(anchor); i >= 0; i = text.indexOf(anchor, i + 1)) {
+    if (inDead(i)) continue; // 注释/字符串里的 `report: {` 不是返回点（否则 sites 计数能被注释凑够，也会把"旧写法"示例判红）
     const lit = objectLiteralAt(text, i + anchor.length - 1);
     if (lit) out.push({ line: text.slice(0, i).split('\n').length, keys: topLevelKeys(lit) });
   }
   return out;
 }
 
-module.exports = { skipString, objectLiteralAt, topLevelKeys, statsLiterals, objectLiteralKeysAt };
+module.exports = { skipString, objectLiteralAt, topLevelKeys, statsLiterals, objectLiteralKeysAt, nonCodeRanges };
