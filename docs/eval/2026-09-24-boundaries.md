@@ -62,3 +62,18 @@
 - 未测：Actions 队列在高负载下"合并错过点位"的官方规则细节（文档只说会 delay；我们的读数是间接证据）。
 - 未测：VACUUM 在 Turso/libsql HTTP 面能否跑、耗时多少。
 - 未测：FTS5 在 Turso 上是否可用（搜索改造的前置）。
+- **取证受阻（09-24 夜实测）**：Actions 的 **job 日志接口在本机链路上持续 502** —— `GET /actions/jobs/{id}/logs` 用 `--max-redirs 0` 取 `Location` 那一跳退避重试 3 次仍是 502（同域名的 JSON 接口一切正常 ⇒ 不是 PAT/配额问题）。
+  后果要写清：**"模型没答 vs 我们自己把答案判死了"没法从历史日志回溯**，只能等下一期带 `stats.themeSkip.why` 的批次（本轮因此改走"用已落库数据分离解释"这条路，见 §七）。
+
+## 七、AI 批的"触发率 × 实际墙钟"（09-24 夜逐 run 拉 jobs 实测，只读）
+
+| 量 | 读数 | 与哪条边界对表 |
+|---|---|---|
+| 样本 | collect.yml 最近 **50 个 run**（dispatch + schedule 混样；`collect=39 success + 11 skipped = 50` 自洽） | — |
+| **AI 批真跑成功** | `daily-ai=2`、`daily-ai-evening=2` ⇒ **50 趟里成 4 趟（8%）** | §二 的"schedule 会 delay/合并"机制；H27 |
+| 其他每日一根的批 | `daily-report=2`、`cleanup=2`、`snapshot=2`、**`weekly=0`、`mybrief=0`** | 周刊/个性化早报**在这 50 趟里一次都没跑过**（H27 同一病灶，不是新功能坏了） |
+| AI job 实际墙钟 | **86 / 88 / 95 min**（job 起讫差），与库里 `stats.elapsedMin=87.4` 对得上 | 本轮抬到的 `BUDGET_MS=300min` / `timeout-minutes=330` ⇒ 约 **3.5× 余量**，且 330min 已贴近 GitHub 的 6h 硬顶（§五 第 5 条） |
+
+⇒ 这条把用户那句"毕竟我们时间有 9 小时"变成了可核对的说法：**9 小时窗口不是瓶颈，触发不到才是**（8% 的触发率下，一期 AI 早报的期望等待是十几小时量级）。
+⇒ 顺带用已落库数据削掉 H30 一半不确定性（`tools/_probe-theme-vs-channel.cjs`，零模型零写）：16 期 AI 档里**唯一带导语的 id=49 是空壳批次**（`analyzed=0 / passed=0 / elapsedMin=0`），其余 15 期都有 117~215 条真深析 ⇒ "模型整体不可用"**不能解释全部**；但 09-23/24 那 4 期 `filterStats.failed=24~136` ⇒ provider 失败是活的可解释项；09-20~09-22 那 8 期该键还没落库 ⇒ 仍要等一期 `why`。
+⇒ 主题全景（`themes` 0 簇）另有一笔账：用生产同一份贪心实现回放，**`@0.45` 就有 8 簇分布在 6 期**，而库里 16 期只存下 3 簇 ⇒ 主要漏点在 `buildThemePanorama:1064` 的 `if (!r.ok) continue`（起名失败即整簇消失），**不是阈值**（放宽到 0.25 只变 15 簇且最大簇仍 2~3 条）。细节与待拍板见 H32。
