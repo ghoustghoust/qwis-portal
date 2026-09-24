@@ -68,6 +68,20 @@
                 "lines": { "type": "integer", "description": "模型回复的有效行数" }
               }
             },
+            "themePanorama": {
+              "type": "object",
+              "description": "**仅 AI 档**（H32，09-24 夜补）：主题全景的账。线上 `themes: []` 单独看分不清「聚不到簇」与「聚到了但命名/解析被丢掉」—— 命名环节原本有四条不留痕的出口，这条把每条出口各自计数。⚠️ 只加读数不改判定：Jaccard 阈值 0.45、簇≥2、按总分取前 4、命名提示词都一字未动",
+              "properties": {
+                "found": { "type": "integer", "description": "贪心聚出来的簇总数（含只有 1 条的）" },
+                "multi": { "type": "integer", "description": "其中 ≥2 条、有资格进命名的簇数（命名分母；受「取前 4」上限约束）" },
+                "named": { "type": "integer", "description": "真正落进 themes 的主题数 = themes 数组长度" },
+                "drops": {
+                  "type": "object",
+                  "description": "按出口分类的丢弃次数；键只在发生时出现（不写 0）。no_token=标题切不出 ≥2 字词、根本不进簇 / ai_failed=模型调用失败 / no_json=回复里匹配不到 JSON 对象 / incomplete=JSON 缺 name 或 summary / bad_json=JSON.parse 抛",
+                  "propertyNames": { "enum": ["no_token", "ai_failed", "no_json", "incomplete", "bad_json"] }
+                }
+              }
+            },
             "elapsedMin": { "type": "number" },
             "theme": { "type": ["string", "null"], "description": "仅 AI 版：导语" },
             "degraded": { "type": "boolean", "description": "仅 AI 版：AI 链路降级标记" },

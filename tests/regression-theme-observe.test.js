@@ -85,6 +85,47 @@ test('T6 读层每一处 report 字面量的**顶层**必须带 theme/schemaVers
   assert.ok(sites >= 5, `部署面只扫到 ${sites} 处 report 字面量（<5），判据已空转 —— 写法变了或文件变了就要同步这里`);
 });
 
+test('T8 每一处 buildThemePanorama 调用都必须取 .themes（返回形状从数组改成对象后的防漏锁）', () => {
+  // 为什么（H32）：为了把"聚到几簇 / 命名成几个 / 四条出口各丢几次"落进库，
+  // `buildThemePanorama` 的返回值从 `themes[]` 改成 `{themes, found, multi, named, drops}`。
+  // 形状一改就漏一个调用方 ⇒ 症状是"主题全景永远空"且不报错（`themes` 变成对象，前端拿不到数组），
+  // 正是本轮反复抓的那一类"静默降级"。所以调用点要机械扫，不靠记性。
+  const SKIP = new Set(['node_modules', '.git', 'dist', 'data', 'archive']);
+  const hits = [];
+  (function sweep(dir) {
+    for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+      if (e.name.startsWith('.') || SKIP.has(e.name)) continue;
+      const rel = dir ? `${dir}/${e.name}` : e.name;
+      if (e.isDirectory()) { sweep(rel); continue; }
+      if (!/\.(js|cjs|mjs)$/.test(e.name)) continue;
+      const text = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+      for (const m of text.matchAll(/buildThemePanorama\(/g)) {
+        if (text.slice(Math.max(0, m.index - 20), m.index).includes('async function')) continue; // 定义处
+        hits.push({ rel, ok: text.slice(m.index, m.index + 170).includes('.themes') });
+      }
+    }
+  })('');
+  assert.ok(hits.length >= 2, `只扫到 ${hits.length} 处调用点，判据已空转`);
+  for (const h of hits) assert.ok(h.ok, `${h.rel} 有一处 buildThemePanorama 调用没取 .themes —— 会把对象当数组用，主题全景静默变空`);
+});
+
+test('T10 buildThemePanorama 里每一条 continue 都必须先给自己计数（H32：五条静默出口）', () => {
+  // 为什么（H32 实测 + 第五轮审查补的第 5 条）：`themes: []` 这个读数原本分不清"标题聚不到簇"与"聚到了但命名/解析被丢掉"，
+  // 因为循环里有五条 `continue` 一条都不留痕（切不出 token / !r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛）。
+  // 现在五条各自 bump() 计数。判据是机械的：函数体内每个 `continue` 之前必须有 `bump(`。
+  // 这条锁**上岗当天就抓到一处**：我第一版只数了命名循环那四条，被它判红的是聚类循环里"标题切不出 token 就跳过"那条。
+  // 坏样本（F2P 已做）：把任意一条 bump 摘掉 ⇒ 本条红；说明它真在管这件事，不是恒绿。
+  const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
+  const i = src.indexOf('async function buildThemePanorama(');
+  assert.ok(i > 0, '找不到 buildThemePanorama —— 改名要同步这条锁');
+  const body = src.slice(i, src.indexOf('\n}', src.indexOf('return { themes', i)));
+  const cont = [...body.matchAll(/\bcontinue\b/g)];
+  assert.ok(cont.length >= 4, `只扫到 ${cont.length} 条 continue，判据已空转（出口被合并也要同步这里）`);
+  for (const c of cont) {
+    const back = body.slice(Math.max(0, c.index - 60), c.index);
+    assert.ok(/bump\(/.test(back), `命名循环里有一条 continue 前面没有 bump() 计数 ⇒ 它丢掉的是"已经聚出来的整簇"，线上只会看到 themes:[]（H32 的病根本身）`);
+  }
+});
 test('T7 提取器自证：注释与字符串里的 `report: {` 不算返回点', () => {
   // 为什么（09-24 第四轮审查实测）：上一版 `objectLiteralKeysAt` 不认注释 ⇒ 一个洞两种坏：
   //   ① 注释里写一行"旧写法 report: { sections, stats }"就被判成缺字段的返回点（假红）；

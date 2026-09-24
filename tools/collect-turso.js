@@ -1034,13 +1034,20 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
 // ─── T3-1 R0c 主题全景（2026-09-13）───
 // 把碎片聚合成主题全景：标题 Jaccard 聚类 → 每簇 AI 命名 + 四类视角 + 跨源综述。
 // 用户需求原文：把碎片聚合成主题全景，事件/领域/人物/产品对比四类视角。
+// ⚠️ 09-24 夜（H32）：这里原本有**四条静默出口**（!r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛），
+//   任一条丢掉的都是"已经聚出来的整簇"，而线上读数只有 `themes: []` —— 看起来像"标题聚不到一起"。
+//   现在返回值从数组改成 `{themes, found, multi, named, drops}`：**只加归因，不改任何判定**（阈值、簇数上限、
+//   命名提示词一字未动）。返回形状变了 ⇒ 每个调用方必须取 `.themes`（锁 T8 全仓扫这一点）。
 async function buildThemePanorama(items) {
   const _ai = require('../api/_ai');
-  if (!items || items.length < 2) return [];
+  const zero = { themes: [], found: 0, multi: 0, named: 0, drops: {} };
+  if (!items || items.length < 2) return zero;
+  const drops = {};
+  const bump = (k) => { drops[k] = (drops[k] || 0) + 1; };
   const clusters = [];
   for (const it of items) {
     const tok = titleTokens(it.translated_title || it.title || '');
-    if (!tok.length) continue;
+    if (!tok.length) { bump('no_token'); continue; } // 标题切不出 ≥2 字词 ⇒ 根本不进簇（第五轮审查点出的第五条静默出口，锁 T10）
     let hit = null;
     for (const c of clusters) {
       if (jaccard(tok, c.tokens) >= 0.45) { hit = c; break; }
@@ -1048,6 +1055,7 @@ async function buildThemePanorama(items) {
     if (hit) { hit.items.push(it); for (const t of tok) hit.tokens.add(t); }
     else clusters.push({ tokens: new Set(tok), items: [it] });
   }
+  const multi = clusters.filter((c) => c.items.length >= 2).length; // "≥2 条的簇"才有资格进命名，这条 counted 是给归因用的分母
   const rated = clusters
     .filter((c) => c.items.length >= 2)
     .map((c) => ({ items: c.items, score: c.items.reduce((n, i) => n + (i.totalScore || 0), 0) }))
@@ -1061,21 +1069,21 @@ async function buildThemePanorama(items) {
     const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.summary ? `｜摘要：${String(i.summary).slice(0, 80)}` : ''}`).join('\n');
     const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述：概括这件事/这个主题本身的事实与各源侧重；禁止评论文章质量、评分或'评语'，禁止出现'评语'二字"}\n\n${list}`;
     const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
-    if (!r.ok) continue;
+    if (!r.ok) { bump('ai_failed'); continue; }
     const m = String(r.reply || '').match(/\{[\s\S]*\}/);
-    if (!m) continue;
+    if (!m) { bump('no_json'); continue; }
     try {
       const j = JSON.parse(m[0]);
-      if (!j.name || !j.summary) continue;
+      if (!j.name || !j.summary) { bump('incomplete'); continue; }
       themes.push({
         name: String(j.name).slice(0, 20),
         viewpoint: VIEWS.includes(j.viewpoint) ? j.viewpoint : '事件',
         summary: String(j.summary).slice(0, 160),
         items: c.items.map((i) => ({ id: i.id, title: i.translated_title || i.title, url: i.url, source: i.source_name, kind: i.kind || 'article' })),
       });
-    } catch { /* 跳过坏簇 */ }
+    } catch { bump('bad_json'); /* 跳过坏簇 */ }
   }
-  return themes;
+  return { themes, found: clusters.length, multi, named: themes.length, drops };
 }
 
 // ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报） ───
@@ -1251,8 +1259,8 @@ async function runDailyAi() {
 
   // T3-1 R0c 主题全景：深析条目按标题聚类（Jaccard≥0.45，簇≥2），每簇 1 次 AI 调用出
   // 主题名 + 四类视角（事件/领域/人物/产品对比）+ ≤100 字跨源综述；按簇总分取前 4
-  let themes = [];
-  try { themes = await buildThemePanorama(analyzed); } catch (e) { log(`主题全景失败（不阻断）: ${e.message}`); }
+  let themes = []; let panorama = null;
+  try { panorama = await buildThemePanorama(analyzed); themes = panorama.themes; } catch (e) { log(`主题全景失败（不阻断）: ${e.message}`); }
 
   // ── T4-2 R4 七层防御入报 ──
   // L5a 权威加权：近 30 天源级高分率 → authority ∈ [0.8,1.2] 乘入 totalScore（权威大事件排前）
@@ -1418,6 +1426,10 @@ async function runDailyAi() {
     // 导语为空时的归因（H30）：'ai_failed' 模型没答 / 'all_lines_rejected' 答了但每行都像污染元文本 /
     // 'picked_vetoed' 挑出来的那句被一票否决 / 'throw' 调用抛错。有 theme 时该键不落（null 不留噪声键）。
     ...(theme ? {} : { themeSkip: { why: th.why || 'unlabeled', err: th.err, detail: th.detail, lines: th.lines } }),
+    // 主题全景的账（H32）：`themes: []` 单独看分不清"聚不到簇"与"聚到了但命名/解析丢掉"。
+    // found=全部簇、multi=≥2 条的簇（有资格命名的分母）、named=进库数、drops 按四条出口各自计数。
+    // 只加读数，不改判定：阈值/取前 4/提示词一字未动（改判据要用户点头，见 H32 待拍板）。
+    ...(panorama ? { themePanorama: { found: panorama.found, multi: panorama.multi, named: panorama.named, drops: panorama.drops } } : {}),
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
     //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，
@@ -1635,10 +1647,12 @@ async function runMyBrief(analyzed) {
   // 主题全景（订阅视角）：与 daily-ai 同管线，簇取自 mine
   let themes = [];
   try {
-    themes = await buildThemePanorama(mine);
+    const myPanorama = await buildThemePanorama(mine);
+    themes = myPanorama.themes;
     // 2026-09-18：此处原先是空 catch——主题全景线上长期为空却无任何归因日志。
     // 空簇（Jaccard≥0.45 的 ≥2 条簇不足）与 AI 命名失败是两种不同病因，必须能区分。
-    if (!themes.length) log(`我的早报主题全景: 0 簇（候选 ${mine.length} 条，标题相似度聚不到 ≥2 条的簇或 AI 命名全失败）`);
+    // 09-24（H32）把这条日志再拆细一层：现在能直接读出"聚到几簇 / 够格的有几簇 / 命名成几个 / 各出口丢了几次"。
+    if (!themes.length) log(`我的早报主题全景: 0 簇（候选 ${mine.length} 条；聚到 ${myPanorama.found} 簇、≥2 条的 ${myPanorama.multi} 簇、命名成功 ${myPanorama.named}、丢弃 ${JSON.stringify(myPanorama.drops)}）`);
   } catch (e) { log(`我的早报主题全景失败（不阻断）: ${e.message}`); }
   // H13/B21：期号与归档——单键覆盖写让历史期直接丢失（用户 09-18 标注）。
   // 同北京日重跑原地替换（修码重跑不另算新期）；空态不占期号（那是状态不是期）。
