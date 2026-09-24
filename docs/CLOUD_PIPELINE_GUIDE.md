@@ -182,11 +182,14 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     （`runDailyAi`、`runDaily`、`api/daily-generate.js`、读层内联兜底）共用的唯一出处，
     配额值唯一写死处是 `settings['prescreen.perSourceCap']`（缺省 2，坏值回默认并出声）。
     **为什么收成一条**：实测 `ORDER BY published_at DESC LIMIT 500` 在 24h 窗口 2,688 篇 / 469 源的池子里
-    只覆盖 94 源——500 个坑里 352 个是同一批高频源的"第 3 篇以后"；这一刀不削减 AI 调用量，只把覆盖换回来。
-    两条附带硬约束：① 宽池 2000 行**不许携带 `content_html`**（同不变量里 weekly 那条 libsql HTTP 掐断教训），
+    只覆盖 94 源——500 个坑里 352 个是同一批高频源的"第 3 篇以后"；这一刀换的是覆盖，不是额度。
+    （第一期实测原句"不削减 AI 调用量"不成立：调用量 500→337、覆盖 94→202，因为当时 2000 行的宽池读自己就是天花板。）
+    两条附带硬约束：① 宽池读**不许携带 `content_html`**（同不变量里 weekly 那条 libsql HTTP 掐断教训），
+    行数单一取值写死在 `lib/prescreen.js#CANDIDATE_POOL_READ`（09-24 由 2000 抬到 **6000**：24h 全量 3,645 篇 / 327 源，
+    轻量列合计仅 928 KB —— "宽池不能抬"的旧顾虑只对 `content_html` 成立；锁 **P9** 钉住 runner 与两份 api 不分叉），
     正文一律到深析阶段按 id 单取；② `stats.prescreen` 必须落库，否则"配额有没有生效"又变成不可判别
     （P0-2 那一族）。本地灾备端 `server/` **不在本面内**（不在部署面，见 `docs/ISSUES.md` H22），
-    但入报门槛照旧必接。对账锁：`tests/regression-prescreen.test.js` P6/P6b/P8 + 执行锁 E1~E3。
+    但入报门槛照旧必接。对账锁：`tests/regression-prescreen.test.js` P6/P6b/P8/P9 + 执行锁 E1~E3。
 
 ## 3. 改代码时的检查清单
 

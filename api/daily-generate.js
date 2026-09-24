@@ -110,7 +110,7 @@ async function generateDaily(windowHours) {
   }
   // 排除热榜/聚合源
   sql += ` AND ${notNoiseSql('s')}`;
-  sql += ' ORDER BY a.published_at DESC LIMIT 2000';
+  sql += ` ORDER BY a.published_at DESC LIMIT ${require('../lib/prescreen').CANDIDATE_POOL_READ}`; // 宽池读单一取值见 lib/prescreen.js（此处内联 require：下方才 const prescreen，前置会撞 TDZ）
 
   const candidates = await qAll(sql, args);
 

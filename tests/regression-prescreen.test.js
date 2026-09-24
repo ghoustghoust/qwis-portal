@@ -150,3 +150,19 @@ test('P8 每个配额调用都必须显式带上限，且宽池必须真大于�
   assert.ok(Number.isFinite(read) && Number.isFinite(send), '两个常量任一被改名/删掉 —— 判据要跟着改，别让它哑');
   assert.ok(read > send, `宽池 ${read} 必须大于送模型量 ${send}，否则级3 无从"换覆盖"——配额与截断变成同一件事`);
 });
+
+test('P9 宽池读只有一个数：runner 字面量 == lib/prescreen.CANDIDATE_POOL_READ，且两份 api 不再自己写死', () => {
+  // 为什么（用户 09-24 裁定「抬」H25）：级3 第一期实测发现覆盖率的真天花板不是 cap 而是宽池读
+  //   （`prescreen.pool` 恰等于 2000 → 池里只剩 202 源）。抬这个数要同时动四处，
+  //   而 api/ 不能 require tools/（`.vercelignore` 排除 tools）→ 字面量必然存在两份（runner + lib），
+  //   漂移只在"抬了一半"时发生：那正是本条要拦的。取值依据（3,645 篇/327 源/928KB）写在 lib/prescreen.js。
+  const runner = Number(/CANDIDATE_POOL_READ = (\d+)/.exec(stripComments(fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8')))?.[1]);
+  const lib = ps().CANDIDATE_POOL_READ;
+  assert.ok(Number.isInteger(lib) && lib > 0, 'lib/prescreen 必须导出 CANDIDATE_POOL_READ —— 两份 api 靠它取宽池读');
+  assert.equal(runner, lib, `runner=${runner} 与 lib=${lib} 不一致 = 抬池只抬了一半，级3 天花板仍停在旧值`);
+  const rawSrc = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8'); // 用原文视图：`code()` 会剥掉字符串里的数，判据会变哑
+  for (const f of ['api/daily-generate.js', 'api/[...slug].js']) {
+    assert.ok(!/published_at DESC LIMIT 2000/.test(rawSrc(f)), `${f} 仍把宽池写死 2000 —— 应取 require('../lib/prescreen').CANDIDATE_POOL_READ`);
+    assert.ok(/CANDIDATE_POOL_READ/.test(rawSrc(f)), `${f} 的候选层宽池读没引用单一取值 —— 截断常数一旦改名这里会静默回 500/2000`);
+  }
+});

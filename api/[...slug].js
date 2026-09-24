@@ -700,7 +700,7 @@ async function generateDailyInline() {
     args.push(...selectedIds);
   }
   sql += ` AND ${notNoiseSql('s')}`;
-  sql += ' ORDER BY a.published_at DESC LIMIT 2000';
+  sql += ` ORDER BY a.published_at DESC LIMIT ${require('../lib/prescreen').CANDIDATE_POOL_READ}`; // 宽池读单一取值见 lib/prescreen.js
 
   const candidates = await qAll(sql, args);
   // 简单安检

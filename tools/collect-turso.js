@@ -38,8 +38,9 @@ const { notNoiseSql, notHotlistSql } = require('../lib/noise');
 // ─── 配置 ───
 const MODE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'collect';
 const LIMIT = Number(process.env.COLLECT_LIMIT) || 500;
-// 早报候选：宽池读 2000 轻量行，级3 每源配额后再截 500 送模型（44 号 spec 步1；额度不变，换源覆盖）
-const CANDIDATE_POOL_READ = 2000;
+// 早报候选：宽池读 6000 轻量行（≈1.5× 当前 30h 全量池），级3 每源配额后再截 500 送模型（44 号 spec 步1 + H25）。
+// 抬池换的是**源覆盖**：送模型量由 DAILY_POOL_LIMIT 决定，不受这个数影响。
+const CANDIDATE_POOL_READ = 6000; // 必须等于 lib/prescreen.CANDIDATE_POOL_READ（锁 P9 盯相等；取值依据写在那个字段的注释里）
 const DAILY_POOL_LIMIT = 500;
 const CONCURRENCY = Number(process.env.COLLECT_CONCURRENCY) || 6;
 const FETCH_TIMEOUT = 10000;   // 单源抓取超时（无 serverless 限制，给足 10s）
