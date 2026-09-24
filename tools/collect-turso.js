@@ -1153,7 +1153,7 @@ async function runDailyAi() {
   const AI_LIMIT = Number(process.env.DAILY_AI_LIMIT) || Infinity; // 调试用：限制候选数
   const clean = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log);
   const valid = prescreen.applySourceQuota(clean, {
     cap: perSourceCap,
     limit: Number.isFinite(AI_LIMIT) ? AI_LIMIT : DAILY_POOL_LIMIT,
@@ -1184,12 +1184,16 @@ async function runDailyAi() {
 
   // 降级判定：首批深析连败 3 次 → AI 链路全挂
   const analyzed = [];
-  let consecFail = 0;
+  let consecFail = 0, analyzeNoBody = 0;
   for (const a of passed) {
     if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
     // 正文按 id 单取（级3 之后宽池不再携带 content_html；只有过了初筛的幸存者也才值得付这个字节数）
     const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
-    const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
+    const body = full[0] ? full[0].content_html : null;
+    // 取空不许静默：analyzeArticle 会照打不误（正文那段是空的），分数看着正常、其实是凭空给的
+    // ——正是 P0-2 那一族「数据上不可判别」。计数落 stats.analyzeNoBody。
+    if (!body) { analyzeNoBody++; log(`深析缺正文 #${a.id}（本期该条按空正文打分）`); }
+    const r = await _ai.analyzeArticle({ ...a, content_html: body });
     if (!r) {
       consecFail++;
       if (consecFail >= 3 && analyzed.length === 0) {
@@ -1391,6 +1395,7 @@ async function runDailyAi() {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
+    analyzeNoBody,
     prescreen: prescreenRead,
     sections: sections.length, totalItems: allItems.length,
     // 单位坑（B137，2026-09-24 实测）：原式 `Math.round(ms/600e2)/10` 里 600e2=60000 已是"分钟"，
@@ -1697,8 +1702,10 @@ async function runDaily() {
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
-  // 列写死而不是 `a.*`：本函数只消费 id/title/url/summary/score/cover + 两列 join，
-  // 而宽池抬到 2000 行之后，多拉的 content_html 就是 4 倍的无谓字节（:865 那条 weekly 教训同形）。
+  // 列写死而不是 `a.*`：栏目匹配与投影用不到 content_html，而宽池抬到 2000 行之后
+  // 多拉的它就是 4 倍无谓字节（:865 那条 weekly 教训同形）。
+  // 注：`translated_title` 一并取出，但 `formatItem` 目前不投影它（裸报告从不显示译文标题，
+  // 09-24 对抗审查指出后如实标注，不假称"只取用到的列"）。
   let sql = `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, a.score, a.cover, a.translated_title,
                     s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
@@ -1712,13 +1719,16 @@ async function runDaily() {
   sql += ' AND ' + notNoiseSql('s');
   sql += ` ORDER BY a.published_at DESC LIMIT ${CANDIDATE_POOL_READ}`;
 
-  // 级3 每源预配额（44 号 spec 步1）：裸报告虽不花 AI 额度，但**候选语义必须与另四份同一份实现**
+  // 级3 每源预配额（44 号 spec 步1）：裸报告虽不花 AI 额度，但**候选语义必须与另三份同一份实现**
   // ——B20 的教训就是"门槛只接在 3/5 份"，表现成"大部分天正常、个别天混进低质条目"。
+  // 顺序必须是「先安检再配额」，与另三份一致：否则乱码/错误页条目会白占每源名额（09-24 对抗审查抓出）。
   const psRaw = await qAll(sql, args);
   const ps = require('../lib/prescreen');
-  const psCap = ps.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
-  const candidates = ps.applySourceQuota(psRaw, { cap: psCap, limit: DAILY_POOL_LIMIT });
-  let valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  const psCap = ps.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log);
+  const clean = psRaw.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  const candidates = ps.applySourceQuota(clean, { cap: psCap, limit: DAILY_POOL_LIMIT });
+  const psRead = ps.prescreenStats(clean, candidates, psCap);
+  let valid = candidates;
   // B20（2026-09-19 第二次对抗审查补漏）：门槛此前只接在 runDailyAi（AI 深析版）那一份，
   // 本函数产出的"裸报告"（degraded/关键词兜底）没有 → 一旦读层选中裸报告，低质条目照样入报。
   // 未评分条目一律不误杀（passesDailyQualityGate 对 score 非数放行），口径共用 lib/brief-guards。
@@ -1762,6 +1772,8 @@ async function runDaily() {
     // B112：关键词版也必须显式带档位 —— 原来只有降级分支用 json_set 补，正常跑出来的行是 `(无)`
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.KEYWORD,
     candidates: valid.length, articles: valid.length, sections: sections.length,
+    // 不变量 20（CLOUD_PIPELINE_GUIDE）：五份写入器都要落 prescreen —— 降级路径正是最该看得见它的时候
+    prescreen: psRead,
     totalItems: sections.reduce((n, s) => n + s.items.length, 0),
   };
   const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);

@@ -203,15 +203,24 @@ test('E2 因果被真执行证明：同样 12 个坑，cap=2 把源覆盖换回�
     `配额后源覆盖没换回来：${noCap.stats.prescreen.keptSources} → ${withCap.stats.prescreen.keptSources}`);
 });
 
-test('E3 正文按 id 单取真的生效（Pass2 拿到正文，Pass1 没烧正文）', async () => {
+test('E3 正文按 id 单取真的生效（Pass2 每条都拿到正文，Pass1 一条都没烧正文）', async () => {
+  // 自己独占一次测量跑：先清桩日志。原实现吃的是 E1+E2 的残留（`/__reset` 定义了却没人调），
+  // 且用 `some()` —— 12 条里 11 条取空也照样绿（09-24 对抗审查抓出）。改成 every + 独立窗口。
+  await fetch(`http://127.0.0.1:${port}/__reset`);
+  await exec("INSERT OR REPLACE INTO settings(key,value) VALUES('prescreen.perSourceCap',?)", ['2']);
+  assert.match(runDailyAi(), /EXITING OK/);
   const all = readPrompts();
   const filterCalls = all.filter((p) => p.includes('待评内容'));
   const analyzeCalls = all.filter((p) => p.includes('待评文章'));
   assert.ok(filterCalls.length >= LIMIT, `初筛调用数 ${filterCalls.length} < ${LIMIT} —— 配额后的候选没真进模型`);
   assert.ok(analyzeCalls.length > 0, '一次深析都没发生 —— 过了初筛的条目没进 Pass2');
-  assert.ok(analyzeCalls.some((p) => p.includes('BODY-MARKER-')),
-    '深析请求里没有 BODY-MARKER → runDailyAi 的"按 id 单取 content_html"取空了：'
-    + '深析会静默拿空正文打分（不报错），正是 P0-2 那一族"数据上不可判别"');
+  const missing = analyzeCalls.filter((p) => !p.includes('BODY-MARKER-'));
+  assert.deepEqual(missing, [], `${missing.length}/${analyzeCalls.length} 条深析请求里没有正文 —— `
+    + 'runDailyAi 的"按 id 单取 content_html"取空时不报错，深析会拿空正文照常打分（P0-2 那一族不可判别）');
   assert.ok(!filterCalls.some((p) => p.includes('BODY-MARKER-')),
     '初筛请求里出现了全文 —— Pass1 只该吃标题+摘要，烧正文等于白付 token');
+  // 缺正文必须有数：stats.analyzeNoBody 是本用例的对照组，静默取空要能在库里看见
+  const rep = await latestReport();
+  assert.equal(typeof rep.stats.analyzeNoBody, 'number', 'stats.analyzeNoBody 没落库 —— 取空又变成看不见的形状');
+  assert.equal(rep.stats.analyzeNoBody, 0, `有 ${rep.stats.analyzeNoBody} 条深析是拿空正文打的分`);
 });

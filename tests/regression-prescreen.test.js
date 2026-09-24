@@ -20,6 +20,9 @@ const ROOT = path.join(__dirname, '..');
 // 直接加载失败 —— 那时 `lib/prescreen.js` 还不存在，锁就读不出"是世界变了还是锁坏了"。
 const ps = () => require('../lib/prescreen');
 const derivedWriters = () => require('../lib/daily-writers').findDailyReportWriters(ROOT);
+// 计数只看剥掉注释与字符串后的代码视图（`lib/daily-writers.js` 头注 §① 明令：注释里出现函数名不算接线）
+const stripComments = (s) => require('../lib/src-spans').stripComments(s);
+const callCount = (file) => (stripComments(fs.readFileSync(path.join(ROOT, file), 'utf8')).match(/applySourceQuota\(/g) || []).length;
 
 const row = (id, sourceId) => ({ id, source_id: sourceId, title: `t${id}` });
 const srcCount = (rows) => new Set(rows.map((r) => r.source_id)).size;
@@ -93,15 +96,20 @@ function deployedWriterFiles() {
   return [...new Set(deployedWriters().map((w) => w.file))].sort();
 }
 
-test('P6 部署面写入器逐个接线（派生清单，剔掉整表复制类与未部署的本地端）', () => {
+test('P6 部署面写入器逐个接线（按**函数**计数，不是按文件出现过就算）', () => {
   const all = derivedWriters();
   assert.ok(all.filter((w) => !w.dynamic).length >= 5, `派生到的生成类写入器只有 ${all.filter((w) => !w.dynamic).length} 个（W14 要求 >=5）—— 判据抓不到东西了`);
-  const files = deployedWriterFiles();
-  // 4 个生成函数住在 3 个文件里：runDailyAi 与 runDaily 同在 tools/collect-turso.js
-  assert.ok(deployedWriters().length >= 4 && files.length >= 3,
-    `部署面只剩 ${deployedWriters().length} 个函数 / ${files.length} 个文件（${files.join(' ')}）—— 面的定义或写入器分布变了，本锁要重读`);
-  const notWired = files.filter((f) => !fs.readFileSync(path.join(ROOT, f), 'utf8').includes('applySourceQuota'));
-  assert.deepEqual(notWired, [], `这些部署面日报生成器没接级3：${notWired.join(', ')} —— B20 的形状就是"只接了 3/5 份"`);
+  // 对抗审查抓出的空洞：原来只判"文件里出现过 applySourceQuota"，而 4 个写入函数住在 3 个文件里
+  // —— 删掉 runDaily 那份接线，同文件的另一份仍让判据绿灯。改成**每个函数要各占一次调用**。
+  const perFile = {};
+  for (const w of deployedWriters()) perFile[w.file] = (perFile[w.file] || 0) + 1;
+  const thin = Object.entries(perFile)
+    .map(([f, n]) => ({ f, n, got: callCount(f) }))
+    .filter((x) => x.got < x.n)
+    .map((x) => `${x.f} 里 applySourceQuota 调用 ${x.got} 次 < 该文件内写入器 ${x.n} 个`);
+  assert.deepEqual(thin, [], `接线数不够：${thin.join(' ; ')}`);
+  const files = Object.keys(perFile).sort();
+  assert.ok(files.length >= 3, `部署面只剩 ${files.length} 个文件（${files.join(' ')}）—— 面的定义变了，本锁要重读`);
 });
 
 test('P6b 本地端豁免的前提必须还成立：server/ 仍在 .vercelignore 外', () => {
@@ -113,21 +121,32 @@ test('P6b 本地端豁免的前提必须还成立：server/ 仍在 .vercelignore
   assert.ok(gate.includes('applyDailyQualityGate'), '本地端虽然不接级3，但入报门槛（安全阀）必须继续在 —— 缺了就是 W14 该红');
 });
 
-test('P7 elapsedMin 单位（B137）：所有出现处都要 ÷6000 取一位小数', () => {
+test('P7 elapsedMin 单位：所有出现处都要 ÷6000 取一位小数', () => {
   const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
   const found = [...src.matchAll(/elapsedMin:\s*Math\.round\(\(Date\.now\(\) - t0\) \/ (\d+(?:e\d+)?)/g)].map((m) => Number(m[1]));
   assert.ok(found.length >= 2, `只扫到 ${found.length} 处 elapsedMin —— 判据抓不到东西了（daily-ai 与 weekly 各一处）`);
   // 600e2 = 60000 = "整分钟"，再 ÷10 就把落库值算成真实耗时的 1/10：
-  // 两期观察读数 8.1/8.5 实为 81/85 分钟，据此误判过预算余量（B137）
+  // 两期观察读数 8.1/8.5 实为 81/85 分钟，据此误判过预算余量。
+  // 取证：`docs/eval/2026-09-24-prescreen-step1.md` 第二节（该 bug 已修，不占 ISSUES 活编号）
   const bad = found.filter((d) => d !== 6000);
   assert.deepEqual(bad, [], `这些 elapsedMin 的除数不是 6000：${bad.join(', ')}`);
 });
 
-test('P8 旧候选形态不许复活：生成类写入器里不得再有未经配额的 `published_at DESC LIMIT 500`', () => {
-  // 范围＝P6 那批派生写入器文件（`tools/export-portal.js` 也有一句 LIMIT 500，但它导的是门户静态快照、
-  // 不是日报候选池，**故意不在本面内**；哪天它变成写入器，P6 的派生清单会自己把它带进来）。
+test('P8 每个配额调用都必须显式带上限，且宽池必须真大于送模型量', () => {
+  // 对抗审查抓出：原判据 grep 字面量 `LIMIT 500`，而接线后写成 `LIMIT ${CANDIDATE_POOL_READ}`，
+  // 那句字面量根本不再出现 —— 判据当场变成哑的。换成判**调用形状**与**两个常量的关系**。
+  const code = (f) => stripComments(fs.readFileSync(path.join(ROOT, f), 'utf8'));
   const files = deployedWriterFiles();
-  const bad = files.filter((f) => /published_at DESC LIMIT 500/.test(fs.readFileSync(path.join(ROOT, f), 'utf8')));
-  assert.deepEqual(bad, [], `这些写入器还在直取 500 未经级3：${bad.join(', ')}`);
-  assert.ok(deployedWriters().length >= 4, `对账面只有 ${deployedWriters().length} 个生成函数（分母：${files.join(' ')}）—— 判据抓不到东西了`);
+  const bare = files.filter((f) => {
+    const src = code(f);
+    const calls = (src.match(/applySourceQuota\(/g) || []).length;
+    const withLimit = (src.match(/applySourceQuota\([\s\S]{0,260}?limit:/g) || []).length;
+    return calls !== withLimit;
+  });
+  assert.deepEqual(bare, [], `这些文件的 applySourceQuota 调用没显式带 limit（少 limit = 悄悄把整池全送）：${bare.join(', ')}`);
+  const runner = code('tools/collect-turso.js');
+  const read = Number(/CANDIDATE_POOL_READ = (\d+)/.exec(runner)?.[1]);
+  const send = Number(/DAILY_POOL_LIMIT = (\d+)/.exec(runner)?.[1]);
+  assert.ok(Number.isFinite(read) && Number.isFinite(send), '两个常量任一被改名/删掉 —— 判据要跟着改，别让它哑');
+  assert.ok(read > send, `宽池 ${read} 必须大于送模型量 ${send}，否则级3 无从"换覆盖"——配额与截断变成同一件事`);
 });

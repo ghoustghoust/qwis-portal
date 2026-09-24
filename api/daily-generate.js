@@ -117,7 +117,7 @@ async function generateDaily(windowHours) {
   // 过滤安检
   const clean = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(m));
   let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
   const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
 

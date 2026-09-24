@@ -709,7 +709,7 @@ async function generateDailyInline() {
     return t.length >= 6 && !/参数错误|环境异常|访问过于频繁/.test(t);
   });
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(`[日报内联] ${m}`));
   let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
   const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
   // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
