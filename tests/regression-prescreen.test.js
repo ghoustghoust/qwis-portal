@@ -223,16 +223,17 @@ test('P12 契约必须数得出四份云端写入器 stats 字面量里的每一
     ternary: ok ? yes : no,
     gateDropped,
     str: "c: 8 { d: 7 }",
+    "quotedKey": 5,
     arr: [ { e: 4 } ],
     ...(flag ? {} : { spreadKey: { why: 'x', n: 1 } }),
     totalItems: list.reduce((n, s) => n + s.items.length, 0),
   };`;
   assert.deepStrictEqual(
     topLevelKeys(objectLiteralAt(fixture, fixture.indexOf('{'))),
-    ['a', 'nested', 'ternary', 'gateDropped', 'str', 'arr', 'spreadKey', 'totalItems'],
+    ['a', 'nested', 'ternary', 'gateDropped', 'str', 'quotedKey', 'arr', 'spreadKey', 'totalItems'],
     '提取器自检失败：上面这组键是唯一正确答案。'
-    + '特别注意 `...(flag ? {} : { spreadKey: … })` —— 条件展开里的键同样是本层写出去的字段，'
-    + '漏了它就会有"代码在写、契约没记、锁还恒绿"的第三种形态（09-24 实测：themeSkip 就是这么混过 P12 的）'
+    + '① `...(flag ? {} : { spreadKey: … })` 条件展开里的键同样是本层写出去的字段（09-24 实测：themeSkip 就是这么混过 P12 的）；'
+    + '② `"quotedKey"` 带引号的键也必须进结果 —— 当值跳过的话"代码在写、契约没记"又会静默漏（09-24 审查喂出的第二个坏样本）。'
   );
 
   const contract = JSON.parse(src('docs/contracts/daily-report.json'));
@@ -243,11 +244,19 @@ test('P12 契约必须数得出四份云端写入器 stats 字面量里的每一
     ['api/daily-generate', 'api/daily-generate.js', () => true],
     ['api 读层内联兜底', 'api/[...slug].js', (l) => l.includes('DAILY_SCHEMA_VERSION.KEYWORD')],
   ];
+  // 写入器**全体**由 W14 的派生面给（不信手抄四元组）：出现第 5 个"自己造 stats 形状的部署面写入器"就必须在这里登记，
+  // 否则本锁红。09-24 审查指出：只扫 `lits[0]` + 手写名单 ⇒ "派生"只覆盖名单内，新写入器可以安静地不被核。
+  // 还原/搬迁类不新造形状（把已存在的行原样插回），所以豁免；这条名单是"为什么不核它"的账，不是省事。
+  // migrate-to-turso 是**这条派生判据第一次跑就抓出来的**（09-24）：手写四元组名单时根本没人想到它。
+  const RESTORE_ALLOW = new Set(['handleBackupRestore', 'restoreSql', 'batchInsert']);
+  for (const w of derivedWriters().filter((x) => /^(api|tools)\//.test(x.file) && !RESTORE_ALLOW.has(x.fn))) {
+    assert.ok(WRITERS.some(([, f]) => f === w.file), `派生面发现部署面日报写入器 ${w.file}#${w.fn}，P12 却没核它的键集合 —— 契约对它不设防`);
+  }
   const seen = new Set();
   for (const [name, file, pick] of WRITERS) {
     const lits = statsLiterals(src(file)).filter(pick);
     assert.ok(lits.length >= 1, `${name}：在 ${file} 里找不到 stats 字面量 —— 写入器改了形态，本锁与契约都要跟着重核，不许静默变绿`);
-    const keys = topLevelKeys(lits[0]);
+    const keys = [...new Set(lits.flatMap((l) => topLevelKeys(l)))];
     assert.ok(keys.length >= 4, `${name}：只提出 ${keys.length} 个键（${keys.join('/')}）—— 提取器或写法变了，判据已失效`);
     for (const k of keys) {
       seen.add(k);

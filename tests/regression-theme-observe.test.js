@@ -1,54 +1,103 @@
-// 导语归因锁 T1~T4（H30）
+// 导语归因锁 T1~T5（H30）
 // 为什么有这几条（用户 09-24）：「我们要让功能正式的可以使用，能进行之前所说的各项功能，
-//   而不是之前验证的一半停摆一半未开发」。实测：库里 16 期 AI 档有 **15 期 theme 为空**（94%），
-//   而 `api/_ai.js#generateTheme` 的三条 `return null` 出口**既不落日志也不入库**——
-//   "模型没答"与"答了但被污染判据否决"在事后完全无法区分，所以这条 ✅ 一直挂着却没人知道它没在工作。
-//   本锁钉的是**归因必须可区分**（why 三态）+ **旧字符串契约不许被我改坏**（另两个调用方还在用）。
-// 取证：`tools/_probe-ai-feature-presence.cjs`（只读）；读数写在 docs/ISSUES.md H30。
+//   而不是之前验证的一半停摆一半未开发」。实测（`tools/_probe-ai-feature-presence.cjs`，只读）：
+//   库里 AI 档 16 行里 **15 行 theme 为空（94%）**、`themes` 主题全景 **14/16 行 0 簇**，
+//   而 `api/_ai.js` 的三条 `return null` 出口**既不落日志也不入库** ⇒ "模型没答"与"答了但被自己的污染判据否决"
+//   事后完全分不清，所以这项挂着 ✅ 的功能能安静地缺好几天。
+// 两条形状约定（09-24 审查指出后写清）：
+//   ① `require('../api/_ai.js')` **放在用例内**，不放文件顶层 —— 顶层加载一旦断，整文件变成"文件名级红"，
+//      归因不到具体用例（`docs/pitfalls/testing.md` #67/#120 那一族）；
+//   ② 光钉"我这处调用点写对了"不够（T3/T4 的文本正则会漏掉别的调用点），所以补 T5：**全仓扫**
+//      `generateThemeDetailed(` 的每一处都必须要么投影 `.theme`、要么把归因写进 stats。
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
-const ai = require('../api/_ai.js');
+const fs = require('node:fs');
+const path = require('node:path');
+const ROOT = path.join(__dirname, '..');
 
-test('T1 pickThemeReply 三条空出口各自可区分（why 不许混成一个 null）', () => {
-  const ok = ai.pickThemeReply('从模型发布，到芯片管制，再到开源反扑，本周的主线是算力政治化。');
+const ai = () => require('../api/_ai.js');
+
+test('T1 三条空出口各自可区分（why 不许混成一个 null）', () => {
+  const ok = ai().pickThemeReply('从模型发布，到芯片管制，再到开源反扑，本周的主线是算力政治化。');
   assert.equal(typeof ok.theme, 'string', '正常导语必须仍返回字符串（旧契约）');
   assert.ok(!ok.why, '有导语时不该带 why');
 
-  const rejected = ai.pickThemeReply('用户希望我作为科技媒体主编，从入选列表中提炼出一句话导语\n让我来概括今日主题');
+  const rejected = ai().pickThemeReply('用户希望我作为科技媒体主编，从入选列表中提炼出一句话导语\n让我来概括今日主题');
   assert.equal(rejected.theme, null);
   assert.equal(rejected.why, 'all_lines_rejected', '每行都是元文本 ⇒ 必须是 all_lines_rejected，不许与"模型没答"混同');
   assert.equal(rejected.lines, 2);
 
-  // 这句要"活过"行级 isAnalysis（不以 我/让我/我来 开头、不长、不以冒号结尾），
-  // 再被 picked 级的一票否决打掉（含"叙事"）——只有这种两层不同判的形状才能证明 why 是分得开的
-  const vetoed = ai.pickThemeReply('本周报道的核心叙事集中在芯片出口管制与模型开源两条线，读者可以从多个角度理解它。');
+  // 这句要"活过"行级 isAnalysis（不以 我/让我/我来 开头、不长、不以冒号结尾），再被 picked 级一票否决打掉（含"叙事"）
+  const vetoed = ai().pickThemeReply('本周报道的核心叙事集中在芯片出口管制与模型开源两条线，读者可以从多个角度理解它。');
   assert.equal(vetoed.theme, null);
   assert.equal(vetoed.why, 'picked_vetoed', '挑出来又被一票否决 ⇒ 必须是 picked_vetoed（这条最能暴露判据过严）');
   assert.ok(typeof vetoed.detail === 'string' && vetoed.detail.length > 0, '被否决那句要留下前 60 字，否则无法回看是不是误杀');
 });
 
-test('T2 空输入与纯空白不许抛错，且给得出 why（探针与线上都会喂到这种形状）', () => {
+test('T2 空输入与纯空白不许抛错，且给得出 why（线上与探针都会喂到这种形状）', () => {
   for (const bad of ['', null, undefined, '\n\n  \n']) {
-    const r = ai.pickThemeReply(bad);
+    const r = ai().pickThemeReply(bad);
     assert.equal(r.theme, null);
     assert.ok(r.why, `空输入 "${String(bad)}" 必须带 why，不许静默 null`);
   }
 });
 
-test('T3 旧的字符串契约没被改坏：generateTheme(items) 与 detailed 版同判', async () => {
-  // 不联网：只验证两个入口的关系（detailed 是形状来源，generateTheme 是它的 .theme 投影）
-  const src = require('node:fs').readFileSync(require.resolve('../api/_ai.js'), 'utf8');
+test('T3 旧的字符串契约没被改坏：generateTheme 仍是 detailed 版的 .theme 投影', async () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'api', '_ai.js'), 'utf8');
   assert.match(src, /async function generateTheme\(items\) \{\s*return \(await generateThemeDetailed\(items\)\)\.theme;/,
     'generateTheme 必须是 generateThemeDetailed 的 .theme 投影 —— 周刊/我的早报两个调用方只吃字符串，形状一改它们就全空');
-  assert.equal(typeof ai.generateTheme, 'function');
-  assert.equal(typeof ai.generateThemeDetailed, 'function');
-  assert.equal(typeof ai.pickThemeReply, 'function');
+  for (const fn of ['generateTheme', 'generateThemeDetailed', 'pickThemeReply']) {
+    assert.equal(typeof ai()[fn], 'function', `导出缺 ${fn}`);
+  }
 });
 
 test('T4 runner 在 theme 为空时必须把 themeSkip 写进 stats（不许只 log 一句就过）', () => {
-  const src = require('node:fs').readFileSync(require.resolve('../tools/collect-turso.js'), 'utf8');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'tools', 'collect-turso.js'), 'utf8');
   assert.match(src, /generateThemeDetailed\(allItems\)/, 'runner 又用回只吃字符串的 generateTheme ⇒ 归因会重新消失');
   assert.match(src, /themeSkip: \{ why:/, 'stats 里少了 themeSkip ⇒ H30 又变回看不见');
   assert.match(src, /why: 'throw'/, '抛错分支也必须被归因（原来这条只在日志里，事后查不到）');
+});
+
+test('T6 读层每一处 report 返回必须同形：不许漏 theme/schemaVersion/degraded（全文件扫，不只 handleDaily）', () => {
+  // 为什么（09-24 两轮对抗审查）：新鲜分支给了 `theme/schemaVersion/degraded`，过期分支只给 sections/stats ——
+  // 前端 `item.theme` 无兜底，于是"库里有导语但读者看不到"，档位标记一起丢（B112 同族的另一个入口）。
+  // 第一版本锁只扫 `handleDaily`，随后实测在同一文件里又扫到**第 4 处**同形缺陷（`handleDailyRegenerate`，
+  // 管理后台点"重新生成"后回给前端的那份）⇒ 判据覆盖面本身是缺陷，改成扫整个部署面文件。
+  const src = fs.readFileSync(path.join(ROOT, 'api', '[...slug].js'), 'utf8');
+  const sites = [...src.matchAll(/report: \{/g)];
+  assert.ok(sites.length >= 4, `部署面只扫到 ${sites.length} 处 report 返回，判据已空转（写法变了或文件变了就要同步这里）`);
+  for (const m of sites) {
+    const seg = src.slice(m.index, m.index + 700);
+    for (const k of ['theme:', 'schemaVersion:', 'degraded:']) {
+      assert.ok(seg.includes(k), `读层有一处 report 返回漏了 ${k} —— 走这条分支的读者看不到导语/档位（B112 同族）`);
+    }
+  }
+});
+
+test('T5 全仓扫：每一处 generateThemeDetailed 调用都必须投影 .theme 或落归因（防"别处用错形状还全绿"）', () => {
+  const SKIP = new Set(['node_modules', '.git', 'dist', 'data', 'archive']);
+  const hits = [];
+  (function sweep(dir) {
+    for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+      if (SKIP.has(e.name)) continue;
+      const rel = dir ? `${dir}/${e.name}` : e.name;
+      if (e.isDirectory()) { sweep(rel); continue; }
+      if (!/\.(js|cjs|mjs)$/.test(e.name)) continue;
+      const src = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+      for (const m of src.matchAll(/generateThemeDetailed\s*\(/g)) {
+        hits.push({ rel, around: src.slice(Math.max(0, m.index - 90), m.index + 220) });
+      }
+    }
+  })('');
+  // 定义处（api/_ai.js 里的 `async function generateThemeDetailed`）不算调用点
+  const calls = hits.filter((h) => !/function generateThemeDetailed/.test(h.around.replace(/\s+/g, ' ')));
+  assert.ok(calls.length >= 1, '一处调用都扫不到 = 判据已经空转（改名/搬走都可能造成这种假绿）');
+  for (const c of calls) {
+    const projected = /\)\s*\.theme\b/.test(c.around) || /\.theme\b/.test(c.around);
+    const attributed = /themeSkip/.test(c.around) || /\bth\.theme\b/.test(c.around);
+    assert.ok(projected || attributed,
+      `${c.rel} 里有一处 generateThemeDetailed(...) 既没投影 .theme 也没落归因 —— `
+      + `它会把对象当字符串用（前端渲染成 [object Object]），而 T3/T4 看不见别处`);
+  }
 });

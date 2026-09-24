@@ -35,7 +35,21 @@ function topLevelKeys(objText) {
   let depth = 0, prev = '';
   for (let i = 0; i < objText.length; i++) {
     const ch = objText[i];
-    if (ch === "'" || ch === '"' || ch === '`') { i = skipString(objText, i); prev = 'v'; continue; }
+    if (ch === "'" || ch === '"' || ch === '`') {
+      // 带引号的键（`"themeSkip": …`）同样是本层写出去的字段 —— 直接当字符串跳过会**静漏键**，
+      // 而这条锁存在的理由就是"不许静默"（09-24 审查喂出的坏样本）。只在"该出现键的位置"上认它。
+      if (depth === 1 && (prev === '{' || prev === ',')) {
+        const close = skipString(objText, i);
+        const name = objText.slice(i + 1, close);
+        if (/^\s*:/.test(objText.slice(close + 1)) && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name)) {
+          keys.push(name);
+          i = close;
+          prev = ':';
+          continue;
+        }
+      }
+      i = skipString(objText, i); prev = 'v'; continue;
+    }
     if (ch === '/' && objText[i + 1] === '/') { const nl = objText.indexOf('\n', i); i = nl < 0 ? objText.length : nl - 1; continue; }
     if (ch === '/' && objText[i + 1] === '*') { const e = objText.indexOf('*/', i); if (e < 0) break; i = e + 1; continue; }
     if (/\s/.test(ch)) continue;

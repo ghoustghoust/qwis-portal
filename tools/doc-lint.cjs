@@ -76,6 +76,24 @@ const lintTargets = [path.join(ROOT, 'AGENTS.md'), path.join(ROOT, 'ARCHITECTURE
   .concat(docsFiles)
   .filter((f) => !ARCHIVE_PREFIXES.some((p) => rel(f).startsWith(p)))
   .filter((f) => !MACHINE_EVIDENCE.some((p) => rel(f).startsWith(p)));
+// 悬空判据必须按 **git 会带走的那棵树** 判，不能按工作树判 —— 否则"本地存在但 CI 不存在"的文件
+// （典型：`tools/_*.cjs` 这类被 gitignore 的一次性探针）会让我在本地全绿、推到 CI 当场红。
+// 本仓已为此连红两次（`_probe-behavior-corpus.cjs`、`_probe-ai-feature-presence.cjs`），故把教训下沉到判据本身。
+// 口径 = `git ls-files --cached --others --exclude-standard`：跟踪的 + 未跟踪但未被 ignore 的
+// （后者允许，因为"文档与它点名的新文件同批提交"是正常流程）；被 ignore 的一律算不存在。
+let GIT_VISIBLE = null;
+try {
+  // execFileSync + argv 数组：命令与参数都不过 shell（固定字符串也不行，免得以后有人往里拼东西）
+  const out = require('child_process').execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'],
+    { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, windowsHide: true }).toString();
+  GIT_VISIBLE = new Set(out.split('\0').filter(Boolean).map((p) => p.replace(/\\/g, '/')));
+} catch { GIT_VISIBLE = null; } // 非 git 环境（或 git 不可用）退回工作树判据，不假装通过
+const refExists = (abs) => {
+  if (!fs.existsSync(abs)) return false;
+  if (!GIT_VISIBLE) return true;
+  const r = path.relative(ROOT, abs).replace(/\\/g, '/');
+  return GIT_VISIBLE.has(r);
+};
 for (const f of lintTargets) {
   if (!fs.existsSync(f)) continue;
   for (const r of extractRefs(read(f))) {
@@ -83,8 +101,8 @@ for (const f of lintTargets) {
     if (/[<…]/.test(clean) || /xxx|XXX/.test(clean)) continue;
     if (LOCAL_BY_DESIGN.has(clean)) continue; // 本地设计内文件（凭据/令牌），CI 上不存在属正常
     const cands = [path.join(ROOT, clean), path.join(path.dirname(f), clean)];
-    if (cands.some((c) => fs.existsSync(c))) continue;
-    const msg = `[悬空] ${rel(f)} 引用了不存在的 ${clean}`;
+    if (cands.some((c) => refExists(c))) continue;
+    const msg = `[悬空] ${rel(f)} 引用了不存在的 ${clean}${fs.existsSync(cands[0]) ? '（工作树里有，但 git 不会带走 = CI 上必悬空）' : ''}`;
     // 历史 spec/变更记录里的引用是「当时的事实」，只提示；活文档必须零悬空
     if (strictOk(f)) errors.push(msg); else warnings.push(msg);
   }
