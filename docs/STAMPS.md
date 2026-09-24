@@ -6,7 +6,7 @@
 > 已知局限：① 本表按路径查历史，**文件改名/搬家前的历史不跟随**（`--follow` 只能逐文件跑），搬过的文档其提交史从搬家那次起算。② 本表读已提交历史，**正在提交的这一次必然不进表**（显式滞后一轮，配合 `⚠` 可见），下一轮重跑即补上。
 > 未跟踪件不入表：如本地文件 `docs/HANDOVER.md` 按设计永不提交，本就没有提交史可记。
 
-**统计**：底层文档 一致 8 · 待判 10 · 头部超前 0 · 缺头注 0　|　不要求头注 194 份　|　工作区未提交 1 份　|　总计 212 份
+**统计**：底层文档 一致 8 · 待判 10 · 头部超前 0 · 缺头注 0　|　不要求头注 194 份　|　工作区未提交 2 份　|　总计 212 份
 
 ### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（18 份）
 
@@ -106,7 +106,7 @@
 | docs/archive/README.md | — | 不要求头注 | `d452d52` 2026-09-21 22:47 docs(ISSUES 结构重排,用户口径): 已核销/已归档一律撤出正文——ISSUES 162→97 行,正文只剩『进度速览 + 未修/观察/等你操作/待裁决/挂案/阻塞』六段,每条只答现在坏着什么与下一步;撤出与改写行原文逐字进 round2 归档件 §九(无损校验过); test(G8 判据口径): B71~B83 登记面从单文件扩为 活文档+归档层调试件,查无某号仍红(追溯不断)<br>`e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
 | docs/BESTBLOGS_BORROW.md | 2026-09-18 | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1750845` 2026-09-11 21:54 docs: BestBlogs 调研借鉴清单(10项范式映射进总spec) |
 | docs/changes/2026-09-11-runner-direct-collect.md | — | 不要求头注 | `146352b` 2026-09-11 15:46 docs: AI 上云状态更正——Agnes key 云端 401(IP 绑定),待 DEEPSEEK_API_KEY 启用;不借 starhub,独立配置<br>`57dec47` 2026-09-11 13:17 feat(ai): 翻译上云 —— collect-turso.js 新增 translate 模式,每轮采集后自动翻译英文文章 |
-| docs/changes/2026-09-23-rss-pipeline-discussion-handoff.md | — | 不要求头注 | `6833df4` 2026-09-24 17:20 docs(H25 核销 + 读层生成器活体实测): 抬池后 id=69 覆盖 202→313,POST /api/daily-generate 200/33s/零模型调用<br>`66dade3` 2026-09-24 16:32 docs(收口链对账+实测边界写明): 读层两份生成器未活体打到,POST /api/daily-generate 待授权;H25 待拍板 |
+| docs/changes/2026-09-23-rss-pipeline-discussion-handoff.md | — | 不要求头注 ⚠ | `6833df4` 2026-09-24 17:20 docs(H25 核销 + 读层生成器活体实测): 抬池后 id=69 覆盖 202→313,POST /api/daily-generate 200/33s/零模型调用<br>`66dade3` 2026-09-24 16:32 docs(收口链对账+实测边界写明): 读层两份生成器未活体打到,POST /api/daily-generate 待授权;H25 待拍板 |
 | docs/changes/archive/2026-09-11-settings-write.md | — | 不要求头注 | `60901a4` 2026-09-13 18:01 docs: 文档大整理——归档制/大清洗/T3 需求定稿（2026-09-13 晚） |
 | docs/changes/archive/2026-09-12-cloud-alerts.md | — | 不要求头注 | `60901a4` 2026-09-13 18:01 docs: 文档大整理——归档制/大清洗/T3 需求定稿（2026-09-13 晚） |
 | docs/changes/archive/2026-09-12-my-brief.md | — | 不要求头注 | `60901a4` 2026-09-13 18:01 docs: 文档大整理——归档制/大清洗/T3 需求定稿（2026-09-13 晚） |
@@ -131,7 +131,7 @@
 | docs/deprecated/TOOLS.md | — | 不要求头注 | `ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/deprecated/USER.md | — | 不要求头注 | `b0c3b50` 2026-09-09 20:22 feat: 文档清洗+日报修复+AI设置集成+全面复检 (2026-09-09) |
 | docs/deprecated/VERCEL_MIGRATION.md | — | 不要求头注 | `b0c3b50` 2026-09-09 20:22 feat: 文档清洗+日报修复+AI设置集成+全面复检 (2026-09-09) |
-| docs/eval/2026-09-24-prescreen-step1.md | 2026-09-24 | 不要求头注 ⚠ | `76b72f3` 2026-09-24 17:36 test(读层内联生成器执行锁 I1~I3): mock req/res 跑整个 catch-all handler,file: 临时库,零生产写<br>`6833df4` 2026-09-24 17:20 docs(H25 核销 + 读层生成器活体实测): 抬池后 id=69 覆盖 202→313,POST /api/daily-generate 200/33s/零模型调用 |
+| docs/eval/2026-09-24-prescreen-step1.md | 2026-09-24 | 不要求头注 ⚠ | `f79d152` 2026-09-24 17:44 docs(POST 副作用边界): 关键词版 id=69 未顶掉读者所见的 AI 版 id=68,代价只是历史多一行<br>`76b72f3` 2026-09-24 17:36 test(读层内联生成器执行锁 I1~I3): mock req/res 跑整个 catch-all handler,file: 临时库,零生产写 |
 | docs/eval/bl10-null-audit-20260921.md | — | 不要求头注 | `16a957d` 2026-09-21 01:56 docs(B101 拦一下)+docs(BL10 复核): 待删量按现役库重算是 50,636 条（84.6%），不是旧库那 10,733<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌 |
 | docs/eval/citation-audit-20260919.md | — | 不要求头注 | `a08b77c` 2026-09-20 07:50 docs(锚点审计): 第 4 轮只读复核——254 条 file:line 引用扫出 5 条烂锚，登记 B115 |
 | docs/features/collectors.md | 2026-09-05 | 不要求头注 | `ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计)<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |

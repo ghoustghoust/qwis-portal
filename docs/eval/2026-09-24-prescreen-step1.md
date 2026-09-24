@@ -135,10 +135,11 @@
 | `GET /api/daily` | HTTP 200 / 36,976 B，`report.id=68`、`generated_at=2026-09-24T07:53:19Z`、`sections=5`、`items=46`、`stale=false`；栏目名 `培训课程发布/重点更新/AI技术/其它重要/视频与播客`（字段是 `column`，不是 `name`） | 级3 那一期**就是用户早上打开的那一版**；出报形状没被步1 打坏 |
 | 同响应里的 `stats` | `candidates=337 elapsedMin=87.4 gateDropped=34 prescreen={cap:2,pool:2000,poolSources:202,kept:337,keptSources:202} filterStats={candidates:337,passed:229,analyzed:137,failed:70,truncated:true}` | 与 §八 直读库的**逐字段一致** → 读层没有另算一套，也没有把新字段吞掉 |
 
-**顺带一条未定性的读数（不是本轮改的，只登记不下结论）**：`GET /api/articles?limit=2` 与 `?limit=5` 都返回 **30 条**。
-`api/[...slug].js` 里确有 `limit = Math.min(Number(req.query.limit) || …, …)` 的写法，所以"参数被吃"可能是**缓存键没带 query**，
-也可能是我打到的不是 `handleArticles`。**没查清之前不许写成 bug** —— 待查项：`grep -n 'handleArticles' -A20 api/[...slug].js` 对上路由，
-再按 `?limit=2` / `?limit=2&page=1` 两次取回比条数。
+**已核销的一条（09-24 09:5xZ 查代码定性，先前那句"疑缓存键未带 query"是我猜错的）**：
+`GET /api/articles?limit=2` 与 `?limit=5` 都返回 30 条 —— **不是缓存，也不是 bug**：
+`handleArticles`（`api/[...slug].js:124`）是**游标分页**，页大小写死 `PAGE_SIZE = 30`，SQL 取 `LIMIT PAGE_SIZE + 1`（多取一条算 `hasMore`），
+**根本没有 `limit` 这个参数**；我 grep 到的 `Number(req.query.limit)` 属于别的 handler（`handleQueueFailed` / `handleAuditList`）。
+留下的是一个产品口径问题而不是缺陷：这个端点不提供页大小旋钮，前端要改每页条数只能改常数或新增参数。
 
 ## 十二、抬池 + 读层生成器活体实测（09:10~09:18Z，用户授权）
 
@@ -183,7 +184,7 @@
 
 1. **`analyzeNoBody` 的生产读数**：要等下一次 `daily-ai` 批次（代码已在 `ed96b46` 起入库，本期 sha `dc57332` 早于它）。
 2. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 §九① 的推论走。
-3. **上一条 `/api/articles` limit 读数定性**。
+3. ~~上一条 `/api/articles` limit 读数定性~~ → **已核销，见 §十：游标分页固定 30/页，该端点无 `limit` 参数，非缺陷**。
 4. ~~读层 HTTP 实测~~ → **08:22Z 已做完，见 §十**（代理恢复；此前记的"待补"与次级 GitHub 侧证据一并作废为本节实测）。
 5. **读层两份生成器没有活体实测**（本节实测的边界，别把 §十 读成"读层全部验过"）：本轮改了
    `api/daily-generate.js` 与 `api/[...slug].js#generateDailyInline`，但 `GET /api/daily` 只读已存在的报告，

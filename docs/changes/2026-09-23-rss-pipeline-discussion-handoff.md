@@ -41,7 +41,10 @@
 > `GET /api/daily` → 200 / 36,976 B，`report.id=68`、5 栏 46 条、`stale=false`，
 > 且响应里的 `stats.prescreen` 与直读库的 §八 读数**逐字段一致**（读层没另算一套、也没吞新字段）。
 > 明细见 `docs/eval/2026-09-24-prescreen-step1.md` §十。顺带登记一条**未定性**读数：
-> `GET /api/articles?limit=2`/`?limit=5` 都返回 30 条 —— 没查清前不当 bug（疑缓存键未带 query），列为待查项。
+> `GET /api/articles?limit=2`/`?limit=5` 都返回 30 条 —— **已核销，非缺陷也非缓存**：`handleArticles` 是游标分页、
+> 页大小写死 `PAGE_SIZE = 30`（SQL 取 31 条用来算 hasMore），这个端点**没有 `limit` 参数**；
+> 我先前那句"疑缓存键没带 query"是猜错的（`Number(req.query.limit)` 属于 `handleQueueFailed`/`handleAuditList`）。
+> 剩下的不是 bug 而是口径问题：要改每页条数只能改常数或新增参数。
 >
 > **三、收口链状态（08:31Z）**：push → CI（`test=success`、`collect` 近三批无红）→ 云端实测（数据面 + 读层）→ 冒烟 20/20 → 文档同步，
 > 五步在 `a228da1` 上都有实证。**实测边界要写清**：读层两份生成器（`api/daily-generate.js`、`generateDailyInline`）**没被活体打到**——
