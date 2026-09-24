@@ -224,10 +224,10 @@ Turso 官方口径（[Usage & Billing](https://docs.turso.tech/help/usage-and-bi
 | 步 | 实际 | 说明 |
 |---|---|---|
 | `npm test` | 收口时 **640 条全绿**；⚠️ 但第一次跑是 **637/640（3 红）**，三红全是我这一轮自己造的（见 §十二 第 6 条） | 别把"跑过一次绿"当收口：改一行判据就要重跑一次 |
-| push + **push-CI** | `fad1b5d` **success**；⚠️ 但**同一条链上 `5329808`、`67a8b7a` 两个提交的 ci run 是 `completed/failure`** | 我此前在会话里说过"CI 除 f59ce97 外全绿" —— **那句是错的**：那两个提交各带一处 `docs/` 引用未入库探针的悬空引用，红到我做完 git 感知版 doc-lint（`2b07d36`）才断根。**根因是"没回读 API 就宣布绿"**，与 `git push` 的输出不是交付证据同一条教训 |
-| 云端实测 | `GET /api/meta` → `commit=fad1b5d`（= HEAD）；`GET /api/daily` → `id=68 / sv=2 / theme=null / stale=false`，三个新字段真的在响应体里 | 三次连发一致；`x-vercel-cache: MISS`、`age: 0` ⇒ 不是边缘缓存回声 |
-| 冒烟 | `node smoke-test.js` 见下一行（本表随批次补） | 生产库副本、零副作用 |
-| 对抗审查 | 第三轮 reviewer 在跑（只读） | 结论回来后再写进本节 |
+| push + **push-CI** | `fad1b5d` **success**、`b104bed` **success**；⚠️ 但**同一条链上 `5329808`、`67a8b7a` 两个提交的 ci run 是 `completed/failure`** | 我此前在会话里说过"CI 除 f59ce97 外全绿" —— **那句是错的**：那两个提交各带一处 `docs/` 引用未入库探针的悬空引用，红到我做完 git 感知版 doc-lint（`2b07d36`）才断根。**根因是"没回读 API 就宣布绿"**，与 `git push` 的输出不是交付证据同一条教训 ⇒ 从现在起报绿必须附"查了哪些 sha、各自 conclusion" |
+| 云端实测 | `GET /api/meta` → `commit=e65afbd`（= HEAD，与 origin/main 同一条）；`GET /api/daily` → `report keys=id,generated_at,window_hours,sections,stats,issue,theme,schemaVersion,degraded`、`schemaVersion=2`、`stale=false` | 三次连发一致；`x-vercel-cache: MISS`、`age: 0` ⇒ 不是边缘缓存回声。`theme=null` 是**真实缺导语**（H30），不是字段丢失 —— 两件事终于能分开了 |
+| 冒烟 | `node smoke-test.js` → **通过 20 / 失败 0**（生产库副本、零副作用） | 在 `fad1b5d` 之后、`b104bed` 之前跑的；`b104bed` 只动响应形状与判据，收口时再跑一次 |
+| 对抗审查 | 第三轮 reviewer（看 `2b07d36`+`fad1b5d`）→ 八条判定见 §十二；第四轮 reviewer 看 `b104bed` 那批（结论回填在此行） | 第三轮推翻了我 4 条说法（含"读者口径 5 天 0 次"与"`sites.length>=4` 会保证新加返回点变红"这两条担保） |
 
 **一次我自己的假警报（必须留字，不许悄悄改掉）**：第一次抓 `/api/daily` 时我读到 `generated_at=2026-09-14`、`stale=false`，
 当场按"线上早报停在十天前"去查代码分支 —— 真因是**量具**：`curl -o /tmp/daily.json` 写到 Git Bash 的 `/tmp`
