@@ -202,3 +202,59 @@ test('P10 配额键三头对齐：读端点分键 == 写分支 == GET 透出 == 
   assert.ok(/prescreen:\s*\{\s*perSourceCap:/.test(tab), '早报设置页没有这一格');
   assert.ok(/api\.put\('\/api\/settings'/.test(tab), "后台保存没走 PUT /api/settings（会写到别的键上去）");
 });
+
+// ── 源码级顶层键提取器在 `tools/stats-literal-keys.cjs`（能被单独喂坏样本），这里只取用 ──
+const { objectLiteralAt, topLevelKeys, statsLiterals } = require('../tools/stats-literal-keys.cjs');
+
+test('P12 契约必须数得出四份云端写入器 stats 字面量里的每一个键（判据从代码派生，不靠手抄清单）', () => {
+  // 为什么（09-24 对抗审查指出 P11 的盲区，并当场抓出三处真实错位）：P11 只能证明"我手写进判据的那几个键
+  //   在契约里"，**新键写了而契约没记 = 它永远不红** —— 而它守的恰好就是这一族漂移（本轮我自己就加了三次键）。
+  //   审查据此抓出：① 契约把 videos 标成「仅本地」，而云端 runDailyAi 正在发它（tools/collect-turso.js 的 stats 字面量）；
+  //   ② 契约说关键词档位「只有 candidates/articles/sections/totalItems」，而 runner 那份还带 prescreen；
+  //   ③ 契约说 candidates 五份同口径，实测 AI 档位＝配额后送模型的行数、关键词三份＝进门槛前行数（`valid.length + gateDropped`）。
+  //   ⇒ 判据改成从四份 `const stats = {…}` **派生**键集合（同 W14「从事实反查写入器」的做法），手抄清单退场。
+  const src = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+
+  // 自证：提取器先在合成源码上跑 —— 三元里的 `b`、嵌套对象的 `inner`、注释与字符串里的假冒号都不许进结果，
+  // 而简写属性（`gateDropped,`）必须进。漏一个 = 判据会假装契约很全（恒绿的锁比没有锁更坏）。
+  const fixture = `const stats = {
+    a: 1, // b: 9  注释里的不算
+    nested: { inner: 2, deep: { x: 3 } },
+    ternary: ok ? yes : no,
+    gateDropped,
+    str: "c: 8 { d: 7 }",
+    arr: [ { e: 4 } ],
+    totalItems: list.reduce((n, s) => n + s.items.length, 0),
+  };`;
+  assert.deepStrictEqual(
+    topLevelKeys(objectLiteralAt(fixture, fixture.indexOf('{'))),
+    ['a', 'nested', 'ternary', 'gateDropped', 'str', 'arr', 'totalItems'],
+    '提取器自检失败：上面这组键是唯一正确答案'
+  );
+
+  const contract = JSON.parse(src('docs/contracts/daily-report.json'));
+  const st = contract.properties.report.properties.stats.properties;
+  const WRITERS = [
+    ['runner AI 档位', 'tools/collect-turso.js', (l) => l.includes('DAILY_SCHEMA_VERSION.AI')],
+    ['runner 关键词档位', 'tools/collect-turso.js', (l) => l.includes('DAILY_SCHEMA_VERSION.KEYWORD')],
+    ['api/daily-generate', 'api/daily-generate.js', () => true],
+    ['api 读层内联兜底', 'api/[...slug].js', (l) => l.includes('DAILY_SCHEMA_VERSION.KEYWORD')],
+  ];
+  const seen = new Set();
+  for (const [name, file, pick] of WRITERS) {
+    const lits = statsLiterals(src(file)).filter(pick);
+    assert.ok(lits.length >= 1, `${name}：在 ${file} 里找不到 stats 字面量 —— 写入器改了形态，本锁与契约都要跟着重核，不许静默变绿`);
+    const keys = topLevelKeys(lits[0]);
+    assert.ok(keys.length >= 4, `${name}：只提出 ${keys.length} 个键（${keys.join('/')}）—— 提取器或写法变了，判据已失效`);
+    for (const k of keys) {
+      seen.add(k);
+      assert.ok(st[k], `契约 stats 缺 ${name} 正在写的键 ${k} —— 代码在写、契约没记，按契约对接的人以为它不存在`);
+    }
+  }
+  // 反向也钉一条：契约里写的键得真有人写（否则契约在承诺不存在的字段）
+  const written = new Set([...seen, 'videos', 'theme', 'themes', 'degraded', 'timeSplit', 'analyzeNoBody', 'filterStats', 'prescreen']);
+  for (const k of Object.keys(st)) {
+    if (/^(windowHours|sortMode|droppedBadItems|cocoonEvents|aiAnalyzed)$/.test(k)) continue; // 仅本地，另有其面
+    assert.ok(written.has(k), `契约里列了 ${k} 但四份云端写入器没人写它（本地专属键要进上面那条豁免表并写清"仅本地"）`);
+  }
+});

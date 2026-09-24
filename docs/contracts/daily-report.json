@@ -14,14 +14,14 @@
         "window_hours": { "type": "number", "description": "读库返回时存在；云端即时自动生成时无此字段" },
         "stats": {
           "type": "object",
-          "description": "云端按档位分两种形状：schemaVersion=2（AI 增强版，runner daily-ai* 生成）字段为 candidates/articles/videos/gateDropped/filterStats/prescreen/timeSplit/analyzeNoBody/sections/totalItems/elapsedMin/theme/degraded/themes；schemaVersion=1（关键词裸报）只有 candidates/articles/sections/totalItems（+ 内联兜底那份另带 prescreen/gateDropped）。⚠️ elapsedMin 在 09-24 之前落库的行是真实值的 1/10（B137 已修，旧行不重写）。windowHours/sortMode 等标「仅本地」的字段云端不返回",
+          "description": "云端按档位分两种形状，且**同档位里四份写入器并不完全同键**（09-24 对抗审查后逐份核 `const stats = {…}` 字面量重列，不再凭记忆）：schemaVersion=2（AI 增强版，仅 runner `runDailyAi` 一份）＝ candidates/articles/videos/gateDropped/filterStats/prescreen/timeSplit/analyzeNoBody/sections/totalItems/elapsedMin/theme/degraded/themes；schemaVersion=1（关键词裸报）三份：runner `runDaily`＝candidates/articles/sections/prescreen/totalItems（**没有 gateDropped**，门槛在这份里没接线）、`api/daily-generate.js` 与读层内联兜底＝再加 candidates 口径含 gateDropped 且**带 gateDropped**。⇒ 消费侧规则：同档位内**任何扩展键都按「可能缺失」处理**，只有 schemaVersion/candidates/articles/sections/totalItems 是四份共有。⚠️ elapsedMin 在 09-24 之前落库的行是真实值的 1/10（B137 已修，旧行不重写）。windowHours/sortMode/aiAnalyzed 等标「仅本地」的字段云端不返回",
           "properties": {
-            "candidates": { "type": "integer" },
+            "candidates": { "type": "integer", "description": "⚠️ 跨档门口径不同（09-24 逐份核代码，不许再按「五份同口径」读）：AI 档位＝每源配额后送模型的行数（等于 prescreen.kept）；关键词三份＝进门槛前的行数（valid.length + gateDropped）。拿 candidates 跨档比较必然错" },
             "articles": { "type": "integer" },
             "sections": { "type": "integer" },
             "totalItems": { "type": "integer" },
             "schemaVersion": { "type": "integer", "description": "1=关键词裸报，2=AI 增强版；读层按此优先挑档位，不许按 generated_at 最新" },
-            "gateDropped": { "type": "integer", "description": "入报门槛剔掉的条数；candidates = 进门槛前候选数（五份写入器同口径）" },
+            "gateDropped": { "type": "integer", "description": "入报门槛剔掉的条数。AI 档位的门槛作用在**深析之后**（作用对象是 analyzed，不是 candidates 那一批）；关键词三份作用在配额后的 valid 上" },
             "filterStats": {
               "type": "object",
               "description": "仅 AI 版。attempted = passed + rejected 必须自洽（失败放行的条目同时在 passed 与 failed 里，passed+failed 是重复计数）",
@@ -62,7 +62,8 @@
             "theme": { "type": ["string", "null"], "description": "仅 AI 版：导语" },
             "degraded": { "type": "boolean", "description": "仅 AI 版：AI 链路降级标记" },
             "themes": { "type": "array", "description": "仅 AI 版：主题全景簇" },
-            "videos": { "type": "integer", "description": "仅本地" },
+            "videos": { "type": "integer", "description": "仅 **AI 档位**（runner runDailyAi 的视频入报条数；09-24 对抗审查核出：这一条此前被误标成「仅本地」，而云端那份写入器就在发它）" },
+            "aiAnalyzed": { "type": "integer", "description": "仅本地（server/services/ai/daily.js 的 AI 分析条数），云端四份写入器都不发" },
             "windowHours": { "type": "number", "description": "仅本地" },
             "sortMode": { "type": "string", "description": "仅本地" },
             "droppedBadItems": { "type": "integer", "description": "仅本地" },

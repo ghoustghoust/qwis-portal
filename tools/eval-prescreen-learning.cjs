@@ -98,7 +98,11 @@ function fitCNB(samples) {
   return (tokens) => {
     let sl = 0, sc = 0;
     for (const t of new Set(tokens)) { sl += wLeave(t); sc += wCut(t); }
-    return (sc - sl) >= 0 ? 'leave' : 'cut'; // CNB 取 argmin：补集代价小的一侧胜出
+    // **符号更正（2026-09-24，行为标签语料抓出来的）**：CNB 的类分是"与其它类的距离之和"，
+    // 越**大**越像本类 → 取 **argmax**，不是 argmin。原来写的是 `(sc - sl) >= 0 ? 'leave'`（＝sl 小就判留），
+    // 等于把两臂系统性反过来 —— 行为五折实测：错号 AUC=0.082（比随机还低一大截），改号后见
+    // `tools/eval-prescreen-behavior.cjs` 输出。返回**分数**（越高越该留），判定交给调用方统一 `>=0`。
+    return sl - sc;
   };
 }
 
@@ -114,7 +118,7 @@ function parseLabels(md) {
   return rows;
 }
 
-(async () => {
+async function main() {
   const md = fs.readFileSync(LABELS, 'utf8');
   let rows = parseLabels(md);
   if (rows.length < 4) {
@@ -139,7 +143,7 @@ function parseLabels(md) {
     const train = rows.filter((_, k) => k !== i);
     const test = rows[i];
     const nb = fitNB(train)(test.tokens) >= 0 ? 'leave' : 'cut';
-    const cnb = fitCNB(train)(test.tokens);
+    const cnb = fitCNB(train)(test.tokens) >= 0 ? 'leave' : 'cut';
     const tf = fitTfidf(train)(test.tokens) >= 0 ? 'leave' : 'cut';
     for (const [m, pred] of [['nb', nb], ['cnb', cnb], ['tf', tf]]) {
       if (pred === 'leave' && test.label === 'leave') metrics[m].tn++;
@@ -166,4 +170,13 @@ function parseLabels(md) {
   }
   console.log(`\n判据口径：误砍率 = 你标"留"却被模型判"砍"，这是决定要不要上线的那个数；漏砍率是可以接受的浪费（多送几篇给深析）。`);
   process.exitCode = 0;
-})().catch((e) => { console.error('RUN-FAIL', e.message); process.exitCode = 2; });
+}
+
+// 只有被直接运行才跑标注集评测；被 require 时只暴露分词与三臂（`eval-prescreen-behavior.cjs` 复用**同一份**
+// 模型实现，不另写第二套 —— 同一条"单一实现"纪律，见不变量 20 的那族坑）
+if (require.main === module) {
+  main().catch((e) => { console.error('RUN-FAIL', e.message); process.exitCode = 2; });
+}
+
+module.exports = { tokens, fitNB, fitCNB, fitTfidf, parseLabels };
+

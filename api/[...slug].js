@@ -716,7 +716,9 @@ async function generateDailyInline() {
   // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
   // 最晚接上门槛 → id=103 的 stats 形状 {candidates,articles,sections,totalItems} 正是本函数的指纹，
   // 实测带进 2 条 <30 分（29/22）。门槛口径与其余四份共用同一条 lib/brief-guards 实现。
-  let gateDropped = 0; // stats.candidates 的口径统一为"进门槛前的候选数"（五份写入器同一条口径，见 CLOUD_PIPELINE_GUIDE §12）
+  let gateDropped = 0; // 本函数的 stats.candidates 口径＝"进门槛前的候选数"（关键词三份同此口径）。
+  // ⚠️ 09-24 对抗审查核出的口径差：runner 的 **AI 那份**写的是 `candidates: valid.length`（＝每源配额后送模型的行数，
+  // 门槛作用在深析之后的 analyzed 上）⇒ **跨档口比较 candidates 是错的**，契约 `docs/contracts/daily-report.json` 已按此写明。
   try {
     const aiCfg = (await getSetting('ai', {})) || {};
     const g = briefGuards.applyDailyQualityGate(valid, aiCfg.dailyMinScore, (m) => console.log(`[日报内联] ${m}`));
