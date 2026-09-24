@@ -240,3 +240,41 @@ test('E3 正文按 id 单取真的生效（Pass2 每条都拿到正文，Pass1 �
   assert.ok(ts.filterMin + ts.analyzeMin + ts.mediaMin <= Number(rep.stats.elapsedMin) + 0.5,
     `三段之和 ${ts.filterMin + ts.analyzeMin + ts.mediaMin}min 超过总耗时 ${rep.stats.elapsedMin}min —— 计时器套错位置（拆账比合账还假）`);
 });
+
+// E4（H32，用户 09-24「我们要让功能正式的可以使用……不是一半停摆一半未开发」）：
+// 主题全景的归因读数必须**在真跑出来的那一行里**，且算式自洽 —— 源码级有 T10 管"每条 continue 都计数"，
+// 但只有运行时能回答"是不是还有一条出口没被计数"（那正是 H32 的病根：`themes:[]` 说不清是聚不到还是命名丢了）。
+// 用桩跑，零真模型调用；断言全部是结构 + 算式，不假设桩一定命名成功。
+test('E4 主题全景归因真落库，且 named + 四条命名出口丢弃 == 发起命名的簇数', async () => {
+  assert.match(runDailyAi(), /EXITING OK/);
+  const rep = await latestReport();
+  const tp = rep.stats.themePanorama;
+  assert.ok(tp, 'stats.themePanorama 没落库 —— 那 H32 就还是"只看到 themes:[] 而分不清病因"');
+  for (const k of ['found', 'multi', 'rated', 'named']) {
+    assert.equal(typeof tp[k], 'number', `themePanorama.${k} 不是数（拿它做分母会静默失真）`);
+  }
+  assert.ok(tp.found >= tp.multi && tp.multi >= tp.rated, `found=${tp.found} multi=${tp.multi} rated=${tp.rated} 不单调`);
+  assert.equal(tp.rated, Math.min(tp.multi, 4), `发起命名 ${tp.rated} 簇 ≠ min(够格的 ${tp.multi}, 上限 4) —— "取前 4"这道闸没进读数`);
+  const d = tp.drops || {};
+  // 出口名单从契约取，不在锁里手抄（09-24 第六轮审查抓到：上一版抄了四条，漏了契约里合法的 `no_token`
+  // 　⇒ 任何一期里只要有一条标题切不出词就假红。抄清单必漂，改成引用唯一事实源）
+  const CONTRACT_EXITS = require('../docs/contracts/daily-report.json')
+    .properties.report.properties.stats.properties.themePanorama.properties.drops.propertyNames.enum;
+  assert.ok(Array.isArray(CONTRACT_EXITS) && CONTRACT_EXITS.length >= 5,
+    `契约 drops 枚举读不到或退化到 ${CONTRACT_EXITS && CONTRACT_EXITS.length} 条 —— 分母空了这条判据就是恒绿`);
+  for (const k of Object.keys(d)) {
+    assert.ok(CONTRACT_EXITS.includes(k),
+      `drops 里出现契约外出口 ${k}（契约现有 ${CONTRACT_EXITS.join('/')}）—— 枚举要先进 docs/contracts/daily-report.json 再上线`);
+  }
+  // `no_token` 是**聚类前**的条目级丢弃（契约原文："标题切不出 ≥2 字词、根本不进簇"），
+  // 它丢的不是簇、不进 `rated` 这本账 ⇒ 命名算式只允许加命名环节的四个出口。
+  const lost = CONTRACT_EXITS.filter((k) => k !== 'no_token').reduce((n, k) => n + (d[k] || 0), 0);
+  assert.equal(tp.named + lost, tp.rated,
+    `命名成功 ${tp.named} + 丢弃 ${lost} ≠ 发起 ${tp.rated} ⇒ **还有一条静默出口没计数**（H32 的病根就是这个式子不成立）`);
+  assert.equal((rep.stats.themes || []).length, tp.named, 'stats.themes 长度与 named 不一致 ⇒ 读数和产物两本账');
+  // 导语那条（H30）也顺手在真跑的行里验一次形状：为空就必须带得出 why
+  if (!rep.stats.theme) {
+    assert.ok(rep.stats.themeSkip && ['ai_failed', 'all_lines_rejected', 'picked_vetoed', 'throw', 'unlabeled'].includes(rep.stats.themeSkip.why),
+      'theme 为空却没有可区分的 why（H30 原本的症状）');
+  }
+});

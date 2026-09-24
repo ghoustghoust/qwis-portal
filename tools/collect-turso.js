@@ -1036,11 +1036,12 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
 // 用户需求原文：把碎片聚合成主题全景，事件/领域/人物/产品对比四类视角。
 // ⚠️ 09-24 夜（H32）：这里原本有**四条静默出口**（!r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛），
 //   任一条丢掉的都是"已经聚出来的整簇"，而线上读数只有 `themes: []` —— 看起来像"标题聚不到一起"。
-//   现在返回值从数组改成 `{themes, found, multi, named, drops}`：**只加归因，不改任何判定**（阈值、簇数上限、
+//   第五轮审查又点出聚类循环前的第五条（标题切不出 token，条目级、丢的不是簇），故 drops 共五个键。
+//   现在返回值从数组改成 `{themes, found, multi, rated, named, drops}`：**只加归因，不改任何判定**（阈值、簇数上限、
 //   命名提示词一字未动）。返回形状变了 ⇒ 每个调用方必须取 `.themes`（锁 T8 全仓扫这一点）。
 async function buildThemePanorama(items) {
   const _ai = require('../api/_ai');
-  const zero = { themes: [], found: 0, multi: 0, named: 0, drops: {} };
+  const zero = { themes: [], found: 0, multi: 0, rated: 0, named: 0, drops: {} };
   if (!items || items.length < 2) return zero;
   const drops = {};
   const bump = (k) => { drops[k] = (drops[k] || 0) + 1; };
@@ -1083,7 +1084,7 @@ async function buildThemePanorama(items) {
       });
     } catch { bump('bad_json'); /* 跳过坏簇 */ }
   }
-  return { themes, found: clusters.length, multi, named: themes.length, drops };
+  return { themes, found: clusters.length, multi, rated: rated.length, named: themes.length, drops };
 }
 
 // ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报） ───
@@ -1427,9 +1428,11 @@ async function runDailyAi() {
     // 'picked_vetoed' 挑出来的那句被一票否决 / 'throw' 调用抛错。有 theme 时该键不落（null 不留噪声键）。
     ...(theme ? {} : { themeSkip: { why: th.why || 'unlabeled', err: th.err, detail: th.detail, lines: th.lines } }),
     // 主题全景的账（H32）：`themes: []` 单独看分不清"聚不到簇"与"聚到了但命名/解析丢掉"。
-    // found=全部簇、multi=≥2 条的簇（有资格命名的分母）、named=进库数、drops 按四条出口各自计数。
+    // found=全部簇、multi=≥2 条的簇（命名分母）、rated=实际发起命名数=min(multi,4)、named=进库数；
+    // drops 按五个出口各自计数：no_token 在聚类前（条目级，不进 rated 账），其余四条在命名环节（簇级，
+    //   与 named 一起构成 `named + 四条出口 == rated` 这条算式，运行时由锁 E4 钉、源码级由 T10 钉）。
     // 只加读数，不改判定：阈值/取前 4/提示词一字未动（改判据要用户点头，见 H32 待拍板）。
-    ...(panorama ? { themePanorama: { found: panorama.found, multi: panorama.multi, named: panorama.named, drops: panorama.drops } } : {}),
+    ...(panorama ? { themePanorama: { found: panorama.found, multi: panorama.multi, rated: panorama.rated, named: panorama.named, drops: panorama.drops } } : {}),
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
     //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，

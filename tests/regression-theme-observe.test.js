@@ -90,6 +90,11 @@ test('T8 每一处 buildThemePanorama 调用都必须取 .themes（返回形状�
   // `buildThemePanorama` 的返回值从 `themes[]` 改成 `{themes, found, multi, named, drops}`。
   // 形状一改就漏一个调用方 ⇒ 症状是"主题全景永远空"且不报错（`themes` 变成对象，前端拿不到数组），
   // 正是本轮反复抓的那一类"静默降级"。所以调用点要机械扫，不靠记性。
+  // ⚠️ 已知两处盲点（第六轮审查点出，本轮如实登记、不假装它严丝合缝）：
+  //   ① 判据是"调用点后 170 字符内出现 `.themes`" ⇒ 若那 170 字符里恰好有**另一句**带 `.themes` 的代码，本处会假绿；
+  //   ② 反向会假红：`const { themes } = await buildThemePanorama(…)` 这种**解构写法**是正确的，却不含 `.themes`。
+  //   要真做到"赋值变量的使用可追"得引 AST，本轮不为此加依赖；两条留给"系统稳定后按新口径重建正式验收测试"
+  //   （AGENTS §3）一起收，不在迭代中间堆工具。
   const SKIP = new Set(['node_modules', '.git', 'dist', 'data', 'archive']);
   const hits = [];
   (function sweep(dir) {
@@ -109,12 +114,14 @@ test('T8 每一处 buildThemePanorama 调用都必须取 .themes（返回形状�
   for (const h of hits) assert.ok(h.ok, `${h.rel} 有一处 buildThemePanorama 调用没取 .themes —— 会把对象当数组用，主题全景静默变空`);
 });
 
-test('T10 buildThemePanorama 里每一条 continue 都必须先给自己计数（H32：五条静默出口）', () => {
+test('T10 buildThemePanorama 里每一条静默出口都必须先给自己计数（H32：五条）', () => {
   // 为什么（H32 实测 + 第五轮审查补的第 5 条）：`themes: []` 这个读数原本分不清"标题聚不到簇"与"聚到了但命名/解析被丢掉"，
-  // 因为循环里有五条 `continue` 一条都不留痕（切不出 token / !r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛）。
-  // 现在五条各自 bump() 计数。判据是机械的：函数体内每个 `continue` 之前必须有 `bump(`。
-  // 这条锁**上岗当天就抓到一处**：我第一版只数了命名循环那四条，被它判红的是聚类循环里"标题切不出 token 就跳过"那条。
-  // 坏样本（F2P 已做）：把任意一条 bump 摘掉 ⇒ 本条红；说明它真在管这件事，不是恒绿。
+  // 因为循环里有五条出口一条都不留痕（切不出 token / !r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛）。
+  // 现在五条各自 bump() 计数。
+  // ⚠️ 09-24 第六轮审查抓到本锁自己的洞：出口有**两种写法** —— 前四条是 `{ bump(...); continue; }`，
+  //   第五条（parse 抛）是 `catch { bump('bad_json'); }`，**根本没有 continue**。上一版只扫 `continue`，
+  //   于是把 `bump('bad_json')` 整颗摘掉，本条仍然退 0（实测：改坏 → EXIT=0）。 ⇒ 判据补第二条腿：
+  //   `continue` 往前看必须有 bump，`catch` 往后看必须有 bump。两条腿各喂各的坏样本才是真锁。
   const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
   const i = src.indexOf('async function buildThemePanorama(');
   assert.ok(i > 0, '找不到 buildThemePanorama —— 改名要同步这条锁');
@@ -124,6 +131,12 @@ test('T10 buildThemePanorama 里每一条 continue 都必须先给自己计数�
   for (const c of cont) {
     const back = body.slice(Math.max(0, c.index - 60), c.index);
     assert.ok(/bump\(/.test(back), `命名循环里有一条 continue 前面没有 bump() 计数 ⇒ 它丢掉的是"已经聚出来的整簇"，线上只会看到 themes:[]（H32 的病根本身）`);
+  }
+  const catches = [...body.matchAll(/\bcatch\b/g)];
+  assert.ok(catches.length >= 1, `函数体里一条 catch 都没扫到（${catches.length}）⇒ 这条腿在空转，第五条出口换写法了要同步这里`);
+  for (const e of catches) {
+    const fwd = body.slice(e.index, e.index + 60);
+    assert.ok(/bump\(/.test(fwd), `有一条 catch 后面没接 bump() ⇒ parse 抛出去的那一簇不留痕，named+四条出口≠rated 只在真踩到时才发现（E4 也验不到：桩不产坏 JSON 时两边都恒等）`);
   }
 });
 test('T7 提取器自证：注释与字符串里的 `report: {` 不算返回点', () => {

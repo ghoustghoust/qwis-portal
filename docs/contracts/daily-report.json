@@ -74,6 +74,7 @@
               "properties": {
                 "found": { "type": "integer", "description": "贪心聚出来的簇总数（含只有 1 条的）" },
                 "multi": { "type": "integer", "description": "其中 ≥2 条、有资格进命名的簇数（命名分母；受「取前 4」上限约束）" },
+                "rated": { "type": "integer", "description": "真正发起命名的簇数 = min(multi, 4)。不变式：named + drops 里那四条命名出口之和 == rated（锁 E4 在运行时钉这条算式，源码级的由 T10 钉）" },
                 "named": { "type": "integer", "description": "真正落进 themes 的主题数 = themes 数组长度" },
                 "drops": {
                   "type": "object",
