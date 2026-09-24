@@ -140,7 +140,35 @@
 也可能是我打到的不是 `handleArticles`。**没查清之前不许写成 bug** —— 待查项：`grep -n 'handleArticles' -A20 api/[...slug].js` 对上路由，
 再按 `?limit=2` / `?limit=2&page=1` 两次取回比条数。
 
-## 十一、仍待补
+## 十二、抬池 + 读层生成器活体实测（09:10~09:18Z，用户授权）
+
+| 动作 | 读数 | 取法 |
+|---|---|---|
+| 抬宽池读（`e468b3b`） | 2000 → **6000**，单一取值写进 `lib/prescreen.js#CANDIDATE_POOL_READ`，runner + 两份 api 同取此数 | 代码 + 锁 P9 |
+| 抬池前的只读取数 | 24h 全量 **3,645 篇 / 327 源**；30h **4,361 / 387 源**；轻量列（title+summary+url）合计 **928 KB** | 谓词逐字复刻候选查询 |
+| Vercel 部署跟上 | `GET /api/meta` → `commit=e468b3b`（推送后 33 秒） | 真端点 |
+| **`POST /api/daily-generate?key=…`** | **HTTP 200 / 33.08 s**，返回 `{ok:true, report:{generated_at:2026-09-24T09:12:23Z…}}` | 用户 09-24 授权这一次 |
+| 新行 `daily_reports.id=69` | `prescreen={cap:2, pool:3806, poolSources:448, kept:500, keptSources:313}`、`candidates=500`、`gateDropped=13`、`sections=4`、`totalItems=41`、`win=30h`、`schemaVersion=1` | 只读探针 |
+
+**三条判读**：
+1. `pool=3806` —— 不再是旧行那种**恰好顶格的 2000**，宽池读已从天花板降级为余量（6000 > 3,806），级3 现在真在**全池**上做配额。
+2. `kept=500 / keptSources=313` —— 500 个坑**重新填满**，覆盖 202 → **313 源（+55%）**；与抬池前算的 `Σmin(n,2)=530 > 500` 完全一致。
+   额度这一侧回到设计原意：**换的是覆盖，不是省调用**（第一期的"省 33%"其实是池被截断的副作用，不是收益）。
+3. 这一行同时是 **H25 的核销证据**。另顺手澄清一份归属：`schemaVersion=1` 且**带** `gateDropped=13`
+   → 读层这份 `api/daily-generate.js` 的 stats 口径是对的，H23 那份"裸报告缺 `gateDropped`"专指 runner 的 `runDaily`。
+
+**更正我自己上一轮的话**：授权前我说这次 POST 要"真烧约 337 次初筛调用"——**错了**。
+`api/daily-generate.js` 是**零模型**生成器（读候选 → 门槛 → 分栏 → 落库，所以 `maxDuration:60` 装得下），
+60 秒预算里根本不做逐篇打分；实际耗时 33 s、模型调用 **0 次**。
+
+## 十三、本节的边界（别读成"两份读层生成器都验过"）
+
+第二份生成器 `api/[...slug].js#generateDailyInline` **仍未活体打到**。它有两个入口：
+`GET /api/daily` 的兜底分支（只在"今日无报告"且北京 hour≥1 时走），以及 `POST /api/daily/regenerate`；
+后者会先 `DELETE FROM daily_reports WHERE generated_at ∈ [北京今日]` 再重建 —— 也就是**会抹掉今早那份 AI 早报（id=68）**，
+这超出"授权一次 `POST /api/daily-generate`"的范围，没有单独点头就不按。现状＝该函数只有静态锁（P6/P8/P9 计它一份接线）。
+
+## 十四、仍待补
 
 1. **`analyzeNoBody` 的生产读数**：要等下一次 `daily-ai` 批次（代码已在 `ed96b46` 起入库，本期 sha `dc57332` 早于它）。
 2. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 §九① 的推论走。

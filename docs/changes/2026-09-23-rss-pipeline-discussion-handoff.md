@@ -1,6 +1,26 @@
 # 交接：RSS 高质量信息流设计 × 现状逐条对边界（2026-09-23）
 
-> **⚠️ 09-24 傍晚·级3 第一期生产读数到手（先读本节；它更正下面「午后」节的二·①③ 两处预估）**
+> **⚠️ 09-24 09:20Z·两件事按裁定落地（先读本节；下面「傍晚」节的"待拍板 ①②"里 ① 已做完、② 已核销）**
+>
+> **A. H25 已核销：宽池读 2000 → 6000**（提交 `e468b3b`，`npm test` 622/622、push-CI `test=success`、冒烟 20/20、`build:vercel` ✓）。
+> 单一取值写死在 `lib/prescreen.js#CANDIDATE_POOL_READ`，runner + 两份 api 同取此数，新增锁 **P9** 钉"四处不分叉"
+> （`.vercelignore` 排除 `tools/` → `api/` 不能 require runner，字面量必然两份，漂移只在"抬一半"时发生）。
+> 抬的依据（只读取数）：24h 全量 **3,645 篇 / 327 源**、30h **4,361 / 387**，轻量列合计仅 **928 KB** ——
+> 旧顾虑"宽池不能抬"只对 `content_html` 成立。**兑现读数**（`daily_reports.id=69`，09:12Z）：
+> `pool=3806`（不再顶格）、`kept=500`（500 坑填满）、`keptSources=313` → **覆盖 202 → 313 源（+55%）**。
+>
+> **B. 读层生成器活体实测：`POST /api/daily-generate` 打通**（用户授权这一次）。Vercel 33 秒内跟上
+> （`/api/meta` → `commit=e468b3b`），`HTTP 200 / 33.08 s`，写出 `id=69`。
+> **顺手更正我上一轮写在本文的一句话**：我说这次 POST 会"真烧约 337 次初筛调用"——**错了**，
+> `api/daily-generate.js` 是**零模型**生成器（读候选 → 门槛 → 分栏 → 落库，所以 `maxDuration:60` 装得下），实际 0 次调用。
+> 它同时澄清一份归属：`schemaVersion=1` 且**带** `gateDropped=13` → H23 那份"裸报告缺 `gateDropped`"专指 runner 的 `runDaily`，不是这一份。
+>
+> **C. 还没测的（要单独授权）**：第二份生成器 `api/[...slug].js#generateDailyInline`。它唯一的活体入口是
+> `POST /api/daily/regenerate`，而那个 handler **先 `DELETE` 今日 `daily_reports` 行**再重建 ——
+> 按下去会抹掉今早那份 AI 早报（`id=68`）。超出"一次 POST /api/daily-generate"的范围，所以没按。
+> 明细：`docs/eval/2026-09-24-prescreen-step1.md` §十二/§十三。
+
+> **⚠️ 09-24 傍晚·级3 第一期生产读数到手（它更正下面「午后」节的二·①③ 两处预估；其中"待拍板"已被上面 A 节落地）**
 >
 > 生产 `daily_reports.id=68`（run `35964421731`，06:25:34Z 起跑、07:53:19Z 落库，墙钟 87.75min）：
 > `stats.prescreen = {cap:2, pool:2000, poolSources:202, kept:337, keptSources:202}`。
