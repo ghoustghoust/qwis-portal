@@ -51,6 +51,7 @@ function startStub() {
 const http = require('http');
 const fs = require('fs');
 const LOG = process.argv[2];
+let THEME_CALLS = 0; // 主题命名这一发的计数（交替回两种形状用）
 fs.writeFileSync(LOG, '');
 const server = http.createServer((req, res) => {
   let raw = '';
@@ -67,6 +68,17 @@ const server = http.createServer((req, res) => {
         + '"quote":"原文金句","points":["要点一"],"tags":["AI"]}';
     } else if (raw.includes('入选列表')) {
       content = '从本地测试，到执行锁，再到隔离边界，判断这条锁有效。';
+    } else if (raw.includes('属于同一主题')) {
+      // 主题命名这一发【轮流给两种形状】（第六轮审查点出：原来固定回 {"themes":[]}，四条命名出口里
+      // 只有 incomplete 会被踩到，"丢弃到底进没进 drops、会不会让 named 少一"这条账从没被真跑验过）。
+      // 交替 ⇒ 至少一次成功命名 + 至少一次 no_json 丢弃 ⇒ E4 的 named + Σ == rated 第一次在
+      // "有一项真的非零"的情形下闭合（而不是两边都 0 的恒等）。
+      // ⚠️ 这段注释里不许出现反引号：它在**生成桩源码的模板串**内部，一个反引号就会截断模板串
+      //   （实测表现是"本文件 SyntaxError、整个 E 套件 0 pass"，看起来像隔离坏了而不是引号坏了）。
+      THEME_CALLS++;
+      content = THEME_CALLS % 2 === 1
+        ? '{"name":"桩主题' + THEME_CALLS + '","viewpoint":"事件","summary":"桩给的跨源综述，覆盖两条报道。"}'
+        : '这段回复里没有花括号';
     } else {
       content = '{"themes":[]}';
     }
@@ -253,22 +265,41 @@ test('E4 主题全景归因真落库，且 named + 四条命名出口丢弃 == �
   for (const k of ['found', 'multi', 'rated', 'named']) {
     assert.equal(typeof tp[k], 'number', `themePanorama.${k} 不是数（拿它做分母会静默失真）`);
   }
+  // ⚠️ 下限（第六轮审查抓到的关键洞）：上面几行在**全 0** 时全部成立 —— 往实现里塞一句提前 `return zero`、
+  //   或把 `items.length < 2` 改成 `< 500`，旧 E4 与 T10 都仍绿 ⇒ "功能从此再也不产出"这条恰好没人管，
+  //   而这正是 H32 登记的原症状。种子数据是**确定**能聚出簇的（12 条里同一标题形状成对出现），
+  //   所以这里要求非零不是碰运气：found/multi/rated 任意为 0 就该红。
+  assert.ok(tp.found >= 1, `found=${tp.found} ⇒ 一期都没聚出簇：桩里 12 条种子标题是成对同形的，聚不出就是实现被改坏（H32 的原症状）`);
+  assert.ok(tp.multi >= 1, `multi=${tp.multi} ⇒ 没有"≥2 条的簇"，命名环节根本没启动`);
+  assert.ok(tp.rated >= 1, `rated=${tp.multi ? tp.rated : '?'} ⇒ 发起了 0 次命名，后面的算式全是 0==0 的空转`);
   assert.ok(tp.found >= tp.multi && tp.multi >= tp.rated, `found=${tp.found} multi=${tp.multi} rated=${tp.rated} 不单调`);
   assert.equal(tp.rated, Math.min(tp.multi, 4), `发起命名 ${tp.rated} 簇 ≠ min(够格的 ${tp.multi}, 上限 4) —— "取前 4"这道闸没进读数`);
+  // ⚠️ 本条**钉不住"取前 4"这道闸本身**：桩里 multi 只有 2~3（< 4），把 `.slice(0, 4)` 改成 `.slice(0, 400)`
+  //   E4 与 T10 都仍绿 —— 要钉住它得给种子加到 >4 组重簇。如实登记为未收口（不假装这条腿有牙）。
   const d = tp.drops || {};
+  // 至少有一条**真实结局**：要么命名成功、要么有出口被计数（全 0 + 全空 = 上面已被挡住，这里再挡"两边都空"）
+  assert.ok(tp.named >= 1 || Object.keys(d).length >= 1, `named=${tp.named} 且 drops 为空 ⇒ 这一期既没产出也没有任何归因，等于 H32 没修`);
   // 出口名单从契约取，不在锁里手抄（09-24 第六轮审查抓到：上一版抄了四条，漏了契约里合法的 `no_token`
   // 　⇒ 任何一期里只要有一条标题切不出词就假红。抄清单必漂，改成引用唯一事实源）
   const CONTRACT_EXITS = require('../docs/contracts/daily-report.json')
     .properties.report.properties.stats.properties.themePanorama.properties.drops.propertyNames.enum;
-  assert.ok(Array.isArray(CONTRACT_EXITS) && CONTRACT_EXITS.length >= 5,
+  const exitsIn = (k) => CONTRACT_EXITS.includes(k);
+  assert.ok(Array.isArray(CONTRACT_EXITS) && CONTRACT_EXITS.length >= 6,
     `契约 drops 枚举读不到或退化到 ${CONTRACT_EXITS && CONTRACT_EXITS.length} 条 —— 分母空了这条判据就是恒绿`);
+  // 谓词自证（两侧各一个样本）：只测"当前数据恰好合法"是不够的，得证明这条腿**认得合法、也拒绝非法**，
+  // 否则它可能只是恒真（第六轮审查对上一条腿提的就是这个）。
+  assert.ok(Object.keys({ no_token: 1, too_few_items: 2, ai_failed: 1 }).every(exitsIn),
+    '派生名单连契约里明写的键都不认 ⇒ 名单取错了路径');
+  assert.ok(!Object.keys({ bogus_exit: 1 }).every(exitsIn), '契约外出口没被判红 ⇒ 这条腿恒真、没有牙');
   for (const k of Object.keys(d)) {
-    assert.ok(CONTRACT_EXITS.includes(k),
+    assert.ok(exitsIn(k),
       `drops 里出现契约外出口 ${k}（契约现有 ${CONTRACT_EXITS.join('/')}）—— 枚举要先进 docs/contracts/daily-report.json 再上线`);
   }
-  // `no_token` 是**聚类前**的条目级丢弃（契约原文："标题切不出 ≥2 字词、根本不进簇"），
-  // 它丢的不是簇、不进 `rated` 这本账 ⇒ 命名算式只允许加命名环节的四个出口。
-  const lost = CONTRACT_EXITS.filter((k) => k !== 'no_token').reduce((n, k) => n + (d[k] || 0), 0);
+  // `too_few_items` 与 `no_token` 都是**聚类前**的丢弃（一条整批、一条条目级），丢的不是簇、不进 `rated`
+  // 这本账 ⇒ 命名算式只允许加命名环节那四条（契约 drops 描述里写明两族之分）。
+  const NAMING_EXITS = CONTRACT_EXITS.filter((k) => k !== 'no_token' && k !== 'too_few_items');
+  assert.equal(NAMING_EXITS.length, 4, `命名环节出口应有 4 条，契约现在给了 ${NAMING_EXITS.length} 条 ⇒ 新增键要先进对应那一族`);
+  const lost = NAMING_EXITS.reduce((n, k) => n + (d[k] || 0), 0);
   assert.equal(tp.named + lost, tp.rated,
     `命名成功 ${tp.named} + 丢弃 ${lost} ≠ 发起 ${tp.rated} ⇒ **还有一条静默出口没计数**（H32 的病根就是这个式子不成立）`);
   assert.equal((rep.stats.themes || []).length, tp.named, 'stats.themes 长度与 named 不一致 ⇒ 读数和产物两本账');

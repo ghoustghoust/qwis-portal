@@ -86,15 +86,18 @@ test('T6 读层每一处 report 字面量的**顶层**必须带 theme/schemaVers
 });
 
 test('T8 每一处 buildThemePanorama 调用都必须取 .themes（返回形状从数组改成对象后的防漏锁）', () => {
-  // 为什么（H32）：为了把"聚到几簇 / 命名成几个 / 四条出口各丢几次"落进库，
-  // `buildThemePanorama` 的返回值从 `themes[]` 改成 `{themes, found, multi, named, drops}`。
-  // 形状一改就漏一个调用方 ⇒ 症状是"主题全景永远空"且不报错（`themes` 变成对象，前端拿不到数组），
+  // 为什么（H32）：为了把"聚到几簇 / 命名成几个 / 六条出口各丢几次"落进库，
+  // `buildThemePanorama` 的返回值从数组改成 `{themes, found, multi, rated, named, drops}`。
+  // 形状一改就漏一个调用方 ⇒ 症状是"主题全景永远空"且不报错（返回值变成对象，前端拿不到数组），
   // 正是本轮反复抓的那一类"静默降级"。所以调用点要机械扫，不靠记性。
-  // ⚠️ 已知两处盲点（第六轮审查点出，本轮如实登记、不假装它严丝合缝）：
-  //   ① 判据是"调用点后 170 字符内出现 `.themes`" ⇒ 若那 170 字符里恰好有**另一句**带 `.themes` 的代码，本处会假绿；
-  //   ② 反向会假红：`const { themes } = await buildThemePanorama(…)` 这种**解构写法**是正确的，却不含 `.themes`。
-  //   要真做到"赋值变量的使用可追"得引 AST，本轮不为此加依赖；两条留给"系统稳定后按新口径重建正式验收测试"
-  //   （AGENTS §3）一起收，不在迭代中间堆工具。
+  // ⚠️ 第六轮审查点出本锁会把自己这段注释扫成一个"调用点"（注释里写了函数名加左括号，而窗口里恰好有
+  //   `.themes` 这个词）⇒ 现在**先剔注释与字符串体**（复用 `tools/stats-literal-keys.cjs` 的 `nonCodeRanges`，
+  //   与 T7 同一套），命中的就只剩真代码里的调用点。
+  // ⚠️ 仍知的两处盲点（如实登记，不假装严丝合缝）：① 判据是"调用点后 170 字符内出现 `.themes`"，
+  //   若那 170 字符里恰好有**另一句**带 `.themes` 的代码，本处会假绿；② 反向会假红：把返回值**解构**
+  //   （`const { themes } = await …`）是正确写法却不含点号形式。要真做到"赋值变量的使用可追"得引 AST，
+  //   本轮不为此加依赖；两条留给"系统稳定后按新口径重建正式验收测试"（AGENTS §3）一起收。
+  const { nonCodeRanges } = require('../tools/stats-literal-keys.cjs');
   const SKIP = new Set(['node_modules', '.git', 'dist', 'data', 'archive']);
   const hits = [];
   (function sweep(dir) {
@@ -104,24 +107,30 @@ test('T8 每一处 buildThemePanorama 调用都必须取 .themes（返回形状�
       if (e.isDirectory()) { sweep(rel); continue; }
       if (!/\.(js|cjs|mjs)$/.test(e.name)) continue;
       const text = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+      const dead = nonCodeRanges(text);
+      const inDead = (pos) => dead.some(([a, b]) => pos >= a && pos < b);
       for (const m of text.matchAll(/buildThemePanorama\(/g)) {
+        if (inDead(m.index)) continue; // 注释/字符串里提到函数名 ≠ 一处调用（否则分母会被自己的注释凑满）
         if (text.slice(Math.max(0, m.index - 20), m.index).includes('async function')) continue; // 定义处
         hits.push({ rel, ok: text.slice(m.index, m.index + 170).includes('.themes') });
       }
     }
   })('');
-  assert.ok(hits.length >= 2, `只扫到 ${hits.length} 处调用点，判据已空转`);
+  assert.ok(hits.length >= 2, `只扫到 ${hits.length} 处真代码调用点，判据已空转`);
   for (const h of hits) assert.ok(h.ok, `${h.rel} 有一处 buildThemePanorama 调用没取 .themes —— 会把对象当数组用，主题全景静默变空`);
 });
 
-test('T10 buildThemePanorama 里每一条静默出口都必须先给自己计数（H32：五条）', () => {
-  // 为什么（H32 实测 + 第五轮审查补的第 5 条）：`themes: []` 这个读数原本分不清"标题聚不到簇"与"聚到了但命名/解析被丢掉"，
-  // 因为循环里有五条出口一条都不留痕（切不出 token / !r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛）。
-  // 现在五条各自 bump() 计数。
-  // ⚠️ 09-24 第六轮审查抓到本锁自己的洞：出口有**两种写法** —— 前四条是 `{ bump(...); continue; }`，
-  //   第五条（parse 抛）是 `catch { bump('bad_json'); }`，**根本没有 continue**。上一版只扫 `continue`，
-  //   于是把 `bump('bad_json')` 整颗摘掉，本条仍然退 0（实测：改坏 → EXIT=0）。 ⇒ 判据补第二条腿：
-  //   `continue` 往前看必须有 bump，`catch` 往后看必须有 bump。两条腿各喂各的坏样本才是真锁。
+test('T10 主题全景的每一条静默出口都必须先给自己计数（H32：六条），且键名与契约枚举一一对应', () => {
+  // 为什么（H32 实测 + 第五轮补第 5 条 + 第六轮补第 6 条）：`themes: []` 这个读数原本分不清
+  //   "整批没东西可聚"／"标题聚不到簇"／"聚到了但命名或解析被丢掉"。出口一共六条：
+  //   聚类前 `too_few_items`（整批 <2 条直接早退）、`no_token`（条目切不出词）；
+  //   命名环节 `ai_failed`／`no_json`／`incomplete`／`bad_json`。
+  // ⚠️ 09-24 第六轮审查抓到本锁自己的两个洞（都各自喂过坏样本，见下）：
+  //   ① 只扫 `continue` ⇒ 第五条出口写法是 `catch { bump('bad_json'); }`，**没有 continue**，
+  //      把那颗 bump 整颗摘掉旧判据仍 EXIT=0（恒绿）⇒ 补"每条 catch 向后必须有 bump"这条腿；
+  //   ② 两条腿都只管"有没有 bump("，不管**键名写错** —— 把 `bump('ai_failed')` 改成
+  //      `bump('aifaied')` 时两条腿全绿，而运行时 E4 也抓不到（算式里错键当 0、`named` 也少一，恰好抵消）
+  //      ⇒ 再加第三条腿：函数体里 `bump('KEY')` 的**键集合与契约枚举完全相等**（双向派生，不抄名单）。
   const src = fs.readFileSync(path.join(ROOT, 'tools', 'collect-turso.js'), 'utf8');
   const i = src.indexOf('async function buildThemePanorama(');
   assert.ok(i > 0, '找不到 buildThemePanorama —— 改名要同步这条锁');
@@ -130,14 +139,26 @@ test('T10 buildThemePanorama 里每一条静默出口都必须先给自己计数
   assert.ok(cont.length >= 4, `只扫到 ${cont.length} 条 continue，判据已空转（出口被合并也要同步这里）`);
   for (const c of cont) {
     const back = body.slice(Math.max(0, c.index - 60), c.index);
-    assert.ok(/bump\(/.test(back), `命名循环里有一条 continue 前面没有 bump() 计数 ⇒ 它丢掉的是"已经聚出来的整簇"，线上只会看到 themes:[]（H32 的病根本身）`);
+    assert.ok(/bump\(/.test(back), `有一条 continue 前面没有 bump() 计数 ⇒ 它丢掉的是"已经聚出来的整簇"，线上只会看到 themes:[]（H32 的病根本身）`);
   }
-  const catches = [...body.matchAll(/\bcatch\b/g)];
-  assert.ok(catches.length >= 1, `函数体里一条 catch 都没扫到（${catches.length}）⇒ 这条腿在空转，第五条出口换写法了要同步这里`);
-  for (const e of catches) {
-    const fwd = body.slice(e.index, e.index + 60);
-    assert.ok(/bump\(/.test(fwd), `有一条 catch 后面没接 bump() ⇒ parse 抛出去的那一簇不留痕，named+四条出口≠rated 只在真踩到时才发现（E4 也验不到：桩不产坏 JSON 时两边都恒等）`);
+  // 第二条腿：`catch` 写法没有 continue，但同样是一条丢弃出口 —— 往后找 bump。
+  // 窗口取 160 而不是 60：第六轮给的**合法**反例是 `catch (e) { log(\`…${c.items.length}…\`); bump('bad_json'); }`，
+  // 那种写法离 bump 约 70 字符，按 60 会**假红**（把安全网写成催改锁的东西，正是 BL13 那一类）。
+  for (const e of body.matchAll(/\bcatch\b/g)) {
+    assert.ok(/bump\(/.test(body.slice(e.index, e.index + 160)),
+      `有一条 catch 后面 160 字符内没接 bump() ⇒ parse 抛出去的那一簇不留痕（E4 也验不到：桩不产坏 JSON 时两边恒等）`);
   }
+  // 第三条腿（双向派生）：bump 键集合 == 契约 drops 枚举。契约是这些键的唯一事实源。
+  const EXITS = require('../docs/contracts/daily-report.json')
+    .properties.report.properties.stats.properties.themePanorama.properties.drops.propertyNames.enum;
+  const keys = new Set([...body.matchAll(/bump\('([a-z_]+)'\)/g)].map((m) => m[1]));
+  assert.ok(EXITS.length >= 6, `契约 drops 枚举只剩 ${EXITS.length} 条 ⇒ 分母塌了，这条腿会恒绿`);
+  assert.ok(keys.size >= 6, `函数体里只扫到 ${keys.size} 种 bump 键（${[...keys].join('/')}）⇒ 有出口被合并或改名没同步`);
+  for (const k of keys) assert.ok(EXITS.includes(k), `bump('${k}') 不在契约枚举里 ⇒ 这个出口线上查不到（先补 docs/contracts/daily-report.json 再上线）`);
+  for (const k of EXITS) assert.ok(keys.has(k), `契约有 drops.${k} 而函数体没有对应 bump ⇒ 那条出口没计数（或键名打错，H32 的账缺一格）`);
+  // 第六条出口（整批 <2 条早退）必须在 `clusters` 之前就落 drops，否则"空批次"与"全批丢弃"同形
+  assert.ok(/too_few_items/.test(body.slice(0, body.indexOf('const clusters'))),
+    '`items<2` 的早退没落 too_few_items ⇒ 空批次与"整批一条没成"在库里同形（第六轮点出的第六条出口）');
 });
 test('T7 提取器自证：注释与字符串里的 `report: {` 不算返回点', () => {
   // 为什么（09-24 第四轮审查实测）：上一版 `objectLiteralKeysAt` 不认注释 ⇒ 一个洞两种坏：

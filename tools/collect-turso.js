@@ -1036,15 +1036,21 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
 // 用户需求原文：把碎片聚合成主题全景，事件/领域/人物/产品对比四类视角。
 // ⚠️ 09-24 夜（H32）：这里原本有**四条静默出口**（!r.ok / 匹配不到 JSON / 缺 name|summary / parse 抛），
 //   任一条丢掉的都是"已经聚出来的整簇"，而线上读数只有 `themes: []` —— 看起来像"标题聚不到一起"。
-//   第五轮审查又点出聚类循环前的第五条（标题切不出 token，条目级、丢的不是簇），故 drops 共五个键。
+//   第五轮审查又点出聚类前的第五条（标题切不出 token，条目级、丢的不是簇），第六轮点出 `items<2` 的早退是第六条
+//   ⇒ drops 共六个键：**聚类前两条**（`too_few_items` 整批级、`no_token` 条目级，都不进 rated 账）
+//   + **命名环节四条**（`ai_failed`/`no_json`/`incomplete`/`bad_json`，与 `named` 一起构成算式）。
 //   现在返回值从数组改成 `{themes, found, multi, rated, named, drops}`：**只加归因，不改任何判定**（阈值、簇数上限、
 //   命名提示词一字未动）。返回形状变了 ⇒ 每个调用方必须取 `.themes`（锁 T8 全仓扫这一点）。
 async function buildThemePanorama(items) {
   const _ai = require('../api/_ai');
-  const zero = { themes: [], found: 0, multi: 0, rated: 0, named: 0, drops: {} };
-  if (!items || items.length < 2) return zero;
   const drops = {};
   const bump = (k) => { drops[k] = (drops[k] || 0) + 1; };
+  const zero = { themes: [], found: 0, multi: 0, rated: 0, named: 0, drops };
+  // 第六轮审查（09-24 22:00Z）点出：这条 `items<2` 的早退是**第六条**不留痕的出口（前四条在命名环节、
+  //   no_token 在聚类前、这条在聚类之前），当时注释只写"五条" ⇒ 空批次与"整批一条没成"在库里同形。
+  //   现在它也走同一个 bump（键名与契约枚举一一对应这条腿由锁 T10 扫 `bump('KEY')` 字面量派生，
+  //   所以不能在早退处直接写对象字面量 —— 那样锁看不见它）。
+  if (!items || items.length < 2) { bump('too_few_items'); return zero; }
   const clusters = [];
   for (const it of items) {
     const tok = titleTokens(it.translated_title || it.title || '');

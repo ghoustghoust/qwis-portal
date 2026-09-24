@@ -78,8 +78,8 @@
                 "named": { "type": "integer", "description": "真正落进 themes 的主题数 = themes 数组长度" },
                 "drops": {
                   "type": "object",
-                  "description": "按出口分类的丢弃次数；键只在发生时出现（不写 0）。no_token=标题切不出 ≥2 字词、根本不进簇 / ai_failed=模型调用失败 / no_json=回复里匹配不到 JSON 对象 / incomplete=JSON 缺 name 或 summary / bad_json=JSON.parse 抛",
-                  "propertyNames": { "enum": ["no_token", "ai_failed", "no_json", "incomplete", "bad_json"] }
+                  "description": "按出口分类的丢弃次数；键只在发生时出现（不写 0）。六个键分两族：聚类前两条 —— too_few_items=整批候选不足 2 条、直接早退（此时 found/multi/rated/named 全 0）/ no_token=标题切不出 ≥2 字词、根本不进簇；命名环节四条 —— ai_failed=模型调用失败 / no_json=回复里匹配不到 JSON 对象 / incomplete=JSON 缺 name 或 summary / bad_json=JSON.parse 抛。⚠️ 只有后四条进 named + Σ == rated 这本账，前两条丢的不是簇（锁 E4 在运行时钉算式、T10 在源码级钉每条出口都有 bump 且键名与本契约枚举一一对应）",
+                  "propertyNames": { "enum": ["too_few_items", "no_token", "ai_failed", "no_json", "incomplete", "bad_json"] }
                 }
               }
             },
