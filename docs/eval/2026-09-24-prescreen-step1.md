@@ -134,5 +134,10 @@
    `*.vercel.app` 直连不通而 `api.github.com` 通），**待代理恢复后补测**——这一步没做就是没做，不许用 CI 绿替代。
    本期再次实测：直连 `curl -m12 https://qwis-intel.vercel.app/api/meta` 超时、走 `127.0.0.1:12000` 拒连；
    `api.vercel.com` 可达（401/403 级）但仓库内无 Vercel token，且制度禁止交互式 login → **没有合法替代证据**，只有侧写不算实测。
+   08:10Z 复测：`12000/7890/7897/10809/8118/10808` 六个端口全部不通，直连仍超时。
+   - **次级证据（不是实测，只补"部署面 == origin/main"这一半）**：GitHub 上 `b1e3f71` 的提交状态
+     `ctx=Vercel state=success / "Deployment has completed"`，且 `deployments` 列表首条 =
+     `id 6633018370, env=Production, sha=b1e3f71`。→ 证明**读层那次部署构建完成在 main 最新提交上**；
+     **不证明** `/api/meta` 返回体、不证明 `/api/daily` 出报形状、不证明读层代码真跑过。这两半不能互相替代。
 2. **`analyzeNoBody` 的生产读数**：要等下一次 `daily-ai` 批次（代码已在 `ed96b46` 起入库，本期 sha 早于它）。
 3. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 ① 的推论走。
