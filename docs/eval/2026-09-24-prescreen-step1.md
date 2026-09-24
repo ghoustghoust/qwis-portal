@@ -146,3 +146,7 @@
 2. **`prescreen.perSourceCap` 调档实测**：目前只有"默认 2"一期样本；改 cap 后需看 `kept`/`keptSources` 是否按 §九① 的推论走。
 3. **上一条 `/api/articles` limit 读数定性**。
 4. ~~读层 HTTP 实测~~ → **08:22Z 已做完，见 §十**（代理恢复；此前记的"待补"与次级 GitHub 侧证据一并作废为本节实测）。
+5. **读层两份生成器没有活体实测**（本节实测的边界，别把 §十 读成"读层全部验过"）：本轮改了
+   `api/daily-generate.js` 与 `api/[...slug].js#generateDailyInline`，但 `GET /api/daily` 只读已存在的报告，
+   走不到这两份。活体验证只有一次 `POST /api/daily-generate` = **生产写一条报告 + 真烧约 337 次初筛调用**，
+   须用户授权后才做。现状＝静态接线锁（P6/P8）+ runner 生产模式执行锁（E1~E3，跑的是 `tools/collect-turso.js` 不是 Vercel）。
