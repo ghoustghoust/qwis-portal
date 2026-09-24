@@ -67,6 +67,10 @@ function collectCandidates(windowHours, cfg) {
     aSql += ` AND a.source_id IN (${cfg.articleSourceIds.map(() => '?').join(',') || 'NULL'})`;
     aArgs.push(...cfg.articleSourceIds);
   }
+  // 级3 每源配额**故意不接在本端**（用户 2026-09-24 裁定 A）：本文件不在部署面
+  // （`.vercelignore` 排除 server/，注释「已由 api/ 替代」），且其功能集早已与云端分叉
+  // （related 同主题合并 / 破茧栏 / 正文参与栏目匹配都没有云端版）。
+  // 入报门槛仍然必须接（那是安全阀，W14 管），但级3 是策展策略，只约束真会产出读者所见早报的那几份。
   for (const r of db.prepare(aSql).all(...aArgs)) {
     items.push({
       kind: 'article', ref_id: r.id, source_id: r.source_id,

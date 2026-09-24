@@ -38,6 +38,9 @@ const { notNoiseSql, notHotlistSql } = require('../lib/noise');
 // ─── 配置 ───
 const MODE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'collect';
 const LIMIT = Number(process.env.COLLECT_LIMIT) || 500;
+// 早报候选：宽池读 2000 轻量行，级3 每源配额后再截 500 送模型（44 号 spec 步1；额度不变，换源覆盖）
+const CANDIDATE_POOL_READ = 2000;
+const DAILY_POOL_LIMIT = 500;
 const CONCURRENCY = Number(process.env.COLLECT_CONCURRENCY) || 6;
 const FETCH_TIMEOUT = 10000;   // 单源抓取超时（无 serverless 限制，给足 10s）
 // 必须用浏览器 UA：newsnow 等热榜 API 对自定义 UA 直接 403（ARCHITECTURE 已知坑 #4 链路）
@@ -1008,7 +1011,7 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
     issue, dateStart, dateEnd, theme, degraded: degradedFlag,
     spineMissing: spine.spineMissing, spineMissingParts: spine.missing, weeklySummary,
     ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
-    generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
+    generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 6000) / 10,
     items,
   };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('weekly.latest', ?)", args: [JSON.stringify(report)] });
@@ -1131,9 +1134,12 @@ async function runDailyAi() {
   log(`daily-ai 窗口: ${startUtc} ~ ${endUtc}（${label}）`);
 
   // 候选（沿用关键词版排除规则）
+  // 级3 每源预配额（44 号 spec 步1）：**宽池 2000 轻量行 → 按源限量 → 截 500**，AI 调用量不变而源覆盖换回来。
+  // 池查询故意不拉 content_html（同 runWeekly `:865` 那条：一次取两千行全文会被 libsql HTTP 链路掐断），
+  // 正文改到深析阶段按 id 单取 —— 只有过了初筛的幸存者才值得付这个字节数。
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
-  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.content_html, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.spotlight AS source_spotlight
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
                AND ${notNoiseSql('s')}`;
@@ -1142,11 +1148,18 @@ async function runDailyAi() {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
     args.push(...selectedIds);
   }
-  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+  sql += ` ORDER BY a.published_at DESC LIMIT ${CANDIDATE_POOL_READ}`;
   const candidates = await qAll(sql, args);
   const AI_LIMIT = Number(process.env.DAILY_AI_LIMIT) || Infinity; // 调试用：限制候选数
-  const valid = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a)).slice(0, AI_LIMIT);
-  log(`候选 ${valid.length} 篇，开始两阶段初筛`);
+  const clean = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
+  const prescreen = require('../lib/prescreen');
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  const valid = prescreen.applySourceQuota(clean, {
+    cap: perSourceCap,
+    limit: Number.isFinite(AI_LIMIT) ? AI_LIMIT : DAILY_POOL_LIMIT,
+  });
+  const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
+  log(`候选 ${valid.length} 篇（宽池 ${prescreenRead.pool} 篇/${prescreenRead.poolSources} 源 → 每源≤${perSourceCap} 后 ${prescreenRead.kept} 篇/${prescreenRead.keptSources} 源），开始两阶段初筛`);
 
   // 阶段 1：初筛（2026-09-23 P0-2 配套：失败/截断计数落 filterStats，异常发报警——判据唯一实现 lib/filter-observe.js）
   const passed = [];
@@ -1174,7 +1187,9 @@ async function runDailyAi() {
   let consecFail = 0;
   for (const a of passed) {
     if (Date.now() - t0 > BUDGET_MS) { log('深析预算耗尽，截断'); break; }
-    const r = await _ai.analyzeArticle(a);
+    // 正文按 id 单取（级3 之后宽池不再携带 content_html；只有过了初筛的幸存者也才值得付这个字节数）
+    const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
+    const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
     if (!r) {
       consecFail++;
       if (consecFail >= 3 && analyzed.length === 0) {
@@ -1376,8 +1391,12 @@ async function runDailyAi() {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
     candidates: valid.length, articles: valid.length, videos: windowVideos, gateDropped,
     filterStats: { candidates: valid.length, passed: passed.length, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated },
+    prescreen: prescreenRead,
     sections: sections.length, totalItems: allItems.length,
-    elapsedMin: Math.round((Date.now() - t0) / 600e2) / 10,
+    // 单位坑（B137，2026-09-24 实测）：原式 `Math.round(ms/600e2)/10` 里 600e2=60000 已是"分钟"，
+    // 再 ÷10 → 落库值是真实耗时的 1/10（两期观察读数 8.1/8.5 实为 81/85 分钟，据此误判过预算余量）。
+    // 一位小数的分钟数应为 `Math.round(ms/6000)/10`。
+    elapsedMin: Math.round((Date.now() - t0) / 6000) / 10,
   };
   await qRun(
     'INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
@@ -1678,7 +1697,10 @@ async function runDaily() {
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
-  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
+  // 列写死而不是 `a.*`：本函数只消费 id/title/url/summary/score/cover + 两列 join，
+  // 而宽池抬到 2000 行之后，多拉的 content_html 就是 4 倍的无谓字节（:865 那条 weekly 教训同形）。
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, a.score, a.cover, a.translated_title,
+                    s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -1688,9 +1710,14 @@ async function runDaily() {
     args.push(...selectedIds);
   }
   sql += ' AND ' + notNoiseSql('s');
-  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+  sql += ` ORDER BY a.published_at DESC LIMIT ${CANDIDATE_POOL_READ}`;
 
-  const candidates = await qAll(sql, args);
+  // 级3 每源预配额（44 号 spec 步1）：裸报告虽不花 AI 额度，但**候选语义必须与另四份同一份实现**
+  // ——B20 的教训就是"门槛只接在 3/5 份"，表现成"大部分天正常、个别天混进低质条目"。
+  const psRaw = await qAll(sql, args);
+  const ps = require('../lib/prescreen');
+  const psCap = ps.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  const candidates = ps.applySourceQuota(psRaw, { cap: psCap, limit: DAILY_POOL_LIMIT });
   let valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
   // B20（2026-09-19 第二次对抗审查补漏）：门槛此前只接在 runDailyAi（AI 深析版）那一份，
   // 本函数产出的"裸报告"（degraded/关键词兜底）没有 → 一旦读层选中裸报告，低质条目照样入报。

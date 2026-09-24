@@ -95,7 +95,11 @@ async function generateDaily(windowHours) {
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
   // 取候选文章
-  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
+  // 级3 每源预配额（44 号 spec 步1，与 runner 共用 lib/prescreen 唯一实现）：宽池 2000 轻量行 → 每源限量 → 截 500。
+  // 列故意写死而不是 `a.*`：本函数只消费 title/summary/score/cover（栏目匹配与 formatItem），
+  // 而 content_html 两千行一次取会撞 libsql HTTP 链路（tools/collect-turso.js runWeekly 同一条教训）。
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, a.score, a.cover, a.translated_title,
+                    s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${ARTICLE_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -106,12 +110,16 @@ async function generateDaily(windowHours) {
   }
   // 排除热榜/聚合源
   sql += ` AND ${notNoiseSql('s')}`;
-  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+  sql += ' ORDER BY a.published_at DESC LIMIT 2000';
 
   const candidates = await qAll(sql, args);
 
   // 过滤安检
-  let valid = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  const clean = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
+  const prescreen = require('../lib/prescreen');
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
+  const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
 
   // B20（2026-09-19 独立对抗审查查出，本轮实测坐实）：分析后质量门槛此前**只接在 runner 那一份**
   // （tools/collect-turso.js:1128），本文件与本地 server/services/ai/daily.js 都没有 →
@@ -183,6 +191,7 @@ async function generateDaily(windowHours) {
     schemaVersion: DAILY_SCHEMA_VERSION.KEYWORD,
     candidates: valid.length + gateDropped,
     gateDropped,
+    prescreen: prescreenRead,
     articles: valid.length,
     sections: sections.length,
     totalItems: sections.reduce((n, s) => n + s.items.length, 0),

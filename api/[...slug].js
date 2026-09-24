@@ -686,7 +686,11 @@ async function generateDailyInline() {
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
 
-  let sql = `SELECT a.*, s.name AS source_name, s.spotlight AS source_spotlight
+  // 级3 每源预配额（44 号 spec 步1，与 runner/云端 cron 共用 lib/prescreen 唯一实现）：
+  // 宽池 2000 轻量行 → 每源限量 → 截 500。列写死而非 `a.*`：本函数只消费 title/summary/score/cover/
+  // source_spotlight，而 content_html 两千行一次取会撞 libsql HTTP 链路（同 tools/collect-turso.js runWeekly 的教训）。
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, a.score, a.cover, a.translated_title,
+                    s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at <= ? AND s.enabled = 1
                AND s.type IN (${DAILY_SOURCE_TYPES.map(() => '?').join(',')})`;
@@ -696,14 +700,18 @@ async function generateDailyInline() {
     args.push(...selectedIds);
   }
   sql += ` AND ${notNoiseSql('s')}`;
-  sql += ' ORDER BY a.published_at DESC LIMIT 500';
+  sql += ' ORDER BY a.published_at DESC LIMIT 2000';
 
   const candidates = await qAll(sql, args);
   // 简单安检
-  let valid = candidates.filter(a => {
+  const clean = candidates.filter(a => {
     const t = String(a.title || '');
     return t.length >= 6 && !/参数错误|环境异常|访问过于频繁/.test(t);
   });
+  const prescreen = require('../lib/prescreen');
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null));
+  let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
+  const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
   // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
   // 最晚接上门槛 → id=103 的 stats 形状 {candidates,articles,sections,totalItems} 正是本函数的指纹，
   // 实测带进 2 条 <30 分（29/22）。门槛口径与其余四份共用同一条 lib/brief-guards 实现。
@@ -767,7 +775,7 @@ async function generateDailyInline() {
     }
   } catch { /* 媒体栏失败不阻断日报 */ }
 
-  const stats = { schemaVersion: briefGuards.DAILY_SCHEMA_VERSION.KEYWORD, candidates: valid.length + gateDropped, articles: valid.length, gateDropped, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
+  const stats = { schemaVersion: briefGuards.DAILY_SCHEMA_VERSION.KEYWORD, candidates: valid.length + gateDropped, articles: valid.length, gateDropped, prescreen: prescreenRead, sections: sections.length, totalItems: sections.reduce((n, s) => n + s.items.length, 0) };
   const windowH = Math.round((Date.parse(cutoffEnd) - Date.parse(cutoff)) / 3600e3);
   await qRun('INSERT INTO daily_reports(generated_at, window_hours, stats, sections) VALUES(?, ?, ?, ?)',
     [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]);

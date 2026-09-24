@@ -81,17 +81,9 @@
 - **单文件决策**：`03-公众号走托管RSS决策.md`、`05-任务队列选型决策.md`、`22-rss-first-collection-decision.md`、`23-information-overload-defense.md`、`24-weekly-v2-magazine.md`、`25-hot-redesign.md`、`26-platform-ia-refactor.md`、`P1-12-401-handling-fix.md`
 - **四件套齐**（spec/plan/task/checklist）：`09` `11` `13`~`21`
 - **只有 spec.md**（2026-09-18 清洁核实，别再声称四件套完成）：`10-my-reading`、`12-roadmap-2026`、`27-reader-today`、`27b-source-axes`、`28-hot-redesign`、`29-source-groups`、`30-admin-consolidation`、`31-media-playback`、`32-content-typography`、`33-misc-fixes`、`34-misc-fixes`
-- **在途/待批（2026-09-19 批注轮，全部未动工）**：
-  `35-selfheal-admin-console/`（自愈引擎 + 源健康度窗口 + 彩色百分比；其 35D 已移交 38）、
-  `36-reading-semantics/`（未知日期/类型筛选/足迹口径/阅读器性能）、
-  `37-alerts-observability/`（报警链路恢复 + 结构化事件 + CI 可观测）、
-  `38-admin-ia-refactor/`（后台信息架构与功能隔离，取代 35D）、
-  `39-ai-console/`（AI 能力台：env-only 裁决、假开关清除、模型枚举与耗时）、
-  `40-brief-center-products/`（三报统一期/档位/历史 + 归档投影 + 脏数据订正）、
-  `41-e2e-whitebox-eval/`（端到端 + 白盒评测与去污染，验收流程升级）、
-  `42-full-audit-2026-09/`（**已冻结，不作排期入口**：全量深度审计第一轮，用户 2026-09-21 否决——项目仍在开发阶段，不在该阶段做全体功能审计。
-  可达图/调度登记表等地基数据保留但属 09-19 快照（`rootHead 668e254`），重启前必须重跑分析器；其工具与分析产物已由并行会话隔离进
-  原 42 号全库审计的隔离区（含还原清单 MANIFEST）已随 42 号 spec 于 09-23 作废删除，锚点见 `docs/ISSUES.md`「specs 35~43 作废」行）。已执行且**不撤销**的动作：portal 项目下线/删除、2h 门户同步通道默认关闭）
+- **待批（09-24 立项）**：`44-prescreen-tier/spec.md`（零额度预筛层：级3 每源配额 + 初筛改二元三问；**未批准、未动工**）
+- **已作废删除**：`docs/specs/35`~`43` 共 65 份（09-23 用户裁定整批清除，「不能用前朝的剑斩本朝的官」）。逐字反查/还原锚点在 `docs/ISSUES.md`「specs 35~43 作废」行，**不要再按"35~43 在途"读**。
+  - 随 35~43 作废但**已执行且不撤销**的动作（唯一仍生效的事实）：portal 项目下线/删除、2h 门户同步通道默认关闭。
 
 ## 接口契约（docs/contracts/）· 读层响应形状，改 API 必须同步
 
