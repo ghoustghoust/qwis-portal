@@ -59,6 +59,13 @@
 → **"每天早上有 AI 早报"目前是人工 dispatch 在维持，不是链路在跑**。
 机制未定（同流 7 条 cron 被丢弃 / 延迟后归属到别的串），取证：`GET /actions/runs?event=schedule` +
 逐 run `GET /actions/runs/{id}/jobs`。
+**09-24 14:12Z 追量化，成因基本锁定**：09-15~09-24 每天 `event=schedule` 的 run 只有 **11~13 次**，
+而按 cron 配置每日应触发 ≈**100 次**（collect 4 条 × 每小时 4 次 = 96 + 其余 4 条各 1）→ **投递率 ≈12%**；
+单点位 AI 批的期望命中 0.12 次/日 ≈ **8 天一次**，与上面"8 个 schedule run 里 daily-ai 只成功 1 次"完全吻合。
+已排除 `concurrency` 组（collect.yml 没有 `concurrency:` 块）；也未发现权限或表达式问题（同流其他 job 的门正常开）。
+→ 病根是**AI 批与 collect 挤同一个 schedule 队列**，所以修法 (a)（拆独立 workflow 文件）直接对症。
+仓库 `actions/secrets` 现有 `AGNES_API_KEY/COLLECT_KEY/TURSO_*/`（**无 GH_TOKEN 类**）→ "新流里 dispatch 旧流"这条走不通，
+真要拆就得把两个 AI job **移动**到新文件（不是复制，否则两份定义必漂，坑 #59 同族），这会改掉你熟悉的"在 collect.yml 里手动补跑"入口 —— **属 CI 拓扑变更，等点头再动**。
 ⚠️ 本轮把夜间预算抬到 300min、job 超时抬到 330min，会让"上一次还在跑 → 丢这次 schedule"更容易发生，
 **这条收益与这条风险必须一起观察**，不能只报收益。
 
