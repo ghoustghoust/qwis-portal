@@ -1,6 +1,6 @@
 # 功能矩阵 · 迁移路径 · 待开发目标 · 理想态
 
-> 最后更新：2026-09-23（§1.5：测试条数 604→**609**（新增 regression-filter-observe F1~F5；BL13 三条语料规模锁按裁定③摘除，如实更正本格曾与 ISSUES 矛盾的"0 红"误记）；新增 §1.5 头部口径——`eval:*` 降级为按需工具；push-CI 缺口行核销——`.github/workflows/ci.yml` 已落地。上轮：§1.5 复跑校核 604 / 白盒实存 24 项）
+> 最后更新：2026-09-24（§1.2 新增「候选层每源预配额（级3）」能力行 + §1.5 测试条数 609→**621**（44 号 spec 步1：`lib/prescreen.js` 唯一实现、四处部署面接线、P1~P8 与 E1~E3 执行锁、`elapsedMin` ÷10 修复）。上轮：§1.5 604→609、`eval:*` 降级为按需工具、push-CI 缺口核销）
 > **本文档是唯一权威的功能覆盖矩阵**（SSOT）。其它文档（MODULE_STATUS 等）不再维护矩阵，一律指向本文。
 > 生成方式：**以真实环境逆向推导**——云端能力逐端点实测于 `https://qwis-intel.vercel.app`（2026-09-11），本地能力以 `server/` 代码为准。
 > 更新规则：任何端点增删改 → 先改本文，再改其它文档。每条功能改动必须云端实测后才允许把矩阵标为 ✅。
@@ -47,6 +47,8 @@
 | 手动重新生成 | ✅（先补抓到期源） | ✅ 但不补抓、无 AI 增强 | |
 | 日报设置（栏目/来源勾选/时间） | ✅ | ❌ 404 | 需 `GET/PUT /api/settings/daily` |
 | AI 增强（摘要/评分/tags） | ✅ | ⚠️ 链路已通待移植 | Agnes 云端已修复（2026-09-11，根因=settings.ai 污染）；翻译/摘要/日报增强按 specs/12-roadmap-2026 移植 |
+
+| 候选层每源预配额（级3·44 号 spec 步1） | ❌ 故意不接（见说明） | ✅ | 唯一实现 `lib/prescreen.js`（`applySourceQuota` / `prescreenCapOf` / `prescreenStats`）；配额取 `settings['prescreen.perSourceCap']` 缺省 2，坏值回默认并出声。**AI 调用量不变，换的是源覆盖**：24h 池 2,688 篇 / 469 源，旧写法 `ORDER BY published_at DESC LIMIT 500` 只覆盖 94 源（500 个坑里 352 个是同一批高频源的"第 3 篇以后"）。形状 = 宽池 2000 轻量行（不取 `content_html`）→ 每源取前 cap 篇 → 截 500 送模型；runner 的 `runDailyAi`、`runDaily` 与云端两份生成器共四处接线，正文到深析阶段按 id 单取。读数落 `stats.prescreen`（缺正文条数另记 `stats.analyzeNoBody`）。本地灾备端 `server/` 按用户 09-24 裁定 A **不接**（不在部署面，`.vercelignore` 排除；该豁免的前提由锁 P6b 守着，一旦 server/ 回到部署面自动判红）。链路约束见 `docs/CLOUD_PIPELINE_GUIDE.md` 不变量 20；判据 `tests/regression-prescreen.test.js` P1~P8 与 `tests/regression-prescreen-exec.test.js` E1~E3（E2 生产模式真跑：不配额覆盖 3 源 → cap=2 覆盖 9 源）。步2（词表代码化 + 初筛改二元三问）未开工 |
 
 ### 1.3 管理后台（/admin/）
 
