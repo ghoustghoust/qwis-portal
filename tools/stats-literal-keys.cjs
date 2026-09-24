@@ -111,4 +111,17 @@ function statsLiterals(text) {
   return out;
 }
 
-module.exports = { skipString, objectLiteralAt, topLevelKeys, statsLiterals };
+// 找出源码里所有 `report: {…}` / `report = {…}` 这类"某个名字的对象字面量"的**顶层**键。
+// 为什么单独要这份：读层"响应同形"判据第一版是"取锚点后 700 字符看有没有 `theme:` 字样" ——
+// 注释里写一句就满足，字段嵌进子对象也满足，而紧邻的下一处返回点的字段会被算进这一处（09-24 第三轮审查实测）。
+// 复用 objectLiteralAt（括号配平、跳字符串/注释）+ topLevelKeys（只取深度 1），这三条假绿一次堵掉。
+function objectLiteralKeysAt(text, anchor) {
+  const out = [];
+  for (let i = text.indexOf(anchor); i >= 0; i = text.indexOf(anchor, i + 1)) {
+    const lit = objectLiteralAt(text, i + anchor.length - 1);
+    if (lit) out.push({ line: text.slice(0, i).split('\n').length, keys: topLevelKeys(lit) });
+  }
+  return out;
+}
+
+module.exports = { skipString, objectLiteralAt, topLevelKeys, statsLiterals, objectLiteralKeysAt };

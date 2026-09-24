@@ -1,8 +1,9 @@
 // 导语归因锁 T1~T5（H30）
 // 为什么有这几条（用户 09-24）：「我们要让功能正式的可以使用，能进行之前所说的各项功能，
 //   而不是之前验证的一半停摆一半未开发」。实测（`tools/_probe-ai-feature-presence.cjs`，只读）：
-//   库里 AI 档 16 行里 **15 行 theme 为空（94%）**、`themes` 主题全景 **14/16 行 0 簇**，
-//   而 `api/_ai.js` 的三条 `return null` 出口**既不落日志也不入库** ⇒ "模型没答"与"答了但被自己的污染判据否决"
+//   库里 AI 档 16 行里 **15 行 theme 为空**；按北京日 5 天里 4 天当天所有期都无导语；全库 57 期只有 1 期带导语
+//   （`id=49 / 09-20`）—— 单看"94%"会把"读者几乎从没读到"说成"偶尔读到"，而 `api/_ai.js` 的三条 `return null` 出口
+//   **既不落日志也不入库** ⇒ "模型没答"与"答了但被自己的污染判据否决"
 //   事后完全分不清，所以这项挂着 ✅ 的功能能安静地缺好几天。
 // 两条形状约定（09-24 审查指出后写清）：
 //   ① `require('../api/_ai.js')` **放在用例内**，不放文件顶层 —— 顶层加载一旦断，整文件变成"文件名级红"，
@@ -15,6 +16,8 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
+// 纯函数提取器（无副作用、不读环境），T6 与 P12 共用同一份 ⇒ 判据不会两边各写一套再漂移
+const { objectLiteralKeysAt } = require('../tools/stats-literal-keys.cjs');
 
 const ai = () => require('../api/_ai.js');
 
@@ -59,20 +62,27 @@ test('T4 runner 在 theme 为空时必须把 themeSkip 写进 stats（不许只 
   assert.match(src, /why: 'throw'/, '抛错分支也必须被归因（原来这条只在日志里，事后查不到）');
 });
 
-test('T6 读层每一处 report 返回必须同形：不许漏 theme/schemaVersion/degraded（全文件扫，不只 handleDaily）', () => {
-  // 为什么（09-24 两轮对抗审查）：新鲜分支给了 `theme/schemaVersion/degraded`，过期分支只给 sections/stats ——
-  // 前端 `item.theme` 无兜底，于是"库里有导语但读者看不到"，档位标记一起丢（B112 同族的另一个入口）。
-  // 第一版本锁只扫 `handleDaily`，随后实测在同一文件里又扫到**第 4 处**同形缺陷（`handleDailyRegenerate`，
-  // 管理后台点"重新生成"后回给前端的那份）⇒ 判据覆盖面本身是缺陷，改成扫整个部署面文件。
-  const src = fs.readFileSync(path.join(ROOT, 'api', '[...slug].js'), 'utf8');
-  const sites = [...src.matchAll(/report: \{/g)];
-  assert.ok(sites.length >= 4, `部署面只扫到 ${sites.length} 处 report 返回，判据已空转（写法变了或文件变了就要同步这里）`);
-  for (const m of sites) {
-    const seg = src.slice(m.index, m.index + 700);
-    for (const k of ['theme:', 'schemaVersion:', 'degraded:']) {
-      assert.ok(seg.includes(k), `读层有一处 report 返回漏了 ${k} —— 走这条分支的读者看不到导语/档位（B112 同族）`);
+test('T6 读层每一处 report 字面量的**顶层**必须带 theme/schemaVersion/degraded（括号配平，不数窗口）', () => {
+  // 为什么（09-24 三轮对抗审查逐步收紧）：
+  //   第 1 轮抓出：新鲜分支给三个字段，过期分支只给 sections/stats ⇒ "库里有导语但读者看不到"（B112 同族）。
+  //   第 2 轮抓出：只扫 handleDaily 会漏第 4 处（`handleDailyRegenerate`，后台点"重新生成"后回给前端的那份）。
+  //   第 3 轮抓出：判据形式本身还是错的 —— "锚点后 700 字符里含 `theme:` 字样"三种假绿：① 注释里写一句就满足
+  //   ② 字段嵌进子对象（前端只认 `item.theme`）也满足 ③ 两处返回点挨得近时，下一站的字段被算进这一站。
+  //   ⇒ 换成 objectLiteralKeysAt：括号配平取字面量原文、只认**深度 1** 的键（同一个提取器已被 P12 的坏样本自证过）。
+  const files = ['api/[...slug].js', 'api/daily-generate.js'];
+  let sites = 0;
+  for (const rel of files) {
+    const text = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+    for (const anchor of ['report: {', 'report = {']) {
+      for (const s of objectLiteralKeysAt(text, anchor)) {
+        sites++;
+        for (const k of ['theme', 'schemaVersion', 'degraded']) {
+          assert.ok(s.keys.includes(k), `${rel}:${s.line} 的 ${anchor} 字面量缺顶层键 ${k} —— 走这条分支的读者看不到导语/档位（B112 同族）`);
+        }
+      }
     }
   }
+  assert.ok(sites >= 5, `部署面只扫到 ${sites} 处 report 字面量（<5），判据已空转 —— 写法变了或文件变了就要同步这里`);
 });
 
 test('T5 全仓扫：每一处 generateThemeDetailed 调用都必须投影 .theme 或落归因（防"别处用错形状还全绿"）', () => {

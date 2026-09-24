@@ -206,7 +206,16 @@ async function generateDaily(windowHours) {
     [nowIso(), windowH, JSON.stringify(stats), JSON.stringify(sections)]
   );
 
-  return { id: result.lastInsertRowid, generated_at: nowIso(), stats, sections };
+  // 09-24 第三轮审查：这是部署面**第 5 处**早报响应形状（POST /api/daily-generate 的写入回执，
+  // 后台"生成日报"按钮直接读它）。原来只回 id/generated_at/stats/sections ⇒ 同一个"读 report.theme"的
+  // 前端在四条 GET 分支上能看到导语，在这条路上看不到。三个字段一律从同一份 stats 取，与读层同形（锁 T6）。
+  const report = {
+    id: result.lastInsertRowid, generated_at: nowIso(), stats, sections,
+    theme: stats.theme || null,
+    schemaVersion: stats.schemaVersion || 1,
+    degraded: !!stats.degraded,
+  };
+  return report;
 }
 
 function formatItem(a) {
