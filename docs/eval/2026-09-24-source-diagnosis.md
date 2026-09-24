@@ -76,3 +76,22 @@
 2. **形态出池**：`/commits/`、`github.com/*/commits/*` 这类流从候选池出（不进翻译、不进初筛），保留在源列表里可见。
 3. **按端分面**：16 个本地专属类型源在云端列表里应标"本地专属"，不计入"云端僵尸"（否则治理指标是假的）。
 4. **`published_at` 缺失的源**（B 桶 2 个）：采集侧补时间口径，否则它们永远进不了任何窗口查询。
+
+## 六、顺带做的系统性清点：**"代码在读、后台写不进去"的配置键**（喂给后台重构）
+
+`prescreen.perSourceCap` 不是孤例。做法：把部署面（`tools/collect-turso.js` + `api/*.js` + `lib/*.js`）所有
+`getSetting('X')` 的键取全集（36 个），再逐个看它在部署面有没有 `setSetting('X')` 写点。
+
+| 键 | 写点 | 是什么 | 为什么要紧 |
+|---|---|---|---|
+| **`ai.minIntervalMs`** | **无** | AI 调用节流间隔（`lib/ai-throttle.js` `DEFAULT_GAP_MS=4000`） | **今晚"压 gap 换时间"这个选项在云端目前调不动**：`PUT /api/settings` 对 `ai` 段整体 400（09-11 事故后 env-only 裁决），库里又没这行 → 永远跑默认 4s |
+| **`ai.filterThreshold`** | **无** | 初筛剔除门槛（现 30 分） | 步2 改三问时唯一的人为阈值，却不可配 |
+| `mybrief.interestProfile` | **无** | 个性化早报的兴趣画像 | "个性化早报"功能的一半没接线 |
+| `translate` / `reading.digest` / `hot.categories` | **无** | 翻译配置 / 阅读摘要 / 热点分类 | 读得到、改不了：要么补写路径，要么显式声明为运维键 |
+| `prescreen.perSourceCap` | ✅ 本轮补 | 级3 每源配额 | 从"只能直改库"→ 可写 + GET 透出 + 后台一格 |
+| `alerts` / `alerts.cooldowns` / `ai.glossary` / `daily.cocoonFamiliar` / `translate.queue` | ✅ 另有端点 | —— | **不算缺口，别误报** |
+| `ai.stats` / `hot.eventsCache` / `weekly.latest`/`archive` / `wechat.*` / `axes.migrated` / `subscription.ids` / `backup.latest` / `cloud.collect` | 机器自写 | 状态/缓存/进度键 | **不需要人配**，别给它们做格子 |
+
+给后台重构的结论：真正要补的是**"运维键 vs 人可配键"的显式分类**（而不是每个键一个输入框）；
+但 `ai.minIntervalMs` 与 `ai.filterThreshold` 是**确实在决策路径上、却没人能改**的两个 ——
+今晚的预算/gap 议题正好撞在前者上。已登记 ISSUES **H28**。
