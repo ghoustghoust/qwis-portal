@@ -23,7 +23,7 @@ web/src/          # 前端 React 代码
   components/     # Tab 组件（每个 Tab 一个文件）
   pages/          # 页面组件（AdminPage、ReaderPage 等）
 docs/             # 项目文档
-docs/deprecated/  # 已归档的历史文档
+docs/features/     # 模块功能文档（现状叙述）
 tools/            # 工具脚本
 ```
 
@@ -106,7 +106,7 @@ node tools/audit-cloud.js   # 云端巡检（需生产环境可达）
 
 - 每个文档头部必须有 `> 最后更新：YYYY-MM-DD`
 - 活文档（如 ISSUES.md）在修改记录区追加条目
-- 归档文档移入 `docs/deprecated/` 并加标注
+- 作废的文档**整批删除**并在 `docs/ISSUES.md`「作废登记」留反查锚点（09-25 裁决；不再搬进目录留着）
 
 ---
 

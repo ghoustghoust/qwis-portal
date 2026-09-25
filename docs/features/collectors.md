@@ -1,10 +1,9 @@
 # 采集层架构
 
-> ⚠️ 适用范围：本文描述本地 Express（server/）实现。云端对应物：采集 tools/collect-turso.js、API api/[...slug].js；差异与云端覆盖见 docs/FEATURE_MATRIX.md。
-> 补注：云端 YouTube 熔断阈值 10、RSS 间隔 60min。
-
-> `server/services/collectors/` — 数据采集引擎
-> 最后更新：2026-09-05
+> ⚠️ 适用范围：**采集语义全库有三份实现**——本地端 `server/services/collectors/`、云端读层的即时采集 `api/collect.js`、
+> 主链路 runner `tools/collect-turso.js`（AGENTS §1：改任何一份的过滤/清洗/熔断/去重/UA/间隔，必须同步检查另外两份）。
+> 本文写"怎么算"，**不复制易变数字**（间隔与阈值的真值去处见下文两处指针）。
+> 最后更新：2026-09-25（按只读审查订正：RSS 那族间隔的兜底值原本写得差着一个量级，且漏了"这一族不查适配器默认值"的分岔）
 
 ## 设计目标
 
@@ -75,24 +74,30 @@ fetchSource(source)
 ### 源错误状态机（store.js）
 
 ```
-markSourceError(source, errMsg)
+标记源错误(source, errMsg)
   ├── fail_count += 1
   ├── extra.lastError = errMsg（脱敏）
-  ├── fail_count >= 3 → enabled=0（自动熔断）
+  ├── fail_count 达到「该类型的熔断阈值」→ enabled=0（自动熔断）
+  │     ⚠️ 阈值**不在本文档写死**：全库一份在熔断实现里（`lib/source-breaker.js`），
+  │     按源类型区分——视频类放宽（反爬会假 404/500，误杀代价大），其余更严。三端共用这一份。
   └── fail_count >= 2 → 触发报警（异步，非批量路径）
 
-unfreezeSource(id)
+解冻源(id)
   ├── enabled=1, fail_count=0, status='ok'
   └── 清 extra.lastError/lastErrorAt，保留 intervalMin/etag
 ```
 
-### 刷新间隔计算（_shared.js）
+### 刷新间隔怎么算
 
-`intervalMinFor(source, registry)` 优先级：
-1. `source.extra.intervalMin`（源级覆盖）
-2. `settings.intervals[type]`（全局配置）
-3. `adapter.defaultIntervalMin`（适配器默认）
-4. 兜底值（RSS 8h，抖音 360min，B站 60min）
+优先级**不是**一条直线，且**按类型分岔**（这是 09-25 订正的旧错：本文原先写"RSS 兜底 8h"，实际差着 16 倍）：
+
+1. 源级覆盖 `extra.intervalMin` —— 最高，单源可钉。
+2. 全局配置 `settings.intervals[...]`。
+3. **文字类那一族（rss / wechat / x / youtube）到此为止**：它们共用一个"文章刷新间隔"键，
+   没配就用默认值（真值见 `_shared.js`，云端与本地是否同源见 `FEATURE_MATRIX.md` §1.4）——
+   **这一族不查适配器默认值**，所以"改了适配器默认间隔想影响 RSS 源"是无效的。
+4. **B站/抖音**：查适配器默认值，再不行才落各自的兜底数。
+5. 其余（热榜/未知类型）：适配器默认 → 回落到文章族那个间隔。
 
 ## 数据模型
 
@@ -119,7 +124,7 @@ const registry = require('./registry');
 
 ## 注意事项
 
-1. **pending_items 表只有 6 列**（id, type, url, name, status, error, imported_at），无 source_id/created_at
+1. **`pending_items` 是"搬进来的待办"表，不是文章表**：列见建表语句，**没有 source_id、也没有 created_at**（要按源归属得先解析出 url 再落 articles）
 2. **异步回调内的 DB 操作必须 try/catch**，prepare 抛错可崩进程
 3. **better-sqlite3 不支持编号参数 `?1`**，一律用匿名 `?`
 4. **抖音串行限速**：fetch 内部经 douyin.enqueue 严格串行 ≥10s 间隔

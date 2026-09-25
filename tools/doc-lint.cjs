@@ -78,7 +78,7 @@ const strictOk = (f) => {
 const MACHINE_EVIDENCE = ['docs/eval/'];
 const lintTargets = [path.join(ROOT, 'AGENTS.md'), path.join(ROOT, 'ARCHITECTURE.md'), path.join(ROOT, 'README.md')]
   .concat(docsFiles)
-  .filter((f) => !ARCHIVE_PREFIXES.some((p) => rel(f).startsWith(p)))
+  .filter((f) => !ARCHIVE_PREFIXES.some((p) => rel(f).startsWith(p)) || rel(f) === 'docs/archive/README.md')
   .filter((f) => !MACHINE_EVIDENCE.some((p) => rel(f).startsWith(p)));
 // 悬空判据必须按 **git 会带走的那棵树** 判，不能按工作树判 —— 否则"本地存在但 CI 不存在"的文件
 // （典型：`tools/_*.cjs` 这类被 gitignore 的一次性探针）会让我在本地全绿、推到 CI 当场红。

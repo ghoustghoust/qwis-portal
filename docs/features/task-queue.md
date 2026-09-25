@@ -8,7 +8,7 @@
 ## 设计目标
 
 - **不引入 Redis**：项目哲学自包含，PM2 单 fork，SQLite 足够
-- **优先级排序**：focus 源高优先级（100），普通源（50）
+- **优先级排序**：带"特别关注"标记（27b 的聚光灯轴，旧称"重点/focus"已退役）的源排更前，其余普通档 —— 具体数值一份在调度器实现里，本文不复制
 - **同源去重**：同一 source_id 同时只允许 1 个 running
 - **崩溃恢复**：进程重启后自动将 running 任务重置为 pending
 - **可回退**：`QUEUE_ENABLED=false` 环境变量回退串行模式
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS job_queue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   type TEXT NOT NULL,           -- 'fetch_source' | 'enrich' | ...
   payload TEXT NOT NULL,        -- JSON: {sourceId, ...}
-  status TEXT DEFAULT 'pending', -- pending | running | completed | failed
+  status TEXT DEFAULT 'pending', -- pending | running | completed | failed | dead（dead＝重试耗尽，需人工重试）
   priority INTEGER DEFAULT 0,   -- 越高越先执行
   retries INTEGER DEFAULT 3,    -- 最大重试次数
   attempts INTEGER DEFAULT 0,   -- 已尝试次数
@@ -102,13 +102,17 @@ start()
       └── UPDATE job_queue SET status='pending' WHERE status='running'
 ```
 
-### 重试策略
+### 重试策略（09-25 订正：旧文档漏了 dead 态与退避，按它读会以为失败会无限重来）
 
 ```
-retryFailed()
-  └── SELECT * FROM job_queue WHERE status='failed' AND attempts < retries
-      └── UPDATE SET status='pending'  // 重新入队
+扫失败任务
+  ├── 尝试次数 < 上限 → 按「指数退避」延后重新入队（有封顶，不越等越久的上限值看实现）
+  └── 尝试次数 ≥ 上限 → 置 dead：不再自动重试，只能人工从队列面板重试
 ```
+
+⚠️ 两个历史上真咬过人的坑（注释留在实现里）：
+- 重试判定**不能**用 SQLite 的字符串列做数值比较（类型序 `INTEGER < TEXT` 恒假 ⇒ 重试永不发生）；
+- dead 判定要放在循环内，**不能**在查询里预过滤（那样放不进去就永远不可达）。
 
 ## 调度器集成
 

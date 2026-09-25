@@ -42,7 +42,7 @@ start()
   ├── jobsFulltext.scheduleFulltextRecovery()  // 全文补抓
   ├── 日报补跑检测（needsGeneration → 立即生成）
   ├── 队列轮询注册（queue.enabled 控制）
-  ├── 门户同步注册（每 2h）
+  ├── 门户同步注册（**默认不注册**：要 settings 显式开启，且同步目标项目已不存在）
   ├── 数据清理注册（每 24h）
   ├── 报警清理注册（每 10min）
   ├── jobsRecovery.resumeInterrupted()  // 中断恢复
@@ -76,7 +76,7 @@ jobsDaily.setTickingRef(tickingRef);  // 共享对象引用
 | fulltext.js | 全文补抓（<1000 字符薄内容） | 每 6h cron |
 | opml.js | OPML 源清单同步 | 每 12h setInterval |
 | maintenance.js | 数据清理 + 报警清理 + 健康自检 | 24h / 10min / 5min |
-| portal.js | Vercel portal 快照同步 | 每 2h setInterval |
+| 门户同步 | （历史：向已下线的 Vercel 只读门户搬快照） | **默认关闭**，需显式开设置才注册；目标项目已删除，开了也不会产出可用结果 |
 | recovery.js | 中断的 bilibili/douyin pending 恢复 | 启动时一次性 |
 
 ## 接口契约

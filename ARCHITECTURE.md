@@ -42,7 +42,7 @@
 > **编号/日期自洽说明（09-20 文档洁净轮）**：本文件 `git log` 的最后提交日是 2026-09-20，但**最后一次内容改动是 09-19 夜那次「清理 04:13 从未触发」加注**（`530a5f4` 当天写完、随叫停轮压到 09-20 才推）——所以头注日期停在 09-19 是对的，不是漏更。提交日 ≠ 内容日这件事本身，就是 §3 Step 2 需要人读一遍的原因。
 > ⚠️ **图里"清理 04:13"是设计时刻,不是实际状态**（2026-09-19 夜实测,见 `docs/ISSUES.md` B101）：`cleanup` job 唯一的触发条件是 `if: github.event.schedule == '13 20 * * *'`,而实际主力触发器 cron-job.org 走的是 `workflow_dispatch`,其 `mode` 选项里**根本没有 cleanup** → dispatch 永远跑不到它；216 条 scheduled run 里没有一条落在 20:13 前后;生产心跳近 168 轮（≈23h）里 `cleanup` 出现 **0 次**。反向证据:拿那两条 DELETE 的原样谓词做 COUNT,线上现有 **10,733 条**（保留清理 8,616 + 热榜 2,117）满足删除条件却仍在库里 → **保留清理自引入起基本没执行过**。改这张图之前请先读 B101（原出处 43 号 spec 已作废删除，锚点见 `docs/ISSUES.md`；是否要恢复每日删除属产品决策 D4,不是bug修复）。
 >
-> ✅ **上面这条已被 09-23 实测推翻 —— 清理现在是常驻执行的路径。** 直读生产 `settings['cloud.collect'].history`：**cleanup 已实跑两轮 —— `2026-09-20T22:27Z` 删 50,823（热榜 26,532 + 保留 24,291）、`2026-09-21T23:17Z` 删 8,483（324 + 8,159）= 两天 59,306 行**；删除闸 `deleteGateAny` 现判**放行**（转储凭证 71,742 行 / 19h 内），此刻待删 7,500 条 = 全库 35.4%。取证命令 `npm run check:retention`。作废的 43 号 spec 原文逐字反查锚点见 `docs/ISSUES.md` 的「specs 35~43 作废」行。
+> ✅ **上面这条已被 09-23 实测推翻 —— 清理现在是常驻执行的路径。** 直读生产 `settings['cloud.collect'].history`：**cleanup 已实跑两轮 —— `2026-09-20T22:27Z` 删 50,823（热榜 26,532 + 保留 24,291）、`2026-09-21T23:17Z` 删 8,483（324 + 8,159）= 两天 59,306 行**；删除闸 `deleteGateAny` 现判**放行**（转储凭证 71,742 行 / 19h 内），此刻待删 7,500 条 = 全库 35.4%。取证命令 `npm run check:retention`。作废的 43 号 spec 原文逐字反查锚点见 `docs/ISSUES.md` 的「作废登记」一节。
 > **两件仍未定，别顺手当已验证**：① 两轮心跳落在 22:27Z / 23:17Z 而**非** cron 声明的 `13 20 * * *`，"20:13 那条 schedule 究竟有没有在触发"仍未证实 —— 图上"清理 04:13"至今只是设计时刻；② 待删窗口列是 `COALESCE(published_at, created_at)`（`lib/retention.js:30`），而采集在做历史回填 → 实测 09-22 单日入库 8,737 条里 **7,083 条（81%）当天就已过窗**（发布平均滞后 149.1 天）。所以"是否恢复每日删除属产品决策、不是 bug 修复"这句**仍然成立**，只是决策对象从"要不要开"变成"要不要这样删"。
 
 ## 2. 仓库与目录
@@ -64,10 +64,12 @@
 
 1. **采集必须在本地/云端函数,不能在浏览器**——风控与 Cookie。
 2. **公众号 = wechat2rss 托管 RSS**(2026-09-04 起):自建 we-mp-rss(Python 子进程 + 微信读书 Cookie)已退役——太重且未内部集成。375 个 bestblogs wechat2rss 源以 type='rss' 导入,正文在 `content:encoded`(rss 适配器已读),图片由对方 img-proxy 代理(单点依赖,已知情接受);缺失的 28 个原 wemp 源接受损失。
-3. **catch-all serverless**:Vercel Hobby 限 12 个函数,portal/api/[...slug].js 单函数路由全部 /api/*。
-4. **云端读 Turso 优先,静态 JSON 快照兜底**(portal/public/data/)。
+3. **catch-all serverless**:Vercel Hobby 限 12 个函数,`api/[...slug].js` 单函数路由全部 /api/*。
+4. **云端读 Turso 优先,静态 JSON 快照兜底**（`static-data/`）。
 5. **管理后台是独立 bundle**(admin.html),不随读者前端分发;云端 /admin/ 有口令(httpOnly cookie)。
-6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso。**cron 具体值唯一事实源 = `.github/workflows/collect.yml:24-36`**（现 7 条 cron / 9 个 job：采集、日报、AI 早报×2、我的早报、周刊、快照、清理；AGENTS.md §2.5 禁止在本文档写死），本行只记语义：采集每 15min 全量到期源，**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。**⚠️ 09-23 实测：8430047 因内嵌死 PAT 连跪已于 09-20 自动停用，当前只剩 schedule 一档在撑（全天仅 2 轮 collect）——现状与处置见 `docs/ISSUES.md` B136，恢复前本条的"双保险"按一档读**。本地调度器管本地采集。YouTube 源熔断阈值放宽为 10(反爬假 404/500 防误杀),其余类型仍为 3。**09-11 采集语义新规**:RSS 云端间隔 60min;热榜时间戳按名次递减 60s 排列(fix-hotlist-times.js)。
+6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso。**cron 具体值唯一事实源 = `.github/workflows/collect.yml:24-36`**（现 7 条 cron / 9 个 job：采集、日报、AI 早报×2、我的早报、周刊、快照、清理；AGENTS.md §2.5 禁止在本文档写死），本行只记语义：采集每 15min 全量到期源，**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。**⚠️ 09-23 实测：8430047 因内嵌死 PAT 连跪已于 09-20 自动停用，当前只剩 schedule 一档在撑（全天仅 2 轮 collect）——现状与处置见 `docs/ISSUES.md` B136，恢复前本条的"双保险"按一档读**。本地调度器管本地采集。**熔断阈值与各源类型间隔的写死值不在本文档复制**（AGENTS §2.5 单一事实源）：
+   阈值一份在三端共用的熔断实现里（YouTube 放宽、其余更严，理由=反爬假 404/500 防误杀），间隔真值见 `docs/FEATURE_MATRIX.md` §1.4 与 runner 行。
+   热榜时间戳按名次递减 60s 排列。
 7. **前端无感刷新:60s 轮询 `/api/articles/since`**(2026-09-11):SSE 长连接在 Vercel serverless 不支持(函数 30s 超时即断),已废弃 `server/routes/events-sse.js` 的云端路径,前端改为每 60s 轮询增量端点拉新。
 8. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
 9. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
@@ -164,26 +166,23 @@ server/services/
 - **手动同步门户(历史脚本)**:portal 独立仓库已合并进根项目,`node tools/sync-portal.js` / `sync-portal.bat` 现存用途仅为导出静态 JSON 快照兜底(export-portal.js),推送分支不再生效
 - **健康自检**:根目录 `npm test`;冒烟 `node smoke-test.js`(生产库副本上跑,零副作用);云端 `node tools/audit-cloud.js`(19 项)
 - **日志**:主进程 console
-- **详细 runbook**:`docs/RUNBOOK.md`(唯一现行运维手册,2026-09-04 整合);平台指南 `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`;历史文档全部在 `archive/`
+- **详细 runbook**:`docs/RUNBOOK.md`(唯一现行运维手册,2026-09-04 整合);平台指南 `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`
 
 ## 8. 测试约定
 
 - node:test,`tests/*.test.js`,helpers.js 用 APP_DATA_DIR 隔离临时库(任何引用 server/* 的测试文件必须先 require helpers)
 - 每个线上修过的 bug 必须有回归测试(regression-phase9.test.js、regression-aclass.test.js 是样板)
-- 改完跑 `npm test` + `npm run build`(含 portal build),全绿才算完
+- **交付链以 `AGENTS.md` §3 为准**（唯一命令清单在 `docs/FEATURE_MATRIX.md` §1.5）：`npm test` → push → CI + Actions → 云端实测 → 冒烟 → 对抗审查 → 同步文档。**"本地测试全绿"从来不等于交付完成**
 
-## 8. 历史修复纪要（2026-09-04 ~ 09-05，已收敛归档）
+## 8.1 仍然生效的两条口径（09-05 定，原「历史修复纪要」已删，语义并进模块文档）
 
-> 完整过程记录已归档至 `docs/changes/archive/` 与 `docs/deprecated/`，语义权威见 `docs/features/`。速览：
-- **09-04 A 类硬伤批量修复**：pending_items schema、编号参数空转、DataTab 上传契约、抖音双端点等（archive/docs-deprecated/A_CLASS_FIX_REPORT.md）。
-- **09-04 we-mp-rss 退役 + bestblogs 迁移**：公众号=wechat2rss 托管 RSS（375 源入「公众号」组）；自建引擎代码移 trash/；.env WEMP_* 失效。
-- **09-05 十期**：源库 Tab + 自动分类（spec：docs/specs/09-source-library-autoclassify/）。
-- **09-05 视觉精修 / 信息架构修正**：设计 token 共享组件；热榜/聚合源退出文章流（默认排除，include_hot=1 豁免）；word_count 纯文本字数列替代 LENGTH(content_html)；OverviewRail 右栏（features：docs/features/my-reading.md 等）。
+- **热榜/聚合源默认退出文章流**（读层默认排除，显式豁免才带上）——口径写在 `docs/features/my-reading.md`。
+- **字数用 `word_count` 纯文本列**，不用 `LENGTH(content_html)` —— 列义写在 `docs/features/collectors.md`。
 
 ## 9. Agent 协作规则
 
 1. 先读本文档 + 对应 runbook,再动手
-2. 主系统 server/ 业务代码与 portal/ 云端代码**共享语义但不共享进程**,改一边要想另一边
-3. 新功能默认:本地 API + 云端 API 双实现,前端一套
+2. 三端**共享语义但不共享进程**：读层 `api/`、runner `tools/collect-turso.js`、本地 `server/` 各一份实现，**采集语义有三份副本**——改任何一份的过滤/清洗/熔断/去重/UA/间隔必须同步检查另外两份（AGENTS §1）。`server/` 不在部署面（Vercel 只部署 `api/`+`web/`）
+3. 新功能默认先问"这属云端还是本地专属"：云端能做的一律只落云端两份部署面（`api/` + runner），本地端按需跟；**不再要求"本地 API + 云端 API 双实现"**（那是 portal 时代的旧默认）
 4. 不要引入需要无头浏览器的云端功能(抖音是本地专属)
 5. 提交前:npm test 全绿 + 构建无错 + 涉及云端的跑 audit-cloud.js

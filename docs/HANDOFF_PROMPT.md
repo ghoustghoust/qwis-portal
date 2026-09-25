@@ -29,6 +29,6 @@ cron-job.org 外置触发兜底）。采集语义有三份实现，改一必查�
 
 > 进度快照写在这里必然过时（2026-09-12 那份快照就是这么烂掉的）。接手 Agent 请读：
 > - 活跃问题 → `docs/ISSUES.md`
-> - 待办需求 → `docs/NEXT-DEV-REQS.md`
-> - 已完成且已验收的历史 → `docs/archive/`（分类见 `docs/DOC_GOVERNANCE.md` §2.3）
-> - 交叉审核报告（09-11~12）→ 已归档 `docs/deprecated/AUDIT-2026-09-12.md`
+> - 待办需求 → `docs/FEATURE_MATRIX.md` §2 + `docs/NEXT-DEV-REQS.md`（需求定义）
+> - 模块地图（先在这里定位"用户改的是哪个模块"，再决定读哪份文档）→ `docs/INDEX.md`
+> **不要去翻归档目录重建进度**：已作废的历史件 09-25 已整批清除，要反查用 `docs/ISSUES.md`「作废登记」一节的 git 锚点。

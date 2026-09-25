@@ -53,27 +53,30 @@
 
 ### 2.2 白名单之外的目录职责
 
-- `docs/deprecated/` —— **整篇作废**的文档。头注必须写「已作废 + 日期 + 替代文档指针」，禁止静默删除（AGENTS §2.4）。
-- **例：整批作废可以直接删（2026-09-23 补，`docs/specs/35~43` 共 65 份即按本条处理）**。一份份搬进 `deprecated/` 等于把已失效的前情提要再养一遍，所以允许删目录 —— 但**必须同时满足三条，缺一即算静默删除**：
+- **作废 = 删，不是搬进目录养着**（用户 09-25 裁决「清除过去的文档，别让过时的文档影响判断」）。
+  原 `docs/deprecated/` 已按此清空并删除（19 份作废件 + 5 份已完结变更，09-25），该目录不再是文档体系的一部分。
+  "不静默删除"由**一条作废台账 + git** 承担，不再由"文件还在原地"承担：
+- **整批删除必须同时满足三条，缺一即算静默删除**（2026-09-23 立，`docs/specs/35~43` 共 65 份即按本条处理）：
   1. **先确认可反查**：`git ls-files <目录>` 逐份确认已被跟踪、且工作树干净（被 `.gitignore` 或内容过滤器挡住的孤儿文件要单独救出 —— 本轮 `42/quarantine/验证截图/README.md` 就是这样一份未入库副本，它记着「三项 P1 修复当初没留下视觉证据」，已改登记为 `docs/ISSUES.md` H17）。
   2. **登记锚点**：在 `docs/ISSUES.md` 写一行作废记录，含删除前的 tree sha（还原命令 `git restore --source=<sha> -- <路径>`、看原文命令 `git show <sha>:<路径>`）与被删文件数。
   3. **不可再生的内容先落新家再删**：裁决、未验收边界、"某个键/某张表根本不存在"这类**只有探针才查得出来**的事实，删前必须逐条搬到活文档（本轮去向 = H12/H14/H15/H16/H17/H18 + ARCHITECTURE §1 + CLOUD_PIPELINE_GUIDE + EVAL_GUIDE + FEATURE_MATRIX + pitfalls/collection）。
-  - 仍留在各文档里的 **`39-1`/`41-2`/`35A-F6` 这类编号引用不逐条清理**：作废登记里统一声明「自此只作历史编号读，不得当"方案已存在"引用」。
-  - ⚠️ 已知副作用：删掉大批文档会**缩小文档门禁的扫描分母**。本轮 `doc-lint` 的锚点分母从 172 跌到 47、裸文件名从 43 跌到 12，触发 L3/L5 两把「分母过小 = 判据写空」锁变红。这类红**不许靠下调阈值消音**，收口方式见 `docs/ISSUES.md` 的对应裁定行。
-- `docs/archive/` —— **已完结内容**的分类归档层，见 §2.3。
+  - **删完之后不要再回头给这些文件写指针**：现行文档里出现"原文见某归档件第几节"这类地址式描述，等于把过去的上下文重新引回现在（用户 09-25 明确禁止）。反查只走 git。
+  - ⚠️ 已知副作用：删掉大批文档会**缩小文档门禁的扫描分母**。09-23 那轮 `doc-lint` 的锚点分母从 172 跌到 47、裸文件名从 43 跌到 12，触发 L3/L5 两把「分母过小 = 判据写空」锁变红。这类红**不许靠下调阈值消音**，收口方式见 `docs/ISSUES.md` 的对应裁定行。
+  - **删完仍散落在各文档里的历史编号**（`39-1`/`41-2`/`35A-F6` 这类）不逐条清理：作废登记里统一声明「自此只作历史编号读，不得当"方案已存在"引用」。
+- `docs/archive/` —— 历次核销移出活跃表的**原文留底**，见 §2.3；**只作反查用，不作现状依据，也不在索引里逐篇登记**。
 - `archive/`（仓库根） —— 与分析产物/评测素材同级的历史仓库级归档，不放活文档。
 
 ### 2.3 归档分类（用户指定的六类 → 每类都有「现役位」与「归档位」）
 
-清洁动作的本质就是：**内容验收通过后，从现役位搬到同类归档位**，并在现役位留一行指针。
+清洁动作的本质就是：**内容验收通过后，从现役位搬到同类归档位**；现役位**只在该文件头部**用一句目录级说明交代"已核销的不进本文件"，不逐条留地址（09-25 裁决，见 §2.5 末段）。
 
 | 类别 | 现役位（还在跟进的） | 归档位（已验收/已完结） | 收什么 |
 |---|---|---|---|
 | **功能** | `docs/features/`、`docs/NEXT-DEV-REQS.md` | `docs/archive/feature/` | 已验收功能的交付说明、需求源头、产品范式借鉴（如 `BESTBLOGS_BORROW.md` 待 T3 收尾后入此） |
 | **优化** | `docs/ISSUES.md` 观察中、`FEATURE_MATRIX.md` | `docs/archive/optimization/` | 性能/感知/配额/成本类优化的前后对比与实测数据 |
-| **调试** | `docs/ISSUES.md` 活跃表 | `docs/archive/debugging/`（ISSUES 核销批次沿用 `ISSUES-resolved-<date>.md` 命名，现存于 `docs/deprecated/`，**新批次一律进归档位**） | 单期修复流水、DELIVERY 类文档、已完结 `changes/*.md` |
+| **调试** | `docs/ISSUES.md` 活跃表 | `docs/archive/debugging/` | 单期修复流水、DELIVERY 类文档、已完结 `changes/*.md` |
 | **踩坑** | `docs/pitfalls/`（**只累积不归档**） | — | 症状/根因/规则/案例四段式，按域一文件：collection / backend / ai / frontend / deployment / testing |
-| **对接** | `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`、`cloud/` 说明、`features/collectors.md` | `docs/archive/integration/` | 已停用/已替换的第三方链路方案（如 we-mp-rss 退役方案、wemp 集成报告——历史件已在 `archive/docs-deprecated/`） |
+| **对接** | `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`、`cloud/` 说明、`features/collectors.md` | `docs/archive/integration/` | 已停用/已替换的第三方链路方案 |
 | **密钥管理** | `docs/HANDOVER.md` §1.5（本地）、`ARCHITECTURE.md` §6 | `docs/archive/credentials/` | 凭据**轮换史与位置矩阵**（三处同步记录、失效事件） |
 
 > ⚠️ **密钥类硬规则**：`docs/archive/credentials/` 里**只许出现凭据名、存放位置、轮换时间、掩码指纹（前 4 后 4）**，永不写完整明文密钥。真实值只在本地 `.env` / Vercel env / GitHub Secrets 三处（AGENTS §2.6）。提交前 `git status` 复核不得含该目录之外的密钥泄漏。
@@ -88,7 +91,8 @@
 ```
 
 五字段缺任一项 = 归档无效（出了问题查不到，就是当初没写依赖）。
-反向也要登记：活文档里被抽走的那一行，改成一行指针（`详见 docs/archive/debugging/xxx.md`），不许留空行。
+反向也要登记，但**只登记一次、且不给地址**：活文档里被抽走的行**就地删掉**，在文件头部用**一句目录级说明**交代"已核销的不进本文件，反查走 git 与归档层"。
+**不许逐条写"详见 `docs/archive/xxx.md` §几"**（用户 09-25：那是多此一举，且会把过去的上下文引回现在）。
 
 ### 2.6 文档改动戳 —— 谁改了、什么时候、哪个版本（2026-09-20 新增）
 
@@ -120,11 +124,12 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 
 **Step 2 头部元信息核对**：跑 `node tools/doc-stamp.cjs` 看 `docs/STAMPS.md` 的判定列，**不要**再用 `git log -1 --format=%ad -- <file>` 当"最后内容改动日期"——元提交（改头注/改错字/搬家）会把该读数顶新，2026-09-20 实测 4 例，机制与口径见 §2.6。判定为 `待判` 的要逐条对着提交主题确认是真过时还是元改动；`头部超前` 一律改回。头部声明的范围（"B12~B19"、"H9~H13"）仍须与正文表格实际范围一致。
 
-**Step 3 悬空引用扫描**：跑 `node tools/doc-lint.cjs`（§5）。文档里出现的每个路径/端点/表名/spec 编号都要验证存在；引用 `docs/deprecated/` 的必须写明「已归档」。
+**Step 3 悬空引用扫描**：跑 `node tools/doc-lint.cjs`（§5）。文档里出现的每个路径/端点/表名/spec 编号都要验证存在；**指向已删除历史件的指针直接删句**（不给它补"已归档"标注——那等于继续为过去的文档占现在的上下文）。
 
-**Step 4 抽离归档**：按 §2.3 分类搬，按 §2.4 写头注，活文档原位留指针。
+**Step 4 抽离归档**：按 §2.3 分类搬，按 §2.4 写头注；**活文档原位不留逐条指针**（去冗规则见 §2.5 末段：文件头一句目录级说明即可）。
 
-**Step 5 重建索引**：`docs/INDEX.md` 必须覆盖 `docs/` 下全部 `.md`（含 `contracts/`、`screenshots/`、`pitfalls/` 各域、`specs/` 全部编号、`archive/` 各分类）。漏登记 = 下次没人能找到。
+**Step 5 重建索引**：`docs/INDEX.md` 必须覆盖 `docs/` 下全部**在用** `.md`（含 `contracts/`、`screenshots/`、`pitfalls/` 各域、`specs/` 全部编号）。
+**归档层是唯一的例外**：`docs/archive/` 与仓库根 `archive/` 只写一句"不作现状依据"，**不逐篇登记**（09-25 用户裁决；`doc-lint` 的登记豁免与此口径配套，别再往 INDEX 里补清单）。漏登记在用文档 = 下次没人能找到。
 
 **Step 6 去重与 SSOT 收敛**：同一事实多处写死 → 保留权威那处，其它改「见 X」。已作废决策加头注，不静默删。
 
@@ -211,7 +216,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 12. **判据自身要能被证伪**：`npm run lint:docs:selftest`（同一份 `doc-lint` 的 `--self-test`）逐条喂
     坏样本与反例，**双向** 44 例；`tests/regression-doc-lint-rules.test.js` L1~L5 把它钉进 `npm test`
     （含"分母必须非空"与"不许有文件级 ignore 短路"两条，防判据被写成恒绿）。
-人工复核项（脚本查不了的）：范围声明与正文是否一致、同类事实是否只剩一处、归档指针是否可达、日期是否与内容改动相称。
+人工复核项（脚本查不了的）：范围声明与正文是否一致、同类事实是否只剩一处、**现行文档是否又长出了指向归档件的逐条地址**（09-25 禁，`doc-lint` 只查文件级悬空、查不出"节级指向已改名/已删段"）、日期是否与内容改动相称。
 
 ## 6. 与其他文档的关系
 
@@ -234,7 +239,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 **已做（修正类，不需验收）**
 - 头注日期与范围订正：`ARCHITECTURE.md`（09-11→09-18、三模式→七模式、§5 补 #D2 #35、`cloud/db.js`→`lib/db.js`）、`ISSUES.md`（范围声明 B12~B19→B8~B25/H1~H17）、`CLOUD_PIPELINE_GUIDE.md`（日期 + 测试基线不写死 + **B 站"未上云"与"报警引擎未上云"两行是错的**，已按 FEATURE_MATRIX 订正）、`HANDOVER.md`（生成时间/commit 指针 + 1.4 调度表降为指针 + 数据工具名 `_diag-turso`→`_debug-turso`）<!-- doc-lint:ignore：本段记录"从什么改到什么"，含已消失的旧路径 -->
 - **SSOT 冲突消解**：调度表只存 `collect.yml`（ARCHITECTURE §3.6 与 HANDOVER §1.4 改为指针）；测试条数一律改「以 `npm test` 为准」；代理端口 **7890→12000**（`RUNBOOK.md:26`、`DELIVERY_VERIFICATION.md` 5 处、`X_SETUP_GUIDE.md:62`）；坑数不写死（`INDEX.md:20` "28 条已知坑"）
-- **悬空引用**：`HANDOFF_PROMPT` → `docs/deprecated/AUDIT-2026-09-12.md`；`BESTBLOGS_BORROW` 提示词目录 → 根 `prompts/`（实测 7 个文件）；`NEXT-DEV-REQS`/归档件的 `docs/specs/26` → 真实文件名
+- **悬空引用**：`HANDOFF_PROMPT` → 交叉审核报告（该件 09-25 已随作废批清除，反查见 `docs/ISSUES.md`「作废登记」）；`BESTBLOGS_BORROW` 提示词目录 → 根 `prompts/`（实测 7 个文件）；`NEXT-DEV-REQS`/归档件的 `docs/specs/26` → 真实文件名
 - **过期快照清除**：`HANDOVER.md` §0「09-13 晚状态速览」（259 测试 / 899 源 / focus=1 八源，全部已失真）改为"本文件只装凭据位置"；`HANDOFF_PROMPT.md`「09-12 进度快照」同理
 - **决策作废落档**：`NEXT-DEV-REQS.md` **T5-15「每轮修复后更新 DELIVERY-2026-09-XX.md」机制作废**（它就是文档污染的生产器），替代方案 = 交付即写 SSOT + 按本文归档
 - **实情订正**：`docs/specs/` 中 10/12/27~34 **只有 spec.md**，`NEXT-DEV-REQS:2` 与本文此前"四件套完成"的说法已改（历史四件套不补，挂 `ISSUES.md` H17）

@@ -11,7 +11,7 @@
 
 1. **接手必读**：`docs/CLOUD_PIPELINE_GUIDE.md`（实时链路+不变量）→ `AGENTS.md`（强制约束）→ `ARCHITECTURE.md`
 2. **当前状态**：`docs/FEATURE_MATRIX.md`（功能 SSOT）→ `docs/ISSUES.md`（活跃问题）→ `docs/NEXT-DEV-REQS.md`（需求队列）
-3. **排障**：`docs/RUNBOOK.md` → `docs/pitfalls/`（踩坑库）→ `docs/archive/README.md`（反向索引：按症状查历史）
+3. **排障**：`docs/RUNBOOK.md` → `docs/pitfalls/`（踩坑库）
 4. **凭据**：`docs/HANDOVER.md`（⚠️ 含密钥，本地文件，永不提交）
 5. **交付末尾**：按 `docs/DOC_GOVERNANCE.md` §3 做清洁与归档
 
@@ -36,7 +36,7 @@
 | `STAMPS.md` | **文档改动戳**（机器件，勿手改）：每份 `.md` 的最近改动 = 短号 · 日期 时:分 · 提交主题。重跑 `node tools/doc-stamp.cjs`，规则见 §2.6 |
 | `CLOUD_PIPELINE_GUIDE.md` | 云端实时链路 P0 必读（管线地图/不变量/故障决策树） |
 | `FEATURE_MATRIX.md` | **功能矩阵 SSOT**（本地/云端/runner 三端能力矩阵） |
-| `ISSUES.md` | **活跃问题 SSOT**（活跃 bug / 观察中 / 挂案；已核销见 `deprecated/`、`archive/debugging/`） |
+| `ISSUES.md` | **活跃问题 SSOT**（活跃 bug / 观察中 / 挂案；已核销的不进本文件） |
 | `NEXT-DEV-REQS.md` | **需求队列 SSOT**（T 系列，未开工/在途） |
 | `RUNBOOK.md` | 运维手册（本地/宝塔/云端排障） |
 | `DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 `127.0.0.1:12000`） |
@@ -57,7 +57,8 @@
 |---|---|
 | `changes/2026-09-11-runner-direct-collect.md` | **方案A**：云端采集移入 GH runner 直写 Turso（P0 必读，根因链全在里头；文中「每 30min」已被 09-11 后续加密为 15min，以 `collect.yml` 为准） |
 | `changes/2026-09-23-rss-pipeline-discussion-handoff.md` | RSS 设计文档 × 现状逐条对边界：用户 9 条页面标注核实 / P0-1 候选池 / P0-2 初筛失灵（**09-23 晚已修复交付**）/ P0-3 分配层两处相反（未开）/ 三个取舍（**09-23 晚已定**） |
-| `changes/archive/` | 已完结变更归档（09-11 settings-write、09-12 cloud-alerts / my-brief / sources-write、09-13 delivery-emergency-fixes）：读 `FEATURE_MATRIX.md` 即可，不逐篇维护 |
+| `changes/2026-09-25-status-handoff.md` | **对接·现状交接（09-25）**：做了什么 / 没做什么 / 待测 / 待开发 / 待你拍 14 条 + 交付链七步逐条状态；只在本轮有效 |
+| `changes/`（其它） | 在途变更的对边界记录；**已完结即删，不留"过去方案"当第二事实源**（09-25 用户裁决） |
 
 ## 踩坑库（docs/pitfalls/）· 语义权威，只累积不归档
 
@@ -110,7 +111,7 @@
 - **四件套齐**（spec/plan/task/checklist）：`09` `11` `13`~`21`
 - **只有 spec.md**（2026-09-18 清洁核实，别再声称四件套完成）：`10-my-reading`、`12-roadmap-2026`、`27-reader-today`、`27b-source-axes`、`28-hot-redesign`、`29-source-groups`、`30-admin-consolidation`、`31-media-playback`、`32-content-typography`、`33-misc-fixes`、`34-misc-fixes`
 - **待批（09-24 立项）**：`44-prescreen-tier/spec.md`（零额度预筛层：级3 每源配额 + 初筛改二元三问；**未批准、未动工**）
-- **已作废删除**：`docs/specs/35`~`43` 共 65 份（09-23 用户裁定整批清除，「不能用前朝的剑斩本朝的官」）。逐字反查/还原锚点在 `docs/ISSUES.md`「specs 35~43 作废」行，**不要再按"35~43 在途"读**。
+- **已作废删除**：`docs/specs/35`~`43` 共 65 份（09-23 用户裁定整批清除，「不能用前朝的剑斩本朝的官」）。逐字反查/还原锚点在 `docs/ISSUES.md`「作废登记」一节，**不要再按"35~43 在途"读**。
   - 随 35~43 作废但**已执行且不撤销**的动作（唯一仍生效的事实）：portal 项目下线/删除、2h 门户同步通道默认关闭。
 
 ## 接口契约（docs/contracts/）· 读层响应形状，改 API 必须同步
@@ -128,10 +129,14 @@
 
 ## 归档层
 
-- **`docs/archive/`（分类归档，规则见 GOVERNANCE §2.3）**：`README.md`（反向索引）· `debugging/2026-09-13-reader-pagination-and-content-fixes.md` · `debugging/2026-09-14-delivery.md` · `debugging/2026-09-19-delivery-evidence-ledger.md`（已修条目的逐条处置与 F2P/评测读数对账） · `debugging/2026-09-20-round-status-records.md`（AGENTS §3 交付链状态的轮次记录，含洁净轮记录） · `debugging/2026-09-21-release-approval-ledger.md`（09-19 汇总的**放行清单整块**：15 行逐字原文 + 放行后落点表 + 三条随审计轮冻结的动作） · `debugging/2026-09-21-issues-closed-rows.md`（ISSUES 核销轮移出件：B27~B70 六域登记原文、🟡观察中整节、已核销单行、被改写的头部原文） · `debugging/2026-09-21-issues-round2-closed.md`（ISSUES 第二轮核销：B1~B26 判定轮表、15 条已交付 B 行、B71~B85 已修行、产品选择裁定表、BL2~BL11 已核销阻塞项） · `feature/2026-09-21-nextdev-closed-rounds.md`（NEXT-DEV-REQS 核销轮：T2 存档、T4-1/T4-2、T5 已完成行、T6 第 0/1/1.5 步执行原文）；`optimization/` `integration/` `credentials/` 待用
-- **`docs/deprecated/`（整篇作废，头注含替代指针）**：`ISSUES-resolved-2026-09-13.md` · `ISSUES-resolved-2026-09-14.md` · `AUDIT-2026-09-12.md` · `REFACTOR_GUIDE.md` · `MODULE_STATUS.md` · `PROJECT_STATUS.md` · `VERCEL_MIGRATION.md` · `PHASE6_REVIEW_REPORT.md` · `REPOWIKI_AUDIT_2026-09-06.md` · `1.CODE_REVIEW_2026-09-05.md` · `01/02/04` 三条已作废决策 · `AGENTS-generic-template.md` · `HEARTBEAT.md` `IDENTITY.md` `SOUL.md` `TOOLS.md` `USER.md`（早期 Agent 模板残留）
-- **仓库根 `archive/`**：`docs-deprecated/`（DEPLOYMENT、phase9-runbook、A_CLASS_FIX_REPORT 等历史件）+ 分析产物/样例/评测素材
+## 归档层（**不作为现状依据**）
 
-## 重复文档树（⚠️ 不是权威）
+`docs/archive/`（分类规则见 GOVERNANCE §2.3）留的是历次核销时移出活跃表的原文；仓库根 `archive/` 留分析产物与演示素材。
+**本索引不逐篇登记它们，也不写"原文在哪一节"这类指针**（用户 09-25 裁决：过去的文档不该占现在的上下文，
+也别用地址和链接去描述它们）。要找逐字原文用 `git log --diff-filter=D -- <路径>` 与提交历史。
+已判定作废的件不再搬进目录留着——**整批删**：09-25 清了 19 份作废件与 5 份已完结变更。
 
-`portal/` 是独立 git 仓库（根以 gitlink 引用，无 `.gitmodules`，见 `ISSUES.md` H9），内含一份**过时的 `docs/` 副本**。任何修订只落根树；`tools/sync-portal.js`、`sync-portal.bat` 不许再用来同步文档。
+## portal/（已退役，09-21）
+
+门户 Vercel 项目已下线删除，gitlink 已从索引移除，工作树里**没有 `portal/` 目录**。
+残留的 `tools/sync-portal.js` 与 `sync-portal.bat` **不许再用**（它们要同步的项目已不存在），2h 门户同步通道默认关闭。

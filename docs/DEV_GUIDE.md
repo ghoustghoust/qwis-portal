@@ -48,8 +48,7 @@ Vercel Serverless（读层主部署）
 | `tools/` | 运维脚本 |
 | `tests/` | 回归测试（node:test） |
 | `docs/` | 文档 |
-| `docs/deprecated/` | 已归档的历史文档 |
-| `archive/` | 全部历史资产 |
+| `archive/` | 分析产物与演示素材（**不作现状依据**） |
 | `cloud/` | PHP 队列（Token 鉴权） |
 | `config/` | customer-config.json |
 | `opml/` | bestblogs 源清单 |

@@ -25,8 +25,6 @@
 | 09-13~15 那批 UI/管理台/源治理改了什么 | `debugging/2026-09-14-delivery.md` | `docs/specs/25`、`docs/specs/26` |
 | "某一轮 AGENTS §3 十一条各自跑没跑"、洁净轮 Step0~7 读数 | `debugging/2026-09-20-round-status-records.md` | `AGENTS.md` §3、`docs/DOC_GOVERNANCE.md` §4.1 |
 | 已修条目的逐条取证与 F2P 证据对账（09-19 两批） | `debugging/2026-09-19-delivery-evidence-ledger.md` | `docs/eval/f2p/*.json` |
-| 更早批次（09-11 settings 写、09-12 报警/我的早报/源写） | `docs/changes/archive/` | `docs/specs/13~16` |
-| ISSUES 已核销历史 | `docs/deprecated/ISSUES-resolved-2026-09-13.md`、`-09-14.md` | — |
 | 「这批改动当时等谁点头」「放行清单某行后来去了哪」「哪几条被冻结了」 | `debugging/2026-09-21-release-approval-ledger.md` §二 原文 + §三 落点表 | `docs/ISSUES.md`「✅ 放行清单」指针行 |
 | B27~B70 某条 09-19 的登记原话、W1~W16 观察项的原始读数、已核销行的原样措辞 | `debugging/2026-09-21-issues-closed-rows.md` §一~§九 | 对应域 spec `docs/specs/{36,37,38,39,40}-*/` |
 | B102/B107~B117 等已交付行的交付读数原文、B71~B85 已修行原文、产品选择裁定表原表、BL2~BL11 已核销阻塞项原文 | `debugging/2026-09-21-issues-round2-closed.md` §三/§四/§六/§七 | `docs/ISSUES.md` 各指针行 |
@@ -37,7 +35,7 @@
 | 文件 | 类别 | 归档自 | 日期 |
 |---|---|---|---|
 | `debugging/2026-09-13-reader-pagination-and-content-fixes.md` | 调试 | `docs/changes/` 同名文件 | 2026-09-18 |
-| `debugging/2026-09-14-delivery.md` | 调试 | `docs/DELIVERY-2026-09-14.md` | 2026-09-18 |
+| `debugging/2026-09-14-delivery.md` | 调试 | （原 `docs/` 顶层件，09-15 大清洗移入本目录） | 2026-09-18 |
 | `debugging/2026-09-19-delivery-evidence-ledger.md` | 调试 | `docs/ISSUES.md`「B8~B26 本轮处置」+「本轮已修（证据对账）」 | 2026-09-20 |
 | `debugging/2026-09-20-round-status-records.md` | 调试 | `docs/ISSUES.md` 三节轮次状态表（交付链×2 + 洁净轮记录） | 2026-09-20 |
 | `debugging/2026-09-21-release-approval-ledger.md` | 调试/授权台账 | `docs/ISSUES.md`「⛔ 待你点头的放行清单」15 行整块（用户 09-21 整表放行后出账） | 2026-09-21 |

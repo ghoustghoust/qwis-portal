@@ -118,25 +118,26 @@ test('P6-4: 未知任务类型标记 failed 而非崩溃', async () => {
 test('P6-5: 重构后文档体系完整', () => {
   const ROOT = path.join(__dirname, '..');
 
-  // 核心文档存在（2026-09-11 文档重整后对齐：PROJECT_STATUS 等已归档 deprecated/，决策文档在 deprecated/）
+  // 核心文档存在（09-25 用户裁决「清除过去的文档」：docs/deprecated/ 与 docs/changes/archive/ 已整批删除，
+  // 本锁随之**去掉对作废件的存在性断言**——它原先要求 5 个 deprecated/ 文件必须存在，等于把旧文档钉成体系的一部分。
+  // 检查力度没有变小：现行 SSOT + 模块文档的存在性照旧逐份钉，另加一条"作废目录不许复活"的反向断言。）
   const requiredDocs = [
     'ARCHITECTURE.md',
     'AGENTS.md',
     'docs/INDEX.md',
     'docs/FEATURE_MATRIX.md',
     'docs/RUNBOOK.md',
-    'docs/deprecated/REFACTOR_GUIDE.md', // 2026-09-14 文档大清洗（10a9556）：REFACTOR_GUIDE 入 deprecated
     'docs/CLOUD_PIPELINE_GUIDE.md',
+    'docs/DOC_GOVERNANCE.md',
+    'docs/ISSUES.md',
+    'docs/contracts/daily-report.json',
     'docs/features/collectors.md',
     'docs/features/scheduler.md',
     'docs/features/task-queue.md',
     'docs/features/daily-report.md',
     'docs/features/events-alerts.md',
-    'docs/deprecated/PROJECT_STATUS.md',
-    'docs/deprecated/01-部署架构决策.md',
-    'docs/deprecated/02-不做云端采集决策.md',
+    'docs/features/test-harness.md',
     'docs/specs/03-公众号走托管RSS决策.md',
-    'docs/deprecated/04-不做Vercel前端决策.md',
     'docs/specs/05-任务队列选型决策.md',
   ];
 
@@ -145,6 +146,25 @@ test('P6-5: 重构后文档体系完整', () => {
     assert.ok(fs.existsSync(fullPath), `文档缺失: ${doc}`);
     const content = fs.readFileSync(fullPath, 'utf-8');
     assert.ok(content.length > 50, `文档内容过短: ${doc} (${content.length} bytes)`);
+  }
+
+  // 反向断言：09-25 整批删除的 24 份历史件不许复活。
+  // 为什么逐个文件名判、不判"目录不存在"：空目录也算"不存在文件"，而有人新建同名目录放别的件是合法的——
+  // 判目录会同时造成误伤与漏判（审查指出，我复推确认）。
+  const deletedGone = [
+    'docs/deprecated/01-部署架构决策.md', 'docs/deprecated/02-不做云端采集决策.md', 'docs/deprecated/04-不做Vercel前端决策.md',
+    'docs/deprecated/1.CODE_REVIEW_2026-09-05.md', 'docs/deprecated/AGENTS-generic-template.md', 'docs/deprecated/AUDIT-2026-09-12.md',
+    'docs/deprecated/HEARTBEAT.md', 'docs/deprecated/IDENTITY.md', 'docs/deprecated/ISSUES-resolved-2026-09-13.md',
+    'docs/deprecated/ISSUES-resolved-2026-09-14.md', 'docs/deprecated/MODULE_STATUS.md', 'docs/deprecated/PHASE6_REVIEW_REPORT.md',
+    'docs/deprecated/PROJECT_STATUS.md', 'docs/deprecated/REFACTOR_GUIDE.md', 'docs/deprecated/REPOWIKI_AUDIT_2026-09-06.md',
+    'docs/deprecated/SOUL.md', 'docs/deprecated/TOOLS.md', 'docs/deprecated/USER.md', 'docs/deprecated/VERCEL_MIGRATION.md',
+    'docs/changes/archive/2026-09-11-settings-write.md', 'docs/changes/archive/2026-09-12-cloud-alerts.md',
+    'docs/changes/archive/2026-09-12-my-brief.md', 'docs/changes/archive/2026-09-12-sources-write.md',
+    'docs/changes/archive/2026-09-13-delivery-emergency-fixes.md',
+  ];
+  assert.equal(deletedGone.length, 24, '反向断言的清单必须与 docs/ISSUES.md「作废登记」里的 19+5 对齐');
+  for (const f of deletedGone) {
+    assert.ok(!fs.existsSync(path.join(ROOT, f)), `已作废的历史件复活: ${f}`);
   }
 });
 
