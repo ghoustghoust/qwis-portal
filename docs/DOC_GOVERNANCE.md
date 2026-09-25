@@ -2,7 +2,7 @@
 
 > **这份文档管什么**：什么时候必须清洁文档、清洁时留什么、剔出去的内容按什么分类归档、归档要登记哪些依赖、以及怎么机器化自检。
 > **它自己是底层文档**（`DEVELOPMENT_STANDARDS.md` §文档规则的可执行版本；两者冲突以本文为准并回改本文）。
-> 最后更新：2026-09-23（§2.2 补「整批作废可以直接删」及其三条硬性前置 —— 本轮 `docs/specs/35~43` 共 65 份按此处理；并记下落删的已知副作用：文档门禁的扫描分母会随之塌小，见 `docs/ISSUES.md` BL13。上轮 2026-09-20（新增 §2.6 文档改动戳：`tools/doc-stamp.cjs` → `docs/STAMPS.md`，§2.1 随之登记该件，§3 Step 2 改用它取改动史并**弃用** `git log -1` 当内容改动日期））
+> 最后更新：2026-09-25（§2.1 白名单登记新件 `docs/DOC_VALIDITY_LEDGER.md`（有效性判定台账）：模块地图改三层后需要一处承载「条目级有效性裁决」，而 §2.3 六类分类里没有该职责的现役位。⚠️ 本表与 `INDEX.md` 顶层表自称互为镜像、实测已不等，登记为台账 V08 待裁决。上轮 2026-09-23（§2.2 补「整批作废可以直接删」及其三条硬性前置 —— `docs/specs/35~43` 共 65 份按此处理；并记下落删的已知副作用：文档门禁的扫描分母会随之塌小，见 `docs/ISSUES.md` BL13。再上轮 2026-09-20 新增 §2.6 文档改动戳：`tools/doc-stamp.cjs` → `docs/STAMPS.md`，§2.1 随之登记该件，§3 Step 2 改用它取改动史并**弃用** `git log -1` 当内容改动日期））
 
 ---
 
@@ -34,10 +34,11 @@
 | `docs/NEXT-DEV-REQS.md` | **需求队列 SSOT**（未开工/在途） | 全员 |
 | `docs/RUNBOOK.md` | 运维排障手册 | AGENTS §4 |
 | `docs/DELIVERY_VERIFICATION.md` | 线上实测流程（AGENTS §2.2 指名） | AGENTS §2 |
-| `docs/EVAL_GUIDE.md` | **评测规范 SSOT**（端到端 + 白盒 + 去污染 + 门禁），AGENTS §3 第 4 层 | AGENTS §3、spec 41 |
+| `docs/EVAL_GUIDE.md` | **评测规范 SSOT**（端到端 + 白盒 + 去污染 + 门禁），按需工具、不作每轮必过的门 | AGENTS §3 |
 | `docs/DEVELOPMENT_STANDARDS.md` | 开发/验收规范 | DEV_GUIDE |
 | `docs/DEV_GUIDE.md` | 开发者上手 | — |
 | `docs/DOC_GOVERNANCE.md` | **本文**（文档治理） | INDEX |
+| `docs/DOC_VALIDITY_LEDGER.md` | **有效性判定台账**：把活文档里的约束/边界/口径摊到可裁决粒度，逐条记准入判定与因果链（一次性裁决载体，裁决完即删） | INDEX 模块地图（`V 号` `W 号`） |
 | `docs/STAMPS.md` | **文档改动戳**（机器生成，勿手改；每份文档的改动时间 + 推送版本，见 §2.6） | INDEX |
 | `docs/HANDOVER.md` | 凭据与端点速查（⚠️ 本地文件，永不提交） | AGENTS §0 |
 | `docs/ROADMAP-2026-09.md` | 用户已拍板决策母文档（只留决策，不留流水） | NEXT-DEV-REQS |

@@ -5,7 +5,6 @@
 > 理由与边界见 `AGENTS.md` §3 头注（自评卷结构 + 产品意图未稳就立锁 = 门禁分不出"世界变了"和"有人作弊"）。
 > 现行验收与交付链**以 `AGENTS.md` §3 为唯一准绳**；本文保留作这些工具的使用说明与判据档案——
 > 改到它们守护的区域时建议运行，系统稳定后按新口径重建正式验收测试时从 `tests/` 行为锁里长。
-> **本文是验收口径的组成部分**（`AGENTS.md` §3 第 4 层）：规定"每轮改动怎样才算修好了"。
 > 它是**流程与要求的唯一事实源**；要实现哪些工具、按什么顺序建 —— 原 41 号（治理层）spec 已于 09-23 作废删除，逐字反查锚点见 `docs/ISSUES.md`「作废登记」一节；本文 §三~§九 即现行唯一的流程事实源，不再有"上面的实施计划页"。
 > 方法论蓝本：SWE-rebench（arXiv:2505.20411v1），只借机制不搬规模——见 §8；内容质量层借 `agentscope.evaluate` 的 Task/Metric 体系与 LLM-as-a-Judge 五维指标——见 §5。
 > 最后更新：2026-09-23（新增暂缓头注：eval 各命令降级为按需工具，验收以 AGENTS §3 为准；41 号实施计划页已作废删除，本文件为流程与判据的唯一事实源；锚点见 `docs/ISSUES.md`。承接上轮 2026-09-19
@@ -355,7 +354,7 @@ npm run eval:content -- --judge --align <人工分.json> # 真评（花 AI 配�
 - 命令：`npm run eval:preflight`（§3.1）、`npm run eval:e2e`（§3，41-2 已交付：默认线上 + 每剧本连跑 3 次；**非验收轮即便全绿也退 2**，口径见 §3.7）、`npm run eval:whitebox`（§4）、`npm run eval:process`（§3.6 过程性检查 F1~F8；自检项数以 `--self-test` 输出为准）、`npm run eval:f2p`（§6 改前必红取证；自检项数以 `--self-test` 输出为准，不在文档里写死）、`npm run eval:content`（§5，41-8 已交付）。
 - 报告：`docs/eval/YYYY-MM-DD-<轮次>/{report.json, screenshots/, env_lock.json}`；`env_lock` 含部署 commit、Turso 快照标识、`APP_DATA_DIR` 副本路径、settings 键指纹、代理端口，**以及 judge 模型与 prompt 版本、`axis_weights` 取值**（换 judge 必须重跑基线）。报告目录**只进 git 的 `report.json` 与摘要**，截图走 `.gitignore`（避免仓库膨胀）。
 - 退出码：0=全绿；1=有 `fail_product`；2=有 `fail_env`（视为未评测，不许交付）。
-- 交付口径（写进 `AGENTS.md` §3）：L1~L5 全绿 + 每条 F2P 有改前红/改后绿双证据。
+- 交付口径只有一份，见 `AGENTS.md` §3；本文不复述那份序列。
 
 ## 10. 关系
 

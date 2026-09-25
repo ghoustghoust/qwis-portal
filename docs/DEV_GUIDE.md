@@ -1,6 +1,6 @@
 # 全网情报系统 · 开发者上手指南
 
-> 最后更新：2026-09-20（清洁轮：删三个已不存在的"不要修改"路径、坑数不再写死、阅读顺序补 `AGENTS.md` 与 `CLOUD_PIPELINE_GUIDE.md` 以对齐 AGENTS §0）
+> 最后更新：2026-09-25
 
 ---
 
@@ -63,7 +63,7 @@ Vercel Serverless（读层主部署）
 4. **修改前端**：改 `web/src/` → `npm run build` → Ctrl+F5
 5. **修改后端（本地）**：改 `server/` → `restart-server.bat`
 6. **修改后端（Vercel）**：改 `api/` → `git push` 即可（✅ Vercel 与 GitHub 已连 Git 集成，push main 自动部署）
-7. **跑测试**：`npm test`（全绿才算完）
+7. **跑交付链**：按 `AGENTS.md` §3 逐条跑，本文件不复制那份序列
 8. **portal 已退役（09-21）**：门户 Vercel 项目已下线、`portal/` gitlink 已从索引移除；本地调度里的门户同步通道默认关（`settings.portal.enabled` 显式置 true 才注册，锁 `tests/regression-audit42-portal-channel.test.js`），别再按它改行为
 
 ---
@@ -76,10 +76,7 @@ Vercel Serverless（读层主部署）
 
 ### 5.2 测试要求
 
-- `npm test` 全绿
-- `npm run build` 无错
-- 涉及云端的跑 `node tools/audit-cloud.js`
-- 每个修过的 bug 必须有回归测试
+验收以 `AGENTS.md` §3 为准，这里只补一条它没写的：云端巡检工具有 `node tools/audit-cloud.js`（只读，需生产环境可达），**不替代**云端实测那一步。
 
 ### 5.3 文档更新约定
 
