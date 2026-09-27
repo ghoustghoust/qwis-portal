@@ -838,7 +838,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 2
+      "fail_count": 3
     },
     {
       "id": 728,
@@ -1538,7 +1538,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 4
+      "fail_count": 6
     },
     {
       "id": 768,
@@ -2223,8 +2223,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 6
     },
     {
       "id": 807,
@@ -2372,6 +2372,20 @@
       "name": "Gastropod",
       "url": "https://www.omnycontent.com/d/playlist/aaea4e69-af51-495e-afc9-a9760146922b/2a195077-f014-41d2-8313-ab190186b4c2/277bcd5c-0a05-4c14-8ba6-ab190186b4d5/podcast.rss",
       "avatar": "https://megaphone.imgix.net/podcasts/97d6d85e-e320-11eb-be6b-3ff4d7cb8782/image/3af290d77dd48789f45dcd5a93483cd1.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 817,
+      "type": "x",
+      "name": "Geek(@geekbb)",
+      "url": "https://api.xgo.ing/rss/user/9cb3b60e689e4445a7fbdfd0be144126",
+      "avatar": "https://pbs.twimg.com/profile_images/1644898947272671233/7959WGOK_normal.jpg",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -2799,6 +2813,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 524,
+      "type": "youtube",
+      "name": "How I AI",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCRYY7IEbkHLH_ScJCu9eWDQ",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 6
     },
     {
       "id": 19,
@@ -4229,20 +4257,6 @@
       "fail_count": 0
     },
     {
-      "id": 570,
-      "type": "youtube",
-      "name": "Nikhil Kamath",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCnC8SAZzQiBGYVSKZ_S3y4Q",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 933,
       "type": "rss",
       "name": "Niracler 的博物志",
@@ -4269,6 +4283,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 535,
+      "type": "youtube",
+      "name": "No Priors",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSI7h9hydQ40K5MJHnCrQvw",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 6
     },
     {
       "id": 935,
@@ -4338,7 +4366,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 6
+      "fail_count": 3
     },
     {
       "id": 938,
@@ -4487,20 +4515,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/0120e999fc95e098c74bd5482a2a4c8407c42c38.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4XfZEiaIxTZFPcSMe0laHNlkWJfvNVMcFY7PrIPmKrQjg/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 586,
-      "type": "youtube",
-      "name": "Patrick Boyle",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCASM0cgfkJxQ1ICmRilfHLw",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4697,20 +4711,6 @@
       "url": "hotlist://producthunt",
       "avatar": "/api/img?u=https%3A%2F%2Fproducthunt.com%2Ffavicon.ico",
       "group_id": 3,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 607,
-      "type": "youtube",
-      "name": "Product School",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6hlQ0x6kPbAGjYkoz53cvA",
-      "avatar": null,
-      "group_id": 28,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5527,8 +5527,22 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1015,
+      "type": "rss",
+      "name": "Skywind Inside",
+      "url": "http://www.skywind.me/blog/feed",
+      "avatar": "https://skywind.me/blog/wp-content/uploads/2025/10/cropped-favicon-1-32x32.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1016,
@@ -6581,20 +6595,6 @@
       "fail_count": 0
     },
     {
-      "id": 1084,
-      "type": "rss",
-      "name": "World",
-      "url": "https://feeds.washingtonpost.com/rss/world",
-      "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1085,
       "type": "rss",
       "name": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
@@ -6698,6 +6698,20 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1092,
+      "type": "rss",
+      "name": "YangXuan's Blog",
+      "url": "https://yangxuan.ai/feed/",
+      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7585,8 +7599,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 490,
@@ -8925,20 +8939,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/ab06f5f1e4d78417466bd4ff3330d36284ba0503.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7BmxMfFQA3ic4p0H3Syd79W0p8Z6RnA9WnHcTTNrfPxSw/0",
       "group_id": 21,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1179,
-      "type": "rss",
-      "name": "千古八方的博客",
-      "url": "https://rangotec.com/feed",
-      "avatar": null,
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -12195,20 +12195,6 @@
       "fail_count": 0
     },
     {
-      "id": 1260,
-      "type": "rss",
-      "name": "泠泫凝的异次元空间",
-      "url": "https://lxnchan.cn/atom.xml",
-      "avatar": "https://lxnchan.cn/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1261,
       "type": "rss",
       "name": "泫言",
@@ -12961,8 +12947,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 398,
@@ -15023,20 +15009,6 @@
       "fail_count": 0
     },
     {
-      "id": 72,
-      "type": "rss",
-      "name": "量子位博客",
-      "url": "https://www.qbitai.com/feed",
-      "avatar": "https://www.qbitai.com/favicon.ico",
-      "group_id": 3,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 56,
       "type": "hotlist",
       "name": "金十数据",
@@ -15443,20 +15415,6 @@
       "fail_count": 0
     },
     {
-      "id": 1334,
-      "type": "rss",
-      "name": "青石坞",
-      "url": "https://www.qs5.org/feed/",
-      "avatar": "https://www.qs5.org/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 261,
       "type": "rss",
       "name": "青稞AI",
@@ -15737,5 +15695,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-09-26T06:19:33.423Z"
+  "generated_at": "2026-09-27T06:48:34.348Z"
 }
