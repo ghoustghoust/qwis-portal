@@ -10,7 +10,7 @@
 | `feature/` | 功能（已验收交付、需求源头） | `docs/features/`、`docs/NEXT-DEV-REQS.md` |
 | `optimization/` | 优化（性能/感知/配额/成本，含实测数据） | `docs/ISSUES.md` 观察中 |
 | `debugging/` | 调试（单期修复流水、已完结变更记录、ISSUES 核销批次） | `docs/ISSUES.md` 活跃表 |
-| `integration/` | 对接（已停用/被替换的第三方链路方案） | `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`、`docs/features/collectors.md` |
+| `integration/` | 对接（已停用/被替换的第三方链路方案） | `docs/RUNBOOK.md` §4、`docs/features/collectors.md`（两份对接手册 09-27 判废删除，见 `docs/ISSUES.md` 作废登记与 H40） |
 | `credentials/` | 密钥管理（轮换史、位置矩阵、失效事件；**禁明文**） | `docs/HANDOVER.md` §1.5 |
 
 踩坑类不归档，永久累积在 `docs/pitfalls/`（换手必读）。

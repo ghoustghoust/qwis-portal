@@ -6,7 +6,7 @@
 > 已知局限：① 本表按路径查历史，**文件改名/搬家前的历史不跟随**（`--follow` 只能逐文件跑），搬过的文档其提交史从搬家那次起算。② 本表读已提交历史，**正在提交的这一次必然不进表**（显式滞后一轮，配合 `⚠` 可见），下一轮重跑即补上。
 > 未跟踪件不入表：如本地文件 `docs/HANDOVER.md` 按设计永不提交，本就没有提交史可记。
 
-**统计**：底层文档 一致 9 · 待判 4 · 头部超前 1 · 缺头注 0　|　不要求头注 176 份　|　工作区未提交 69 份　|　总计 190 份
+**统计**：底层文档 一致 9 · 待判 4 · 头部超前 1 · 缺头注 0　|　不要求头注 192 份　|　工作区未提交 83 份　|　总计 206 份
 
 ### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（14 份）
 
@@ -18,79 +18,39 @@
 | docs/DELIVERY_VERIFICATION.md | 2026-09-18 | 待判 | `73147de` 2026-09-21 04:27 feat(B113/B110)+test(S1~S8)+坑#69: 凭据卫生收成一份共享实现，密钥扫描面从"只已跟踪"扩成两面<br>`ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`608d1fa` 2026-09-11 17:16 docs: 新增交付验证手册(生产环境验证全流程) + 索引收录 |
 | docs/DEV_GUIDE.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/DEVELOPMENT_STANDARDS.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
-| docs/DOC_GOVERNANCE.md | 2026-09-27 | 一致 ⚠ | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
+| docs/DOC_GOVERNANCE.md | 2026-09-27 | 一致 ⚠ | `a9ed8e4` 2026-09-27 21:43 docs(判定台账退役: 删除 DOC_VALIDITY_LEDGER): 已判决的结论已在 076aaf2 全部归位活文档, 未判决的按用户 09-27 裁决不迁、直接删<br>`076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决 |
 | docs/EVAL_GUIDE.md | 2026-09-23 | 待判 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/FEATURE_MATRIX.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档 |
 | docs/INDEX.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
-| docs/ISSUES.md | 2026-09-23 | 待判 ⚠ | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档 |
+| docs/ISSUES.md | 2026-09-23 | 待判 | `a9ed8e4` 2026-09-27 21:43 docs(判定台账退役: 删除 DOC_VALIDITY_LEDGER): 已判决的结论已在 076aaf2 全部归位活文档, 未判决的按用户 09-27 裁决不迁、直接删<br>`076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/NEXT-DEV-REQS.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档 |
 | docs/RUNBOOK.md | 2026-09-27 | 一致 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`8e90a58` 2026-09-22 19:06 docs(B103②收口): /api/backup 只覆盖配置的语义写明——响应带 contentBackup 指路字段(内容表由内容级转储覆盖),RUNBOOK 备份段同步; 不建第二份备份面 |
 | README.md | 2026-09-16 | 待判 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1f2f253` 2026-09-16 18:40 docs(screenshots): 替换用户提供的 4 张截图 + 热点榜拆为 AI精选/AI实时流/热搜事件 三栏展示<br>`88b4381` 2026-09-16 18:29 docs(readme): 重写 README + 线上生产截图更新（2026-09-16）——新增我的早报/精选周刊/热搜事件/我的阅读/管理后台早报中心/系统管理 6 张截图，功能描述同步源四轴/早报体系/AI增强等最新进展 |
 
-### 其余受管文档（列最近 2 次）（176 份）
+### 其余受管文档（列最近 2 次）（192 份）
 
 | 文档 | 头部声明 | 判定 | 提交史（短号 · 日期 时:分 · 主题） |
 |---|---|---|---|
 | .cluster/expert-playbook.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/analysis/_doc_merge_analysis.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/analysis/2026-09-15-thin-body-sources.md | — | 不要求头注 ⚠ | `e92572b` 2026-09-15 20:03 ops(sources): A 类死 feed 删除 10 源 + YouTube 误写 articles 存量迁 videos + 播客桥接源降频 3 天（65 源）+ 普查报告与执行记录落档 |
-| archive/docs-deprecated/A_CLASS_FIX_REPORT.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/AC12-acceptance-template.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/DAILY_SETTINGS_MIGRATION.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/DEPLOYMENT.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/EMERGENCY_RECOVERY_GUIDE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/FINAL_DIAGNOSIS_AND_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/OBSERVATION-GUIDE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/P0-P2-fix-verification-report.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/P3-搁置-多语言支持.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/P3-搁置-性能基准测试.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/phase9-runbook.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/SOURCE_ERROR_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/TIPS-DAILY-TAB-BLANK-PAGE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-ai-handoff.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/WEMP-INTEGRATION-SOLUTION.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-progress-report-summary.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-runbook.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/微信公众号接入与热榜方案.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/微信方案备选对比.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/批量恢复熔断源 - 一键故障恢复方案.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源列表管理增强 - 功能实施指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源列表管理增强 - 实施总结报告.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源错误熔断与批量操作修复完整指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源错误熔断修复 - 完整补丁与验证指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/⚠️阅读前必看-可信度分级.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/ARCHITECTURE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_LIFECYCLE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_TAB_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_TAB_FIX_SUMMARY.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FINAL_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FINAL_VERIFICATION_SUMMARY.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FIX_RECORD_UNIFIED.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/P0-P2-FINAL-REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/REFRESH_MECHANISM_AUDIT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/RESTART_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SEARCH_AND_DAILY_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SMOKE_TEST_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SOURCE_ERROR_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WE_MP_RSS_LEAK_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WEMP_SAMPLING_AUDIT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WEMP_SUBSCRIPTION_FIX.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/紧急修复报告.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase8.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/specs/checklist.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase8.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | config/README.md | — | 不要求头注 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| docs/adr/01-部署方向.md | — | 不要求头注 ⚠ | — |
+| docs/adr/02-采集只在服务端做.md | — | 不要求头注 ⚠ | — |
+| docs/adr/03-公众号走托管RSS.md | — | 不要求头注 ⚠ | — |
+| docs/adr/04-云端API收在一个函数.md | — | 不要求头注 ⚠ | — |
+| docs/adr/05-不做读路径兜底.md | — | 不要求头注 ⚠ | — |
+| docs/adr/06-前端刷新走轮询.md | — | 不要求头注 ⚠ | — |
+| docs/adr/07-批量操作走单条SQL.md | — | 不要求头注 ⚠ | — |
+| docs/adr/08-源状态拆多轴.md | — | 不要求头注 ⚠ | — |
+| docs/adr/09-进模型前按源限量.md | — | 不要求头注 ⚠ | — |
+| docs/adr/10-三套队列不并成一套.md | — | 不要求头注 ⚠ | — |
+| docs/adr/11-不做多用户与权限分级.md | — | 不要求头注 ⚠ | — |
+| docs/adr/12-凭据一套口径.md | — | 不要求头注 ⚠ | — |
+| docs/adr/13-采集触发双档换可靠性.md | — | 不要求头注 ⚠ | — |
+| docs/adr/14-三端共享语义不共享进程.md | — | 不要求头注 ⚠ | — |
+| docs/adr/15-AI评分口径.md | — | 不要求头注 ⚠ | — |
+| docs/adr/16-探索位不改订阅集合.md | — | 不要求头注 ⚠ | — |
+| docs/archive/analysis/_doc_merge_analysis.md | — | 不要求头注 ⚠ | — |
+| docs/archive/analysis/2026-09-15-thin-body-sources.md | — | 不要求头注 ⚠ | — |
 | docs/archive/debugging/2026-09-13-reader-pagination-and-content-fixes.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
 | docs/archive/debugging/2026-09-14-delivery.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
 | docs/archive/debugging/2026-09-19-delivery-evidence-ledger.md | — | 不要求头注 | `1bf7084` 2026-09-20 16:57 docs(§4.1 洁净=精炼+去冗+归档): ISSUES 从 471 行降到 292 行，轮次记录与证据对账外迁归档 |
@@ -98,8 +58,64 @@
 | docs/archive/debugging/2026-09-21-issues-closed-rows.md | — | 不要求头注 | `6c9a2c7` 2026-09-21 06:20 feat(B109/B45)+test(V1~V7)+feat(W19): 报警事件表收成 lib/alert-events.js 一份，云端后台四个假开关拔掉<br>`138b1c7` 2026-09-21 01:53 feat(B103/D3)+test(D1~D10): 内容级转储与删除前置闸 —— 云端第一次有"回得来"的底牌 |
 | docs/archive/debugging/2026-09-21-issues-round2-closed.md | — | 不要求头注 | `3f89a08` 2026-09-22 23:31 docs(BL7 核销+BL12 降级入账): 补锁与复测读数落档<br>`8ecd798` 2026-09-22 23:27 docs(B81/B128 核销入账): ISSUES 出队（该行引用已删文件曾致 doc-lint 1 错）; 602/602 绿 |
 | docs/archive/debugging/2026-09-21-release-approval-ledger.md | — | 不要求头注 | `0a1c567` 2026-09-21 04:16 docs(放行台账 §三 #12): 勾掉已交付的 W9/B127/B124，只留 B115② 与 lint:cites 两条待做<br>`2dd6808` 2026-09-21 03:03 feat(门禁扩面)+test(L1~L4): doc-lint 加 5 条判据并给它做双向自证 —— 编号撞号那条是本轮自己咬出来的 |
+| docs/archive/docs-deprecated/A_CLASS_FIX_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/AC12-acceptance-template.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/DAILY_SETTINGS_MIGRATION.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/DEPLOYMENT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/EMERGENCY_RECOVERY_GUIDE.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/FINAL_DIAGNOSIS_AND_FIX_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/OBSERVATION-GUIDE.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/P0-P2-fix-verification-report.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/P3-搁置-多语言支持.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/P3-搁置-性能基准测试.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/phase9-runbook.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/SOURCE_ERROR_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/TIPS-DAILY-TAB-BLANK-PAGE.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/wemp-ai-handoff.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/WEMP-INTEGRATION-SOLUTION.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/wemp-progress-report-summary.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/wemp-runbook.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/微信公众号接入与热榜方案.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/微信方案备选对比.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/批量恢复熔断源 - 一键故障恢复方案.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/源列表管理增强 - 功能实施指南.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/源列表管理增强 - 实施总结报告.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/源错误熔断与批量操作修复完整指南.md | — | 不要求头注 ⚠ | — |
+| docs/archive/docs-deprecated/源错误熔断修复 - 完整补丁与验证指南.md | — | 不要求头注 ⚠ | — |
 | docs/archive/feature/2026-09-21-nextdev-closed-rounds.md | — | 不要求头注 | `e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
-| docs/archive/README.md | — | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`d452d52` 2026-09-21 22:47 docs(ISSUES 结构重排,用户口径): 已核销/已归档一律撤出正文——ISSUES 162→97 行,正文只剩『进度速览 + 未修/观察/等你操作/待裁决/挂案/阻塞』六段,每条只答现在坏着什么与下一步;撤出与改写行原文逐字进 round2 归档件 §九(无损校验过); test(G8 判据口径): B71~B83 登记面从单文件扩为 活文档+归档层调试件,查无某号仍红(追溯不断) |
+| docs/archive/README.md | — | 不要求头注 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`d452d52` 2026-09-21 22:47 docs(ISSUES 结构重排,用户口径): 已核销/已归档一律撤出正文——ISSUES 162→97 行,正文只剩『进度速览 + 未修/观察/等你操作/待裁决/挂案/阻塞』六段,每条只答现在坏着什么与下一步;撤出与改写行原文逐字进 round2 归档件 §九(无损校验过); test(G8 判据口径): B71~B83 登记面从单文件扩为 活文档+归档层调试件,查无某号仍红(追溯不断) |
+| docs/archive/reports/⚠️阅读前必看-可信度分级.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/ARCHITECTURE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/DATA_LIFECYCLE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/DATA_TAB_FIX_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/DATA_TAB_FIX_SUMMARY.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/FINAL_FIX_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/FINAL_VERIFICATION_SUMMARY.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/FIX_RECORD_UNIFIED.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/P0-P2-FINAL-REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/REFRESH_MECHANISM_AUDIT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/RESTART_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/SEARCH_AND_DAILY_AUDIT_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/SMOKE_TEST_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/SOURCE_ERROR_AUDIT_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/WE_MP_RSS_LEAK_REPORT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/WEMP_SAMPLING_AUDIT.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/WEMP_SUBSCRIPTION_FIX.md | — | 不要求头注 ⚠ | — |
+| docs/archive/reports/紧急修复报告.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/checklist-phase6.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/checklist-phase7.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/checklist-phase8.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/checklist.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/plan-phase6.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/plan-phase7.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/plan.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/spec-phase6.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/spec-phase7.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/spec-phase8.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/spec.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/task-phase6.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/task-phase7.md | — | 不要求头注 ⚠ | — |
+| docs/archive/specs/task.md | — | 不要求头注 ⚠ | — |
 | docs/changes/2026-09-25-status-handoff.md | — | 不要求头注 | `717a78a` 2026-09-25 15:07 docs(按 09-25 裁决清除过去文档): 撤掉我自己洗成"规矩"的那条行数阈值<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/eval/2026-09-24-boundaries.md | — | 不要求头注 | `a88c665` 2026-09-25 04:31 docs(第五轮复审核销): "8% 触发率"是无效分母，按点位算 AI 批 96% 在跑；导语第一条真归因恰恰是 ai_failed<br>`97da7a4` 2026-09-25 03:43 docs(H32 自我更正): 起名出口从一条改成四条、回放读数降格为下界（自己复核传参后发现的） |
 | docs/eval/2026-09-24-prescreen-labels.md | — | 不要求头注 | `05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`cc6f372` 2026-09-24 22:36 docs(行为正样本回测·判据清单改判): 形态类规则误砍 0/246 该上,长度类规则误砍 40.2%/9.8% 直接否决 |
@@ -112,7 +128,7 @@
 | docs/features/collectors.md | 2026-09-25 | 不要求头注 | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/features/daily-report.md | — | 不要求头注 | `54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/events-alerts.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
-| docs/features/my-reading.md | 2026-09-25 | 不要求头注 ⚠ | `076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
+| docs/features/my-reading.md | 2026-09-25 | 不要求头注 | `a9ed8e4` 2026-09-27 21:43 docs(判定台账退役: 删除 DOC_VALIDITY_LEDGER): 已判决的结论已在 076aaf2 全部归位活文档, 未判决的按用户 09-27 裁决不迁、直接删<br>`076aaf2` 2026-09-27 21:41 docs(判定台账退役前置: 已判决结论全部归位活文档, 地图 21 个 V 号改内联): 台账先提交保全, 下一步删 |
 | docs/features/scheduler.md | 2026-09-05 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/source-library-autoclassify.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/task-queue.md | 2026-09-05 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |

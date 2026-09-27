@@ -1,0 +1,39 @@
+sources 列: id,type,name,url,avatar,uid,group_id,focus,enabled,status,last_fetched_at,next_fetch_at,extra,created_at,fail_count,spotlight,muted,reader_visible
+articles 列: id,source_id,title,url,author,cover,summary,content_html,published_at,read_at,later,created_at,category,score
+
+== 源按类型 ==
+  rss: 457 个（enabled 合计 0）
+  youtube: 125 个（enabled 合计 0）
+  wemp: 65 个（enabled 合计 0）
+  hotlist: 29 个（enabled 合计 29）
+  bilibili: 1 个（enabled 合计 0）
+  douyin: 1 个（enabled 合计 0）
+
+== url 命中 wechat2rss 的源：375 个 ==
+  #134 rss enabled=0 人人都是产品经理
+  #135 rss enabled=0 腾讯技术工程
+  #136 rss enabled=0 阿里技术
+  #137 rss enabled=0 阿里云开发者
+  #138 rss enabled=0 大淘宝技术
+  #139 rss enabled=0 新智元
+  #140 rss enabled=0 腾讯云开发者
+  #141 rss enabled=0 前端早读课
+  #142 rss enabled=0 Founder Park
+  #143 rss enabled=0 歸藏的AI工具箱
+  #144 rss enabled=0 腾讯科技
+  #145 rss enabled=0 InfoQ
+  #146 rss enabled=0 赛博禅心
+  #147 rss enabled=0 数字生命卡兹克
+  #148 rss enabled=0 十字路口Crossing
+  #149 rss enabled=0 极客公园
+  #150 rss enabled=0 京东技术
+  #151 rss enabled=0 Web3天空之城
+  #152 rss enabled=0 AI前线
+  #153 rss enabled=0 51CTO技术栈
+
+== 这些源的文章：7398 篇，其中正文为空 0 篇 ==
+
+== 40 篇正文里的 img 域名分布 ==
+  wechat2rss.bestblogs.dev: 297
+
+含 "proxy" 字样的域名：无

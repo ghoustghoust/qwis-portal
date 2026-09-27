@@ -133,14 +133,19 @@ for (const f of docsFiles) {
   if (!registered(f)) warnings.push(`[失踪] ${rel(f)} 未在 docs/INDEX.md 登记`);
 }
 
-// 4 归档件必须有依赖头注（DOC_GOVERNANCE §2.4 五字段）
+// 4 归档件头注：**降为一条计数提示，不判红**（用户 09-27 裁"门禁豁免选 A"）。
+//   为什么：① 归档层按 09-25 裁决"只作反查、不在索引逐篇登记、不用地址和链接描述它们"——
+//   既然规定不登记不描述，再要求每份补五字段头注就是自相矛盾的判据；② 实测该判据 255 条错
+//   全部来自归档层，把"零错"变成不可满足，而 S6/L5 两枚锁借的就是本判据的退出码——
+//   门禁非零会让密钥扫描判据静默失声。保留计数而不是删掉检查：把规模摊给人看，
+//   要清还是继续豁免由人判，机器不替人判。
+let archiveNoHead = 0;
 for (const f of docsFiles.filter((x) => rel(x).startsWith('docs/archive/'))) {
   if (path.basename(f) === 'README.md') continue;
   const head = read(f).slice(0, 1200);
-  for (const k of ['类别：', '归档自：', '关联', '状态：']) {
-    if (!head.includes(k)) { errors.push(`[归档头注] ${rel(f)} 缺「${k}」`); }
-  }
+  if (!['类别：', '归档自：', '关联', '状态：'].every((k) => head.includes(k))) archiveNoHead++;
 }
+if (archiveNoHead > 0) warnings.push(`[归档头注] docs/archive/ 有 ${archiveNoHead} 份缺五字段头注（豁免判红，理由见本段与 DOC_GOVERNANCE §2.4）`);
 
 // 5 活文档超长（提示核销轮，不算不通过）
 const LIMITS = { 'docs/ISSUES.md': 130, 'ARCHITECTURE.md': 400, 'docs/NEXT-DEV-REQS.md': 260, 'docs/FEATURE_MATRIX.md': 200 };
