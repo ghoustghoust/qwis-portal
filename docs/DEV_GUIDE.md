@@ -1,6 +1,6 @@
 # 全网情报系统 · 开发者上手指南
 
-> 最后更新：2026-09-25
+> 最后更新：2026-09-27
 
 ---
 
@@ -44,11 +44,10 @@ Vercel Serverless（读层主部署）
 | `api/` | **Vercel 读层 API**：catch-all 主 API；采集/日报函数为手动备份（主链路在 runner） |
 | `server/` | Express 后端（本地开发/灾备）：routes/services/db.js |
 | `web/` | 主前端（Vite+React+Tailwind）：index.html + admin.html |
-| `portal/` | 原 Vercel 项目（已合并到根项目，待清理） |
+| `lib/` | 三端共用的单实现层（保留策略、预筛、密钥掩码等）——同一语义只在这里写一份 |
 | `tools/` | 运维脚本 |
 | `tests/` | 回归测试（node:test） |
 | `docs/` | 文档 |
-| `archive/` | 分析产物与演示素材（**不作现状依据**） |
 | `cloud/` | PHP 队列（Token 鉴权） |
 | `config/` | customer-config.json |
 | `opml/` | bestblogs 源清单 |
@@ -72,7 +71,7 @@ Vercel Serverless（读层主部署）
 
 ### 5.1 双端同步规则
 
-改 Vercel API（`api/`）必须同步检查本地 Express（`server/`），反之亦然。双端共享语义但独立实现。
+改云端读层（`api/`）或 runner 那条采集链时，要**同步检查**本地 Express（`server/`）里同语义的那一份，反之亦然——三份实现共享语义、各自独立。**但"同步检查"不等于"三端各写一遍"**：新功能先问它属云端还是本地专属，云端能做的只落云端两份部署面（读层 + runner），本地端按需跟。
 
 ### 5.2 测试要求
 
@@ -82,7 +81,8 @@ Vercel Serverless（读层主部署）
 
 - 改架构/流程 → 同步更新 `ARCHITECTURE.md`
 - 新功能 → 在 `docs/features/` 新增功能文档
-- 新决策 → 在 `docs/specs/` 新增 spec
+- 新决策（方向性取舍、"不做什么"）→ 在 `docs/adr/` 落一个编号件：是什么 / 为什么 / 边界与禁止；同一主题被改判时**就地改写那件**，不新开"取代件"、不留旧方案叙述
+- 开发一个功能（要拆几步、什么结果算完）→ 在 `docs/specs/` 走 spec 四件套
 
 ### 5.4 已知坑（必读）
 
@@ -96,11 +96,10 @@ Vercel Serverless（读层主部署）
 
 ---
 
-## 六、阅读顺序推荐
+## 六、按场景去哪份文档
 
-| 场景 | 阅读顺序 |
-|------|---------|
-| 新接手 | `AGENTS.md` §0 固定顺序 → 本文档 → RUNBOOK.md → ISSUES.md |
-| 修 bug | ISSUES.md → ARCHITECTURE.md §5 → 对应模块 docs/features/ |
-| 新功能 | docs/features/ 相关模块 → ARCHITECTURE.md §3 → DEVELOPMENT_STANDARDS.md |
-| 排障 | RUNBOOK.md → ARCHITECTURE.md §5 |
+**固定阅读顺序只有 `AGENTS.md` §0 一份，本文不复制**（复制过一次就已经和它不一致了——这张表原来就犯过这个错）。按任务类型的入口：
+
+- **修 bug / 复现问题**：`docs/ISSUES.md` 找活跃条目 → 该模块在 `docs/features/` 的那份功能文档
+- **线上排障**：`docs/RUNBOOK.md`（含云端排障与止血顺序）
+- **加功能**：`docs/INDEX.md` 模块地图先定位到"改的是哪个模块的哪个子模块" → 它的功能文档 → 能力边界看 `docs/FEATURE_MATRIX.md`

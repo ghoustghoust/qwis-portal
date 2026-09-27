@@ -2,7 +2,7 @@
 
 > **这份文档管什么**：什么时候必须清洁文档、清洁时留什么、剔出去的内容按什么分类归档、归档要登记哪些依赖、以及怎么机器化自检。
 > **它自己是底层文档**（`DEVELOPMENT_STANDARDS.md` §文档规则的可执行版本；两者冲突以本文为准并回改本文）。
-> 最后更新：2026-09-25（§2.1 白名单登记新件 `docs/DOC_VALIDITY_LEDGER.md`（有效性判定台账）：模块地图改三层后需要一处承载「条目级有效性裁决」，而 §2.3 六类分类里没有该职责的现役位。⚠️ 本表与 `INDEX.md` 顶层表自称互为镜像、实测已不等，登记为台账 V08 待裁决。上轮 2026-09-23（§2.2 补「整批作废可以直接删」及其三条硬性前置 —— `docs/specs/35~43` 共 65 份按此处理；并记下落删的已知副作用：文档门禁的扫描分母会随之塌小，见 `docs/ISSUES.md` BL13。再上轮 2026-09-20 新增 §2.6 文档改动戳：`tools/doc-stamp.cjs` → `docs/STAMPS.md`，§2.1 随之登记该件，§3 Step 2 改用它取改动史并**弃用** `git log -1` 当内容改动日期））
+> 最后更新：2026-09-27
 
 ---
 
@@ -38,17 +38,16 @@
 | `docs/DEVELOPMENT_STANDARDS.md` | 开发/验收规范 | DEV_GUIDE |
 | `docs/DEV_GUIDE.md` | 开发者上手 | — |
 | `docs/DOC_GOVERNANCE.md` | **本文**（文档治理） | INDEX |
-| `docs/DOC_VALIDITY_LEDGER.md` | **有效性判定台账**：把活文档里的约束/边界/口径摊到可裁决粒度，逐条记准入判定与因果链（一次性裁决载体，裁决完即删） | INDEX 模块地图（`V 号` `W 号`） |
 | `docs/STAMPS.md` | **文档改动戳**（机器生成，勿手改；每份文档的改动时间 + 推送版本，见 §2.6） | INDEX |
 | `docs/HANDOVER.md` | 凭据与端点速查（⚠️ 本地文件，永不提交） | AGENTS §0 |
-| `docs/ROADMAP-2026-09.md` | 用户已拍板决策母文档（只留决策，不留流水） | NEXT-DEV-REQS |
-| `docs/HANDOFF_PROMPT.md` | 新窗口接手提示词（薄，**不复述进度**） | — |
-| `docs/ANDROID_SUBMIT_GUIDE.md` | 对接类**现役**手册：安卓 HTTP Shortcuts 提交链路 | ARCHITECTURE §7、RUNBOOK §、`tools/setup-customer.js:160` |
-| `docs/X_SETUP_GUIDE.md` | 对接类**现役**手册：RSSHub + X cookie | ARCHITECTURE §7 |
 | `docs/pitfalls/` | **踩坑库**（按域，见 §2.3） | ARCHITECTURE §5 |
 | `docs/features/` | **功能语义权威**（模块干什么） | INDEX |
-| `docs/specs/` | 决策与四件套（含 mew-spec 产物） | ISSUES / NEXT-DEV-REQS |
+| `docs/adr/` | **决策件**：一个主题一个编号件，只写「是什么 / 为什么 / 边界与禁止」的最新标准（索引在 `ARCHITECTURE.md` §3.8） | 架构文档 §3.8、ISSUES / NEXT-DEV-REQS |
+| `docs/specs/` | **开发功能规格**与四件套（含 mew-spec 产物：spec/plan/task/checklist）。⚠️ 与 ADR 不是一类：这里写"做什么功能、拆几步、要什么结果"，不写方向性取舍 | ISSUES / NEXT-DEV-REQS |
 | `docs/contracts/` | 接口契约 JSON（读层响应形状） | 前端/测试 |
+| `docs/research/` | **研究性与前瞻设计参考**：外部范式拆解、目标态框架。**每份必须自陈身份**（目标态 / 已验收现状依据）；落地的那部分改写进 `features/`，作废即删——**这里不许长成第二个归档层** | `docs/research/README.md`、INDEX |
+| `docs/changes/` | 在途变更的对边界记录，一轮一份；**已完结即删**，不养"过去方案"当第二事实源 | INDEX |
+| `docs/eval/` | 评测与一次性只读探针的产物（AGENTS §3 验收第 7 条：数据链路改动配探针直读生产真值）+ 白盒棘轮基线 | `EVAL_GUIDE.md`、AGENTS §3 |
 
 被代码或活文档**指名引用**的手册不许移走（移动 = 制造悬空引用，`tools/setup-customer.js` 这类运行时提示也会一起失效）。除上表外的文件不得留在 `docs/` 顶层。
 
@@ -67,17 +66,20 @@
 - `docs/archive/` —— 历次核销移出活跃表的**原文留底**，见 §2.3；**只作反查用，不作现状依据，也不在索引里逐篇登记**。
 - `archive/`（仓库根） —— 与分析产物/评测素材同级的历史仓库级归档，不放活文档。
 
-### 2.3 归档分类（用户指定的六类 → 每类都有「现役位」与「归档位」）
+### 2.3 归档分类（每类都有「现役位」与归档处置）
 
-清洁动作的本质就是：**内容验收通过后，从现役位搬到同类归档位**；现役位**只在该文件头部**用一句目录级说明交代"已核销的不进本文件"，不逐条留地址（09-25 裁决，见 §2.5 末段）。
+清洁动作的本质就是：**内容验收通过后，从现役位搬到同类归档位**；现役位**只在该文件头部**用一句目录级说明交代"已核销的不进本文件"，不逐条留地址（09-25 裁决，见 §4.1 末段）。
 
 | 类别 | 现役位（还在跟进的） | 归档位（已验收/已完结） | 收什么 |
 |---|---|---|---|
-| **功能** | `docs/features/`、`docs/NEXT-DEV-REQS.md` | `docs/archive/feature/` | 已验收功能的交付说明、需求源头、产品范式借鉴（如 `BESTBLOGS_BORROW.md` 待 T3 收尾后入此） |
+| **决策** | `docs/adr/`（一主题一号，只写最新标准） | — | **被覆盖就地改写该件，不归档、不留"旧方案对比"**；查经过走 git |
+| **开发功能规格** | `docs/specs/`（spec / plan / task / checklist） | **不设归档位** | 用户 09-25 裁决：架构改过一轮后这批 spec 大多失时效，判完生死按 §2.2「作废即删」走——**不建状态头注、不搬进目录养着**，否则归档层会变成第二个事实源 |
+| **功能** | `docs/features/`、`docs/NEXT-DEV-REQS.md` | `docs/archive/feature/` | 已验收功能的交付说明、需求源头、外部产品范式借鉴清单 |
 | **优化** | `docs/ISSUES.md` 观察中、`FEATURE_MATRIX.md` | `docs/archive/optimization/` | 性能/感知/配额/成本类优化的前后对比与实测数据 |
 | **调试** | `docs/ISSUES.md` 活跃表 | `docs/archive/debugging/` | 单期修复流水、DELIVERY 类文档、已完结 `changes/*.md` |
 | **踩坑** | `docs/pitfalls/`（**只累积不归档**） | — | 症状/根因/规则/案例四段式，按域一文件：collection / backend / ai / frontend / deployment / testing |
-| **对接** | `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`、`cloud/` 说明、`features/collectors.md` | `docs/archive/integration/` | 已停用/已替换的第三方链路方案 |
+| **对接** | `docs/RUNBOOK.md` §4（队列对端与同步入口）、`docs/features/collectors.md` | `docs/archive/integration/` | 已停用/已替换的第三方链路方案。**09-27 起这里不再有独立手册**：两份"平台对接指南"被删，因为它们描述的通路从未在当前真实环境跑起来，而手册把它们写成了现役 |
+| **研究/前瞻** | `docs/research/`（每份自陈身份） | **不设归档位** | 外部范式拆解与目标态框架。判断不再成立即删、反查走 git；已落地的部分改写进 `docs/features/`，不留"应然 vs 实然"两份并行 |
 | **密钥管理** | `docs/HANDOVER.md` §1.5（本地）、`ARCHITECTURE.md` §6 | `docs/archive/credentials/` | 凭据**轮换史与位置矩阵**（三处同步记录、失效事件） |
 
 > ⚠️ **密钥类硬规则**：`docs/archive/credentials/` 里**只许出现凭据名、存放位置、轮换时间、掩码指纹（前 4 后 4）**，永不写完整明文密钥。真实值只在本地 `.env` / Vercel env / GitHub Secrets 三处（AGENTS §2.6）。提交前 `git status` 复核不得含该目录之外的密钥泄漏。
@@ -104,7 +106,7 @@
 | 谁生成 | `node tools/doc-stamp.cjs` → 写 `docs/STAMPS.md`；`--check` 只比对不写（将来接门禁用，本轮未接入） |
 | 装什么 | 全库每份 tracked `.md`：头部声明日期 + 判定 + **最近 2~3 次提交**（短号 · 日期 时:分 · 提交主题）。底层文档给 3 次，其余给 2 次 |
 | 何时重跑 | 每次改完文档、提交之前跑一次，产物随同提交 |
-| 为什么**不**把 commit 号写进各文档头部 | ① **自引用**：写戳那次提交本身即成为该文件的新提交，头部只能指上一条，永远滞后一格；② **`git log -1` 不等于"最后内容改动"**：只加头注、只改错别字的元提交会把日期顶新（2026-09-20 实测 4 例：`README.md`、`docs/ANDROID_SUBMIT_GUIDE.md` 的"漂移"经对 `git show` 取证后确认头部是诚实的，`docs/DEVELOPMENT_STANDARDS.md` 那次只改了 `Agencs`→`Agnes`）。所以给的是**带主题的提交史**，元改动由读者按主题分辨，**机器不替人判** |
+| 为什么**不**把 commit 号写进各文档头部 | ① **自引用**：写戳那次提交本身即成为该文件的新提交，头部只能指上一条，永远滞后一格；② **`git log -1` 不等于"最后内容改动"**：只加头注、只改错别字的元提交会把日期顶新（2026-09-20 实测 4 例：`README.md`、`docs/DEV_GUIDE.md` 的"漂移"经对 `git show` 取证后确认头部是诚实的，`docs/DEVELOPMENT_STANDARDS.md` 那次只改了 `Agencs`→`Agnes`）。所以给的是**带主题的提交史**，元改动由读者按主题分辨，**机器不替人判** |
 | 判定列怎么读 | `待判` ≠ 有错。它只说"头部比最近提交旧"，真过时还是元提交，看同一行的提交主题；`头部超前` = 头部写了尚未提交的日期，**提交前出现它是正常态**，只有"已 push 却仍超前"才是硬伤；`⚠` = 工作区还有未提交改动 |
 | 设计内滞后 | 表读的是**已提交**历史，所以"正在提交的这一次"必然不进表：本轮改过的文档，其行落后一个提交，下一轮重跑即补上。这是**显式**滞后（配合 `⚠`），与"头部手写 commit 号"那种静默滞后不同类——前者读者看得见，后者看不见 |
 | 头部 `> 最后更新：` 的新语义 | 收窄为"最后一次**内容**改动"，并保留必填的"改了什么"一句。**纯元改动（改头注、改错字、重排、搬家）不许顶日期** —— 这条正是上面 4 例的结论 |
@@ -119,20 +121,21 @@
 ```bash
 grep -n "cron:" .github/workflows/collect.yml          # 调度频率唯一真值
 grep -rn "intervalMin\|refreshInterval" server/services/collectors/ | head   # 采集间隔默认值
-npm test 2>&1 | tail -5                                 # 测试数以命令输出为准，不写进文档
+npm test > test.log 2>&1; echo "EXIT=$?"                # 测试数以命令输出为准，不写进文档
 ```
+> ⚠️ **不许用 `npm test | tail`、`| grep` 这类管道看结果**：管道的退出码是末端命令的，红色的套件会照样报 0。本项目已两次因此把红读成绿（含本文件旧版这里写的 `| tail -5`）。要么重定向到文件再取 `$?`，要么直接看汇总行。落文件时**别用 `/tmp`**：Windows 上 Git Bash 的 `/tmp` 与 Node 的 `os.tmpdir()` 不是同一处。
 逐项核对：调度频率 / 采集间隔 / 测试基线 / 域名 / 端口 / 代理端口 / 凭据位置 / 功能矩阵 / 表列清单。发现冲突 → 改文档，**不改真值来源**。
 
 **Step 2 头部元信息核对**：跑 `node tools/doc-stamp.cjs` 看 `docs/STAMPS.md` 的判定列，**不要**再用 `git log -1 --format=%ad -- <file>` 当"最后内容改动日期"——元提交（改头注/改错字/搬家）会把该读数顶新，2026-09-20 实测 4 例，机制与口径见 §2.6。判定为 `待判` 的要逐条对着提交主题确认是真过时还是元改动；`头部超前` 一律改回。头部声明的范围（"B12~B19"、"H9~H13"）仍须与正文表格实际范围一致。
 
 **Step 3 悬空引用扫描**：跑 `node tools/doc-lint.cjs`（§5）。文档里出现的每个路径/端点/表名/spec 编号都要验证存在；**指向已删除历史件的指针直接删句**（不给它补"已归档"标注——那等于继续为过去的文档占现在的上下文）。
 
-**Step 4 抽离归档**：按 §2.3 分类搬，按 §2.4 写头注；**活文档原位不留逐条指针**（去冗规则见 §2.5 末段：文件头一句目录级说明即可）。
+**Step 4 抽离归档**：按 §2.3 分类搬，按 §2.4 写头注；**活文档原位不留逐条指针**（去冗规则见 §4.1 末段：文件头一句目录级说明即可）。
 
-**Step 5 重建索引**：`docs/INDEX.md` 必须覆盖 `docs/` 下全部**在用** `.md`（含 `contracts/`、`screenshots/`、`pitfalls/` 各域、`specs/` 全部编号）。
-**归档层是唯一的例外**：`docs/archive/` 与仓库根 `archive/` 只写一句"不作现状依据"，**不逐篇登记**（09-25 用户裁决；`doc-lint` 的登记豁免与此口径配套，别再往 INDEX 里补清单）。漏登记在用文档 = 下次没人能找到。
+**Step 5 重建索引**：`docs/INDEX.md` 必须覆盖 `docs/` 下全部**在用** `.md`（`adr/`、`changes/`、`contracts/`、`eval/`、`features/`、`pitfalls/` 各域、`specs/` 全部编号）。
+**归档层是唯一的例外**：`docs/archive/` 只写一句"不作现状依据"，**不逐篇登记**（09-25 用户裁决；`doc-lint` 的登记豁免与此口径配套，别再往 INDEX 里补清单）。漏登记在用文档 = 下次没人能找到。
 
-**Step 6 去重与 SSOT 收敛**：同一事实多处写死 → 保留权威那处，其它改「见 X」。已作废决策加头注，不静默删。
+**Step 6 去重与 SSOT 收敛**：同一事实多处写死 → 保留权威那处，其它改「见 X」。已作废的结论**直接改掉或删掉**（§2.2 作废即删），现行件只写最新标准，不留"已作废 + 日期 + 链接"的头注。
 
 **Step 7 交付**：`node tools/doc-lint.cjs` 0 错 + `npm test` 不新增红 + `git push origin main`（AGENTS §2.1）。文档改动也要推，否则下一个人读的是旧事实。
 
@@ -141,8 +144,11 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 1. **易变事实不写死**：测试条数、坑条数、源数量、保留天数 → 写「以 `npm test` / `grep -c` / `settings.data` 为准」。
 2. **单一事实源**：调度表只存在于 `collect.yml`；功能矩阵只存在于 `FEATURE_MATRIX.md`；凭据位置只存在于 `HANDOVER.md` §1.5。
 3. **活文档只装"当前"**：ISSUES 只装未修复/观察中/挂案；已核销进 `docs/archive/debugging/ISSUES-resolved-<date>.md`。
-4. **指针式推荐**：`HANDOFF_PROMPT`/`RUNBOOK` 之类入口文档只指路，不复述内容。
-5. **portal/ 已退役（09-21）**：门户 Vercel 项目下线、gitlink 已从索引移除，本条仅作历史说明保留；若它复活，旧规则是「portal 副本不是权威，任何文档修订不落到 portal」。 <!-- doc-lint:ignore：本行刻意引用已删除路径 -->
+4. **文档只写现状，不写变更史**：不写"哪天改过、被哪次实测推翻、当时读到多少条"。一条陈述仍然有效的凭证是它的**编号与确认标记**（ADR 号、坑号、`核 <日期>：<依据类型>`），不是叙述长度；变更史交给 git 与 `docs/STAMPS.md`。**过期陈述比缺失更危险**——它会指挥下一个动手的人往错方向走。
+5. **不写死接口**：任何活文档都不写行号、参数取值、函数签名，也不复述代码结构；只写输入输出示例与"不能做什么"。取值全库只许一份（上面第 1、2 条），其余写「见 X」。理由：接口在迭代里大概率还要变，写死等于给文档排个腐烂日期。
+6. **凭证不许押在一次性件上**：长期陈述的依据只能是代码/配置本身、现役文档、或 `docs/adr/` 的决策件；`V 号`（判定台账）只是过程索引，裁决完就该把结论搬走——**不许**在活文档里写"因为 V 号裁过所以成立"。
+7. **一个词只指一个东西**：同名多义（"快照"既指整库备份又指静态导出物、"队列"既指任务表又指待导入清单）一律拆名后重写；靠上下文区分不成立。
+8. **指针式推荐**：`INDEX`/`RUNBOOK` 之类入口文档只指路，不复述内容。
 
 ### 4.1 洁净 = 精炼 + 去冗 + 归档（三条都做才算做过洁净，2026-09-20 用户口径）
 
@@ -158,7 +164,7 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 
 这三类都在**影响 agent 和人的阅读**：读者打开账本要看的是"现在什么坏着、等什么决定"，不是读五份已完成工作的验收细节。**放行 / 待批队列留在 `ISSUES.md` 顶部** —— 那才是它该装的。
 
-**精炼的对象就是这些累计出来的废话**：同一事实多处写死 → 只留权威那处，其它改「见 X」；已作废结论 → 一行指针；复述代码行为的段落 → 删掉，改成 `file:符号` 锚点。
+**精炼的对象就是这些累计出来的废话**：同一事实多处写死 → 只留权威那处，其它改「见 X」；已作废结论 → 直接改掉或删掉（不留一行指针，指针也会被当成"那份还在"）；复述代码行为的段落 → **删掉，不留**——要指路只指到承载它的那份文档，**不写行号、参数取值、函数签名，也不复述代码结构**（09-26 用户裁定原则 1；本文此前"改成 `file:符号` 锚点"的说法与之相反，已作废：锚点会被重构消哑、会随版本越界，且把文档绑死在代码形状上）。
 
 **判据不是"最短"，是"不可再被误解的最短"**：当你删掉任何一个词、任何一步、任何一个条件都会让执行失败或让语义改变时，这段就到位了（柯氏复杂度式的"不可再压缩而不损失信息"）。
 
@@ -232,31 +238,3 @@ npm test 2>&1 | tail -5                                 # 测试数以命令输�
 2. 每个小功能/板块各出一份 **mew-spec 小框架**（同目录 `NN-<topic>-<sub>.md`），列改动点、影响面、验收；
 3. **用户同意后才动代码**；动工即建四件套（spec/plan/task/checklist），验收证据写进 checklist；
 4. 交付后按 §3 Step 4 归档：功能语义进 `docs/features/`，流水进 `docs/archive/feature|optimization/`，坑进 `docs/pitfalls/`。
-
-## 8. 本次清洁执行记录（2026-09-18 深夜，全量可复现）
-
-**Step 1 反向核对取到的真值**：cron → `.github/workflows/collect.yml:24-36`（7 条 cron / 9 job）；runner 模式 → `tools/collect-turso.js` 里 `main()` 的 `MODE === '…'` 分支（现 7 种；**不写行号**——本轮 B53 删掉 53 行死码后，旧写法 `collect-turso.js:1954-1967` 已成烂锚，见 `docs/ISSUES.md` B115）；测试 → 实测 `npm test` 301 项 / 297 绿 / 4 红（红的即 B12，**不写进文档**）。
-
-**已做（修正类，不需验收）**
-- 头注日期与范围订正：`ARCHITECTURE.md`（09-11→09-18、三模式→七模式、§5 补 #D2 #35、`cloud/db.js`→`lib/db.js`）、`ISSUES.md`（范围声明 B12~B19→B8~B25/H1~H17）、`CLOUD_PIPELINE_GUIDE.md`（日期 + 测试基线不写死 + **B 站"未上云"与"报警引擎未上云"两行是错的**，已按 FEATURE_MATRIX 订正）、`HANDOVER.md`（生成时间/commit 指针 + 1.4 调度表降为指针 + 数据工具名 `_diag-turso`→`_debug-turso`）<!-- doc-lint:ignore：本段记录"从什么改到什么"，含已消失的旧路径 -->
-- **SSOT 冲突消解**：调度表只存 `collect.yml`（ARCHITECTURE §3.6 与 HANDOVER §1.4 改为指针）；测试条数一律改「以 `npm test` 为准」；代理端口 **7890→12000**（`RUNBOOK.md:26`、`DELIVERY_VERIFICATION.md` 5 处、`X_SETUP_GUIDE.md:62`）；坑数不写死（`INDEX.md:20` "28 条已知坑"）
-- **悬空引用**：`HANDOFF_PROMPT` → 交叉审核报告（该件 09-25 已随作废批清除，反查见 `docs/ISSUES.md`「作废登记」）；`BESTBLOGS_BORROW` 提示词目录 → 根 `prompts/`（实测 7 个文件）；`NEXT-DEV-REQS`/归档件的 `docs/specs/26` → 真实文件名
-- **过期快照清除**：`HANDOVER.md` §0「09-13 晚状态速览」（259 测试 / 899 源 / focus=1 八源，全部已失真）改为"本文件只装凭据位置"；`HANDOFF_PROMPT.md`「09-12 进度快照」同理
-- **决策作废落档**：`NEXT-DEV-REQS.md` **T5-15「每轮修复后更新 DELIVERY-2026-09-XX.md」机制作废**（它就是文档污染的生产器），替代方案 = 交付即写 SSOT + 按本文归档
-- **实情订正**：`docs/specs/` 中 10/12/27~34 **只有 spec.md**，`NEXT-DEV-REQS:2` 与本文此前"四件套完成"的说法已改（历史四件套不补，挂 `ISSUES.md` H17）
-- **踩坑入库**：`docs/pitfalls/collection.md` **#35**（熔断=45min 抖动锁源 48h、三端自愈语义不一致、系统性故障批量误熔断），两处索引同步（`pitfalls/README.md`、`ARCHITECTURE.md` §5）
-- **门禁脚本落地**：`tools/doc-lint.cjs`（§5 六条）+ `npm run lint:docs`
-
-**已做（归档类，属已验收批次）**
-- `docs/DELIVERY-2026-09-14.md` → `docs/archive/debugging/2026-09-14-delivery.md`（+§2.4 头注）<!-- doc-lint:ignore：记录搬家前路径 -->
-- `docs/changes/2026-09-13-reader-pagination-and-content-fixes.md` → `docs/archive/debugging/` 同名<!-- doc-lint:ignore：记录搬家前路径 -->
-- 新建 `docs/archive/README.md`（分类目录 + **按症状查的反向索引** + 已登记归档件表）
-- `docs/INDEX.md` 全量重建（补 `contracts/` 5 件、`screenshots/` 14 张、specs 25~35、`archive/` 分类、`deprecated/` 18 件、portal 副本非权威声明）
-
-**留在活文档里没动的（等验收，AGENTS §2 / 本文 §1）**
-| 条目 | 现居 | 目标分类 |
-|---|---|---|
-| B13 构建中断、B14 `qOne`、B16 周刊导语清洗、B20 早报质量门槛（**都还没跑批/重跑验证**，见 W7） | `ISSUES.md` 活跃表 | 调试 `docs/archive/debugging/` |
-| B8/B11 在途改动（未提交，见 B25）+ 用户页面标注本轮要重做 | 工作区 | — |
-| `changes/2026-09-11-runner-direct-collect.md` | `docs/changes/` | **不移**：ARCHITECTURE/HANDOVER 仍指名引用（§4.5） |
-| `BESTBLOGS_BORROW.md` | `docs/` 顶层 | 功能（待 T3 收尾） |

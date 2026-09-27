@@ -157,7 +157,7 @@ function generateClients(cfg, token) {
     const outDir = path.join(ROOT, 'data');
     fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(path.join(outDir, 'http-shortcuts.json'), rendered, 'utf8');
-    console.log('✔ data/http-shortcuts.json 已生成（安卓 HTTP Shortcuts 导入配置，用法见 docs/ANDROID_SUBMIT_GUIDE.md）');
+    console.log('✔ data/http-shortcuts.json 已生成（安卓 HTTP Shortcuts 导入配置；队列侧说明见 docs/RUNBOOK.md §4）');
   } else {
     console.warn('⚠ 未找到 tools/http-shortcuts-template.json，跳过安卓配置生成');
   }

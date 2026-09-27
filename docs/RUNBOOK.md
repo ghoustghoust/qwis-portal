@@ -1,9 +1,8 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
-> 最后更新：2026-09-20（新增 **§10.9 Turso 读封锁** 排查与止血三步：症状「`/api/*` 全 500 但静态页 200、前端显示自己写的兜底文案」不是后端在施工；两条硬规矩「旧库不许删」与「换存储必须读路径 + 一次 workflow_dispatch 写路径各验一次」。来源 B118/B120）
-> 上轮（09-19 夜·B101 实测加注：`cleanup` job 从未被自动触发，手动 dispatch 也选不到该 mode；09-18 代理端口统一 12000）
-> 唯一现行运维文档（2026-09-04 整合自 DEPLOYMENT.md、phase9-runbook.md、批量恢复熔断源方案、源列表管理增强指南；已与当前代码核对一致，2026-09-11 复核）。
-> 架构与凭据位置看根目录 `ARCHITECTURE.md`。**修复历史不作现状依据**：要回看某一笔改了什么，用 git 与该模块在 `docs/ISSUES.md` 的登记，别翻 `archive/`。
+> 最后更新：2026-09-27
+> 唯一现行运维手册。架构与凭据位置看根目录 `ARCHITECTURE.md` 与 `docs/HANDOVER.md`；功能覆盖以谁为准看 `docs/FEATURE_MATRIX.md`。
+> **修复历史不作现状依据**：要回看某一笔改了什么，用 git 与该模块在 `docs/ISSUES.md` 的登记，别翻 `docs/archive/`。
 
 ## 1. 系统形态
 
@@ -26,8 +25,10 @@ npm run build          :: 改了 web/src 后必须重建前端
 1. 上传代码（排除 `node_modules/ data/ .env portal/ archive/`），`npm install --production`
 2. 需要抖音功能才装 Playwright：`npx playwright install chromium`（约 300MB）
 3. 配 `.env`：`PORT=3000`；海外源需 `HTTPS_PROXY=http://127.0.0.1:12000`（Clash 实际端口，旧 7890 已失效；公众号/B站/抖音/AIHOT 国内源不需要代理）
+   > ⚠️ **`.env` 里的代理端口不是你唯一要改的地方**：`npm run setup:customer` 会拿 `config/customer-config.json` 里的代理值**覆盖写回** `.env`。那份配置若还写着已失效的旧端口，跑一次生成器就把死端口种回去，症状是海外源集体抓不到、看起来像云端坏了。搬机或换代理后两处一起核。
    > ⚠️ **宝塔部署本身不解决海外源可达性**：能不能抓 YouTube/X 取决于服务器所在地域/出站代理，不取决于面板。国内机房服务器仍需配代理（或换海外机房）；本机之所以能抓是因为本机有代理。
-   > 🔐 **API 鉴权已上线（2026-09-05，本地/云端一致）**：公开 GET 无需鉴权；写操作（POST/PUT/DELETE）需 `Authorization: Bearer <JWT>`，经 `POST /api/auth/login`（ADMIN_USER/ADMIN_PASSWORD）换取，7 天有效，签名密钥 `AUTH_SECRET`。上公网仍需确认 `.env` 已配置这三个变量。
+   > 🔐 **API 鉴权（本地/云端一致）**：公开 GET 无需鉴权；写操作（POST/PUT/DELETE）需 `Authorization: Bearer <JWT>`，经登录端点（`ADMIN_USER`/`ADMIN_PASSWORD`）换取，7 天有效，签名密钥 `AUTH_SECRET`。上公网前先确认 `.env` 已配置这三个变量。
+   > ⚠️ **鉴权中间件必须把"登录入口本身"列进豁免名单**：否则它会把换取令牌的那个请求也拦掉，症状是"密码明明对、却永远登不进去"——**和密码值无关**。当时往密码方向查过，白查。
 4. `npm run build` → `npm run pm2:start` → `pm2 save` → `pm2 startup`（开机自启）
 5. Nginx 反代 `http://127.0.0.1:3000`，`client_max_body_size 10m`
 6. 日志：`npm run pm2:logs`；建议 `pm2 install pm2-logrotate`（50M × 7 天）
@@ -35,7 +36,8 @@ npm run build          :: 改了 web/src 后必须重建前端
 
 ## 4. 云端队列（PHP，可选）
 
-`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端；云端等价入口 `POST /api/queue/sync`（拉 PHP 云端队列 → pending_items → 清云端，需鉴权）。安卓端配置见 `docs/ANDROID_SUBMIT_GUIDE.md`。
+`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端；云端等价入口 `POST /api/queue/sync`（拉 PHP 云端队列 → pending_items → 清云端，需鉴权）。
+> ⚠️ **这条链路的对端在仓库之外，且当前不是活着的**——它是否还在解析、还是不是你的资产，只有你知道。本文件不再自带一份"手机端怎么配"的手册（那份 09-27 已删，它描述的通路从未在当前真实环境跑通过）。仍留在代码里的对端、生成器与界面入口的处置，见 `docs/ISSUES.md` 本轮立案那条。
 
 ## 5. 熔断与恢复
 
@@ -50,7 +52,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ```powershell
 npm test                      # 回归测试（通过数以实际输出为准）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
-node tools/audit-cloud.js     # 云端 19 项自检
+node tools/audit-cloud.js     # 云端巡检（只读，项数以脚本自身输出为准，本档不写死）
 node tools/ops-toolkit.js check    # 健康总览
 node tools/ops-toolkit.js frozen   # 熔断源清单
 node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
@@ -62,6 +64,7 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 
 - 整库快照/恢复/按天清理：管理台「数据」Tab（快照在 `data/backups/app-*.db`，支持上传导入；恢复为八表同事务整库回滚，有二次确认）
 - 保留天数：`settings.data.retentionDays`（默认 7，本地清理定时任务每 24h 执行，数据 Tab 改动即生效）。
+  ⚠️ **保留期是按"发布时间"判的（发布时间取不到才退回入库时间）**，所以有一整类文会被误判成过期：**滞后入库的老文**——发布很久之后才被补抓进来，实测这类占待删集合的绝大多数（发布平均滞后一百多天）。它们不是"旧闻被留下"，是"从没给过阅读窗口就被判死"。要动保留口径前先跑 `npm run check:retention` 看这个比例，别只看"待删多少条"。
   **本地端只清队列与本地产物，不删内容**：`articles`/`videos` 在 `lib/retention.js` 的 `local` 作用域里是 `skip`（本地库的角色是灾备副本，AGENTS §1；B102 收口，用户 09-20 决定）。
   删除/保留谓词**全库只有 `lib/retention.js` 一份**，三端（本地 / GH runner / 云端手动端点）都从它取，白盒 W17 扫"绕过它的第二份时间窗删除"。
   **如实说明覆盖面**（09-21 复核）：`api/[...slug].js` 的 `ARTICLE_CLEAN_WHERE` 与 `tools/archive-articles.js` 的"搬进 `articles_archive` 再按 id 删"**两处还没收进来**，W17 对前者按整文件记账豁免、对后者因"DELETE 里没有 `< ?` 形状"而放过（分别记在 B102 残余与 B132）。所以"扫不到红"不等于"只有一份"。
@@ -103,11 +106,12 @@ node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
 # 周刊：周五 18:03             node tools/collect-turso.js weekly
 #                          node tools/generate-snapshots.js（push 回仓库）
 # 清理：04:13                 node tools/collect-turso.js cleanup
-#   ⚠️ 实测（2026-09-19 夜，B101）：**这个 job 从来没被自动跑过**——它的 if 只认 `github.event.schedule == '13 20 * * *'`，
-#   而主力触发是 cron-job.org 的 workflow_dispatch（mode 选项里没有 cleanup）→ 每个 dispatch 批次它都是 skipped。
-#   现在去 GitHub → Actions → Run workflow 也**选不到 cleanup**，要清只能手动跑上面这条命令（需 TURSO_* 环境变量）。
-#   判"到底跑没跑"的硬证据：`settings['cloud.collect'].history[].mode` 里有没有 cleanup（本轮实读 168 轮 = 0 次）。
-# （cron 表达式以 .github/workflows/collect.yml 为唯一事实源，本段只标北京时刻）
+#   ⚠️ 这一档要分清两件事（详见 CLOUD_PIPELINE_GUIDE §1 图下注）：
+#   **跑没跑** —— 它只认 schedule，手动 Run workflow 的 mode 选项里没有 cleanup，只能现读
+#     `settings['cloud.collect'].history[].mode` 里有没有它；
+#   **删没删** —— 跑到不等于删到，没有内容转储凭证时删除闸必挡，看同一格读数的 deleted 行数。
+#   要立刻清一次而不等 schedule：本地跑上面那条命令（需 TURSO_* 环境变量）。
+#   （cron 表达式以 .github/workflows/collect.yml 为唯一事实源，本段只标北京时刻）
 
 # 手动触发：GitHub → Actions → collect → Run workflow → 选 mode
 #   ⚠️ 更正（2026-09-18）：原先写「四个 job 全跑」是错的——不带 mode 的 dispatch 只跑 collect。

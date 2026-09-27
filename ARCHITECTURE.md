@@ -1,188 +1,178 @@
 # 全网情报系统 · 架构文档
 
-> 所有 Agent 的共用上下文。改架构/流程/凭据位置时必须同步更新本文档。文档自身的清洁规则见 `docs/DOC_GOVERNANCE.md`。
-> 最后更新:2026-09-23(§3.6 加注:cron-job.org 8430047 已于 09-20 自动停用(死 PAT),双保险暂按一档读,处置见 ISSUES B136;上轮:09-23 只读复核轮 §1 清理加注被实测推翻并就地改写;specs 35~43 作废锚点在 docs/ISSUES.md)
+> 所有 Agent 的共用上下文。本文只写**系统此刻怎么摆、机制怎么接、什么东西必须保持一致**。
+> 为什么这么定、边界在哪、什么提案直接拒绝——那些是决策，住在 `docs/adr/` 的编号件里（索引见 §3.8），本文不复述。
+> 文档自身的清洁规则与写作尺子见 `docs/DOC_GOVERNANCE.md`；协作约束与交付链见 `AGENTS.md`（本文不复述）。
+> 最后更新：2026-09-27
 
-## 0. 部署方向决策(2026-09-11 方案A)
+## 0. 三端角色
 
-- **主部署:Vercel Serverless(读层 + 管理台)**——`api/` 目录为读 API,对外地址 `https://qwis-intel.vercel.app`。
-- **采集主链路:GitHub Actions runner 直写 Turso**——`.github/workflows/collect.yml` 每 15min 跑 `tools/collect-turso.js`(模式:collect / cleanup / daily / daily-ai / weekly / mybrief / translate,见 `collect-turso.js:1954-1967`),不经 Vercel 函数(根治 Hobby 10s→单次 2 源死局)。runner 海外网络,YouTube/X/RSSHub 直连。
-- **Vercel 端 api/collect.js、api/daily-generate.js 保留为手动备份**(`POST ?key=COLLECT_KEY`),不再是定时链路。
-- **本地 Express + SQLite**:开发/灾备用途。完整功能(含抖音 Playwright)仅在本地可用。
-
-## 1. 系统全景
-
-```
-                        ┌─────────────────────────────────┐
-                        │ GitHub Actions runner            │
-                        │ 每15min 全量采集(:07/:22/:37/:52) │
-                        │ cron-job.org 外置触发器(8430047)  │
-                        │ 双保险(GH schedule 会丢任务)      │
-                        │ 日报 09:03 / 快照 09:33          │
-                        │ 清理 04:13(均北京时间)            │
-                        │ tools/collect-turso.js 直写 Turso │
-                        └─────────────┬───────────────────┘
-                                      │ @libsql/client HTTPS 直写
-                                      ▼
-┌──────────────────┐        ┌──────────────────────────────┐
-│  本地机(开发/灾备)  │        │  Vercel 主部署(读层+管理台)     │
-│                  │        │                              │
-│  情报系统 :3000   │        │  qwis-intel.vercel.app        │
-│  ├ Express+SQLite│        │  ├ api/[...slug].js (读 API)  │
-│  ├ 阅读器/日报/热榜 │        │  ├ api/collect.js (手动备份)  │
-│  ├ /admin/ 管理台 │        │  ├ api/daily-generate.js(备份)│
-│  ├ 采集调度器      │        │  ├ 读者前端(完整页面)          │
-│  └ 抖音 Playwright│        │  ├ /admin/ 管理后台           │
-└──────────────────┘        │  └ Turso (东京) ◀── 唯一数据源  │
-   公众号 = wechat2rss       └──────────────────────────────┘
-```
-
-**Vercel 为读层主部署,采集主链路在 GH Actions runner(方案A,2026-09-11),本地为开发/灾备**。`api/` 目录是读 API 正式代码;采集/日报/清理由 `.github/workflows/collect.yml` 驱动 `tools/collect-turso.js` 直写 Turso(根治 Hobby 10s→单次 2 源死局,详见 docs/changes/2026-09-11-runner-direct-collect.md)。本地 Express 保留完整功能(含抖音 Playwright),用于开发和全功能灾备,未来宝塔/自有服务器全量部署时抖音功能在服务器运行。portal 历史:原 portal/ 独立仓库已合并进根项目 api/,冻结态已解除;Vercel 老项目 qwis-portal 已于 2026-09-11 删除下架。双端共享语义但独立实现,改一边要检查另一边。
-
-> **编号/日期自洽说明（09-20 文档洁净轮）**：本文件 `git log` 的最后提交日是 2026-09-20，但**最后一次内容改动是 09-19 夜那次「清理 04:13 从未触发」加注**（`530a5f4` 当天写完、随叫停轮压到 09-20 才推）——所以头注日期停在 09-19 是对的，不是漏更。提交日 ≠ 内容日这件事本身，就是 §3 Step 2 需要人读一遍的原因。
-> ⚠️ **图里"清理 04:13"是设计时刻,不是实际状态**（2026-09-19 夜实测,见 `docs/ISSUES.md` B101）：`cleanup` job 唯一的触发条件是 `if: github.event.schedule == '13 20 * * *'`,而实际主力触发器 cron-job.org 走的是 `workflow_dispatch`,其 `mode` 选项里**根本没有 cleanup** → dispatch 永远跑不到它；216 条 scheduled run 里没有一条落在 20:13 前后;生产心跳近 168 轮（≈23h）里 `cleanup` 出现 **0 次**。反向证据:拿那两条 DELETE 的原样谓词做 COUNT,线上现有 **10,733 条**（保留清理 8,616 + 热榜 2,117）满足删除条件却仍在库里 → **保留清理自引入起基本没执行过**。改这张图之前请先读 B101（原出处 43 号 spec 已作废删除，锚点见 `docs/ISSUES.md`；是否要恢复每日删除属产品决策 D4,不是bug修复）。
->
-> ✅ **上面这条已被 09-23 实测推翻 —— 清理现在是常驻执行的路径。** 直读生产 `settings['cloud.collect'].history`：**cleanup 已实跑两轮 —— `2026-09-20T22:27Z` 删 50,823（热榜 26,532 + 保留 24,291）、`2026-09-21T23:17Z` 删 8,483（324 + 8,159）= 两天 59,306 行**；删除闸 `deleteGateAny` 现判**放行**（转储凭证 71,742 行 / 19h 内），此刻待删 7,500 条 = 全库 35.4%。取证命令 `npm run check:retention`。作废的 43 号 spec 原文逐字反查锚点见 `docs/ISSUES.md` 的「作废登记」一节。
-> **两件仍未定，别顺手当已验证**：① 两轮心跳落在 22:27Z / 23:17Z 而**非** cron 声明的 `13 20 * * *`，"20:13 那条 schedule 究竟有没有在触发"仍未证实 —— 图上"清理 04:13"至今只是设计时刻；② 待删窗口列是 `COALESCE(published_at, created_at)`（`lib/retention.js:30`），而采集在做历史回填 → 实测 09-22 单日入库 8,737 条里 **7,083 条（81%）当天就已过窗**（发布平均滞后 149.1 天）。所以"是否恢复每日删除属产品决策、不是 bug 修复"这句**仍然成立**，只是决策对象从"要不要开"变成"要不要这样删"。
-
-## 2. 仓库与目录
-
-| 路径 | 说明 |
-|---|---|
-| `D:\全网情报系统\` | 主仓库(本地 git,非远端托管) |
-| `server/` | Express 后端:routes/(API)、services/(collectors 采集器、ai/daily 日报、events 事件聚合、alerts 报警、scheduler 调度、queue 任务队列)、db.js(本地 better-sqlite3 同步层)。**统一异步双模式层在 `lib/db.js`**（本地 better-sqlite3 包装 / 云端 Turso HTTP，`TURSO_DATABASE_URL` 决定） |
-| `web/` | 主前端(Vite+React+Tailwind),多入口:index.html(读者)+ admin.html(管理后台,独立 bundle) |
-| `api/` | **Vercel 读层正式代码**:catch-all [...slug].js(读 API)、collect.js/daily-generate.js(手动备份端点) |
-| `tools/` | 运维脚本(2026-09-04 清洁后):collect-turso.js(**云端采集主链路**,GH runner 直写 Turso)、generate-snapshots.js(静态快照)、fix-hotlist-times.js(热榜时间戳修正)、export-portal.js、sync-portal.js、import-bestblogs-opml.js、ops-toolkit.js、audit-cloud.js、seed-hotlist.js、seed-turso.js、setup-customer.js、gen_bat.py;一次性脚本已归档 `archive/tools/` |
-| `archive/` | 全部历史资产:reports/(修复报告)、specs/(一~八期)、docs-deprecated/、analysis/、_eval/(参考工程)、tools/(一次性脚本)、测试/ |
-| `opml/` | bestblogs 源清单(wechat2rss 375 公众号 / youtube 124 / podcast 60),2026-09-04 已导入 |
-| ~~`D:\tools\we-mp-rss\`~~ | **已退役(2026-09-04)**:公众号改走 wechat2rss 托管 RSS,不再自建引擎;代码移 trash/,旧 wemp 源 enabled=0 保留历史文章 |
-
-> ℹ️ `api/` 和 `vercel.json` 是 Vercel 主部署的正式代码。`src-admin/`、`admin.html`、`vite.config.js`、`vite.admin.config.js`、`copy-routes.js` 是原 portal 构件的历史副本，**不要使用/修改**，待清理。主前端构建走 `web/vite.config.js`。
-
-## 3. 关键架构决策(为什么这么设计)
-
-1. **采集必须在本地/云端函数,不能在浏览器**——风控与 Cookie。
-2. **公众号 = wechat2rss 托管 RSS**(2026-09-04 起):自建 we-mp-rss(Python 子进程 + 微信读书 Cookie)已退役——太重且未内部集成。375 个 bestblogs wechat2rss 源以 type='rss' 导入,正文在 `content:encoded`(rss 适配器已读),图片由对方 img-proxy 代理(单点依赖,已知情接受);缺失的 28 个原 wemp 源接受损失。
-3. **catch-all serverless**:Vercel Hobby 限 12 个函数,`api/[...slug].js` 单函数路由全部 /api/*。
-4. **云端读 Turso 优先,静态 JSON 快照兜底**（`static-data/`）。
-5. **管理后台是独立 bundle**(admin.html),不随读者前端分发;云端 /admin/ 有口令(httpOnly cookie)。
-6. **定时调度(2026-09-11 方案A 重构)**:GitHub Actions runner 直跑 `tools/collect-turso.js` 写 Turso。**cron 具体值唯一事实源 = `.github/workflows/collect.yml:24-36`**（现 7 条 cron / 9 个 job：采集、日报、AI 早报×2、我的早报、周刊、快照、清理；AGENTS.md §2.5 禁止在本文档写死），本行只记语义：采集每 15min 全量到期源，**不再**戳 Vercel /api/collect(Hobby 10s 死局)。GH schedule 高负载会延迟甚至丢任务(09-11 曾连丢五轮),故加 cron-job.org 外置触发器(jobId 8430047)双保险兜底。**⚠️ 09-23 实测：8430047 因内嵌死 PAT 连跪已于 09-20 自动停用，当前只剩 schedule 一档在撑（全天仅 2 轮 collect）——现状与处置见 `docs/ISSUES.md` B136，恢复前本条的"双保险"按一档读**。本地调度器管本地采集。**熔断阈值与各源类型间隔的写死值不在本文档复制**（AGENTS §2.5 单一事实源）：
-   阈值一份在三端共用的熔断实现里（YouTube 放宽、其余更严，理由=反爬假 404/500 防误杀），间隔真值见 `docs/FEATURE_MATRIX.md` §1.4 与 runner 行。
-   热榜时间戳按名次递减 60s 排列。
-7. **前端无感刷新:60s 轮询 `/api/articles/since`**(2026-09-11):SSE 长连接在 Vercel serverless 不支持(函数 30s 超时即断),已废弃 `server/routes/events-sse.js` 的云端路径,前端改为每 60s 轮询增量端点拉新。
-8. **SQLite 任务队列**(重构 Phase 5):本地调度器 tick 改为 scanAndEnqueue 入队 + TaskQueue 异步消费(并发 5，同源去重，优先级排序，崩溃恢复)。`QUEUE_ENABLED=false` 环境变量可回退串行模式。2026-09-05 补强:入队同源去重(pending/running 不重复)、retryDelayMs 退避生效(默认 30s)、job_queue 随每日数据清理自动 purge(completed>24h / failed>7d)。2026-09-05b 补强:bilibili/douyin 类型级 promise 链互斥(队列并发 5 下同平台多源不再并发,坑 #6 的串行保护补齐)。
-9. **API 鉴权(2026-09-05 启用,P0)**:读者只读 GET 公开(articles/videos/hot/daily/groups/sources/status/img/settings),一切写操作 + alerts/data/backup/queue/health/auth-douyin 等敏感读接口需 Bearer JWT(POST /api/auth/login 获取,7d 有效)。中间件必须注册在路由挂载之前(index.js 有回归测试 P0-1e 锁死顺序)。密钥链:AUTH_SECRET(.env,缺省自动生成并持久化 settings auth.secret)、ADMIN_USER/ADMIN_PASSWORD(.env,默认 admin/admin123 会有启动告警)。应急回退:AUTH_DISABLED=true(仅本机调试)。前端:api.js 自动注入 Bearer,401 广播 'qwis:unauthorized' → LoginGate 弹登录框(管理台 blocking 强制登录,读者端可关闭继续只读)。token 存 localStorage('qwis.token') 全站共享。2026-09-05b 补强:GET /api/sources 的 extra 改白名单重建(intervalMin/lastError 脱敏/lastErrorAt/marksFeatured/aggregator/domain/etag/lastModified),原串不再外泄;log.mask 行内键值分支打码失效 bug 已修;api.upload 供二进制上传(DataTab 快照导入)。
-10. **日报保底双保险**:定时 cron(settings daily.time,默认 08:00)+ 启动时 needsGeneration() 补跑(错过定时的场景)+ 前端打开 /daily/ 时 stale 即自动补(F3)。本地/服务器部署经 PM2 ecosystem.config.js 注入 TZ=Asia/Shanghai,定时不随服务器时区漂移(注:此为本地/服务器语义,云端日报为 GH runner 09:03 定时直写 Turso,无 PM2)。日报页(2026-09-05b 混合式改版):栏首封面卡≤3 + 紧凑列表行,栏目折叠/全展、排序(默认/最新/热度)、关键词高亮、渐进渲染(首批 12 行 + content-visibility),偏好存 localStorage(qwis.daily.*)。
-12. **源四轴模型 + 前后台信息架构重构(2026-09-15, T5-2 / specs 26→27/27b/29/30)**：`focus` 一字段四职拆为四轴——上架 `enabled`（既有）/ 收录 `reader_visible`（新列=1）/ 订阅 `settings subscription.ids` / 重点 `spotlight`（新列）/ 屏蔽 `muted`（新列=0）；一次性迁移 focus=1→spotlight=1+订阅集初始化（幂等闸 settings `axes.migrated`，生产 Turso 已 schema-first 执行：8 源行为不变）；**`focus` 列物理保留但代码引用清零**（仅 lib/source-axes.js 迁移函数与兼容别名可读它）。`lib/source-axes.js` 为四轴唯一实现（三端共用，同 hot-events 模式）。阅读器默认「今日」滚动 24h 视图（`/api/articles?since=<ISO>` 新参数 + smart=spotlight+3d 加权），未读口径收敛近 3 天（/api/sources 与 /api/status 同口径），「全部」降级检索模式（前端门槛：无筛选条件不请求）。源库三视图（组合卡片/问题源/检索），后台 12→5 Tab（源库含平台接入/早报中心含日报设置/热点榜策展/AI 能力含翻译/系统=数据+监控+报警）+ 每 Tab 前台对照卡；抖音 Tab 下架（永不云端化决策不变）。组级操作走 `POST /api/sources/batch {groupScopeId}` 单条 SQL（云端 serverless 不可逐行循环）。
-
-11. **源库管理 + 自动分类(2026-09-05 深夜,十期)**:管理台「源库」Tab(置首位,版心特例 1160px)统一浏览/筛选/批量管理全类型源。`routes/sourcelib.js` 提供 `GET /api/sources/library`(公开只读,含 itemCount/contentKind)、`POST /api/sources/batch`(enable 走 unfreezeSource+6h 随机错峰/focus 只增量/move 带 kind 校验+写锁定)、`POST /api/sources/autoclassify`(dryRun 预览零落库/apply 跳过锁定源,预览清单只含可执行建议——无建议条目单独计 noSuggestion)。**sourcelib 必须挂在 sources 路由之前**(决策:防 /batch 被子路由截胡,index.js 有注释)。手动锁定 = `extra.categoryLocked=1`,统一写在 `POST /api/groups/move`(Sidebar 拖拽/源库下拉/批量移动的汇聚点),自动分类永不覆盖。新源自动分类挂接三点:手动添加(sources.js POST)/OPML 同步(wechat syncOpml)/队列导入(poller resolvePending),全部 try/catch 降级不阻断建源。分类目录内置 8 类(中英别名归一+关键词表,数组顺序即优先级),落组仅精确同名同 kind 复用。破茧栏名单从 daily.js 硬编码改为 `settings['daily.cocoonFamiliar']` 可配+落组自动并入。详见 docs/specs/09-source-library-autoclassify/(spec/plan/task/checklist 四件套)。
-
-13. **候选层每源预配额（级3，2026-09-24，44 号 spec 步1）**：进模型之前先按源限量，唯一实现 `lib/prescreen.js`，四处部署面写入器共用（runner `runDailyAi`/`runDaily` + 云端 `api/daily-generate.js` + 读层内联兜底）。**为什么这么设计**：实测 24h 池 2,688 篇/469 源，而 `ORDER BY published_at DESC LIMIT 500` 只覆盖 94 源——500 个坑里 352 个是同一批高频源的"第 3 篇以后"；先限量再截断，换的是源覆盖（执行锁 E2 真跑：不配额 3 源 → cap=2 后 9 源）。**第一期生产读数（id=68）更正本条原预估**：覆盖 94→202 源（2.15×）而非「约 450」，调用量 500→337（−32.6%）而非「不变」——真天花板是宽池读 `CANDIDATE_POOL_READ=2000` 被吃满（`prescreen.pool=2000`、`poolSources=202` → 配额能给的天花板只有 202×2=404），登记为 ISSUES **H25**；**同用户 09-24 裁定已把宽池读 2000 → 6000**（单一取值写死 `lib/prescreen.js#CANDIDATE_POOL_READ`，
-新增锁 P9 钉住"runner 字面量 == lib 常数、两份 api 不再自己写死"——因为 `.vercelignore` 排除 `tools/`，`api/` 不能 require 它，
-字面量必然存在两份，漂移只在"抬一半"时发生）。抬的依据：24h 全量 3,645 篇 / 327 源，轻量列合计仅 928 KB，
-所以旧顾虑"宽池不能抬"只对 `content_html` 成立。送模型量仍由 `DAILY_POOL_LIMIT=500` 决定。三条派生决定：① 配额值是策略参数不是常量 → `settings['prescreen.perSourceCap']`（缺省 2，坏值回默认并出声）；② 宽池 2000 行**一律不取 `content_html`**、正文到深析按 id 单取（否则 libsql HTTP 链路会被两千行全文掐断，同 weekly 那条教训）；③ 本地灾备端 `server/` **有意不接**（不在部署面，`.vercelignore` 排除；且其功能集早已与云端分叉）——因为入报门槛是**安全阀**（漏一份就出垃圾），级3 是**策展策略**（改的是版面构成），两类风险不共用同一个"逐个接线"的面；该豁免的前提由锁 P6b 守着（`server/` 一旦回到部署面自动判红）。详见 `docs/CLOUD_PIPELINE_GUIDE.md` 不变量 20 与 `docs/specs/44-prescreen-tier/spec.md`。
-
-## 3.1 模块架构(重构后)
-
-
-```
-server/services/
-├── collectors/
-│   ├── _shared.js      # 并发防护锁 + 刷新间隔计算
-│   ├── _base.js        # 适配器契约校验(validateAdapter)
-│   ├── registry.js     # 适配器注册表 + 契约校验
-│   ├── repo.js         # 数据仓储 CRUD(saveArticles/saveVideos)
-│   ├── fetcher.js      # 抓取编排(fetchSource → 落库 → enrich 触发)
-│   ├── store.js        # 源生命周期(markError/unfreeze) + 兼容 re-export
-│   ├── rss/            # RSS 适配器(含 fetchFulltext/cleanContent 正式导出)
-│   ├── hotlist/        # 热榜适配器
-│   └── ...             # bilibili/douyin/wechat/x
-├── ai/
-│   ├── _tokens.js      # titleTokens + jaccard 纯函数
-│   └── daily.js        # 日报引擎
-├── aihot/
-│   ├── backfill.js     # AIHOT sitemap 历史回填(running 锁带 since 心跳,>30min 陈旧自动复位)
-│   └── enrich.js       # AIHOT 详情页解析/富字段补写
-├── scheduler/
-│   ├── index.js        # 调度核心(tick/scanAndEnqueue + start/stop)
-│   └── jobs/           # 独立 Job 模块
-│       ├── daily.js    # 日报定时
-│       ├── fulltext.js # 全文补抓
-│       ├── opml.js     # OPML 同步
-│       ├── maintenance.js # 数据清理+报警清理+健康自检
-│       ├── portal.js   # 门户同步
-│       └── recovery.js # 中断恢复
-├── queue/
-│   ├── taskQueue.js    # SQLite 任务队列(优先级/重试/同源去重/崩溃恢复)
-│   └── poller.js       # 云端队列轮询器(wechat/bilibili/douyin)
-├── events.js           # 事件聚合(引用 _tokens.js，不依赖 daily.js)
-├── classify.js         # 源自动分类(十期):分类目录/关键词兜底/OPML 层级解析/落组/存量预览&执行
-└── alerts.js           # 报警引擎
-```
-
-## 4. 数据通路(按源类型)
-
-| 类型 | 通道 | 注意 |
+| 角色 | 承载 | 职责 |
 |---|---|---|
-| hotlist(热榜) | newsnow `/api/s?id=&latest` | url 规范 `hotlist://{id}`;**必须带浏览器 UA**;hover 摘要可能乱码(西里尔特征丢弃) |
-| 公众号(rss) | wechat2rss.bestblogs.dev 托管 feed | 全文在 `content:encoded`;图片走对方 img-proxy(防盗链已解决,但系单点依赖) |
-| rss | rss-parser + `customFields:['content:encoded','content']`(缺了会丢全文) | GBK 页面用 fetchHtmlSmart charset 嗅探 |
-| bilibili | wbi 签名 + 合集/搜索兜底 | 风控 -352 时走兜底 |
-| 抖音 | Playwright + 登录态 | **仅本地**,云端不跑 |
+| 读层 + 管理后台 | Vercel（`api/` 单函数 catch-all + `web/` 前端） | 对外提供读者页面与管理后台，读 Turso |
+| 采集与批处理 | GitHub Actions runner（作业文件驱动 `tools/collect-turso.js`） | 直写 Turso：采集、日报、早报、周刊、静态导出物、清理 |
+| 开发与灾备 | 本地 Express（`server/` + 本地 SQLite） | 全功能灾备；**不在部署面**——Vercel 只发 `api/` 与 `web/`，runner 作业不跑本地代码 |
 
-## 5. 已知坑（血泪史 → 已迁至 docs/pitfalls/ 踩坑库）
+数据只有一个落点：Turso。三端共享语义、不共享进程（哪些语义必须三端一致，见 §3.7）。
 
-> 全部坑已按域拆分到 **`docs/pitfalls/`** 单独文件（2026-09-13 重构），每条含症状/根因/规则/案例，换手必读。
-> 本节只留索引，编号全局通用（历史文档引用的坑 #N 不变）：**条数以 pitfalls/ 为准，本表不写死数字**（AGENTS.md §2.5 单一事实源）。
+## 1. 全景
 
-| 域 | 文件 | 坑编号 | 一句话核心 |
-|---|---|---|---|
-| 采集与信源 | `docs/pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 #35 | 三份实现同步改；浏览器 UA；反爬熔断是常态；大查询禁携全文；**熔断=45min 抖动锁源 48h，三端自愈语义不一致** |
-| 后端与数据 | `docs/pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 #36 | 游标同型；无索引大查询云端必炸；focus 双语义；超长 OR 链必须平衡二叉树（表达式树深度上限 100）；**被 catch 隔离的静默 ReferenceError**；**`typeof null==='object'` 把 NULL 写成 `'null'` 字面串** |
-| AI 管线 | `docs/pitfalls/ai.md` | #8 #24 #26 #32 #34 #A1 #A2 | settings 覆盖 env 先查残留；推理模型输出三层清洗；**多写者产物表读取按档位不按时间**；**深析必须有否决权/入报必须有分数门槛** |
-| 前端 | `docs/pitfalls/frontend.md` | #1 #2 #16 #F1 #54 | 防盗链；hook 必须在早退 return 前；**`flex-1` 基准 0 的主列会被无界兄弟挤到 0 宽，而 0 宽下 line-clamp 不封顶（B85 的 594px 空框）** |
-| 部署与运维 | `docs/pitfalls/deployment.md` | #5 #20 #21 #22 #D1 #D2 | 密钥三处同步；vercel.json 无 crons；push 后验远端 SHA |
-| 测试 | `docs/pitfalls/testing.md` | #13 #18 #27 #T1 #T2 | 云端测试直打生产库；全量替换语义必须快照还原；**还原必须断言，否则报警链路被写坏两天无人知** |
+```
+   GitHub Actions runner ──直写──▶ Turso（唯一数据源）
+        ▲  双档触发：GH schedule + 外置 HTTP 触发器
+        │
+   Vercel 读层 ◀──读── Turso        对外：读者前端 + /admin/ 管理后台
+   本地 Express ◀── 本地 SQLite     开发与全功能灾备
+```
+
+各批处理任务的具体时刻只写在作业文件里，本图不放：把取值抄进图里，就变成第三份会过期的真相。
+
+## 2. 仓库与远端
+
+本仓推 GitHub（`origin`），push 到 `main` 即触发 Vercel 自动部署（Git 集成已连）。
+
+| 路径 | 承载什么 |
+|---|---|
+| `api/` | 云端读层正式代码（含手动备份端点） |
+| `web/` | 主前端，多入口：读者页 + 管理后台（独立 bundle） |
+| `tools/collect-turso.js` + `.github/workflows/collect.yml` | 云端采集与批处理主链路 |
+| `server/` | 本地 Express 后端与本地采集器（灾备面，边界见 §8） |
+| `lib/` | 三端共用的实现（熔断、保留、四轴、预配额、密钥掩码等） |
+| `docs/adr/` | 决策件：一个主题一个编号件，只写最新标准 |
+| `cloud/` | 文件型导入队列的**服务端半边**（PHP + 落库 JSON），对端是仓外的独立 PHP 站点。**不是死副本**：`tests/queue.test.js` 拿它当端到端测试的 docroot 源，`tools/setup-customer.js` 往里生成 `token.json` 供上传。机制见 §3.6，决策见 ADR-10 |
+| `static-data/` 与 `public/data/` | 每日导出的静态 JSON **同源双写进这两个目录**，构建时再拷进站点的 `data/` 路径。**没有运行期读取方**（流向见 §3.4，决策见 ADR-05） |
+| `opml/` | 订阅源清单（bestblogs 系公众号 / YouTube / podcast） |
+| `docs/` | 活文档；分层与归属见 §6 与 `docs/INDEX.md` |
+
+## 3. 系统形状与决策索引
+
+本节只写**东西怎么接、数据怎么走、取值去哪读**。理由、代价、边界与禁令一律在 `docs/adr/`（索引 §3.8）——两处各写一遍，两处就会各自过期。
+
+### 3.1 采集与批处理
+
+- 触发器只表达"现在跑一轮"；**采哪些源由库里每个源的下次抓取时间决定**，不由触发方指定。触发有两档（为什么两档：ADR-13）。
+- 日报、早报、周刊、清理等批处理作业各有各的触发条件，写在作业文件里。手动补跑会连带触发哪几步，**以那份文件为准**，不看文档。
+- 取值去处：cron 表达式 / 作业清单 / 各源间隔 → 作业文件与 `docs/FEATURE_MATRIX.md` §1.4；熔断阈值 → `lib/source-breaker.js` 一处，口径文字见 `docs/CLOUD_PIPELINE_GUIDE.md` 不变量 3。
+
+### 3.2 一个请求在云端怎么被处理
+
+全部 `/api/*` 收在同一个函数里，路径与方法在一张分发表里派发到处理函数。鉴权门在分发表**之前**。管理后台是独立打包的入口，经重写表指向另一个 HTML，不随读者页分发。
+
+### 3.3 前端怎么保持新鲜
+
+页面按固定周期拉增量端点，跟随当前筛选条件。没有长连接推送。
+
+### 3.4 静态导出物流到哪
+
+runner 从库导出 JSON → 同时写进 `static-data/` 与 `public/data/` → 提交回仓库 → 构建脚本把其中一份拷进站点的 `data/` 路径随站点发布。这条链的终点就是"文件被发布"：读层与前端都不请求它（由此引出的决策：ADR-05）。
+
+### 3.5 内容保留
+
+一条过期数据被删掉需要三个条件同时成立：清理作业这一轮被触发、删除闸放行、窗口里确实有待删行。三者互不相关。
+现读命令：`npm run check:retention`（打出按天待删量与闸状态）。"要不要这样删"挂在 `docs/ISSUES.md`。
+
+### 3.6 队列的三处落点
+
+| 落点 | 在哪 | 谁读写它 |
+|---|---|---|
+| 本地调度器的任务队列 | 本地库一张表 | 只有本地进程；云端没有这张表，云端同类接口返回的是下面那张清单加零值占位 |
+| 待导入清单 | 本地与云端各一张同名表 | 同步动作写入；解析动作把它转成正式内容或订阅 |
+| 文件型导入队列 | 仓外 PHP 站点的落库文件（仓内有源码与两份消费方，见 §2） | 轮询器拉取 → 写上面那张清单 → 回写清空对端 |
+
+三者关系与不许合并的理由：ADR-10。
+
+### 3.7 共用实现落在哪
+
+- `lib/`：跨端必须同规则的语义——熔断、内容保留、源四轴、预配额、噪声、密钥掩码、图片安全取回。
+- 三份独立实现：采集语义在 `server/`、`api/collect.js`、`tools/collect-turso.js` 各一份。
+- 两份独立实现：设置读写与坏值回退在本地与云端各一份；批量端点在本地与云端各一份。
+
+为什么是"共享语义不共享进程"、改哪些必须三端对齐：ADR-14（顺序规则另见 `AGENTS.md` §1）。
+
+### 3.8 决策索引
+
+一个主题一个件；件里只写最新标准（是什么 / 为什么 / 边界与禁止），不写"以前是什么、为什么换掉"。编号跟主题固定，被覆盖就地改写该件，不新增"取代件"。本表只给号与主题，**不复述内容**——复述就会长成第二份真相。
+
+| 号 | 主题 |
+|---|---|
+| ADR-01 | 部署方向：Vercel 读层 + runner 采集 |
+| ADR-02 | 采集只在服务端做，需登录态的平台不进云端 |
+| ADR-03 | 公众号走托管 RSS，不自建引擎 |
+| ADR-04 | 云端 API 收在一个函数 |
+| ADR-05 | 不做读路径兜底：静态导出物只是导出物 |
+| ADR-06 | 前端刷新走轮询，不做长连接 |
+| ADR-07 | 批量操作走单条 SQL |
+| ADR-08 | 源状态拆多轴 |
+| ADR-09 | 进模型前先按源限量 |
+| ADR-10 | 三套队列不并成一套 |
+| ADR-11 | 不做多用户与权限分级 |
+| ADR-12 | 凭据一套口径：口令换令牌、请求带 Bearer |
+| ADR-13 | 采集触发双档，用触发密度换可靠性 |
+| ADR-14 | 三端共享语义，不共享进程 |
+| ADR-15 | AI 评分口径：六维固定，生产与评测两名一物 |
+| ADR-16 | 探索位不改订阅集合 |
+
+## 4. 数据通路（按源类型）
+
+| 类型 | 通道 | 必须注意 |
+|---|---|---|
+| hotlist 热榜 | newsnow 聚合端点 | 必须带浏览器 UA；URL 规范成 `hotlist://{id}`；摘要里的西里尔特征按乱码丢弃；默认不进文章流（降噪口径与唯一实现见 `docs/FEATURE_MATRIX.md` §1.1 与 `lib/noise.js`——`docs/features/my-reading.md` 只管足迹面，不管这条） |
+| 公众号（rss 子类） | wechat2rss 托管 feed | 全文在 `content:encoded`；图片域名与代理约束见 ADR-03 |
+| rss | 直连 feed 解析 | 缺 `content:encoded`/`content` 自定义字段会丢全文；GBK 页面要嗅探字符集；迟到进 feed 的文章不能按"发布早于上轮抓取"丢弃 |
+| bilibili | wbi 签名 + 合集/搜索兜底 | **在 runner 上采，不是本地专属** |
+| 抖音 | Playwright + 登录态 | 仅本地，永不上云（ADR-02） |
+
+## 5. 索引：什么在别处说了算
+
+| 事实 | 唯一承载处 |
+|---|---|
+| 架构与功能方向的决策（为什么、边界、禁止什么） | `docs/adr/` 编号件（索引在 §3.8） |
+| cron 取值、作业清单、各源间隔 | 作业文件 + `docs/FEATURE_MATRIX.md` §1.4 |
+| 熔断阈值 | `lib/source-breaker.js`（一份实现三端共用）；口径文字见 `docs/CLOUD_PIPELINE_GUIDE.md` 不变量 3 |
+| 功能矩阵（哪端有什么功能） | `docs/FEATURE_MATRIX.md` |
+| 活跃问题与挂案 | `docs/ISSUES.md` |
+| 未开工 / 在途需求 | `docs/NEXT-DEV-REQS.md` |
+| 模块与子模块的位置 | `docs/INDEX.md` 模块地图（本文不放代码结构清单） |
+| 功能语义（模块干什么、参数怎么生效） | `docs/features/` |
+| 坑的症状 / 根因 / 规则 / 案例 | `docs/pitfalls/`，按域一文件 |
+| 验收步骤与命令清单 | `AGENTS.md` §3 + `docs/FEATURE_MATRIX.md` §1.5 |
+| 写作尺子（现状原则、不写死接口、作废即删、改动戳） | `docs/DOC_GOVERNANCE.md` |
+
+坑的域索引（编号全局通用，历史引用的坑号不变；**条数以 `docs/pitfalls/` 为准，本文不写死数字**）：
+
+| 域 | 文件 |
+|---|---|
+| 采集与信源 | `docs/pitfalls/collection.md` |
+| 后端与数据 | `docs/pitfalls/backend.md` |
+| AI 管线 | `docs/pitfalls/ai.md` |
+| 前端 | `docs/pitfalls/frontend.md` |
+| 部署与运维 | `docs/pitfalls/deployment.md` |
+| 测试 | `docs/pitfalls/testing.md` |
 
 ## 6. 凭据与配置位置
 
 | 凭据 | 位置 |
 |---|---|
-| 情报系统配置 | `D:\全网情报系统\.env`(PORT/代理/云队列/ADMIN_USER/ADMIN_PASSWORD/AUTH_SECRET)+ settings 表 |
-| 本地代理（Clash） | `http://127.0.0.1:12000`（2026-09-13 实测，旧 7890 已失效）；git 已配 http.proxy=127.0.0.1:12000 |
-| Turso | `.env` 的 TURSO_DATABASE_URL/TURSO_AUTH_TOKEN;Vercel 项目环境变量(production) |
-| COLLECT_KEY | Vercel env + GitHub repo Secrets(Actions) + 本地 .env —— **三处必须同步**(坑 #20) |
-| GitHub PAT(管理 Secrets/查日志) | `docs/HANDOVER.md` §1.5(该文件已 gitignore,勿提交;稳定后轮换) |
-| cron-job.org API Key | `docs/HANDOVER.md` §1.5；外置触发器 jobId 8430047 的管理 Key（该触发器是采集**主力**：每 15min POST workflow_dispatch，GH schedule 仅备份）；任务配置内嵌上方 GitHub PAT，PAT 轮换时须同步更新 cron-job，控制台 <https://console.cron-job.org/dashboard> |
-| 云端管理口令 | Turso settings `admin.passwordHash`(首次访问设置) |
-| 报警渠道 | settings `alerts`(本地) / Turso settings(云端);支持钉钉/企微/飞书/Server酱/Bark/TG/自定义 webhook |
-| ~~微信读书 Cookie / we-mp-rss SECRET_KEY~~ | **已随 we-mp-rss 退役作废**(2026-09-04);credentials 表 weread 行可不再维护 |
+| 本地系统配置 | `D:\全网情报系统\.env`（端口 / 代理 / 云队列 / 管理账号 / JWT 密钥）+ 本地 settings 表 |
+| Turso | `.env` 的库地址与 token；Vercel 环境变量（production） |
+| 采集口令 `COLLECT_KEY` | 本地 `.env` + Vercel env + GitHub Secrets —— **三处必须同步**，改一处必改三处 |
+| GitHub PAT（管 Secrets / 查日志 / 被外置触发器内嵌） | `docs/HANDOVER.md` §1.5（本地文件，勿提交；**轮换时须同步更新外置触发器里内嵌的那份**，否则触发器静默连跪） |
+| 外置触发器 | jobId 与 API Key 见 `docs/HANDOVER.md` §1.5；控制台 cron-job.org |
+| 云端与本地的管理口令 | `ADMIN_USER` / `ADMIN_PASSWORD`：本地 `.env` + Vercel env（+ 需要处 GitHub Secrets）；登录换令牌。⚠️ settings 里那个口令哈希键是**不回显名单的成员，不是鉴权入口**（ADR-12） |
+| 报警渠道 | 本地 settings / 云端 Turso settings 各一份；支持钉钉 / 企微 / 飞书 / Server酱 / Bark / TG / 自定义 webhook |
+| 本地代理 | `http://127.0.0.1:12000`（打线上端点与 git 都要走它；代理不在位时线上探针直接失败，别把失败读成"线上坏了"） |
 
-## 7. 运维手册
+## 7. 运维入口
 
-- **启动**:`D:\全网情报系统\start-all.bat`(起主系统)
-- **重启情报系统**:`restart-server.bat`(按端口找 PID,管理员运行)
-- **手动同步门户(历史脚本)**:portal 独立仓库已合并进根项目,`node tools/sync-portal.js` / `sync-portal.bat` 现存用途仅为导出静态 JSON 快照兜底(export-portal.js),推送分支不再生效
-- **健康自检**:根目录 `npm test`;冒烟 `node smoke-test.js`(生产库副本上跑,零副作用);云端 `node tools/audit-cloud.js`(19 项)
-- **日志**:主进程 console
-- **详细 runbook**:`docs/RUNBOOK.md`(唯一现行运维手册,2026-09-04 整合);平台指南 `docs/ANDROID_SUBMIT_GUIDE.md`、`docs/X_SETUP_GUIDE.md`
+- **启动**：根目录 `start-all.bat`。**重启**：`restart-server.bat`（按端口找 PID，需管理员）。
+- **健康自检**：本地 `npm test`；冒烟 `node smoke-test.js`（在库副本上跑，零副作用）；云端 `node tools/audit-cloud.js`。
+- **详细排障**：`docs/RUNBOOK.md` 是唯一现行运维手册。（两份"平台对接指南"09-27 已删——它们写的通路从未在当前真实环境跑起来；仍留在代码里的对端与入口见 `docs/ISSUES.md` 本轮立案那条。）
+- **日志**：本地主进程 console；云端看 Actions 运行日志。
 
-## 8. 测试约定
+## 8. 本文的边界
 
-- node:test,`tests/*.test.js`,helpers.js 用 APP_DATA_DIR 隔离临时库(任何引用 server/* 的测试文件必须先 require helpers)
-- 每个线上修过的 bug 必须有回归测试(regression-phase9.test.js、regression-aclass.test.js 是样板)
-- **交付链以 `AGENTS.md` §3 为准**（唯一命令清单在 `docs/FEATURE_MATRIX.md` §1.5）：`npm test` → push → CI + Actions → 云端实测 → 冒烟 → 对抗审查 → 同步文档。**"本地测试全绿"从来不等于交付完成**
-
-## 8.1 仍然生效的两条口径（09-05 定，原「历史修复纪要」已删，语义并进模块文档）
-
-- **热榜/聚合源默认退出文章流**（读层默认排除，显式豁免才带上）——口径写在 `docs/features/my-reading.md`。
-- **字数用 `word_count` 纯文本列**，不用 `LENGTH(content_html)` —— 列义写在 `docs/features/collectors.md`。
-
-## 9. Agent 协作规则
-
-1. 先读本文档 + 对应 runbook,再动手
-2. 三端**共享语义但不共享进程**：读层 `api/`、runner `tools/collect-turso.js`、本地 `server/` 各一份实现，**采集语义有三份副本**——改任何一份的过滤/清洗/熔断/去重/UA/间隔必须同步检查另外两份（AGENTS §1）。`server/` 不在部署面（Vercel 只部署 `api/`+`web/`）
-3. 新功能默认先问"这属云端还是本地专属"：云端能做的一律只落云端两份部署面（`api/` + runner），本地端按需跟；**不再要求"本地 API + 云端 API 双实现"**（那是 portal 时代的旧默认）
-4. 不要引入需要无头浏览器的云端功能(抖音是本地专属)
-5. 提交前:npm test 全绿 + 构建无错 + 涉及云端的跑 audit-cloud.js
+- **不写决策的"为什么"**：本文只给机制与形状，理由一律指向 `docs/adr/`。两处各写一遍，两处就会各自过期。
+- **不写取值、不写一次性读数、不放代码结构清单**：去哪读见 §5。
+- **交付链与测试约定见 `AGENTS.md` §3**，本文不复述。
+- **本地灾备端的功能细节**（任务队列参数、密钥链与回退开关、日报补跑与时区注入）：不在部署面，现状待重核，云端为准；重核之前不要按本地那套去改云端行为。
+- **未核项**：静态导出物链去留、本地端三条待重核语义、文件型队列算不算现役、退役引擎遗留源名下的文章数、"快照"一名多物的余下文档 V42、链路指南那半句过期结论 V43。

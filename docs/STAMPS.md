@@ -6,94 +6,91 @@
 > 已知局限：① 本表按路径查历史，**文件改名/搬家前的历史不跟随**（`--follow` 只能逐文件跑），搬过的文档其提交史从搬家那次起算。② 本表读已提交历史，**正在提交的这一次必然不进表**（显式滞后一轮，配合 `⚠` 可见），下一轮重跑即补上。
 > 未跟踪件不入表：如本地文件 `docs/HANDOVER.md` 按设计永不提交，本就没有提交史可记。
 
-**统计**：底层文档 一致 8 · 待判 9 · 头部超前 1 · 缺头注 0　|　不要求头注 177 份　|　工作区未提交 7 份　|　总计 195 份
+**统计**：底层文档 一致 1 · 待判 4 · 头部超前 10 · 缺头注 0　|　不要求头注 175 份　|　工作区未提交 88 份　|　总计 190 份
 
-### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（18 份）
+### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（15 份）
 
 | 文档 | 头部声明 | 判定 | 提交史（短号 · 日期 时:分 · 主题） |
 |---|---|---|---|
-| AGENTS.md | 2026-09-25 | 头部超前 ⚠ | `1128d72` 2026-09-23 20:30 docs(交付链重订+B136+BL13 核销): ①AGENTS §3 用户重订——eval 各命令降级按需工具(自评卷+未稳立锁=门禁分不出世界变了与作弊),新链=npm test→push→ci+Actions→云端实测→冒烟→对抗审查→文档同步,锁纪律三条(diff 带 why/红了报用户三选一/不许自消);EVAL_GUIDE+FEATURE_MATRIX+CLOUD_PIPELINE 同步暂缓头注 ②ISSUES:B136 cron-job 8430047 死 PAT 连跪 09-20 起停用(全天 2 轮/370 源到期),BL13 核销出账,B121 复验改探针 ③FEATURE_MATRIX §1.5 测试 604→609+如实更正 0 红误记,push-CI 缺口核销 ④ARCHITECTURE §3.6 双保险暂按一档读 ⑤INDEX 登记 RSS 设计文档(1)与交接文档,交接文档补三个裁定与交付进展 ⑥STAMPS 刷新;lint:docs 0 错 2 警 EXIT=0<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档<br>`abc2836` 2026-09-21 20:50 feat(AGENTS §2.9 文档改动戳): doc-stamp 工具与 STAMPS.md 入账——每份 .md 的最近改动=短号·日期·提交主题,禁止手写 commit 号进文档头部(机制见 DOC_GOVERNANCE §2.6) |
-| ARCHITECTURE.md | 2026-09-23 | 待判 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`e468b3b` 2026-09-24 17:10 feat(H25 抬宽池读 2000→6000): 级3 的真天花板不是 cap 而是候选宽池读,单一取值收进 lib/prescreen<br>`b1e3f71` 2026-09-24 15:59 docs(级3 第一期生产读数到手·id=68): 两处原预估被证伪,新登记 H25 |
-| docs/ANDROID_SUBMIT_GUIDE.md | 2026-09-05 | 待判 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| docs/CLOUD_PIPELINE_GUIDE.md | 2026-09-23 | 待判 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`00fa95a` 2026-09-24 23:23 docs(H29·什么在大量读 Turso)：删除闸从 09-22 起恒挡→库只涨不删；体积不是腹泻源撑的 |
+| AGENTS.md | 2026-09-26 | 头部超前 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`1128d72` 2026-09-23 20:30 docs(交付链重订+B136+BL13 核销): ①AGENTS §3 用户重订——eval 各命令降级按需工具(自评卷+未稳立锁=门禁分不出世界变了与作弊),新链=npm test→push→ci+Actions→云端实测→冒烟→对抗审查→文档同步,锁纪律三条(diff 带 why/红了报用户三选一/不许自消);EVAL_GUIDE+FEATURE_MATRIX+CLOUD_PIPELINE 同步暂缓头注 ②ISSUES:B136 cron-job 8430047 死 PAT 连跪 09-20 起停用(全天 2 轮/370 源到期),BL13 核销出账,B121 复验改探针 ③FEATURE_MATRIX §1.5 测试 604→609+如实更正 0 红误记,push-CI 缺口核销 ④ARCHITECTURE §3.6 双保险暂按一档读 ⑤INDEX 登记 RSS 设计文档(1)与交接文档,交接文档补三个裁定与交付进展 ⑥STAMPS 刷新;lint:docs 0 错 2 警 EXIT=0<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档 |
+| ARCHITECTURE.md | 2026-09-27 | 头部超前 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`e468b3b` 2026-09-24 17:10 feat(H25 抬宽池读 2000→6000): 级3 的真天花板不是 cap 而是候选宽池读,单一取值收进 lib/prescreen<br>`b1e3f71` 2026-09-24 15:59 docs(级3 第一期生产读数到手·id=68): 两处原预估被证伪,新登记 H25 |
+| docs/CLOUD_PIPELINE_GUIDE.md | 2026-09-27 | 头部超前 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`00fa95a` 2026-09-24 23:23 docs(H29·什么在大量读 Turso)：删除闸从 09-22 起恒挡→库只涨不删；体积不是腹泻源撑的 |
 | docs/DELIVERY_VERIFICATION.md | 2026-09-18 | 待判 | `73147de` 2026-09-21 04:27 feat(B113/B110)+test(S1~S8)+坑#69: 凭据卫生收成一份共享实现，密钥扫描面从"只已跟踪"扩成两面<br>`ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`608d1fa` 2026-09-11 17:16 docs: 新增交付验证手册(生产环境验证全流程) + 索引收录 |
-| docs/DEV_GUIDE.md | 2026-09-25 | 一致 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
-| docs/DEVELOPMENT_STANDARDS.md | 2026-09-25 | 一致 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`82a33d0` 2026-09-19 04:13 fix(ai-console): 修 B53——删 runner 里定义了没人调的 llmChat 通道，去掉 AI 设置页把接口地址截成半截域名的 slice，清 Agencs 错字（归属 39-2）<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
-| docs/DOC_GOVERNANCE.md | 2026-09-25 | 一致 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档<br>`e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
-| docs/EVAL_GUIDE.md | 2026-09-23 | 待判 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`1128d72` 2026-09-23 20:30 docs(交付链重订+B136+BL13 核销): ①AGENTS §3 用户重订——eval 各命令降级按需工具(自评卷+未稳立锁=门禁分不出世界变了与作弊),新链=npm test→push→ci+Actions→云端实测→冒烟→对抗审查→文档同步,锁纪律三条(diff 带 why/红了报用户三选一/不许自消);EVAL_GUIDE+FEATURE_MATRIX+CLOUD_PIPELINE 同步暂缓头注 ②ISSUES:B136 cron-job 8430047 死 PAT 连跪 09-20 起停用(全天 2 轮/370 源到期),BL13 核销出账,B121 复验改探针 ③FEATURE_MATRIX §1.5 测试 604→609+如实更正 0 红误记,push-CI 缺口核销 ④ARCHITECTURE §3.6 双保险暂按一档读 ⑤INDEX 登记 RSS 设计文档(1)与交接文档,交接文档补三个裁定与交付进展 ⑥STAMPS 刷新;lint:docs 0 错 2 警 EXIT=0<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档 |
-| docs/FEATURE_MATRIX.md | 2026-09-25 | 一致 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`c7b453a` 2026-09-25 07:16 docs(§1.5 条数格回填): 648 条 / 647 过 / 0 红 / 1 todo（E6 挂账不计通过数），09-24 23:16Z 复跑于 HEAD 8ea1ea1、真实退出码 0 |
-| docs/HANDOFF_PROMPT.md | 2026-09-18 | 待判 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`6e8d635` 2026-09-13 03:17 docs: 09-11~12 交叉审核报告(实现逻辑/验证矩阵/bug/风险/优化) + INDEX/接手快照同步 |
-| docs/INDEX.md | 2026-09-25 | 一致 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`6c40812` 2026-09-24 14:15 feat(级3 每源预配额进候选层·44号spec步1): 削减换源覆盖、AI 调用量不变 |
-| docs/ISSUES.md | 2026-09-23 | 待判 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`a96a8e3` 2026-09-25 07:11 feat(H35 补归因·H36/H37/H38/H39 登记): filterStats.failWhy 九类落库，并拆掉一句我拿来当隔离依据的假话 |
-| docs/NEXT-DEV-REQS.md | 2026-09-25 | 一致 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档<br>`e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
-| docs/ROADMAP-2026-09.md | 2026-09-18 | 一致 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`d601202` 2026-09-12 12:06 docs: 早报体系三级产品落档(每日早报/我的早报/精选周刊) + 阅读体验修复 + 翻译多轮管线 + InfoQ语料<br>`e003216` 2026-09-12 10:39 docs: 日报设置UI可读性补充 + 管理后台UX整改提升为独立专项P2-4 |
-| docs/RUNBOOK.md | 2026-09-20 | 待判 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`8e90a58` 2026-09-22 19:06 docs(B103②收口): /api/backup 只覆盖配置的语义写明——响应带 contentBackup 指路字段(内容表由内容级转储覆盖),RUNBOOK 备份段同步; 不建第二份备份面<br>`dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实) |
-| docs/X_SETUP_GUIDE.md | 2026-09-18 | 一致 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| docs/DEV_GUIDE.md | 2026-09-27 | 头部超前 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实) |
+| docs/DEVELOPMENT_STANDARDS.md | 2026-09-27 | 头部超前 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`82a33d0` 2026-09-19 04:13 fix(ai-console): 修 B53——删 runner 里定义了没人调的 llmChat 通道，去掉 AI 设置页把接口地址截成半截域名的 slice，清 Agencs 错字（归属 39-2） |
+| docs/DOC_GOVERNANCE.md | 2026-09-27 | 头部超前 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档 |
+| docs/DOC_VALIDITY_LEDGER.md | 2026-09-25 | 一致 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决 |
+| docs/EVAL_GUIDE.md | 2026-09-23 | 待判 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`1128d72` 2026-09-23 20:30 docs(交付链重订+B136+BL13 核销): ①AGENTS §3 用户重订——eval 各命令降级按需工具(自评卷+未稳立锁=门禁分不出世界变了与作弊),新链=npm test→push→ci+Actions→云端实测→冒烟→对抗审查→文档同步,锁纪律三条(diff 带 why/红了报用户三选一/不许自消);EVAL_GUIDE+FEATURE_MATRIX+CLOUD_PIPELINE 同步暂缓头注 ②ISSUES:B136 cron-job 8430047 死 PAT 连跪 09-20 起停用(全天 2 轮/370 源到期),BL13 核销出账,B121 复验改探针 ③FEATURE_MATRIX §1.5 测试 604→609+如实更正 0 红误记,push-CI 缺口核销 ④ARCHITECTURE §3.6 双保险暂按一档读 ⑤INDEX 登记 RSS 设计文档(1)与交接文档,交接文档补三个裁定与交付进展 ⑥STAMPS 刷新;lint:docs 0 错 2 警 EXIT=0 |
+| docs/FEATURE_MATRIX.md | 2026-09-27 | 头部超前 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`c7b453a` 2026-09-25 07:16 docs(§1.5 条数格回填): 648 条 / 647 过 / 0 红 / 1 todo（E6 挂账不计通过数），09-24 23:16Z 复跑于 HEAD 8ea1ea1、真实退出码 0 |
+| docs/INDEX.md | 2026-09-27 | 头部超前 ⚠ | `2be039d` 2026-09-25 18:47 docs(模块地图改三层 + 有效性判定清单): 地图按「域>模块>子模块」重建并挂有效性指针；新增 DOC_VALIDITY_LEDGER 承载条目级裁决<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档 |
+| docs/ISSUES.md | 2026-09-23 | 待判 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`a96a8e3` 2026-09-25 07:11 feat(H35 补归因·H36/H37/H38/H39 登记): filterStats.failWhy 九类落库，并拆掉一句我拿来当隔离依据的假话 |
+| docs/NEXT-DEV-REQS.md | 2026-09-27 | 头部超前 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档<br>`e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
+| docs/RUNBOOK.md | 2026-09-27 | 头部超前 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`8e90a58` 2026-09-22 19:06 docs(B103②收口): /api/backup 只覆盖配置的语义写明——响应带 contentBackup 指路字段(内容表由内容级转储覆盖),RUNBOOK 备份段同步; 不建第二份备份面<br>`dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实) |
 | README.md | 2026-09-16 | 待判 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1f2f253` 2026-09-16 18:40 docs(screenshots): 替换用户提供的 4 张截图 + 热点榜拆为 AI精选/AI实时流/热搜事件 三栏展示<br>`88b4381` 2026-09-16 18:29 docs(readme): 重写 README + 线上生产截图更新（2026-09-16）——新增我的早报/精选周刊/热搜事件/我的阅读/管理后台早报中心/系统管理 6 张截图，功能描述同步源四轴/早报体系/AI增强等最新进展 |
 
-### 其余受管文档（列最近 2 次）（177 份）
+### 其余受管文档（列最近 2 次）（175 份）
 
 | 文档 | 头部声明 | 判定 | 提交史（短号 · 日期 时:分 · 主题） |
 |---|---|---|---|
 | .cluster/expert-playbook.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/analysis/_doc_merge_analysis.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/analysis/2026-09-15-thin-body-sources.md | — | 不要求头注 | `e92572b` 2026-09-15 20:03 ops(sources): A 类死 feed 删除 10 源 + YouTube 误写 articles 存量迁 videos + 播客桥接源降频 3 天（65 源）+ 普查报告与执行记录落档 |
-| archive/docs-deprecated/A_CLASS_FIX_REPORT.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/AC12-acceptance-template.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/DAILY_SETTINGS_MIGRATION.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/DEPLOYMENT.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/EMERGENCY_RECOVERY_GUIDE.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/FINAL_DIAGNOSIS_AND_FIX_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/OBSERVATION-GUIDE.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/P0-P2-fix-verification-report.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/P3-搁置-多语言支持.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/P3-搁置-性能基准测试.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/docs-deprecated/phase9-runbook.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/SOURCE_ERROR_DIAGNOSIS_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/TIPS-DAILY-TAB-BLANK-PAGE.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-ai-handoff.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/WEMP-INTEGRATION-SOLUTION.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-progress-report-summary.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/wemp-runbook.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/微信公众号接入与热榜方案.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/微信方案备选对比.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/批量恢复熔断源 - 一键故障恢复方案.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源列表管理增强 - 功能实施指南.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源列表管理增强 - 实施总结报告.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源错误熔断与批量操作修复完整指南.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/docs-deprecated/源错误熔断修复 - 完整补丁与验证指南.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/⚠️阅读前必看-可信度分级.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/ARCHITECTURE_AUDIT_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_LIFECYCLE_AUDIT_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_TAB_FIX_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/DATA_TAB_FIX_SUMMARY.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FINAL_FIX_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FINAL_VERIFICATION_SUMMARY.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/FIX_RECORD_UNIFIED.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/P0-P2-FINAL-REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/REFRESH_MECHANISM_AUDIT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/RESTART_DIAGNOSIS_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SEARCH_AND_DAILY_AUDIT_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SMOKE_TEST_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/SOURCE_ERROR_AUDIT_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WE_MP_RSS_LEAK_REPORT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WEMP_SAMPLING_AUDIT.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/WEMP_SUBSCRIPTION_FIX.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/reports/紧急修复报告.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase6.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase7.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/checklist-phase8.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| archive/specs/checklist.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan-phase6.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan-phase7.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/plan.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase6.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase7.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec-phase8.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/spec.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task-phase6.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task-phase7.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| archive/specs/task.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/analysis/_doc_merge_analysis.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/analysis/2026-09-15-thin-body-sources.md | — | 不要求头注 ⚠ | `e92572b` 2026-09-15 20:03 ops(sources): A 类死 feed 删除 10 源 + YouTube 误写 articles 存量迁 videos + 播客桥接源降频 3 天（65 源）+ 普查报告与执行记录落档 |
+| archive/docs-deprecated/A_CLASS_FIX_REPORT.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
+| archive/docs-deprecated/AC12-acceptance-template.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/DAILY_SETTINGS_MIGRATION.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/DEPLOYMENT.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/EMERGENCY_RECOVERY_GUIDE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/FINAL_DIAGNOSIS_AND_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/OBSERVATION-GUIDE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/P0-P2-fix-verification-report.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/P3-搁置-多语言支持.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
+| archive/docs-deprecated/P3-搁置-性能基准测试.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
+| archive/docs-deprecated/phase9-runbook.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/SOURCE_ERROR_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/TIPS-DAILY-TAB-BLANK-PAGE.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/wemp-ai-handoff.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/WEMP-INTEGRATION-SOLUTION.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/wemp-progress-report-summary.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/wemp-runbook.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/微信公众号接入与热榜方案.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/微信方案备选对比.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/批量恢复熔断源 - 一键故障恢复方案.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/源列表管理增强 - 功能实施指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/源列表管理增强 - 实施总结报告.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/源错误熔断与批量操作修复完整指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/docs-deprecated/源错误熔断修复 - 完整补丁与验证指南.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/⚠️阅读前必看-可信度分级.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构<br>`5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/ARCHITECTURE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/DATA_LIFECYCLE_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/DATA_TAB_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/DATA_TAB_FIX_SUMMARY.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/FINAL_FIX_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/FINAL_VERIFICATION_SUMMARY.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/FIX_RECORD_UNIFIED.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/P0-P2-FINAL-REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/REFRESH_MECHANISM_AUDIT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/RESTART_DIAGNOSIS_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/SEARCH_AND_DAILY_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/SMOKE_TEST_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/SOURCE_ERROR_AUDIT_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/WE_MP_RSS_LEAK_REPORT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/WEMP_SAMPLING_AUDIT.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/WEMP_SUBSCRIPTION_FIX.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/reports/紧急修复报告.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/checklist-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/checklist-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/checklist-phase8.md | — | 不要求头注 ⚠ | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
+| archive/specs/checklist.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/plan-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/plan-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/plan.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/spec-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/spec-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/spec-phase8.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/spec.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/task-phase6.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/task-phase7.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| archive/specs/task.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | config/README.md | — | 不要求头注 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
 | docs/archive/debugging/2026-09-13-reader-pagination-and-content-fixes.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
 | docs/archive/debugging/2026-09-14-delivery.md | — | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架 |
@@ -104,9 +101,6 @@
 | docs/archive/debugging/2026-09-21-release-approval-ledger.md | — | 不要求头注 | `0a1c567` 2026-09-21 04:16 docs(放行台账 §三 #12): 勾掉已交付的 W9/B127/B124，只留 B115② 与 lint:cites 两条待做<br>`2dd6808` 2026-09-21 03:03 feat(门禁扩面)+test(L1~L4): doc-lint 加 5 条判据并给它做双向自证 —— 编号撞号那条是本轮自己咬出来的 |
 | docs/archive/feature/2026-09-21-nextdev-closed-rounds.md | — | 不要求头注 | `e203f76` 2026-09-21 22:22 docs(文档洁净第二轮·核销轮): ISSUES 234→162 / NEXT-DEV-REQS 327→256,两刀均脚本切片+无损校验(97+76 行原文逐字可反查),新归档件 issues-round2-closed 与 nextdev-closed-rounds 双登记; lint 24 警→3 警(14 悬空/3 裸名/2 背景出处全清); test(L5/S6 判据口径修正): 三处断言与脏树耦合(真库必须还有违规才绿),改为相对锚+开火证明归 self-test,判据本体未动 |
 | docs/archive/README.md | — | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`d452d52` 2026-09-21 22:47 docs(ISSUES 结构重排,用户口径): 已核销/已归档一律撤出正文——ISSUES 162→97 行,正文只剩『进度速览 + 未修/观察/等你操作/待裁决/挂案/阻塞』六段,每条只答现在坏着什么与下一步;撤出与改写行原文逐字进 round2 归档件 §九(无损校验过); test(G8 判据口径): B71~B83 登记面从单文件扩为 活文档+归档层调试件,查无某号仍红(追溯不断) |
-| docs/BESTBLOGS_BORROW.md | 2026-09-18 | 不要求头注 | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`1750845` 2026-09-11 21:54 docs: BestBlogs 调研借鉴清单(10项范式映射进总spec) |
-| docs/changes/2026-09-11-runner-direct-collect.md | — | 不要求头注 | `146352b` 2026-09-11 15:46 docs: AI 上云状态更正——Agnes key 云端 401(IP 绑定),待 DEEPSEEK_API_KEY 启用;不借 starhub,独立配置<br>`57dec47` 2026-09-11 13:17 feat(ai): 翻译上云 —— collect-turso.js 新增 translate 模式,每轮采集后自动翻译英文文章 |
-| docs/changes/2026-09-23-rss-pipeline-discussion-handoff.md | — | 不要求头注 | `54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`a96a8e3` 2026-09-25 07:11 feat(H35 补归因·H36/H37/H38/H39 登记): filterStats.failWhy 九类落库，并拆掉一句我拿来当隔离依据的假话 |
 | docs/changes/2026-09-25-status-handoff.md | — | 不要求头注 | `717a78a` 2026-09-25 15:07 docs(按 09-25 裁决清除过去文档): 撤掉我自己洗成"规矩"的那条行数阈值<br>`2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述 |
 | docs/eval/2026-09-24-boundaries.md | — | 不要求头注 | `a88c665` 2026-09-25 04:31 docs(第五轮复审核销): "8% 触发率"是无效分母，按点位算 AI 批 96% 在跑；导语第一条真归因恰恰是 ai_failed<br>`97da7a4` 2026-09-25 03:43 docs(H32 自我更正): 起名出口从一条改成四条、回放读数降格为下界（自己复核传参后发现的） |
 | docs/eval/2026-09-24-prescreen-labels.md | — | 不要求头注 | `05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`cc6f372` 2026-09-24 22:36 docs(行为正样本回测·判据清单改判): 形态类规则误砍 0/246 该上,长度类规则误砍 40.2%/9.8% 直接否决 |
@@ -119,7 +113,7 @@
 | docs/features/collectors.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/daily-report.md | — | 不要求头注 | `54fe1c3` 2026-09-25 12:35 docs(按四条规范重排本轮改动过的文档): 叙述主轴改成「用户改设置→数据流向→结果」，台账退化成索引，新建两份模块文档<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/events-alerts.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
-| docs/features/my-reading.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
+| docs/features/my-reading.md | 2026-09-25 | 不要求头注 ⚠ | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/scheduler.md | 2026-09-05 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/source-library-autoclassify.md | 2026-09-25 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
 | docs/features/task-queue.md | 2026-09-05 | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`ba585c8` 2026-09-11 18:26 docs: 真实环境逆推全库文档重整(2026-09-11 审计) |
@@ -131,7 +125,8 @@
 | docs/pitfalls/frontend.md | — | 不要求头注 | `bc1e4e4` 2026-09-19 20:07 test(regression): B83 收口——最后四份"直打生产 Turso"的测试搬到本地文件库<br>`a1d9c3b` 2026-09-13 19:44 docs: 踩坑库独立成档 + T4 追加需求 + 三份新 spec + 原定目标存续盘点 |
 | docs/pitfalls/README.md | 2026-09-18 | 不要求头注 | `2826591` 2026-09-19 10:25 fix(eval): 按独立对抗性审查修掉取证器"会自己说谎"的三条路径，并补齐固定交付链<br>`6a6e932` 2026-09-19 09:23 fix(eval): 取证器的红因分类补上 ENOENT，并修掉一个"跨行匹配造出假路径"的分类器 bug（坑 #44） |
 | docs/pitfalls/testing.md | — | 不要求头注 | `24e76bf` 2026-09-21 07:15 feat(B111/39-6)+test(PR1~PR7)+feat(W20)+坑#71: 翻译 prompt 收成 lib/ai-prompts.js 一份，三种键名归一<br>`73147de` 2026-09-21 04:27 feat(B113/B110)+test(S1~S8)+坑#69: 凭据卫生收成一份共享实现，密钥扫描面从"只已跟踪"扩成两面 |
-| docs/RSS高质量信息流系统设计参考文档 (1).md | — | 不要求头注 | `aab5f4e` 2026-09-23 19:56 docs(specs 35~43 整批作废)+chore(死引用清理): 用户裁定删除 65 份(前朝剑不斩本朝官,锚点 tree 065e1632 落 ISSUES);12 处源码/文档同步(原 spec 引用改指 ISSUES 锚点,DOC_GOVERNANCE §2.2 补整批作废三前置,ARCHITECTURE §1 清理加注被 09-23 实测推翻改写,FEATURE_MATRIX 544→604);登记 RSS 设计文档(1)(权威版)与 09-23 交接文档 |
+| docs/research/RSS信息流策展设计参考.md | 2026-09-23 | 不要求头注 ⚠ | — |
+| docs/ROADMAP-2026-09.md | — | 不要求头注 ⚠ | `ef42694` 2026-09-18 23:40 docs(governance): 文档清洁轮——底层文档逆推真值 + 六类归档规范 + 门禁脚本，并立自愈/健康度 spec 框架<br>`d601202` 2026-09-12 12:06 docs: 早报体系三级产品落档(每日早报/我的早报/精选周刊) + 阅读体验修复 + 翻译多轮管线 + InfoQ语料 |
 | docs/specs/03-公众号走托管RSS决策.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/05-任务队列选型决策.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/09-source-library-autoclassify/checklist.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
@@ -143,7 +138,7 @@
 | docs/specs/11-advanced-filter-views/plan.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/11-advanced-filter-views/spec.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
 | docs/specs/11-advanced-filter-views/task.md | — | 不要求头注 | `2e81cd7` 2026-09-08 22:30 feat: Vercel serverless 部署 + 全量功能重构 |
-| docs/specs/12-roadmap-2026/spec.md | — | 不要求头注 | `e0365b2` 2026-09-12 13:38 feat(translate): 17-translate 翻译链完整上云<br>`180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |
+| docs/specs/12-roadmap-2026/spec.md | — | 不要求头注 ⚠ | `e0365b2` 2026-09-12 13:38 feat(translate): 17-translate 翻译链完整上云<br>`180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |
 | docs/specs/13-settings-write/checklist.md | — | 不要求头注 | `2b66b76` 2026-09-12 09:27 feat(settings): 13-settings-write 设置写API上云 |
 | docs/specs/13-settings-write/plan.md | — | 不要求头注 | `2b66b76` 2026-09-12 09:27 feat(settings): 13-settings-write 设置写API上云 |
 | docs/specs/13-settings-write/spec.md | — | 不要求头注 | `2b66b76` 2026-09-12 09:27 feat(settings): 13-settings-write 设置写API上云 |
@@ -181,7 +176,7 @@
 | docs/specs/21-bilibili-runner/spec.md | — | 不要求头注 | `9c61695` 2026-09-13 03:10 feat(bilibili): 21-bilibili-runner B站采集移植 runner |
 | docs/specs/21-bilibili-runner/task.md | — | 不要求头注 | `9c61695` 2026-09-13 03:10 feat(bilibili): 21-bilibili-runner B站采集移植 runner |
 | docs/specs/22-rss-first-collection-decision.md | — | 不要求头注 | `a1d9c3b` 2026-09-13 19:44 docs: 踩坑库独立成档 + T4 追加需求 + 三份新 spec + 原定目标存续盘点 |
-| docs/specs/23-information-overload-defense.md | — | 不要求头注 | `d2eefda` 2026-09-24 14:24 docs(步1 收口·四处读数更正): 交接文档快照 / ISSUES H19~H22 / 不变量20 / spec23 L4 作废标注<br>`a1d9c3b` 2026-09-13 19:44 docs: 踩坑库独立成档 + T4 追加需求 + 三份新 spec + 原定目标存续盘点 |
+| docs/specs/23-information-overload-defense.md | — | 不要求头注 ⚠ | `d2eefda` 2026-09-24 14:24 docs(步1 收口·四处读数更正): 交接文档快照 / ISSUES H19~H22 / 不变量20 / spec23 L4 作废标注<br>`a1d9c3b` 2026-09-13 19:44 docs: 踩坑库独立成档 + T4 追加需求 + 三份新 spec + 原定目标存续盘点 |
 | docs/specs/24-weekly-v2-magazine.md | — | 不要求头注 | `a1d9c3b` 2026-09-13 19:44 docs: 踩坑库独立成档 + T4 追加需求 + 三份新 spec + 原定目标存续盘点 |
 | docs/specs/25-hot-redesign.md | — | 不要求头注 | `7765593` 2026-09-14 16:53 docs: 热点榜三阶段+补丁全量落档（ISSUES 傍晚批次/DELIVERY 三阶段行/NEXT-DEV-REQS T5-16/specs 25 补-8~11；HANDOVER 为本地 gitignore 文件已同步本地）<br>`1b2dc96` 2026-09-14 14:54 docs: 热点榜三阶段补丁落档（精选口径/来源下拉/分类收拢/译文标题/热度降序/AI 分组收紧） |
 | docs/specs/26-platform-ia-refactor.md | — | 不要求头注 | `f7ed253` 2026-09-15 16:21 docs(T5-2): 文档同步——FEATURE_MATRIX 阅读器/后台矩阵 + NEXT-DEV-REQS T5-2/8/10 核销 + ARCHITECTURE 决策12（四轴模型）+ specs 26/27/27b/29/30 状态 + HANDOVER API 清单 + 坑#17 落档 + DELIVERY 09-15 轮 + ISSUES 挂案 H7/H8 + 测试基线 278<br>`1af8583` 2026-09-14 01:52 docs: specs/26 v2.1——源四轴语义模型（拆开 focus 四职：上架/收录/订阅/重点/屏蔽）+ 源库=精卫填海工具职责重定义 + 27b 迁移小spec |
@@ -194,11 +189,11 @@
 | docs/specs/32-content-typography/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
 | docs/specs/33-misc-fixes/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
 | docs/specs/34-misc-fixes/spec.md | — | 不要求头注 | `ca2d91a` 2026-09-14 02:13 fix(misc): 34-misc-fixes 首批六修 + specs/27~34 草案文件夹（含图片声明） |
-| docs/specs/44-prescreen-tier/spec.md | 2026-09-24 | 不要求头注 | `05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`78c41c4` 2026-09-24 22:44 docs(lint 自查回补): doc-lint:ignore 只在同行生效,上一条把标记留在了跨行条目末尾 |
+| docs/specs/44-prescreen-tier/spec.md | 2026-09-24 | 不要求头注 ⚠ | `05fd6b8` 2026-09-25 00:06 feat(三臂行为回测给出"是否采用"的数) + 独立审查推翻本轮 3 条说法后逐条改写<br>`78c41c4` 2026-09-24 22:44 docs(lint 自查回补): doc-lint:ignore 只在同行生效,上一条把标记留在了跨行条目末尾 |
 | docs/specs/P1-12-401-handling-fix.md | — | 不要求头注 | `fb3bc95` 2026-09-09 21:24 fix(P0-1,P0-3,P0-7,P1-12): 阅读沉淀页数据+热点榜筛选+全部已读+401处理 |
 | lib/README.md | — | 不要求头注 | `dc0732a` 2026-09-21 20:35 docs(并行会话清洁轮入账)+编号归一: 作废路径指针/样图与 SPA 旧引用加注 ignore/轮转态记录补 09-21 节; dump-content 件编号 B128→B131、B129→B132(与 ISSUES 现行号对齐); lib/dirty-columns.js 半成品入库(未接线,README/FEATURE_MATRIX 措辞同步改实)<br>`5695874` 2026-09-20 23:08 fix(#65 之后第 3 条)+test(B102): 删除/保留谓词收进 lib/retention.js 一份，本地不再删内容 |
-| memory/2026-09-02.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
-| memory/README.md | — | 不要求头注 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| memory/2026-09-02.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| memory/README.md | — | 不要求头注 ⚠ | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
 | opml/BestBlogs_RSS_Doc.md | — | 不要求头注 | `4d7fc7c` 2026-09-21 20:50 chore(资产入账): opml/ 18 份订阅源清单(DEV_GUIDE/HANDOVER/NEXT-DEV-REQS 与 spec 09 已引用)与 archive/样图 两个设计参考目录(周报页面设计/热点榜)入库,消除工作区悬浮件 |
 | prompts/daily-analyze.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | prompts/daily-theme.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
@@ -209,7 +204,7 @@
 | prompts/translate-refine.md | — | 不要求头注 | `e0365b2` 2026-09-12 13:38 feat(translate): 17-translate 翻译链完整上云 |
 | prompts/translate-skill.md | — | 不要求头注 | `24e76bf` 2026-09-21 07:15 feat(B111/39-6)+test(PR1~PR7)+feat(W20)+坑#71: 翻译 prompt 收成 lib/ai-prompts.js 一份，三种键名归一 |
 | prompts/translate.md | — | 不要求头注 | `180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |
-| scripts/README.md | — | 不要求头注 | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
-| tools/快速启动.md | — | 不要求头注 | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
+| scripts/README.md | — | 不要求头注 ⚠ | `2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
+| tools/快速启动.md | — | 不要求头注 ⚠ | `5062475` 2026-09-05 11:52 初始提交：全网情报系统 (QWIS) 完整代码库 |
 | web/src/README.md | — | 不要求头注 | `2be8690` 2026-09-25 14:10 docs(按 09-25 裁决清除过去文档): 作废即删 + 摘掉全部归档指针 + 订正 17 处与实现相反的陈述<br>`2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
 

@@ -1,6 +1,6 @@
 # 全网情报系统 · 开发规范与验收标准
 
-> 所有开发者（含 AI Agent）必须遵守的约定。最后更新：2026-09-25
+> 所有开发者（含 AI Agent）必须遵守的约定。最后更新：2026-09-27
 
 ---
 
@@ -43,7 +43,7 @@ tools/            # 工具脚本
 
 | 操作 | 必须同步 |
 |------|---------|
-| 新增/修改 API 路由 | ✅ 本地/云端都要改 |
+| 新增/修改 API 路由 | 先问它属云端还是本地专属。**云端能做的只落云端两份部署面**（读层 + runner），本地端按需跟——**不要求本地/云端各写一遍**（"双实现"是门户时代的旧默认，AGENTS §1 已废） |
 | 修改采集语义（过滤/清洗/熔断/去重/增量） | ✅ 三端同步：`server/services/collectors/` + `api/collect.js` + `tools/collect-turso.js` |
 | 修改数据库查询 | ✅ 确认各端 SQL 兼容 |
 | 新增 settings key | ✅ 各端读写逻辑对齐 |
@@ -53,7 +53,7 @@ tools/            # 工具脚本
 
 1. 改完一端后，搜索其余实现是否有对应代码
 2. 如果只改了一端，在 commit message 标注 `[Vercel only]` 或 `[Local only]` 并说明原因
-3. 新功能优先实现 Vercel 端，再补本地 Express 端
+3. 新功能先定它属于哪一端：云端能做的只落云端两份部署面（读层 + runner），本地端按需跟；本地专属的（要登录态、要动整库文件的）不要顺手往云端补一份空实现
 
 ### 2.3 差异容忍
 
@@ -84,13 +84,13 @@ tools/            # 工具脚本
 | 场景 | 需更新的文档 |
 |------|-------------|
 | 修改部署架构 | `ARCHITECTURE.md` |
-| 新增/删除 API 路由 | `docs/FEATURE_MATRIX.md` + `docs/DEV_GUIDE.md` |
+| 新增/删除 API 路由 | `docs/FEATURE_MATRIX.md`（能力矩阵）；端点与凭据位置速查另在 `docs/HANDOVER.md` |
 | 修复已知问题 | `docs/ISSUES.md`（标记状态） |
 | 修改日报逻辑 | `docs/RUNBOOK.md` §日报 |
 | 新增功能模块 | `docs/features/` 新增对应文档 |
 | 凭据/API 变更 | `docs/HANDOVER.md` |
 | 功能/端点变更 | `docs/FEATURE_MATRIX.md` |
-| 调度频率变更 | 联动 `ARCHITECTURE.md` + `docs/HANDOVER.md` + `docs/RUNBOOK.md` + `docs/CLOUD_PIPELINE_GUIDE.md` 四处 |
+| 调度频率变更 | 取值只存在于 `.github/workflows/collect.yml`（唯一事实源）；其它文档一律写"见作业文件"，**不许**为"同步"去各改一遍抄本 |
 
 ### 4.2 文档格式
 

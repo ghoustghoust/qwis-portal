@@ -18,8 +18,7 @@ const FOUNDATION = [
   'docs/FEATURE_MATRIX.md', 'docs/ISSUES.md', 'docs/NEXT-DEV-REQS.md',
   'docs/RUNBOOK.md', 'docs/DELIVERY_VERIFICATION.md', 'docs/DEVELOPMENT_STANDARDS.md',
   'docs/EVAL_GUIDE.md',
-  'docs/DEV_GUIDE.md', 'docs/ROADMAP-2026-09.md', 'docs/HANDOFF_PROMPT.md',
-  'docs/ANDROID_SUBMIT_GUIDE.md', 'docs/X_SETUP_GUIDE.md', 'docs/BESTBLOGS_BORROW.md',
+  'docs/DEV_GUIDE.md',
   'docs/pitfalls/README.md', 'docs/HANDOVER.md',
 ];
 
@@ -35,8 +34,12 @@ const LOCAL_BY_DESIGN = new Set(['docs/HANDOVER.md', 'cloud/token.json']);
 const walk = (dir, out = []) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) walk(p, out);
-    else out.push(p);
+    // 第三方依赖树不是文档：归档目录里躺着的 vendored node_modules 会让「归档头注」这项判据
+    // 吐出几十万字符，把 execFileSync 的缓冲区撑爆（npm test 因此跑不出汇总）。
+    if (e.isDirectory()) {
+      if (e.name === 'node_modules') continue;
+      walk(p, out);
+    } else out.push(p);
   }
   return out;
 };

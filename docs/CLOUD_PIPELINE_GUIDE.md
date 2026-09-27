@@ -2,8 +2,10 @@
 
 > **这份文档的目的**：让任何接手的 Agent 在改代码之前，先理解"网页数据为什么会自动更新"，
 > 避免改功能时把采集/调度链路碰断而又不自知（本系统已经因此静默停摆过 2 天）。
-> 最后更新：2026-09-23（§3 检查清单按新交付链改写：验收以 AGENTS §3 为准，eval 类降级为按需工具，新增 ci.yml 检查项；**另：cron-job.org 主力触发器 8430047 已停用待处理，见 `docs/ISSUES.md` 🔵 表 09-23 新行**——不变量 9 的双保险目前只剩 schedule 一档在撑。上轮：§AI 配置写入口径那条原指向 39 号 spec，该批 spec 已作废删除、锚点见 `docs/ISSUES.md`，裁决本身仍有效）
-> 上轮（09-19 夜·图下加注「04:13 清理当前不生效」的实测依据 + 用 `cloud.collect.history[].mode` 判触发真假的口径，见 B101/37-5；09-18 文档清洁轮：测试基线不再写死数字；调度图 09-14 已对齐 collect.yml 的**表达式**——表达式真、触发未成立）
+> 最后更新：2026-09-27
+> 验收与交付链以 `AGENTS.md` §3 为唯一准绳；`eval:*` 那批命令是按需工具，不是每轮必过的门。
+> 档位与 cron 取值一律以 `.github/workflows/collect.yml` 为唯一事实源，本文只画形状、不复制取值。判"这一轮到底跑没跑"的硬证据是 `settings['cloud.collect'].history[].mode` 里有没有那个 mode，**不是本文的任何陈述**。
+> 外置触发器（cron-job.org）与 GH schedule 是**双档**：两档各自按自己的可靠性跑，本文不声明谁主力谁备份——那样一句话每轮换一次实测就会被写成本文最大的坑（停摆 2 天那次就是这么来的）。
 
 ---
 
@@ -12,7 +14,7 @@
 | 优先级 | 文档 | 为什么先读它 |
 |---|---|---|
 | **P0 必读** | **本文档** | 实时链路的完整地图 + 不可破坏的不变量 |
-| **P0 必读** | `docs/changes/2026-09-11-runner-direct-collect.md` | 上一次"不更新"事故的完整根因链——所有坑都在里面 |
+| **P0 必读** | `docs/pitfalls/deployment.md` | 上一次"不更新"事故留下的坑：凭据三处不一致、定时声明从未真正生效、代理要走配套客户端、作业缺写权限 |
 | **P1 必读** | `ARCHITECTURE.md` §0/§1/§3/§5 | 架构决策与 22 条血泪坑（§5 每条都对应过一次线上事故） |
 | **P2 建议** | `docs/RUNBOOK.md` §10 | 云端运维操作手册 |
 | **P2 建议** | `docs/ISSUES.md` | 当前未解决问题的活清单 |
@@ -30,12 +32,13 @@
 │                             │  └─ 尾部：热搜事件预聚合 + quickscore 即时补分│
 │                             └─► translate（AI 翻译）         │
 │  每天 09:03 日报 daily ｜ 每天 00:32 daily-ai（兜底补跑）      │
-│  每天 21:30 晚间生成主批（daily-ai + mybrief，rolling24h）     │
-│  周五 18:03 周刊 weekly ｜ 每天 09:33 快照 ｜ 04:13 清理       │
+│  每天 21:30 晚间生成主批 daily-ai-evening（rolling24h）        │
+│  周五 18:03 周刊 ｜ 每天 09:33 快照 ｜ 04:13 清理              │
+│  ⚠ 我的早报没有定时档——只能手动 dispatch 触发                 │
 │                          （时间均为北京时间）                  │
-│  触发双保险：cron-job.org（jobId 8430047）每 15min POST        │
-│  workflow_dispatch 叫醒 collect job——GH schedule 会丢任务，    │
-│  此为实际主力触发器（不变量 9；Key 见 HANDOVER §1.5）          │
+│  触发双档：GH schedule + cron-job.org 外置触发器（jobId        │
+│  8430047，每 15min POST workflow_dispatch 叫醒采集）。两者各按  │
+│  自己的可靠性跑，本文不判主次；Key 见 HANDOVER §1.5            │
 └──────────────────────────┬──────────────────────────────────┘
                            │ @libsql/client 直写（不经任何 Vercel 函数）
                            ▼
@@ -51,7 +54,7 @@
 **关键认知**：Vercel 函数**不参与**定时采集。Vercel 只是读层。数据新不新，取决于
 GH Actions → Turso 这条链，和 Vercel 部署本身无关。
 
-> ⚠️ 上面图里的「04:13 清理」**当前不生效**（2026-09-19 实测,详情 B101）：`cleanup` job 只认 `github.event.schedule == '13 20 * * *'`,而主力触发是 cron-job.org 的 `workflow_dispatch`（`mode` 选项无 cleanup）→ 该 job 在每个 dispatch 批次里都是 `skipped`;生产上此刻还有 **10,733 条**已满足删除谓词的文章未被删除。**"有 cron 表达式"≠"会执行"**,判据要看心跳里该 mode 有没有出现过（`settings['cloud.collect'].history[].mode`,见 37-5 拟新增的 `scheduler_gap` 事件）。
+> ⚠️ 图里的「04:13 清理」是**两件事**，别混成一个布尔：**跑没跑** —— 该 job 只认 schedule 那一档，手动 dispatch 的 mode 选项里没有它，所以判它跑没跑只能现读 `settings['cloud.collect'].history[].mode` 里有没有 cleanup（"有 cron 表达式" ≠ "它会执行"）；**删没删** —— 跑到不等于删到，删除闸在没有内容转储凭证时必定挡住，同一格读数里的 deleted 行数才是结果。这两个数本文不写结论。
 
 ## 2. 不可破坏的不变量（动了就会"不更新"）
 
@@ -134,15 +137,16 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
     会被 B8 的"像不像 HTML"分流判据误判成 HTML 分支（等于用一个 bug 换另一个 bug）。
     对账锁：`tests/regression-20260920a.test.js` A1~A4（A3 不设豁免，任何 `.replace(/&实体/` 重现即红）。
 
-9. **触发双保险（cron-job.org）**：云端采集的**实际主力触发器**是 cron-job.org 任务
+9. **触发双档**：云端采集由两档共同撑着——GH Actions 的 schedule，与 cron-job.org 外置任务
    **8430047**（每 15min `POST /actions/workflows/345928986/dispatches`，body `{"ref":"main"}`；
-   dispatch 只跑 collect job，日报/快照/清理不会被 15min 刷）。GH schedule 仅为备份
-   （2026-09-11 高负载曾连丢五轮且无告警）。该任务配置内嵌 GitHub PAT 做鉴权
-   （值见 `docs/HANDOVER.md` §1.5）——**PAT 轮换/失效时必须同步更新 cron-job 配置**，
-   否则主力触发静默停摆，只剩会丢任务的备份。控制台 <https://console.cron-job.org/dashboard>，
+   **不带 mode 的 dispatch 只跑采集那一步**，日报/快照/清理都不会被这 15min 刷出来）。
+   两档各自都会单独失效：schedule 在高负载下会丢轮（2026-09-11 曾连丢五轮且无告警）；外置档
+   内嵌 GitHub PAT 做鉴权（值见 `docs/HANDOVER.md` §1.5）——**PAT 轮换/失效时必须同步更新 cron-job
+   配置**，漏这一处曾让整条链路 403 停摆。本文不声明哪档是主力：判现在还剩几档在跑，现读
+   `settings['cloud.collect'].history[].mode`。
    管理用 API Key 同见 HANDOVER §1.5。
-   **2026-09-18 追加**：`workflow_dispatch` 现在带 `inputs.mode`（choice，默认 `collect`）。
-   cron-job.org 不传 inputs → 取默认 `collect` → **仍然只跑 collect job，本不变量不被破坏**。
+   `workflow_dispatch` 带一个 `inputs.mode` 选项（默认 `collect`）。
+   cron-job.org 不传 inputs → 取默认 `collect` → **仍然只跑采集那一步，本不变量不被破坏**。
    AI 批次 job 的 `if` 都要求 mode 精确等于各自名字才会触发，取值缺失/为空时恒不成立（fail-safe）。
    **夜间预算（09-24 重排，用户裁定"时间长一点都可以，各边界留缓冲"）**：`runDailyAi` 的 `BUDGET_MS = 300min`、
    初筛段独立上限 `FILTER_BUDGET_MS = 130min`（原来是"总预算的一半"，抬总预算会连带把深析段的份额也挪走），
@@ -217,7 +221,8 @@ GH Actions → Turso 这条链，和 Vercel 部署本身无关。
 - [ ] 改了 Turso schema？→ 四处采集实现 + `tools/generate-snapshots.js` + `api/[...slug].js` 全部要对齐。
 - [ ] 改了 workflow 的 cron？→ 注意 GH Actions 是 **UTC**，且整点拥挤，用错峰分钟（:07/:37 风格）。
 - [ ] 改完必须跑：`npm test`（**条数以命令输出为准，本档不写死**；基线状态见 `docs/FEATURE_MATRIX.md` §1.5）。不许新增失败。**2026-09-23 起**：验收与交付链以 `AGENTS.md` §3 为唯一准绳（`eval:whitebox`/`eval:e2e` 等降级为按需工具，改到其守护区域时建议运行）；push 后查 `ci.yml` push-CI 是否绿（09-23 新增）。
-- [ ] 涉及云端的改动 → 部署后跑一次 `workflow_dispatch` 验证 4 个 job 全绿（见 §4）。
+- [ ] 涉及云端的改动 → 部署后**验你改的那一步**：不带 mode 的手动触发只会跑采集那一步（不变量 9），其余档位要么要选对应 mode、要么只认 schedule，**一次 dispatch 点不出全流程**。判某一档真跑没跑，现读 `settings['cloud.collect'].history[].mode`。
+  ⚠️ **不许把"人去 GitHub 点一次 Run workflow"当验收步骤**（09-27 用户裁：这条通路他从未手动用过，即使功能存在也不在他的操作面里）。要补跑就写清是谁跑、跑完现读哪个字段自证。
 
 ## 3.1 部署方式（2026-09-11 晚更新）
 
@@ -244,10 +249,10 @@ Vercel CLI 红线：禁止 `vercel env pull`（会覆盖本地 .env 丢失 PORT/
 curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 #    created_at 应在 1 小时内
 
-# ④ 手动触发一轮完整管线
-#    GitHub → Actions → collect → Run workflow（四个 job 全跑）
+# ④ 手动触发采集
+#    GitHub → Actions → collect → Run workflow（不带 mode 只跑采集那一步；清理档在这里选不到）
 
-# ⑤ 看 cron-job.org 外置触发器（主力）是否在准点敲门
+# ⑤ 看 cron-job.org 外置触发器这一档是否在准点敲门（另一档是 GH schedule）
 #    控制台 https://console.cron-job.org/dashboard → job 8430047 执行历史
 #    或 API：curl -H "Authorization: Bearer <CRONJOB_API_KEY>" \
 #      "https://api.cron-job.org/jobs/8430047/history"（Key 见 HANDOVER §1.5）
@@ -316,4 +321,4 @@ curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
 | `api/[...slug].js` | 读 API（含日报 getOrGenerate 兜底） |
 | `tools/generate-snapshots.js` | 静态快照导出（首屏兜底 public/data/） |
 | `vercel.json` | 仅 rewrites/headers/functions，**无 crons** |
-| cron-job.org 任务 8430047（非仓库文件） | **采集主力触发器**：每 15min POST workflow_dispatch 叫醒 collect job（GH schedule 为备份）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 `docs/HANDOVER.md` §1.5 |
+| cron-job.org 任务 8430047（非仓库文件） | **双档触发之一**：每 15min POST workflow_dispatch 叫醒采集；另一档是 GH schedule 的那四条 cron。两档都只跑采集那一步，主次不在本文判（判据见不变量 9）；控制台 <https://console.cron-job.org/dashboard>，API Key 见 `docs/HANDOVER.md` §1.5 |
