@@ -161,6 +161,7 @@
 - **四件套齐**（spec/plan/task/checklist）：`09` `11` `13`~`21`
 - **只有 spec.md**（2026-09-18 清洁核实，别再声称四件套完成）：`10-my-reading`、`12-roadmap-2026`、`27-reader-today`、`27b-source-axes`、`28-hot-redesign`、`29-source-groups`、`30-admin-consolidation`、`31-media-playback`、`32-content-typography`、`33-misc-fixes`、`34-misc-fixes`
 - **`44-prescreen-tier/spec.md`**（零额度预筛层）：级3「每源配额」**已在部署面接线**——实测依据是 daily-ai 运行输出带 `prescreen` 计数、宽池常数在 `lib/prescreen.js` 一处；决策与边界见 ADR-09。本件其余步骤仍按 spec 登记，**本行不判定批准状态**。
+- **`45-doc-validity-adr-split/spec.md`**（docs 顶层有效性核验 + 决策外迁 ADR + 叙述重写，09-28 开工）：本轮不碰 `tools/`、`tests/`；地基 = 新建 ADR-17~23 与六处边界增量的逐条放行。
 - **已作废删除**：`docs/specs/35`~`43` 共 65 份（09-23 用户裁定整批清除，「不能用前朝的剑斩本朝的官」）。逐字反查/还原锚点在 `docs/ISSUES.md`「作废登记」一节，**不要再按"35~43 在途"读**。
   - 随 35~43 作废但**已执行且不撤销**的动作（唯一仍生效的事实）：portal 项目下线/删除、2h 门户同步通道默认关闭。
 
