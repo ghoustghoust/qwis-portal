@@ -111,6 +111,12 @@ runner 从库导出 JSON → 同时写进 `static-data/` 与 `public/data/` → 
 | ADR-14 | 三端共享语义，不共享进程 |
 | ADR-15 | AI 评分口径：六维固定，生产与评测两名一物 |
 | ADR-16 | 探索位不改订阅集合 |
+| ADR-17 | 不做云 / 本地数据同步 |
+| ADR-18 | 定时只走 GitHub Actions，Vercel 不加 crons 块 |
+| ADR-19 | 不引入工作流编排平台 |
+| ADR-20 | 不引入搜索引擎栈（全文检索 / 向量库） |
+| ADR-21 | runner 依赖面只许纯 JS |
+| ADR-22 | 不做清理总开关 |
 
 ## 4. 数据通路（按源类型）
 
