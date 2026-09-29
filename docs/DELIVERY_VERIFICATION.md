@@ -206,12 +206,12 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 | 5.1 | `curl vercel.app` 连接超时 | GFW 阻断 | `export https_proxy=http://127.0.0.1:12000` |
 | 5.2 | 走代理后报 `CRYPT_E_REVOCATION_OFFLINE` | Windows schannel 吊销检查 | curl 加 `--ssl-no-revoke` |
 | 5.3 | `git push` 报 Connection reset | GFW 干扰 git HTTPS | `git -c http.proxy=http://127.0.0.1:12000 push` |
-| 5.4 | GH Actions schedule 整批缺失 | GitHub 高负载丢定时任务（无告警） | 调度加密到 15min 对冲 + 每日人工/Agent 抽查 §2.1；彻底方案是 cron-job.org 等外部触发器 POST dispatch API（§2.3） |
+| 5.4 | GH Actions schedule 整批缺失 | GitHub 高负载会丢定时任务（无告警） | **这正是"双档触发"存在的理由**（ADR-13）：外置触发器用 POST 手动触发 API 敲门。判"这一轮到底跑没跑"现读采集心跳里的 mode，别拿"有没有 cron 表达式"当证据 |
 | 5.5 | GH API 拉日志 403 "admin rights" | 日志接口必须鉴权 | 带 PAT（§2.2） |
 | 5.6 | Node 脚本 exit 127 + libuv 断言 `UV_HANDLE_CLOSING` | 连接未关时 `process.exit()` | 先 `db.close()` 再 `process.exitCode=0` 自然退出 |
 | 5.7 | 外部 undici `ProxyAgent` 喂内置 fetch 一律 "fetch failed" | dispatcher 符号不兼容 | 用 undici 包自带的 `fetch` 配对（见 `tools/collect-turso.js`） |
 | 5.8 | newsnow 热榜 403 | 自定义 UA 被封 | 采集必须用浏览器 UA |
-| 5.9 | YouTube feed 404/500 但频道活着 | Google 对数据中心 IP 反爬返回假 404/500 | 间歇性掷骰；熔断阈值已放宽到 10，勿见 404 就删源 |
+| 5.9 | YouTube feed 404/500 但频道活着 | Google 对数据中心 IP 反爬返回假 404/500 | 间歇性掷骰；熔断阈值对视频类单独放宽（取值在共用实现，见链路指南不变量 3），**勿见 404 就删源** |
 | 5.10 | Vercel CLI token "invalidToken" | token 过期（auth.json 里 expiresAt） | 跑一次 `vercel whoami` 自动刷新 |
 
 ---
@@ -227,15 +227,5 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 7. **页面**：浏览器开 `https://qwis-intel.vercel.app/reader/`（本机需挂代理），强刷 Ctrl+F5
 8. **文档**：改动若涉及架构/凭据/坑，同步 `ARCHITECTURE.md`、`docs/HANDOVER.md`、本文档
 
----
-
-## 7. 2026-09-11 实战案例（本文档的出处）
-
-| 时间(UTC) | 动作 | 验证方式 |
-|---|---|---|
-| ~01:40 | 诊断「页面不更新」：GH runs 全部 failure → 读 job 日志 → `POST /api/collect` 403 | §2.1/§2.2/§3.2 |
-| 01:55 | 重写 3 个 Secrets → dispatch → 4 job 3 绿 1 败（snapshot 读 .env 崩） | §2.3/§2.4 |
-| 02:04 | 本地跑通 `tools/collect-turso.js`（先 15 源小批量，再全量 500） | §6.1 |
-| 02:44 | push 75e2520 → dispatch → 4/4 全绿 → 端验 created_at 实时 | §6.2-6.6 |
-| 08:05 | 发现 schedule 连丢 5 轮 → 调度加密 15min → push ca5b3c4 | §2.1 对比 |
-| 08:12 | RSS 重采间隔 480→60min + 重置 609 源 → dispatch 验证 499/500 成功 | §2.3 + §4 |
+> 本文档不收录"某年某月的实战案例"。某一轮当时读到什么、怎么一步步查出来的，属于变更史——
+> 要回看走 git 与 `docs/ISSUES.md` 里对应条目的登记。**把它留在手册里，下一个人会照着过期现场的动作去做。**

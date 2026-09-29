@@ -1,171 +1,132 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
-> 最后更新：2026-09-27
-> 唯一现行运维手册。架构与凭据位置看根目录 `ARCHITECTURE.md` 与 `docs/HANDOVER.md`；功能覆盖以谁为准看 `docs/FEATURE_MATRIX.md`。
+> 最后更新：2026-09-28
+> 唯一现行运维手册。架构与凭据位置看根目录 `ARCHITECTURE.md` 与 `docs/HANDOVER.md`；功能覆盖以谁为准看 `docs/FEATURE_MATRIX.md`；实时链路与不变量看 `docs/CLOUD_PIPELINE_GUIDE.md`。
 > **修复历史不作现状依据**：要回看某一笔改了什么，用 git 与该模块在 `docs/ISSUES.md` 的登记，别翻 `docs/archive/`。
+> 本手册只写**症状 → 现读哪个字段 → 怎么止血**，不写"哪年哪轮遇见过几次"。数值一律指路到唯一承载处（作业文件、共用实现、settings 键），本文件不复制取值。
 
 ## 1. 系统形态
 
-- 单进程 Node/Express + SQLite（better-sqlite3，WAL），端口默认 3000
-- 页面：`/reader/` 阅读器、`/daily/` 日报、`/hot/` 热点榜、`/admin/` 管理台（独立 bundle）
-- 源类型：rss（含 wechat2rss 公众号、播客）、youtube（走官方 feed，需代理）、bilibili、douyin（Playwright，仅本地）、x（RSSHub）、hotlist（newsnow）、wechat（OPML）
-- 数据：`data/app.db` + `data/backups/`；配置：`.env` + settings 表 + `config/customer-config.json`
-- 云端：Vercel 读层主部署（`api/` 读 API）+ GH Actions runner 直采 Turso（方案A，详见 §10）；PHP 队列（cloud/*.php，接收手机/桌面提交链接）
+- **主部署面**：GH Actions runner 采集与批处理 → Turso（唯一数据落点）→ Vercel 读层与管理台。方向性理由见 ADR-01。
+- **本地端**（`server/` + 本地库）：开发与全功能灾备，**不在部署面**。
+- 页面：`/reader/` 阅读器、`/daily/` 日报、`/mybrief/` 我的早报、`/weekly/` 周刊、`/hot/` 热点榜、`/reading/` 我的阅读、`/admin/` 管理台（独立 bundle）。
+- 源类型：rss（含公众号托管 feed、播客）、youtube、bilibili、douyin（需登录态，仅本地）、hotlist（热榜聚合）、x（**需自备 RSSHub 实例，本仓从未部署过 —— 可填可存但抓不到东西，处置等拍，见 `docs/ISSUES.md` H40**）。
+- 数据与配置：本地库文件 + 备份目录；配置分三层（环境变量、设置表、客户配置文件），加载顺序与生成关系见 `ARCHITECTURE.md` §6。
 
 ## 2. 日常启停（Windows 本机）
 
 ```bat
 start-all.bat          :: 一键启动（含健康检查、自动开浏览器）
-restart-server.bat     :: 按 3000 端口找 PID 重启（管理员运行）
+restart-server.bat     :: 按端口找 PID 重启（管理员运行）
 npm run build          :: 改了 web/src 后必须重建前端
 ```
 
-## 3. 宝塔/服务器部署（PM2）
+端口与代理等本地变量只在 `.env` 里，本文件不写取值。
 
-1. 上传代码（排除 `node_modules/ data/ .env portal/ archive/`），`npm install --production`
-2. 需要抖音功能才装 Playwright：`npx playwright install chromium`（约 300MB）
-3. 配 `.env`：`PORT=3000`；海外源需 `HTTPS_PROXY=http://127.0.0.1:12000`（Clash 实际端口，旧 7890 已失效；公众号/B站/抖音/AIHOT 国内源不需要代理）
-   > ⚠️ **`.env` 里的代理端口不是你唯一要改的地方**：`npm run setup:customer` 会拿 `config/customer-config.json` 里的代理值**覆盖写回** `.env`。那份配置若还写着已失效的旧端口，跑一次生成器就把死端口种回去，症状是海外源集体抓不到、看起来像云端坏了。搬机或换代理后两处一起核。
-   > ⚠️ **宝塔部署本身不解决海外源可达性**：能不能抓 YouTube/X 取决于服务器所在地域/出站代理，不取决于面板。国内机房服务器仍需配代理（或换海外机房）；本机之所以能抓是因为本机有代理。
-   > 🔐 **API 鉴权（本地/云端一致）**：公开 GET 无需鉴权；写操作（POST/PUT/DELETE）需 `Authorization: Bearer <JWT>`，经登录端点（`ADMIN_USER`/`ADMIN_PASSWORD`）换取，7 天有效，签名密钥 `AUTH_SECRET`。上公网前先确认 `.env` 已配置这三个变量。
-   > ⚠️ **鉴权中间件必须把"登录入口本身"列进豁免名单**：否则它会把换取令牌的那个请求也拦掉，症状是"密码明明对、却永远登不进去"——**和密码值无关**。当时往密码方向查过，白查。
-4. `npm run build` → `npm run pm2:start` → `pm2 save` → `pm2 startup`（开机自启）
-5. Nginx 反代 `http://127.0.0.1:3000`，`client_max_body_size 10m`
-6. 日志：`npm run pm2:logs`；建议 `pm2 install pm2-logrotate`（50M × 7 天）
-7. Node 版本：20+ 可用，推荐 24（本机实测版本；better-sqlite3 随 npm install 自动编译对应 ABI）
+## 3. 把本地端长期跑在一台服务器上（可选，非主部署面）
 
-## 4. 云端队列（PHP，可选）
+这是**灾备端的一种托管方式**，不改变 ADR-01 的判断：主链路仍在 runner。
 
-`cloud/` 下 5 个文件（_queue_lib.php、wechat-rss-queue.php、bilibili-video-queue.php、douyin-video-queue.php、token.json）传到任意 PHP 站点根目录即用；Token 即全部鉴权（token.json 勿泄露）。本地每 10min 轮询拉取并清空云端；云端等价入口 `POST /api/queue/sync`（拉 PHP 云端队列 → pending_items → 清云端，需鉴权）。
-> ⚠️ **这条链路的对端在仓库之外，且当前不是活着的**——它是否还在解析、还是不是你的资产，只有你知道。本文件不再自带一份"手机端怎么配"的手册（那份 09-27 已删，它描述的通路从未在当前真实环境跑通过）。仍留在代码里的对端、生成器与界面入口的处置，见 `docs/ISSUES.md` 本轮立案那条。
+1. 上传代码（排除依赖目录、数据目录、本地环境文件），按生产依赖安装。
+2. 只有要抖音功能时才装无头浏览器（体积大，且这项永不进云端：ADR-02）。
+3. 配 `.env`：端口、海外源代理。⚠️ **代理端口不止一处**：客户机生成器会拿配置文件里的代理值**覆盖写回** `.env`。那份配置若还留着失效的旧端口，跑一次生成器就把死端口种回去，症状是海外源集体抓不到、看起来像云端坏了。**搬机或换代理后两处一起核。**
+4. ⚠️ **换服务器不解决海外源可达性**：能不能抓取决于机房地域与出站代理，不取决于面板。本机之所以能抓是因为本机有代理。
+5. 进程守护、开机自启、日志轮转按常规做法；反向代理要放开上传体积上限（数据 Tab 要传备份）。
+6. **鉴权**：本地与云端同一套口径——公开只读、写与敏感读换令牌（ADR-12）。上公网前先确认环境里那几个变量都配了。
+   ⚠️ **鉴权中间件必须把"登录入口本身"列进豁免名单**：否则它会把换取令牌的那个请求也拦掉，症状是"密码明明对、却永远登不进去"——**和密码值无关**，别往密码方向查。
+
+## 4. 文件型导入队列（对端在仓库之外）
+
+`cloud/` 下那几个 PHP 文件与 token 传到任意 PHP 站点根目录即用；**Token 即全部鉴权，勿泄露**。本地按固定节奏轮询拉取并清空对端；云端的等价入口是那个手动同步端点（需鉴权）。
+
+> ⚠️ **这条链路当前不是活的**：它描述的通路从未在当前真实环境跑通过，所以本手册**不自带**"手机端怎么配"那份说明。仍留在代码里的对端、生成器与界面入口怎么处置，见 `docs/ISSUES.md` H40。
+> 也别因为"没在用"就顺手删这些 PHP 文件：端到端测试拿它当服务根目录、生成器往里写 token。
 
 ## 5. 熔断与恢复
 
-- 规则：源连失 3 次自动 `enabled=0`（熔断）；恢复时 fail_count 清零
-- **例外（2026-09-11）**：云端链路（api/collect.js、tools/collect-turso.js）对 `youtube` 类型阈值放宽为 10 次——YouTube 对数据中心 IP 反爬返回假 404/500，3 次会误杀活源；本地 Express 调度器仍为 3 次
-- **统一解冻语义**（`store.unfreezeSource`）：enabled=1 + fail_count=0 + 清 extra.lastError/lastErrorAt，保留 intervalMin/etag
-- 入口（任选）：管理台各 Tab「批量恢复」按钮 → `POST /api/sources/restore-all`（支持 `type` 过滤、`refreshImmediately`，立即刷新软上限 20）；CLI `node tools/ops-toolkit.js unfreeze [--yes]`；单源用 toggle 开关
-- ⚠️ 不要再手写 SQL 清 extra——intervalMin 存在 extra 里，整体清空会让源级间隔静默回退默认值
+- 规则：源连续失败到达阈值自动停用；恢复时失败计数清零。**阈值按类型分档，取值只在共用实现里一份**（视频类比别的高，因为反爬会掷假 404/500 误杀活源；口径见 `CLOUD_PIPELINE_GUIDE.md` 不变量 3）。
+- **统一解冻语义**：解冻 = 置为启用 + 清失败计数 + 清错误字段，**保留**源级间隔与校验标记。这些字段同存在一个扩展列里，所以**不要手写 SQL 整列清空**——那会让源级间隔静默回退默认值，看不出来。
+- 入口任选：管理台各 Tab 的「批量恢复」（支持按类型过滤、是否立即刷新）；运维工具箱的解冻命令；单源用开关。
+- 批量恢复要防二次熔断（大批同时抓取会集体失败再被熔断），走"立即刷新"时受软上限约束。
 
 ## 6. 健康自检与报警
 
 ```powershell
-npm test                      # 回归测试（通过数以实际输出为准）
+npm test                      # 回归网（条数以实际输出为准）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
-node tools/audit-cloud.js     # 云端巡检（只读，项数以脚本自身输出为准，本档不写死）
+node tools/audit-cloud.js     # 云端只读巡检（项数以脚本自身输出为准）
 node tools/ops-toolkit.js check    # 健康总览
 node tools/ops-toolkit.js frozen   # 熔断源清单
-node tools/ops-toolkit.js diagnose-bili  # B 站 WBI/Cookie 诊断
+node tools/ops-toolkit.js diagnose-bili  # B 站签名/Cookie 诊断
 ```
 
-系统内置每 5min 采集停滞自检（启动 30min 后生效，1h 内 0 成功刷新→报警）。报警渠道（钉钉/企微/飞书/Server酱/Bark/TG/webhook）在管理台「报警管理」Tab 配置。
+内置采集停滞自检（周期性，判据是"一段时间内零成功刷新"→报警）。报警渠道在管理台「报警管理」配置；渠道与冷却的语义见 `docs/features/events-alerts.md`。
 
 ## 7. 数据管理
 
-- 整库快照/恢复/按天清理：管理台「数据」Tab（快照在 `data/backups/app-*.db`，支持上传导入；恢复为八表同事务整库回滚，有二次确认）
-- 保留天数：`settings.data.retentionDays`（默认 7，本地清理定时任务每 24h 执行，数据 Tab 改动即生效）。
-  ⚠️ **保留期是按"发布时间"判的（发布时间取不到才退回入库时间）**，所以有一整类文会被误判成过期：**滞后入库的老文**——发布很久之后才被补抓进来，实测这类占待删集合的绝大多数（发布平均滞后一百多天）。它们不是"旧闻被留下"，是"从没给过阅读窗口就被判死"。要动保留口径前先跑 `npm run check:retention` 看这个比例，别只看"待删多少条"。
-  **本地端只清队列与本地产物，不删内容**：`articles`/`videos` 在 `lib/retention.js` 的 `local` 作用域里是 `skip`（本地库的角色是灾备副本，AGENTS §1；B102 收口，用户 09-20 决定）。
-  删除/保留谓词**全库只有 `lib/retention.js` 一份**，三端（本地 / GH runner / 云端手动端点）都从它取，白盒 W17 扫"绕过它的第二份时间窗删除"。
-  **如实说明覆盖面**（09-21 复核）：`api/[...slug].js` 的 `ARTICLE_CLEAN_WHERE` 与 `tools/archive-articles.js` 的"搬进 `articles_archive` 再按 id 删"**两处还没收进来**，W17 对前者按整文件记账豁免、对后者因"DELETE 里没有 `< ?` 形状"而放过（分别记在 B102 残余与 B132）。所以"扫不到红"不等于"只有一份"。
-- **内容级转储与回放演练（B103，删除类改动的硬前置）**：`npm run dump:content -- --scope cloud`（增量；首轮加 `--full`）把 `articles`/`videos` 导成 gzip NDJSON 分片 + sha256 清单，落在 `data/content-dump/cloud/`（`/data/` 已 ignore）。
-  核对与演练：`npm run dump:content -- --scope cloud --verify` → `npm run dump:gate -- --max-age-hours 48`（`allowed:false` 即不许执行任何删除）→ `npm run dump:content -- --scope cloud --restore --mktarget --into data/rehearse/app.db`（把云端全量放回一个空库，用来证明"删得回来"）。
-  09-21 首轮实测：云端 59,832 文章 + 1,291 视频 = 161.6MB / 154 片，回放 17.6s 行数全等、抽样 12 行 × 23 列逐字段 0 不一致。⚠️ **它仍只是工具**：runner 的 `runCleanup` 还没在 DELETE 前调这道闸（接线随 B101）。
-- 配置轻量迁移（仅 sources/groups/settings JSON）：管理台「公众号 RSS」Tab 底部——与整库快照用途不同，勿混淆
-- 搬机：拷贝 `data/` + `.env` + `config/customer-config.json`，新机器 `npm install && npm run build && npm start`
-- 云端（Vercel/Turso）语义不同：配置备份存 `settings.backup.latest`（`POST /api/backup` / `GET /api/backup/latest` / `POST /api/backup/restore`）；文件型整库快照云端不可用（`/api/data/snapshot|restore|upload` 返回 501），用配置备份替代。**内容表（articles/videos/articles_archive）的云端备份 = 内容级转储**（`npm run dump:content -- --scope cloud`，回放 `--restore`，凭证 `settings['retention.dumpCredential']`）——`/api/backup` 只覆盖配置，别再按「全量备份」理解（B103②）
+- **整库快照 / 恢复 / 按天清理**：管理台「数据」Tab（恢复是同事务整库回滚，有二次确认）。这是**本地端能力，云端没有**——云端只给配置级备份，内容表要靠下面的转储。
+- **保留天数**：只有这一个可改项；**没有"停用清理"的总开关，这是决策不是遗漏**（ADR-22）。热榜那一轴与豁免名单是代码写死的，界面控制不了。
+- ⚠️ **保留期按"发布时间"判**（取不到才退回入库时间），所以有一整类会被误判过期：**滞后入库的老文**——发布很久之后才被补抓进来。它们不是"旧闻被留下"，是**从没给过阅读窗口就被判死**。要动保留口径前先跑 `npm run check:retention` 看这个比例，别只看"待删多少条"。
+- **本地端只清队列与本地产物，不删内容**：本地库的角色是灾备副本。
+- 删除/保留谓词**全库只有共用实现那一份**，三端都从它取（归属见 ADR-14）。⚠️ **如实说明覆盖面**：读层与归档脚本里各还有一处自己拼删除条件的地方没收进来，对应的对账判据对前者按整文件豁免、对后者因形状不同而放过——**所以"扫不到红"不等于"只有一份"**，账在 `docs/ISSUES.md`。
+- **内容级转储与回放演练（任何删除类改动的硬前置）**：先转储（首轮全量，之后增量）→ `--verify` 校验 → `npm run dump:gate` 判闸（不放行就**不许执行任何删除**）→ 用 `--restore` 把全量放回一个空库，证明"删得回来"。
+  ⚠️ runner 侧的自动清理还没在删除前调这道闸（转储是本地盘产物，runner 上没有），所以"定时清理真能删"这件事目前仍受制于人工转储，见 `docs/ISSUES.md` H29 那一族。
+- 配置轻量迁移（只搬订阅分组与设置，不含内容）在管理台对应 Tab，**与整库快照用途不同，勿混**。
+- **一名一物**：这里的"快照"指整库备份文件；每天导出的那些静态 JSON 叫**静态导出物**，它不是兜底路径（ADR-05）。
 
 ## 8. 源管理要点
 
-- 添加：管理台对应 Tab 粘贴链接（自动识别类型）；源级刷新间隔在源行内编辑器设置（存 extra.intervalMin，优先于全局 settings.intervals）
-- 公众号：2026-09-04 起全部走 wechat2rss 托管 RSS（375 源，分组「公众号」）；we-mp-rss 已退役；新增公众号源用 `tools/import-bestblogs-opml.js`（幂等，可重跑）或手动加 rss 源
-- 热榜：`hotlist://{newsnow源id}`，公共实例失效可自建 newsnow 后改 settings `hotlist.baseUrl`（已知失效：kuaishou、36kr 全系）
-- X/Twitter：配置 RSSHub 地址模板后加用户名（公共实例大多需自建授权）
-- 抖音：严格串行 ≥10s 间隔（防风控）；登录态在管理台抖音 Tab 扫码（有头浏览器，存 credentials 表）
+- 添加：管理台对应 Tab 粘贴链接（自动识别类型）；源级刷新间隔在源行内设置，优先于全局间隔。
+- 公众号：全部走托管 RSS，自建引擎已退役；**云端不采这一类**（后果见 `FEATURE_MATRIX.md` §1.4 与 ADR-17）。批量补录用仓库里的 OPML 导入脚本（幂等，可重跑）。
+- 热榜：以聚合源形式入库，公共实例会失效、可自建后改基址设置（失效名单会漂，现读源表）。
+- 抖音：严格串行、间隔偏大（防风控）；登录态在管理台对应 Tab 扫码，存在凭据表里。
 
 ## 9. 常见问题
 
-- **视频/B站抓不到（412/-352/-799）**：配 B站 Cookie（管理台 B站 Tab）；未配置时走合集+搜索兜底
-- **源被自动暂停**：连失 3 次熔断，见 §5 恢复
-- **海外源抓不到**：配代理环境变量后重启（见 §3.3）
-- **GBK 页面乱码**：rss 适配器已做 charset 嗅探（gb18030/big5）；存量乱码用标题特征检测后重抓
-- **端口被占**：`.env` 改 `PORT`
-- **图片不显示**：微信图片走 `/api/img` 代理（SSRF 防护+7 天缓存）；wechat2rss 图片由对方 img-proxy 代理（单点依赖，已知情接受）
+- **视频/B站抓不到（风控状态码）**：配 B站 Cookie；未配置时走合集 + 搜索兜底。
+- **源被自动暂停**：连发达阈值熔断，见 §5。
+- **海外源抓不到**：代理环境变量配了吗？配了要重启；再核 §3.3 那处会被生成器覆盖的代理值。
+- **GBK 页面乱码**：rss 适配器有字符集嗅探；存量乱码按标题特征检测后重抓。
+- **端口被占**：改 `.env` 的端口。
+- **图片不显示**：微信图片走本站图片代理（带 SSRF 防护与缓存）；托管 feed 的图片由对方代理域名提供——**单点依赖，已知情接受**，别把地址改回原站。
 
-## 10. Vercel 主部署运维（2026-09-11 方案A 后）
+## 10. 主部署面运维
 
-定时管线全部在 GH Actions runner 内执行 `tools/collect-turso.js` 直写 Turso，
-**不再**调用 Vercel 函数（Hobby 10s 限制）。无需手动干预：
+**定时与档位的唯一事实源是作业文件** `.github/workflows/collect.yml`：有哪几档、几点跑、哪档认 schedule、哪档认手动触发，全部以它为准。**本手册故意不列时刻表**——抄一份进来就会在作业文件改动的当天变成假事实（这正是 `docs/ISSUES.md` 记的那类"多处拷贝"漂移）。
 
-```powershell
-# GH Actions 定时任务（北京时间）
-# 采集：每 15 分钟（UTC :07/:22/:37/:52）+ cron-job.org 双保险（jobId 8430047，每 15min POST workflow_dispatch）
-#                          node tools/collect-turso.js collect
-# 日报：09:03                 node tools/collect-turso.js daily          ← 非 AI 兜底批（坑 #32 / 不变量 12）
-# AI 早报：21:30 主批 / 00:32 备跑   node tools/collect-turso.js daily-ai [--rolling24]
-# 周刊：周五 18:03             node tools/collect-turso.js weekly
-#                          node tools/generate-snapshots.js（push 回仓库）
-# 清理：04:13                 node tools/collect-turso.js cleanup
-#   ⚠️ 这一档要分清两件事（详见 CLOUD_PIPELINE_GUIDE §1 图下注）：
-#   **跑没跑** —— 它只认 schedule，手动 Run workflow 的 mode 选项里没有 cleanup，只能现读
-#     `settings['cloud.collect'].history[].mode` 里有没有它；
-#   **删没删** —— 跑到不等于删到，没有内容转储凭证时删除闸必挡，看同一格读数的 deleted 行数。
-#   要立刻清一次而不等 schedule：本地跑上面那条命令（需 TURSO_* 环境变量）。
-#   （cron 表达式以 .github/workflows/collect.yml 为唯一事实源，本段只标北京时刻）
+要点只三条：
 
-# 手动触发：GitHub → Actions → collect → Run workflow → 选 mode
-#   ⚠️ 更正（2026-09-18）：原先写「四个 job 全跑」是错的——不带 mode 的 dispatch 只跑 collect。
-#   现在 mode 可选：collect（默认）/ daily-ai-evening / daily-ai / mybrief / weekly。
-#   cron-job.org 每 15min 的不带 inputs dispatch 会取默认 collect，行为不变（不变量 9）。
-# 本地手动直采（读本地 .env 的 TURSO_* / HTTPS_PROXY）
-node tools/collect-turso.js collect
+1. **不带 mode 的手动触发只跑采集那一步**。日报 / 周刊 / 清理都不会被这一次点出来；要补跑必须选对应 mode（可选哪些值也写在作业文件里）。判"某一档这一轮跑没跑"：现读采集心跳里的 mode，不是看有没有 cron 表达式。
+2. **清理档要分清"跑没跑"与"删没删"**（它只认 schedule；跑到不等于删到——没有内容转储凭证时删除闸必挡，看同一格读数里的实删行数）。要立刻清一次而不等 schedule：在能读到云库凭据的机器上手动跑那一档。
+3. **push 之后必须验部署**，否则"代码修了但线上还是旧产物"没人发现。验法：先打 `/api/meta` 比对提交指纹（AGENTS §3 的第 5 步），必要时看平台部署状态。两条手动救急端点（采集、生成）仍在，但受免费档时长限制，只当救急用。
 
-# ⚠️ push 之后必须验部署，否则「代码修了但线上还是旧 bundle」（2026-09-18 实测连续 4 次 Error 无人发现）
-git push origin main
-npx vercel ls | head -6          # 最新一条必须是 ● Ready，不是 ● Error
-npx vercel inspect <部署地址> --logs | grep -iE "error|Could not resolve"
+外置 HTTP 触发器（双档的另一档）的任务标识与管理 Key 在 `docs/HANDOVER.md` §1.5；**它的鉴权内嵌了仓库凭据，轮换时必须同批改这一处**（ADR-12）。
 
-# 备份端点（Vercel 函数仍可用，仅手动救急；Hobby 10s 单次仅 2 源）
-curl -X POST "https://qwis-intel.vercel.app/api/collect?key=$COLLECT_KEY"
-curl -X POST "https://qwis-intel.vercel.app/api/daily-generate?key=$COLLECT_KEY"
+## 11. 托管库读封锁：`BLOCKED: SQL read operations are forbidden`
 
-# 云端采集停滞排查 playbook：
-#   1) 查采集心跳：Turso settings 表 key='cloud.collect' 的 lastRunAt（>30min 未更新即停滞），
-#      或 GET /api/health/status 的 collect 字段
-#   2) 看 GH Actions 日志：github.com/ghoustghoust/qwis-portal/actions → collect 工作流最近运行
-#   3) 查 cron-job.org 执行历史（jobId 8430047）：外部双保险触发器是否成功 dispatch
-# 查看 Vercel 部署日志
-# Vercel Dashboard → Project → Deployments → Functions → Logs
-```
+**症状**：线上 `/api/*` 全 500（错误文案里带 `BLOCKED: …reads are blocked…`），而静态页面仍 200，前端于是显示自己写的兜底文案（例如热点榜那句"服务尚未就绪"）——**那句话不是"后端在施工"，是 500 的兜底**，别照着它去查代码。
 
-## 10.9 Turso 读封锁：`BLOCKED: SQL read operations are forbidden`（2026-09-20 实遇，B118）
+**三步定性**（都是只读，几分钟内能做完）：
 
-**症状**：线上 `/api/*` 全 500（`error` 里带 `BLOCKED: …reads are blocked…`），静态 HTML 仍 200，
-前端于是显示自己写的兜底文案（如 `web/src/components/HotEvents.jsx` 的「热点榜服务尚未就绪」）——
-**那句话不是"后端在施工"，是 500 的兜底**，别照着它去查代码。
+1. 打 `/api/meta`：若 500 且文案含 `BLOCKED` → 进第 2 步（说明不是路由问题）。
+2. **绕开读层直连托管库**跑一条最小计数：同样 `BLOCKED` ⇒ 封锁在平台侧（账号/配额），与本次部署无关；在仓库里搜该文案搜不到，可佐证不是我们自己的字符串。
+3. 看平台控制台配额。**本仓没有平台 API token，配额无法程序化观测**——这一条就是"挂了几小时没人知"的直接原因，只能人工看盘。
 
-**三步定性（都是只读，几分钟内可做完）**：
-
-1. 打 `/api/meta`：若 500 且文案含 `BLOCKED` → 进第 2 步（不是路由问题）。
-2. **绕开 Vercel 直连 Turso** 跑一条最小 `SELECT COUNT(*) FROM sources`：同样 `BLOCKED` ⇒ 封锁在
-   provider 侧（账号/DB 配额），与本次部署无关；全仓 grep 该文案 0 命中可佐证不是我们的字符串。
-3. 看 Turso 控制台 Quota。**本仓没有 Turso 平台 API token，配额无法程序化观测**（B119 ④）——
-   这一条是"挂了几小时没人知"的直接原因，只能人工看盘。
-
-**止血顺序（本轮实际做法）**：新建库 → 以本地灾备在线备份为基线搬 schema/十表 →
-源库按 `public/data/sources.json` 快照恢复 → **凭据三处同步**（本地 `.env` / Vercel env /
-GH Secrets，AGENTS §2.6）→ **必须用一次 workflow_dispatch 复验 runner 真写进新库**
-（看 `settings['cloud.collect']` 心跳与 articles 增长，不能只看 `/api/meta` 变绿）。
+**止血顺序**：新建库 → 以本地灾备的在线备份为基线搬结构与数据 → 源清单按已发布的快照恢复 → **凭据三处同步**（本地环境 / 平台环境变量 / 仓库密文，AGENTS §2.6）→ **必须再复验一次 runner 真写进了新库**（看采集心跳与入库增长；只看读端点变绿会漏掉整条写链路）。
 
 **两条硬规矩**：
-- **旧库不许删**。读封锁是配额事件，重置/升级后旧库仍可回读——本轮 `settings.weekly.archive`
-  （5 期周刊归档、107,918B）只存在于旧库，是**唯一能无损补回的路径**。
-- **换库后必查"哪些键来自本地副本而非云端"**：`tools/migrate-to-turso.js` 搬的是本地 settings，
-  云端独有的键会静默丢失；实测口径见 `docs/ISSUES.md` B118/B119 与 `HANDOVER.md` §2.1「换库记录」。
 
-## 11. 热点榜/日报机制速查
+- **旧库不许删**：读封锁是配额事件，重置或升级后旧库仍可回读——有些归档只存在于旧库，它是唯一能无损补回的路径。
+- **换库后必查"哪些键来自本地副本而非云端"**：搬库工具搬的是本地设置，云端独有的键会静默丢失。换库记录与各键核对口径见 `docs/HANDOVER.md` §2.1 与 `docs/ISSUES.md`。
 
-- 热点榜数据源：AIHOT 聚合源文章（extra.aggregator=1），分类映射六胶囊（模型/产品/行业/论文/教程/观点）
-- 事件榜：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度=Σ权重×24h 半衰×1.5^(信源数-1)，缓存 5min
-- 日报：每天 09:03（北京时间，GH Actions runner 生成；本地为 settings daily.time 默认 08:00）
-- 全文补抓：每 6h（02/08/14/20 点）补抓 <1000 字符的薄内容，限速 2s/条
+## 12. 热点榜与日报的机制口径（在哪份文档读）
+
+| 想知道 | 去哪读 |
+|---|---|
+| 热榜条目怎么进流、什么被降噪 | `docs/features/collectors.md` + 功能矩阵 §1.1（判定唯一实现的说法见 ADR-14 边界） |
+| 事件榜怎么聚成簇、缓存多久 | `docs/features/events-alerts.md`（聚合语义只有一份实现，链路指南不变量 10） |
+| 日报窗口、档次择优、门槛 | `docs/features/daily-report.md` + 链路指南不变量 12/17 |
+| 早报候选每源配额 | `docs/features/daily-report.md` + ADR-09 / 链路指南不变量 20 |
+| 我的早报与画像 | `docs/features/my-reading.md`（足迹面）+ ADR-23（为什么画像不可配） |
+
+参数取值（窗口长度、相似度阈值、限速、缓存时长）一律以共用实现与作业文件为准，本手册不复制。
