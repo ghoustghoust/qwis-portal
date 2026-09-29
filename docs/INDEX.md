@@ -151,7 +151,7 @@
 
 方向性取舍与"不做什么"的家。件内三段：**是什么 / 为什么 / 边界与禁止**；不写"以前是什么、为什么换掉"——被覆盖就地改写本件，查经过走 git。索引表在 `ARCHITECTURE.md` §3.8，本处只登记有哪些号：
 
-`docs/adr/01-部署方向.md` · `docs/adr/02-采集只在服务端做.md` · `docs/adr/03-公众号走托管RSS.md` · `docs/adr/04-云端API收在一个函数.md` · `docs/adr/05-不做读路径兜底.md` · `docs/adr/06-前端刷新走轮询.md` · `docs/adr/07-批量操作走单条SQL.md` · `docs/adr/08-源状态拆多轴.md` · `docs/adr/09-进模型前按源限量.md` · `docs/adr/10-三套队列不并成一套.md` · `docs/adr/11-不做多用户与权限分级.md` · `docs/adr/12-凭据一套口径.md` · `docs/adr/13-采集触发双档换可靠性.md` · `docs/adr/14-三端共享语义不共享进程.md` · `docs/adr/15-AI评分口径.md` · `docs/adr/16-探索位不改订阅集合.md` · `docs/adr/17-不做云数据同步.md` · `docs/adr/18-定时只走GH-Actions.md` · `docs/adr/19-不引入工作流编排平台.md` · `docs/adr/20-不引入搜索引擎栈.md` · `docs/adr/21-runner依赖只许纯JS.md` · `docs/adr/22-不做清理总开关.md` · `docs/adr/23-兴趣画像不作可改项.md`
+`docs/adr/01-部署方向.md` · `docs/adr/02-采集只在服务端做.md` · `docs/adr/03-公众号走托管RSS.md` · `docs/adr/04-云端API收在一个函数.md` · `docs/adr/05-不做读路径兜底.md` · `docs/adr/06-前端刷新走轮询.md` · `docs/adr/07-批量操作走单条SQL.md` · `docs/adr/08-源状态拆多轴.md` · `docs/adr/09-进模型前按源限量.md` · `docs/adr/10-三套队列不并成一套.md` · `docs/adr/11-不做多用户与权限分级.md` · `docs/adr/12-凭据一套口径.md` · `docs/adr/13-采集触发双档换可靠性.md` · `docs/adr/14-三端共享语义不共享进程.md` · `docs/adr/15-AI评分口径.md` · `docs/adr/16-探索位不改订阅集合.md` · `docs/adr/17-不做云数据同步.md` · `docs/adr/18-定时只走GH-Actions.md` · `docs/adr/19-不引入工作流编排平台.md` · `docs/adr/20-不引入搜索引擎栈.md` · `docs/adr/21-runner依赖只许纯JS.md` · `docs/adr/22-不做清理总开关.md` · `docs/adr/23-兴趣画像不作可改项.md` · `docs/adr/24-策展四目标不可拆.md`
 
 ## 开发功能 Spec（docs/specs/）· 与 ADR 不是一类
 

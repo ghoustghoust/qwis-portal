@@ -118,6 +118,7 @@ runner 从库导出 JSON → 同时写进 `static-data/` 与 `public/data/` → 
 | ADR-21 | runner 依赖面只许纯 JS |
 | ADR-22 | 不做清理总开关 |
 | ADR-23 | 兴趣画像不作为用户可改项 |
+| ADR-24 | 早报策展的四个目标不可拆 |
 
 ## 4. 数据通路（按源类型）
 
