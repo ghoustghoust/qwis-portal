@@ -1,6 +1,7 @@
 # 全网情报系统 · 开发规范与验收标准
 
-> 所有开发者（含 AI Agent）必须遵守的约定。最后更新：2026-09-27
+> 所有开发者（含 AI Agent）必须遵守的约定。最后更新：2026-09-29
+> 与 `AGENTS.md`（协作约束与交付链）或 `docs/DOC_GOVERNANCE.md`（文档尺子）重复的内容**本文件不复述**，只指路——复述过一次的那份已经和它不一致过一次了，而 agent 会照"看起来更具体的那份"干活。
 
 ---
 
@@ -8,165 +9,115 @@
 
 ### 1.1 命名约定
 
-- **文件名**：kebab-case（如 `daily-generate.js`、`AiSettingsTab.jsx`）
-- **组件名**：PascalCase（如 `AiSettingsTab`、`DailySettingsTab`）
-- **函数/变量**：camelCase（如 `handleDaily`、`getSetting`）
-- **常量**：UPPER_SNAKE_CASE（如 `PUBLIC_GET_PATHS`、`DAILY_COLUMNS`）
-- **数据库字段**：snake_case（如 `published_at`、`source_id`）
+| 对象 | 约定 |
+|---|---|
+| 文件名 | kebab-case（React 组件文件例外，随组件名） |
+| 组件名 | PascalCase |
+| 函数 / 变量 | camelCase |
+| 常量 | UPPER_SNAKE_CASE |
+| 数据库列 | snake_case，全小写（大小写混用会让跨端建表比对失灵） |
 
-### 1.2 目录结构
+本文件**不点名仓库里现有的符号**。名字必然随重构变化，写进规范的例子会变成假锚点。
 
-```
-api/              # Vercel Serverless 正式代码（主部署）
-server/           # 本地 Express 代码（开发/灾备）
-web/src/          # 前端 React 代码
-  components/     # Tab 组件（每个 Tab 一个文件）
-  pages/          # 页面组件（AdminPage、ReaderPage 等）
-docs/             # 项目文档
-docs/features/     # 模块功能文档（现状叙述）
-tools/            # 工具脚本
-```
+### 1.2 目录职责
 
-### 1.3 Import 约定
+各目录承载什么、谁是部署面，看 `ARCHITECTURE.md` §2 与 `docs/INDEX.md` 的模块地图。**本文件不放代码结构清单**——那份东西在这里存在过，结果每次搬家都要来改它。
 
-- 前端组件使用相对路径 import
-- 后端模块使用 `require()` 而非 `import`
-- 禁止循环依赖
+### 1.3 模块引用
+
+前端用相对路径 import；后端 CommonJS `require`；禁止循环依赖。
 
 ---
 
-## 2. 三端同步规则
+## 2. 多端实现的同步规则
 
-系统有三套后端实现：**本地 Express**（`server/services/collectors/`）、**Vercel Serverless 备份端点**（`api/collect.js`）、**GH runner 采集主链路**（`tools/collect-turso.js`）。
+采集语义有**三份独立实现**，另有两处是"本地与云端各一份"（设置读写与坏值回退、批量端点）。谁是唯一承载处、哪些必须同规则，见 **ADR-14**；改之前先读它。
 
-### 2.1 强制同步
+### 2.1 强制同步的判据
 
-| 操作 | 必须同步 |
-|------|---------|
-| 新增/修改 API 路由 | 先问它属云端还是本地专属。**云端能做的只落云端两份部署面**（读层 + runner），本地端按需跟——**不要求本地/云端各写一遍**（"双实现"是门户时代的旧默认，AGENTS §1 已废） |
-| 修改采集语义（过滤/清洗/熔断/去重/增量） | ✅ 三端同步：`server/services/collectors/` + `api/collect.js` + `tools/collect-turso.js` |
-| 修改数据库查询 | ✅ 确认各端 SQL 兼容 |
-| 新增 settings key | ✅ 各端读写逻辑对齐 |
-| 修改鉴权白名单 | ✅ PUBLIC_GET_PATHS 和 Express middleware 同步 |
+| 你改的是 | 要同步谁 |
+|---|---|
+| 采集语义（过滤 / 清洗 / 去重 / 熔断口径 / UA / 请求间隔） | **三份实现都要对**。它们是真会漂移的，这是本项目反复出事的根 |
+| 跨端必须同规则的语义（熔断阈值、保留与删除谓词、源轴、预配额、噪声判定、日界、文本清洗、密钥掩码） | **只改共用实现那一份**，不许在某一端另写一份（归属见 ADR-14） |
+| 新增 / 删除 API 路由 | **先问它属云端还是本地专属**。云端能做的只落云端两份部署面（读层 + runner），本地端按需跟——**不要求本地与云端各写一遍**（那是门户时代的旧默认，已废） |
+| 新增云端只读端点 | 同一次改齐三处（分发表 / 鉴权白名单精确匹配 / 消费方），且**必须有一次真打线上**（本地测不到鉴权这层）：ADR-04 |
+| 新增设置键 | 各端读写与坏值回退口径对齐；只落一份取值 |
+| 库结构 | 三份采集实现 + 静态导出物生成 + 读层全部对齐 |
 
 ### 2.2 检查流程
 
-1. 改完一端后，搜索其余实现是否有对应代码
-2. 如果只改了一端，在 commit message 标注 `[Vercel only]` 或 `[Local only]` 并说明原因
-3. 新功能先定它属于哪一端：云端能做的只落云端两份部署面（读层 + runner），本地端按需跟；本地专属的（要登录态、要动整库文件的）不要顺手往云端补一份空实现
+1. 改完一端，搜其余实现有没有对应代码。
+2. 只改一端时，commit message 标 `[Vercel only]` / `[Local only]` / `[runner only]` **并写清为什么**。
+3. 本地专属的（要登录态、要动整库文件的）**不要顺手往云端补一份空实现**——那会造出"云端也有"的假象，比缺功能更坏。
 
-### 2.3 差异容忍
+### 2.3 差异是设计，不是债
 
-以下允许不一致：
-- 本地 Express 可有 Playwright 依赖（抖音采集）
-- Vercel 端不能有 Node.js 原生模块
+- 本地端可以有需要编译的原生依赖与无头浏览器；**runner 侧只许纯 JS**（ADR-21），云端函数受存活时长限制。
+- 两地数据与配置**互不同步**（ADR-17）：本地改了生产看不到，是知情接受的代价，不是待修 bug。
+- 没有长连接推送，前端靠轮询（ADR-06）。
 
 ---
 
 ## 3. 测试要求
 
-验收与交付链以 `AGENTS.md` §3 为唯一准绳，本文件不复制那份步骤序列（复制过一次就已经和它不一致了，而 agent 会照看起来更具体的那份干活）。
+验收与交付链以 `AGENTS.md` §3 为唯一准绳，本文件不复制那份步骤序列。
 
-本节只留与测试**写法**有关、不在交付链里的约定：
+这里只留与**写法**有关、交付链里没有的约定：
 
-- 新增 API 路由：至少写一个能独立判成败的测试
-- 修改现有逻辑：确保原有测试不被 break
-- 线上修过的每个 bug 必须有回归测试
-- 引用 `server/*` 的测试文件先 require `tests/helpers`（否则会把本地库指到生产）
-- 前端组件：手动验证功能正常
+- 线上修过的每个 bug 必须有回归测试。
+- 新增 API 路由：至少一条能独立判成败的测试。
+- 引用 `server/*` 的测试文件先 require 测试辅助模块——否则会把本地库指到生产库。
+- 每条锁的改动都要带"为什么"（指到用户的一句裁决或一个实测数字）；**锁红了不许 agent 自己改锁消红**，报给用户三选一。判据细节见 `AGENTS.md` §3 与 `docs/EVAL_GUIDE.md`。
 
 ---
 
 ## 4. 文档更新约定
 
-### 4.1 必须更新文档的场景
+**这一层的规矩归 `docs/DOC_GOVERNANCE.md`**（触发时机、写作红线、作废即删、改动戳、门禁）。本文件只留一张"改了什么该动哪份文档"的对应表：
 
-| 场景 | 需更新的文档 |
+| 场景 | 动哪份 |
 |------|-------------|
-| 修改部署架构 | `ARCHITECTURE.md` |
-| 新增/删除 API 路由 | `docs/FEATURE_MATRIX.md`（能力矩阵）；端点与凭据位置速查另在 `docs/HANDOVER.md` |
-| 修复已知问题 | `docs/ISSUES.md`（标记状态） |
-| 修改日报逻辑 | `docs/RUNBOOK.md` §日报 |
-| 新增功能模块 | `docs/features/` 新增对应文档 |
-| 凭据/API 变更 | `docs/HANDOVER.md` |
-| 功能/端点变更 | `docs/FEATURE_MATRIX.md` |
-| 调度频率变更 | 取值只存在于 `.github/workflows/collect.yml`（唯一事实源）；其它文档一律写"见作业文件"，**不许**为"同步"去各改一遍抄本 |
+| 改系统形状 / 数据怎么接 | `ARCHITECTURE.md` |
+| 方向性取舍、"不做什么" | `docs/adr/` 新建或改写该件（并登记索引） |
+| 端点增删改、能力覆盖变化 | `docs/FEATURE_MATRIX.md`（矩阵是唯一 SSOT） |
+| 模块行为语义 | `docs/features/` 对应那份 |
+| 修 / 挂一个问题 | `docs/ISSUES.md` |
+| 新需求、排期变化 | `docs/NEXT-DEV-REQS.md` |
+| 运维操作 / 排障步骤 | `docs/RUNBOOK.md` |
+| 凭据与端点速查 | `docs/HANDOVER.md`（本地件，永不提交） |
+| 文档自身的清洁规则 | `docs/DOC_GOVERNANCE.md` |
+| 调度频率 / 作业清单 | **取值只存在于作业文件**，其它文档一律写"见作业文件"，不许为"同步"各改一遍抄本 |
 
-### 4.2 文档格式
-
-- 每个文档头部必须有 `> 最后更新：YYYY-MM-DD`
-- 活文档（如 ISSUES.md）在修改记录区追加条目
-- 作废的文档**整批删除**并在 `docs/ISSUES.md`「作废登记」留反查锚点（09-25 裁决；不再搬进目录留着）
+模块行为（日报、早报、画像等）**不在本文件写**，去 `docs/features/` 对应那份——本文件曾写过一节"日报逻辑"，它和 features 那份各自过期过一次。
 
 ---
 
-## 5. 验收 Checklist（交付链之外、本文件独有的检查项）
+## 5. 交付链之外、本文件独有的检查项
 
-交付链本身见 `AGENTS.md` §3，这里不重复。以下各项是交付链没覆盖、要靠人逐条对照的：
+- **代码质量**：无调试输出残留（要出声走日志模块，且敏感字段过掩码）。
+- **多端一致性**：改采集语义时三份实现逐份核对；改共用语义时确认只动了那一份唯一实现。
+- **文档**：动过哪层事实就改承载它的那**一份**文档（见 §4 表），别顺手在第二份里复述。
+- **安全**：新增路由明确鉴权档位（公开只读 / 要凭据）；无明文密钥进提交；外部输入先校验再拼查询。
+- **部署**：改到凭据 → 按 ADR-12 的三处同步清单核（含外置触发器内嵌那份）；改到作业文件 → 跑一次手动触发确认能起。
 
-### 代码质量
-- [ ] 无 `console.log` 调试残留（用 `console.error` 或 log 模块）
-
-### 双端一致性
-- [ ] Vercel API 改动已同步本地 Express（或标注原因）
-- [ ] 本地 Express 改动已同步 Vercel API（或标注原因）
-
-### 文档
-- [ ] 改架构 → ARCHITECTURE.md 已更新
-- [ ] 修 bug → ISSUES.md 状态已更新
-- [ ] 新功能 → DEV_GUIDE.md / FEATURE_MATRIX.md 已更新
-
-### 安全
-- [ ] 新增路由已加入鉴权白名单或公开白名单
-- [ ] 无明文密钥/密码提交
-- [ ] 用户输入已做校验/转义
-
-### 部署
-- [ ] Vercel 环境变量已配置（如需新增）
-- [ ] GitHub Actions workflow 已测试（如涉及）
+交付链本身（测试、推、CI、线上实测、对抗性审查、文档收口）见 `AGENTS.md` §3。
 
 ---
 
 ## 6. Git 约定
 
-### 6.1 Commit Message 格式
-
-```
-<type>: <简要描述>
-
-type 可选：
-  feat     新功能
-  fix      修复
-  refactor 重构
-  docs     文档
-  chore    工具/配置
-  test     测试
-```
-
-### 6.2 分支策略
-
-- `main`：生产分支（直接推送或 PR 合并）
-- 功能分支：`feat/xxx`、`fix/xxx`
+- 提交信息：`<type>(<范围>) <一句话>`，type 取 `feat` / `fix` / `refactor` / `docs` / `chore` / `test`。**只改文档/只改元信息的提交要在主题里写明**，否则改动戳会把元提交冒充成内容改动（机制见 `docs/DOC_GOVERNANCE.md` §2.6）。
+- 分支：`main` 是生产分支（推即部署）；临时分支用 `feat/xxx`、`fix/xxx`。
+- Windows + Git Bash 下**引号会静默变形**：提交信息用 heredoc 传，别拼多行引号串。
 
 ---
 
 ## 7. 环境配置
 
-### 7.1 必需环境变量
+**必需变量的清单与位置矩阵只有一处**：`ARCHITECTURE.md` §6（速查与轮换记录在本地件 `docs/HANDOVER.md` §1.5）。本文件不再列一份——曾经三份并存，改值时漏改云端那份直接让整链停摆两天。
 
-| 变量 | 用途 | 配置位置 |
-|------|------|---------|
-| `TURSO_DATABASE_URL` | Turso 云数据库地址 | Vercel Env + .env |
-| `TURSO_AUTH_TOKEN` | Turso 认证令牌 | Vercel Env + .env |
-| `AUTH_SECRET` | JWT 签名密钥 | Vercel Env + .env |
-| `COLLECT_KEY` | 采集触发密钥 | **三处同步**：本地 .env + Vercel Env + GitHub Secrets |
-| `ADMIN_USER` | 管理员用户名 | Vercel Env + .env |
-| `ADMIN_PASSWORD` | 管理员密码 | Vercel Env + .env |
-| `AGNES_API_KEY` | Agnes AI API Key | Vercel Env + .env |
-| `DEEPSEEK_API_KEY` | DeepSeek API Key（云端 AI 待启用：Agnes key 绑 IP 在云端 401，用 DeepSeek 回退） | Vercel Env + GitHub Secrets + .env |
+写代码时的口径：
 
-### 7.2 安全红线
-
-- `AUTH_SECRET` 不得使用 `dev-secret` 作为生产值
-- API Key 不得硬编码在源码中
-- 环境变量变更必须同步更新本文档
+- 凭据不进代码、不进提交；本地读 `.env`，云端读平台环境变量，runner 读仓库密文。
+- 新增一个需要凭据的功能 = 触发 ADR-12 的同步义务（三处 + 外置触发器）。
+- 变量缺失与坏值的下场要**出声**（回落默认并留痕），不许静默；口径见 ADR-14 与 `docs/ISSUES.md` 设置面那一族。
