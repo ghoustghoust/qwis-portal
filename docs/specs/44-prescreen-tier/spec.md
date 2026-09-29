@@ -82,7 +82,7 @@
 
 - `docs/specs/23-information-overload-defense.md`：L4「补强：在 filterArticle prompt 中显式列负例」是**被本 spec 取代的旧决策** → 头部加「已作废 + 日期 + 指向本 spec」，禁止静默删除；L2/L3 的状态标记按本期实测更正（L3 已实现但只管版面、L2 的信号被 `url` UNIQUE 销毁）。
 - `docs/ISSUES.md`：登记 B137（`elapsedMin` ÷10、黄金集失真、级1/级2 前提不成立、翻译候选无源过滤、commit 流真身=OPML 导入源 974）。
-- `docs/FEATURE_MATRIX.md`、`docs/CLOUD_PIPELINE_GUIDE.md`（候选池语义变了＝链路变更）、`ARCHITECTURE.md` 坑区、`docs/changes/2026-09-23-rss-pipeline-discussion-handoff.md` §五/§六 三处更正。
+- `docs/FEATURE_MATRIX.md`、`docs/CLOUD_PIPELINE_GUIDE.md`（候选池语义变了＝链路变更）、`ARCHITECTURE.md` 坑区。
 
 ## 七、禁止
 
