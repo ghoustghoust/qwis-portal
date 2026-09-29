@@ -1,9 +1,9 @@
 # 全网情报系统 · 已知问题清单（活文档）
 
 > 只装**现在还坏着 / 等你决定 / 等复验**的事；每条只答两个问题：**现在坏着什么、下一步是谁的什么动作**。
-> 已核销（修好且验证过）一律不进本文件——要回看历史用 git 与「作废登记」一节的锚点，本文件不为旧件写指针。编号不连续是正常的：出账的号不占位。
+> 已核销（修好且验证过）一律不进本文件——要回看历史走 git，本文件不为旧件写指针。编号不连续是正常的：出账的号不占位。
 > 功能需求见 `docs/NEXT-DEV-REQS.md`；每条登记必须带取证命令（坑 #50）。
-> 最后更新：2026-09-23（**B136 核销**：用户已轮换 PAT，cron-job 8430047 已换钥并重新启用——13:01/13:15/13:30Z 连续三轮 dispatch 成功，15 分钟心跳恢复；push-CI 同轮首绿。**BL13 核销**：三条语料规模锁按裁定③摘除——锚点分母 ≥100 / 裸文件名 ≥20 / 台账引用数 ≥ 文档数，理由=语料规模不是锁能拥有的属性（删 65 份 spec 合法塌陷 172→47、224→62 致误红），分母打印/非零下限/双向自证保留，锁落在 `tests/regression-doc-lint-rules.test.js` L3/L5 注释；**B121 复验改探针**（e2e 已按 09-23 测试口径降级为按需工具，AGENTS §3）；**交付链已重订**见 AGENTS §3。上一轮：specs 35~43 整批作废删除并留逐字反查锚点）
+> 最后更新：2026-09-29
 
 ## 进度速览
 
@@ -92,22 +92,6 @@
   推论也跟着改：**体积不是腹泻源撑的** —— 被降噪轴排除的 4,722 行只带 1.4 MB（单行 0.3 KB vs 全文源单行 15.9 KB）。
   现状底稿：`docs/eval/2026-09-24-source-diagnosis.md`；本轮全量读数：`docs/eval/2026-09-24-turso-read-amp.md` §一二。取证：`docs/eval/2026-09-24-prescreen-step1.md` §十五；`SELECT COUNT(*) FROM articles_archive`、`grep -rn archive-articles .github/workflows`（无命中） |
 
-### 作废登记（整批删除的反查锚点） <!-- doc-lint:ignore -->
-> 用户 09-25 裁决「清除过去的文档，别让过时的文档影响判断，也别用地址和链接去描述已归档件」，
-> 本表此后**只留这一节**记"删了什么、怎么还原"，现行文档里不再出现指向这些文件的指针。
->
-> | 时间 | 删了什么 | 份数 | 反查锚点（删除前 tree） |
-> |---|---|---|---|
-> | 09-23 | `docs/specs/` 下 35-selfheal-admin-console ~ 43-collect-retention-safety 整批（上一版排期产物，「不能用前朝的剑斩本朝的官」；作废的是优先级表/✅⏸ 状态/09-13~21 实测读数，**不是需求本身**） | 65 | `065e1632`（父提交 `3f89a08`）<!-- doc-lint:ignore --> |
-> | 09-25 | `docs/deprecated/` 整目录（19 份已判定作废的件：三条 09-04 决策及其替代史、两份 ISSUES-resolved、AUDIT/REPOWIKI/PHASE6/CODE_REVIEW 报告、MODULE_STATUS/PROJECT_STATUS/REFACTOR_GUIDE/VERCEL_MIGRATION、7 份早期 Agent 模板残留）+ `docs/changes/archive/`（5 份已完结变更） | 24 | `126eaee1`（父提交 `54fe1c3`）<!-- doc-lint:ignore --> |
-> | 09-27 | 四份：`docs/HANDOFF_PROMPT.md`（纯指路壳，指的路与 `AGENTS` §0/§3 现行版冲突、两处易变事实写死且写反）、`docs/BESTBLOGS_BORROW.md`（09-11 外部产品调研借鉴清单；仍生效的三条"不引入"已先搬进 `NEXT-DEV-REQS.md`）、`docs/changes/2026-09-11-runner-direct-collect.md`（方案A 变更记录，根因链里仍有效的部分已分落链路指南 / 运维手册 / 坑库）、`docs/changes/2026-09-23-rss-pipeline-discussion-handoff.md`（RSS 对边界轮一次性交接件，存续项已搬进 `NEXT-DEV-REQS.md`「T3-7 对边界轮存续项」） | 4 | 父提交 `2be039d`；单文件 `git show 2be039d:<路径>`，`docs/changes/` 整目录 tree `c1576243`。**⚠ 一处已知不可反查**：`BESTBLOGS_BORROW.md` 删除时工作区那份的头注是 09-27「摘掉指向已作废需求母文档的三处提法」，而 `2be039d` 存的是 09-18 版——那三处摘除属并行会话未提交改动，随删除丢失、git 取不回。缓解：它们删的正是本批一并作废的指针，无独有信息；09-18 版全文可查 <!-- doc-lint:ignore --> |
-> | 09-27 | 两份**平台对接手册**：`docs/ANDROID_SUBMIT_GUIDE.md`（安卓 HTTP Shortcuts 提交链路）、`docs/X_SETUP_GUIDE.md`（自建 RSSHub + X cookie）。判定依据：前者描述的通路在当前真实云端环境从未跑通过，后者依赖一个从未部署的 RSSHub 实例。**代码侧一处没动**，留下的界面可改性缺口另立 H40 三选一 | 2 | 父提交 `2be039d`；单文件 `git show 2be039d:docs/<文件名>` <!-- doc-lint:ignore --> |
-> | 09-27 | `docs/DOC_VALIDITY_LEDGER.md`（有效性判定台账，469 行）。**退役原因**：它自定"裁决完即删、不留副本"；本轮复核发现它正文三成已被仓库现状推翻、留着 27 个自己宣布作废的行号锚、且 V45 的核心实测漏算了地图那 21 处引用——**它记录的状态比它声称记录的对象更陈旧**。**已判决的结论全部先归位**：地图 21 处 V 号→内联进 `INDEX.md` 有效性列；三型静默失真→H41；清理旁路表清单→H42；周刊无配置/手动触发不当验收步骤/层级不锁三级/待建挂号未执行→`INDEX.md`；鉴权豁免与滞后入库两类事实→`RUNBOOK.md`；判据缺陷→本文件 H37~H39 与 §1.5。**未判决的条目按用户 09-27 裁决直接删除、不迁** | 1 | 父提交 **`076aaf2`**（该提交已把本台账含 §0.5 勘误表的版本存入 git）；全文 `git show 076aaf2:docs/DOC_VALIDITY_LEDGER.md` <!-- doc-lint:ignore --> |
-> | 09-27 | `docs/ROADMAP-2026-09.md`（09-11 用户口述归纳的需求与愿景母文档）。它作为"已拍板决策母文档"挂在白名单上引领工作，正文却是当时的产品意图：§1「源写操作/设置写/报警/视频/enrich 全部上线到云端」与现行部署面相反、§0 与 §5「重新审视权限模型」已被 ADR-11 挡在门外、§6「后台收敛为 4-5 区」属已删的 spec 30。**其中两条仍生效的决策已先拆出**：AI 六维评分口径 → `docs/adr/15`，探索位不改订阅集合 → `docs/adr/16` | 1 | `8491f02c`（HEAD `2be039d` 的 `docs/` 目录树）<!-- doc-lint:ignore --> |
->
-> 还原：`git restore --source=<锚点> -- <路径>`；看原文：`git show <锚点>:<路径>`。
-> 三条 09-04 决策的**现行替代**（宝塔全量部署→Vercel 为主、不做云端采集→runner 直写、不做 Vercel 前端→云端前端正式开发）以 `FEATURE_MATRIX.md` 与 `CLOUD_PIPELINE_GUIDE.md` 为准。
-> 历史编号（`35A-F6`/`39-1`/`41-2` 这类）自此只作历史读，**不得当"方案已存在"引用**；`docs/specs/03`、`05`、`09`~`34` 未删。
 
 | H27 | **AI 早报的自动触发在生产上没兑现——晚间主批 4 天里自己跑过 0 次**：`collect.yml:108` 的 `daily-ai-evening` 门是 `github.event.schedule == '30 13 * * *'`（北京 21:30），`daily-ai` 门是 `'32 16 * * *'`。逐个 job 核最近 8 个 `event=schedule` 的 run（09-20 21:27 → 09-23 16:50）：**`daily-ai-evening` 8/8 全 skipped，`daily-ai` 只有 1/8 success（09-21 20:29）**；同期 collect/snapshot/daily-report/cleanup 的门都正常开（说明不是权限、不是表达式写错，是那两条 cron 的 schedule 事件本身没按点位到达/被归属到别的串）。旁证：库里现存 AI 行的落库时刻（UTC 14:17 / 15:51 / 19:14 / 20:23 / 21:06 / 22:00）**对不上任何一个点位**，且 09-19 及以前 AI 版 **0 天**（只有关键词版），09-20 起才有人工 dispatch 的痕迹 → **"每天都有早报"这件事实际是人工在维持，不是链路在跑**。成因**基本锁定（量化与实测对上，两个候选已排除一个）**：collect.yml 里 7 条 cron 中 collect 独占 4 条（每 15min → 96 次/日），
 每日应触发 ≈100 次，而 09-15~09-24 实测 `event=schedule` 的 run 只有 **11~13 次/日 → 投递率 ≈12%**；
