@@ -1,6 +1,6 @@
 # QWis Portal — 全网情报系统
 
-> 最后更新：2026-09-16（目录结构与功能描述随 09-16 重写）
+> 最后更新：2026-09-29
 > **Q**uan**W**ang **I**ntel **S**ystem — 私人 AI 情报阅读器
 >
 > 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报与个性化早报，支持 AI 辅助分析、翻译、精选周刊和多端推送报警。
@@ -69,81 +69,29 @@
 ### 🛡 鉴权与数据安全
 
 - **JWT 鉴权**：读者只读 GET 公开，写操作与管理接口需 Bearer Token（7d 有效）
-- **整库快照备份**：WAL 安全 backup → `data/backups/app-*.db`
+- **整库备份**：WAL 安全 backup → `data/backups/app-*.db`
 - **按天清理**：可配置 retentionDays（默认 7 天）
 - **熔断机制**：源连续失败 3 次自动停用，修好后手动启用清零 fail_count
 
 ---
 
-## 🖥 页面预览
+## 🖥 页面一览
 
-> 以下截图均来自线上生产环境 <https://qwis-intel.vercel.app>（2026-09-16 截取）。
+> 界面截图不再随仓库分发（图片目录已下架），**形态以线上为准**（生产地址见文首）。下表是各页此刻承载的东西；能力有没有对上某一端，查 `docs/FEATURE_MATRIX.md` §1，那才是权威矩阵。
 
-### 阅读器 (`/reader/`)
-
-文章/视频双 Tab + 分组导航 + 今日早报摘要卡 + 「今日」滚动 24h 视图 + 未读计数
-
-![阅读器首页](docs/screenshots/01-reader-page.png)
-
-### 每日早报 (`/daily/`)
-
-四栏目布局（培训课程 / 重点更新 / AI 技术 / 其它）+ 统计卡片 + 破茧栏 + AI 评分/摘要 + 中英对照
-
-![每日早报](docs/screenshots/02-daily-page.png)
-
-### 我的早报 (`/mybrief/`)
-
-个性化订阅源 + 智能推荐 + 主题导语 + 阅读足迹回顾
-
-![我的早报](docs/screenshots/09-mybrief-page.png)
-
-### 精选周刊 (`/weekly/`)
-
-AI 策展周度精选 + 主题全景四视角 + 补充阅读
-
-![精选周刊](docs/screenshots/10-weekly-page.png)
-
-### 热点榜 · AI 精选 (`/hot/`)
-
-自有源六维 ≥60 且 AI 相关 + 七分类胶囊（AI·前沿 / Top200 / 国际科技 / X推主 / 科技博客 / 公众号 / 中文科技）
-
-![AI 精选](docs/screenshots/03-hot-page.png)
-
-### 热点榜 · AI 信息实时流
-
-只出 AI 相关内容 + 60s 无感刷新 + 分类筛选
-
-![AI 信息实时流](docs/screenshots/03b-hot-realtime.png)
-
-### 热点榜 · 热搜事件
-
-72h 全域聚类 + 24 桶趋势折线 + 分组信源胶囊 + 热度降序
-
-![热搜事件](docs/screenshots/11-hot-events.png)
-
-### 我的阅读 (`/reading/`)
-
-阅读沉淀 + 批量管理 + 导出 + 阅读足迹
-
-![我的阅读](docs/screenshots/12-reading-page.png)
-
-### 管理后台 (`/admin/`)
-
-5 Tab 收敛：源库（组合/问题源/检索/平台接入）/ 早报中心 / 热点榜策展 / AI 能力 / 系统
-
-![管理后台](docs/screenshots/04-admin-page.png)
-
-### 管理后台 · 早报中心
-
-生成历史 + 订阅源配置 + 日报栏目/时间设置 + 晚间主批配置
-
-![早报中心](docs/screenshots/07-admin-brief-center.png)
-
-### 管理后台 · 系统
-
-数据/监控/报警分区 + 整库快照 + 健康状态
-
-![系统管理](docs/screenshots/08-admin-system.png)
+| 页面 | 现在有什么 |
+|---|---|
+| 阅读器 `/reader/` | 文章/视频双 Tab + 分组导航 + 今日早报摘要卡 + 「今日」滚动 24h 视图 + 未读计数 |
+| 每日早报 `/daily/` | 四栏目布局（培训课程发布 / 重点更新 / AI技术 / 其它重要）+ 统计卡片 + 破茧栏 + AI 评分/摘要 + 中英对照 |
+| 我的早报 `/mybrief/` | 个性化订阅源 + 智能推荐 + 主题导语 + 阅读足迹回顾 |
+| 精选周刊 `/weekly/` | AI 策展周度精选 + 主题全景四视角 + 补充阅读 |
+| 热点榜 · AI 精选 `/hot/` | 自有源六维 ≥60 且 AI 相关 + 七分类胶囊（AI·前沿 / Top200 / 国际科技 / X推主 / 科技博客 / 公众号 / 中文科技） |
+| 热点榜 · AI 信息实时流 | 只出 AI 相关内容 + 60s 无感刷新 + 分类筛选 |
+| 热点榜 · 热搜事件 | 72h 全域聚类 + 24 桶趋势折线 + 分组信源胶囊 + 热度降序 |
+| 我的阅读 `/reading/` | 阅读沉淀 + 批量管理 + 导出 + 阅读足迹 |
+| 管理后台 `/admin/` | 5 Tab 收敛：源库（组合/问题源/检索/平台接入）/ 早报中心 / 热点榜策展 / AI 能力 / 系统 |
+| 管理后台 · 早报中心 | 生成历史 + 订阅源配置 + 日报栏目/时间设置 + 晚间主批配置 |
+| 管理后台 · 系统 | 数据/监控/报警分区 + 整库备份 + 健康状态 |
 
 ---
 
@@ -262,7 +210,7 @@ qwis-portal/
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
 ├── tools/                # 运维脚本（collect-turso.js = 云端采集主链路）
 ├── tests/                # 回归测试（node:test）
-├── docs/                 # 文档（RUNBOOK / 截图 / specs / pitfalls 等）
+├── docs/                 # 文档（RUNBOOK / specs / pitfalls / adr / features / eval 等）
 ├── archive/              # 历史资产（报告 / 规格 / 分析）
 └── trash/                # 退役代码（we-mp-rss 等）
 ```
@@ -339,7 +287,7 @@ qwis-portal/
 | `/api/settings` | GET/PUT | 系统设置 |
 | `/api/settings/daily` | GET/PUT | 日报设置 |
 | `/api/alerts` | GET/POST/DELETE | 报警管理 |
-| `/api/backup` | POST | 整库快照备份 |
+| `/api/backup` | POST | 整库备份 |
 | `/api/data/upload` | POST | 数据库上传导入 |
 | `/api/queue` | GET/PUT | 队列配置与同步 |
 | `/api/health` | GET | 健康自检 |
@@ -383,7 +331,7 @@ qwis-portal/
 
 - **备份**：管理后台 → 「系统」Tab → 「整库快照」，或调用 `POST /api/backup`
 - **恢复**：管理后台 → 「系统」Tab → 上传 `.db` 文件（文件名白名单 + SQLite 头校验）
-- **云端语义**：配置备份存 Turso `settings` 表；文件型整库快照在云端不支持（501），需整库迁移请用 `tools/migrate-to-turso.js`
+- **云端语义**：配置备份存 Turso `settings` 表；文件型整库备份在云端不支持（501），需整库迁移请用 `tools/migrate-to-turso.js`
 
 ---
 

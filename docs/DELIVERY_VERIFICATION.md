@@ -50,7 +50,7 @@ git -c http.proxy=http://127.0.0.1:12000 pull --rebase origin main
 git -c http.proxy=http://127.0.0.1:12000 push origin main
 ```
 
-- **pull --rebase 是必须的**：snapshot job（每日 09:33）会自动提交快照 commit，远端经常领先本地。
+- **pull --rebase 是必须的**：静态导出物那条定时作业会自动提交它的产物，远端经常领先本地（作业时刻以作业文件为唯一事实源，本文不写）。
 - 注意 `.gitignore` 已排除 `docs/HANDOVER.md`（含明文 PAT，提交到公开仓库会被 GitHub 扫描后**自动吊销**）。
 
 ### 1.3 push 后自动发生的事
@@ -143,7 +143,7 @@ curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status
 | 日报 | `GET /api/daily` | `report.generated_at` 是今天（曾为 null = 日报链断） |
 | 备份采集端点 | `POST /api/collect?key=<COLLECT_KEY>` | 200 + `stats`；403 = 密钥不一致 |
 | API 缓存 | `curl -sSI .../api/articles` | 应为 `max-age=0` + `X-Vercel-Cache: MISS`（API 无缓存，慢=库没新数据，不是缓存） |
-| 快照文件 | `GET /data/articles.json` | `generated_at` 日期（每日 09:33 由 snapshot job 更新，仅兜底首屏，页面不依赖它刷新） |
+| 静态导出物 | `GET /data/articles.json` | `generated_at` 日期（由那条定时作业刷新，时刻见作业文件；仅兜底首屏，页面不依赖它刷新。它**不是降级路径**，见 ADR-05） |
 
 ### 3.3 页面显示时间的解读（避免误判）
 
