@@ -38,7 +38,7 @@
 | `NEXT-DEV-REQS.md` | **需求队列 SSOT**（T 系列，未开工/在途） |
 | `RUNBOOK.md` | 运维手册（本地/宝塔/云端排障） |
 | `DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 `127.0.0.1:12000`） |
-| `EVAL_GUIDE.md` | **评测规范 SSOT**：端到端（环境前置/剧本/三类断言/四分类/flaky/性能预算/**过程性二值检查**）+ 白盒（不变量项，号位以 `tools/eval-whitebox.cjs` 实存为准）+ **内容质量（LLM-as-a-Judge 五维加权）** + F2P-P2P 改前必红 + 去污染四条 + 门禁产物。**按需工具（见 AGENTS §3），不作每轮必过的门** |
+| `EVAL_GUIDE.md` | **评测口径 SSOT**：只写"怎么判"——三层取证各回答什么、判据三条纪律、红之后的四分类与处置、五维内容分的口径与阈值、改前必红、去污染、产物与退出码。命令清单见 `FEATURE_MATRIX.md` §1.5，交付链见 `AGENTS.md` §3。**按需工具，不作每轮必过的门** |
 | `DEVELOPMENT_STANDARDS.md` | 开发规范与验收标准 |
 | `DEV_GUIDE.md` | 开发者上手指南 |
 | `HANDOVER.md` | 凭据位置 + 端点清单（本地，含密钥） |

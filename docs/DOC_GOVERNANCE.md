@@ -34,7 +34,7 @@
 | `docs/NEXT-DEV-REQS.md` | **需求队列 SSOT**（未开工/在途） | 全员 |
 | `docs/RUNBOOK.md` | 运维排障手册 | AGENTS §4 |
 | `docs/DELIVERY_VERIFICATION.md` | 线上实测流程（AGENTS §2.2 指名） | AGENTS §2 |
-| `docs/EVAL_GUIDE.md` | **评测规范 SSOT**（端到端 + 白盒 + 去污染 + 门禁），按需工具、不作每轮必过的门 | AGENTS §3 |
+| `docs/EVAL_GUIDE.md` | **评测口径 SSOT**（怎么判：三层取证、四分类处置、五维口径、改前必红、去污染）。**按需工具，不作每轮必过的门**；命令清单在 `FEATURE_MATRIX.md` §1.5 | AGENTS §3 |
 | `docs/DEVELOPMENT_STANDARDS.md` | 开发/验收规范 | DEV_GUIDE |
 | `docs/DEV_GUIDE.md` | 开发者上手 | — |
 | `docs/DOC_GOVERNANCE.md` | **本文**（文档治理） | INDEX |
