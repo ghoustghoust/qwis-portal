@@ -55,7 +55,7 @@
   ② 门槛必须放在 **L5 权威加权之后**判定，保证"用户看到的星数"就是"被判定过的那个分"（加权系数 0.8–1.2，前后差最多 20 分）。
   ③ 无 AI 评分的条目（视频/播客——`videos` 表实测根本没有 `score` 列；以及降级关键词版）**必须豁免**，否则整栏消失。
   ④ 长期解不是继续调绝对分，而是**给模型一个说"不"的合法出口**：`analyzeArticle` 加 `veto` 字段 + `prompts/daily-analyze.md` 写清什么情况该 veto。绝对分在推理模型上不稳（本批中位 38），相对判定才可靠。
-- 实现：`lib/brief-guards.js passesDailyQualityGate()`；接入 `tools/collect-turso.js runDailyAi` L5 之后。
+- 实现：`lib/brief-guards.js` 里那道进报门槛判据；接入点在 `tools/collect-turso.js` 的加权环节之后。
 - 回归锁：`tests/regression-brief-guards.test.js` 8/9/10（用线上真实 22/10 分构造）。
-- 契约核对：`tests/columns.test.js:111`「spotlight 源两条全收」**没有被本次推翻**——它跑的是本地 `server/services/ai/daily.js` 的无 AI 降级路径，条目 `score` 为 `undefined`，正好落在门槛的「未评分豁免」分支里（实测该用例仍绿）。
-- **门槛没有同步到本地 `daily.js`，是刻意的，不是漏掉**：本地 `server/services/ai/daily-ai.js` 的 `analyzeBatch` 返回契约只有 `{summary, importance, tags}`（`:38`），**压根没有六维分**，加门槛就是个永不生效的空操作。真正的缺口是本地灾备与 runner 深析契约早已分叉（见 ISSUES B20），要同步得先让本地也产出六维分。
+- 契约核对：`tests/columns.test.js` 里「spotlight 源两条全收」那条用例**没有被本次推翻**——它跑的是本地 `server/services/ai/daily.js` 的无 AI 降级路径，条目分数为空，正好落在门槛的「未评分豁免」分支里（实测该用例仍绿）。
+- **门槛没有同步到本地 `daily.js`，是刻意的，不是漏掉**：本地 `server/services/ai/daily-ai.js` 的深析返回契约只有摘要/重要度/标签三项，**压根没有六维分**，加门槛就是个永不生效的空操作。真正的缺口是本地灾备与 runner 深析契约早已分叉（见 ISSUES B20），要同步得先让本地也产出六维分。

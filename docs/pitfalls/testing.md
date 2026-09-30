@@ -180,11 +180,11 @@
 - 读数（`docs/eval/f2p/2026-09-20044618.json`）：`base.failedNames=["tests\\regression-daily-ai.test.js"]`（记的是**文件名**不是用例名）、`base.missingOwn=[".env"]` → 基线树里 `.env` 不存在（被 gitignore），而该文件第 7 行顶层 `fs.readFileSync('../.env')` → 加载期就崩，一条用例名都没产出。与坑 #64 同族，但触发点从"require 新建模块"换成"读未跟踪配置"。
 - 工具侧的第二个错：`missingOwn` 非空明明等于"没跑到"，却仍然走 `state=product` + 退出码 1。**方向是删安全网**的误判比漏判危险（B106 已经为同一件事立过案，分类修复在待放行清单里）。
 - 规则：**契约型锁（只读源码文本、不碰运行时配置）不许 require 任何需要 `.env`/凭据的模块**——它天然可以在任意基线树上跑，取证才能归因到用例名。本轮做法：把这条锁单独落成 `tests/regression-daily-cover.test.js`（零外部依赖），F2P 立刻给出干净的改前红/改后绿。
-- 案例：`tests/regression-daily-cover.test.js` 的头注；同族前科 `tests/regression-daily-ai.test.js:7`（顶层读 `.env` + require `api/_ai`，因此它**永远不能**作为新增契约锁的宿主文件）。
+- 案例：`tests/regression-daily-cover.test.js` 的头注；同族前科 `tests/regression-daily-ai.test.js`（顶层读 `.env` + require `api/_ai`，因此它**永远不能**作为新增契约锁的宿主文件）。
 
 ### #68 别的写入者产出的"正常行"，不是本次修复的证据（2026-09-20 B120 差点误宣告生效）
 - 症状：给 runner 的 AI 版日报投影补上 `cover` 后，我去数最新一期 `daily_reports`：`#52` 有 12 个条目带 cover → 差点写下"runner 侧已生效"。
-- 真相：`#52` 根本不是 AI 版。它是 `schedule` 触发的 `daily-report` job（关键词版）产的行 —— `stats` 里**没有 `schemaVersion`**，23 个条目里 **0 个带 `reason`、0 个带 `scores`**；而关键词版从设计上就带 cover（`tools/collect-turso.js:1379`）。它带不带图与本次修复无关，是一条**同表、同字段形态、不同写入者**的行。
+- 真相：`#52` 根本不是 AI 版。它是 `schedule` 触发的 `daily-report` job（关键词版）产的行 —— `stats` 里**没有 `schemaVersion`**，23 个条目里 **0 个带 `reason`、0 个带 `scores`**；而关键词版从设计上就带封面图（见 `tools/collect-turso.js` 里关键词那条生成路径）。它带不带图与本次修复无关，是一条**同表、同字段形态、不同写入者**的行。
 - 根因：`daily_reports` 是多写者共用表（`lib/daily-writers.js` 的清单实测 4~5 份），**"最新一行"不等于"我改的那条路径产出的行"**。讽刺的是读侧早有这个指纹判据 —— `lib/brief-guards.js` 的 `isAiDailyReport()`，取证时却没用它。
 - 规则：任何"修复已在线生效"的断言必须同时给三样，缺一律写"未验证"：①**产出者的形态指纹**（AI 版认 `reason`/`scores`/`schemaVersion`，不是按时间取最新）；②**该产出来自哪次 run / 哪个 head_sha**；③**可见面读数**（页面 `<img>` 计数这类）。
 - 案例：本轮 B120 的最终状态是"线上 served 的 `#51` 由修复后代码（本地跑）产出、页面 5 张图全加载；runner 侧待 run `1077`（head 含修复）产出带 `reason` 且带 `cover` 的 AI 版行后才算证明"。

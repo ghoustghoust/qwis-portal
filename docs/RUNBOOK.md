@@ -1,6 +1,6 @@
 # 全网情报系统 · 运维手册（RUNBOOK）
 
-> 最后更新：2026-09-28
+> 最后更新：2026-09-30
 > 唯一现行运维手册。架构与凭据位置看根目录 `ARCHITECTURE.md` 与 `docs/HANDOVER.md`；功能覆盖以谁为准看 `docs/FEATURE_MATRIX.md`；实时链路与不变量看 `docs/CLOUD_PIPELINE_GUIDE.md`。
 > **修复历史不作现状依据**：要回看某一笔改了什么，用 git 与该模块在 `docs/ISSUES.md` 的登记，别翻 `docs/archive/`。
 > 本手册只写**症状 → 现读哪个字段 → 怎么止血**，不写"哪年哪轮遇见过几次"。数值一律指路到唯一承载处（作业文件、共用实现、settings 键），本文件不复制取值。

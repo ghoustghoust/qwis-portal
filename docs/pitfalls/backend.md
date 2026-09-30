@@ -54,9 +54,9 @@
 
 ### #36 `typeof null === 'object'`：迁移序列化把 NULL 写成字符串 `'null'`，毒害一切「IS NOT NULL」口径（2026-09-19 实测）
 - 症状：「我的阅读」显示 已读 25142 = 全部 25142；未读角标恒 0；`read_at >= datetime('now','-1 day')` 命中 2.5 万行，看起来像"有人批量标已读"（旧 B15 就是这么误诊的）。
-- 根因：`tools/migrate-to-turso.js:250` 序列化写 `if (typeof v === 'object') return JSON.stringify(v)`，而 **`typeof null === 'object'`** → NULL 列被写成字面字符串 `'null'`。实测云端 `read_at='null'` 24855 行、`tags='null'` 24355、`reason='null'` 24799、`videos.watched_at='null'` 846；真 ISO 已读只有 287 条。本地库干净 → **污染只在迁移目标端**。
+- 根因：`tools/migrate-to-turso.js` 的序列化那一分支写的是"对象就 `JSON.stringify`"，而 **`typeof null === 'object'`** → NULL 列被写成字面字符串 `'null'`。实测云端 `read_at='null'` 24855 行、`tags='null'` 24355、`reason='null'` 24799、`videos.watched_at='null'` 846；真 ISO 已读只有 287 条。本地库干净 → **污染只在迁移目标端**。
 - 规则：①任何"值→存储字符串"的序列化必须先显式处理 `v === null`/`undefined`，禁止用 `typeof === 'object'` 当判据；②凡"IS NOT NULL 即真值"的口径（保留清理豁免、未读角标、阅读足迹）都要额外排除 `'null'`/`''` 字面串，或在写入侧就不产生；③**字符串与 ISO 时间比较是文本序**（`'null' > '2026-…'` 为真），任何"最近 N 天"统计若命中数异常巨大，先查列里有没有字面串，再谈业务解释；④诊断结论必须区分"数据被写了"与"数据被写歪了"——两者修法完全不同。
-- 案例：2026-09-19 20 条批注实测；订正 `docs/ISSUES.md` B15（原误诊）与 BL10；受影响口径 `api/[...slug].js:1958`（保留清理）、`:876/:917`（未读角标）、`tools/collect-turso.js:974`（阅读足迹）。
+- 案例：2026-09-19 20 条批注实测；订正 `docs/ISSUES.md` B15（原误诊）与 BL10；受影响口径是 `api/[...slug].js` 里的保留清理与未读角标两处聚合，以及 `tools/collect-turso.js` 的阅读足迹。
 
 ### #37 同一个判定抄成 N 份：列表与计数、本地与云端各写一遍，副本之间还会各有增减（2026-09-19 实测）
 - 症状：`/api/reading?type=podcast` 列表返回 30 行真播客，`counts.all` 却是 0；`type=article` 计数 6413，而按同口径实数是 7282（869 篇公众号文章不进计数）。用户侧看到"筛得出条目、角标显示 0"。
@@ -92,7 +92,7 @@
 - 症状：后台「RSS 最后同步」自上线起恒显示"从未同步"，但库里明明一直在抓。根因不是没抓，是 `sources` 里有 1 行 `last_fetched_at` 存的是**字符串 `'null'`**（`tools/migrate-to-turso.js` 迁移期把 JS `null` 直接 `String()` 落库那一族，与 B15 的 24855 条 `read_at='null'` 同源）。SQLite 里时间是 TEXT，`'null' > '2026-09-19T…'` 按字典序成立 → `MAX(last_fetched_at)` 取到它 → 读层那句 `if (v === 'null') return null` 又把它变成 `null` → 界面显示"从未同步"。
 - 为什么能活这么久：①**污染在数据里，判据在代码里**——只看代码看不出问题；②这类聚合在**三端各写一遍**（本地 `status.js` 的 rss 与 bilibili、云端 `[...slug].js` 的两条、还有一支诊断脚本），我第一轮只给 `rss` 那条加了 `NULLIF`，于是"已修"的说法对一半（B93 上一版就犯在这里）；③接口巡检/端到端都只看"200 且字段存在"，`null` 是合法值 → 永远绿。
 - 规则：①**在 SQL 层排**（`MAX(NULLIF(col,'null'))`），不要在 JS 里补兜底——JS 补了 `MAX` 仍然是错的值，其它消费方继续中毒；②`MIN()` 不在此列（`'null'` 抢不到最小），**别为了判据对称去改无关代码**，说清为什么只收 MAX；③这类"每个写入/读取点各写一遍"的不变量，判据必须**从事实派生**：白盒 **W15** 扫全仓 `MAX(<已知污染列>)` 出现点并要求同一表达式里有 `NULLIF`（本轮它当场抓出第 5 处：`tools/_diag-media.cjs`，正是"两端各写一遍必漏一端"的实测样本）；④**这是绕过污染、不是订正污染**：B15/BL10 的数据订正（等授权）没做之前，任何按文本比较这些列的地方都仍可能出怪结果，登记时不许写"脏数据已修"。
-- 案例：`server/routes/status.js:67,74`、`api/[...slug].js:919,920`、`tools/_diag-media.cjs:17`；判据 W15；行为锁 `tests/regression-20260919i.test.js` I14（种"一行真时间戳 + 一行字面串 `'null'`"，断言端点回真时间戳，并带两条前提探针防空库假绿）。
+- 案例：`server/routes/status.js` 与 `api/[...slug].js` 里那几处聚合、诊断脚本 `tools/_diag-media.cjs`；判据 W15；行为锁 `tests/regression-20260919i.test.js` I14（种"一行真时间戳 + 一行字面串 `'null'`"，断言端点回真时间戳，并带两条前提探针防空库假绿）。
 
 ### #70 JS 数字绑进 `json_set` 落成 `1.0`（real），要 integer 必须 `CAST(? AS INTEGER)`（2026-09-21 写 B112 的锁时实测）
 - 症状/诱因：B112 要把 `daily_reports.stats.$.schemaVersion` 的三种形态（缺失 / 数字 / 字符串 `"1"`）统一成"写入侧只走常量"。
