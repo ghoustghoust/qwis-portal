@@ -49,8 +49,6 @@
 
 ### 关键源码入口（只作索引）
 
-- 真跑主链脚本的执行锁与本机桩：`tests/regression-prescreen-exec.test.js`
-- 只跑读层接口的执行锁（同一类隔离的另一份实现）：`tests/regression-inline-exec.test.js`
-- 子进程驱动与隔离工具：`tests/driver-runner.js`、`tests/helpers/`、`lib/test-isolation.js`
+- 子进程驱动与隔离工具：`tests/driver-runner.js`、`tests/helpers.js`
 - 供应商注入点与供应商链：`api/_ai.js`
 - 作业侧超时与批次定义：`.github/workflows/collect.yml`

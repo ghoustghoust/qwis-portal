@@ -28,8 +28,8 @@
 
 ### #D3 「已推到 origin」不等于「线上在跑」——交付验收必须比服务中的 commit（2026-09-19 复发）
 - 症状：`git push` 连推 5 次全绿，`npm test` 全绿，本地读代码确认改动都在，但线上行为一点没变。真因是 Vercel 的 Git 触发在这段时间没产生新 deployment，production 还停在 36 分钟前那一份。
-- 为什么会漏：AGENTS §2.1 把"push 即触发部署"当成事实，于是所有验收都建立在"push 成功"这个代理信号上；`eval:preflight` 也只比 `HEAD == origin/main`——那验的是 GitHub，不是**正在响应请求的那个函数**。
-- 规则：①任何"我改的东西线上有没有"的判断，必须来自线上自己的回答：读层 `/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA`，`eval:preflight` 有一条 `线上 commit == origin/main` 的硬判据（不一致即红并点名"Vercel 未部署"）；②接口新增字段后，**用该字段是否出现**当部署指纹（本轮就是靠 `/api/hot/categories` 缺 `map` 反证线上没更新）；③触发器坏了不要用手动 `vercel --prod` 绕过——那只会把根因永久盖住，本项目最贵的就是"以为上线了"。
+- 为什么会漏：AGENTS §2.1 把"push 即触发部署"当成事实，于是所有验收都建立在"push 成功"这个代理信号上；只比 `HEAD == origin/main` 验的是 GitHub，不是**正在响应请求的那个函数**。
+- 规则：①任何"我改的东西线上有没有"的判断，必须来自线上自己的回答：读层 `/api/meta` 回传 `VERCEL_GIT_COMMIT_SHA`，交付链里有 `线上 commit == origin/main` 这一硬判据（AGENTS §3 验收第 5 条，不一致即停手点名"Vercel 未部署"）；②接口新增字段后，**用该字段是否出现**当部署指纹（本轮就是靠 `/api/hot/categories` 缺 `map` 反证线上没更新）；③触发器坏了不要用手动 `vercel --prod` 绕过——那只会把根因永久盖住，本项目最贵的就是"以为上线了"。
 - 案例：`docs/ISSUES.md` BL12；受影响验收：B56/B58/B62 的云端实测（B39/B53 在停摆前已上线）。
 
 ### #D4 「本轮零部署」不是「不用做云端实测」的理由——配额是墙钟事件（2026-09-20 整站挂 6 小时）

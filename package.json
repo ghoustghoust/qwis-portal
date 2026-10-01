@@ -14,12 +14,6 @@
     "lint:docs:selftest": "node tools/doc-lint.cjs --self-test",
     "lint:cites": "node tools/doc-lint.cjs --cites",
     "check:retention": "node tools/check-retention.cjs",
-    "eval:preflight": "node tools/eval-preflight.cjs",
-    "eval:whitebox": "node tools/eval-whitebox.cjs",
-    "eval:process": "node tools/eval-process-checks.cjs --self-test",
-    "eval:strip-selftest": "node tools/_probe-strip-selftest.cjs",
-    "eval:f2p": "node tools/eval-f2p.cjs",
-    "eval:content": "node tools/eval-content.cjs",
     "setup:customer": "node tools/setup-customer.js",
     "migrate:turso": "node tools/migrate-to-turso.js",
     "snapshots": "node tools/generate-snapshots.js",
@@ -29,8 +23,7 @@
     "pm2:start": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop qwis-server",
     "pm2:restart": "pm2 restart qwis-server",
-    "pm2:logs": "pm2 logs qwis-server --lines 100",
-    "eval:e2e": "node tools/eval-e2e.cjs"
+    "pm2:logs": "pm2 logs qwis-server --lines 100"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",

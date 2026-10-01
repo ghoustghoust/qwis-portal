@@ -893,7 +893,7 @@ async function handleDaily(req) {
   return jsonOk({
     // 09-24 审查抓出的不对称：这个过期分支漏了 `theme / schemaVersion / degraded` 三个字段，
     // 而新鲜分支都给 —— 结果是"库里其实有导语，但因为走的是过期分支，读者看不到"（前端只认 item.theme，无兜底）。
-    // 三个字段都从同一份 stats 里取，读层两处返回必须同形（锁 `tests/regression-theme-observe.test.js` T6 钉这条）。
+    // 三个字段都从同一份 stats 里取，读层两处返回必须同形。
     report: {
       id: row.id, generated_at: row.generated_at, window_hours: row.window_hours, sections, stats,
       issue: await dailyIssueOf(row),

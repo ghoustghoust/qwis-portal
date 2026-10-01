@@ -1,5 +1,5 @@
 // 2026-09-19 批注轮小刺打包的回归锁（对应 docs/ISSUES.md B22/B27/B28/B29/B47/B48/B52/B59 + 坑 #35/#36）
-// 原则：每条都锚在「改前会红」的具体形态上，不写自证式空断言（EVAL_GUIDE §6/§7）。
+// 原则：每条都锚在「改前会红」的具体形态上，不写自证式空断言（EVAL_GUIDE 重建原则）。
 const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -26,7 +26,7 @@ test('B28: 云端 /api/reading 的 tabCond 必须被括号包住，否则类型�
 
 // ── B29 类型口径：文章含 wemp、播客按音频 enclosure ──
 // 2026-09-19 重锚：原断言锁的是 `if (type === 'article') aConds.push("...")` 这个**代码形状**，
-// B60 把四处副本收敛成 lib/reading-filters.js 一份后形状变了（形状锁 = 自证式断言，EVAL_GUIDE §7）。
+// B60 把四处副本收敛成 lib/reading-filters.js 一份后形状变了（形状锁 = 自证式断言，EVAL_GUIDE 重建原则）。
 // 现在锁行为：口径必须真的含 wemp、播客必须是音频判定而不是 s.type='douyin'。
 test('B29: 阅读页类型口径必须含 wemp，且播客不再按 douyin 判定', () => {
   const { readingTypeFilter } = require('../lib/reading-filters');

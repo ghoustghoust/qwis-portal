@@ -50,7 +50,7 @@ router.put('/config', (req, res) => {
   if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
   setSetting('ai', next);
   // B51：假开关（写了只回显给同一个界面、无任何行为读取）已摘除；原判据出处 39-2 已随 39 号 spec 作废删除（锚点见 docs/ISSUES.md），
-  // 现在这条不变量由白盒 W3/W3 的子判据守着（号位以 tools/eval-whitebox.cjs 实存为准）。
+  // 现在这条不变量由 tests/regression-20260919d.test.js 的 B51 组守着（假开关/假统计/假流程折叠不许回潮）。
   log.info('[AI] 配置已更新');
   res.json({ ok: true });
 });

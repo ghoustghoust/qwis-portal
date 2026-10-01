@@ -1,5 +1,7 @@
 # 坑 · AI 管线（ai）
 
+> **坐标说明**：个别案例中点名的 `tests/regression-brief-guards.test.js`、`tests/columns.test.js` 等锁文件已随 2026-10-01 评测装置摘除删除，路径保留作 git 反查坐标；行尾 `<!-- doc-lint:ignore -->` 即此用途。
+
 ### #8 日报出库安检
 - 症状：乱码标题/风控错误页混进早报。
 - 规则：入库前 hasMojibake（西里尔字符/锟斤拷检测）+ isErrorPageItem（"参数错误/访问频繁"类短标题）双检，daily.js 与 collect-turso.js 两处实现都要有。
@@ -38,7 +40,7 @@
   ② **周刊空覆盖**：`saveWeekly` 无条件 `INSERT OR REPLACE weekly.latest`，无最小条数守卫；`weekly` job 每周只此一次且 `if: github.event.schedule` **排除 workflow_dispatch**（掉一次 run 就整周断更且无法补跑）；失败报警条件只认 `MODE==='daily'`，`daily-ai`/`weekly` 全灭时**一条报警都没有**。
 - 规则：**凡「多写者 + 单读者取最新」的产物表，落库必须带质量档位（schemaVersion），读层必须按档位优先而非按时间优先**；生成器落库前必须有最小内容量守卫（宁可不发布，也不用空/降级产物覆盖上一期好内容）；低频一次性批次（周刊）必须同时具备 ①dispatch 补跑口 ②失败报警，否则等于没有兜底。
 - 实现：守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`，runner 与读层共用）。接入点：`api/[...slug].js handleDaily`、`server/services/ai/daily.js getLatest`、`tools/collect-turso.js saveWeekly`（+ runWeekly 前置省 AI 配额）。
-- 回归锁：`tests/regression-brief-guards.test.js`（含用线上真实 id99/100 时间戳构造的事故复现用例）。
+- 回归锁：`tests/regression-brief-guards.test.js`（含用线上真实 id99/100 时间戳构造的事故复现用例）。 <!-- doc-lint:ignore -->
 - 顺带排掉的假线索：`settings.ai.features.{classify,analyze}` 在后台 `AiSettingsTab` 有 4 个复选框和「x/4 完成度」，但 `api/_ai.js` 与 `collect-turso.js` **零引用**——纯装饰开关，线上回显 `classify:false / analyze:false` 极易被误判成「AI 被关了」。见 `docs/ISSUES.md` 挂案。
 
 ### #34 深析没有否决权：AI 把「不适合收录」写进 reason，组装阶段从不读它（2026-09-18 用户标注抓出）
@@ -56,6 +58,6 @@
   ③ 无 AI 评分的条目（视频/播客——`videos` 表实测根本没有 `score` 列；以及降级关键词版）**必须豁免**，否则整栏消失。
   ④ 长期解不是继续调绝对分，而是**给模型一个说"不"的合法出口**：`analyzeArticle` 加 `veto` 字段 + `prompts/daily-analyze.md` 写清什么情况该 veto。绝对分在推理模型上不稳（本批中位 38），相对判定才可靠。
 - 实现：`lib/brief-guards.js` 里那道进报门槛判据；接入点在 `tools/collect-turso.js` 的加权环节之后。
-- 回归锁：`tests/regression-brief-guards.test.js` 8/9/10（用线上真实 22/10 分构造）。
-- 契约核对：`tests/columns.test.js` 里「spotlight 源两条全收」那条用例**没有被本次推翻**——它跑的是本地 `server/services/ai/daily.js` 的无 AI 降级路径，条目分数为空，正好落在门槛的「未评分豁免」分支里（实测该用例仍绿）。
+- 回归锁：`tests/regression-brief-guards.test.js` 8/9/10（用线上真实 22/10 分构造）。 <!-- doc-lint:ignore -->
+- 契约核对：`tests/columns.test.js` 里「spotlight 源两条全收」那条用例**没有被本次推翻**——它跑的是本地 `server/services/ai/daily.js` 的无 AI 降级路径，条目分数为空，正好落在门槛的「未评分豁免」分支里（实测该用例仍绿）。 <!-- doc-lint:ignore -->
 - **门槛没有同步到本地 `daily.js`，是刻意的，不是漏掉**：本地 `server/services/ai/daily-ai.js` 的深析返回契约只有摘要/重要度/标签三项，**压根没有六维分**，加门槛就是个永不生效的空操作。真正的缺口是本地灾备与 runner 深析契约早已分叉（见 ISSUES B20），要同步得先让本地也产出六维分。

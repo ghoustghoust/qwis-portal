@@ -1,7 +1,6 @@
-// 2026-09-19 第 3 批页面批注（B84/B85/B72）的 F2P 锁
+// 2026-09-19 第 3 批页面批注（B84/B85/B72）的回归锁
 // 运行：node --test tests/regression-20260919i.test.js
-// 改前基线：node tools/eval-f2p.cjs --base d679167 --tests tests/regression-20260919i.test.js --cases I
-// 三条缺陷的可见面在浏览器里（已由 eval:e2e E3/E6/E10 打线上取证）；本文件钉的是**离线可判的契约**：
+// 本文件钉的是**离线可判的契约**：
 // 布局下限/上界是否写进组件、三份媒体栏实现是否同步带出兜底字段、路由是否有白名单外分支。
 'use strict';
 const { test } = require('node:test');
@@ -93,19 +92,10 @@ test('I4 B84：MediaRow 无封面分支渲染 SourceAvatar，不再用 emoji 冒
 test('I5 B72：未知路径必须有白名单外分支，else 不得无条件渲染阅读器', () => {
   const src = read('web', 'src', 'main.jsx');
   assert.ok(/function NotFoundPage/.test(src), 'main.jsx 没有 NotFoundPage');
-  assert.ok(/data-e2e="notfound"/.test(src), '404 兜底缺 data-e2e 锚点（E10 靠它定位）');
+  assert.ok(/data-e2e="notfound"/.test(src), '404 兜底缺 data-e2e 锚点（本锁靠它定位）');
   assert.ok(!/else page = <ReaderPage \/>;/.test(src), '路由末尾仍是无条件 else → ReaderPage（B72 原样）');
   assert.ok(/else page = <NotFoundPage/.test(src), '未知路径没有落到 NotFoundPage 分支');
   assert.ok(/KNOWN_PREFIXES/.test(src), '缺白名单：无法区分"阅读器"和"打错的路径"');
-});
-
-test('I6 B72：评测接线同步——E10 从 known_gap 回到门禁位，剧本仍在', () => {
-  const src = read('tools', 'eval-e2e.cjs');
-  assert.ok(/id: 'E10'/.test(src), 'E10 剧本被删了（禁止用删剧本逃门禁）');
-  const gaps = src.match(/const KNOWN_GAPS = \{[^}]*\}/);
-  assert.ok(gaps, '找不到 KNOWN_GAPS 声明');
-  assert.ok(!/E10/.test(gaps[0]), `B72 已修，E10 仍挂在 KNOWN_GAPS 上不进门禁：${gaps[0]}`);
-  assert.ok(/notfound/.test(src), 'E10 没有用 404 锚点做判据（还在只判"页面有没有阅读器文案"）');
 });
 
 test('I8 坑 #55/B10：栏目表只许一份实现，且写回 settings 的默认值必须来自它', () => {
@@ -247,11 +237,6 @@ test('I7 B85 追加：设了上界的列必须同时可收缩，否则行尾会�
   assert.ok(bounded.length >= 3, `带宽度上界的列只有 ${bounded.length} 个（理由/标签/来源），判据对象不对`);
   const stiff = bounded.filter((c) => /flex-none/.test(c) && !/min-w-0/.test(c));
   assert.ok(stiff.length === 0, `这些列设了上界却不可收缩，窄档会裁掉行尾：${JSON.stringify(stiff).slice(0, 200)}`);
-  // 判据必须存在于端到端：只看单一视口抓不到"只在 800px 裁切"这一类
-  const e2e = read('tools', 'eval-e2e.cjs');
-  const a0 = e2e.indexOf("id: 'E3'"); const a1 = e2e.indexOf("id: 'E4'");
-  assert.ok(a0 > 0 && a1 > a0, 'E3 剧本段定位失败');
-  assert.ok(/setViewportSize/.test(e2e.slice(a0, a1)), 'E3 没有做多视口扫描（单视口跑不出断点级裁切）');
 });
 
 test('I12 坑 #56 同源面：巡检必须走统一代理出口，并把"拿不到响应"判成环境红', () => {
@@ -368,11 +353,9 @@ test('I13 坑 #57/#58：函数边界切分必须 EOL 无关、注释不参与判
   assert.equal(ownerAt(crlf, crlf.indexOf('function nextFn') - 1), 'heavy', '上一个函数的尾部区段仍归上一个函数');
 
   // 链路：判据/锁 → lib/daily-writers → lib/src-spans，任何一环换成手写边界都算漂移
-  // （W14 现在不直接 require src-spans，它拿的是 lib/daily-writers 派生出的写入点清单）
   const chain = [
     ['tests/regression-20260919i.test.js', '../lib/src-spans'],
     ['lib/daily-writers.js', './src-spans'],
-    ['tools/eval-whitebox.cjs', '../lib/daily-writers'],
   ];
   for (const [f, dep] of chain) {
     assert.ok(read(...f.split('/')).includes(dep), `${f} 丢了 ${dep} —— 又回到各自手写边界/自己列清单`);

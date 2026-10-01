@@ -9,8 +9,9 @@
 // A8  AlertsTab：api.delete 不存在 / 单条删除是假删除
 // A9  portal src-admin：SourcesTab 重复声明 / WereadTab 未定义 / 误放 HotSettingsTab
 // A10 portal/api/backfill.js 是非法 serverless 函数（导出对象且无鉴权）
-// A11 scripts/restore-frozen-sources.js 清 extra='{}' 抹掉 intervalMin/etag
 // A12 smoke-test.js 直写生产库 data/app.db
+// （原 A11 锁的是一次性脚本 scripts/restore-frozen-sources.js，脚本早已删除，
+//   锁成 ENOENT 装置红，2026-10-01 随评测装置摘除一并撤锁）
 const { test, after } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -188,13 +189,6 @@ test('A10: api/ 下的 serverless 函数面必须等于白名单，其余文件�
     assert.ok(f.startsWith('_'), `api/${f} 会被 Vercel 当成独立函数；共享模块必须下划线前缀或进白名单`);
   }
   assert.ok(!files.includes('backfill.js'), '回填不得做成独立函数（无鉴权 + 10s 必超时）');
-});
-
-// ---------- A11：解冻脚本保留 extra ----------
-test('A11: 批量解冻脚本只清错误字段，不抹 extra', () => {
-  const src = read('scripts/restore-frozen-sources.js');
-  assert.ok(!/extra\s*=\s*['"]\{\}['"]/.test(src), '清空 extra 会抹掉 intervalMin/etag（P0-1 故障重现）');
-  assert.match(src, /unfreezeSource/, '必须走统一解冻实现（保留 intervalMin/etag）');
 });
 
 // ---------- A12：smoke-test 隔离 ----------

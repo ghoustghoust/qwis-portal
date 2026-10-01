@@ -1,8 +1,9 @@
-// we-mp-rss 退役 + bestblogs 迁移回归测试（2026-09-04）
+// we-mp-rss 退役回归测试（2026-09-04）
 // BUG-1 P0: rss 适配器 YouTube 分支 result=null 时 !!result.notModified 必抛 TypeError
 // BUG-2 P1: 读者侧栏不得展示停用源
-// BUG-3 P2: 播客导入不做跨 OPML 同名去重
 // 退役守卫: /api/wemp 不挂载 / wempSupervisor 不存在 / 适配器表无 wemp
+// （原 BUG-3 / 迁移幂等守卫锁的是一次性脚本 tools/import-bestblogs-opml.js，
+//   脚本已随 2026-10-01 评测装置摘除一并删除，锁同撤——对象不存在，锁无处可锚）
 const { test, after } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -23,12 +24,6 @@ test('BUG-1: YouTube 分支 notModified 判空（P0 回归守卫）', () => {
 
 test('BUG-2: 读者侧栏只拉启用源', () => {
   assert.match(read('web/src/components/Sidebar.jsx'), /\/api\/sources\?enabled=1/);
-});
-
-test('BUG-3: 播客导入不做同名去重（与公众号同品牌不同媒介）', () => {
-  const src = read('tools/import-bestblogs-opml.js');
-  assert.match(src, /dedupName: false/);
-  assert.match(src, /f\.dedupName !== false && existingNameType/);
 });
 
 test('退役守卫: wemp 管线无活跃引用', () => {
@@ -53,9 +48,4 @@ test('退役守卫: .env 无 WEMP_* 残留', () => {
 test('disabled 源不进调度 tick（SQL 级守卫）', () => {
   const src = read('server/services/scheduler/index.js');
   assert.match(src, /WHERE enabled=1 AND \(next_fetch_at IS NULL OR next_fetch_at <= \?\)/);
-});
-
-test('迁移幂等守卫: import 脚本 URL 去重先于一切', () => {
-  const src = read('tools/import-bestblogs-opml.js');
-  assert.ok(src.indexOf('existingUrl.get') < src.indexOf('existingNameType.get'), 'URL 去重必须先执行');
 });

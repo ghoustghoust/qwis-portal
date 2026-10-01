@@ -88,7 +88,7 @@ export function IconRail() {
 }
 
 // 未知路径兜底页（B72）：可见地告诉用户「这里没有页面」，并给出去处的链接。
-// data-e2e 是端到端评测 E10 的锚点——改类名可以，改这个属性必须同步 tools/eval-e2e.cjs。
+// data-e2e 是测试定位锚点（tests/regression-20260919i.test.js I5 断言它存在）——改类名可以，改这个属性要同步那枚锁。
 function NotFoundPage({ path }) {
   const links = [
     ['/reader/', '阅读器'],

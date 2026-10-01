@@ -1,5 +1,7 @@
 # 坑 · 前端（frontend）
 
+> **坐标说明**：个别案例中点名的 `tools/eval-e2e.cjs` 等文件已随 2026-10-01 评测装置摘除删除，路径保留作 git 反查坐标；行尾 `<!-- doc-lint:ignore -->` 即此用途。
+
 ### #1 mmbiz.qpic.cn 图片防盗链
 - 症状：公众号图片挂。
 - 规则：`referrerpolicy="no-referrer"`；封面走 `/api/img` 代理（服务端无 Referer）。
@@ -30,4 +32,4 @@
   ② 主内容列给 `min-w-[<非零>]` 下限，别只写 `min-w-0`；
   ③ 判断这类缺陷只读 JSX 不够，**必须抓真实 DOM 的 `getBoundingClientRect()` + `getComputedStyle()`**：
      量到的第一个数字（0 宽 / 594 高）会直接否决"固定高度"这类猜测。
-- 锁：`tests/regression-20260919i.test.js` I1/I2（契约层）+ `tools/eval-e2e.cjs` E3（线上行高 ≤160、标题列 ≥100）。
+- 锁：`tests/regression-20260919i.test.js` I1/I2（契约层）+ `tools/eval-e2e.cjs` E3（线上行高 ≤160、标题列 ≥100）。 <!-- doc-lint:ignore -->

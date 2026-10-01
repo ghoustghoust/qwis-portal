@@ -1,7 +1,7 @@
 // 2026-09-19 T6 第 1 步小刺打包回归锁：B39 / B53 / B62 / B51 / B58 / B54 / B56
 // 本文件同时是 docs/pitfalls/backend.md 坑 #38「能力差异只用给人看的文案表达」的回归锁。
 // F6-1/2/3 另锁 docs/pitfalls/collection.md 坑 #39「大规模失败先分环境类与源侧，分母必须含成功」。
-// 原则（EVAL_GUIDE §6/§7）：每条断言都必须"改前会红"，且不锁代码形状而锁行为/数据。
+// 原则（EVAL_GUIDE 重建原则）：每条断言都必须"改前会红"，且不锁代码形状而锁行为/数据。
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
@@ -109,7 +109,7 @@ test('B53-3 runner 里不得留 llmChat() 这种"定义了没人调"的 AI 通�
 // MyReadingPage.jsx:22 `sourceType === 'douyin'` 判播客，而筛选口径已改成音频特征：
 // 结果"播客 Tab 筛得出条目、每条徽章却写文章"。kind 必须由 lib/reading-filters 出，两端 + 前端共用。
 const DOUYIN_PODCAST_GUESS = /sourceType\s*===\s*'douyin'/;
-test('B62-0 检测器自检：douyin 猜播客的坏写法必须能被探针命中（EVAL_GUIDE §4.1）', () => {
+test('B62-0 检测器自检：douyin 猜播客的坏写法必须能被探针命中（EVAL_GUIDE 重建原则②）', () => {
   assert.ok(DOUYIN_PODCAST_GUESS.test("if (sourceType === 'douyin') return t('reading.podcast');"), '探针失效');
 });
 
@@ -284,136 +284,4 @@ test('F6-3 runner 真的用这条判据决定不熔断（不是只有函数没�
   // 分母必须含成功：只统计失败会让比例恒为 100%，抑制器就成了永久免死金牌
   assert.match(runner, /\(stats\.outcomes \|\| \(stats\.outcomes = \[\]\)\)\.push\(\{ ok: true \}\)/,
     '成功侧也必须记 outcome，否则失败率分母里没有成功');
-});
-
-// ── 41-7 过程性二值检查器：工具自身的锁（评测器不自检 = 假门禁）──
-test('41-7 过程检查器自检必须全过（每项都要"坏样本会红、好样本会绿"；09-19 夜加了 F8 三类覆盖，故不再写死 7）', () => {
-  const { execFileSync } = require('node:child_process');
-  const out = execFileSync(process.execPath, ['tools/eval-process-checks.cjs', '--self-test'],
-    { cwd: ROOT, encoding: 'utf8' });
-  const m = out.match(/自检：(\d+)\/(\d+) 通过/);
-  assert.ok(m, '自检没输出计数，等于没跑：' + out.slice(0, 200));
-  assert.equal(m[1], m[2], `有检查器没通过自检（未通过的一律视为假门禁）：\n${out}`);
-  assert.ok(Number(m[2]) >= 8, '检查器至少要有 F1~F8 八项（少一项就是门禁缩水）：' + m[2]);
-});
-
-test('41-7 检查器要求参数出处与退出码诚实（本轮真踩过的两个坑，判据不许退化）', () => {
-  const t = require('../tools/eval-process-checks.cjs');
-  const names = Object.keys(t.CHECKS);
-  for (const n of ['check_probe_params_sourced', 'check_exit_code_honest', 'check_no_stub_text', 'check_assertions_executed', 'check_assertion_kinds']) {
-    assert.ok(names.includes(n), `缺检查 ${n}`);
-  }
-  // 猜参数（无 source）必须红；带 file:line 必须绿
-  const bad = t.CHECKS.check_probe_params_sourced({ cases: [{ id: 'x', requests: [{ params: { tab: { value: 'article' } } }] }] });
-  assert.equal(bad.ok, false, '无出处的探针参数必须判不过');
-  const good = t.CHECKS.check_probe_params_sourced({ cases: [{ id: 'x', requests: [{ params: { type: { value: 'article', source: 'api/[...slug].js:1021' } } }] }] });
-  assert.equal(good.ok, true, '带 file:line 出处的参数该过：' + good.why);
-  // `cmd | tail` 吞退出码必须红（真发生过）
-  assert.equal(t.CHECKS.check_exit_code_honest({ commands: [{ cmd: 'npm test | tail' }] }).ok, false);
-});
-
-// ── 41-3 F2P 取证器 ──
-// 它自己第一版就被 Windows cmd 坑过：`--base ca42cd5^` 里的 ^ 被 cmd 当转义符吃掉，
-// base 静默变成"改动本身"，于是报出"改前也全绿"→ 反过来冤枉真锁。见坑 #40。
-test('41-3 取证器：git ref 的 ^ 必须原样送到 git（不经 cmd 解释）', () => {
-  const { git } = require('../tools/eval-f2p.cjs');
-  const head = git(['rev-parse', 'HEAD']);
-  const parent = git(['rev-parse', 'HEAD^']);
-  assert.match(head, /^[0-9a-f]{40}$/, 'HEAD 没解析成 sha');
-  assert.match(parent, /^[0-9a-f]{40}$/, 'HEAD^ 没解析成 sha（^ 很可能又被 shell 吃掉了）');
-  assert.notEqual(head, parent, 'HEAD^ 必须与 HEAD 不同——相同就说明参数被 cmd 篡改了');
-  assert.notEqual(git(['rev-parse', 'HEAD^{commit}']), head + 'x');
-});
-
-test('41-3 判据本身：假锁/环境红/改后仍红 都必须判不过', () => {
-  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
-  const red = parseSummary('ℹ tests 3\nℹ pass 0\nℹ fail 3\n✖ F6-1 x (1ms)\n✖ F6-2 y (1ms)\n✖ F6-3 z (1ms)\n');
-  const green = parseSummary('ℹ tests 3\nℹ pass 3\nℹ fail 0\n');
-  assert.equal(verdict(red, green, ['F6-1']).ok, true, '真锁该判成立');
-  assert.equal(verdict(green, green, ['F6-1']).ok, false, '改前也绿 = 假锁，必须判不过');
-  const envRed = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: Cannot find module 'better-sqlite3'\n");
-  assert.equal(verdict(envRed, green, ['t']).ok, false, 'worktree 缺依赖的"环境红"不许当改前证据');
-  assert.equal(verdict(red, red, ['F6-1']).ok, false, '改后仍红 = 没修好');
-  assert.equal(parseSummary('没有汇总行'), null, '解析不到汇总必须返回 null，不能当通过');
-});
-
-// 本轮实测：凭记忆挑的 base（64124b7）其实是修复提交 5aa8118 的子孙，
-// 于是 8 条真锁被判"改前也全绿 = 假锁"，而 §6 给假锁的处置是删用例。见坑 #41。
-test('41-3 基线守卫（坑 #40）：选错基线要判"基线错"（退 2），不许长得像"锁是假的"（退 1）', () => {
-  const t = require('../tools/eval-f2p.cjs');
-  const f = 'tests/regression-20260919c.test.js';
-  const intro = t.lockIntroCommit(f, 'B60-1');
-  assert.ok(intro && /^[0-9a-f]{40}$/.test(intro), '反查不到锁的引入提交，守卫等于不存在');
-  assert.deepEqual(t.baseIsStale({ 'B60-1': [intro] }, t.git(['rev-parse', 'HEAD'])), ['B60-1'],
-    'base=HEAD 早已包含该修复，必须判基线错');
-  // 正向探针：守卫反了方向会把所有取证拒死（suggestBase 的祖先判断真反过一次）
-  assert.deepEqual(t.baseIsStale({ 'B60-1': [intro] }, t.git(['rev-parse', intro + '^'])), [],
-    'base 在修复之前必须放行');
-  const { execFileSync } = require('node:child_process');
-  let code = 0, out = '';
-  try {
-    execFileSync(process.execPath, ['tools/eval-f2p.cjs', '--base', 'HEAD^', '--tests', f],
-      { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-  } catch (e) { code = e.status; out = String(e.stdout || '') + String(e.stderr || ''); }
-  assert.equal(code, 2, `错基线必须退 2；退 1 会被读成"锁是假的"，处置动作就是删用例：\n${out}`);
-  assert.match(out, /不要按 §6 删用例/, '报错文案必须把"别删用例"写进去：' + out.slice(0, 300));
-});
-
-test('41-3 两种红要分开：裸包名=环境红（不算证据），相对路径=修复新建文件（产品红，算证据）', () => {
-  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
-  const own = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ B60-1 x (1ms)\nError: Cannot find module '../lib/reading-filters'\n");
-  assert.equal(own.envBroken, false, '收敛型修复新建的文件在旧树里本就没有；判成环境红 = 这类修复永远取不到证据');
-  assert.deepEqual(own.missingOwn, ['../lib/reading-filters']);
-  const dep = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: Cannot find module 'better-sqlite3'\n");
-  assert.deepEqual(dep.missingDeps, ['better-sqlite3'], '裸包名必须归环境类');
-  assert.equal(verdict(dep, parseSummary('ℹ tests 1\nℹ pass 1\nℹ fail 0\n'), ['t']).ok, false, '环境红仍不许当改前证据');
-  const green = parseSummary('ℹ tests 1\nℹ pass 1\nℹ fail 0\n');
-  assert.equal(verdict(own, green, ['B60-1']).ok, true, '产品红（缺新建共享模块）该判成立');
-  assert.match(verdict(own, green, ['B60-1']).why, /改前缺本次修复新建的文件/, '成立理由里必须写明红在"缺新文件"，别让人以为是断言打红');
-});
-
-// 同一判据要覆盖 ENOENT：本轮给 41-8 的新文件出证时，工具把"树内缺文件"报成"环境失败"，
-// 原因正是正则跨行匹配 Node 的对象 dump 造出一个假路径。见坑 #44。
-test('41-3 ENOENT 按树内/树外分类，且正则不许跨行造出假路径（坑 #44）', () => {
-  const { parseSummary } = require('../tools/eval-f2p.cjs');
-  const inside = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: ENOENT: no such file or directory, scandir 'D:\\\\.wt-9\\\\tools\\\\eval-content'\n", 'D:\\.wt-9');
-  assert.equal(inside.envBroken, false, '修复新增的目录在旧树里本就没有 = 产品红（双反斜杠形态也要认）');
-  assert.ok(inside.missingOwn.includes('tools/eval-content'), '树内路径要折成仓库相对再记账');
-  const dump = parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nError: spawnSync python3 ENOENT\n  code: 'ENOENT',\n  syscall: 'spawn python3',\n", 'D:\\.wt-9');
-  assert.equal(dump.envPaths.length, 0, '对象 dump 里的 `code: ENOENT` 跨行匹配会造出假路径，把合法取证判成环境失败');
-  assert.equal(dump.fail, 1, '同一条红仍然要被计到');
-  assert.equal(parseSummary("ℹ tests 1\nℹ pass 0\nℹ fail 1\n✖ t (1ms)\nENOENT: no such file or directory, open 'C:\\Windows\\x'\n", 'D:\\.wt-9').envBroken, true,
-    '树外的 ENOENT 才是环境红');
-});
-
-// 对抗性审查（本轮独立 reviewer）查出取证器三条"会自己说谎"的路径，逐条钉住。见坑 #45。
-test('41-3 判据收紧：逐条目标都要改前红，没跑到/没点名一律判"未取证"而不是"成立"（坑 #45）', () => {
-  const { parseSummary, verdict } = require('../tools/eval-f2p.cjs');
-  const green = parseSummary('ℹ tests 6\nℹ pass 6\nℹ fail 0\n');
-  // ① 旧版：文件里任意一条红就判成立 → 无关老用例的红会被当成本轮锁的证据
-  const unrelated = parseSummary('ℹ tests 6\nℹ pass 1\nℹ fail 5\n✖ 无关老用例 (1ms)\n✖ B (1ms)\n✖ C (1ms)\n✖ D (1ms)\n✖ E (1ms)\n');
-  assert.equal(verdict(unrelated, green, []).ok, false, '没点名目标时不许自证成立');
-  assert.equal(verdict(unrelated, green, []).state, 'env', '这一档属"未取证"，不允许据此删用例');
-  const partial = parseSummary('ℹ tests 6\nℹ pass 5\nℹ fail 1\n✖ 锁X (1ms)\n');
-  const vp = verdict(partial, green, ['锁X', '锁Y', '锁Z']);
-  assert.equal(vp.ok, false, '三条目标只红一条不许判成立（旧版命中 1 条就报 ✓）');
-  assert.equal(vp.state, 'product', '这里才是"锁抓不到 bug"，允许按 §6 处理');
-  assert.match(vp.why, /2\/3 条目标锁改前不红/);
-  // ② 旧版 head 解析失败时兜底成 0 红 → "改后 0 条全绿"是无中生有
-  const vh = verdict(unrelated, { tests: 0, pass: 0, fail: 0, failedNames: [], envBroken: false }, ['无关老用例']);
-  assert.equal(vh.ok, false, '一条都没跑到不许记成"改后全绿"');
-  assert.equal(vh.state, 'env');
-  // ③ 全中才算成立
-  const all3 = parseSummary('ℹ tests 6\nℹ pass 3\nℹ fail 3\n✖ 锁X (1ms)\n✖ 锁Y (1ms)\n✖ 锁Z (1ms)\n');
-  assert.equal(verdict(all3, green, ['锁X', '锁Y', '锁Z']).state, 'ok');
-});
-
-// 自检项数不写死在文档里（写死就会漂）：这里只钉"必须全绿"，数量由工具自己报
-test('41-3 取证器自检必须全绿（探针数与通过数相等，且不许少于 15 项）', () => {
-  const { execFileSync } = require('node:child_process');
-  const out = execFileSync(process.execPath, ['tools/eval-f2p.cjs', '--self-test'], { cwd: ROOT, encoding: 'utf8' });
-  const m = out.match(/自检：(\d+)\/(\d+) 通过/);
-  assert.ok(m, '自检没输出计数，等于没跑：' + out.slice(0, 200));
-  assert.equal(m[1], m[2], `有探针没通过（未通过一律视为假门禁）：\n${out}`);
-  assert.ok(Number(m[2]) >= 15, `探针数量退化了（${m[2]}），取证器的负向验证不能省`);
 });

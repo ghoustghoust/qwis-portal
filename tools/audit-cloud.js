@@ -119,7 +119,7 @@ function tally(results) {
 }
 function exitCodeOf(t) { return t.fail ? 1 : (t.total === 0 || t.skip === t.total ? 2 : 0); }
 
-// 被 require 时不许自动打云端（本轮在 eval-process-checks 上刚踩过同一形态：模块级副作用会污染测试进程）
+// 被 require 时不许自动打云端（模块级副作用会污染测试进程——这个形态曾在评测工具上踩过）
 if (require.main === module) main();
 
 module.exports = { verdictToResult, tally, exitCodeOf, isEnvOutage, BASE };

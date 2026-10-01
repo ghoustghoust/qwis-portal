@@ -1,7 +1,7 @@
 // B105 族（scratch 驱动子进程在退出阶段偶发 0xC0000005，载荷已正确打出）的统一口径：
 //   退出码与断言载荷分别判 —— 载荷在 = 产品行为已证明，退出段崩只记警告并打出 status/stderr 尾；
 //   载荷不在 = 真红，连 status/signal/stderr 一起抛，不许只剩一句裸 "Command failed"。
-// 锁：tests/regression-driver-runner.test.js DR1~DR5（含反向：无载荷必须抛、没配 payloadRe 不许永远放行）。
+// 本驱动被约十个 regression 测试复用；其自身的 DR1~DR5 锁已随 2026-10-01 评测装置摘除一并撤掉（装置锁，不锁产品行为）。
 'use strict';
 const { spawnSync } = require('child_process');
 const path = require('path');

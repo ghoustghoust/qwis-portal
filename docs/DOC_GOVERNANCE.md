@@ -34,7 +34,7 @@
 | `docs/NEXT-DEV-REQS.md` | **需求队列 SSOT**（未开工/在途） | 全员 |
 | `docs/RUNBOOK.md` | 运维排障手册 | AGENTS §4 |
 | `docs/DELIVERY_VERIFICATION.md` | 线上实测流程（AGENTS §2.2 指名） | AGENTS §2 |
-| `docs/EVAL_GUIDE.md` | **评测口径 SSOT**（怎么判：三层取证、四分类处置、五维口径、改前必红、去污染）。**按需工具，不作每轮必过的门**；命令清单在 `FEATURE_MATRIX.md` §1.5 | AGENTS §3 |
+| `docs/EVAL_GUIDE.md` | **评测现状与重建原则**（现役三件验证装置、装置摘除的裁决、稳定后重建原则）。命令清单在 `FEATURE_MATRIX.md` §1.5 | AGENTS §3 |
 | `docs/DEVELOPMENT_STANDARDS.md` | 开发/验收规范 | DEV_GUIDE |
 | `docs/DEV_GUIDE.md` | 开发者上手 | — |
 | `docs/DOC_GOVERNANCE.md` | **本文**（文档治理） | INDEX |
@@ -47,7 +47,7 @@
 | `docs/contracts/` | 接口契约 JSON（读层响应形状） | 前端/测试 |
 | `docs/research/` | **研究性与前瞻设计参考**：外部范式拆解、目标态框架。**每份必须自陈身份**（目标态 / 已验收现状依据）；落地的那部分改写进 `features/`，作废即删——**这里不许长成第二个归档层** | `docs/research/README.md`、INDEX |
 | `docs/changes/` | 在途变更的对边界记录，一轮一份；**已完结即删**，不养"过去方案"当第二事实源 | INDEX |
-| `docs/eval/` | 评测与一次性只读探针的产物（AGENTS §3 验收第 7 条：数据链路改动配探针直读生产真值）+ 白盒棘轮基线 | `EVAL_GUIDE.md`、AGENTS §3 |
+| `docs/eval/` | 一次性只读探针与历史评测轮的产物（AGENTS §3 验收第 7 条：数据链路改动配探针直读生产真值） | `EVAL_GUIDE.md`、AGENTS §3 |
 
 被代码或活文档**指名引用**的手册不许移走（移动 = 制造悬空引用，`tools/setup-customer.js` 这类运行时提示也会一起失效）。除上表外的文件不得留在 `docs/` 顶层。
 
@@ -244,8 +244,7 @@ npm test > test.log 2>&1; echo "EXIT=$?"                # 测试数以命令输�
 10. **同一张登记表内编号唯一**：一张表里两行同号（例如 09-21 实测两个 B128 并存：`lib/db.js` 少三列 与 零引用资产）
     → **错**。粒度是**单张表**：跨表/正文再写一遍同一个号是正常引用（第一版按整份文件判，立刻造出 21 条假红）。
 11. **判据自身要能被证伪**：`npm run lint:docs:selftest`（同一份 `doc-lint` 的 `--self-test`）逐条喂
-    坏样本与反例，**双向**（例数由本次运行打印，本文不复制）；`tests/regression-doc-lint-rules.test.js` L1~L5 把它钉进 `npm test`
-    （含"分母必须非空"与"不许有文件级 ignore 短路"两条，防判据被写成恒绿）。
+    坏样本与反例，**双向**（例数由本次运行打印，本文不复制；含"分母必须非空"与"不许有文件级 ignore 短路"两条，防判据被写成恒绿）。
     - **判据的判据对象消失了就要一起摘**，不许留着：留下的是"看起来有门禁、实际永远零命中"，比没有更坏（上面那条锁防的正是这个形状）。摘除记在 `docs/ISSUES.md` 的作废登记里。
 人工复核项（脚本查不了的）：范围声明与正文是否一致、同类事实是否只剩一处、**现行文档是否又长出了指向归档件的逐条地址**（09-25 禁，`doc-lint` 只查文件级悬空、查不出"节级指向已改名/已删段"）、日期是否与内容改动相称。
 

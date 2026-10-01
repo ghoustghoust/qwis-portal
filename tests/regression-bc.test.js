@@ -15,7 +15,7 @@ after(() => helpers.cleanup());
 
 // ---------- B15/B18：云端安全项（2026-09-19 重新锚定：portal 已独立成仓，锚点一律指向根树真实文件）----------
 test('B18（坑 #1 图片防盗链）: 图片代理走 safeimg（DNS 校验 + 重定向逐跳 + 流式上限），双端同语义', () => {
-  // 三端一致约束（EVAL_GUIDE §4 W1）：本地与云端两份实现必须同等防护
+  // 三端一致约束：本地与云端两份实现必须同等防护
   for (const f of ['server/util/safeimg.js', 'api/_safeimg.js']) {
     const src = read(f);
     assert.match(src, /dns\.lookup/, `${f} 必须做 DNS 解析后校验`);
@@ -83,8 +83,9 @@ test('C22: unfreezeSource 统一语义——清计数/启用/清错误字段，�
   assert.equal(unfreezeSource(999999), false, '不存在的 id 返回 false');
 });
 
-test('C22(静态): 四个解冻入口全部收敛到 store.unfreezeSource', () => {
-  for (const f of ['server/routes/sources.js', 'server/routes/health.js', 'server/routes/restore-all.js', 'scripts/restore-frozen-sources.js']) {
+test('C22(静态): 三个解冻入口全部收敛到 store.unfreezeSource', () => {
+  // 原第四入口 scripts/restore-frozen-sources.js 是一次性脚本，早已删除（ENOENT 装置红），2026-10-01 撤锚
+  for (const f of ['server/routes/sources.js', 'server/routes/health.js', 'server/routes/restore-all.js']) {
     assert.match(read(f), /unfreezeSource/, `${f} 必须使用统一解冻实现`);
   }
 });
@@ -135,10 +136,11 @@ test('C28: 文章/视频列表接口返回 counts（侧栏导航计数）', () =
 });
 
 // ---------- ARCHITECTURE.md 决策记录 ----------
-test('文档: ARCHITECTURE.md 记录宝塔全量部署决策与 portal 冻结态', () => {
+// 本锁原有三条腿，其中两条钉字面量：「宝塔/自有服务器全量部署」与「冻结态」。
+// 用户 09-26 裁：「还是按 Vercel+runner 走，删掉宝塔那行」⇒ 那句已不是现役决策，
+// 继续钉住等于逼文档保留过期陈述，两条措辞腿摘掉；只留「禁词」这条（它防的是已更正的旧表述被写回去）。
+test('文档: ARCHITECTURE.md 不出现已更正的「两套部署同构同码」表述', () => {
   const src = read('ARCHITECTURE.md');
-  assert.match(src, /宝塔\/自有服务器全量部署/);
-  assert.match(src, /冻结态/);
   assert.ok(!src.includes('两套部署同构同码'), '「同构同码」表述已更正（语义已漂移）');
 });
 
