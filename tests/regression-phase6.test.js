@@ -239,11 +239,13 @@ test('P6-9: 活跃文件无指向已移动文件的裸引用', () => {
     const content = fs.readFileSync(f, 'utf-8');
     const rel = path.relative(ROOT, f);
 
-    // A_CLASS_FIX_REPORT.md 应指向 archive/docs-deprecated/
-    const bareAClass = content.match(/(?<!archive\/docs-deprecated\/)A_CLASS_FIX_REPORT\.md/g);
-    if (bareAClass) errors.push(`${rel}: 裸引用 A_CLASS_FIX_REPORT.md (${bareAClass.length} 处)`);
+    // 归档层已不收文字件（2026-10-01 整批清空，登记见 docs/ISSUES.md 作废登记），
+    // 所以这批旧文档名**任何形态都不许再被现行文档引用**——原先放行 `archive/docs-deprecated/` 前缀
+    // 是因为那时那个目录里真有份留底；现在放行前缀等于放行一条指向不存在文件的死指针。
+    const anyAClass = content.match(/A_CLASS_FIX_REPORT\.md/g);
+    if (anyAClass) errors.push(`${rel}: 引用已彻底删除的 A_CLASS_FIX_REPORT.md (${anyAClass.length} 处)`);
 
-    // docs/DEPLOYMENT.md 已归档，应引用 docs/RUNBOOK.md
+    // docs/DEPLOYMENT.md 那份旧部署手册同样已彻底删除，现役只有 docs/RUNBOOK.md
     if (content.includes('docs/DEPLOYMENT.md')) {
       errors.push(`${rel}: 引用已归档的 docs/DEPLOYMENT.md`);
     }

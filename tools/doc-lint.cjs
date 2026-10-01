@@ -133,19 +133,17 @@ for (const f of docsFiles) {
   if (!registered(f)) warnings.push(`[失踪] ${rel(f)} 未在 docs/INDEX.md 登记`);
 }
 
-// 4 归档件头注：**降为一条计数提示，不判红**（用户 09-27 裁"门禁豁免选 A"）。
-//   为什么：① 归档层按 09-25 裁决"只作反查、不在索引逐篇登记、不用地址和链接描述它们"——
-//   既然规定不登记不描述，再要求每份补五字段头注就是自相矛盾的判据；② 实测该判据 255 条错
-//   全部来自归档层，把"零错"变成不可满足，而 S6/L5 两枚锁借的就是本判据的退出码——
-//   门禁非零会让密钥扫描判据静默失声。保留计数而不是删掉检查：把规模摊给人看，
-//   要清还是继续豁免由人判，机器不替人判。
-let archiveNoHead = 0;
-for (const f of docsFiles.filter((x) => rel(x).startsWith('docs/archive/'))) {
-  if (path.basename(f) === 'README.md') continue;
-  const head = read(f).slice(0, 1200);
-  if (!['类别：', '归档自：', '关联', '状态：'].every((k) => head.includes(k))) archiveNoHead++;
+// 4 归档层不收文字件 → **判红**（2026-10-01 反转：本条原先判"归档件缺五字段头注"，
+//   因为那时还假设"文字该留在 archive"。现在假设反了：归档层只放素材，
+//   仍生效的语义搬进 adr/features/pitfalls，其余出账即删、反查走 git（DOC_GOVERNANCE §2.2/§2.3）。
+//   README.md 是唯一允许的 .md——它是这一层的目录级说明，不是留底。）
+function findArchivedText(paths) {
+  return paths.filter((p) => {
+    const r = rel(p).split(path.sep).join('/');
+    return r.startsWith('docs/archive/') && /\.md$/i.test(r) && path.basename(r) !== 'README.md';
+  });
 }
-if (archiveNoHead > 0) warnings.push(`[归档头注] docs/archive/ 有 ${archiveNoHead} 份缺五字段头注（豁免判红，理由见本段与 DOC_GOVERNANCE §2.4）`);
+for (const f of findArchivedText(docsFiles)) errors.push(`[归档收文字] ${rel(f)} —— 归档层不再收文字件：仍成立的搬进 adr/features/pitfalls，其余就地删（反查走 git）`);
 
 // 5 活文档超长（提示核销轮，不算不通过）
 const LIMITS = { 'docs/ISSUES.md': 130, 'ARCHITECTURE.md': 400, 'docs/NEXT-DEV-REQS.md': 260, 'docs/FEATURE_MATRIX.md': 200 };
@@ -402,6 +400,11 @@ if (SELF_TEST) {
   expect('表格-少一格是合法 markdown，不许红', findTableBreaks('| a | b |\n|---|---|\n| 1 |\n').length, 0);
   expect('表格-转义竖线不许误判', findTableBreaks('| a | b |\n|---|---|\n| x \\| y | 2 |\n').length, 0);
   expect('表格-对齐正常必须绿', findTableBreaks('| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n').length, 0);
+  // 4 归档层不收文字件（2026-10-01 反转的判据：坏样本 = 往 archive 放 .md；反向 = 目录级说明与素材不算）
+  const P = (...s) => path.join(ROOT, ...s);
+  expect('归档收文字-放 md 进 archive 必须红', findArchivedText([P('docs/archive/reports/x.md')]).length, 1);
+  expect('归档收文字-目录级 README 不许红', findArchivedText([P('docs/archive/README.md')]).length, 0);
+  expect('归档收文字-图片与 eval 取证件不许红', findArchivedText([P('docs/archive/analysis/a.jpg'), P('docs/eval/x.md')]).length, 0);
   expect('表格-非表的两行不误判', findTableBreaks('| a | b |\n| c | d |\n').length, 0);
   expect('表格-ignore 行放过', findTableBreaks('| a | b |\n|---|---|\n| 1 | 2 | 3 | <!-- doc-lint:ignore -->\n').length, 0);
   expect('表格-裸竖线含代码样式也要红（B125 那族逻辑或）', findTableBreaks('| a | b |\n|---|---|\n| x || y | 2 | z |\n').length, 1);
