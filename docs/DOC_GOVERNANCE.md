@@ -74,14 +74,14 @@
 | **决策** | `docs/adr/`（一主题一号，只写最新标准） | — | **被覆盖就地改写该件，不归档、不留"旧方案对比"**；查经过走 git |
 | **开发功能规格** | `docs/specs/`（在途批次的工作文件） | **不设归档位** | 判完生死按 §2.2「作废即删」走——**不建状态头注、不搬进目录养着**，否则归档层会变成第二个事实源。持久部分先按 §2.5 搬走 |
 | **功能** | `docs/features/`、`docs/NEXT-DEV-REQS.md` | `docs/archive/feature/` | 已验收功能的交付说明、需求源头、外部产品范式借鉴清单 |
-| **优化** | `docs/ISSUES.md` 观察中、`FEATURE_MATRIX.md` | `docs/archive/optimization/` | 性能/感知/配额/成本类优化的前后对比与实测数据 |
+| **优化** | `docs/ISSUES.md` 观察中、`FEATURE_MATRIX.md` | `docs/archive/analysis/`（与一次性分析产物同处） | 性能/感知/配额/成本类优化的前后对比与实测数据。**曾经规划的 `archive/optimization/` 从未建起来**，别再往那个路径搬 |
 | **调试** | `docs/ISSUES.md` 活跃表 | `docs/archive/debugging/` | 单期修复流水、DELIVERY 类文档、已完结 `changes/*.md` |
 | **踩坑** | `docs/pitfalls/`（**只累积不归档**） | — | 症状/根因/规则/案例四段式，按域一文件：collection / backend / ai / frontend / deployment / testing |
-| **对接** | `docs/RUNBOOK.md` §4（队列对端与同步入口）、`docs/features/collectors.md` | `docs/archive/integration/` | 已停用/已替换的第三方链路方案。**09-27 起这里不再有独立手册**：两份"平台对接指南"被删，因为它们描述的通路从未在当前真实环境跑起来，而手册把它们写成了现役 |
+| **对接** | `docs/RUNBOOK.md` §4（队列对端与同步入口）、`docs/features/collectors.md` | **不设归档位**（判死方案原文现存 `docs/archive/docs-deprecated/`） | 已停用/已替换的第三方链路方案。**09-27 起这里不再有独立手册**：两份"平台对接指南"被删，因为它们描述的通路从未在当前真实环境跑起来，而手册把它们写成了现役。规划中的 `archive/integration/` 从未建起来，别再往那个路径搬 |
 | **研究/前瞻** | `docs/research/`（每份自陈身份） | **不设归档位** | 外部范式拆解与目标态框架。判断不再成立即删、反查走 git；已落地的部分改写进 `docs/features/`，不留"应然 vs 实然"两份并行 |
-| **密钥管理** | `docs/HANDOVER.md` §1.5（本地）、`ARCHITECTURE.md` §6 | `docs/archive/credentials/` | 凭据**轮换史与位置矩阵**（三处同步记录、失效事件） |
+| **密钥管理** | `docs/HANDOVER.md` §1.5（本地）、`ARCHITECTURE.md` §6 | **不设归档位**（规划中的 `archive/credentials/` 从未建起来） | 凭据**轮换史与位置矩阵**（三处同步记录、失效事件）写在现役那两处；本仓不在 `docs/` 里堆凭据史副本——**归档层里放一份"位置矩阵"就等于公开仓里多一个可被扫描的靶子** |
 
-> ⚠️ **密钥类硬规则**：`docs/archive/credentials/` 里**只许出现凭据名、存放位置、轮换时间、掩码指纹（前 4 后 4）**，永不写完整明文密钥。真实值只在本地 `.env` / Vercel env / GitHub Secrets 三处（AGENTS §2.6）。提交前 `git status` 复核不得含该目录之外的密钥泄漏。
+> ⚠️ **密钥类硬规则**：任何入库的文档（含归档层）**只许出现凭据名、存放位置、轮换时间、掩码指纹（前 4 后 4）**，永不写完整明文密钥；也不要在归档层另存一份"位置矩阵"——那是把靶子复制进公开仓。真实值只在本地 `.env` / Vercel env / GitHub Secrets 三处（AGENTS §2.6），本地速查件 `docs/HANDOVER.md` 已 gitignore、永不提交。提交前 `git status` 复核不得含密钥泄漏（门禁的明文凭据扫描见 §5 第 6 条，它连"未跟踪但没被 ignore"的文件一起扫）。
 
 ### 2.4 归档文档必须登记的依赖（头注格式，固定五字段）
 
@@ -259,4 +259,4 @@ npm test > test.log 2>&1; echo "EXIT=$?"                # 测试数以命令输�
 1. 先出**总 spec**（一份框架：目标/边界/分板块/验收口径/回滚点），进 `docs/specs/NN-<topic>/spec.md`；
 2. 每个小功能/板块各出一份 **mew-spec 小框架**（同目录 `NN-<topic>-<sub>.md`），列改动点、影响面、验收；
 3. **用户同意后才动代码**；动工即建四件套（spec/plan/task/checklist），验收证据写进 checklist；
-4. 交付后按 §3 Step 4 归档：功能语义进 `docs/features/`，流水进 `docs/archive/feature|optimization/`，坑进 `docs/pitfalls/`；**这批规格文件本身按 §2.2 整批删**——它的持久部分已经搬完，留着它就会出现"以过时规格引领开发方向"那种事故。
+4. 交付后按 §3 Step 4 归档：功能语义进 `docs/features/`，交付流水进 `docs/archive/feature/`、一次性分析产物进 `docs/archive/analysis/`，坑进 `docs/pitfalls/`；**这批规格文件本身按 §2.2 整批删**——它的持久部分已经搬完，留着它就会出现"以过时规格引领开发方向"那种事故。

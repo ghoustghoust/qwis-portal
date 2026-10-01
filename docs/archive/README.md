@@ -1,27 +1,28 @@
 # docs/archive/ · 已完结内容归档层
 
-> **规则见 `docs/DOC_GOVERNANCE.md` §2.3/§2.4**：内容验收通过后从现役位搬进这里，头部五字段依赖必填，现役位留一行指针。
-> 本目录**只读不维护**。要查"这个问题当年是怎么修的/哪次事故改的"，从下面的反向索引进。
+> **规则见 `docs/DOC_GOVERNANCE.md` §2.2/§2.3/§2.4**：内容验收通过后从现役位搬进这里，头部五字段依赖必填。
+> **本目录只读不维护，且不作任何现状依据**——本文件里出现的每一个文件名都只回答"当年那一轮改了什么/读到多少"，不回答"现在怎么跑"。要查现在，读 `docs/` 顶层那几份活文档与 `docs/features/`。
 
-## 分类目录
+## 目录里实际有什么
 
-| 目录 | 类别 | 现役位（对照） |
+| 目录 | 装什么 | 现役对照（现在该读哪里） |
 |---|---|---|
-| `feature/` | 功能（已验收交付、需求源头） | `docs/features/`、`docs/NEXT-DEV-REQS.md` |
-| `optimization/` | 优化（性能/感知/配额/成本，含实测数据） | `docs/ISSUES.md` 观察中 |
-| `debugging/` | 调试（单期修复流水、已完结变更记录、ISSUES 核销批次） | `docs/ISSUES.md` 活跃表 |
-| `integration/` | 对接（已停用/被替换的第三方链路方案） | `docs/RUNBOOK.md` §4、`docs/features/collectors.md`（两份对接手册 09-27 判废删除，见 `docs/ISSUES.md` 作废登记与 H40） |
-| `credentials/` | 密钥管理（轮换史、位置矩阵、失效事件；**禁明文**） | `docs/HANDOVER.md` §1.5 |
+| `debugging/` | 单期修复流水、已完结变更记录、ISSUES 核销批次的原文留底 | `docs/ISSUES.md` 活跃表 |
+| `feature/` | 已验收功能的交付说明与需求源头 | `docs/features/`、`docs/NEXT-DEV-REQS.md` |
+| `analysis/` | 一次性分析产物（某天的名单、某轮的读数） | 无现役位；结论若仍生效早已搬进活文档 |
+| `reports/` | 2026-08~09 那批审计/修复报告。**先读 `reports/⚠️阅读前必看-可信度分级.md`**：其中多份含虚构验证或互斥结论，一批描述的是已被 ADR-01/02/03 推翻的形态 | 无现役位 |
+| `docs-deprecated/` | 门户时代与自建引擎时代的部署/运维/诊断手册（宝塔、PM2、Nginx、wemp 引擎、扫码登录态那几代方案） | `docs/RUNBOOK.md`、`docs/DEV_GUIDE.md`。这些方案**已被判死**，本目录只留原文供反查 |
+| `tools/`、`样图/`、`测试/` | 工具的一次性产物、设计样图、测试素材 | 无现役位 |
 
-踩坑类不归档，永久累积在 `docs/pitfalls/`（换手必读）。
+分类里**没有** `optimization/`、`integration/`、`credentials/` 这三档（治理 §2.3 的表曾列过，实际从未建起来或已并入上面几档）。踩坑类不归档，永久累积在 `docs/pitfalls/`（换手必读）。
 
 ## 反向索引：出问题了去哪查（按症状查，不按时间查）
 
 | 症状 / 关键词 | 先读 | 再读 |
 |---|---|---|
-| 阅读器分页断层、文章重复、pubDate 未来时间 | `debugging/2026-09-13-reader-pagination-and-content-fixes.md` | `docs/pitfalls/backend.md` #31 |
+| 阅读器分页断层、文章重复、pubDate 未来时间 | `debugging/2026-09-13-reader-pagination-and-content-fixes.md` | `docs/pitfalls/backend.md` #25 |
 | 早报/周刊出现"用户要求我…/我需要找到…"这类元评论、标题被胡编 | `debugging/2026-09-14-delivery.md` §翻译管线 | `docs/pitfalls/ai.md` #26 #A2 |
-| 游标分页/`since` 语义、云端 504 | `debugging/2026-09-14-delivery.md` §0.2 | `docs/pitfalls/backend.md` #31 #33 |
+| 游标分页/`since` 语义、云端 504 | `debugging/2026-09-14-delivery.md` §0.2 | `docs/pitfalls/backend.md` #25、#23 |
 | 09-13~15 那批 UI/管理台/源治理改了什么 | `debugging/2026-09-14-delivery.md` | 当时的规格件已整批作废，反查走 git（锚点见 `docs/ISSUES.md` 的作废登记）；仍生效的取舍在 `docs/adr/` |
 | "某一轮 AGENTS §3 十一条各自跑没跑"、洁净轮 Step0~7 读数 | `debugging/2026-09-20-round-status-records.md` | `AGENTS.md` §3、`docs/DOC_GOVERNANCE.md` §4.1 |
 | 已修条目的逐条取证与 F2P 证据对账（09-19 两批） | `debugging/2026-09-19-delivery-evidence-ledger.md` | `docs/eval/f2p/*.json` |
@@ -30,17 +31,12 @@
 | B102/B107~B117 等已交付行的交付读数原文、B71~B85 已修行原文、产品选择裁定表原表、BL2~BL11 已核销阻塞项原文 | `debugging/2026-09-21-issues-round2-closed.md` §三/§四/§六/§七 | `docs/ISSUES.md` 各指针行 |
 | T2/T4-1/T4-2/T5 已完成需求行、T6 第 0/1/1.5 步执行原文 | `feature/2026-09-21-nextdev-closed-rounds.md` | `docs/NEXT-DEV-REQS.md` 各指针行 |
 
-## 已登记归档件
+## 归档件的登记方式（**不逐篇登记**）
 
-| 文件 | 类别 | 归档自 | 日期 |
-|---|---|---|---|
-| `debugging/2026-09-13-reader-pagination-and-content-fixes.md` | 调试 | `docs/changes/` 同名文件 | 2026-09-18 |
-| `debugging/2026-09-14-delivery.md` | 调试 | （原 `docs/` 顶层件，09-15 大清洗移入本目录） | 2026-09-18 |
-| `debugging/2026-09-19-delivery-evidence-ledger.md` | 调试 | `docs/ISSUES.md`「B8~B26 本轮处置」+「本轮已修（证据对账）」 | 2026-09-20 |
-| `debugging/2026-09-20-round-status-records.md` | 调试 | `docs/ISSUES.md` 三节轮次状态表（交付链×2 + 洁净轮记录） | 2026-09-20 |
-| `debugging/2026-09-21-release-approval-ledger.md` | 调试/授权台账 | `docs/ISSUES.md`「⛔ 待你点头的放行清单」15 行整块（用户 09-21 整表放行后出账） | 2026-09-21 |
-| `debugging/2026-09-21-issues-closed-rows.md` | 调试 | `docs/ISSUES.md` 四段整节（B27~B70 六域登记、🟡观察中、已关闭挂案、阻塞项已闭行）+ 19 条已核销单行 + 被改写的头部原文 | 2026-09-21 |
-| `debugging/2026-09-21-issues-round2-closed.md` | 调试 | `docs/ISSUES.md` 第二轮核销 + 同日结构重排（§九）：判定轮表、已交付/已修 B 行、裁定表、已核销挂案与阻塞项、瘦身行原文 | 2026-09-21 |
-| `feature/2026-09-21-nextdev-closed-rounds.md` | 功能 | `docs/NEXT-DEV-REQS.md`：T2 存档、T4-1/T4-2、T5 已完成行、T6 第 0/1/1.5 步执行原文 | 2026-09-21 |
+本目录**不再维护"已登记归档件"清单**——那份表与每件自己的五字段头注是同一件事写两处，两处就会各自过期（09-25 用户裁：归档层不逐篇登记，`docs/INDEX.md` 也只指到本目录一层，不指到篇）。
 
-> 新增归档件必须同时：①本表加一行；②`docs/INDEX.md` 指向本目录；③原现役位留指针。漏任一项，`tools/doc-lint.cjs` 会报。
+规矩收敛成三条，都在治理件里，本文件不复述细则：
+
+1. **每份归档件自带五字段头注**（类别 / 归档自 / 关联承载处 / 状态 / 取代），出处就写在文件里——要问"这份是从哪搬来的"，读它自己，别读索引。
+2. **`docs/INDEX.md` 只登记本目录**，不登记篇。
+3. **现役文档不留指向本目录的逐条地址**。被搬走的内容在活文档里就地删掉，最多在文件头部写一句目录级说明（"已核销的不进本文件，反查走 git 与归档层"）。
