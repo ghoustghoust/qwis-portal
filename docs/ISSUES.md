@@ -114,6 +114,8 @@
 
 | `docs/archive/` 全部**文字件**（旧规格副本 + 门户/自建引擎时代的部署运维手册 + 各期审计报告 + 核销底稿 + 一次性运行输出） | 85（66 `.md` + 18 `.txt` + 1 `.html`）；**图片与脚本本轮未动**（用户 10-01：图片先不急） | 删除发生在下一次提交，**删除前的内容在 `ed85f00`** | 看原文 `git show ed85f00:<原路径>`（路径按下面那条"列出清单"的命令取）；列出清单 `git ls-tree -r --name-only ed85f00 -- docs/archive`；还原 `git restore --source=ed85f00 -- docs/archive/` | 删前按 §2.5 逐份过完：**9 条仍生效的取舍/护栏/结构性事实搬进** 坑 #73/#74/#75、ADR-03 边界、`features/hot-and-weekly.md` §六、`features/events-alerts.md`、`RUNBOOK.md` §2、H51/H52/H53（登记见本表）；其余是流水、一次性读数、以及描述已被 ADR-01/02/03/25 判死方案的手册。**这批的入站引用实测为零**（现行文档 grep 全部 52 个可辨识文件名与标志读数，唯一命中的是改动戳与两条防复活断言）。**政策随之内转**：归档层从此只放素材，`docs/archive/**.md` 由门禁判红（治理 §2.2/§2.3/§4.1、§5 第 4 条）；"核销 → 搬进归档层"这条流程从此不存在 |
 
+| `docs/ROADMAP-2026-09.md` + `memory/`（2 份）+ `static-data/aihot.json` | 4 | 删除发生在下一次提交，**删除前的内容在 `6aee937`** | 看原文 `git show 6aee937:<原路径>`；还原 `git restore --source=6aee937 -- docs/ROADMAP-2026-09.md memory/ static-data/aihot.json`（本行含已删路径，刻意引用） <!-- doc-lint:ignore --> | 路线图过期（活文档只写现状，现行文档零引用）；`memory/` 是 09-02 一次性会话记录，无活引用；`aihot.json` 是门户时代快照，唯一出现处是 `tools/export-portal.js` 的**生成侧**（writeJson，链路默认关闭），读侧零消费、前端不 fetch 该文件。**`docs/archive/` 的图片与脚本按用户 10-01「先不急」未删**（上批曾误入工作树删除状态，本批已 `git restore` 恢复） |
+
 ## 🔒 阻塞中的长期项
 
 | # | 阻塞什么 | 为什么还开着 | 清法 |

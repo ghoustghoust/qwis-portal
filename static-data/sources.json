@@ -407,20 +407,6 @@
       "fail_count": 0
     },
     {
-      "id": 709,
-      "type": "x",
-      "name": "AI产品黄叔(@PMbackttfuture)",
-      "url": "https://api.xgo.ing/rss/user/5b632b7fba274f62928cdcc9d3db4c5e",
-      "avatar": "https://pbs.twimg.com/profile_images/1743267669124816896/wv6pXt1q_normal.jpg",
-      "group_id": null,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 152,
       "type": "rss",
       "name": "AI前线",
@@ -1019,8 +1005,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 744,
@@ -1509,8 +1495,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 772,
@@ -2559,8 +2545,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 837,
@@ -3417,20 +3403,6 @@
       "fail_count": 0
     },
     {
-      "id": 893,
-      "type": "rss",
-      "name": "Longlong's Blog",
-      "url": "https://blog.xlonglong.cn/feed/",
-      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -3548,20 +3520,6 @@
       "name": "MacTalk-池建强的 Blog",
       "url": "http://macshuo.com/?feed=rss2",
       "avatar": "http://macshuo.com/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 901,
-      "type": "x",
-      "name": "ManusAI(@ManusAI_HQ)",
-      "url": "https://api.xgo.ing/rss/user/320181c4651a41a08015946b55f704ab",
-      "avatar": "https://pbs.twimg.com/profile_images/1972973045393592322/e11bi-fE_normal.jpg",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -4547,8 +4505,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 962,
@@ -15457,5 +15415,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-01T07:27:06.333Z"
+  "generated_at": "2026-10-01T14:34:36.237Z"
 }
