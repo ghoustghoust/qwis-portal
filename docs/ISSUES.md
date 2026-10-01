@@ -107,7 +107,7 @@
 
 | 删了什么 | 份数 | 删除前 tree | 反查命令 | 内容去向与声明 |
 |---|---|---|---|---|
-| `docs/specs/` 全部历史规格（spec/plan/task/checklist 与单文件决策件） | 65 | `c67fd8f2d83f985f7ad824e7004748f6ff35998d` | 看原文 `git show c67fd8f2d83f985f7ad824e7004748f6ff35998d/<原路径>`；还原 `git restore --source=c67fd8f2d83f985f7ad824e7004748f6ff35998d -- docs/specs/` | 仍生效的取舍已逐条搬走：新建 ADR-25~34 十件，既有件补边界 ADR-02/03/08/10/14/15/22，评测侧"既有红三族读法"进 `docs/EVAL_GUIDE.md` §3，"一条陈述的三种去处"尺子进 `docs/DOC_GOVERNANCE.md` §2.5。**随本批一并摘除门禁判据 #11（父 spec 背景段出处）——它的判据对象不再存在，留着就是一条永远零命中却看起来在把关的判据**。**自此所有 spec 编号（含更早作废的 35~43 与 `NN-*/task.md` 这类子号）只作历史编号读，不得当"方案已存在"引用**；要指路只许指向 ADR / `docs/features/` / 现行手册 |
+| `docs/specs/` 全部历史规格（spec/plan/task/checklist 与单文件决策件） | 65 | 删除发生在 `f1124ae`，**删除前的内容在父提交 `2e9f73f`** | 看原文 `git show 2e9f73f:docs/specs/<原路径>`；列出全部 `git ls-tree -r --name-only 2e9f73f -- docs/specs`（实测 65 条）；还原 `git restore --source=2e9f73f -- docs/specs/` | 仍生效的取舍已逐条搬走：**新建 11 件** ADR-25~35，**8 份既有件补边界** ADR-02/03/08/10/14/15/16/22；评测侧"既有红三族读法"进 `docs/EVAL_GUIDE.md` §6.1，"一条陈述的三种去处"尺子进 `docs/DOC_GOVERNANCE.md` §2.5，"加字段先问要不要被查询"进 `docs/DEVELOPMENT_STANDARDS.md` §9；足迹面的三条"结构上没有这条路"进 `docs/features/my-reading.md`。**随本批一并摘除门禁判据 #11（父 spec 背景段出处）——它的判据对象不再存在，留着就是一条永远零命中却看起来在把关的判据**。**自此所有 spec 编号（含更早作废的 35~43 与 `NN-*/task.md` 这类子号）只作历史编号读，不得当"方案已存在"引用**；要指路只许指向 ADR / `docs/features/` / 现行手册 |
 
 ## 🔒 阻塞中的长期项
 
