@@ -1,6 +1,84 @@
 {
   "items": [
     {
+      "id": 101579,
+      "source_id": 542,
+      "platform": "youtube",
+      "title": "ChatGPT Dots: How I Spent My First 24 Hours",
+      "url": "https://www.youtube.com/watch?v=db1KRJQEt8w",
+      "vid": "db1KRJQEt8w",
+      "cover": "https://i.ytimg.com/vi/db1KRJQEt8w/hqdefault.jpg",
+      "duration": null,
+      "author": "The AI Advantage",
+      "published_at": "2026-09-30T19:04:18.000Z",
+      "source_name": "The AI Advantage"
+    },
+    {
+      "id": 100844,
+      "source_id": 621,
+      "platform": "youtube",
+      "title": "Did a 50 year old military secret just solve agent prompt injection?",
+      "url": "https://www.youtube.com/watch?v=I_KVMFrUtPk",
+      "vid": "I_KVMFrUtPk",
+      "cover": "https://i.ytimg.com/vi/I_KVMFrUtPk/hqdefault.jpg",
+      "duration": null,
+      "author": "Fireship",
+      "published_at": "2026-09-30T17:16:43.000Z",
+      "source_name": "Fireship"
+    },
+    {
+      "id": 100664,
+      "source_id": 577,
+      "platform": "youtube",
+      "title": "🚨🚨 TheStandup: Dots and dot.com, Muse, Dario, Super Intelligence, ...🚨🚨",
+      "url": "https://www.youtube.com/watch?v=MsaB-fvjVKI",
+      "vid": "MsaB-fvjVKI",
+      "cover": "https://i.ytimg.com/vi/MsaB-fvjVKI/hqdefault.jpg",
+      "duration": null,
+      "author": "The PrimeTime",
+      "published_at": "2026-09-30T16:04:57.000Z",
+      "source_name": "The PrimeTime"
+    },
+    {
+      "id": 100064,
+      "source_id": 577,
+      "platform": "youtube",
+      "title": "We use MCP wrong",
+      "url": "https://www.youtube.com/watch?v=GFCxdGd1emE",
+      "vid": "GFCxdGd1emE",
+      "cover": "https://i.ytimg.com/vi/GFCxdGd1emE/hqdefault.jpg",
+      "duration": null,
+      "author": "The PrimeTime",
+      "published_at": "2026-09-30T13:04:37.000Z",
+      "source_name": "The PrimeTime"
+    },
+    {
+      "id": 99914,
+      "source_id": 620,
+      "platform": "youtube",
+      "title": "Implementing Undo - Computerphile",
+      "url": "https://www.youtube.com/watch?v=S6PqsZ65Mg4",
+      "vid": "S6PqsZ65Mg4",
+      "cover": "https://i.ytimg.com/vi/S6PqsZ65Mg4/hqdefault.jpg",
+      "duration": null,
+      "author": "Computerphile",
+      "published_at": "2026-09-30T13:00:36.000Z",
+      "source_name": "Computerphile"
+    },
+    {
+      "id": 98894,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜拿到新手机0.01秒后……",
+      "url": "https://www.bilibili.com/video/BV1GGaZ6AEzJ",
+      "vid": "BV1GGaZ6AEzJ",
+      "cover": "https://i1.hdslb.com/bfs/archive/3d6ff3a5140e2ec4d94f8bc55e3abb4c10b01cda.jpg",
+      "duration": 52,
+      "author": "影视飓风",
+      "published_at": "2026-09-30T09:12:47.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 96522,
       "source_id": 529,
       "platform": "youtube",
@@ -1221,85 +1299,7 @@
       "author": "Y Combinator",
       "published_at": "2026-09-26T14:00:37.000Z",
       "source_name": "Y Combinator"
-    },
-    {
-      "id": 75117,
-      "source_id": 565,
-      "platform": "youtube",
-      "title": "Humans Can Regrow an Organ",
-      "url": "https://www.youtube.com/watch?v=oNTaHYXQ4MM",
-      "vid": "oNTaHYXQ4MM",
-      "cover": "https://i.ytimg.com/vi/oNTaHYXQ4MM/hqdefault.jpg",
-      "duration": null,
-      "author": "Kurzgesagt – In a Nutshell",
-      "published_at": "2026-09-26T14:00:11.000Z",
-      "source_name": "Kurzgesagt - In a Nutshell"
-    },
-    {
-      "id": 91334,
-      "source_id": 577,
-      "platform": "youtube",
-      "title": "Blueberry",
-      "url": "https://www.youtube.com/watch?v=FcvLyGRjCWA",
-      "vid": "FcvLyGRjCWA",
-      "cover": "https://i.ytimg.com/vi/FcvLyGRjCWA/hqdefault.jpg",
-      "duration": null,
-      "author": "The PrimeTime",
-      "published_at": "2026-09-26T13:06:35.000Z",
-      "source_name": "The PrimeTime"
-    },
-    {
-      "id": 80205,
-      "source_id": 511,
-      "platform": "youtube",
-      "title": "Grok Bot Tutorial: How to Use Grok Bot for AI Automation (Full Workflow)",
-      "url": "https://www.youtube.com/watch?v=j0Pqe8c07vY",
-      "vid": "j0Pqe8c07vY",
-      "cover": "https://i.ytimg.com/vi/j0Pqe8c07vY/hqdefault.jpg",
-      "duration": null,
-      "author": "AI Master",
-      "published_at": "2026-09-26T13:04:52.000Z",
-      "source_name": "AI Master"
-    },
-    {
-      "id": 80672,
-      "source_id": 626,
-      "platform": "youtube",
-      "title": "The number one thing he wishes he could change in his career",
-      "url": "https://www.youtube.com/watch?v=oGTTSL9K3yw",
-      "vid": "oGTTSL9K3yw",
-      "cover": "https://i.ytimg.com/vi/oGTTSL9K3yw/hqdefault.jpg",
-      "duration": null,
-      "author": "Ryan Peterman",
-      "published_at": "2026-09-26T13:03:30.000Z",
-      "source_name": "Ryan Peterman"
-    },
-    {
-      "id": 78998,
-      "source_id": 555,
-      "platform": "youtube",
-      "title": "Misuse Of Flock's Cameras Is Sending Innocent People To Jail | Dispatch",
-      "url": "https://www.youtube.com/watch?v=UDAvyIjqRuU",
-      "vid": "UDAvyIjqRuU",
-      "cover": "https://i.ytimg.com/vi/UDAvyIjqRuU/hqdefault.jpg",
-      "duration": null,
-      "author": "Business Insider",
-      "published_at": "2026-09-26T13:00:37.000Z",
-      "source_name": "Business Insider"
-    },
-    {
-      "id": 79387,
-      "source_id": 519,
-      "platform": "youtube",
-      "title": "What is Utopia?  Presenting The Receipt Horizon, by Joel Borgen – Chapters 1–4",
-      "url": "https://www.youtube.com/watch?v=BaTTNx8B4r0",
-      "vid": "BaTTNx8B4r0",
-      "cover": "https://i.ytimg.com/vi/BaTTNx8B4r0/hqdefault.jpg",
-      "duration": null,
-      "author": "Cognitive Revolution \"How AI Changes Everything\"",
-      "published_at": "2026-09-26T11:34:08.000Z",
-      "source_name": "Cognitive Revolution"
     }
   ],
-  "generated_at": "2026-09-30T07:01:44.679Z"
+  "generated_at": "2026-10-01T07:27:03.586Z"
 }
