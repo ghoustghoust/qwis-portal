@@ -1,10 +1,9 @@
 # 交付验证手册 —— Vercel 生产环境验证流程
 
-> 最后更新：2026-09-18（代理端口统一 12000（旧 7890 已失效））
+> 最后更新：2026-10-01
 > 适用对象：任何接手本项目的 Agent / 开发者。
 > 目的：在**无法直连线上环境**（GFW）或**只有本地代码**的情况下，依然能对
 > `https://qwis-intel.vercel.app` 生产环境做有效验证，保证线上线下一致性。
-> 撰写时间：2026-09-11（方案A 落地当日的完整实战记录）
 
 ---
 
@@ -12,7 +11,7 @@
 
 ```
 GitHub Actions runner ──直写──▶ Turso (libSQL, 东京) ◀──读── Vercel Serverless API ◀── 浏览器
-  (采集/日报/清理, 每15min)                              (api/*.js 无缓存)
+  (采集/日报/清理等档, 节奏见作业文件)                    (api/*.js 无缓存)
 ```
 
 **三个独立系统，三处独立凭据**（改一处不同步 = 静默故障，本项目最大血泪坑）：
@@ -83,8 +82,8 @@ for r in json.load(sys.stdin)['workflow_runs']:
 ```
 
 **检查点**：
-- `event=schedule` 的 run 应按调度表出现（当前：UTC `:07/:22/:37/:52`）
-- 连续缺失 = GitHub 丢任务（2026-09-11 实测连丢 5 轮，页面冻结数小时）
+- `event=schedule` 的 run 应按调度表出现（取值唯一承载处是作业文件，文档不复制 cron 取值——ADR-13）
+- 连续缺失 = GitHub 丢任务（无告警）——这正是双档触发存在的理由（ADR-13）
 - `conclusion=failure` → 进 2.2 查日志
 
 ### 2.2 读取失败 job 的完整日志（定位根因的关键）
@@ -108,6 +107,8 @@ curl -sS -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.g
   -d '{"ref":"main"}'
 # 返回 204 即成功；然后回到 2.1 轮询新 run 的 conclusion
 ```
+
+⚠️ **两条边界**（链路指南 §3 与不变量 9）：① 不带 mode 的 dispatch **只跑采集那一步**，验证日报/周刊/清理要带对应 mode；② 手动触发是**补跑手段，不是验收步骤**——判某一档真跑没跑，现读采集心跳里的 mode，不看"有没有 cron 表达式"。
 
 ### 2.4 管理 Secrets（改密钥值，API 需要 libsodium sealed-box 加密）
 
@@ -138,12 +139,12 @@ curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status
 | 层 | 命令 | 健康标志 |
 |---|---|---|
 | 读 API 活性 | `GET /api/status` | 200 + `overview.enabledSources` 有值（注意冷启动可能要 10-15s，别误判超时） |
-| 数据新鲜度 | `GET /api/articles?limit=3&sort=new&include_hot=1` | `created_at`（入库时间）在 30 分钟内 |
+| 数据新鲜度 | `GET /api/articles?limit=3&sort=new&include_hot=1` | `created_at`（入库时间）距现在 > 1 小时 = 链路断（口径见 `docs/CLOUD_PIPELINE_GUIDE.md` §4，勿另立阈值） |
 | 阅读器视图 | `GET /api/articles?limit=3&sort=new`（不带 include_hot） | `published_at`（**发布时间**，≠入库时间，会比 created_at 旧，属正常） |
 | 日报 | `GET /api/daily` | `report.generated_at` 是今天（曾为 null = 日报链断） |
 | 备份采集端点 | `POST /api/collect?key=<COLLECT_KEY>` | 200 + `stats`；403 = 密钥不一致 |
 | API 缓存 | `curl -sSI .../api/articles` | 应为 `max-age=0` + `X-Vercel-Cache: MISS`（API 无缓存，慢=库没新数据，不是缓存） |
-| 静态导出物 | `GET /data/articles.json` | `generated_at` 日期（由那条定时作业刷新，时刻见作业文件；仅兜底首屏，页面不依赖它刷新。它**不是降级路径**，见 ADR-05） |
+| 静态导出物 | `GET /data/articles.json` | `generated_at` 日期（由那条定时作业刷新，时刻见作业文件）。它是每日导出物，页面不依赖它刷新，**不是兜底/降级路径**（ADR-05） |
 
 ### 3.3 页面显示时间的解读（避免误判）
 
@@ -186,7 +187,7 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 **关键检查点**：
 - `created_at` 最新值与当前时间的差 = 真实的采集停滞时长
 - `settings.cloud.collect` 心跳：每轮采集/日报/清理都会写，含 `lastRunAt` 和 stats
-- `sources` 表 `enabled=0 AND fail_count>=阈值` = 被熔断的源（YouTube 阈值 10，其他 3）
+- `sources` 表 `enabled=0` 且失败计数达阈值 = 被熔断的源；阈值按类型分档（视频类更高），取值唯一承载处在共用实现，本文不写数值（链路指南不变量 3）
 
 **打印前的掩码纪律（坑 #69，2026-09-20 B110 实咬）**：任何直连库里 `settings` / `credentials` / 报警渠道的探针，
 **输出前必须过 `lib/secrets.js#maskDeep`**，并把"掩了几处、掩了哪些路径"一起打出来（静默少掩是这条纪律最危险的失败方向）。
@@ -220,7 +221,7 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 
 1. **本地**：`node --check <改动文件>` + 相关脚本本地跑通（采集类脚本可直接对 Turso 跑，限 `COLLECT_LIMIT=15` 小批量先试）
 2. **推送**：`git -c http.proxy=... pull --rebase` → `push`（§1.2）
-3. **触发**：dispatch API 手动跑一轮（§2.3），轮询到 `conclusion=success`
+3. **触发**：dispatch API 补跑一轮（§2.3；不带 mode 只跑采集步，验证其它档要带对应 mode），轮询到 `conclusion=success` 后现读采集心跳自证
 4. **日志**：确认 job 输出里的统计行（如 `采集完成: 成功 N / 新增 M 篇`）
 5. **库验**：§4 查 `created_at` 新鲜度 + 心跳
 6. **端验**：§3.2 全套端点（带代理 + `--ssl-no-revoke`）

@@ -1,6 +1,6 @@
 # QWis Portal — 全网情报系统
 
-> 最后更新：2026-09-29
+> 最后更新：2026-10-01
 > **Q**uan**W**ang **I**ntel **S**ystem — 私人 AI 情报阅读器
 >
 > 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜等多源信息，自动生成每日情报日报与个性化早报，支持 AI 辅助分析、翻译、精选周刊和多端推送报警。
@@ -20,36 +20,36 @@
 | 源类型 | 采集方式 | 说明 |
 |--------|----------|------|
 | **RSS / Atom** | `rss-parser` | 通用 RSS 适配器，含 `content:encoded` 全文保留、ETag 304 短路、GBK/Big5 编码嗅探、Readability 正文提取 |
-| **微信公众号** | wechat2rss 托管 RSS | 375 个 bestblogs 源，图片由对方 img-proxy 代理 |
+| **微信公众号** | wechat2rss 托管 RSS | bestblogs 系托管源（数量现读源表），图片由对方 img-proxy 代理 |
 | **B站视频** | wbi 签名 API | 合集/搜索兜底，匿名 buvid Cookie，playurl 直链解析 |
 | **抖音视频** | Playwright headless | 扫码登录，严格串行 ≥10s 间隔，仅本地运行 |
-| **热榜聚合** | newsnow API | 微博/知乎/百度/头条/抖音/B站/贴吧/澎湃/凤凰等 29 个热榜源 |
+| **热榜聚合** | newsnow API | 多平台热榜聚合（源数现读源表） |
 | **YouTube** | 官方频道 RSS | 需代理可达 |
-| **X / Twitter** | RSSHub | 依赖第三方 RSS 服务将时间线转为 RSS |
+| **X / Twitter** | RSSHub | 需自备 RSSHub 实例——本仓从未部署过，未配置则可填可存但抓不到内容（`docs/ISSUES.md` H40） |
 | **播客音频** | RSS enclosure | 音频直链 + 封面归位，阅读器内嵌播放器 |
 
 ### 📰 每日情报日报 & 早报体系
 
-- **每日早报**：四栏目布局（培训课程 / 重点更新 / AI 技术 / 其它重要），每日 08:00 + 晚间 21:30 双批次生成
+- **每日早报**：晚间主批 + 夜间备跑兜底（时刻以作业文件 `.github/workflows/collect.yml` 为唯一事实源）；栏目由全站唯一一份栏目表实现，文档不复述栏目名
 - **我的早报**：个性化订阅源 + 智能推荐，基于用户关注分组加权
 - **精选周刊**：AI 策展周度精选，主题全景四视角
-- **智能生成流程**：候选收集 → 关键词分类 → Jaccard ≥0.5 去重 + 同源限流 → 出库安检（乱码/风控错误页过滤）
-- **破茧栏**：事件聚合引擎，与用户常读分组交集最小的 Top5 事件
+- **智能生成流程**：候选收集 → 关键词分类 → 去重 + 同源限流 → 出库安检（乱码/风控错误页过滤）；各环节参数取值以共用实现为准
+- **破茧栏**：仅本地端，未移植云端（`docs/ISSUES.md` H22）
 - **AI 增强**：摘要/评分/标签/翻译（多轮精翻管线 + 中英对照）
 
 ### 🔥 AI 热点榜
 
-- **AI 精选**：自有源六维 ≥60 且 AI 相关，热榜源不入精选
-- **AI 信息实时流**：只出 AI 相关内容，60s 无感刷新
-- **热搜事件**：近 72h 全域条目 Jaccard(≥0.4) 聚类，热度 = Σ权重 × 24h 半衰 × 1.5^(信源数-1)，24 桶趋势折线
-- **分类胶囊**：AI·前沿 / Top200 精选 / 国际科技 / X·AI推主 / 科技博客 / 公众号 / 中文科技 等
-- **enrich 管线**：pending_items → 串行详情页解析 → 富字段入库
+- **AI 精选**：自有源达分数门槛且 AI 相关（取值见 `docs/features/hot-and-weekly.md` §七），热榜源不入精选
+- **AI 信息实时流**：只出 AI 相关内容，固定周期轮询刷新（ADR-06）
+- **热搜事件**：采集批次预聚合、云端直读（聚合窗口与参数见 `docs/features/hot-and-weekly.md`）
+- **分类胶囊**：分类映射的现状是"三处不同源"（界面 / 设置键 / 云端过滤各一份），见 `docs/features/hot-and-weekly.md` §二与 `docs/ISSUES.md` H49
+- **enrich 管线**：仅本地端，云端待移植（`docs/FEATURE_MATRIX.md` §1.4）
 
 ### 🚨 报警系统
 
 - **7 渠道**：钉钉 / 企微 / 飞书 / Server酱 / Bark / Telegram / 自定义 webhook
-- **4 事件类型**：源熔断 / 采集停滞 / 队列异常 / 系统错误
-- **防骚扰**：120min 冷却期 + 代理失败直连重试
+- **事件类型与触发判据**：见 `docs/features/events-alerts.md`
+- **防骚扰**：冷却语义见 `docs/features/events-alerts.md`
 
 ### 📋 源库管理与源四轴模型
 
@@ -59,19 +59,17 @@
 - **自动分类**：内置 8 类目录（中英别名归一 + 关键词兜底），新源三挂接点自动入组
 - 存量回填 dryRun 预览 → 勾选确认 → apply
 
-### 🔄 云端队列同步
+### 🔄 云端队列同步（未启用）
 
-- 手机端/桌面端通过 HTTP Shortcuts 提交链接到云端 PHP 队列
-- 本地 poller 每 10min 拉取 → 写入 pending_items → 清空云端
-- 云端（Vercel）已支持 `POST /api/queue/sync` 直接触发同步
-- 支持 B站视频、抖音视频、公众号文章三队列
+- 通路：手机/桌面提交链接到仓外 PHP 队列站点 → 本地 poller 定时拉取写入 pending_items → 清空对端
+- ⚠️ **这条链路当前不是活的**：对端实例从未部署，"可填可存但抓不到任何东西"；处置三选一等你拍（`docs/ISSUES.md` H40）。运维说明见 `docs/RUNBOOK.md` §4
 
 ### 🛡 鉴权与数据安全
 
-- **JWT 鉴权**：读者只读 GET 公开，写操作与管理接口需 Bearer Token（7d 有效）
+- **JWT 鉴权**：读者只读 GET 公开，写操作与管理接口需 Bearer Token（有效期属实现细节，ADR-12）
 - **整库备份**：WAL 安全 backup → `data/backups/app-*.db`
-- **按天清理**：可配置 retentionDays（默认 7 天）
-- **熔断机制**：源连续失败 3 次自动停用，修好后手动启用清零 fail_count
+- **按天清理**：保留天数是唯一可改项（settings），没有清理总开关（ADR-22）
+- **熔断机制**：源连续失败达阈值自动停用，阈值按类型分档（视频类更高，取值在共用实现一处）；修复后手动启用清零 fail_count
 
 ---
 
@@ -82,12 +80,12 @@
 | 页面 | 现在有什么 |
 |---|---|
 | 阅读器 `/reader/` | 文章/视频双 Tab + 分组导航 + 今日早报摘要卡 + 「今日」滚动 24h 视图 + 未读计数 |
-| 每日早报 `/daily/` | 四栏目布局（培训课程发布 / 重点更新 / AI技术 / 其它重要）+ 统计卡片 + 破茧栏 + AI 评分/摘要 + 中英对照 |
+| 每日早报 `/daily/` | 多栏目版面（栏目表全站一份实现）+ 统计卡片 + AI 评分/摘要 + 中英对照 |
 | 我的早报 `/mybrief/` | 个性化订阅源 + 智能推荐 + 主题导语 + 阅读足迹回顾 |
 | 精选周刊 `/weekly/` | AI 策展周度精选 + 主题全景四视角 + 补充阅读 |
-| 热点榜 · AI 精选 `/hot/` | 自有源六维 ≥60 且 AI 相关 + 七分类胶囊（AI·前沿 / Top200 / 国际科技 / X推主 / 科技博客 / 公众号 / 中文科技） |
-| 热点榜 · AI 信息实时流 | 只出 AI 相关内容 + 60s 无感刷新 + 分类筛选 |
-| 热点榜 · 热搜事件 | 72h 全域聚类 + 24 桶趋势折线 + 分组信源胶囊 + 热度降序 |
+| 热点榜 · AI 精选 `/hot/` | 自有源达门槛且 AI 相关 + 分类胶囊 |
+| 热点榜 · AI 信息实时流 | 只出 AI 相关内容 + 固定周期刷新 + 分类筛选 |
+| 热点榜 · 热搜事件 | 预聚合事件聚类 + 趋势折线 + 分组信源胶囊 + 热度降序 |
 | 我的阅读 `/reading/` | 阅读沉淀 + 批量管理 + 导出 + 阅读足迹 |
 | 管理后台 `/admin/` | 5 Tab 收敛：源库（组合/问题源/检索/平台接入）/ 早报中心 / 热点榜策展 / AI 能力 / 系统 |
 | 管理后台 · 早报中心 | 生成历史 + 订阅源配置 + 日报栏目/时间设置 + 晚间主批配置 |
@@ -135,26 +133,9 @@ npm run dev            # 开发模式（nodemon 热重载）
 # 管理后台:  http://localhost:3000/admin/
 ```
 
-### 宝塔 / 服务器部署（PM2）
+### 服务器常驻（可选，非主部署面）
 
-```bash
-# 1. 上传代码（排除 node_modules/ data/ .env）
-# 2. 安装依赖
-npm install --production
-
-# 3. 抖音功能需 Playwright（约 300MB）
-npx playwright install chromium
-
-# 4. 配置 .env（PORT / HTTPS_PROXY 等）
-
-# 5. 构建并启动
-npm run build
-npm run pm2:start
-pm2 save
-pm2 startup   # 开机自启
-
-# 6. Nginx 反代 http://127.0.0.1:3000，client_max_body_size 10m
-```
+把本地端长期跑在一台服务器上的做法（依赖安装、代理、鉴权豁免等注意事项）见 `docs/RUNBOOK.md` §2/§3。主部署面是 Vercel 读层 + GH runner 采集（ADR-01），本地端是开发与灾备。
 
 ### 测试
 
@@ -172,7 +153,7 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 | **后端** | Node.js 20+ / Express 4 / better-sqlite3 (WAL) |
 | **前端** | React 18 / Vite 5 / Tailwind CSS 3 |
 | **采集** | rss-parser / Playwright (抖音) / undici (HTTP) |
-| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；GitHub Actions runner 直写 Turso + cron-job.org 外置触发器双保险（云端主链路） |
+| **调度** | node-cron / 自定义 due 驱动 tick 调度器（本地）；云端主链路 = GH Actions runner 直写 Turso，双档触发（GH schedule + 外置 HTTP 触发器，ADR-13） |
 | **AI** | Agnes 云端（日报增强/评分/翻译/摘要）；多轮精翻管线 + 薄正文仅标题通道 |
 | **云端** | Vercel Serverless (读层+管理台) / Turso (libSQL, 东京) / GH Actions runner (采集) / PHP 队列 |
 | **部署** | Vercel (生产读层) + GH Actions (定时采集) / PM2 (本地开发/灾备) |
@@ -184,12 +165,12 @@ node smoke-test.js    # 冒烟测试（生产库副本，零副作用）
 ```
 qwis-portal/
 ├── server/               # Express 后端
-│   ├── routes/           # 22 个 API 路由
+│   ├── routes/           # API 路由
 │   ├── services/         # 采集器 / AI日报 / 事件聚合 / 报警 / 调度 / 源自动分类
 │   ├── cloud/            # 双模式异步数据层（SQLite / Turso）
 │   ├── middleware/       # 鉴权中间件（JWT）
 │   ├── util/             # HTTP / 日志 / 安全图片代理 / 时间工具
-│   ├── db.js             # 本地 better-sqlite3（9 张表 DDL + 增量迁移）
+│   ├── db.js             # 本地 better-sqlite3（建表 DDL + 增量迁移）
 │   └── index.js          # 入口（代理初始化 → 建表 → 路由 → 鉴权 → 调度器）
 ├── web/                  # 主前端（Vite + React + Tailwind）
 │   ├── src/
@@ -210,9 +191,7 @@ qwis-portal/
 ├── opml/                 # bestblogs 源清单（wechat2rss / youtube / podcast）
 ├── tools/                # 运维脚本（collect-turso.js = 云端采集主链路）
 ├── tests/                # 回归测试（node:test）
-├── docs/                 # 文档（RUNBOOK / specs / pitfalls / adr / features / eval 等）
-├── archive/              # 历史资产（报告 / 规格 / 分析）
-└── trash/                # 退役代码（we-mp-rss 等）
+└── docs/                 # 文档（全量地图见 docs/INDEX.md：pitfalls / adr / features / eval 等）
 ```
 
 ---
@@ -221,18 +200,7 @@ qwis-portal/
 
 ### `.env` 环境变量
 
-| 变量 | 必填 | 说明 |
-|------|------|------|
-| `PORT` | 否 | 服务端口，默认 `3000` |
-| `AUTH_SECRET` | 是 | JWT 签名密钥（生产环境必须修改为强随机字符串） |
-| `ADMIN_USER` | 是 | 管理员用户名 |
-| `ADMIN_PASSWORD` | 是 | 管理员密码 |
-| `HTTPS_PROXY` | 否 | 翻墙代理地址（YouTube/X 等海外源需要） |
-| `NO_PROXY` | 否 | 不走代理的地址列表（逗号分隔） |
-| `CLOUD_BASE_URL` | 否 | 云端队列 API 域名 |
-| `TURSO_DATABASE_URL` | 否 | Turso 数据库 URL |
-| `TURSO_AUTH_TOKEN` | 否 | Turso 认证 Token |
-| `AUTH_DISABLED` | 否 | 设为 `true` 禁用鉴权（仅本机调试） |
+必需变量的清单与位置矩阵只有一处：`ARCHITECTURE.md` §6（凭据速查在本地件 `docs/HANDOVER.md` §1.5，永不提交）；模板见 `.env.example`。常用项：`PORT`（服务端口）、`AUTH_SECRET`（JWT 签名密钥）、`ADMIN_USER` / `ADMIN_PASSWORD`（管理口令）、`HTTPS_PROXY`（海外源代理）、`TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN`（云库）。
 
 ### `config/customer-config.json`
 
@@ -251,7 +219,7 @@ qwis-portal/
 
 ### 管理后台口令
 
-首次访问 `/admin/` 时设置管理口令，存储于 `settings` 表的 `admin.passwordHash` 字段（httpOnly cookie）。
+管理账号来自环境变量 `ADMIN_USER` / `ADMIN_PASSWORD`（本地 `.env` + Vercel env），登录换令牌（ADR-12）。`settings` 表里那个口令哈希键**不是鉴权入口**，只是"不回显"名单的成员——把它设上不会让任何接口放行。
 
 ---
 
@@ -262,7 +230,7 @@ qwis-portal/
 | 端点 | 说明 |
 |------|------|
 | `GET /api/articles` | 文章列表（默认排除热榜/聚合源，支持 `since` 增量 + `smart` 排序） |
-| `GET /api/articles/since` | 文章增量（前端 60s 无感刷新轮询用） |
+| `GET /api/articles/since` | 文章增量（前端固定周期轮询用） |
 | `GET /api/videos` | 视频列表（游标分页 + 播客并入） |
 | `GET /api/hot` | 热点榜（精选/全部动态/事件榜） |
 | `GET /api/hot/groups` | 热点分类列表（去重、只含有内容的组） |
@@ -294,7 +262,7 @@ qwis-portal/
 | `/api/reading` | POST/PUT | 阅读记录写入 |
 | `/api/audit` | GET | 审计日志 |
 
-> 管理端点全表见 [docs/HANDOVER.md](docs/HANDOVER.md) §3.4
+> 本表是本地端速查。云端读层的响应形状见 `docs/contracts/`；管理端点全表在本地件 `docs/HANDOVER.md` §3（含密钥，已 gitignore，不入库）。
 
 ---
 
@@ -302,7 +270,7 @@ qwis-portal/
 
 ### Q: 抖音采集为什么只能在本地运行？
 
-抖音采集依赖 Playwright 有头浏览器 + 扫码登录态，云端无头环境无法维持登录状态。目标部署形态为宝塔/自有服务器全量部署，届时抖音功能可在服务器上运行。
+抖音采集依赖 Playwright + 扫码登录态，**仅本地端**，永不上云（ADR-02）。要长期跑就按 `docs/RUNBOOK.md` §3 托管本地端。
 
 ### Q: 微信公众号图片加载不出来？
 
@@ -310,7 +278,7 @@ qwis-portal/
 
 ### Q: 源被自动停用了？
 
-系统有熔断机制：源连续失败 3 次自动 `enabled=0`。可在管理后台「源库」Tab 批量恢复，或单源手动启用（启用时自动清零 fail_count）。
+系统有熔断机制：源连续失败达阈值（按类型分档，取值在共用实现）自动 `enabled=0`。可在管理后台「源库」Tab 批量恢复，或单源手动启用（启用时自动清零 fail_count）。
 
 ### Q: 如何添加新的 RSS 源？
 
@@ -324,7 +292,7 @@ qwis-portal/
 
 ### Q: 日报没有自动生成？
 
-- 云端（Vercel）：每天北京时间 08:00 + 21:30 由 GH Actions runner 生成；排查先看 Turso settings `cloud.collect` 心跳，再看 GitHub Actions 运行记录
+- 云端：晚间主批 + 夜间备跑由 GH Actions runner 生成（时刻以作业文件 `.github/workflows/collect.yml` 为准）；排查先看 Turso settings `cloud.collect` 心跳，再看 GitHub Actions 运行记录
 - 本地：检查调度器 `npm run pm2:logs`；手动触发：管理后台 → 「早报中心」→ 「重新生成」
 
 ### Q: 如何备份和恢复数据？
@@ -337,18 +305,9 @@ qwis-portal/
 
 ## 📋 运维命令速查
 
-| 命令 | 说明 |
-|------|------|
-| `npm start` | 启动服务（生产模式） |
-| `npm run dev` | 开发模式（nodemon 热重载） |
-| `npm run build` | 构建前端 |
-| `npm test` | 运行回归测试 |
-| `npm run pm2:start` | PM2 启动守护进程 |
-| `npm run pm2:restart` | PM2 重启 |
-| `npm run pm2:logs` | PM2 查看日志 |
-| `node smoke-test.js` | 冒烟测试（零副作用） |
-| `node tools/collect-turso.js collect` | 手动直采云端 Turso（主链路同款脚本） |
-| `node tools/audit-cloud.js` | 云端 19 项健康检查 |
+日常启停：`npm start`（生产模式）/ `npm run dev`（开发热重载）/ `npm run build`（改了 `web/src` 必须重建）/ `npm run pm2:*`（进程守护）。
+
+验证与门禁命令的唯一清单（`npm test`、冒烟、文档门禁等各自"判什么、怎么取读数"）见 `docs/FEATURE_MATRIX.md` §1.5；运维排障命令见 `docs/RUNBOOK.md` §6。
 
 ---
 
@@ -359,6 +318,9 @@ qwis-portal/
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 架构文档（系统全景、数据通路、已知坑、协作规则） |
 | [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | 功能矩阵（功能/端点状态唯一权威） |
 | [docs/CLOUD_PIPELINE_GUIDE.md](docs/CLOUD_PIPELINE_GUIDE.md) | 云端定时管线指南 |
+| [docs/INDEX.md](docs/INDEX.md) | 文档地图（全量索引 + 模块地图） |
+| [docs/DOC_GOVERNANCE.md](docs/DOC_GOVERNANCE.md) | 文档清洁与治理规范（写作尺子 + 门禁） |
+| [docs/EVAL_GUIDE.md](docs/EVAL_GUIDE.md) | 评测现状与重建原则 |
 | [docs/HANDOVER.md](docs/HANDOVER.md) | 交接/对接文档（Vercel 配置、凭据速查、API 列表）⚠️ 含敏感凭据，已 gitignore |
 | [docs/DEV_GUIDE.md](docs/DEV_GUIDE.md) | 开发者上手指南 |
 | [docs/DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) | 开发规范与验收标准 |
@@ -366,7 +328,7 @@ qwis-portal/
 | [docs/ISSUES.md](docs/ISSUES.md) | 已知问题清单（活文档） |
 | [docs/DELIVERY_VERIFICATION.md](docs/DELIVERY_VERIFICATION.md) | 交付验证清单 |
 | [docs/NEXT-DEV-REQS.md](docs/NEXT-DEV-REQS.md) | 待开发需求 |
-| [docs/pitfalls/](docs/pitfalls/) | 踩坑库（采集/后端/AI/前端/部署/测试 六域 30+ 条） |
+| [docs/pitfalls/](docs/pitfalls/) | 踩坑库（采集/后端/AI/前端/部署/测试 六域；条数以各域文件为准） |
 | 功能规格件 | 在途批次的**工作文件**：判完生死即整批删，持久部分搬进 `docs/adr/` 与 `docs/features/`（规矩见 [docs/DOC_GOVERNANCE.md](docs/DOC_GOVERNANCE.md) §2.1 与 §7）。当前没有常驻的规格库 |
 
 ---

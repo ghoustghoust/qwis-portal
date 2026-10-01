@@ -3,7 +3,7 @@
 > 所有有效文档的路径与用途速查，供 Agent 和开发者快速定位上下文。
 > **本文件是全量地图**：`docs/` 下任何 `.md`/`.json` 未在此登记即为失踪文档（`tools/doc-lint.cjs` 会报）。
 > 文档自身的清洁与归档规则 → `docs/DOC_GOVERNANCE.md`。
-> 最后更新：2026-09-30
+> 最后更新：2026-10-01
 
 ---
 
@@ -13,7 +13,7 @@
 2. **当前状态**：`docs/FEATURE_MATRIX.md`（功能 SSOT）→ `docs/ISSUES.md`（活跃问题）→ `docs/NEXT-DEV-REQS.md`（需求队列）
 3. **排障**：`docs/RUNBOOK.md` → `docs/pitfalls/`（踩坑库）
 4. **凭据**：`docs/HANDOVER.md`（⚠️ 含密钥，本地文件，永不提交）
-5. **交付末尾**：按 `docs/DOC_GOVERNANCE.md` §3 做清洁与归档
+5. **交付末尾**：按 `docs/DOC_GOVERNANCE.md` §3 做清洁出账
 
 ## 根目录核心文档（3 份，不再增）
 
@@ -36,7 +36,7 @@
 | `FEATURE_MATRIX.md` | **功能矩阵 SSOT**（本地/云端/runner 三端能力矩阵） |
 | `ISSUES.md` | **活跃问题 SSOT**（活跃 bug / 观察中 / 挂案；已核销的不进本文件） |
 | `NEXT-DEV-REQS.md` | **需求队列 SSOT**（T 系列，未开工/在途） |
-| `RUNBOOK.md` | 运维手册（本地/宝塔/云端排障） |
+| `RUNBOOK.md` | 运维手册（本地/云端运维排障） |
 | `DELIVERY_VERIFICATION.md` | 交付验证手册（线上实测流程，代理 `127.0.0.1:12000`） |
 | `EVAL_GUIDE.md` | **评测现状与重建原则**：现役验证装置是哪三件、评测装置为何摘除（09-28/10-01 两裁）、稳定后重建时照什么原则。命令清单见 `FEATURE_MATRIX.md` §1.5，交付链见 `AGENTS.md` §3 |
 | `DEVELOPMENT_STANDARDS.md` | 开发规范与验收标准 |
@@ -61,16 +61,16 @@
 
 ## 踩坑库（docs/pitfalls/）· 语义权威，只累积不归档
 
-每条含症状/根因/规则/案例；换手必读。域文件与编号索引见 `pitfalls/README.md`，`ARCHITECTURE.md` §5 只留同一张表的镜像。
+每条含症状/根因/规则/案例；换手必读。**坑号以各域文件的 `### #N` 条目为准**，本文不维护编号清单——抄一份就漂一份（本表此前的编号镜像已两次落后于域文件实测，故删）。`ARCHITECTURE.md` §5 只留域文件索引。
 
-| 域文件 | 覆盖 |
+| 域文件 | 域 |
 |---|---|
-| `pitfalls/collection.md` | #4 #6 #7 #9 #19 #28 #29 #30 |
-| `pitfalls/backend.md` | #10 #11 #12 #14 #15 #16b #17 #23 #25 #31 #33 |
-| `pitfalls/ai.md` | #8 #24 #26 #32 #34 #A1 #A2 |
-| `pitfalls/frontend.md` | #1 #2 #16 #F1 |
-| `pitfalls/deployment.md` | #5 #20 #21 #22 #D1 #D2 |
-| `pitfalls/testing.md` | #13 #18 #27 #T1 |
+| `pitfalls/collection.md` | 采集与信源 |
+| `pitfalls/backend.md` | 后端与数据 |
+| `pitfalls/ai.md` | AI 管线 |
+| `pitfalls/frontend.md` | 前端 |
+| `pitfalls/deployment.md` | 部署与运维 |
+| `pitfalls/testing.md` | 测试 |
 
 ## 模块地图（三层 · 检索先来这里）
 
