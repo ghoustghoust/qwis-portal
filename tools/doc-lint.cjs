@@ -60,7 +60,9 @@ for (const f of FOUNDATION) {
 
 // 2 相对路径引用不得悬空。豁免归档/作废层（只读历史，引用已删文件是事实记录），
 //   以及含 doc-lint:ignore 的行（活文档刻意引用已删路径，如 ISSUES B12）
-const ARCHIVE_PREFIXES = ['docs/archive/', 'docs/deprecated/', 'docs/changes/archive/'];
+// 归档前缀只留真实存在的那一个。原先还挂着 `docs/deprecated/`（09-25 裁"作废即删"后该目录已废）
+// 与 `docs/changes/archive/`（从未建起来）——留着不会出错，但会让下一个人以为那两个位置还有东西。
+const ARCHIVE_PREFIXES = ['docs/archive/'];
 const REF_RE = /(?:\.\.?\/|docs\/|archive\/|web\/|server\/|api\/|lib\/|tools\/|tests\/|prompts\/|static-data\/|opml\/|cloud\/|scripts\/|portal\/)[\w.\-/一-龥]*\.(?:md|json|cjs|mjs|jsx|tsx|css|ya?ml|bat|php|png|html|txt|db|js)(?![\w])/g;
 function extractRefs(text) {
   const refs = new Set();
