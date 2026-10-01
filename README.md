@@ -367,7 +367,7 @@ qwis-portal/
 | [docs/DELIVERY_VERIFICATION.md](docs/DELIVERY_VERIFICATION.md) | 交付验证清单 |
 | [docs/NEXT-DEV-REQS.md](docs/NEXT-DEV-REQS.md) | 待开发需求 |
 | [docs/pitfalls/](docs/pitfalls/) | 踩坑库（采集/后端/AI/前端/部署/测试 六域 30+ 条） |
-| [docs/specs/](docs/specs/) | 功能规格文档库 |
+| 功能规格件 | 在途批次的**工作文件**：判完生死即整批删，持久部分搬进 `docs/adr/` 与 `docs/features/`（规矩见 [docs/DOC_GOVERNANCE.md](docs/DOC_GOVERNANCE.md) §2.1 与 §7）。当前没有常驻的规格库 |
 
 ---
 

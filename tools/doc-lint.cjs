@@ -125,7 +125,7 @@ const registered = (f) => {
     if (indexText.includes(dir + '/') || indexText.includes(path.posix.basename(dir))) return true;
     dir = path.posix.dirname(dir);
   }
-  return indexText.includes('docs/specs/') && r.startsWith('docs/specs/');
+  return false;
 };
 for (const f of docsFiles) {
   const base = path.basename(f);
@@ -387,26 +387,9 @@ function findUncitedF2pCounts(text) {
   return out;
 }
 
-// 11 父 spec 的「背景」段里的实测断言必须带编号或指路（B116 的第③条）。
-//    病根：09-21 实测有 4 条父 spec 的"背景事实"当夜就被同轮后续实测推翻（`40` 域行数、
-//    `reading.digest` 是否已存在、`subscription.ids` 是空数组还是悬空 id、`schemaVersion` 类型），
-//    照父 spec 动工就是按假前提开工。
-//    **故意只做提示级**：这是文本语义判据，比前几条软 —— 一上来就判红只会逼人加 ignore
-//    （坑 #45 说的就是这个动作）。先让它每月被看见，攒够真样本再决定要不要升成不通过。
-const BACKGROUND_HEAD = /^#{2,4}\s*.*(背景|现状|事实)/;
-const FACTISH = /(实测|目前|从未|恒 |不存在|已存在|没有|全是|只到|停在)/;
-const ANCHORED = /B\d{1,3}\b|BL\d|见\s|`docs\/|`api\/|`server\/|`tools\/|`lib\/|`web\//;
-function findUnanchoredFacts(text) {
-  const lines = text.split('\n');
-  const out = [];
-  let inBg = false;
-  lines.forEach((raw, i) => {
-    if (/^#{1,4}\s/.test(raw)) { inBg = BACKGROUND_HEAD.test(raw); return; }
-    if (!inBg || raw.startsWith('> 已作废') || !raw.trim().startsWith('-') || raw.includes(IGNORE_MARK)) return;
-    if (FACTISH.test(raw) && !ANCHORED.test(raw)) out.push({ line: i + 1, text: raw.replace(/^(\s*-.{0,50}).*$/, '$1') });
-  });
-  return out;
-}
+// （原判据 #11「父 spec 背景段的实测断言要带出处」随 `docs/specs/` 整批作废一并摘除：
+//   它的判据对象只剩归档件，留着就是一条"永远零命中但看起来在把关"的判据 —— 正是下面自证段要防的形状。
+//   语义没丢，改写进 `docs/DOC_GOVERNANCE.md` §2.5 的"一次性读数"那一行。作废登记见 `docs/ISSUES.md`。）
 
 const SELF_TEST = process.argv.includes('--self-test');
 if (SELF_TEST) {
@@ -432,8 +415,8 @@ if (SELF_TEST) {
     findStaleAnchors('活文档不许出现 a.js:99 这种形态', resolve).bad.length, 0);
   expect('锚点-ignore 行不许红', findStaleAnchors('a.js:99 <!-- doc-lint:ignore -->', resolve).bad.length, 0);
   expect('锚点-文件不在的归悬空判据管', findStaleAnchors('见 gone.js:99', resolve).bad.length, 0);
-  // 豁免靠词表，词表漏一个同义词 = 把**照实引用烂锚**的好文档判红（本轮实测：第 8 条一扩到裸文件名，
-  // `docs/specs/09-*/task.md:146` 那句"旧引用 Sidebar.jsx:186 是烂锚"就红了 —— 原表只有「坏锚点」）
+  // 豁免靠词表，词表漏一个同义词 = 把**照实引用烂锚**的好文档判红（取证原话：一扩到裸文件名，
+  // 历史件里那句"旧引用 Sidebar.jsx:186 是烂锚"就红了 —— 原表只有「坏锚点」）
   expect('锚点-同义词「烂锚/旧引用」也要放过',
     findStaleAnchors('旧引用 Sidebar.jsx:186 是烂锚', (f) => (f === 'Sidebar.jsx' ? 165 : null)).bad.length, 0);
   // 分母可见性：放过的那几条必须被数出来，否则"0 越界"分不清是真干净还是判据写空
@@ -468,13 +451,6 @@ if (SELF_TEST) {
   expect('编号-跨表再写一遍是正常引用', findDuplicateIds(TBL('| B8 | 甲 |\n') + '\n' + TBL('| B8 | 乙（引用索引）|\n')).length, 0);
   expect('编号-正文里提到同号不算（只判行首登记位）',
     findDuplicateIds(TBL('| B12 | 甲 |\n| B13 | 见 B12 那一行 |\n')).length, 0);
-  // 11 父 spec 背景段的实测断言要带出处（提示级）
-  const BG = '## 一、背景\n\n- `articles` 表里没有 `score` 列\n- 源列表共 8 个类型，见 `docs/specs/36`\n- 每日清理从未触发（B101）\n';
-  expect('背景-没出处的实测断言要提示', findUnanchoredFacts(BG).length, 1);
-  expect('背景-带编号或指路的不提示', findUnanchoredFacts(BG).every((x) => !/B101|docs\/specs\/36/.test(x.text)), true);
-  expect('背景-非背景段不判', findUnanchoredFacts('## 二、验收\n\n- `articles` 表里没有 `score` 列\n').length, 0);
-  expect('背景-作废标注行不判（§2.4 要求原文留着）',
-    findUnanchoredFacts('## 一、背景\n\n> 已作废：旧写法「清理每天跑」\n').length, 0);
   // 12 裸文件名锚点（B115②）：坏样本 = 只写 basename 且仓内多个同名；反向 = 写了全路径 / 仓根真有该文件
   const BARE_ON = { exists: () => false, resolveBare: () => ['web/src/a/AlertsTab.jsx', 'web/src/b/AlertsTab.jsx'] };
   expect('裸名-多义必须提示并带候选数', findBareAnchors('见 AlertsTab.jsx:591 那行', BARE_ON).bare[0].cands, 2);
@@ -527,7 +503,7 @@ const suffixHits = (f) => {
 const existsRel = (f) => resolveFile(f) !== null;
 // 第 8 条原来的盲区：`resolveFile` 只按仓根相对路径查，裸文件名一律返回 null → 那条锚点
 // **既不判越界也不进分母**。这里补上"唯一候选才收敛"：多义的不猜（猜错会把好文档判红），
-// 实测补完抓到 1 条真越界（`docs/specs/09-.../task.md:146` 的 `Sidebar.jsx:186`，本轮一并改掉）。
+// 实测补完抓到 1 条真越界（历史件里那条 `Sidebar.jsx:186`，同一轮一并改掉）。
 const resolveAny = (f) => {
   const direct = resolveFile(f);
   if (direct !== null) return direct;
@@ -553,13 +529,13 @@ let anchorScanned = 0, anchorSkipped = 0, bareScanned = 0, anchorLoose = 0;
 for (const f of lintTargets) {
   if (!fs.existsSync(f)) continue;
   const text = read(f);
-  const strict = strictOk(f) || rel(f).startsWith('docs/specs/');
+  const strict = strictOk(f);
   const push = strict ? errors : warnings;
   for (const b of findTableBreaks(text)) push.push(`[表格] ${rel(f)}:${b.line} 该行 ${b.got} 格 > 表头 ${b.want} 格（裸竖线请写成 \\|）：${b.text}`);
   for (const b of findBrokenTableHeads(text)) push.push(`[表格断裂] ${rel(f)}:${b.line} 表头与分隔行被并成一行，整张表会脱离格数判据：${b.text}`);
   const a = findStaleAnchors(text, resolveAny);
   anchorScanned += a.scanned; anchorSkipped += a.skippedVocabulary + a.skippedIgnore;
-  // 行号锚判红的范围 = **活文档**（底层件 + features + pitfalls + adr）。历史层（specs/归档）只清点不判红：
+  // 行号锚判红的范围 = **活文档**（底层件 + features + pitfalls + adr）。历史层（归档件）只清点不判红：
   //   那里的 `file:行号` 是"当时那次取证"的一部分，追溯判红只会逼人删掉证据或整行加 ignore（坑 #64 规则①）。
   //   本地设计内文件（凭据速查件）不进门禁面 —— 它永不入库，改它的书写纪律没有门禁意义（与第 1、2 条同一份豁免表）。
   const relF = rel(f);
@@ -579,12 +555,8 @@ for (const f of lintTargets) {
   }
   for (const c of findUncitedF2pCounts(text)) push.push(`[F2P出处] ${rel(f)}:${c.line} 写了改前/改后条数却没带证据文件名：${c.text}`);
   for (const d of findDuplicateIds(text)) push.push(`[编号撞号] ${rel(f)}:${d.line} 的 ${d.id} 与第 ${d.first} 行同号 —— 两条不同事实共用一个号，之后按号引用必指错行`);
-  // 11 只对**父 spec**（docs/specs/NN-*/spec.md）判，且只出提示（判据比前几条软，见函数注释）
-  if (/^docs\/specs\/\d[^/]*\/spec\.md$/.test(rel(f))) {
-    for (const g of findUnanchoredFacts(text)) warnings.push(`[背景出处] ${rel(f)}:${g.line} 背景段的实测断言没带 B 编号也没指路：${g.text}`);
-  }
 }
-warnings.push(`[锚点分母] 本次看到 ${anchorScanned} 条指向存在的 file:line 锚点：${anchorSkipped} 条按"死锚点信号词/ignore"放过（那是被当作反例或讲规矩时引用的，不是漏判）、${anchorLoose} 条落在历史层（docs/specs/ 与归档件，只进分母不判红，逐条走 npm run lint:cites），其余落在活文档层——**活文档出现行号形态即判红**（09-30 裁定：禁的是形态，不是"指得准不准"）。另有 ${bareScanned} 条只写裸文件名，多义与查无此文件的**只进本条分母**（不猜文件，猜错会把好文档判红）`);
+warnings.push(`[锚点分母] 本次看到 ${anchorScanned} 条指向存在的 file:line 锚点：${anchorSkipped} 条按"死锚点信号词/ignore"放过（那是被当作反例或讲规矩时引用的，不是漏判）、${anchorLoose} 条落在历史/研究层（只进分母不判红，逐条走 npm run lint:cites），其余落在活文档层——**活文档出现行号形态即判红**（09-30 裁定：禁的是形态，不是"指得准不准"）。另有 ${bareScanned} 条只写裸文件名，多义与查无此文件的**只进本条分母**（不猜文件，猜错会把好文档判红）`);
 }
 
 console.log(`doc-lint：${errors.length} 错 ${warnings.length} 警`);

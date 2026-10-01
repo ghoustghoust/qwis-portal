@@ -969,7 +969,7 @@ async function runWeekly() {
     theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch((e) => { log(`周刊导语生成失败: ${e.message}`); return null; });
     // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
     weeklySummary = await _ai.generateWeeklySummary(items).catch((e) => { log(`周刊周总结失败: ${e.message}`); return null; });
-    // 周刊 v2 杂志结构（specs/24）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
+    // 周刊杂志结构（构成边界 ADR-31）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
     if (items.length >= 4) {
       // B121②：`agnes 仅含 reasoning 无 content` 是已知形态（B19/W6 同根），一次退避重试的代价
       // 远小于"整期深析齐全但主线骨架全丢"——上一期就是这么发出去还报 `degraded=false`。

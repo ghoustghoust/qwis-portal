@@ -137,8 +137,11 @@ test('P6-5: 重构后文档体系完整', () => {
     'docs/features/daily-report.md',
     'docs/features/events-alerts.md',
     'docs/features/test-harness.md',
-    'docs/specs/03-公众号走托管RSS决策.md',
-    'docs/specs/05-任务队列选型决策.md',
+    // 03/05 这两条决策原先由 `docs/specs/03-…`、`docs/specs/05-…` 两份规格件承载；用户 09-30 裁定
+    // "非决策非边界的历史规格整批删除"，两份的内容已分别搬进 ADR-03 与 ADR-10，故此处**改指新家**而不是删掉这两格
+    //（本锁的意图是"这些承载处必须存在且非空"，换承载处该跟着换，否则锁会对着已不存在的文件空转）。
+    'docs/adr/03-公众号走托管RSS.md',
+    'docs/adr/10-三套队列不并成一套.md',
   ];
 
   for (const doc of requiredDocs) {

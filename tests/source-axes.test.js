@@ -196,7 +196,7 @@ test('轴语义: muted / reader_visible=0 源被文章流排除，显式 source_
   assert.ok(titles.includes('正常文X'));
   assert.ok(!titles.includes('屏蔽文X'), 'muted 源不进文章流');
   assert.ok(!titles.includes('未收录文X'), 'reader_visible=0 不进文章流');
-  // 显式 source_id 豁免（检索层可回看任何源——specs/26：采集全量、选择只过滤消费端）
+  // 显式 source_id 豁免（检索层可回看任何源——ADR-30：采集全量、选择只过滤消费端）
   const r2 = await req('GET', `/api/articles?source_id=${m}`, undefined);
   assert.ok(r2.body.items.map((x) => x.title).includes('屏蔽文X'), '显式 source_id 可回看屏蔽源');
 });

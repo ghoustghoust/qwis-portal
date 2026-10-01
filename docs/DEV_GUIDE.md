@@ -42,7 +42,7 @@
 ## 五、文档落点（写什么去哪儿）
 
 - 新决策（方向性取舍、"不做什么"）→ `docs/adr/` 一个编号件：是什么 / 为什么 / 边界与禁止。同主题被改判时**就地改写那件**，不新开"取代件"、不留旧方案叙述。
-- 做一个新功能（拆几步、什么算完）→ `docs/specs/` 走规格件。
+- 做一个新功能（拆几步、什么算完）→ 先出规格件（`docs/specs/`，**在途工作文件，交付即清**：持久部分搬进 `adr/`、`features/`、`pitfalls/`，规矩见 `docs/DOC_GOVERNANCE.md` §2.1/§7）。
 - 模块行为变了 → 改 `docs/features/` 那份；能力覆盖变了 → 改矩阵。
 - 完整的对应表与清洁规矩 → `docs/DEVELOPMENT_STANDARDS.md` §4 与 `docs/DOC_GOVERNANCE.md`。
 

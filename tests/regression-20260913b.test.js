@@ -94,7 +94,7 @@ cloudTest('R5 OPML 导出：结构/转义/分组嵌套', async () => {
 //   再**真跑一次 cleanup**，断言存活的正是那四条豁免/窗口内的。原用例只断言"视频恒 0 + articles>=0"，
 //   恒真且押在生产只读上；本文件其余用例全是 GET（读生产是可接受的取证方式）。
 
-cloudTest('R7 周刊编辑综述：任务结构整段复述一票否决（specs/24 对抗案例）', async () => {
+cloudTest('R7 周刊编辑综述：任务结构整段复述一票否决（对抗案例：模型复述任务结构）', async () => {
   const _ai2 = require('../api/_ai');
   // 实测污染形态：模型输出 "1. **Analyze User Input:** - **Role:** …" 任务结构
   _ai2._setProviderOverride(async () =>

@@ -22,11 +22,11 @@
 | 阅读器分页断层、文章重复、pubDate 未来时间 | `debugging/2026-09-13-reader-pagination-and-content-fixes.md` | `docs/pitfalls/backend.md` #31 |
 | 早报/周刊出现"用户要求我…/我需要找到…"这类元评论、标题被胡编 | `debugging/2026-09-14-delivery.md` §翻译管线 | `docs/pitfalls/ai.md` #26 #A2 |
 | 游标分页/`since` 语义、云端 504 | `debugging/2026-09-14-delivery.md` §0.2 | `docs/pitfalls/backend.md` #31 #33 |
-| 09-13~15 那批 UI/管理台/源治理改了什么 | `debugging/2026-09-14-delivery.md` | `docs/specs/25`、`docs/specs/26` |
+| 09-13~15 那批 UI/管理台/源治理改了什么 | `debugging/2026-09-14-delivery.md` | 当时的规格件已整批作废，反查走 git（锚点见 `docs/ISSUES.md` 的作废登记）；仍生效的取舍在 `docs/adr/` |
 | "某一轮 AGENTS §3 十一条各自跑没跑"、洁净轮 Step0~7 读数 | `debugging/2026-09-20-round-status-records.md` | `AGENTS.md` §3、`docs/DOC_GOVERNANCE.md` §4.1 |
 | 已修条目的逐条取证与 F2P 证据对账（09-19 两批） | `debugging/2026-09-19-delivery-evidence-ledger.md` | `docs/eval/f2p/*.json` |
 | 「这批改动当时等谁点头」「放行清单某行后来去了哪」「哪几条被冻结了」 | `debugging/2026-09-21-release-approval-ledger.md` §二 原文 + §三 落点表 | `docs/ISSUES.md`「✅ 放行清单」指针行 |
-| B27~B70 某条 09-19 的登记原话、W1~W16 观察项的原始读数、已核销行的原样措辞 | `debugging/2026-09-21-issues-closed-rows.md` §一~§九 | 对应域 spec `docs/specs/{36,37,38,39,40}-*/` |
+| B27~B70 某条 09-19 的登记原话、W1~W16 观察项的原始读数、已核销行的原样措辞 | `debugging/2026-09-21-issues-closed-rows.md` §一~§九 | 对应域规格件已整批作废（反查走 git）；**spec 编号自此只作历史编号读，不得当"方案已存在"引用** |
 | B102/B107~B117 等已交付行的交付读数原文、B71~B85 已修行原文、产品选择裁定表原表、BL2~BL11 已核销阻塞项原文 | `debugging/2026-09-21-issues-round2-closed.md` §三/§四/§六/§七 | `docs/ISSUES.md` 各指针行 |
 | T2/T4-1/T4-2/T5 已完成需求行、T6 第 0/1/1.5 步执行原文 | `feature/2026-09-21-nextdev-closed-rounds.md` | `docs/NEXT-DEV-REQS.md` 各指针行 |
 

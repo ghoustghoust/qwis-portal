@@ -384,7 +384,7 @@ const { notNoiseSql, notNoiseExistsSql, notNoiseJoinSql, notHotlistSql, hotlistC
 const { eventsState, eventMetaTable } = require('../lib/alert-events');
 const NOT_NOISE_READER = notNoiseSql('s', { reader: true });
 
-// GET /api/hot — 热点榜（2026-09-14 重设计，specs/25：读自有评分源 + 热榜聚合为辅）
+// GET /api/hot — 热点榜（读自有评分源为主、热榜聚合为辅；三个视图的口径差异见 docs/features/hot-and-weekly.md）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
 // 分类=gname(分组名，重名分组合并) / category(六类关键词) / q / source / cursor；时间窗默认 7 天（days 可调，上限 30）
 async function handleHot(req) {

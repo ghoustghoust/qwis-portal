@@ -392,7 +392,7 @@ async function generateWeeklySummary(items) {
   return body.slice(0, 300);
 }
 
-// ═══ 周刊 v2 杂志结构（specs/24，2026-09-14）═══
+// ═══ 周刊 v2 杂志结构（构成边界见 ADR-31；页面形态见 docs/features/hot-and-weekly.md）═══
 // 两次调用：①storylines JSON（封面主题词 + 3-5 条主线，每线标题/叙事≤100字/条目编号）
 // ②编辑长综述（500-700 字递进叙述）。污染兜底：JSON 解析失败/越界编号丢弃 → 调用方回退旧版视图
 async function generateWeeklyMagazine(items) {
@@ -437,7 +437,7 @@ async function generateWeeklyMagazine(items) {
   return magazine;
 }
 
-// 编辑综述生成+清洗（specs/24 对抗案例 2026-09-14：模型把任务结构整段复述
+// 编辑综述生成+清洗（对抗案例：模型把任务结构整段复述
 // 「1. **Analyze User Input:** - **Role:** …」——逐行过滤不兜底，需整段结构化一票否决）
 async function generateWeeklyEditorNote(items, storylines) {
   const list = items

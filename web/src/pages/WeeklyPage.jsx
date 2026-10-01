@@ -114,7 +114,7 @@ export default function WeeklyPage() {
 
           {report && (
             <>
-              {/* 封面头（specs/24 杂志版：有 coverTheme 用大字主题，否则回退期号） */}
+              {/* 封面头（杂志版：有 coverTheme 用大字主题，否则回退期号） */}
               <header>
                 <div className="text-[11px] tracking-widest t-accent font-medium">精选周刊 · 本周必看 {report.items?.length || 0} 条</div>
                 <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
@@ -148,7 +148,7 @@ export default function WeeklyPage() {
 
               <div className="mt-6 border-t-2" style={{ borderColor: 'var(--text)' }} />
 
-              {/* 编辑长综述（specs/24；spec 32：markdown 渲染，段落结构保留） */}
+              {/* 编辑长综述（杂志版；markdown 渲染，段落结构保留） */}
               {report.editorNote && (
                 <section className="mt-8 card p-5 sm:p-6">
                   <div className="text-[11px] tracking-widest t-accent font-medium">编辑综述</div>
@@ -156,7 +156,7 @@ export default function WeeklyPage() {
                 </section>
               )}
 
-              {/* 主线策展（specs/24 杂志版） */}
+              {/* 主线策展（杂志版） */}
               {(report.storylines || []).map((sl, i) => (
                 <section key={sl.title} className="mt-8">
                   <div className="flex items-baseline gap-3">

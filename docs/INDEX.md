@@ -150,19 +150,13 @@
 
 方向性取舍与"不做什么"的家。件内三段：**是什么 / 为什么 / 边界与禁止**；不写"以前是什么、为什么换掉"——被覆盖就地改写本件，查经过走 git。索引表在 `ARCHITECTURE.md` §3.8，本处只登记有哪些号：
 
-`docs/adr/01-部署方向.md` · `docs/adr/02-采集只在服务端做.md` · `docs/adr/03-公众号走托管RSS.md` · `docs/adr/04-云端API收在一个函数.md` · `docs/adr/05-不做读路径兜底.md` · `docs/adr/06-前端刷新走轮询.md` · `docs/adr/07-批量操作走单条SQL.md` · `docs/adr/08-源状态拆多轴.md` · `docs/adr/09-进模型前按源限量.md` · `docs/adr/10-三套队列不并成一套.md` · `docs/adr/11-不做多用户与权限分级.md` · `docs/adr/12-凭据一套口径.md` · `docs/adr/13-采集触发双档换可靠性.md` · `docs/adr/14-三端共享语义不共享进程.md` · `docs/adr/15-AI评分口径.md` · `docs/adr/16-探索位不改订阅集合.md` · `docs/adr/17-不做云数据同步.md` · `docs/adr/18-定时只走GH-Actions.md` · `docs/adr/19-不引入工作流编排平台.md` · `docs/adr/20-不引入搜索引擎栈.md` · `docs/adr/21-runner依赖只许纯JS.md` · `docs/adr/22-不做清理总开关.md` · `docs/adr/23-兴趣画像不作可改项.md` · `docs/adr/24-策展四目标不可拆.md`
+`docs/adr/01-部署方向.md` · `docs/adr/02-采集只在服务端做.md` · `docs/adr/03-公众号走托管RSS.md` · `docs/adr/04-云端API收在一个函数.md` · `docs/adr/05-不做读路径兜底.md` · `docs/adr/06-前端刷新走轮询.md` · `docs/adr/07-批量操作走单条SQL.md` · `docs/adr/08-源状态拆多轴.md` · `docs/adr/09-进模型前按源限量.md` · `docs/adr/10-三套队列不并成一套.md` · `docs/adr/11-不做多用户与权限分级.md` · `docs/adr/12-凭据一套口径.md` · `docs/adr/13-采集触发双档换可靠性.md` · `docs/adr/14-三端共享语义不共享进程.md` · `docs/adr/15-AI评分口径.md` · `docs/adr/16-探索位不改订阅集合.md` · `docs/adr/17-不做云数据同步.md` · `docs/adr/18-定时只走GH-Actions.md` · `docs/adr/19-不引入工作流编排平台.md` · `docs/adr/20-不引入搜索引擎栈.md` · `docs/adr/21-runner依赖只许纯JS.md` · `docs/adr/22-不做清理总开关.md` · `docs/adr/23-兴趣画像不作可改项.md` · `docs/adr/24-策展四目标不可拆.md` · `docs/adr/25-采集路线RSS优先不做自建爬虫.md` · `docs/adr/26-增强环节失败不阻断主链路.md` · `docs/adr/27-降级分两段且机翻必带标记.md` · `docs/adr/28-自动化只写增量不覆盖人工意图.md` · `docs/adr/29-阅读器不作收件箱.md` · `docs/adr/30-用户选择只过滤消费端.md` · `docs/adr/31-周刊构成边界宁缺毋滥.md` · `docs/adr/32-阅读器排序确定性零请求路径模型.md` · `docs/adr/33-预筛层零额度只做削减.md` · `docs/adr/34-预筛判据只认形态类不认长度.md` · `docs/adr/35-云端写路径只标记不请求里等结果.md`
 
-## 开发功能 Spec（docs/specs/）· 与 ADR 不是一类
+## 开发功能规格（`docs/specs/`）· 在途工作文件，不作现役位
 
-这里装"做什么功能、拆几步、要什么结果"（spec / plan / task / checklist），**不装方向性取舍**——那在 `docs/adr/`。
-
-- **单文件决策**：`03-公众号走托管RSS决策.md`、`05-任务队列选型决策.md`、`22-rss-first-collection-decision.md`、`23-information-overload-defense.md`、`24-weekly-v2-magazine.md`、`25-hot-redesign.md`、`26-platform-ia-refactor.md`、`P1-12-401-handling-fix.md`
-- **四件套齐**（spec/plan/task/checklist）：`09` `11` `13`~`21`
-- **只有 spec.md**（2026-09-18 清洁核实，别再声称四件套完成）：`10-my-reading`、`12-roadmap-2026`、`27-reader-today`、`27b-source-axes`、`28-hot-redesign`、`29-source-groups`、`30-admin-consolidation`、`31-media-playback`、`32-content-typography`、`33-misc-fixes`、`34-misc-fixes`
-- **`44-prescreen-tier/spec.md`**（零额度预筛层）：级3「每源配额」**已在部署面接线**——实测依据是 daily-ai 运行输出带 `prescreen` 计数、宽池常数在 `lib/prescreen.js` 一处；决策与边界见 ADR-09。本件其余步骤仍按 spec 登记，**本行不判定批准状态**。
-- **`45-doc-validity-adr-split/spec.md`**（docs 顶层有效性核验 + 决策外迁 ADR + 叙述重写，09-28 开工）：本轮不碰 `tools/`、`tests/`；地基 = 新建 ADR-17~23 与六处边界增量的逐条放行。
-- **已作废删除**：`docs/specs/35`~`43` 共 65 份（09-23 用户裁定整批清除，「不能用前朝的剑斩本朝的官」）。逐字反查/还原锚点在 `docs/ISSUES.md`「作废登记」一节，**不要再按"35~43 在途"读**。
-  - 随 35~43 作废但**已执行且不撤销**的动作（唯一仍生效的事实）：portal 项目下线/删除、2h 门户同步通道默认关闭。
+与 ADR 不是一类：这里只装"做什么功能、拆几步、要什么结果"，**不装方向性取舍**。
+规矩是**用完即清**：一批规格判完生死，持久部分（决策 → `docs/adr/`、功能语义 → `docs/features/`、坑 → `docs/pitfalls/`）搬进新家，其余按 `docs/DOC_GOVERNANCE.md` §2.2 整批删除，反查走 git。
+**本索引不逐份登记这里的文件**——登记会让"在途规格"长成第二个事实源（历史上它曾以过时形态引领开发方向）。当前整批清零，作废登记与历史编号声明在 `docs/ISSUES.md` 的「作废登记」。
 
 ## 接口契约（docs/contracts/）· 读层响应形状，改 API 必须同步
 
