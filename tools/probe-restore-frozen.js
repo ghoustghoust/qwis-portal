@@ -7,13 +7,14 @@ const fs = require('fs');
 const path = require('path');
 const { maskDeep } = require('../lib/secrets.js');
 
-const OPTS = { apply: false, undo: false, batch: 15, type: 'youtube', backup: '' };
+const OPTS = { apply: false, undo: false, batch: 15, type: 'youtube', backup: '', excludeIds: '' };
 for (const a of process.argv.slice(2)) {
   if (a === '--apply') OPTS.apply = true;
   else if (a === '--undo') OPTS.undo = true;
   else if (a.startsWith('--batch=')) OPTS.batch = parseInt(a.slice(8), 10) || 0;
   else if (a.startsWith('--type=')) OPTS.type = a.slice(7);
   else if (a.startsWith('--backup=')) OPTS.backup = a.slice(9);
+  else if (a.startsWith('--exclude-ids=')) OPTS.excludeIds = a.slice(14);
 }
 
 for (const l of fs.readFileSync('.env', 'utf8').split(/\r?\n/)) {
@@ -45,7 +46,8 @@ async function qRun(sql, args = []) { return db.execute({ sql, args }); }
   const { breakerThreshold } = require('../lib/source-breaker.js');
   const th = breakerThreshold('youtube');
   const frozen = all.filter(s => Number(s.enabled) === 0 && Number(s.fail_count || 0) >= th);
-  const pick = frozen.slice(0, OPTS.batch);
+  const exclude = new Set(String(OPTS.excludeIds || '').split(',').map(Number).filter(Number.isFinite));
+  const pick = frozen.filter(s => !exclude.has(Number(s.id))).slice(0, OPTS.batch);
   const stamp = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
   const backupDir = path.join('docs', 'eval');
   fs.mkdirSync(backupDir, { recursive: true });

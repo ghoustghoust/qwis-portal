@@ -1,0 +1,385 @@
+{
+ "at": "2026-10-02T14:32:41.878Z",
+ "count": 42,
+ "threshold": 10,
+ "rows": [
+  {
+   "id": 589,
+   "name": "Chris Williamson",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.938Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:08.260Z\",\"health\":{\"v\":1,\"s\":\"ffffffffffnffeeeeeeeeneneeeneeffffffffff\",\"t\":[29838585,16,14,16,4095,15,15,15,15,15,14,76,15,15,75,75,75,60,76,74,76,74,76,74,76,74,75,61,74,75,75,15,14,16,15,15,15,15,14,16],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T05:01:30.001Z\"}",
+   "last_fetched_at": "2026-09-29T01:31:51.852Z"
+  },
+  {
+   "id": 590,
+   "name": "MrBeast",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.938Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:08.436Z\",\"health\":{\"v\":1,\"s\":\"fffffffffneeeeeeeeeeeeeeeefffeffffffffff\",\"t\":[29840041,14,2761,15,14,16,14,16,15,15,61,74,76,74,76,74,76,74,76,74,76,74,75,61,74,75,75,15,14,16,74,16,14,16,14,16,9,5,16,14],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T06:45:57.951Z\"}",
+   "last_fetched_at": "2026-09-29T03:31:18.134Z"
+  },
+  {
+   "id": 591,
+   "name": "National Geographic",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.938Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:08.604Z\",\"health\":{\"v\":1,\"s\":\"ffffeeeeenneeeneeeeeffffffffffffffffffff\",\"t\":[29838616,15,13,1,16,75,75,74,76,74,76,74,61,75,74,76,74,76,61,74,75,14,16,14,16,14,16,14,16,14,2776,15,15,15,15,14,16,14,16,14],\"k\":[\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:15:57.474Z\"}",
+   "last_fetched_at": "2026-09-26T01:16:17.268Z"
+  },
+  {
+   "id": 592,
+   "name": "PowerfulJRE",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.938Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:08.780Z\",\"health\":{\"v\":1,\"s\":\"eeeeefeffffffffffneffffffffffeffffffffff\",\"t\":[29836591,75,68,82,62,88,15,75,15,15,15,15,15,14,16,14,0,1156,74,76,15,15,14,16,14,16,14,16,14,3976,74,16,14,16,15,15,15,15,15,15],\"k\":[null,null,null,null,null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:29.847Z\"}",
+   "last_fetched_at": "2026-09-28T00:31:22.524Z"
+  },
+  {
+   "id": 593,
+   "name": "SmarterEveryDay",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.938Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:08.950Z\",\"health\":{\"v\":1,\"s\":\"effffeffeffeeeeeeeeeeeeeeeeffeffffffffff\",\"t\":[29845545,76,14,16,14,16,61,14,15,60,15,15,60,75,75,74,61,69,67,74,75,75,75,75,75,75,75,63,11,16,60,14,16,14,16,14,16,14,16,14],\"k\":[null,\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",null,\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-10-01T05:45:57.802Z\"}",
+   "last_fetched_at": "2026-10-01T02:31:15.053Z"
+  },
+  {
+   "id": 594,
+   "name": "White Cube YouTube",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.124Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeffffffffffnffeffffffffffffffffffff\",\"t\":[29836516,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1184,66,10,14,60,16,14,16,15,15,14,16,14,16,4095,15,14,16,15,15,15,15,15,15],\"k\":[null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:29.803Z\"}",
+   "last_fetched_at": "2026-09-25T02:15:50.300Z"
+  },
+  {
+   "id": 595,
+   "name": "一席",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.296Z\",\"health\":{\"v\":1,\"s\":\"fffffeffffffffeeeeeeeeeeeeeeeeffffffffff\",\"t\":[29842741,15,15,15,15,14,61,15,15,15,14,16,11,3,16,74,61,75,74,61,76,74,75,75,75,75,75,75,75,75,75,14,16,14,16,14,16,15,15,14],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T04:45:56.157Z\"}",
+   "last_fetched_at": "2026-09-29T01:16:07.461Z"
+  },
+  {
+   "id": 596,
+   "name": "一条",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.479Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeefeffffffffffffffffffffffffffffff\",\"t\":[29836366,76,74,75,75,68,82,62,88,15,75,15,15,15,15,15,14,16,14,0,1306,15,15,14,16,14,16,14,16,14,4231,15,14,16,15,15,14,16,11,3],\"k\":[null,null,null,null,null,null,null,null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:45:59.051Z\"}",
+   "last_fetched_at": "2026-09-24T03:01:29.628Z"
+  },
+  {
+   "id": 597,
+   "name": "TED",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.649Z\",\"health\":{\"v\":1,\"s\":\"eeeeeffffffffffffffffffffffffnffffffffff\",\"t\":[29836591,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1380,15,15,14,16,14,16,14,16,14,4081,15,15,15,15,75,15,15,14,16,15,15,14,16,11],\"k\":[null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:42:05.531Z\"}",
+   "last_fetched_at": "2026-09-28T03:16:13.527Z"
+  },
+  {
+   "id": 598,
+   "name": "AJ&amp;Smart",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.826Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeffffffffffffffffffffeeffffffffff\",\"t\":[29836366,76,74,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1410,14,16,14,16,14,16,14,16,13,3918,75,89,15,15,15,15,15,14,16,14,16],\"k\":[null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 500\",\"lastErrorAt\":\"2026-09-28T05:01:32.028Z\"}",
+   "last_fetched_at": "2026-09-28T01:17:08.993Z"
+  },
+  {
+   "id": 599,
+   "name": "DesignCourse",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:09.998Z\",\"health\":{\"v\":1,\"s\":\"eeeeeefffffffffffeffffffffffeeffffffffff\",\"t\":[29836516,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1304,17,74,15,14,16,14,16,14,16,14,16,3884,76,74,16,14,16,14,16,15,15,15,15],\"k\":[null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:29.785Z\"}",
+   "last_fetched_at": "2026-09-28T00:31:14.724Z"
+  },
+  {
+   "id": 600,
+   "name": "DesignerUp",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:10.174Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeffffffffffeeffffffffffffffffffff\",\"t\":[29836366,76,74,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1201,74,76,13,16,15,15,14,16,14,16,14,4217,14,15,14,16,14,16,15,15,14],\"k\":[null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:15:56.768Z\"}",
+   "last_fetched_at": "2026-09-25T02:16:44.557Z"
+  },
+  {
+   "id": 601,
+   "name": "Figma",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.939Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:10.356Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeeeffffffffffffffffffffffffffffff\",\"t\":[29836277,75,74,76,74,76,75,75,74,76,74,15,15,15,14,16,15,15,14,16,1350,14,16,14,16,14,16,14,16,13,4051,16,15,15,15,15,15,15,14,16],\"k\":[null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:13.744Z\"}",
+   "last_fetched_at": "2026-09-24T02:32:11.950Z"
+  },
+  {
+   "id": 602,
+   "name": "First of Kind",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:10.573Z\",\"health\":{\"v\":1,\"s\":\"eeeeffffffffffeeeffffffffffffeffffffffff\",\"t\":[29836666,68,82,62,88,15,14,16,14,16,14,16,14,16,1170,75,76,74,15,14,16,14,16,14,16,14,16,4095,15,15,75,15,15,14,16,15,15,14,16,11],\"k\":[null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:42:05.532Z\"}",
+   "last_fetched_at": "2026-09-28T03:16:15.245Z"
+  },
+  {
+   "id": 603,
+   "name": "Flux Academy",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:10.741Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeeeffffffffffffffffffffffffffffff\",\"t\":[29836226,66,74,76,74,75,75,68,82,63,87,15,14,16,15,15,15,15,14,16,1351,13,16,15,15,14,16,14,16,14,4141,15,15,15,15,15,14,16,14,16],\"k\":[null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 500\",\"lastErrorAt\":\"2026-09-28T05:01:33.618Z\"}",
+   "last_fetched_at": "2026-09-24T01:19:01.222Z"
+  },
+  {
+   "id": 604,
+   "name": "Lenny&apos;s Podcast",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:10.919Z\",\"health\":{\"v\":1,\"s\":\"eeeeeefffffffffffnffffffffffneffffffffff\",\"t\":[29836516,75,75,68,82,63,87,15,14,16,15,15,15,15,14,16,1260,14,60,16,14,16,15,15,14,16,14,16,3975,68,81,16,15,15,15,15,15,15,14,16],\"k\":[null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:14.532Z\"}",
+   "last_fetched_at": "2026-09-28T00:54:39.407Z"
+  },
+  {
+   "id": 605,
+   "name": "Mind the Product",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.097Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeffffffffffnfeffffffffffffffffffff\",\"t\":[29836442,74,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1216,75,13,76,15,15,14,16,14,16,14,16,14,4187,14,15,14,16,14,16,15,15,14],\"k\":[null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:15:56.954Z\"}",
+   "last_fetched_at": "2026-09-25T02:45:55.787Z"
+  },
+  {
+   "id": 606,
+   "name": "NNgroup",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.277Z\",\"health\":{\"v\":1,\"s\":\"eeeffffffffffefffeffffffffffeeffffffffff\",\"t\":[29836802,74,76,74,15,15,15,14,16,15,15,14,16,1110,75,5,10,14,60,16,14,16,15,15,14,16,14,16,3961,75,88,16,15,15,15,15,15,15,14,16],\"k\":[null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:13.793Z\"}",
+   "last_fetched_at": "2026-09-28T00:47:09.469Z"
+  },
+  {
+   "id": 607,
+   "name": "Product School",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.446Z\",\"health\":{\"v\":1,\"s\":\"ffefeeeeeeeeeeeeneeffffffffffeffffffffff\",\"t\":[29839981,14,16,74,16,75,75,74,63,74,74,76,72,62,76,74,76,74,76,74,15,15,15,14,16,14,17,13,16,1275,75,14,16,15,15,15,15,15,15,14],\"k\":[\"http\",\"http\",null,\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:15:55.116Z\"}",
+   "last_fetched_at": "2026-09-28T00:46:04.929Z"
+  },
+  {
+   "id": 608,
+   "name": "The Futur",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.621Z\",\"health\":{\"v\":1,\"s\":\"fffffffffffffneeeeeeeeeeeeeeeeffffffffff\",\"t\":[29838571,14,16,14,16,13,4172,15,14,16,14,16,15,15,61,74,76,74,76,74,76,74,76,74,76,74,75,61,74,75,75,15,14,16,14,16,15,15,14,16],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T05:01:29.987Z\"}",
+   "last_fetched_at": "2026-09-29T01:31:50.914Z"
+  },
+  {
+   "id": 609,
+   "name": "yobi321",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.940Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.790Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeffffffffffffffffffffneffffffffff\",\"t\":[29836366,76,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1351,13,16,15,15,14,16,14,16,14,3930,76,74,16,14,16,14,16,15,15,15,15],\"k\":[null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:29.768Z\"}",
+   "last_fetched_at": "2026-09-28T00:31:15.471Z"
+  },
+  {
+   "id": 610,
+   "name": "3Blue1Brown",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:11.964Z\",\"health\":{\"v\":1,\"s\":\"feffffffffeeeeeeeeeeeeeeeefffeffffffffff\",\"t\":[29842801,14,61,15,15,15,14,16,11,3,16,74,61,75,74,61,76,74,75,75,75,75,75,75,75,75,75,14,16,14,62,14,14,16,14,16,14,16,9,5],\"k\":[\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T06:15:57.881Z\"}",
+   "last_fetched_at": "2026-09-29T03:15:57.691Z"
+  },
+  {
+   "id": 611,
+   "name": "Ali Abdaal",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:12.168Z\",\"health\":{\"v\":1,\"s\":\"ffffffefffffffeeeeeeeeeeeeeeeeffffffffff\",\"t\":[29838571,14,16,14,16,4171,14,75,15,15,14,16,11,3,16,74,61,75,74,61,76,74,75,75,75,75,75,75,75,75,75,14,16,14,16,14,16,15,15,14],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T04:45:56.080Z\"}",
+   "last_fetched_at": "2026-09-29T01:16:11.323Z"
+  },
+  {
+   "id": 612,
+   "name": "Anthony Vicino",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:12.341Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeffffffffffeeeffffffffffffffffffff\",\"t\":[29836442,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1125,76,74,75,14,16,15,15,14,16,14,16,14,4081,15,14,16,15,15,15,15,15,15],\"k\":[null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:30.592Z\"}",
+   "last_fetched_at": "2026-09-25T02:16:41.892Z"
+  },
+  {
+   "id": 613,
+   "name": "Justin Sung",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:12.511Z\",\"health\":{\"v\":1,\"s\":\"eeeffefffffffffffffeffffffffffffffffffff\",\"t\":[29836734,82,63,87,15,14,76,15,15,15,15,14,16,14,1,9,1161,5,10,14,60,16,14,16,15,15,14,16,14,16,4155,15,15,15,15,15,14,16,14,16],\"k\":[null,null,null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:01:33.079Z\"}",
+   "last_fetched_at": "2026-09-25T02:15:49.414Z"
+  },
+  {
+   "id": 614,
+   "name": "Matt D&apos;Avella",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:12.685Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeefffffffffffeeffffffffffffffffffff\",\"t\":[29836442,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1245,5,71,74,15,14,16,14,16,14,16,14,16,4035,15,14,16,15,15,15,15,15,15],\"k\":[null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:01:30.555Z\"}",
+   "last_fetched_at": "2026-09-25T03:02:50.388Z"
+  },
+  {
+   "id": 615,
+   "name": "minutephysics",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-29T00:22:15.364Z\",\"health\":{\"v\":1,\"s\":\"feffefffefffeeeeeeeeeeeeeeeefeffffffffff\",\"t\":[29845531,14,76,14,16,61,13,16,14,61,15,15,15,60,75,75,74,61,69,67,74,75,75,75,75,75,75,75,63,11,76,14,16,14,16,14,16,14,16,14],\"k\":[\"http\",null,\"http\",\"http\",null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-10-01T05:45:58.111Z\"}",
+   "last_fetched_at": "2026-10-01T02:15:55.746Z"
+  },
+  {
+   "id": 616,
+   "name": "李永乐老师",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.941Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:12.862Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeffffffffffeffeffffffffffffffffffff\",\"t\":[29836516,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1184,66,10,14,60,16,14,16,15,15,14,16,14,16,4155,15,15,15,15,15,14,16,14,16],\"k\":[null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:01:33.296Z\"}",
+   "last_fetched_at": "2026-09-25T02:15:50.106Z"
+  },
+  {
+   "id": 617,
+   "name": "Amigoscode",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.039Z\",\"health\":{\"v\":1,\"s\":\"eeffffffffffnefffeffffffffffeeffffffffff\",\"t\":[29836816,62,88,15,14,16,14,16,15,15,14,16,1110,60,75,5,10,14,60,16,14,16,15,15,14,16,14,16,3991,75,89,15,15,15,15,15,14,16,14,16],\"k\":[null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:01:31.932Z\"}",
+   "last_fetched_at": "2026-09-28T01:17:08.567Z"
+  },
+  {
+   "id": 618,
+   "name": "Beyond Coding",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.213Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeeeffffffffffffffffffffffffffffff\",\"t\":[29836226,66,74,76,74,75,75,68,82,62,88,15,14,16,14,16,15,15,14,16,1334,16,14,16,15,15,14,16,14,16,4200,15,15,14,16,14,16,14,16,15],\"k\":[null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:46:00.770Z\"}",
+   "last_fetched_at": "2026-09-24T01:18:59.509Z"
+  },
+  {
+   "id": 619,
+   "name": "ByteByteGo",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.399Z\",\"health\":{\"v\":1,\"s\":\"ffffffffeffffffeeeeeeeeeeeeeeeffffffffff\",\"t\":[29844151,14,16,14,16,14,16,15,15,74,16,9,5,16,14,16,75,75,74,62,75,75,75,75,75,74,76,74,75,75,74,1,14,16,14,16,14,16,14,16],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-30T03:31:12.013Z\"}",
+   "last_fetched_at": "2026-09-30T00:16:09.343Z"
+  },
+  {
+   "id": 620,
+   "name": "Computerphile",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-29T23:43:32.500Z\",\"health\":{\"v\":1,\"s\":\"ffffffffffeeeeeeneeeeeeeeefffeffffffffff\",\"t\":[29844241,15,15,1485,15,14,16,15,15,15,15,60,75,75,74,61,69,67,74,75,75,75,75,75,75,75,63,11,16,14,76,14,16,14,16,14,16,14,16,14],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-10-01T06:15:55.230Z\"}",
+   "last_fetched_at": "2026-10-01T02:45:57.152Z"
+  },
+  {
+   "id": 622,
+   "name": "GitHub",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.568Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeeffffffffffneffffffffffffffffffff\",\"t\":[29836366,76,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1141,75,75,13,17,13,16,14,16,14,16,14,4307,14,15,14,16,15,15,14,16,11],\"k\":[null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:42:06.430Z\"}",
+   "last_fetched_at": "2026-09-25T01:17:04.032Z"
+  },
+  {
+   "id": 623,
+   "name": "Hussein Nasser",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.942Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.747Z\",\"health\":{\"v\":1,\"s\":\"eeeefffeffffffffffeffffffffffeffffffffff\",\"t\":[29836621,74,61,76,74,15,14,16,75,15,15,15,14,16,15,15,14,16,1215,76,13,16,15,15,14,16,14,16,14,4029,82,15,15,15,15,15,15,15,14,16],\"k\":[null,null,null,null,\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:14.916Z\"}",
+   "last_fetched_at": "2026-09-28T00:54:40.163Z"
+  },
+  {
+   "id": 624,
+   "name": "Modern Software Engineering",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:13.917Z\",\"health\":{\"v\":1,\"s\":\"eeeeeffffffffffneffeffffffffffffffffffff\",\"t\":[29836591,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1155,75,61,13,17,74,15,14,16,14,16,14,16,14,16,4185,15,14,16,14,16,15,15,14,16],\"k\":[null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:31:13.695Z\"}",
+   "last_fetched_at": "2026-09-25T03:02:06.818Z"
+  },
+  {
+   "id": 626,
+   "name": "Ryan Peterman",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.110Z\",\"health\":{\"v\":1,\"s\":\"fffffffffffffneeeeeneeeeeeeeeeffffffffff\",\"t\":[29838525,16,14,16,14,16,14,16,4215,15,14,16,15,15,61,74,76,74,76,74,76,74,76,74,76,74,75,61,74,75,75,15,14,16,14,16,15,15,14,16],\"k\":[\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T05:01:29.991Z\"}",
+   "last_fetched_at": "2026-09-29T01:31:51.349Z"
+  },
+  {
+   "id": 627,
+   "name": "Spring I/O",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.279Z\",\"health\":{\"v\":1,\"s\":\"feeeeeeeeeeeeeeeefeffffffffffeffffffffff\",\"t\":[29838645,16,75,75,74,76,60,74,61,75,75,76,74,75,75,75,75,75,14,76,14,16,14,16,14,16,14,16,14,2559,81,16,15,15,15,15,15,15,14,16],\"k\":[\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:13.755Z\"}",
+   "last_fetched_at": "2026-09-28T00:54:38.707Z"
+  },
+  {
+   "id": 628,
+   "name": "The Pragmatic Engineer",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.455Z\",\"health\":{\"v\":1,\"s\":\"eeneeeeeeffffffffffnffffffffffffffffffff\",\"t\":[29836292,74,76,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1321,74,15,14,16,14,16,14,16,14,16,4170,14,16,14,16,14,16,15,15,14],\"k\":[null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T06:15:56.772Z\"}",
+   "last_fetched_at": "2026-09-25T03:02:50.958Z"
+  },
+  {
+   "id": 629,
+   "name": "Theo - t3․gg",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.625Z\",\"health\":{\"v\":1,\"s\":\"neffffffffefffeeeeeeeeeeeeeeeeffffffffff\",\"t\":[29842606,76,75,14,15,15,14,16,14,16,14,76,11,4,15,74,61,75,74,61,76,74,75,75,75,75,75,75,75,75,75,14,16,14,16,14,16,15,15,14],\"k\":[null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-29T04:45:56.159Z\"}",
+   "last_fetched_at": "2026-09-29T01:16:10.292Z"
+  },
+  {
+   "id": 630,
+   "name": "Traversy Media",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.802Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeeffffffffffffeffffffffffffffffffff\",\"t\":[29836442,74,75,75,68,82,62,88,15,14,16,14,16,14,16,14,16,1250,10,14,60,16,14,16,15,15,14,16,14,16,4170,15,15,15,15,14,16,14,16,14],\"k\":[null,null,null,null,null,null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:15:57.538Z\"}",
+   "last_fetched_at": "2026-09-25T02:15:50.181Z"
+  },
+  {
+   "id": 631,
+   "name": "Web Dev Simplified",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.943Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:14.971Z\",\"health\":{\"v\":1,\"s\":\"eeeeeeefeffffffffffeffffffffffffffffffff\",\"t\":[29836442,74,75,75,68,82,62,88,15,75,15,15,15,15,15,14,16,14,0,1142,75,13,17,13,16,14,16,14,16,14,4246,15,15,14,16,14,16,14,16,15],\"k\":[null,null,null,null,null,null,null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T05:46:00.772Z\"}",
+   "last_fetched_at": "2026-09-25T01:17:10.497Z"
+  },
+  {
+   "id": 632,
+   "name": "freeCodeCamp.org",
+   "type": "youtube",
+   "enabled": 0,
+   "fail_count": 10,
+   "extra": "{\"origin\":\"bestblogs-youtube\",\"migratedAt\":\"2026-09-04T10:03:52.944Z\",\"resumeCount\":3,\"frozenAt\":\"2026-09-27T23:03:15.155Z\",\"health\":{\"v\":1,\"s\":\"efeffffffffffneffeffffffffffeeffffffffff\",\"t\":[29836878,88,15,75,15,15,15,15,15,14,16,14,0,1067,75,75,13,17,74,15,14,16,14,16,14,16,14,16,3914,69,81,16,15,15,15,15,15,15,14,16],\"k\":[null,\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",null,null,\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\",\"http\"]},\"lastError\":\"HTTP 404\",\"lastErrorAt\":\"2026-09-28T04:31:13.866Z\"}",
+   "last_fetched_at": "2026-09-28T00:54:39.142Z"
+  }
+ ]
+}
