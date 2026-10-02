@@ -1,197 +1,161 @@
 {
   "report": {
-    "id": 89,
-    "generated_at": "2026-10-01T07:03:23.000Z",
+    "id": 90,
+    "generated_at": "2026-10-02T06:51:40.586Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "新公开的课程、训练营与社群招募",
-        "items": [
-          {
-            "id": 2088509,
-            "title": "不得不和讨厌的人相处，比忍耐更有效的是：",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAwNzMxODE2OA==&mid=2651366324&idx=2&sn=4289f284419596ceeec9e1eb27e21cc9",
-            "source": "周国平",
-            "published_at": "2026-09-30T12:00:00.000Z",
-            "score": null,
-            "summary": "简单心理成立于2014年，提供专业心理服务，包括心理科普、心理咨询、心理课程、企业服务等。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=015524a0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fr2Qh0nX7UAsPMRKh95WibiaNvYrFP43W6c5PiaWuyybkkjbicveic7n4Nj215Derm8LVDFVPZUMBjJUiaibzwo2X1Y28gPKDibGqb8lALJQJaBmMM2c%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 1980915,
-            "title": "世界的下一个版本，由我们定义丨2026苏客松招募启动",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248904766&idx=2&sn=a1fa6f868f168539042ba04dc9e04bcf",
-            "source": "36氪",
-            "published_at": "2026-09-30T06:00:00.000Z",
-            "score": null,
-            "summary": "36氪 2026-09-30 14:00 北京 50万奖池已就位、免费吃住、算力管够。 跳转微信打开",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=930f4d96&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeFuFDwU8dbANAoYsAbJ75T1kdiccvW56nHnpTiblULfMkcfyt43zHJsvaeSt95eM85s7Wub0vUwibEbpM49EVVQ5o7mrdczJ6q7Hs%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 1998383,
-            "title": "“豪华”不能是费城76人的ID",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NzI1OTkzNQ==&mid=2654653570&idx=1&sn=7242bbbd3997216a9335eee560fc6621",
-            "source": "苏群",
-            "published_at": "2026-09-30T05:03:00.000Z",
-            "score": null,
-            "summary": "NBA新赛季开战在即，各队的训练营阵容纷纷亮相，其中费城76人是最受瞩目的球队之一。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d82f4ff6&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F4ohV7DiaiafsGdjEuCpIU4lsl7eibog4l8FETQ7scCIO4btcRrNuqyEJ0hHliaYbYYymH99lGadeJTHzxUfSWmwhse7Q5Nd4e0drMnxcouFibYB0%2F0%3Fwx_fmt%3Djpeg"
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 2106544,
-            "title": "Australia news live: ATO finds one-quarter of big firms pay zero tax; NDIS alternative Thriving Kids program begins",
-            "url": "https://www.theguardian.com/australia-news/live/2026/oct/01/labor-anthony-albanese-ato-ndis-thriving-kids-coalition-greens-leader-david-shoebridge-ntwnfb",
+            "id": 2353247,
+            "title": "早知天下事〔2026.10.02〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650242542&idx=1&sn=6e2734f25460710f252c087e8070ceca",
+            "source": "新华社",
+            "published_at": "2026-10-01T22:00:00.000Z",
+            "score": null,
+            "summary": "10月1日清晨，隆重的升国旗仪式在北京天安门广场举行，庆祝中华人民共和国成立77周年。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0c87eb07&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOITIkaP4LKS63WZh2zv8Bj0SG3BibojNfXmJytdzl7L7esCU75SgqNcSibFc0dkXw9MF6CblmOHgmX7oOaLut2lS65dXYHubQBWFo%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2338975,
+            "title": "Tyson Fury vs Anthony Joshua fight confirmed, but is the bout too late?",
+            "url": "https://www.aljazeera.com/sports/2026/10/1/tyson-fury-vs-anthony-joshua-fight-confirmed-but-is-the-bout-too-late?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-10-01T21:54:26.000Z",
+            "score": null,
+            "summary": "As Fury and Joshua confirm long-awaited boxing fight, Al Jazeera explains the delays and exchanges between the sides.",
+            "cover": null
+          },
+          {
+            "id": 2338976,
+            "title": "Flydubai co-pilot ‘assaulted’ captain before landing: Initial Saudi probe",
+            "url": "https://www.aljazeera.com/news/2026/10/1/flydubai-co-pilot-assaulted-captain-before-landing-initial-saudi-probe?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-10-01T21:53:16.000Z",
+            "score": null,
+            "summary": "Saudi Arabia&#039;s Interior Ministry says pilots were returned to the UAE with an Emirati security team.",
+            "cover": null
+          },
+          {
+            "id": 2340889,
+            "title": "OpenRadioss is not open anymore",
+            "url": "https://www.siemens.com/en-us/products/simcenter/mechanical-simulation/radioss/rd/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-01T21:41:36.000Z",
+            "score": null,
+            "summary": "Article URL: https://www.siemens.com/en-us/products/simcenter/mechanical-simulation/radioss/rd/",
+            "cover": null
+          },
+          {
+            "id": 2340890,
+            "title": "CSS Bed: Classless CSS themes to use as starting points in web development",
+            "url": "https://www.cssbed.com",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-01T21:21:32.000Z",
+            "score": null,
+            "summary": "Comments URL: https://news.ycombinator.com/item?id=49927212",
+            "cover": null
+          },
+          {
+            "id": 2375510,
+            "title": "Gufo performance .... 70tps Qwen 3.8 27b but you need to read the fine print.",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wvbmi6/gufo_performance_70tps_qwen_38_27b_but_you_need/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-10-01T21:18:54.000Z",
+            "score": 82,
+            "summary": "So everyone has been yelling about how I should be using Gufo instead of halogen because it&#39;s open source and it&#39;s &quot;just as good or better&quot;. Checking in on their GitHub (GitHub.com/g",
+            "cover": null
+          },
+          {
+            "id": 2375511,
+            "title": "Can your local coding model repair these boundary-case bugs? Failure Map: 20,168 open Python tasks",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wvbk9q/can_your_local_coding_model_repair_these/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-10-01T21:16:19.000Z",
+            "score": null,
+            "summary": "I’m the creator of Failure Map, an archive of compact Python debugging tasks. The open release has 20,168 tasks across 254 categories, with standard-library implementations, explicit contracts, failed",
+            "cover": null
+          },
+          {
+            "id": 2329979,
+            "title": "Australia news live: eSafety warns online gaming can cause ‘serious harms’ to children; Atlassian to power solar farm",
+            "url": "https://www.theguardian.com/australia-news/live/2026/oct/02/labor-anthony-albanese-online-gaming-esafety-coalition-angus-taylor-greens-david-shoebridge-ntwnfb",
             "source": "World news | The Guardian",
-            "published_at": "2026-09-30T21:48:50.000Z",
+            "published_at": "2026-10-01T21:08:13.000Z",
             "score": null,
             "summary": "Get our breaking news email, free app or daily news podcast",
             "cover": null
           },
           {
-            "id": 2107623,
-            "title": "Flydubai passenger describes putting attacker in chokehold after cockpit stabbing",
-            "url": "https://www.bbc.co.uk/news/articles/cmx2z92xx57no?at_medium=RSS&at_campaign=rss",
+            "id": 2328249,
+            "title": "Texas’ Education Board Raised Questions About an AI Learning Tool. The State Then Helped Pilot It in Public Schools.",
+            "url": "https://www.propublica.org/article/alpha-school-ai-texas-public-schools-mike-morath",
+            "source": "ProPublica",
+            "published_at": "2026-10-01T20:10:00.000Z",
+            "score": 68,
+            "summary": "A little-known effort to bring an artificial intelligence tool into Texas public schools began about a year ago, with the help of the state’s top education official, Mike Morath.&nbsp;",
+            "cover": "https://www.propublica.org/wp-content/uploads/2026/09/20251208-Abbott-Turning-Point-USA-BD-06_preview_maxWidth_3000_maxHeight_3000_ppi_72_embedColorProfile_true_quality_95.jpg?w=1149"
+          },
+          {
+            "id": 2400042,
+            "title": "What we know about Christa Pike’s condition after failed execution",
+            "url": "https://www.bbc.co.uk/news/videos/cwe8e82jgm8po?at_medium=RSS&at_campaign=rss",
             "source": "BBC News — News",
-            "published_at": "2026-09-30T21:38:54.000Z",
+            "published_at": "2026-10-01T20:09:34.000Z",
             "score": null,
-            "summary": "Other passengers on the Israel-bound flight described the \"terrifying\" moment the plane dropped.",
+            "summary": "The BBC’s Ione Wells reports from outside the Tennessee hospital where Pike is said to have arrived Wednesday night after surviving two lethal injection attempts.",
             "cover": null
           },
           {
-            "id": 2115968,
-            "title": "It’s the ‘closest thing to an HIV vaccine’, but who gets access?",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/9/30/its-the-closest-thing-to-an-hiv-vaccine-but-who-gets-access?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-30T21:34:30.000Z",
+            "id": 2324818,
+            "title": "Google’s new Guided Vision feature can help you read the fine print",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/1003756/google-gemini-live-guided-vision",
+            "source": "The Verge",
+            "published_at": "2026-10-01T19:47:51.000Z",
             "score": null,
-            "summary": "A twice-yearly injection could revolutionise HIV prevention, but who gets access raises bigger questions.",
-            "cover": null
+            "summary": "Guided Vision is launching in Gemini Live on compatible Android devices today to use AI to give real-time audio descriptions of anything you point your phone's camera at. By sharing your camera in Gem",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/02/STK255_Google_Gemini_B_474198.jpg?quality=90&strip=all&crop=0,0,100,100"
           },
           {
-            "id": 2129594,
-            "title": "早知天下事〔2026.10.01〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650242308&idx=1&sn=08f6a937b98e8f25052317c18342cead",
-            "source": "新华社",
-            "published_at": "2026-09-30T21:30:00.000Z",
+            "id": 2324819,
+            "title": "Android Central ‘will continue’ despite laying off its staff",
+            "url": "https://www.theverge.com/tech/1003735/android-central-layoffs",
+            "source": "The Verge",
+            "published_at": "2026-10-01T19:20:29.000Z",
             "score": null,
-            "summary": "烈士纪念日向人民英雄敬献花篮仪式在京隆重举行，习近平等党和国家领导人出席。详情&gt;&gt;",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b58c7034&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIST0G5X035Tm8euw3ZRftWoh8nw6ylPt1k0D8P02bWJkL4pOkJicg2ibf5CvRtq6XuN0qia3oiazibvLfsG6l1tl1kHbyb7ZBLwWwAo%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Android Central, a blog focused on the Android ecosystem, laid off its staff yesterday, but owner Future confirms to The Verge that the site will continue publishing.",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/Screenshot-2026-10-01-at-12.18.47-PM.jpg?quality=90&strip=all&crop=0,0,100,100"
           },
           {
-            "id": 2115969,
-            "title": "Trump administration files complaint against judges over media comments",
-            "url": "https://www.aljazeera.com/news/2026/9/30/trump-administration-files-complaint-against-judges-over-media-comments?traffic_source=rss",
-            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-09-30T21:28:43.000Z",
-            "score": null,
-            "summary": "Seven Minnesota judges face ethics complaint after speaking publicly about US president&#039;s immigration crackdown.",
-            "cover": null
-          },
-          {
-            "id": 2128125,
-            "title": "Google Wants Hollywood to Stop Being So Afraid of Technology",
-            "url": "https://www.nytimes.com/2026/09/30/business/media/google-hollywood-krya-sedgwick.html",
+            "id": 2315408,
+            "title": "Amazon Settles Lawsuit Over Claims of Slow Deliveries to Low-Income Areas",
+            "url": "https://www.nytimes.com/2026/10/01/technology/amazon-slow-deliveries-dc.html",
             "source": "NYT &gt; Technology",
-            "published_at": "2026-09-30T21:18:56.000Z",
+            "published_at": "2026-10-01T19:17:51.000Z",
             "score": null,
-            "summary": "100 Zeros, a collaboration between Google and Range Media Partners, aims to give the tech giant a foothold in movies, TV and emerging forms of entertainment.",
+            "summary": "The tech giant will refund $7.25 million in Prime membership fees to affected customers and pay an additional $1 million to settle the suit brought by the District of Columbia.",
             "cover": null
           },
           {
-            "id": 2101195,
-            "title": "Neon sticks it to A24 by announcing a Creative Commons SCP Foundation movie",
-            "url": "https://www.theverge.com/entertainment/1002958/neon-a24-creative-commons-scp-foundation-movie",
-            "source": "The Verge",
-            "published_at": "2026-09-30T20:45:00.000Z",
-            "score": null,
-            "summary": "A24 pissed off one of the internet's largest horror communities when it announced it was working on an SCP Foundation film, but apparently hadn't bothered to contact the SCP Wiki team, nor did it comm",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/SCP-X-NEON.png?quality=90&strip=all&crop=0,0,100,100"
+            "id": 2321544,
+            "title": "AI Engineer Kids Day is coming to NYC with @Neo4j and @cassandraonjava. 🗽\r\n\r\nAt our SF Kids Day, kids...",
+            "url": "https://x.com/aiDotEngineer/status/2105734500084842680",
+            "source": "AI Engineer(@aiDotEngineer)",
+            "published_at": "2026-10-01T19:00:02.000Z",
+            "score": 38,
+            "summary": "AI Engineer Kids Day is coming to NYC with @Neo4j and @cassandraonjava. 🗽At our SF Kids Day, kids built corn maze games and banana simulators in a few hours. 🌽🍌We want more families to share that f",
+            "cover": "https://pbs.twimg.com/media/HTh2TAWWkAATLI1.jpg"
           },
           {
-            "id": 2101196,
-            "title": "Google announces Gemini 4 and says it’s so capable that only ‘trusted cyber defenders’ can have it right now",
-            "url": "https://www.theverge.com/tech/1002980/google-gemini-4-argon",
-            "source": "The Verge",
-            "published_at": "2026-09-30T20:41:41.000Z",
-            "score": 65,
-            "summary": "Google today revealed its next AI frontier model, which it's calling Gemini 4 Argon. The new model delivers \"frontier performance in complex workflows across real-world software engineering, enterpris",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/STK093_Google_02.jpg?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 2103273,
-            "title": "Gitea 28.0.0 Is Released",
-            "url": "https://blog.gitea.com/release-of-28.0.0/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-30T20:32:23.000Z",
-            "score": null,
-            "summary": "Article URL: https://blog.gitea.com/release-of-28.0.0/",
-            "cover": null
-          },
-          {
-            "id": 2094736,
-            "title": "we're excited to share and early look of Gemini 4 Argon!",
-            "url": "https://x.com/patloeber/status/2105388838155940040",
-            "source": "Patrick Loeber(@patloeber)",
-            "published_at": "2026-09-30T20:06:29.000Z",
-            "score": 62,
-            "summary": "we&#39;re excited to share and early look of Gemini 4 Argon!Sundar Pichai@sundarpichaiLots of discussion out there about our next model(!), so I wanted to give an early look as soon as possible. Intro",
-            "cover": "https://pbs.twimg.com/profile_images/2051799620062429184/AL8CoAUG_normal.jpg"
-          },
-          {
-            "id": 2095469,
-            "title": "So much work by so many folks across Google to create this model, it is amazing to see the progress ...",
-            "url": "https://x.com/OfficialLoganK/status/2105388580394930499",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-09-30T20:05:28.000Z",
-            "score": null,
-            "summary": "So much work by so many folks across Google to create this model, it is amazing to see the progress here, and just the start! Can&#39;t wait for more folks to use Gemini 4 Argon.blog.google/innovation",
-            "cover": null
-          },
-          {
-            "id": 2095470,
-            "title": "Introducing Gemini 4 Argon, our new frontier model, rolling out to cyber defenders starting today, a...",
-            "url": "https://x.com/OfficialLoganK/status/2105388054274080946",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-09-30T20:03:23.000Z",
-            "score": 52,
-            "summary": "Introducing Gemini 4 Argon, our new frontier model, rolling out to cyber defenders starting today, and more widely as soon as possible. I am really excited by the progress we have made here. Argon is ",
-            "cover": "https://pbs.twimg.com/media/HTfVRhMa0AABGYb.png"
-          },
-          {
-            "id": 2103276,
-            "title": "Dear Software Makers",
-            "url": "https://blog.jim-nielsen.com/2026/dear-software-makers/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-09-30T19:45:38.000Z",
-            "score": null,
-            "summary": "Article URL: https://blog.jim-nielsen.com/2026/dear-software-makers/",
-            "cover": null
-          },
-          {
-            "id": 2082180,
-            "title": "Base completes Cobalt upgrade, adds new tools for tokenized assets",
-            "url": "https://cointelegraph.com/news/base-cobalt-upgrade-tokenized-finance-b20-kyc?utm_source=rss_feed&utm_medium=rss_tag_blockchain&utm_campaign=rss_partner_inbound",
-            "source": "Cointelegraph.com News",
-            "published_at": "2026-09-30T19:00:00.000Z",
-            "score": null,
-            "summary": "Base’s Cobalt lets traders set transaction conditions while giving issuers tools for compliance checks, stock splits and forced token transfers.",
-            "cover": "https://s3-images.ctmedia.io/media/article-covers/2026/09/01M3RM1RHGZ8GVHFDEWSR01F8Q/base-coinbase.png"
-          },
-          {
-            "id": 2082658,
-            "title": "Stella McCartney makes waves with ‘sea life, not sea food’ theme in zero-wool Paris show",
-            "url": "https://www.theguardian.com/fashion/2026/sep/30/stella-mccartney-sea-life-paris-fashion-week-animal-rights",
-            "source": "World news | The Guardian",
-            "published_at": "2026-09-30T18:47:26.000Z",
-            "score": null,
-            "summary": "Designer showcases wool alternatives and ocean-inspired clothes and says ‘kindness requires real work’",
+            "id": 2330444,
+            "title": "Google’s Project Suncatcher AI data center test has officially launched to space onboard SpaceX rocket",
+            "url": "https://www.scientificamerican.com/article/googles-project-suncatcher-ai-data-center-test-has-officially-launched-to-space-aboard-spacex-rocket/",
+            "source": "Scientific American Content: Global",
+            "published_at": "2026-10-01T19:00:00.000Z",
+            "score": 38,
+            "summary": "Project Suncatcher is aimed at testing Google's AI chips in the harsh environment of space",
             "cover": null
           }
         ]
@@ -201,153 +165,153 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 2106793,
-            "title": "docs: clarify Agents API setup and hosted VM support (#162158)",
-            "url": "https://github.com/openclaw/openclaw/commit/aa5ad42c0de0228955c1b016ed8e94c8674c7acc",
-            "source": "Recent Commits to openclaw:main",
-            "published_at": "2026-09-30T21:56:30.000Z",
-            "score": null,
-            "summary": "docs: clarify Agents API setup and hosted VM support (#162158) Co-authored-by: Sarah Fortune &lt;sarah.fortune@gmail.com&gt;",
-            "cover": null
+            "id": 2329994,
+            "title": "Cloudflare brings paid access to MCP tools — who controls the agent’s spending?",
+            "url": "https://thenewstack.io/cloudflare-x402-agent-spending/",
+            "source": "The New Stack",
+            "published_at": "2026-10-01T20:09:20.000Z",
+            "score": 71,
+            "summary": "Cloudflare opened a closed beta of its Monetization Gateway on Wednesday, giving domain owners a way to charge AI agents for access to APIs, MCP tools, websites, and datasets. The gateway carries paym",
+            "cover": "https://cdn.thenewstack.io/media/2026/10/bf0638f1-steve-a-johnson-tx5xt2af9ze-unsplash-1024x683.jpg"
           },
           {
-            "id": 2117390,
-            "title": "刚刚，Gemini 4 Argon 发布：多项基测碾压 GPT-6 Astra，已参与谷歌 80 万行内核代码迁移",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651294363&idx=1&sn=836549714bcf8394007984a84a52e3cd",
-            "source": "InfoQ",
-            "published_at": "2026-09-30T21:54:00.000Z",
-            "score": 73,
-            "summary": "刚刚，谷歌宣布推出新一代模型 Gemini 4 Argon，重点面向长流程软件工程、法律与金融等企业知识工作，以及网络安全防御。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b95800c7&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FhLLZnAbUwNiatSEafCziagM5VYXAF25l1hNGZ5qSAb7Cg1vLo0pdKI3sUcqMz12dO25nuNZYmGMRibJ17B10HoIbmYicHrteYRZYkib7zRLZvHVE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2114675,
-            "title": "Gemini 4 Argon (High) has reshaped the Pareto frontier with a $0.62 cost per task!\r\n\r\nDive into the Ag...",
-            "url": "https://x.com/arena/status/2105411275123782008",
-            "source": "lmarena.ai(@lmarena_ai)",
-            "published_at": "2026-09-30T21:35:39.000Z",
-            "score": 42,
-            "summary": "Gemini 4 Argon (High) has reshaped the Pareto frontier with a $0.62 cost per task!Dive into the Agent Arena details at arena.ai/leaderboard/ag…💬0🔄0❤️11👀1998📊1⚡ Powered by xgo.ing",
-            "cover": "https://pbs.twimg.com/media/HTfsDYvakAAqRYj.jpg"
-          },
-          {
-            "id": 2114676,
-            "title": "More big news from @GoogleDeepMind: Gemini 4 Argon (High) is #8 in Agent Arena with a +7.92% net imp...",
-            "url": "https://x.com/arena/status/2105411271525052418",
-            "source": "lmarena.ai(@lmarena_ai)",
-            "published_at": "2026-09-30T21:35:38.000Z",
-            "score": 62,
-            "summary": "More big news from @GoogleDeepMind: Gemini 4 Argon (High) is #8 in Agent Arena with a +7.92% net improvement score, and has reshaped the Pareto frontier with a $0.62 cost per task! See its placement b",
-            "cover": "https://pbs.twimg.com/media/HTfsA3EbUAANDct.jpg"
-          },
-          {
-            "id": 2108556,
-            "title": "谷歌发布新一代旗舰模型 Gemini 4 Argon。\r\n\r\n谷歌在跑分表里拿它和 OpenAI 的 GPT-6 Astra、Anthropic 的 Claude Fable 5.1 和 Claude O...",
-            "url": "https://x.com/dotey/status/2105396970772942935",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-09-30T20:38:48.000Z",
-            "score": 79,
-            "summary": "谷歌发布新一代旗舰模型 Gemini 4 Argon。谷歌在跑分表里拿它和 OpenAI 的 GPT-6 Astra、Anthropic 的 Claude Fable 5.1 和 Claude Opus 5.5 对比，价格却定在 GPT-6.1 Sol 和 Opus 5.5 的档位。普通用户和开发者暂时还用不上，第一批只开放给谷歌 Fairwind 计划里的网络安全防御人员。谷歌说会分阶段放开，同",
-            "cover": "https://pbs.twimg.com/profile_images/2051799620062429184/AL8CoAUG_normal.jpg"
-          },
-          {
-            "id": 2100673,
-            "title": "A big day for Google!\r\n\r\nGemini 4 Argon is here, taking first place on 13 of the 19 benchmarks Google ...",
-            "url": "https://x.com/TheRundownAI/status/2105388648657031424",
-            "source": "The Rundown AI(@TheRundownAI)",
-            "published_at": "2026-09-30T20:05:44.000Z",
+            "id": 2325513,
+            "title": "Announcing AWS Well-Architected Agent, an AI-powered intelligence to optimize your cloud environment (preview)",
+            "url": "https://aws.amazon.com/blogs/aws/announcing-aws-well-architected-agent-an-ai-powered-intelligence-to-optimize-your-cloud-environment-preview/",
+            "source": "AWS News Blog",
+            "published_at": "2026-10-01T20:04:04.000Z",
             "score": 65,
-            "summary": "A big day for Google!Gemini 4 Argon is here, taking first place on 13 of the 19 benchmarks Google published against GPT-6 Astra and Claude Opus 5.5.A few standout numbers:- DeepSWE (long real-world co",
-            "cover": "https://pbs.twimg.com/media/HTfXS18W0AAoxnd.jpg"
+            "summary": "Today, we’re announcing the public preview of AWS Well-Architected Agent, an AI-powered service that analyzes your AWS environment to deliver targeted, contextual recommendations for improving your ap",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2026/09/27/2026-well-architect-agent-1.jpg"
           },
           {
-            "id": 2087143,
-            "title": "Orchestrator agent - visual code extension",
-            "url": "https://community.openai.com/t/orchestrator-agent-visual-code-extension/1402349",
-            "source": "OpenAI Developer Community · API",
-            "published_at": "2026-09-30T19:16:08.000Z",
-            "score": null,
-            "summary": "We’re building Agent Watch, an open-source VS Code extension that warns when two Codex sessions work on the same file. We want users to keep using the official Codex extension.",
+            "id": 2325653,
+            "title": "Trump’s ‘Morally Binding’ AI ‘Accord,’ the Rise of AI Agents, and Extremists on the Ballot",
+            "url": "https://www.wired.com/story/uncanny-valley-podcast-trumps-pinky-swear-ai-safety-accord-an-ai-agent-worth-the-risk/",
+            "source": "Wired",
+            "published_at": "2026-10-01T19:58:31.000Z",
+            "score": 52,
+            "summary": "This week on “Uncanny Valley,” we discuss the voluntary AI safety agreement tech executives signed, AI agents for normies, and extremist candidates running for office in the US midterms.",
             "cover": null
           },
           {
-            "id": 2071609,
-            "title": "AI Agent 的能力上限由模型决定，行为的可靠性与一致性由规则体系决定。",
-            "url": "https://www.v2ex.com/t/1245935#reply0",
-            "source": "V2EX · 创意",
-            "published_at": "2026-09-30T17:56:27.000Z",
+            "id": 2327314,
+            "title": ".@AnthropicAI’s Thariq on what Claude Mods unlock: conversation context, subagents, structured outpu...",
+            "url": "https://x.com/latentspacepod/status/2105746323907735663",
+            "source": "Latent.Space(@latentspacepod)",
+            "published_at": "2026-10-01T19:47:01.000Z",
+            "score": 68,
+            "summary": ".@AnthropicAI’s Thariq on what Claude Mods unlock: conversation context, subagents, structured output, and control over the UI.“It has a bunch of things in the scope … like how many turns is in this c",
+            "cover": "https://pbs.twimg.com/profile_images/2044472418815893504/xf14RxM8_normal.png"
+          },
+          {
+            "id": 2314404,
+            "title": "[分享创造] Herduck 迭代：在 Herdr 上面补「这项活做到哪了」（自动归类 / 闲着就睡 / herduck 命令）— 求 Herdr 用户拍砖",
+            "url": "https://www.v2ex.com/t/1246075#reply0",
+            "source": "V2EX",
+            "published_at": "2026-10-01T19:21:58.000Z",
             "score": null,
-            "summary": "在使用 AI Agent 开发项目的过程中，我的一些理解 以及 推荐一下我开发的工具：",
+            "summary": "一句话分工： Herdr = 让 Agent 一直跑着、并排管理 Herduck = 记住一项活的目标 / 做到哪了 / 卡在哪 / 下一步，以及能翻回去的记录 互补，不替代。",
             "cover": null
           },
           {
-            "id": 2072565,
-            "title": "解决 Codex 无法访问 rg.exe 的问题",
-            "url": "https://www.liesauer.net/blog/post/1046.html",
-            "source": "LiesAuer's Blog",
-            "published_at": "2026-09-30T17:52:22.000Z",
+            "id": 2326261,
+            "title": "谷歌，发布新模型",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzQ5MTkyMA==&mid=2658283597&idx=2&sn=bc53c86393c09f7a306a5d1062ee66b6",
+            "source": "央视财经",
+            "published_at": "2026-10-01T19:10:00.000Z",
             "score": null,
-            "summary": "这个问题实际上牵扯到多个工具，不确定根源是否在于 Codex 的机制问题，但本文不做过多追溯。事实上，Codex 官方仓库堆积着好多个关于工具调用失败的 issue，但貌似和这个问题不太一样，就不贴出来了。 起因是我两台电脑中一台电脑的环境是正常运行rg.exe的，但是另一台呢就不行，一直报错，导致 Codex 一直回退到使用 powershell 以及 python 去用无比恶心的命令去翻东西，",
+            "summary": "9月30日，谷歌母公司字母表官宣推出全新人工智能模型Gemini 4 Argon。谷歌方面表示，这是Gemini 4系列的首款旗舰模型，在软件工程、金融研究、法律研究、企业自动化等领域评测中表现领先。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4a11adaa&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnXgaYeEbuqiatIYJ7Gyy5cILiaWe68rEMcyX0Tz2AJPIickT1hD5U2CE8WPsVMlAfyK2dlXibZVpV5uETicr6oCh1Fy1OFPTbKVne7bTIyNb1sK0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2315236,
+            "title": "MiMo-V2.6-Flash has landed on the Agent Arena Pareto frontier with -0.57% net improvement at a $0.04...",
+            "url": "https://x.com/arena/status/2105733985884401708",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-10-01T18:57:59.000Z",
+            "score": null,
+            "summary": "MiMo-V2.6-Flash has landed on the Agent Arena Pareto frontier with -0.57% net improvement at a $0.04 median cost per task!Dive into the Agent Arena Pareto frontier at: arena.ai/leaderboard/ag…💬0🔄0❤️",
+            "cover": "https://pbs.twimg.com/media/HTkRr2NbwAAEjOF.jpg"
+          },
+          {
+            "id": 2315237,
+            "title": "MiMo-V2.6-Pro and MiMo-V2.6-Flash by @XiaomiMiMo have landed in Agent Arena!\r\n\r\nMiMo-V2.6-Pro ranks #5...",
+            "url": "https://x.com/arena/status/2105733983250301224",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-10-01T18:57:58.000Z",
+            "score": null,
+            "summary": "MiMo-V2.6-Pro and MiMo-V2.6-Flash by @XiaomiMiMo have landed in Agent Arena!MiMo-V2.6-Pro ranks #5 among open-source models with +3.17% net improvement across 8.1K+ real-world agentic sessions. This r",
+            "cover": "https://pbs.twimg.com/media/HTkRmDtaIAAzF_X.jpg"
+          },
+          {
+            "id": 2304067,
+            "title": "v2.1.287",
+            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.287",
+            "source": "Release notes from claude-code",
+            "published_at": "2026-10-01T18:00:22.000Z",
+            "score": null,
+            "summary": "What's changed Added Claude Mods: plugins may now modify deeper behavior Added You should know, an opt-in plugin where a side agent watches your back and flags things you or Claude might miss. Turn it",
             "cover": null
           },
           {
-            "id": 2047194,
-            "title": "How DoorDash Built a Toolbox for AI Agents",
-            "url": "https://blog.bytebytego.com/p/how-doordash-built-a-toolbox-for",
-            "source": "ByteByteGo Newsletter",
-            "published_at": "2026-09-30T15:31:13.000Z",
-            "score": null,
-            "summary": "CodeAF is a new open-source software factory that sits on the Pareto frontier of cost, speed and quality. On DeepSWE it solved nearly 4&#215; as many real GitHub issues as Claude Code on the same open",
-            "cover": "https://substackcdn.com/image/fetch/$s_!dh1L!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7abed54e-1a7a-42b8-a6e5-1aab6fae128d_1600x840.png"
-          },
-          {
-            "id": 2054562,
-            "title": "Build a multi-agent music production pipeline on Amazon Bedrock AgentCore Runtime Instances",
-            "url": "https://aws.amazon.com/blogs/machine-learning/build-a-multi-agent-music-production-pipeline-on-amazon-bedrock-agentcore-runtime-instances/",
+            "id": 2301290,
+            "title": "Build agent memory with NVIDIA NeMo Agent Toolkit and Amazon S3 Vectors",
+            "url": "https://aws.amazon.com/blogs/machine-learning/build-agent-memory-with-nvidia-nemo-agent-toolkit-and-amazon-s3-vectors/",
             "source": "AWS Machine Learning Blog",
-            "published_at": "2026-09-30T15:21:57.000Z",
-            "score": 69,
-            "summary": "As organizations move from single-purpose agents to multi-agent systems, the infrastructure requirements change. A lone agent handling customer queries can run in a serverless environment with short-l",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/28/ML-21762-1.png"
+            "published_at": "2026-10-01T17:34:56.000Z",
+            "score": null,
+            "summary": "In my previous post: Building persistent memory for multi-agent AI systems with Amazon S3 Vectors, we explored why memory engineering is the foundational discipline for production multi-agent systems.",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/28/ML-21981-1.png"
           },
           {
-            "id": 2055595,
-            "title": "请多使用国产模型，别痴迷海外模型",
-            "url": "https://www.ccgxk.com/emlog_dev/902.html",
+            "id": 2291461,
+            "title": "Claude Sonnet 5.5 + Fish Audio MCP = 🤌 \r\nSee prompts in the thread.",
+            "url": "https://x.com/FishAudio/status/2105705322287714569",
+            "source": "Fish Audio(@FishAudio)",
+            "published_at": "2026-10-01T17:04:05.000Z",
+            "score": 42,
+            "summary": "Claude Sonnet 5.5 + Fish Audio MCP = 🤌 See prompts in the thread.Fish Creative@FishCreativeHQClaude Sonnet 5.5 is scary good at art direction!One poster → a 10-second film, title and sound included.A",
+            "cover": "https://pbs.twimg.com/profile_images/2089556367296413696/1HR2QLv8_normal.png"
+          },
+          {
+            "id": 2301672,
+            "title": "综述 | 世界—动作模型：从预测未来到机器人闭环控制",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557399&idx=1&sn=933a70d8842566827b9a360441fcc7e8",
+            "source": "大模型智能",
+            "published_at": "2026-10-01T16:00:00.000Z",
+            "score": 82,
+            "summary": "系统梳理机器人世界—动作模型的概念、架构、训练与评测，讨论动作对齐、空间一致性、长时序记忆和闭环学习。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=13e6dccc&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FrjiclujBklTzTK3fFkDBwQ2uDf7C0nCbDfQuNyDicFP7onzjS7toXgCdRXb8VYSVeMBBJwxknBfsHmO1yoFyaNZRoWXNLQTMGbp0BmEQLGpvQ%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2302816,
+            "title": "是该启动新一轮稳增长了",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NzYwMzU1MQ==&mid=2247591410&idx=1&sn=0f4f78de4f21dca5098e20f05983a035",
+            "source": "泽平宏观",
+            "published_at": "2026-10-01T16:00:00.000Z",
+            "score": null,
+            "summary": "近年我国在高质量发展方面取得了举世瞩目的伟大成就，综合国力在全球蒸蒸日上，硬科技产品出口高速增长，国产开源大模型主要技术参数全球领先，国产新能源汽车品牌畅销全球，我国经济结构脱胎换骨，国际机构纷纷看好中国经济尤其科技发展前景。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d284d305&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FRS5dSKg4RcibSODB4FcuzJUIhhzsw23XuXyxOnGAxYxWZickyEic7y3Byo5uQNj3eYxcO1ezHUdJSPWp6pZ3zeBv3oDAJEmIsPZkxavXgibc3Js%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2288964,
+            "title": "Build Visual AI Agents From a Prompt With NVIDIA Cosmos and VSS 3.3 https://t.co/kEVxL6AoIv",
+            "url": "https://x.com/NVIDIAAI/status/2105689015790031306",
+            "source": "NVIDIA AI(@NVIDIAAI)",
+            "published_at": "2026-10-01T15:59:17.000Z",
+            "score": 58,
+            "summary": "Build Visual AI Agents From a Prompt With NVIDIA Cosmos and VSS 3.3 x.com/i/broadcasts/1…💬4🔄7❤️43👀3349📊11⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 2268545,
+            "title": "扎克伯格的励志故事，把我感动哭了",
+            "url": "https://www.ccgxk.com/903.html",
             "source": "串串狗小刊 ⭐️",
-            "published_at": "2026-09-30T15:21:14.000Z",
+            "published_at": "2026-10-01T14:37:47.000Z",
             "score": null,
-            "summary": "其实现在（2026.9.30）基本上可以主力使用国产模型了。 不觉得气人吗？Codex 一天比一天慢，现在也学反重力，玩掺水了。而 Claude 又天天费尽心思封 Chinese 。别痴迷海外这些了，国产模型虽然价格并不便宜多少，但是劲儿很大！！！量也基本管饱。Deepseek 和 GLM 在这方面简直又快又干净。 别天天听那短视频里天天散播焦虑说，说什么一... 阅读全文",
-            "cover": null
-          },
-          {
-            "id": 2039314,
-            "title": "You can now use the Interactions API on Gemini Enterprise Agent Platform (prev. Vertex AI) with Gemi...",
-            "url": "https://x.com/_philschmid/status/2105299152796029055",
-            "source": "Philipp Schmid(@_philschmid)",
-            "published_at": "2026-09-30T14:10:07.000Z",
-            "score": 33,
-            "summary": "You can now use the Interactions API on Gemini Enterprise Agent Platform (prev. Vertex AI) with Gemini models. Same `google-genai` SDK.👉docs.cloud.google.com/gemini-enterpr…5💬4🔄1❤️1👀389📊4⚡ Powere",
-            "cover": "https://pbs.twimg.com/media/HTeGY8bWcAAhWFY.jpg"
-          },
-          {
-            "id": 2053429,
-            "title": "OpenAI推理之父最新访谈！数学只是多智能体时代的开胃菜",
-            "url": "https://www.qbitai.com/2026/09/499654.html",
-            "source": "量子位博客",
-            "published_at": "2026-09-30T14:03:43.000Z",
-            "score": null,
-            "summary": "千禧年难题的突破，10000个Agent最多占了10%的功劳。",
-            "cover": null
-          },
-          {
-            "id": 2025237,
-            "title": "AI Agent 小蓝书读书笔记（施工中）",
-            "url": "http://www.z16388.top/ai/agent-bluenote/",
-            "source": "崎径 其镜",
-            "published_at": "2026-09-30T13:31:33.050Z",
-            "score": 57,
-            "summary": "本篇是标叔 真·AI Agent 小蓝书:人人都能懂的智能体入门 教程的学习笔记。",
+            "summary": "最近在 AI 圈里一直很反常识几乎没有声响的科技巨头 Meta，终于发布了一个 AI 圈里有点看头的产品。就是 Muse Agent 。 不知道会持续多久，但起码确实让 Meta 在 AI 圈里有点存在感了。Muse 很像 Manus，不过 Manus 没有被收购成功，但是灵魂确实是过去了。 上线仅两周，下载量就突破 250 万次，登顶美区 App Stor... 阅读全文",
             "cover": null
           }
         ]
@@ -357,122 +321,122 @@
         "desc": "",
         "items": [
           {
-            "id": 2005571,
-            "title": "狼爪为什么押注“穿越式徒步”？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODUxMjExMA==&mid=2650614345&idx=1&sn=be64dae9aaef6622f4a940e5dd0f3a76",
-            "source": "财经早餐",
-            "published_at": "2026-09-30T08:00:00.000Z",
-            "score": 82,
-            "summary": "9月上旬，狼爪全新形象门店率先在长春、沈阳亮相，后续将陆续落地北京、上海、德国慕尼黑、瑞士苏黎世等城市。新店以欧洲高山徒步“山屋补给站”为灵感，把行前准备和行进补给的逻辑融入零售动线，同步官宣品牌新主张：为行致远（Made for Further），锚定穿越式徒步核心场景。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d500f062&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FLsibI20H7f6Xu0cYYfOl17A1M2UHCz5IF9LicVOan7JsDjsBNqmGFqhgtNDCb2icg0WZDP8ZkGlBWC7mVQVLzpjuXW9klgcTEDAgeOCI7A0Trg%2F0%3Fwx_fmt%3Djpeg"
+            "id": 2315614,
+            "title": "GitHub Copilot can now interact with desktop apps with computer use",
+            "url": "https://github.blog/changelog/2026-10-01-github-copilot-can-now-interact-with-desktop-apps",
+            "source": "Use Case: copilot - GitHub Changelog",
+            "published_at": "2026-10-01T19:11:26.000Z",
+            "score": 74,
+            "summary": "Computer use is now available in public preview in GitHub Copilot CLI and the GitHub Copilot app on macOS and Windows.",
+            "cover": null
           },
           {
-            "id": 2096270,
-            "title": "Gemini 4 Argon: our next era of frontier intelligence",
-            "url": "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/",
-            "source": "Google DeepMind Blog",
-            "published_at": "2026-09-30T20:01:45.000Z",
-            "score": 78,
+            "id": 2325563,
+            "title": "Serve live, governed data in AI-built apps with Amazon Quick",
+            "url": "https://aws.amazon.com/blogs/machine-learning/serve-live-governed-data-in-ai-built-apps-with-amazon-quick/",
+            "source": "AWS Machine Learning Blog",
+            "published_at": "2026-10-01T19:49:06.000Z",
+            "score": 69,
+            "summary": "Quick Apps could already bring live data into an app from connectors and content sources: action connectors (services like Jira, Slack, and Google Drive), Spaces documents, web search, and AI inferenc",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/09/30/ML-22064-1.png"
+          },
+          {
+            "id": 2223761,
+            "title": "Who owns AI risk at work? Business and tech leaders can’t agree, PwC survey finds",
+            "url": "https://www.zdnet.com/innovation/pwc-digital-trust-insights-2027-ai-risk-responsibility/",
+            "source": "ZDNET Security",
+            "published_at": "2026-10-01T09:00:00.000Z",
+            "score": 68,
             "summary": "",
             "cover": null
           },
           {
-            "id": 2010270,
-            "title": "DeepSeek加速向华为靠拢",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mjc1NjM3MjY2MA==&mid=2691573130&idx=1&sn=324110cd30071b35150c6aa6ef4c709f",
-            "source": "腾讯科技",
-            "published_at": "2026-09-30T07:45:00.000Z",
-            "score": 78,
-            "summary": "9月30日，DeepSeek宣布开源面向华为昇腾的基础设施组件，涵盖TileLang算子编程语言及其编译支持、计算库和分布式通信库，并强调：“所有组件与此前面向英伟达平台的开源组件一一对应。”",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2f50ac27&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQmK3dYQtkw3efZh6xTA6DKStn1QVTO7FqibSA6iaP1pJL5o30xia9WLFORfQ429dwqWTBZfdZA8wsVyBWYiaIVd9ayCQHTdAsyXTLgnfDb4ZXP4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2050737,
-            "title": "真实一点，别装",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODk2NjUwOA==&mid=2247498522&idx=1&sn=4f337660f51cef91468ede3291b5e16c",
-            "source": "猫笔刀",
-            "published_at": "2026-09-30T14:22:00.000Z",
-            "score": 76,
-            "summary": "a股轻轻松松又浪费了一天，成交量依旧不到1.5万亿，多空都无心恋战，只想尽快放假出去玩。关于股市的话题先休息7天，节后再继续，除非这7天里美股那边出了啥大幺蛾子，那到时候再插播。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=28b77ba3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQDzjsr2LzB4ibmOCyeoyJtyESnicwRw9ay7VTia4mtSDVfCWribXX98EHd6tbj87WQdB24sO5gfTnZp0cKqybmSekT74VjFwjsQraFib6DBdDs2o%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2080324,
-            "title": "How MHK built a HIPAA-eligible agentic AI solution on Amazon Bedrock",
-            "url": "https://aws.amazon.com/blogs/architecture/how-mhk-built-a-hipaa-eligible-agentic-ai-solution-on-amazon-bedrock/",
-            "source": "AWS Architecture Blog",
-            "published_at": "2026-09-30T18:30:24.000Z",
-            "score": 74,
-            "summary": "Healthcare organizations face an increasingly complex challenge: processing vast volumes of medical documents, including clinical records, claims, prior authorizations, appeals, and pharmacy data, whi",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2026/09/25/ARCHBLOG-1486-1.png"
-          },
-          {
-            "id": 2008080,
-            "title": "The Companions to Come",
-            "url": "https://blog.jetbrains.com/kotlin/2026/09/the-companions-to-come/",
-            "source": "Kotlin : A concise multiplatform language developed by JetBrains | The JetBrains Blog",
-            "published_at": "2026-09-30T10:33:03.000Z",
-            "score": 73,
-            "summary": "We are working on extensions to our companions mechanism to unlock new code patterns and improve interoperability across different platforms. This post outlines these new features and provides prelimi",
-            "cover": null
-          },
-          {
-            "id": 2043813,
-            "title": "解禁在前、收购在后：华之杰4亿并购是转型还是托市",
-            "url": "https://www.tmtpost.com/8157486.html",
-            "source": "钛媒体：引领未来商业与生活新知",
-            "published_at": "2026-09-30T13:33:23.000Z",
-            "score": 72,
-            "summary": "9月29日晚间，停牌半个月的华之杰（603400.SH）披露重组预案，拟以发行股份及支付现金的方式收购赵蝶持有的格丽明83.5052%股权，并募集配套资金。交易完成后，华之杰将全资控股格丽明，切入半导体芯片测试配套领域。从表面上看，这是一笔定价温和的小额并购&mdash;&mdash;标的整体估值仅约4.85亿元，对华之杰的利润和估值均难构成实质改变。但把交易放进公司上市十五个月的时间线中看，其目",
-            "cover": "https://images.tmtpost.com/uploads/images/2026/09/5d931ba93386f2d4c1cb9a99f5784198_1790775205.png"
-          },
-          {
-            "id": 2026625,
-            "title": "Oxygen Forensics, A Russian-run forensics firm spent a decade inside European police departments",
-            "url": "https://securityaffairs.com/200090/intelligence/oxygen-forensics-a-russian-run-forensics-firm-spent-a-decade-inside-european-police-departments.html",
-            "source": "Security Affairs",
-            "published_at": "2026-09-30T13:26:20.000Z",
-            "score": 69,
-            "summary": "Last week&#8217;s Justice Department indictment of Oxygen Forensics looked, at first, like an American procurement scandal. CEO Lee Reiber and Russian co-founder Oleg Davydov stand accused of hiding t",
-            "cover": null
-          },
-          {
-            "id": 1993578,
-            "title": "腾讯出手了！WorkBuddy一句话就能生成小程序，夯爆了！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzUxODAzNDg4NQ==&mid=2247564483&idx=1&sn=13bd80193fae4b28e68b978e581b7cef",
-            "source": "小林coding",
-            "published_at": "2026-09-30T06:12:00.000Z",
-            "score": 69,
-            "summary": "以前自己做个小程序，得先熟悉微信开发者工具，再折腾服务器、数据库。就算代码有 AI 帮你写，各种配置还是得自己搞明白，光这些就够折腾好几天了。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=664fa2f4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FysyAxM1rgX1JtYEbc2Le0o38FS9iaA1ulnAE2NNebAuJib01sacwiaH69IJ5TbFsibSK66qX9nUKSmiaQRQPk5YPGXxgfI1FoTYh2EVPibgf04dww%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2094620,
-            "title": "Gemini 4 Argon is here: It’s great, and you can’t have it yet",
-            "url": "https://thenewstack.io/google-gemini-4-argon/",
-            "source": "The New Stack",
-            "published_at": "2026-09-30T20:00:00.000Z",
+            "id": 2120841,
+            "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
+            "url": "https://www.latent.space/p/devday-2026",
+            "source": "Latent Space",
+            "published_at": "2026-09-30T22:23:40.000Z",
             "score": 68,
-            "summary": "Google on Wednesday announced Gemini 4 Argon, the company’s long-awaited flagship model, and it looks like it was worth the wait.",
-            "cover": "https://cdn.thenewstack.io/media/2026/09/f05d48f5-screenshot-2026-09-02-at-12.36.10-1024x581.png"
+            "summary": "Three months ago Dwarkesh, who has been posting incredible blogs and episodes about RL, posted a framing question for his video essay on RLVR which upset a lot of Computer Use folks:",
+            "cover": "https://api.substack.com/feed/podcast/218243619/4623bf38297ddb16dba4460b8b439140.mp3"
+          },
+          {
+            "id": 2351936,
+            "title": "Two years ago, Meta killed CrowdTangle. Can a new AI tool fill the void?",
+            "url": "https://www.niemanlab.org/2026/09/two-years-ago-meta-killed-crowdtangle-can-a-new-ai-tool-fill-the-void/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-01T21:55:42.000Z",
+            "score": 67,
+            "summary": "Article URL: https://www.niemanlab.org/2026/09/two-years-ago-meta-killed-crowdtangle-can-a-new-ai-tool-fill-the-void/",
+            "cover": null
+          },
+          {
+            "id": 2186649,
+            "title": "the number of surfaces you need to track to use ai properly is getting out of hand. there's cursor, ...",
+            "url": "https://x.com/aaditsh/status/2105513366244716846",
+            "source": "Aadit Sheth(@aaditsh)",
+            "published_at": "2026-10-01T04:21:19.000Z",
+            "score": 65,
+            "summary": "the number of surfaces you need to track to use ai properly is getting out of hand. there&#39;s cursor, grok, grok bot. chatgpt, codex, and now dots. claude, claude code, cowork. that&#39;s three comp",
+            "cover": null
+          },
+          {
+            "id": 2335851,
+            "title": "Judge dismisses Chegg and Penske antitrust lawsuits targeting Google AI search",
+            "url": "https://arstechnica.com/google/2026/10/antitrust-lawsuits-targeting-google-ai-search-dismissed-by-federal-judge/",
+            "source": "Ars Technica",
+            "published_at": "2026-10-01T20:11:55.000Z",
+            "score": 64,
+            "summary": "In a setback for publishers worried about the effects of AI search, a US federal judge has dismissed lawsuits filed by Chegg and Penske Media against Google. The companies accused Google of antitrust ",
+            "cover": null
+          },
+          {
+            "id": 2176686,
+            "title": "Why AI Infrastructure Giants Are Racing Into Robotics",
+            "url": "https://www.turingpost.com/p/ai-builds-ai-physical-ai-infrastructure",
+            "source": "Turing Post",
+            "published_at": "2026-10-01T03:59:58.000Z",
+            "score": 63,
+            "summary": "At CoreWeave’s Fully Connected conference, Anu Vatsa described a robot that had found an excellent way to avoid mistakes: do nothing.",
+            "cover": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/asset/file/7d1da42a-f700-413d-8fbc-7f78c210779e/Screenshot_2026-09-30_at_8.17.58_PM.png?t=1790813923"
+          },
+          {
+            "id": 2185811,
+            "title": "iPhone 18 Pro首销3天超上代首周/DeepSeek开源昇腾平台基础组件/苹果全新产品线曝光",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAyNDUyMA==&mid=2651110576&idx=1&sn=d2e502d0dcbf97c85bbfb6e35b60912c",
+            "source": "APPSO",
+            "published_at": "2026-10-01T00:55:00.000Z",
+            "score": 63,
+            "summary": "📱 iPhone 18 Pro 中国首销 3 天销量超上代首周，苹果周份额达 33%",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7974301e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FdCG7OC48IfLSZMG6QQ9roCYTV80Pw9T9TQFmdxpzfb7bIs9qGh5ictiacePJVsic37zSa9I4EGXsibVibSZTRpSkpQk6K2J7S5ibPQHSMHJ46ibSyc%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2321086,
+            "title": "Kcc – a C17 compiler built solo with an LLM on $100/month, no agents",
+            "url": "https://github.com/LiterateDrivenDevelopment/kcc",
+            "source": "Hacker News - Newest: &quot;LLM&quot;",
+            "published_at": "2026-10-01T19:53:34.000Z",
+            "score": 59,
+            "summary": "Article URL: https://github.com/LiterateDrivenDevelopment/kcc",
+            "cover": null
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 479,
-      "articles": 479,
-      "sections": 4,
+      "candidates": 486,
+      "articles": 486,
+      "sections": 3,
       "prescreen": {
         "cap": 2,
-        "pool": 4796,
-        "poolSources": 426,
+        "pool": 3999,
+        "poolSources": 346,
         "kept": 500,
-        "keptSources": 311
+        "keptSources": 318
       },
-      "totalItems": 43
+      "totalItems": 40
     }
   },
-  "generated_at": "2026-10-01T14:34:33.094Z"
+  "generated_at": "2026-10-02T07:14:10.073Z"
 }

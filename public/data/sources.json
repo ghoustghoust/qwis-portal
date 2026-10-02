@@ -183,20 +183,6 @@
       "fail_count": 0
     },
     {
-      "id": 700,
-      "type": "rss",
-      "name": "@Lenciel",
-      "url": "https://lenciel.com/feed.xml",
-      "avatar": "https://lenciel.com/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 701,
       "type": "rss",
       "name": "AAAS: Science: Table of Contents",
@@ -720,6 +706,20 @@
       "name": "All Top News -- ScienceDaily",
       "url": "https://www.sciencedaily.com/rss/top/science.xml",
       "avatar": "https://www.sciencedaily.com/images/scidaily-logo-rss.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 724,
+      "type": "rss",
+      "name": "Alliot's blog",
+      "url": "https://www.iots.vip/atom.xml",
+      "avatar": "https://www.iots.vip/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -2115,6 +2115,20 @@
       "fail_count": 0
     },
     {
+      "id": 621,
+      "type": "youtube",
+      "name": "Fireship",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 807,
       "type": "x",
       "name": "Fireworks AI(@FireworksAI_HQ)",
@@ -3151,6 +3165,20 @@
       "fail_count": 0
     },
     {
+      "id": 565,
+      "type": "youtube",
+      "name": "Kurzgesagt - In a Nutshell",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 875,
       "type": "rss",
       "name": "LCZBlog",
@@ -3171,6 +3199,20 @@
       "url": "https://linuxdorss.longpink.com/wiki.xml",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 526,
+      "type": "youtube",
+      "name": "LangChain",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3269,6 +3311,20 @@
       "url": "https://dreams.plus/rss.xml",
       "avatar": "https://github.com/prinorange.png",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 528,
+      "type": "youtube",
+      "name": "Liam Ottley",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3408,20 +3464,6 @@
       "name": "Louis C Deng's Blog",
       "url": "https://blog.aeilot.top/index.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 895,
-      "type": "x",
-      "name": "LovartAI(@lovart_ai)",
-      "url": "https://api.xgo.ing/rss/user/db648e4d4eae4822aa0d34f0faef7ad2",
-      "avatar": "https://pbs.twimg.com/profile_images/2065372538763694080/KSuXj3OU_normal.jpg",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -3829,6 +3871,20 @@
       "url": "https://muyun.work/feed/",
       "avatar": "https://muyun.work/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 568,
+      "type": "youtube",
+      "name": "My First Million",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4691,6 +4747,20 @@
       "fail_count": 0
     },
     {
+      "id": 625,
+      "type": "youtube",
+      "name": "Real Engineering",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCR1IuLEqb6UEA_zQ81kwXfg",
+      "avatar": null,
+      "group_id": 27,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 974,
       "type": "rss",
       "name": "Recent Commits to openclaw:main",
@@ -4712,6 +4782,20 @@
       "avatar": "https://pbs.twimg.com/profile_images/2046921816782852096/I3nZq3cB_normal.jpg",
       "group_id": null,
       "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 976,
+      "type": "rss",
+      "name": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+      "url": "https://www.reddit.com/r/linux+selfhosted+devops+LocalLLaMA+MachineLearning/new/.rss",
+      "avatar": "https://www.reddit.com/favicon.ico",
+      "group_id": null,
+      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -4985,6 +5069,20 @@
       "fail_count": 0
     },
     {
+      "id": 996,
+      "type": "x",
+      "name": "Runway(@runwayml)",
+      "url": "https://api.xgo.ing/rss/user/e6bb4f612dd24db5bc1a6811e6dd5820",
+      "avatar": "https://pbs.twimg.com/profile_images/1999115192232292353/zOq5-uwB_normal.jpg",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 997,
       "type": "rss",
       "name": "Rust Blog",
@@ -5228,20 +5326,6 @@
       "name": "Show HN",
       "url": "https://hnrss.org/show",
       "avatar": "https://hnrss.org/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1014,
-      "type": "rss",
-      "name": "SkyWT",
-      "url": "https://blog.skywt.cn/feed/",
-      "avatar": "https://blog.skywt.cn/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -5587,6 +5671,20 @@
       "fail_count": 0
     },
     {
+      "id": 1039,
+      "type": "rss",
+      "name": "Surmon.me",
+      "url": "https://surmon.me/rss.xml",
+      "avatar": "https://surmon.me/icon.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1040,
       "type": "rss",
       "name": "Swift by Sundell",
@@ -5915,6 +6013,20 @@
       "url": "https://this-week-in-rust.org/atom.xml",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 579,
+      "type": "youtube",
+      "name": "This Week in Startups",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkkhmBWfS7pILYIk0izkc3A",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6301,6 +6413,20 @@
       "fail_count": 0
     },
     {
+      "id": 1084,
+      "type": "rss",
+      "name": "World",
+      "url": "https://feeds.washingtonpost.com/rss/world",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1085,
       "type": "rss",
       "name": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
@@ -6385,6 +6511,20 @@
       "fail_count": 0
     },
     {
+      "id": 581,
+      "type": "youtube",
+      "name": "Y Combinator",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcefcZRL2oaA_uBNeo5UOWg",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1090,
       "type": "x",
       "name": "Y Combinator(@ycombinator)",
@@ -6404,6 +6544,20 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1092,
+      "type": "rss",
+      "name": "YangXuan's Blog",
+      "url": "https://yangxuan.ai/feed/",
+      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -9205,6 +9359,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/a68a06d7c803848f0b6fb9604fd68b3ba65e148f.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4NLib6hdpxyibKFGBN4uAxQIAI1VKwk6WRibmmNQwWQVsmQ/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1196,
+      "type": "rss",
+      "name": "喵二の小博客",
+      "url": "https://www.miaoer.net/feed",
+      "avatar": "https://cdn.miaoer.net/logo/avatar.webp",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -12545,6 +12713,20 @@
       "fail_count": 0
     },
     {
+      "id": 1281,
+      "type": "rss",
+      "name": "王登科-DK博客",
+      "url": "https://greatdk.com/feed",
+      "avatar": "https://greatdk.com/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1282,
       "type": "rss",
       "name": "王福强的个人博客：一个架构士的思考与沉淀",
@@ -15415,5 +15597,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-01T14:34:36.237Z"
+  "generated_at": "2026-10-02T07:14:10.838Z"
 }
