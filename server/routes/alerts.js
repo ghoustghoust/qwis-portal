@@ -28,6 +28,8 @@ router.put('/config', (req, res) => {
         if (!c.id) c.id = `${c.type}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       }
       cfg.channels = alerts.mergeChannelSecrets(cfg.channels, channels); // 掩码/空值的敏感字段保留旧值
+      // H52：启用中的渠道回调必须过真出口判据，门上拒哨兵（与云端同一条判据，lib/alert-channels）
+      require('../../lib/alert-channels').assertEnabledChannelsHaveExit(cfg.channels);
     }
     if (events !== undefined) cfg.events = { ...cfg.events, ...events };
     if (cooldownMin !== undefined) {

@@ -2772,14 +2772,19 @@ const _ai = require('./_ai'); // 16-ai-infra：统一 AI 通道
 
 // PUT /api/alerts/config — 整体写（掩码合并：掩码/空值保留旧密钥）
 async function handleAlertsConfigPut(req) {
-  const body = req.body || {};
-  const cur = await _alerts.getConfig();
-  const next = { ...cur, ...(body.alerts || body) };
-  if (next.channels) next.channels = _alerts.mergeChannelSecrets(cur.channels, next.channels);
-  delete next.recentLog; // 日志不随配置回写
-  await _alerts.saveConfig(next);
-  await auditRecord('alerts.config', { detail: { channels: (next.channels || []).length } });
-  return jsonOk({});
+  try {
+    const body = req.body || {};
+    const cur = await _alerts.getConfig();
+    const next = { ...cur, ...(body.alerts || body) };
+    if (next.channels) next.channels = _alerts.mergeChannelSecrets(cur.channels, next.channels);
+    require('../lib/alert-channels').assertEnabledChannelsHaveExit(next.channels); // H52：启用渠道回调必须过真出口判据，门上拒哨兵
+    delete next.recentLog; // 日志不随配置回写
+    await _alerts.saveConfig(next);
+    await auditRecord('alerts.config', { detail: { channels: (next.channels || []).length } });
+    return jsonOk({});
+  } catch (err) {
+    return { status: 400, body: jsonErr(err.message) }; // 守卫拒绝属客户端错误（哨兵回调），与组级分支同一形状
+  }
 }
 
 // POST /api/alerts/test — 向全部启用渠道发测试消息
