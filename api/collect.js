@@ -357,10 +357,14 @@ async function updateSourceOk(sourceId, extra, intervalMin, outcome) {
 
 async function updateSourceError(sourceId, extra, errMsg, sourceType, systemic = false) {
   const db = getDb();
-  const { recordAttempt, classifyErr } = require('../lib/source-health');
-  extra = recordAttempt(extra, 'f', classifyErr(errMsg), Date.now());
+  // S2（对抗审查）：系统性故障（出口/代理挂）不是源的错，不进源健康窗口——与 runner 同形状，
+  // 否则同一场风暴在 runner 路径窗口干净、在备份路径记满失败（三端语义必须同步）
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
+  if (!systemic) {
+    const { recordAttempt, classifyErr } = require('../lib/source-health');
+    extra = recordAttempt(extra, 'f', classifyErr(errMsg), Date.now());
+  }
   // H16/坑 #39：系统性故障只写排障线索（status/lastError），不累加 fail_count、不熔断——
   // 否则一次代理故障就把一批活源集体关进牢房。判据与 runner 共用 lib/source-breaker.js。
   if (systemic) {

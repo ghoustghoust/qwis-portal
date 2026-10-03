@@ -880,8 +880,9 @@ async function runCleanup() {
     pendingDeleted: readout.total,
     gateReason: readout.gate.allowed ? null : readout.gate.reason,
   });
-  // H29①：闸挡住必须出声（此前它沉默，"挂了几小时没人知"）——sourceId 用北京日，一天至多响一次
-  if (!readout.gate.allowed) {
+  // H29①：闸挡住必须出声（此前它沉默，"挂了几小时没人知"）——sourceId 用北京日，一天至多响一次。
+  // 无事可删（候选 0）不是"被挡"：那种轮空静默，否则每天准点误报会训练用户忽略这条报警（对抗审查 M1）。
+  if (!readout.gate.allowed && readout.total > 0) {
     try {
       await require('../api/_alerts').dispatch('cleanup_blocked', {
         sourceId: `bj-${require('../lib/time-window').beijingDateStr()}`,

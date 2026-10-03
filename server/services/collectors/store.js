@@ -23,20 +23,21 @@ const { intervalMinFor, noteOutcome, windowIsSystemic } = require('./_shared');
 function markSourceError(source, errMsg, opts = {}) {
   let extra = {};
   try { extra = JSON.parse(source.extra || '{}'); } catch { /* 非法 JSON 按无处理 */ }
-  // ✅ 使用 log.mask() 脱敏敏感信息（Token/Cookie/API Key）
-  extra = require('../../../lib/source-health').recordAttempt(extra, 'f',
-    require('../../../lib/source-health').classifyErr(errMsg), Date.now());
-  extra.lastError = log.mask(String(errMsg || '未知错误')).slice(0, 300);
+  extra.lastError = log.mask(String(errMsg || '未知错误')).slice(0, 300); // ✅ log.mask 脱敏（Token/Cookie/API Key）
   extra.lastErrorAt = nowIso();
   // H16/坑 #39：失败先入分母、再过系统性判据——环境类同指纹风暴只写排障线索（status/lastError），
   // 不累加 fail_count、不熔断、不逐源报警（风暴级报警由批次尾部汇总）。判据三端共用 lib/source-breaker.js。
   noteOutcome(false, errMsg);
   if (windowIsSystemic()) {
+    // S2（对抗审查）：系统性故障不是源的错，不进源健康窗口（与 runner 同形状）——recordAttempt 只在非系统性的下面那支记
     db.prepare("UPDATE sources SET status='error', extra=? WHERE id=?")
       .run(JSON.stringify(extra), source.id);
     const cur = db.prepare('SELECT fail_count, enabled FROM sources WHERE id=?').get(source.id);
     return { failCount: cur ? cur.fail_count : null, autoPaused: false, suppressed: true };
   }
+  // 非系统性失败才记源健康窗口（系统性不是源的错，与 runner 同形状）
+  extra = require('../../../lib/source-health').recordAttempt(extra, 'f',
+    require('../../../lib/source-health').classifyErr(errMsg), Date.now());
   db.prepare("UPDATE sources SET status='error', fail_count=COALESCE(fail_count,0)+1, extra=? WHERE id=?")
     .run(JSON.stringify(extra), source.id);
   const row = db.prepare('SELECT fail_count, enabled FROM sources WHERE id=?').get(source.id);

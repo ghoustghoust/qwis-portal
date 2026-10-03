@@ -57,7 +57,8 @@ function query({ category, q, source, cursor } = {}) {
   const conds = [aggregatorCondSql('s'), 'COALESCE(s.muted,0)=0'];
   const args = [];
   if (q) {
-    conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');
+    // H29③（同批第三处）：搜索只扫 title/summary 轻列——与两端 articles 路由同一契约，正文命中不再算搜索命中
+    conds.push('(a.title LIKE ? OR a.summary LIKE ?)');
     args.push(`%${q}%`, `%${q}%`);
   }
   if (source) {

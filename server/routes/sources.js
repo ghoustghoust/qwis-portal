@@ -77,12 +77,19 @@ router.put('/:id/interval', (req, res) => {
     if (!Number.isFinite(n) || n <= 0) return res.status(400).json({ ok: false, error: 'intervalMin 必须是正数分钟数或 null' });
     extra.intervalMin = n;
   }
+  // S1（对抗审查）：置 null 语义四处必须一致——改走 lib/source-axes 的共用行级语句
+  // （null → next_fetch_at=NULL 立即到期，采集端下一轮按跟随全局的链写回真实值；
+  //  此前本地单源等一个全局周期，与云端单源/两端批量/组级"下轮立刻抓"分叉）。
+  // P0-1 修复：新间隔立即生效——按最新 extra.intervalMin 重算 next_fetch_at（设值分支照旧）
   db.prepare('UPDATE sources SET extra=? WHERE id=?').run(JSON.stringify(extra), s.id);
-  // P0-1 修复：新间隔立即生效——按最新 extra.intervalMin 重算 next_fetch_at
-  // （此前唯一写点在 fetchSource，新间隔要等旧 deadline（可能按 8h 算）到期抓一次后才生效）
-  const updated = db.prepare('SELECT * FROM sources WHERE id=?').get(s.id);
-  const next = new Date(Date.now() + intervalMinFor(updated) * 60000).toISOString();
-  db.prepare('UPDATE sources SET next_fetch_at=? WHERE id=?').run(next, s.id);
+  let next;
+  if (extra.intervalMin === undefined) {
+    db.prepare('UPDATE sources SET next_fetch_at=NULL WHERE id=?').run(s.id);
+    next = null;
+  } else {
+    next = new Date(Date.now() + extra.intervalMin * 60000).toISOString();
+    db.prepare('UPDATE sources SET next_fetch_at=? WHERE id=?').run(next, s.id);
+  }
   try { require('../services/scheduler').reschedule(); } catch { /* 调度未启动时忽略 */ }
   audit.record('source.interval', { target: s.name, detail: { intervalMin: extra.intervalMin ?? null }, ip: req.ip });
   res.json({ ok: true, intervalMin: extra.intervalMin ?? null, nextFetchAt: next });

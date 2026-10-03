@@ -48,6 +48,7 @@ test('H29-3 runner 接线：清理档自写凭证并按 validAfter 重判，闸�
   assert.match(runner, /retentionReadout\(\{ validAfter: lastCollectAt \}\)/, '重判闸时没绑最近成功采集');
   assert.match(runner, /dispatch\('cleanup_blocked'/, '闸挡下没有接报警');
   assert.match(runner, /beijingDateStr/, '北京日必须走 lib/time-window 共用实现（invariant 17），不许手写偏移');
+  assert.match(runner, /!readout\.gate\.allowed && readout\.total > 0/, '无事可删（候选 0）不是"被挡"——那种轮空静默，否则每天准点误报会训练用户忽略这条报警（M1）');
 });
 
 test('H29-4 runner 接线：采集批尾检测"当日清理没跑"', () => {

@@ -113,18 +113,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 330
     steps:
+      # M2（对抗审查）：dispatch 轮每 15min 一次，窗口判据必须在 npm ci 之前完成——
+      # 窗口外整 job 成本压到秒级，否则 96 次/天的空 boot 会把 runner 额度打穿
+      - name: Window check (dispatch 轮)
+        id: win
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.mode }}" != "daily-ai-evening" ]; then
+            HM=$(TZ='Asia/Shanghai' date +%H%M)
+            echo "北京时刻 $HM"
+            if [ "$HM" -lt 2125 ]; then echo "in_window=false" >> "$GITHUB_OUTPUT"; else echo "in_window=true" >> "$GITHUB_OUTPUT"; fi
+          else
+            echo "in_window=true" >> "$GITHUB_OUTPUT"  # schedule 与显式 mode 补跑不查窗
+          fi
+
       - name: Checkout repository
+        if: steps.win.outputs.in_window == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: steps.win.outputs.in_window == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install dependencies
+        if: steps.win.outputs.in_window == 'true'
         run: npm ci --ignore-scripts
 
       - name: Generate evening AI brief (rolling 24h) → Turso
+        if: steps.win.outputs.in_window == 'true'
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
