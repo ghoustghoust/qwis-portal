@@ -140,7 +140,9 @@ async function handleArticles(req) {
   else if (q.include_hot !== '1') conds.push(NOT_NOISE_READER);
 
   if (q.group_id) { conds.push('s.group_id=?'); args.push(Number(q.group_id)); }
-  if (q.q) { conds.push('(a.title LIKE ? OR a.content_html LIKE ?)'); args.push(`%${q.q}%`, `%${q.q}%`); }
+  // H29③：搜索只扫 title/summary 轻列——content_html 的 LIKE 会把每行正文物化出来做匹配，
+  // 是行读单价最大的界面入口之一（正文命中不再算搜索命中；本地 server/routes/articles.js 同一批改）
+  if (q.q) { conds.push('(a.title LIKE ? OR a.summary LIKE ?)'); args.push(`%${q.q}%`, `%${q.q}%`); }
   // B99：from/to 是**北京日历日**（前端日期控件给的也是北京日），边界不许拼成 UTC 零点
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.from || '')) { conds.push('COALESCE(a.published_at, a.created_at) >= ?'); args.push(beijingDayRangeIso(q.from).startIso); }
   if (/^\d{4}-\d{2}-\d{2}$/.test(q.to || '')) { conds.push('COALESCE(a.published_at, a.created_at) <= ?'); args.push(beijingDayRangeIso(q.to).endIso); }

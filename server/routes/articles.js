@@ -45,7 +45,8 @@ function buildWhere(query) {
   else if (query.include_hot !== '1') conds.push(NOISE_SOURCE_COND);
   if (query.group_id) { conds.push('s.group_id=?'); args.push(Number(query.group_id)); }
   if (query.q) {
-    conds.push('(a.title LIKE ? OR a.content_html LIKE ?)');
+    // H29③：搜索只扫 title/summary 轻列（与云端同批改）；正文 LIKE 是行读大户
+    conds.push('(a.title LIKE ? OR a.summary LIKE ?)');
     args.push(`%${query.q}%`, `%${query.q}%`);
   }
   // F4：日期范围筛选（YYYY-MM-DD，按**北京日**边界；to 含当天全天。B99：原来拼的是 UTC 零点，
