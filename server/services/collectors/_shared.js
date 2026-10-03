@@ -55,4 +55,26 @@ function intervalMinFor(source, registry) {
   return adapterDefault(type) || (Number(intervals.rss) || 0.5) * 60;
 }
 
-module.exports = { inFlight, withSourceLock, intervalMinFor };
+// ─── H16 系统性故障抑制：本地端的成败分母（滚动窗口） ────────────────────────
+// 判据本身是 lib/source-breaker.js 的 detectSystemicFailure（三端同一条）；本地没有"一轮"的
+// 批次边界（tick / 手动补抓 / OPML / refresh 各自漏斗进 markSourceError），所以分母用
+// 最近 10 分钟滚动窗口（上限 500 条）。代理挂掉这类"一批源同指纹环境错误"会在窗口里凑齐
+// 量级+同源性+环境类三闸门，之后进来的失败不再折算成连跪（坑 #35 的 458 源事故）。
+// 成败都必须入窗：只记失败会让失败率恒 100%，任何一次小批量都"系统性"（坑 #39 分母陷阱）。
+const OUTCOME_WINDOW_MS = 10 * 60e3;
+const OUTCOME_WINDOW_MAX = 500;
+const outcomeWindow = [];
+
+function noteOutcome(ok, error) {
+  const now = Date.now();
+  outcomeWindow.push({ ok: !!ok, error, ts: now });
+  while (outcomeWindow.length > OUTCOME_WINDOW_MAX) outcomeWindow.shift();
+  while (outcomeWindow.length && now - outcomeWindow[0].ts > OUTCOME_WINDOW_MS) outcomeWindow.shift();
+}
+
+function windowIsSystemic() {
+  const { detectSystemicFailure } = require('../../../lib/source-breaker');
+  return detectSystemicFailure(outcomeWindow.map((o) => ({ ok: o.ok, error: o.error }))).systemic;
+}
+
+module.exports = { inFlight, withSourceLock, intervalMinFor, noteOutcome, windowIsSystemic };

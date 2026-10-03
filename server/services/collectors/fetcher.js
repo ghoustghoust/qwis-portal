@@ -7,7 +7,7 @@ const { nowIso } = require('../../util/time');
 const log = require('../../util/log');
 const registry = require('./registry');
 const { saveArticles, saveVideos } = require('./repo');
-const { withSourceLock, intervalMinFor } = require('./_shared');
+const { withSourceLock, intervalMinFor, noteOutcome } = require('./_shared');
 const { emitNewArticles, emitTranslation } = require('../realtime/event-bus');
 // B107：聚合器轴唯一实现（聚合源的 score 补抓走 pending_items 队列）
 const { aggregatorCondSql } = require('../../../lib/noise');
@@ -56,6 +56,7 @@ async function fetchSourceInner(source) {
   const next = new Date(Date.now() + intervalMinFor(source, registry) * 60000).toISOString();
   db.prepare("UPDATE sources SET last_fetched_at=?, next_fetch_at=?, status='ok', fail_count=0 WHERE id=?")
     .run(now, next, source.id);
+  noteOutcome(true); // H16：成功也进系统性判据的分母（坑 #39 分母陷阱）
   // 聚合源刷新后异步补抓详情页富字段（串行限速，不阻塞本次刷新；304 无变更时也顺带补存量缺字段条目）
   if (extra.aggregator) {
     setImmediate(() => {

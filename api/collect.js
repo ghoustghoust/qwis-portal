@@ -355,12 +355,21 @@ async function updateSourceOk(sourceId, extra, intervalMin, outcome) {
   });
 }
 
-async function updateSourceError(sourceId, extra, errMsg, sourceType) {
+async function updateSourceError(sourceId, extra, errMsg, sourceType, systemic = false) {
   const db = getDb();
   const { recordAttempt, classifyErr } = require('../lib/source-health');
   extra = recordAttempt(extra, 'f', classifyErr(errMsg), Date.now());
   extra.lastError = String(errMsg || '').slice(0, 300);
   extra.lastErrorAt = nowIso();
+  // H16/坑 #39：系统性故障只写排障线索（status/lastError），不累加 fail_count、不熔断——
+  // 否则一次代理故障就把一批活源集体关进牢房。判据与 runner 共用 lib/source-breaker.js。
+  if (systemic) {
+    await db.execute({
+      sql: "UPDATE sources SET status='error', extra=? WHERE id=?",
+      args: [JSON.stringify(extra), sourceId],
+    });
+    return { failCount: null, autoPaused: false, suppressed: true };
+  }
   await db.execute({
     sql: "UPDATE sources SET status='error', fail_count=COALESCE(fail_count,0)+1, extra=? WHERE id=?",
     args: [JSON.stringify(extra), sourceId],
@@ -381,7 +390,7 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType) {
 async function runCollect(mode = 'collect') {
   const db = getDb();
   const now = nowIso();
-  const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, videos: 0 };
+  const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, videos: 0, outcomes: [] };
 
   // [2026-09-10 修复] 排除 wemp/bilibili/douyin：这些类型依赖本地环境（微信 Cookie/wbi 签名/Playwright）
   // serverless 适配器对 bilibili 直接 return skipped=true → MAX_SOURCES=1 时永远 0 采集
@@ -449,10 +458,15 @@ async function runCollect(mode = 'collect') {
       const intervalMin = Number(extra.intervalMin) || (source.type === 'bilibili' ? 60 : (source.type === 'hotlist' ? 30 : 60));
       await updateSourceOk(source.id, extra, intervalMin, (addedA + addedV) > 0 ? 'n' : 'e');
       stats.success++;
+      stats.outcomes.push({ ok: true }); // H16：成败都必须进分母，只记失败会让失败率恒 100%（坑 #39）
     } catch (err) {
-      const { autoPaused } = await updateSourceError(source.id, extra, err.message, source.type);
+      // H16/坑 #39：失败先过系统性判据（与 runner 同一条），环境类同指纹风暴不折算成连跪
+      stats.outcomes.push({ ok: false, error: err.message });
+      const systemic = require('../lib/source-breaker').detectSystemicFailure(stats.outcomes).systemic;
+      const { autoPaused, suppressed } = await updateSourceError(source.id, extra, err.message, source.type, systemic);
       stats.failed++;
-      console.log(`[collect] ${source.type}:${source.name} 失败: ${err.message}${autoPaused ? ' (已自动暂停)' : ''}`);
+      if (suppressed) stats.systemicSuppressed = (stats.systemicSuppressed || 0) + 1;
+      console.log(`[collect] ${source.type}:${source.name} 失败: ${err.message}${autoPaused ? ' (已自动暂停)' : suppressed ? ' (系统性故障，不熔断不计数)' : ''}`);
     }
   }
 
