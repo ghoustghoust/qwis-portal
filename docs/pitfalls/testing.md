@@ -11,7 +11,7 @@
 
 ### #27 云端回归测试写真实 Turso：全量替换语义必须先把整表原值取回来（2026-09-13 事故）
 - 案例：regression-cloud-settings 测 9（focusSourceIds 全量替换）的旧"恢复"只复位 2 个测试 id，而该语义 `UPDATE sources SET focus=CASE...ELSE 0 END` 写**整表** → 跑一次 npm test 把线上 8 个 focus 订阅源全部清零（audit_log 04:42 实锤）。
-- 规则：①凡是"全量替换/整表 UPDATE"语义的测试，before 里取回该语义会触碰的**所有行的原值**，finally 里用同一条语句精确还原；②用"测试前后关键集合一致"断言自证；③知悉：npm test 会直打生产 Turso（只读断言+带还原的写），跑全量前想一下此刻适不适合。
+- 规则：①凡是"全量替换/整表 UPDATE"语义的测试，before 里取回该语义会触碰的**所有行的原值**，finally 里用同一条语句精确还原；②用"测试前后关键集合一致"断言自证；③知悉：npm test 对生产的接触只剩**只读**断言——写侧已被隔离（各测试把 `TURSO_DATABASE_URL` 指到 `file:` 临时库、`tests/helpers.js` 以 `APP_DATA_DIR` 隔离本地库；B83 收口，"npm test 会直打生产写"是过期警告，别再按它恐慌）；跑全量前想一下此刻适不适合。
 
 ### #T1 测试并发下的偶发失败
 - 症状：全量跑偶发 1-2 项失败（regression-ui-data 曾现），单跑全绿。

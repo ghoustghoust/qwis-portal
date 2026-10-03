@@ -1,6 +1,6 @@
 # 交付验证手册 —— Vercel 生产环境验证流程
 
-> 最后更新：2026-10-01
+> 最后更新：2026-10-03（收敛轮：dispatch 改按工作流文件名、掩码函数锚去符号化、两个时间窗口径拆清）
 > 适用对象：任何接手本项目的 Agent / 开发者。
 > 目的：在**无法直连线上环境**（GFW）或**只有本地代码**的情况下，依然能对
 > `https://qwis-intel.vercel.app` 生产环境做有效验证，保证线上线下一致性。
@@ -102,8 +102,9 @@ curl -sSL -H "Authorization: Bearer $TOKEN" \
 ### 2.3 手动触发一轮（验证修复是否生效，不用等定时）
 
 ```bash
+WF=collect.yml   # 按工作流文件名触发，不用数字 ID——数字 ID 在 workflow 重建后会变，文件名不会
 curl -sS -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/ghoustghoust/qwis-portal/actions/workflows/345928986/dispatches" \
+  "https://api.github.com/repos/ghoustghoust/qwis-portal/actions/workflows/$WF/dispatches" \
   -d '{"ref":"main"}'
 # 返回 204 即成功；然后回到 2.1 轮询新 run 的 conclusion
 ```
@@ -185,18 +186,18 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 ```
 
 **关键检查点**：
-- `created_at` 最新值与当前时间的差 = 真实的采集停滞时长
+- `created_at` 最新值与当前时间的差 = 真实的采集停滞时长（新鲜度**判线是 §3.2 的 1 小时口径**；上面探针里的 `-2 hours` 只是看量级的宽窗口，不是判线，两个数别混用）
 - `settings.cloud.collect` 心跳：每轮采集/日报/清理都会写，含 `lastRunAt` 和 stats
 - `sources` 表 `enabled=0` 且失败计数达阈值 = 被熔断的源；阈值按类型分档（视频类更高），取值唯一承载处在共用实现，本文不写数值（链路指南不变量 3）
 
 **打印前的掩码纪律（坑 #69，2026-09-20 B110 实咬）**：任何直连库里 `settings` / `credentials` / 报警渠道的探针，
-**输出前必须过 `lib/secrets.js#maskDeep`**，并把"掩了几处、掩了哪些路径"一起打出来（静默少掩是这条纪律最危险的失败方向）。
+**输出前必须过 `lib/secrets.js` 的深度掩码**，并把"掩了几处、掩了哪些路径"一起打出来（静默少掩是这条纪律最危险的失败方向）。
 - 不许在一次性脚本里自写掩码：`settings.alerts.channels[].config.url` 的密钥在**嵌套层**，
   只按顶层键名打码等于没打 —— 读层 09-12 就修过同一课（`api/[...slug].js` 注释自陈），
   我在 `node -e` 探针里重犯过一次，一条含 token 的飞书 webhook 明文进了会话输出。
 - 落盘同理：产物文件里出现凭据，一次 `git add` 就进历史（B113）。门禁第 6 条现在**两面都扫**
   （已跟踪 + 未跟踪且未被 ignore），模式表含飞书/钉钉/企微 webhook 与长 Bearer（原先只有 4 类，抓不到 webhook）。
-- 判据与自证同源：`lib/secrets.js` ↔ `tests/regression-secrets.test.js` S1~S8（含"普通 RSS 地址不许被吞"的反向样本）。
+- 判据与自证同源：`lib/secrets.js` ↔ `tests/regression-secrets.test.js`（含"普通 RSS 地址不许被吞"的反向样本）。
 
 ---
 

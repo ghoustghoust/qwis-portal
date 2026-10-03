@@ -24,7 +24,7 @@
   - 回归锁：`regression-daily-ai` 3c。
 
 ### #A1 Agnes 免费池配额规律（2026-09-13 实测）
-- 持续 ~15 RPM 调用 45-60 分钟即耗尽（HTTP 429/60s 超时），约 50 分钟自愈；期间 `_consecFail>=3` 触发 ai_failed 报警（属预期）。
+- 持续调用几十分钟量级即耗尽免费池（限速量级实测出现过 ~15 与 20 RPM 两读，随供应商侧配置漂移，判"快耗尽"以现场 429/超时日志为准，不背任何一次的数）；耗尽后约 50 分钟自愈；期间 `_consecFail>=3` 触发 ai_failed 报警（属预期）。
 - 规则：大批量 AI 任务（daily-ai/weekly/eval-filter）串行排期、避开叠加；生成窗口 > 翻译（T4 调度优先级需求）；eval-filter 之类验证选配额空闲窗跑。
 
 ### #A2 薄正文 + 推理模型多轮精翻 = 元评论/胡编标题入库（2026-09-15）
@@ -37,7 +37,7 @@
 - 症状：每日早报只剩「栏目+标题+RSS 摘要」，六维评分/推荐理由/要点/金句/主题全景全体消失；精选周刊整页空白（`weekly.latest` 25 条裸 item、`degraded:true`、`theme:null`）。用户报「AI 功能被删了」——**实际没有任何代码删除 AI 功能，AI 平台也一直正常**（`POST /api/ai/ping` 实测回 `连通成功`）。
 - 真根因（两条独立链，同一形态）：
   ① **每日早报被遮蔽**：`collect.yml` 有三个 job 写 `daily_reports`——`daily-ai-evening`（北京 21:30，`schemaVersion:2`）、`daily-ai`（00:32 备跑）、`daily-report`（北京 09:03，**非 AI**，`window_hours:30`，无 theme/themes/六维）。读层 `handleDaily` 是 `ORDER BY generated_at DESC LIMIT 1` → **最后写的非 AI 批必赢**，每天早上读者拿到的都是裸报。线上 `/api/brief/history` 实锤：id99（AI，theme 有值）被次日 id100（裸，`elapsedMin:null`）顶掉。读层 `getOrGenerate` 内联兜底是第二个裸写入者。
-  ② **周刊空覆盖**：`saveWeekly` 无条件 `INSERT OR REPLACE weekly.latest`，无最小条数守卫；`weekly` job 每周只此一次且 `if: github.event.schedule` **排除 workflow_dispatch**（掉一次 run 就整周断更且无法补跑）；失败报警条件只认 `MODE==='daily'`，`daily-ai`/`weekly` 全灭时**一条报警都没有**。
+  ② **周刊空覆盖**：`saveWeekly` 无条件 `INSERT OR REPLACE weekly.latest`，无最小条数守卫；`weekly` job 当时每周只此一次且 `if: github.event.schedule` **排除 workflow_dispatch**（掉一次 run 就整周断更且无法补跑——此排除条件后来已放开，weekly 现也接受手动 dispatch 补跑，取值见作业文件）；失败报警条件只认 `MODE==='daily'`，`daily-ai`/`weekly` 全灭时**一条报警都没有**。
 - 规则：**凡「多写者 + 单读者取最新」的产物表，落库必须带质量档位（schemaVersion），读层必须按档位优先而非按时间优先**；生成器落库前必须有最小内容量守卫（宁可不发布，也不用空/降级产物覆盖上一期好内容）；低频一次性批次（周刊）必须同时具备 ①dispatch 补跑口 ②失败报警，否则等于没有兜底。
 - 实现：守卫唯一实现 `lib/brief-guards.js`（`pickDailyReport` / `canPublishWeekly`，runner 与读层共用）。接入点：`api/[...slug].js handleDaily`、`server/services/ai/daily.js getLatest`、`tools/collect-turso.js saveWeekly`（+ runWeekly 前置省 AI 配额）。
 - 回归锁：`tests/regression-brief-guards.test.js`（含用线上真实 id99/100 时间戳构造的事故复现用例）。 <!-- doc-lint:ignore -->
@@ -49,12 +49,12 @@
   `score=10`「出售 AI 工作站——有人有兴趣到意大利北部提货吗？」（reason 明写**"不适合收录至早报"**）。
 - 根因（三个叠加点，缺一不可）：
   ① `analyzeArticle` 的返回契约是 `{scores,totalScore,reason,summary,quote,points,tags}`——**没有 `ignore`/`veto` 字段**，深析在结构上没有否决权；
-  ② `runDailyAi` 只在初筛 `:1035` 用 `f.ignore`，深析后 `:1056 analyzed.push({...a, ...r})` 无条件收录；
+  ② `runDailyAi` 只在初筛那一步用 `f.ignore`，深析后无条件收录；
   ③ 「重点更新」栏的判据是 `a.source_spotlight`（**源**有没有被标重点），完全不看分，且排在最前、还走大卡——于是最显眼的栏反而是**门槛最低**的栏。
 - 反直觉数据：当次 46 条里分数中位数只有 **38**、最高 **72**，`≥40` 会砍掉 26 条。所以**不能**凭感觉拍一个高门槛，否则早报直接空掉。
 - 规则：
-  ① **门槛取 30，不取新数**——与初筛 `ai.filterThreshold` 默认值同口径，消除"初筛说 30 分以下不收、深析打完分还能塞回来"的自相矛盾；可配 `ai.dailyMinScore`。
-  ② 门槛必须放在 **L5 权威加权之后**判定，保证"用户看到的星数"就是"被判定过的那个分"（加权系数 0.8–1.2，前后差最多 20 分）。
+  ① **门槛与初筛 `ai.filterThreshold` 默认值同口径**（取值现读实现，不在此背数），消除"初筛说低于门槛不收、深析打完分还能塞回来"的自相矛盾；可配 `ai.dailyMinScore`。
+  ② 门槛必须放在 **L5 权威加权之后**判定，保证"用户看到的星数"就是"被判定过的那个分"（加权幅度读实现）。
   ③ 无 AI 评分的条目（视频/播客——`videos` 表实测根本没有 `score` 列；以及降级关键词版）**必须豁免**，否则整栏消失。
   ④ 长期解不是继续调绝对分，而是**给模型一个说"不"的合法出口**：`analyzeArticle` 加 `veto` 字段 + `prompts/daily-analyze.md` 写清什么情况该 veto。绝对分在推理模型上不稳（本批中位 38），相对判定才可靠。
 - 实现：`lib/brief-guards.js` 里那道进报门槛判据；接入点在 `tools/collect-turso.js` 的加权环节之后。

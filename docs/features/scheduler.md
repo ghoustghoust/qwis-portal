@@ -4,7 +4,7 @@
 > 补注：jobs/portal.js 的 portal 同步目标已随 portal 项目删除而失效；云端调度在 .github/workflows/collect.yml。
 
 > `server/services/scheduler/` — 定时任务调度中心
-> 最后更新：2026-09-05
+> 最后更新：2026-10-03（收敛轮：daily.js 的 08:00 标明本地专属）
 
 ## 设计目标
 
@@ -72,7 +72,7 @@ jobsDaily.setTickingRef(tickingRef);  // 共享对象引用
 
 | 模块 | 职责 | 触发方式 |
 |------|------|---------|
-| daily.js | 日报定时生成 + fetchDueBeforeDaily | node-cron（默认 08:00） |
+| daily.js | 日报定时生成 + fetchDueBeforeDaily | node-cron（默认 08:00，**本地调度器专属**，与云端各档无关） |
 | fulltext.js | 全文补抓（<1000 字符薄内容） | 每 6h cron |
 | opml.js | OPML 源清单同步 | 每 12h setInterval |
 | maintenance.js | 数据清理 + 报警清理 + 健康自检 | 24h / 10min / 5min |
