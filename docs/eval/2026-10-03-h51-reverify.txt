@@ -1,0 +1,12 @@
+H51 云端复验（2026-10-03，生产写，已复原） · 提交 3c754e6 · /api/meta commit == 3c754e6 ✓
+
+方法：登录管理端 → 挑第一个启用的 rss 源（id 693，1A23 Studio）→ PUT interval=30 → 读回 → PUT interval=null 复原 → 读回。
+
+读数：
+- before：next_fetch_at = 2026-10-03T12:32:09.518Z，extra.intervalMin 未设（跟随全局）
+- PUT 30 → 200 {"intervalMin":30,"nextFetchAt":"2026-10-03T13:02:43.820Z"} —— deadline 立即按新间隔重算（now+30min），不再等旧 deadline
+- PUT null → 200 {"intervalMin":null,"nextFetchAt":null}
+- 读回：next_fetch_at = null（立即到期，runner 下一轮写回自己的真实链），extra.intervalMin 未设（复原干净）
+
+判读：设值/置空两支都在真实云上生效，符合坑 #73 的"频率与到期同一次写入"。锁：tests/regression-interval-deadline.test.js（6 条 + 零生产写自证）。
+本文件是一次性取证读数，不作现状依据；现状见 docs/pitfalls/collection.md #73 与锁文件。
