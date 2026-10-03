@@ -1157,6 +1157,8 @@ async function buildThemePanorama(items) {
 // 窗口二态（T3-1 R0）：默认北京自然日 [昨00:00, 今00:00)；--rolling24 时取滚动 24h [now-24h, now)
 // ——晚间 21:30 的 cron 用 rolling24，实现「晚间整理刚过去的一天，次日早上呈现」
 const ROLLING24 = process.argv.includes('--rolling24');
+// H27②：dispatch 通道上的轮次带 --window-guard（显式 mode 补跑不带），由时间窗判该不该跑
+const WINDOW_GUARD = process.argv.includes('--window-guard');
 
 function briefWindow() {
   if (ROLLING24) {
@@ -1199,6 +1201,31 @@ async function buildReadingDigest() {
 // 热点榜精选/权威加权/score_min 全部无米下锅。视频条目（'v' 前缀）跳过。
 async function persistScores(analyzed) {
   return require('../lib/score-persist').persistScores(analyzed, qRun);
+}
+
+// H27②：AI 批的三判据门（时间窗 + 当日产物 + 认领键）——两条触发路径（schedule 与 dispatch 通道）共用，
+// 判定纯逻辑在 lib/daily-ai-claim.js。schedule 丢轮/事件挂错档时，dispatch 轮会在窗口内补上；反之不重跑。
+async function runDailyAiGuarded() {
+  const eb = require('../lib/daily-ai-claim');
+  const tw = require('../lib/time-window');
+  const slot = ROLLING24 ? 'evening' : 'backup';
+  const force = process.env.GH_INPUT_MODE === 'daily-ai-evening' || process.env.GH_INPUT_MODE === 'daily-ai';
+  if (WINDOW_GUARD && !force && !eb.windowOpen(Date.now())) {
+    log(`[H27] AI 批（${slot}）不在晚间窗口（北京 21:25 后）——dispatch 轮跳过`);
+    return;
+  }
+  const hasProduct = await eb.hasAiProductToday(qOne);
+  const claim = await getSetting(eb.CLAIM_KEY, null);
+  const d = eb.claimDecision(claim, { slot, hasProductToday: hasProduct, nowMs: Date.now(), force });
+  if (!d.run) { log(`[H27] AI 批（${slot}）跳过：${d.why}`); return; }
+  await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'started' });
+  try {
+    await runDailyAi();
+    await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'ok' });
+  } catch (e) {
+    await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'failed', error: String(e.message || '').slice(0, 200) });
+    throw e;
+  }
 }
 
 async function runDailyAi() {
@@ -2203,7 +2230,7 @@ async function runTranslate() {
     if (MODE === 'collect') await runCollect();
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
-    else if (MODE === 'daily-ai') await runDailyAi();
+    else if (MODE === 'daily-ai') await runDailyAiGuarded();
     else if (MODE === 'weekly') await runWeekly();
     else if (MODE === 'mybrief') {
       // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）

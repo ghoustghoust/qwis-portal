@@ -105,8 +105,11 @@ jobs:
         run: node tools/collect-turso.js daily
 
   # ─── 晚间生成主批（北京 21:30 / UTC 13:30，滚动 24h 窗口；T3-1 R0 晚间整理次日呈现）───
+  # H27②：AI 主批搭上手动触发通道（每 15min dispatch 稳定敲门）——触发门不再依赖"定时事件串等值"
+  # （GH 会把事件挂错档，周刊断更过一次）。跑不跑由步骤内的时间窗 + 当日产物 + 认领键判
+  # （lib/daily-ai-claim.js）；显式 mode 补跑（GH_INPUT_MODE）不看窗、可强制重跑。
   daily-ai-evening:
-    if: github.event.schedule == '30 13 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'daily-ai-evening')
+    if: github.event.schedule == '30 13 * * *' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 330
     steps:
@@ -127,7 +130,10 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           # 2026-09-15 修：晚间主批此前缺 AI Key——深析全灭降级为关键词版（无评分产出）
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
-        run: node tools/collect-turso.js daily-ai --rolling24
+          # H27②：窗口守卫只对"无 mode 的 dispatch 轮"生效；显式 mode 补跑（GH_INPUT_MODE）可强制重跑
+          WINDOW_GUARD: '1'
+          GH_INPUT_MODE: ${{ github.event.inputs.mode }}
+        run: node tools/collect-turso.js daily-ai --rolling24 --window-guard
 
   # ─── AI 早报备跑兜底（北京 00:32 / UTC 16:32，自然日窗口闭合后；18-daily-ai-v2）───
   daily-ai:
