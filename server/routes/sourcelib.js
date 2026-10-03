@@ -111,13 +111,11 @@ router.post('/batch', async (req, res) => {
         const [col, val] = axes.AXIS_COL_ACTIONS[action];
         db.prepare(`UPDATE sources SET ${col}=? WHERE id=?`).run(val, sid);
       } else if (action === 'interval') {
-        if (intervalMin === null || intervalMin === undefined) {
-          db.prepare("UPDATE sources SET extra=json_remove(COALESCE(extra,'{}'),'$.intervalMin') WHERE id=?").run(sid);
-        } else {
-          const n = Number(intervalMin);
-          if (!Number.isFinite(n) || n <= 0) { errors.push({ id: sid, error: 'intervalMin 必须是正数分钟数或 null' }); continue; }
-          db.prepare("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.intervalMin', ?) WHERE id=?").run(n, sid);
-        }
+        // H51/坑 #73：走共用行级语句，频率与到期同一次写入（云端批同源）
+        try {
+          const stmt = axes.intervalRowStmt(sid, { intervalMin });
+          db.prepare(stmt.sql).run(...stmt.args);
+        } catch (e) { errors.push({ id: sid, error: e.message }); continue; }
       } else if (action === 'failover') {
         const fg = String(failoverGroup || '').trim();
         if (fg) db.prepare("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.failoverGroup', ?) WHERE id=?").run(fg, sid);

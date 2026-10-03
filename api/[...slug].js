@@ -2585,16 +2585,21 @@ async function handleSourceInterval(req, id) {
   const { intervalMin } = req.body || {};
   let extra = {};
   try { extra = JSON.parse(s.extra || '{}'); } catch { /* 重置 */ }
+  // H51/坑 #73：频率与到期时间同一次写入——设值按新间隔重算 deadline；置 null 顶成立即到期，
+  // 下一轮由 runner 按自己的全局链写回真实 next_fetch_at（跟随全局的链不在此复刻，避免读层漂移）
   if (intervalMin === null || intervalMin === undefined) {
     delete extra.intervalMin;
-  } else {
-    const n = Number(intervalMin);
-    if (!Number.isFinite(n) || n <= 0) return { status: 400, body: jsonErr('intervalMin 必须是正数分钟数或 null') };
-    extra.intervalMin = n;
+    await qRun('UPDATE sources SET extra=?, next_fetch_at=NULL WHERE id=?', [JSON.stringify(extra), id]);
+    await auditRecord('source.interval', { target: s.name, detail: { intervalMin: null } });
+    return jsonOk({ intervalMin: null, nextFetchAt: null });
   }
-  await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(extra), id]);
-  await auditRecord('source.interval', { target: s.name, detail: { intervalMin: extra.intervalMin ?? null } });
-  return jsonOk({ intervalMin: extra.intervalMin ?? null });
+  const n = Number(intervalMin);
+  if (!Number.isFinite(n) || n <= 0) return { status: 400, body: jsonErr('intervalMin 必须是正数分钟数或 null') };
+  extra.intervalMin = n;
+  const next = new Date(Date.now() + n * 60000).toISOString();
+  await qRun('UPDATE sources SET extra=?, next_fetch_at=? WHERE id=?', [JSON.stringify(extra), next, id]);
+  await auditRecord('source.interval', { target: s.name, detail: { intervalMin: n } });
+  return jsonOk({ intervalMin: n, nextFetchAt: next });
 }
 
 // POST /api/sources/batch — F6
@@ -2663,13 +2668,11 @@ async function handleSourcesBatch(req) {
         const [col, val] = axes.AXIS_COL_ACTIONS[action];
         await qRun(`UPDATE sources SET ${col}=? WHERE id=?`, [val, sid]);
       } else if (action === 'interval') {
-        if (intervalMin === null || intervalMin === undefined) {
-          await qRun("UPDATE sources SET extra=json_remove(COALESCE(extra,'{}'),'$.intervalMin') WHERE id=?", [sid]);
-        } else {
-          const n = Number(intervalMin);
-          if (!Number.isFinite(n) || n <= 0) { errors.push({ id: sid, error: 'intervalMin 必须是正数分钟数或 null' }); continue; }
-          await qRun("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.intervalMin', ?) WHERE id=?", [n, sid]);
-        }
+        // H51/坑 #73：走共用行级语句，频率与到期同一次写入（本地批同源）
+        try {
+          const stmt = axes.intervalRowStmt(sid, { intervalMin });
+          await qRun(stmt.sql, stmt.args);
+        } catch (e) { errors.push({ id: sid, error: e.message }); continue; }
       } else if (action === 'failover') {
         const fg = String(failoverGroup || '').trim();
         if (fg) await qRun("UPDATE sources SET extra=json_set(COALESCE(extra,'{}'),'$.failoverGroup', ?) WHERE id=?", [fg, sid]);
