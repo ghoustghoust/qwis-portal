@@ -1,0 +1,64 @@
+> 类别：取证产物 ｜ 复验对象：docs/ISSUES.md 观察中 B10/B20/B121（2026-10-03 用户指令复验）
+> 关联承载处：daily_reports 表、weekly.latest/weekly.archive 设置键、cloud.collect 心跳
+> 关联坑：坑 #76 无关；关联决策：ADR-31（宁缺毋滥）、不变量 12/15/20；取证方式：一次性只读探针（脚本已删）
+> 状态：已验收（B20/B121 通过出账；B10 部分不符转未修，见 ISSUES 对应行）
+
+===== B20/B10：daily_reports 最近 4 期（入报门槛 = 30 分，来源 ai.dailyMinScore=null）=====
+
+#一 期 id=92 generated_at=2026-10-03T06:14:48.724Z 窗口=30h schemaVersion=1
+  B20 读数: candidates=488 gateDropped=(键缺失!) filterStats.attempted=undefined passed=undefined rejected=undefined failed=undefined totalItems=42
+  条目分数分布: 有分 22 ｜ 无分/视频类 20 ｜ 最低分 30 ｜ 低于门槛 30 分的条目 = 0
+  B10 栏目注解（4 栏）:
+    [培训课程发布] 2条 ｜ desc: 新公开的课程、训练营与社群招募
+    [重点更新] 15条 ｜ desc: 
+    [AI技术] 15条 ｜ desc: 模型、Agent 与工程链路的技术动向
+    [其它重要] 10条 ｜ desc: 
+
+#一 期 id=91 generated_at=2026-10-02T22:13:28.585Z 窗口=24h schemaVersion=2
+  B20 读数: candidates=460 gateDropped=30 filterStats.attempted=460 passed=362 rejected=98 failed=135 totalItems=46
+  条目分数分布: 有分 36 ｜ 无分/视频类 10 ｜ 最低分 30 ｜ 低于门槛 30 分的条目 = 0
+  B10 栏目注解（5 栏）:
+    [培训课程发布] 2条 ｜ desc: 新公开的课程、训练营与社群招募
+    [重点更新] 15条 ｜ desc: 
+    [AI技术] 15条 ｜ desc: 模型、Agent 与工程链路的技术动向
+    [其它重要] 4条 ｜ desc: 
+    [视频与播客] 10条 ｜ desc: 窗口内新视频/播客，点开即可播放收听
+
+#一 期 id=90 generated_at=2026-10-02T06:51:40.586Z 窗口=30h schemaVersion=1
+  B20 读数: candidates=486 gateDropped=(键缺失!) filterStats.attempted=undefined passed=undefined rejected=undefined failed=undefined totalItems=40
+  条目分数分布: 有分 21 ｜ 无分/视频类 19 ｜ 最低分 38 ｜ 低于门槛 30 分的条目 = 0
+  B10 栏目注解（3 栏）:
+    [重点更新] 15条 ｜ desc: 
+    [AI技术] 15条 ｜ desc: 模型、Agent 与工程链路的技术动向
+    [其它重要] 10条 ｜ desc: 
+
+#一 期 id=89 generated_at=2026-10-01T07:03:23.000Z 窗口=30h schemaVersion=1
+  B20 读数: candidates=479 gateDropped=(键缺失!) filterStats.attempted=undefined passed=undefined rejected=undefined failed=undefined totalItems=43
+  条目分数分布: 有分 21 ｜ 无分/视频类 22 ｜ 最低分 33 ｜ 低于门槛 30 分的条目 = 0
+  B10 栏目注解（4 栏）:
+    [培训课程发布] 3条 ｜ desc: 新公开的课程、训练营与社群招募
+    [重点更新] 15条 ｜ desc: 
+    [AI技术] 15条 ｜ desc: 模型、Agent 与工程链路的技术动向
+    [其它重要] 10条 ｜ desc: 
+
+===== B121：weekly.latest =====
+期号 2 ｜ 窗口 2026-09-18~2026-09-25 ｜ generatedAt=2026-09-25T15:52:48.602Z ｜ 条目 20
+  theme: (缺)
+  coverTheme: AI从能到智，从智到安
+  storylines: 4 条｜首条: AI智能体从玩具进化为生产工具
+  weeklySummary: (缺)
+  degraded=true ｜ spineMissing=true ｜ spineMissingParts=["theme"]
+  判读: 三键缺 theme；degraded 标记如实为真 ✓
+
+归档共 2 期；末位 = 期号 2 generatedAt=undefined theme=(缺) coverTheme=(缺) storylines=(缺) degraded=undefined
+
+════ 附：weekly 档心跳核查（history 168 条无 weekly；GH 侧 10-02 10:03Z 的 weekly cron 触发整轮丢失，11:24Z 的 run 是 collect cron 触发，其 weekly job 为 skipped）════
+心跳 lastRunAt=2026-10-03T09:07:54.355Z；history 共 168 条
+history 里 weekly 档记录 0 条：
+history 最近 6 条（各档）:
+  mode=collect at=2026-10-03T08:34:07.645Z {"total":154,"success":152,"failed":2,"skipped":0,"articles":80,"failures":[{"id":743,"name":"Ask HN","type":"rss","errMsg":"This operation was aborted"},{"id":
+  mode=translate at=2026-10-03T08:36:51.304Z {"total":10,"success":10,"failed":0,"failures":[]}
+  mode=collect at=2026-10-03T08:48:28.888Z {"total":29,"success":29,"failed":0,"skipped":0,"articles":688,"failures":[],"outcomes":[{"ok":true},{"ok":true},{"ok":true},{"ok":true},{"ok":true},{"ok":true}
+  mode=translate at=2026-10-03T08:50:59.779Z {"total":10,"success":10,"failed":0,"failures":[]}
+  mode=collect at=2026-10-03T09:05:16.375Z {"total":411,"success":409,"failed":2,"skipped":0,"articles":96,"failures":[{"id":705,"name":"AI SDK(@aisdk)","type":"x","errMsg":"This operation was aborted"},
+  mode=translate at=2026-10-03T09:07:54.355Z {"total":10,"success":10,"failed":0,"failures":[]}
