@@ -66,6 +66,12 @@ function mergeSetting(key, patch, sensitiveKeys = []) {
 // PUT /api/settings {intervals?, opml?, queue?, ai?, daily?, bilibili?{cookie}}
 router.put('/', (req, res) => {
   const body = req.body || {};
+  // H41①：未知区/闭集区未知键 → 400 点名，不许静默假保存；保留键任何端不收（判定唯一在 lib/settings-schema）
+  const schema = require('../../lib/settings-schema');
+  const reg = schema.checkWritableKeys(body, { allowSections: ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'views', 'bilibili', 'ai'] });
+  if (!reg.ok) return res.status(400).json({ ok: false, error: reg.error });
+  const blocked = schema.findBlocklistedKeys(body);
+  if (blocked.length) return res.status(400).json({ ok: false, error: `含系统保留键 ${blocked.join(', ')}，禁止写入` });
   // 先全部校验、再统一写入——防「400 报错但前面的区已写库」的部分写入（2026-09-04 对抗性审查发现）
   let dailyPatch = null;
   if (body.daily) {

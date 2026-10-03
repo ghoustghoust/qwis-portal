@@ -1181,7 +1181,7 @@ async function runDailyAi() {
   const AI_LIMIT = Number(process.env.DAILY_AI_LIMIT) || Infinity; // 调试用：限制候选数
   const clean = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log);
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log, SETTING_STORE);
   const valid = prescreen.applySourceQuota(clean, {
     cap: perSourceCap,
     limit: Number.isFinite(AI_LIMIT) ? AI_LIMIT : DAILY_POOL_LIMIT,
@@ -1710,6 +1710,7 @@ async function getSetting(key, def = null) {
   try { return JSON.parse(rows[0].value); } catch { return def; }
 }
 
+const SETTING_STORE = { getSetting, setSetting: putSetting }; // H41③：回落留痕的读写面（函数声明提升，此处引用安全）
 async function putSetting(key, val) {
   await getDb().execute({ sql: 'INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)', args: [key, JSON.stringify(val)] });
 }
@@ -1794,7 +1795,7 @@ async function runDaily() {
   // 顺序必须是「先安检再配额」，与另三份一致：否则乱码/错误页条目会白占每源名额（09-24 对抗审查抓出）。
   const psRaw = await qAll(sql, args);
   const ps = require('../lib/prescreen');
-  const psCap = ps.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log);
+  const psCap = ps.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), log, SETTING_STORE);
   const clean = psRaw.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
   const candidates = ps.applySourceQuota(clean, { cap: psCap, limit: DAILY_POOL_LIMIT });
   const psRead = ps.prescreenStats(clean, candidates, psCap);

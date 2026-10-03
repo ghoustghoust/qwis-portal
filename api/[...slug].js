@@ -81,6 +81,7 @@ async function setSetting(key, val) {
   );
   _settingsCache.set(key, { val, ts: Date.now() });
 }
+const SETTING_STORE = { getSetting, setSetting }; // H41③：回落留痕的读写面（prescreen 等消费方传这个）
 
 // ─── 鉴权 ───
 const PUBLIC_GET_PATHS = new Set([
@@ -710,7 +711,7 @@ async function generateDailyInline() {
     return t.length >= 6 && !/参数错误|环境异常|访问过于频繁/.test(t);
   });
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(`[日报内联] ${m}`));
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(`[日报内联] ${m}`), SETTING_STORE);
   let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
   const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
   // B20（2026-09-19 第二次对抗审查补漏）：全库其实有 5 个日报写入点，线上出问题的这一份（读层内联兜底）
@@ -1090,13 +1091,19 @@ async function handleSettings(req) {
       lastSyncAt: await getSetting('wechat.lastSyncAt', null),
       lastResult: await getSetting('wechat.lastResult', null),
     },
-    ai: {
-      enabled: !!aiCfg.enabled,
-      apiKeyConfigured: !!process.env.AGNES_API_KEY,
-      model: process.env.AGNES_MODEL || 'agnes-2.5-flash',
-      envSource: process.env.AGNES_API_KEY ? 'env' : 'settings',
-      locked: 'env', // 13-settings-write：云端 AI 配置锁定 env-only
-    },
+    ai: (() => {
+      // H41②：回显与执行共用同一次解析（api/_ai.js effectiveAiConfig），逐字段标出来源层——
+      // 此前这里只看 env，而执行侧库里那份优先，造成"存了、显示也对、运行时没变"的反序失真
+      const eff = require('./_ai').effectiveAiConfig(aiCfg);
+      return {
+        enabled: eff.enabled,
+        apiKeyConfigured: eff.hasKey,
+        model: eff.model,
+        modelSource: eff.modelSource,
+        keySource: eff.keySource,
+        locked: 'env', // 13-settings-write：云端主设置端点对 AI 段拒写（真写入口在专用端点，写后探测+审计）
+      };
+    })(),
   });
 }
 
@@ -2249,7 +2256,9 @@ async function handleAuditCleanup(req) {
 
 // ═══ 设置写（13-settings-write, 2026-09-11） ═══
 // 与本地 server/routes/settings.js + routes/daily.js settingsRouter 语义对齐
-const SETTINGS_BLOCKLIST = ['auth.secret', 'admin.passwordHash', 'backup.latest', 'cloud.collect'];
+// H41①：合法区/闭集键/保留键的唯一判定在 lib/settings-schema.js（两端共用，不许各写一份）
+const SETTINGS_BLOCKLIST = require('../lib/settings-schema').BLOCKLIST;
+const SETTINGS_ALLOW_SECTIONS = ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'mybrief', 'weekly', 'prescreen', 'views'];
 
 // 栏目表/入报源类型：见文件上方对 lib/daily-columns.js 的唯一引用（B10，此处曾另抄一份）
 
@@ -2319,6 +2328,9 @@ async function handleSettingsPut(req) {
   if (body.ai !== undefined) {
     return { status: 400, body: jsonErr('云端 AI 配置锁定为环境变量（AGNES_*），请在 Vercel 环境变量中修改') };
   }
+  // H41①：未知区/闭集区未知键 → 400 点名，不许静默假保存（此前"写了但没生效还回成功"）
+  const _reg = require('../lib/settings-schema').checkWritableKeys(body, { allowSections: SETTINGS_ALLOW_SECTIONS });
+  if (!_reg.ok) return { status: 400, body: jsonErr(_reg.error) };
   // F6：全部校验先于任何写入
   let dailyPatch = null;
   try {

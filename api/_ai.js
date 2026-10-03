@@ -90,15 +90,31 @@ async function _rawChat(p, messages, opts) {
   return content;
 }
 
-function _providerChain(cfg) {
+// H41②：AI 生效配置的唯一解析——回显（GET /api/settings 的 ai 段）与执行（_providerChain）
+// 共用这一份，逐字段标出"值来自库还是 env"，消灭"显示按 env、执行按库"的反序失真
+// （settings-plane.md §三：库里那份优先于环境变量）。
+function effectiveAiConfig(cfg = {}) {
   const norm = (b) => String(b || '').replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  return {
+    enabled: !!cfg.enabled,
+    hasKey: !!(cfg.apiKey || process.env.AGNES_API_KEY),
+    keySource: cfg.apiKey ? 'settings' : (process.env.AGNES_API_KEY ? 'env' : 'none'),
+    model: cfg.model || process.env.AGNES_MODEL || 'agnes-2.5-flash',
+    modelSource: cfg.model ? 'settings' : 'env',
+    apiBase: norm(cfg.apiBase || process.env.AGNES_API_BASE || 'https://apihub.agnes-ai.com/v1'),
+    apiBaseSource: cfg.apiBase ? 'settings' : 'env',
+  };
+}
+
+function _providerChain(cfg) {
   const chain = [];
-  if (cfg.apiKey || process.env.AGNES_API_KEY) {
+  const eff = effectiveAiConfig(cfg);
+  if (eff.hasKey) {
     chain.push({
       name: 'agnes',
-      key: cfg.apiKey || process.env.AGNES_API_KEY,
-      base: norm(cfg.apiBase || process.env.AGNES_API_BASE || 'https://apihub.agnes-ai.com/v1'),
-      model: cfg.model || process.env.AGNES_MODEL || 'agnes-2.5-flash',
+      key: eff.keySource === 'settings' ? cfg.apiKey : process.env.AGNES_API_KEY,
+      base: eff.apiBase,
+      model: eff.model,
     });
   }
   if (process.env.DEEPSEEK_API_KEY) {
@@ -508,7 +524,7 @@ async function generateTheme(items) {
 }
 
 module.exports = {
-  aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats,
+  aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats, effectiveAiConfig,
   refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateThemeDetailed, pickThemeReply, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
   _setProviderOverride, // tests only
 };

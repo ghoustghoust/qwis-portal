@@ -40,6 +40,13 @@ async function getSetting(key, def = null) {
   if (!row) return def;
   try { return JSON.parse(row.value); } catch { return def; }
 }
+async function putSetting(key, val) {
+  await qRun(
+    'INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+    [key, JSON.stringify(val)]
+  );
+}
+const SETTING_STORE = { getSetting, setSetting: putSetting }; // H41③：回落留痕的读写面
 
 // ─── 默认栏目配置（B10：唯一实现收进 lib/daily-columns.js，本地/runner/云端三端共用） ───
 const { DEFAULT_COLUMNS, ARTICLE_SOURCE_TYPES } = require('../lib/daily-columns');
@@ -117,7 +124,7 @@ async function generateDaily(windowHours) {
   // 过滤安检
   const clean = candidates.filter(a => !hasMojibake(a.title) && !isErrorPageItem(a));
   const prescreen = require('../lib/prescreen');
-  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(m));
+  const perSourceCap = prescreen.prescreenCapOf(await getSetting('prescreen.perSourceCap', null), (m) => console.log(m), SETTING_STORE);
   let valid = prescreen.applySourceQuota(clean, { cap: perSourceCap, limit: 500 });
   const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
 
