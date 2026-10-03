@@ -3,7 +3,7 @@
 > 所有 Agent 的共用上下文。本文只写**系统此刻怎么摆、机制怎么接、什么东西必须保持一致**。
 > 为什么这么定、边界在哪、什么提案直接拒绝——那些是决策，住在 `docs/adr/` 的编号件里（索引见 §3.8），本文不复述。
 > 文档自身的清洁规则与写作尺子见 `docs/DOC_GOVERNANCE.md`；协作约束与交付链见 `AGENTS.md`（本文不复述）。
-> 最后更新：2026-10-01
+> 最后更新：2026-10-03（收敛轮：本地代理取值改指 HANDOVER §1.5）
 
 ## 0. 三端角色
 
@@ -179,7 +179,7 @@ runner 从库导出 JSON → 同时写进 `static-data/` 与 `public/data/` → 
 | 外置触发器 | jobId 与 API Key 见 `docs/HANDOVER.md` §1.5；控制台 cron-job.org |
 | 云端与本地的管理口令 | `ADMIN_USER` / `ADMIN_PASSWORD`：本地 `.env` + Vercel env（+ 需要处 GitHub Secrets）；登录换令牌。⚠️ settings 里那个口令哈希键是**不回显名单的成员，不是鉴权入口**（ADR-12） |
 | 报警渠道 | 本地 settings / 云端 Turso settings 各一份；支持钉钉 / 企微 / 飞书 / Server酱 / Bark / TG / 自定义 webhook |
-| 本地代理 | `http://127.0.0.1:12000`（打线上端点与 git 都要走它；代理不在位时线上探针直接失败，别把失败读成"线上坏了"） |
+| 本地代理 | 打线上端点与 git 都要走它（端口取值见 `docs/HANDOVER.md`「环境常量」；代理不在位时线上探针直接失败，别把失败读成"线上坏了"） |
 
 ## 7. 运维入口
 

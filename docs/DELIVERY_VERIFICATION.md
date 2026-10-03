@@ -44,9 +44,11 @@ git config user.email "ghoustghoust@users.noreply.github.com"   # 仅仓库级�
 ### 1.2 推送必须走代理（GFW 会重置 github.com 的 git 连接）
 
 ```bash
+# 代理地址定义一次（端口取值以 docs/HANDOVER.md「环境常量」为准；端口换过时只改 HANDOVER，本文命令跟着 $PROXY 走）
+PROXY=http://127.0.0.1:12000
 # ❌ 直接 push 会报 "Recv failure: Connection was reset"
-git -c http.proxy=http://127.0.0.1:12000 pull --rebase origin main
-git -c http.proxy=http://127.0.0.1:12000 push origin main
+git -c http.proxy=$PROXY pull --rebase origin main
+git -c http.proxy=$PROXY push origin main
 ```
 
 - **pull --rebase 是必须的**：静态导出物那条定时作业会自动提交它的产物，远端经常领先本地（作业时刻以作业文件为唯一事实源，本文不写）。
@@ -128,8 +130,8 @@ cd /c/Users/17619/.cache/qwis-diag/sec && node set-secrets.js <PAT>
 ### 3.1 网络前提（中国大陆本机必读）
 
 ```bash
-# vercel.app 被 GFW 阻断，必须走代理：
-export https_proxy=http://127.0.0.1:12000 http_proxy=http://127.0.0.1:12000
+# vercel.app 被 GFW 阻断，必须走代理（$PROXY 在 §1.2 定义；单跳本节先回 §1.2 执行定义那两行）：
+export https_proxy=$PROXY http_proxy=$PROXY
 # Windows Git Bash 的 curl(schannel) 走代理时必报 CRYPT_E_REVOCATION_OFFLINE，
 # 必须加 --ssl-no-revoke：
 curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status"
@@ -205,9 +207,9 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 
 | # | 现象 | 根因 | 解法 |
 |---|---|---|---|
-| 5.1 | `curl vercel.app` 连接超时 | GFW 阻断 | `export https_proxy=http://127.0.0.1:12000` |
+| 5.1 | `curl vercel.app` 连接超时 | GFW 阻断 | `export https_proxy=$PROXY`（$PROXY 定义见 §1.2） |
 | 5.2 | 走代理后报 `CRYPT_E_REVOCATION_OFFLINE` | Windows schannel 吊销检查 | curl 加 `--ssl-no-revoke` |
-| 5.3 | `git push` 报 Connection reset | GFW 干扰 git HTTPS | `git -c http.proxy=http://127.0.0.1:12000 push` |
+| 5.3 | `git push` 报 Connection reset | GFW 干扰 git HTTPS | `git -c http.proxy=$PROXY push`（$PROXY 定义见 §1.2） |
 | 5.4 | GH Actions schedule 整批缺失 | GitHub 高负载会丢定时任务（无告警） | **这正是"双档触发"存在的理由**（ADR-13）：外置触发器用 POST 手动触发 API 敲门。判"这一轮到底跑没跑"现读采集心跳里的 mode，别拿"有没有 cron 表达式"当证据 |
 | 5.5 | GH API 拉日志 403 "admin rights" | 日志接口必须鉴权 | 带 PAT（§2.2） |
 | 5.6 | Node 脚本 exit 127 + libuv 断言 `UV_HANDLE_CLOSING` | 连接未关时 `process.exit()` | 先 `db.close()` 再 `process.exitCode=0` 自然退出 |

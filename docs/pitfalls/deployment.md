@@ -18,7 +18,7 @@
 
 ### #D1 push 后必须验证远端 SHA（2026-09-13 事故）
 - 案例：修复 commit 后 push 的后台任务超时被杀未察觉，修复滞留本地 2 小时。
-- 规则：`git push` 后必须 `git ls-remote origin main` 核对 SHA == 本地 HEAD；本机 push 需显式 HTTPS_PROXY（已固化 git config http.proxy=127.0.0.1:12000）。
+- 规则：`git push` 后必须 `git ls-remote origin main` 核对 SHA == 本地 HEAD；本机 push 需显式 HTTPS_PROXY（已固化 git config http.proxy 指向本机代理；**换端口时 git config 与 `.env` 同批改**，取值见 `docs/HANDOVER.md`「环境常量」）。
 - 附：静态导出物那条作业会自动推 `chore: update data snapshots` commit，push 被拒（non-fast-forward）时先 `git pull --rebase` 再推。
 
 ### #D2 workflow 里加 AI 步骤必须检查所在 step 的 env 挂载（2026-09-15 事故）
