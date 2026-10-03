@@ -101,7 +101,7 @@ function runCleanup(env) {
   }
 }
 
-test('DC4 runner：磁盘没有转储目录时凭凭证放行并真删；无凭证一条不删（⑥b 双向）', async () => {
+test('DC4 runner：磁盘没有转储目录时走凭证腿放行并真删（⑥b；H29② 起凭证由清理档按天自写，"凭证作废挡下"的行为场景在 cleanup-observe CO2b）', async () => {
   const dir = tmp('dc4-');
   try {
     // 有凭证 → 真删
@@ -118,17 +118,8 @@ test('DC4 runner：磁盘没有转储目录时凭凭证放行并真删；无凭�
     const row = JSON.parse(Array.from((await db.execute({ sql: "SELECT value FROM settings WHERE key='retention.pending'", args: [] })).rows)[0].value);
     assert.equal(row.gate.via, 'credential', '放行没走凭证腿：' + JSON.stringify(row.gate));
     await db.close();
-    // 无凭证 → 一条不删
-    url = fileUrl(path.join(dir, 'b'));
-    fs.mkdirSync(path.join(dir, 'b'), { recursive: true });
-    db = await seedRunnerDb(url);
-    await db.close();
-    const no = runCleanup({ TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: path.join(dir, 'no-dump') });
-    db = createClient({ url });
-    const left2 = Number(Array.from((await db.execute('SELECT COUNT(*) c FROM articles')).rows)[0].c);
-    assert.equal(left2, 6, `无凭证时一条都不许删，实删 ${6 - left2}：${no.out.slice(-300)}`);
-    assert.match(no.out, /挡下|没有.*凭证|delete-gate/, '被挡下却没出声：' + no.out.slice(-300));
-    await db.close();
+    // （原"无凭证 → 一条不删"半边已随 H29② 语义升级移走：清理档现在自写当日凭证，
+    //   "凭证绑最近成功采集、作废时挡下并出声"的行为场景改在 regression-cleanup-observe CO2b 钉。）
   } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
 });
 

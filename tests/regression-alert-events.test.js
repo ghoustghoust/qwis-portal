@@ -81,10 +81,11 @@ test('V3 反向：分散在两处的单键成员不许算成第二份表（判�
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('V4 表本身的形状：并集 8 键、默认全开、说明齐全（不许有事件没说明）', () => {
+test('V4 表本身的形状：并集 10 键、默认全开、说明齐全（不许有事件没说明）', () => {
   const ae = AE();
   assert.deepEqual(ae.eventKeys(), [
     'source_error', 'source_paused', 'source_slow', 'daily_failed', 'collect_stalled', 'ai_failed', 'frozen_digest', 'mybrief',
+    'cleanup_blocked', 'cleanup_missed',
   ], '事件键集变了 —— 这是三端与后台共同的表，改动必须同步文档（37-2 边界：取并集，不许删本地独有键）');
   assert.ok(ae.eventKeys().includes('source_slow'), '本地独有的 source_slow 必须保留（37-2 边界条款）');
   assert.ok(ae.eventKeys().includes('mybrief'), '云端独有的 mybrief 必须保留');
@@ -93,7 +94,7 @@ test('V4 表本身的形状：并集 8 键、默认全开、说明齐全（不�
     assert.ok(v.title && v.desc, `${k} 缺标题或说明 —— 后台第 4 份说明就是靠这个字段消失的`);
     assert.equal(v.defaultOn, true, `${k} 默认值不再是"开"（改默认值＝改产品行为，需单独拍板）`);
   }
-  assert.equal(Object.keys(ae.defaultEvents()).length, 8);
+  assert.equal(Object.keys(ae.defaultEvents()).length, 10);
 });
 
 test('V5 幽灵键不外露：落库里的 wemp_down 不进状态表，也不许有真事件被它顶掉（B109，零配置写）', () => {
@@ -182,5 +183,5 @@ test('V7 分发真的读这份开关：勾掉的事件 dispatch 必须停在 dis
   const st = alerts.getConfig().events;
   assert.equal(st.source_error, false, '落库的"关"没透到 getConfig');
   assert.equal(st.source_paused, true, '没勾过的键应取表里的默认开');
-  assert.equal(Object.keys(st).length, 8, 'getConfig 的键集不等于表');
+  assert.equal(Object.keys(st).length, 10, 'getConfig 的键集不等于表');
 });

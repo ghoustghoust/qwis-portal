@@ -687,6 +687,24 @@ async function postRunAlerts(stats) {
         if (failCount >= 2) await alerts.sourceAlert({ ...f.source }, failCount, f.errMsg);
       }
     }
+    // H29①：当日清理没跑——清理档只认 schedule，GH 丢 cron 时它整档消失且心跳无痕（H27 同族形状）。
+    // 判据：北京时间已过 23:00 而心跳 history 里没有"今天（北京日）"的 cleanup 条目 → 报一次。
+    // sourceId 带北京日：同一晚的多轮批次只响第一次（冷却键相同）。
+    try {
+      const tw = require('../lib/time-window');
+      if (tw.beijingNow().getUTCHours() >= 23) {
+        const bjDay = tw.beijingDateStr();
+        const hb = await getSetting('cloud.collect', {});
+        const ran = Array.isArray(hb && hb.history) && hb.history.some((e) => e && e.mode === 'cleanup' && tw.beijingDateStr(Date.parse(e.at || '')) === bjDay);
+        if (!ran) {
+          await alerts.dispatch('cleanup_missed', {
+            sourceId: `bj-${bjDay}`,
+            title: `🌙 清理档今天（北京 ${bjDay}）没跑过`,
+            text: '清理档只认 schedule，GitHub 丢 cron 时它整档消失且不留痕（H27 同族）。手动补跑：node tools/collect-turso.js cleanup（需云库凭据）。',
+          });
+        }
+      }
+    } catch (e) { console.log(`[alerts] cleanup_missed 检测失败（已隔离）: ${e.message}`); }
     // 停滞检测：本轮有到期源但 0 成功，且近 1h 无任何成功采集
     if (stats.total > 0 && stats.success === 0) {
       const recent = await qOne(
@@ -720,7 +738,7 @@ const RETENTION_HISTORY_MAX = 14;
 // 转储目录必须与 `tools/dump-content.cjs` 的默认产出同一处：它按 scope 分子目录
 // （`data/content-dump/cloud` / `.../local`）。指到父目录会永远判"没有转储"= 闸恒挡（假安全）。
 const contentDumpDir = () => process.env.CONTENT_DUMP_DIR || path.join(__dirname, '..', 'data', 'content-dump', 'cloud');
-async function retentionReadout() {
+async function retentionReadout({ validAfter } = {}) {
   const { pendingPlan } = require('../lib/retention');
   const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
   const plan = pendingPlan('runner', retentionDays);
@@ -729,7 +747,11 @@ async function retentionReadout() {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   const cd = require('../lib/content-dump');
   const cred = await getSetting(cd.CREDENTIAL_KEY, null);
-  const gate = cd.deleteGateAny(contentDumpDir(), cred, { maxAgeHours: cd.GATE_MAX_AGE_H });
+  // H29②：绑定"最近一次成功采集"是读数的**默认行为**——所有调用方（collect 批次/清理档/刷新）
+  // 不显式传 validAfter 就自动绑，读数面对闸的陈述才不会说谎（显式传 null 表示只要候选读数，不判闸）。
+  let va = validAfter;
+  if (va === undefined) va = lastCollectAtOf(await getSetting('cloud.collect', {}));
+  const gate = cd.deleteGateAny(contentDumpDir(), cred, { maxAgeHours: cd.GATE_MAX_AGE_H, validAfter: va });
   let history = [];
   try {
     const prev = await getSetting(RETENTION_READOUT_KEY, {});
@@ -758,11 +780,33 @@ async function refreshRetentionReadout() {
 }
 
 // ─── 模式：cleanup（数据清理；09-20T22:27Z 已实跑过一轮，删 50,823 条 —— 见 docs/ISSUES.md B101） ───
+// H29②：最近一次**成功采集**的心跳时刻（history 里 mode=collect 的最后一条）。
+// 清理凭证的有效期绑它：采集在凭证之后成功过 = 库里有清单没覆盖的新数据，旧凭证作废。
+function lastCollectAtOf(hb) {
+  const h = hb && Array.isArray(hb.history) ? hb.history : [];
+  for (let i = h.length - 1; i >= 0; i--) if (h[i] && h[i].mode === 'collect' && h[i].at) return h[i].at;
+  return (hb && hb.mode === 'collect' && hb.lastRunAt) || null;
+}
+
 async function runCleanup() {
   // 删除谓词的**唯一实现**在 `lib/retention.js`（spec43 D1/B102）：本文件与 `api/collect.js`、
   // `server/services/datamgr.js` 三端共用同一份条件，改一处即改三处，不再各抄一遍。
   const { cutoffIso, deleteSql, HOTLIST_DAYS } = require('../lib/retention');
-  const readout = await retentionReadout();
+  const cd = require('../lib/content-dump');
+  // H29②（用户 10-03 拍板）：转储腿在 runner 临时盘上结构性不成立，凭证改由本档按天自写——
+  // 小清单凭证（候选行数 + 保留窗口 + 绑定最近一次成功采集的指纹），写完按 validAfter 重判闸。
+  // ⚠️ 这条腿证明的是"候选清单新鲜"，**不提供内容备份**；本地端跑清理仍走磁盘全量校验那条腿。
+  const hbPrev = await getSetting('cloud.collect', {});
+  const lastCollectAt = lastCollectAtOf(hbPrev);
+  const pre = await retentionReadout({ validAfter: null }); // 第一遍只为拿候选读数做指纹
+  const cred = {
+    at: nowIso(), source: 'runner-daily',
+    tables: { articles: { rows: pre.total, maxId: 0 } },
+    manifestSha256: cd.sha256Hex(JSON.stringify({ rows: pre.total, retentionDays: pre.retentionDays, lastCollectAt })),
+  };
+  await putSetting(cd.CREDENTIAL_KEY, cred);
+  log(`清理凭证已自写（候选 ${pre.total} 条 / 绑定采集 ${lastCollectAt || '无'}）`);
+  const readout = await retentionReadout({ validAfter: lastCollectAt }); // 判闸这一遍显式绑定（与默认同值，留作自明）
   log(`保留读数: ${readout.retentionDays} 天窗口下待删 ${readout.total} 条（${JSON.stringify(readout.counts)}）｜删除闸 ${readout.gate.allowed ? '放行' : '挡下'}：${readout.gate.reason}`);
 
   let deleted = 0;
@@ -836,6 +880,17 @@ async function runCleanup() {
     pendingDeleted: readout.total,
     gateReason: readout.gate.allowed ? null : readout.gate.reason,
   });
+  // H29①：闸挡住必须出声（此前它沉默，"挂了几小时没人知"）——sourceId 用北京日，一天至多响一次
+  if (!readout.gate.allowed) {
+    try {
+      await require('../api/_alerts').dispatch('cleanup_blocked', {
+        sourceId: `bj-${require('../lib/time-window').beijingDateStr()}`,
+        title: '🚮 清理被删除闸挡下，本轮一条都没删',
+        text: `${readout.gate.reason}
+待删 ${readout.total} 条（${JSON.stringify(readout.counts)}）。库只涨不删会把行读单价与存储同向顶高（任一维度越限即整站封锁）。`,
+      });
+    } catch (e) { log(`cleanup_blocked 报警失败（不阻断）: ${e.message}`); }
+  }
   // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
   try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
   return { blocked: !readout.gate.allowed, deleted, retentionDeleted, resumed, pendingDeleted: readout.total };
