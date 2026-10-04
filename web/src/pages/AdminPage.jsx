@@ -20,6 +20,7 @@ const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
 const BriefOverview = lazy(() => import('../components/BriefOverview.jsx'));
+const DashboardTab = lazy(() => import('../components/DashboardTab.jsx'));
 const MyBriefPanel = lazy(() => import('../components/MyBriefPanel.jsx'));
 const WeeklyPanel = lazy(() => import('../components/WeeklyPanel.jsx'));
 
@@ -45,6 +46,12 @@ function Zone({ title, note, children }) {
 
 // 子板块定义。id=导航定位；ref=前台对照卡的口径（AdminRefCard 只认五 Tab 值）；wide=内容区宽版
 const SECTIONS = [
+  {
+    parent: '首页',
+    items: [
+      { id: 'home', label: '仪表盘', ref: null, wide: true, render: () => <DashboardTab /> },
+    ],
+  },
   {
     parent: '源',
     items: [
@@ -139,12 +146,13 @@ const itemOf = (id) => ALL_ITEMS.find((i) => i.id === id) || ALL_ITEMS[0];
 const parentOf = (id) => SECTIONS.find((g) => g.items.some((i) => i.id === id)) || SECTIONS[0];
 const readHash = () => {
   const id = window.location.hash.replace(/^#\/?/, '');
-  return ALL_ITEMS.some((i) => i.id === id) ? id : 'library';
+  return ALL_ITEMS.some((i) => i.id === id) ? id : 'home';
 };
 
 // 空闲预热全部板块 chunk：lazy() 与这里的 import() 同路径会被打包器合并为同一模块，
 // 预热完成后切换子板块零 chunk 下载等待（9 个组件合计约 150kB gzip，一次性成本）
 const WARM_IMPORTS = [
+  () => import('../components/DashboardTab.jsx'),
   () => import('../components/SourceLibraryTab.jsx'),
   () => import('../components/HotSettings.jsx'),
   () => import('../components/BriefOverview.jsx'),

@@ -1977,6 +1977,72 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/dashboard — 首页仪表盘轻聚合（T3-8 批次6）
+// H57 教训内建：严控投影与响应体积（计数与末 N 条投影，不出大列表）；入报 Top5 不在这里
+// （贵查询），前端并行拉现成的 /api/status/daily-sources（自带 60s 缓存，B26 懒加载设计）。
+async function handleDashboard(req) {
+  const dayStartIso = beijingDayStartIso(Date.now());
+  const weekAgo = weekAgoIso(Date.now());
+  const notNoiseJoin = notNoiseJoinSql({ item: 'a' });
+  const [total, enabled, errCnt, frozen, today, week, unread, hbRow, aiRaw, dailyRows, weeklyArc, mb, digest] = await Promise.all([
+    qOne('SELECT COUNT(*) c FROM sources'),
+    qOne(`SELECT COUNT(*) c FROM sources WHERE enabled=1 AND ${notNoiseSql('')}`),
+    qOne("SELECT COUNT(*) c FROM sources WHERE status='error' AND enabled=1"),
+    qOne('SELECT COUNT(*) c FROM sources WHERE fail_count >= 3 AND enabled=0'),
+    qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [dayStartIso]),
+    qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.created_at >= ?`, [weekAgo]),
+    qOne(`SELECT COUNT(*) c FROM articles a ${notNoiseJoin} AND a.read_at IS NULL AND COALESCE(a.published_at, a.created_at) >= ?`, [new Date(Date.now() - 3 * 86400e3).toISOString()]),
+    getSetting('cloud.collect', {}),
+    getSetting('ai.stats', { calls: [] }),
+    qAll('SELECT generated_at, stats FROM daily_reports ORDER BY id DESC LIMIT 3'),
+    getSetting('weekly.archive', []),
+    getSetting('mybrief.latest', null),
+    getSetting('reading.digest', null),
+  ]);
+  // 采集心跳：只投影末 24 轮（约 6h）——全量 history 是 H57 挂账的大头，这里绝不出全量
+  const hb = hbRow || {};
+  const history = Array.isArray(hb.history) ? hb.history : [];
+  const recent = history.slice(-24).map((h) => ({
+    at: h.at || null, mode: h.mode || null,
+    total: h.stats && typeof h.stats.total === 'number' ? h.stats.total : null,
+    success: h.stats && typeof h.stats.success === 'number' ? h.stats.success : null,
+    articles: h.stats && typeof h.stats.articles === 'number' ? h.stats.articles : null,
+  }));
+  // AI 用量（与 /api/ai/usage 同口径：近 24h 滑动窗按 kind 聚合）
+  const day = Date.now() - 86400e3;
+  const calls = (Array.isArray(aiRaw?.calls) ? aiRaw.calls : []).filter((c) => Date.parse(c.at) >= day);
+  const byKind = new Map();
+  for (const c of calls) {
+    const k = c.kind || 'chat';
+    if (!byKind.has(k)) byKind.set(k, { calls: 0, failed: 0 });
+    const b = byKind.get(k);
+    b.calls++;
+    if (!c.ok) b.failed++;
+  }
+  const aiKinds = [...byKind.entries()].map(([kind, b]) => ({ kind, ...b })).sort((a, b) => b.calls - a.calls).slice(0, 4);
+  // 生成历史末 3 期（投影期级统计，不出 sections 大列）
+  const daily = dailyRows.map((r) => {
+    let st = {};
+    try { st = JSON.parse(r.stats || '{}'); } catch { /* 坏行 */ }
+    const ai = (() => { try { return briefGuards.isAiDailyReport(r); } catch { return !!st.schemaVersion; } })();
+    return { generatedAt: r.generated_at, totalItems: st.totalItems || 0, degraded: !!st.degraded, tier: st.degraded ? 'degraded' : (ai ? 'ai' : 'keyword') };
+  });
+  const weeklyArcArr = Array.isArray(weeklyArc) ? weeklyArc : [];
+  const weeklyLast = weeklyArcArr.length ? weeklyArcArr[weeklyArcArr.length - 1] : null;
+  return jsonOk({
+    sources: { total: total?.c || 0, enabled: enabled?.c || 0, errorActive: errCnt?.c || 0, frozen: frozen?.c || 0 },
+    ingest: { todayNew: today?.c || 0, weekNew: week?.c || 0, unread3d: unread?.c || 0 },
+    collect: { lastRunAt: hb.lastRunAt || null, mode: hb.mode || null, recent },
+    ai: { total24h: calls.length, failed24h: calls.filter((c) => !c.ok).length, kinds: aiKinds, statsCap: _ai.STATS_MAX },
+    briefs: {
+      daily,
+      weekly: weeklyLast ? { issue: weeklyLast.issue, dateEnd: weeklyLast.dateEnd || null, count: weeklyLast.count || 0, degraded: !!(weeklyLast.report && weeklyLast.report.degraded) } : null,
+      mybrief: mb ? { generatedAt: mb.generatedAt || null, empty: mb.empty || null } : null,
+      digest: digest ? { date: digest.date, readCount: digest.readCount } : null,
+    },
+  });
+}
+
 // GET /api/health/collect-history — 采集心跳历史（T3-2 监控折线图数据源）
 async function handleCollectHistory(req) {
   const hb = await getSetting('cloud.collect', {});
@@ -3137,7 +3203,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
-    if (path === '/api/health/collect-history') return handleCollectHistory(req);
+    if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
+  if (path === '/api/health/collect-history') return handleCollectHistory(req);
     if (path === '/api/brief/history') return handleBriefHistory(req);
     if (path === '/api/queue/pending') return handleQueuePending(req);
     if (path === '/api/queue/stats') return handleQueueStats(req);
