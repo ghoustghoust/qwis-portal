@@ -2215,6 +2215,8 @@ async function handleDataList(req) {
 // POST /api/data/cleanup/preview {days}
 async function handleDataCleanupPreview(req) {
   try {
+    // H42 闭环：预览也查删除闸——闸挡下时如实预告"执行会被拒"，预览数字与实删口径同源
+    const gate = credentialGate(await getSetting(CREDENTIAL_KEY, null), { maxAgeHours: GATE_MAX_AGE_H });
     const cutoff = cutoffIso((req.body || {}).days);
     const willDelete = {};
     let total = 0;
@@ -2227,7 +2229,7 @@ async function handleDataCleanupPreview(req) {
       willDelete[table] = n;
       total += n;
     }
-    return jsonOk({ days: Number((req.body || {}).days), cutoff, willDelete, total, note: '视频/播客不清理；已读/稍后读/精选豁免' });
+    return jsonOk({ days: Number((req.body || {}).days), cutoff, willDelete, total, gate: { allowed: gate.allowed, reason: gate.reason || null }, note: '视频/播客不清理；已读/稍后读/精选豁免' });
   } catch (err) {
     return { status: 400, body: jsonErr(err.message) };
   }
@@ -2842,8 +2844,10 @@ async function handleAlertsConfigPut(req) {
 
 // POST /api/alerts/test — 向全部启用渠道发测试消息
 async function handleAlertsTest(req) {
-  const r = await _alerts.testAll();
-  await auditRecord('alerts.test', { detail: { sent: r.sent } });
+  // T3-8 批次3：接收 channelId 定向测试（前端一直发的是 channelId，后端此前忽略→假定向真广播）
+  const channelId = (req.body || {}).channelId;
+  const r = channelId ? await _alerts.testChannel(channelId) : await _alerts.testAll();
+  await auditRecord('alerts.test', { detail: { channelId: channelId || null, sent: r.sent } });
   return jsonOk(r);
 }
 

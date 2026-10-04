@@ -368,6 +368,11 @@ export default function DataTab() {
         </div>
         {preview && (
           <div className="mt-3 card t-surface2 px-4 py-3 text-[13px]">
+            {preview.gate && !preview.gate.allowed && (
+              <div className="mb-2 text-xs" style={{ color: 'var(--red)' }}>
+                删除闸挡下：{preview.gate.reason || '无有效转储凭证'}——预览仅示意，执行会被拒绝（H42：预览与实删同口径）。
+              </div>
+            )}
             <div className="t-text">
               保留 {days} 天：将删除
               {['articles', 'videos', 'pending_items', 'daily_reports']

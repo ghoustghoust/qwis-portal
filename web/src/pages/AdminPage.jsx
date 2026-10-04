@@ -14,6 +14,7 @@ const SourceLibraryTab = lazy(() => import('../components/SourceLibraryTab.jsx')
 const HotSettings = lazy(() => import('../components/HotSettings.jsx'));
 const DataTab = lazy(() => import('../components/DataTab.jsx'));
 const AlertsTab = lazy(() => import('../components/AlertsTab.jsx'));
+const LogsTab = lazy(() => import('../components/LogsTab.jsx'));
 const DailySettingsTab = lazy(() => import('../components/DailySettingsTab.jsx'));
 const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
@@ -114,8 +115,18 @@ const SECTIONS = [
         label: '报警',
         ref: 'system',
         render: () => (
-          <Zone title="报警" note="作用于 熔断/停滞/失败事件的 webhook 推送">
+          <Zone title="报警" note="作用于 熔断/停滞/失败事件的 webhook 推送（配置面；发生过的记录在「日志」板块）">
             <AlertsTab />
+          </Zone>
+        ),
+      },
+      {
+        id: 'logs',
+        label: '日志',
+        ref: 'system',
+        render: () => (
+          <Zone title="日志" note="作业运行史 / 报警事件流 / 数据层失败留痕 / 服务器与部署日志的查看指引">
+            <LogsTab />
           </Zone>
         ),
       },
@@ -145,6 +156,7 @@ const WARM_IMPORTS = [
   () => import('../components/DataTab.jsx'),
   () => import('../components/MonitorTab.jsx'),
   () => import('../components/AlertsTab.jsx'),
+  () => import('../components/LogsTab.jsx'),
 ];
 
 // 管理后台（/admin/；/wechat/ 兼容同渲染）：独立外壳，不带阅读器 IconRail

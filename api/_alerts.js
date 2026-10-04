@@ -285,6 +285,24 @@ async function frozenDigest() {
 }
 
 // 测试发送
+// 定向测试单个渠道(T3-8 批次3:此前"点一个测全部、UI 只看第一条"是假定向——审查/台账 H55⑥)
+async function testChannel(id) {
+  const cfg = await getConfig();
+  const c = (cfg.channels || []).find((x) => x.id === id);
+  if (!c) return { sent: 0, skipped: 'channel-not-found', results: [] };
+  if (c.enabled === false) return { sent: 0, skipped: 'channel-disabled', results: [] };
+  const sender = SENDERS[c.type];
+  const results = [];
+  try {
+    if (!sender) throw new Error('未知渠道类型');
+    await sender(c, '✅ 全网情报云端报警测试', '如果你看到这条消息，说明云端报警链路已通。');
+    results.push({ channel: c.name, ok: true });
+  } catch (e) {
+    results.push({ channel: c.name, ok: false, error: e.message });
+  }
+  return { sent: results.filter((r) => r.ok).length, results };
+}
+
 async function testAll() {
   const cfg = await getConfig();
   const channels = cfg.channels.filter((c) => c.enabled !== false);
@@ -304,6 +322,7 @@ async function testAll() {
 }
 
 module.exports = {
+  testChannel,
   getConfig, saveConfig, maskChannels, mergeChannelSecrets, SECRET_MASK,
   dispatch, sourceAlert, dailyFailed, collectStalled, aiFailed, frozenDigest,
   classifyError, testAll, DEFAULT_EVENTS,

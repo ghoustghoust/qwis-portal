@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { formatDateTime, relativeTime } from '../util';
+import { relativeTime } from '../util';
+import InfoTip from './InfoTip.jsx';
 import { PlusIcon, XIcon, ExternalIcon, BellIcon, RefreshIcon } from './icons.jsx';
 
 // 垃圾桶图标（删除单条日志）
@@ -316,7 +317,6 @@ export default function AlertsTab() {
   const [adding, setAdding] = useState(false);
   const [testingId, setTestingId] = useState(null);
   const [cooldown, setCooldown] = useState('');
-  const [page, setPage] = useState(0); // 报警日志分页（每页 10 条）
   const [loading, setLoading] = useState(false); // 刷新加载状态
 
   // force=true 绕 90s 缓存强拉（刷新按钮用；挂载首渲染吃缓存瞬时呈现）
@@ -339,30 +339,6 @@ export default function AlertsTab() {
     try {
       await api.post('/api/alerts/clear-cooldowns');
       toast('已清空所有报警冷却记录');
-      await load();
-    } catch (e) {
-      toast('清空失败：' + e.message);
-    }
-  };
-
-  // P2: 删除单条报警日志（真删除：后端 DELETE /api/alerts/log/:index，带 at 指纹防错位）
-  const deleteLogEntry = async (index, entry) => {
-    if (!window.confirm('确认删除这条报警记录吗？此操作不可恢复')) return;
-    try {
-      await api.del(`/api/alerts/log/${index}?at=${encodeURIComponent(entry?.at || '')}`);
-      toast('已删除该条报警记录');
-      await load();
-    } catch (e) {
-      toast('删除失败：' + e.message);
-    }
-  };
-
-  // P1: 清空报警日志
-  const clearLog = async () => {
-    if (!window.confirm('确认清空报警历史记录吗？此操作不可恢复')) return;
-    try {
-      await api.del('/api/alerts/log');
-      toast('已清空报警历史记录');
       await load();
     } catch (e) {
       toast('清空失败：' + e.message);
@@ -427,15 +403,6 @@ export default function AlertsTab() {
   const events = cfg.events || {};
   const meta = cfg.eventMeta || {};
   const log = cfg.recentLog || [];
-
-  // 分页：每页 10 条，避免一次性渲染过多 DOM
-  const PAGE_SIZE = 10;
-  const totalPages = Math.max(1, Math.ceil(log.length / PAGE_SIZE));
-  const curPage = Math.min(page, totalPages - 1);
-  const pageLog = log.slice(curPage * PAGE_SIZE, curPage * PAGE_SIZE + PAGE_SIZE);
-  
-  // 当前页索引偏移（用于正确引用删除操作的 index）
-  const pageIndexOffset = curPage * PAGE_SIZE;
 
   return (
     <div className="space-y-5">
@@ -527,99 +494,50 @@ export default function AlertsTab() {
             onKeyDown={(e) => e.key === 'Enter' && saveCooldown()}
           />
           <span className="t-muted text-xs">分钟（同一事件冷却期内不重复推送，最小 5）</span>
+          <button className="text-xs t-muted hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">清空冷却</button>
         </div>
       </div>
 
-      {/* 最近报警记录 */}
-      <div>
-        <div className="flex items-center mb-2">
-          <div className="text-sm font-medium t-text">最近报警记录</div>
-          <span className="flex-1" />
-          <div className="inline-flex gap-2">
-            <button
-              className={`btn-ghost inline-flex items-center gap-1 !px-2.5 ${loading ? 'animate-spin' : ''}`}
-              onClick={() => load(true)}
-              disabled={loading}
-              title="刷新报警记录"
-            >
-              <RefreshIcon size={13} /> {loading ? '刷新中…' : '刷新'}
-            </button>
-            <span className="text-xs t-muted whitespace-nowrap">•</span>
-            <button className="text-xs t-muted hover:t-text hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">
-              清空冷却
-            </button>
-            <button className="text-xs hover:underline font-medium" style={{ color: 'var(--red)' }} onClick={() => clearLog()} title="清除所有历史报警记录">
-              清空全部日志
-            </button>
-          </div>
+      {/* 报警覆盖矩阵（T3-8 批次3：治"有的模块根本没在报警"——判据/启用/最近触发/送达一览） */}
+      <section className="card p-4">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium t-text">报警覆盖矩阵</div>
+          <InfoTip
+            what="全部报警判据一览：管什么、启用与否、最近一次触发时刻、最近一次送达结果。"
+            how="无需设置；启用/停用用上面的「报警事件」开关。"
+            effect="只读。'配了但哑'在这里一眼可见——渠道发不出去时，每行的送达列会一直挂红。"
+          />
         </div>
-        {log.length > 0 ? (
-          <div className="card divide-y divide-[var(--border)] relative">
-            {/* T3-2 R2：时间线视觉（左缘竖线 + 行首圆点） */}
-            <div className="absolute left-[26px] top-3 bottom-3 w-px" style={{ background: 'var(--border)' }} aria-hidden />
-            {pageLog.map((r, i) => (
-              <div key={r.at + i} className="px-4 py-2.5 relative group">
-                {/* 行操作按钮（悬停时显示） */}
-                <button
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => deleteLogEntry(pageIndexOffset + i, r)}
-                  title="删除这条报警记录"
-                  style={{ color: 'var(--red)' }}
-                >
-                  <TrashIcon size={14} />
-                </button>
-                
-                <div className="flex items-start gap-2 flex-wrap">
-                  <span className="flex-none w-2 h-2 rounded-full mt-1.5 -ml-1" style={{ background: 'var(--accent)' }} aria-hidden />
-                  <div className="flex-1 min-w-0">
-                    {/* 格式化时间显示（主）+ 相对时间（title 悬停） */}
-                    <span 
-                      className="text-[11px] t-accent-soft tabular-nums font-medium mr-2" 
-                      title={`${relativeTime(r.at)}\uff08原始：${r.at}\uff09`}
-                    >
-                      {formatDateTime(r.at)}
-                    </span>
-                    <span className="badge-green">{metaTitle(meta[r.event]) || r.event}</span>
-                    <span className="flex-1" />
-                    {(r.results || []).map((rr, j) => (
-                      <span
-                        key={j}
-                        className={`${rr.ok ? 'badge-green' : 'badge-red'} inline-flex items-center gap-1`}
-                        title={rr.ok ? rr.channel : `${rr.channel}：${rr.error || '发送失败'}`}
-                      >
-                        {rr.ok ? '\u2713' : '\u2717'} {rr.channel}
-                        {!rr.ok && rr.error && <span className="ml-1 opacity-80">{'（'}{rr.error}{'）'}</span>}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {r.title && <div className="mt-1.5 text-[13px] t-text leading-snug pl-6 border-l-2 border-[var(--accent)]">{r.title}</div>}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="card px-4 py-10 text-center text-xs t-muted">暂无报警记录</div>
-        )}
-        {log.length > PAGE_SIZE && (
-          <div className="mt-3 flex items-center justify-center gap-3 text-xs">
-            <button
-              className="btn-ghost !px-2.5 !py-1 disabled:opacity-40"
-              disabled={curPage === 0}
-              onClick={() => setPage(curPage - 1)}
-            >
-              ← 上一页
-            </button>
-            <span className="t-muted tabular-nums">第 {curPage + 1} / {totalPages} 页 · 共 {log.length} 条</span>
-            <button
-              className="btn-ghost !px-2.5 !py-1 disabled:opacity-40"
-              disabled={curPage >= totalPages - 1}
-              onClick={() => setPage(curPage + 1)}
-            >
-              下一页 →
-            </button>
-          </div>
-        )}
-      </div>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="t-surface2 text-left">
+                <th className="px-3 py-2 font-medium t-muted text-xs">判据</th>
+                <th className="px-3 py-2 font-medium t-muted text-xs">启用</th>
+                <th className="px-3 py-2 font-medium t-muted text-xs">最近触发</th>
+                <th className="px-3 py-2 font-medium t-muted text-xs">送达</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(meta).map(([key, m]) => {
+                const last = log.find((r) => r.event === key);
+                const ok = last ? (last.results || []).some((rr) => rr.ok) : null;
+                return (
+                  <tr key={key} className="border-t t-border">
+                    <td className="px-3 py-2 t-text">
+                      {metaTitle(m)}
+                      {typeof m !== 'string' && m && m.desc && <span className="block text-[11px] t-muted">{m.desc}</span>}
+                    </td>
+                    <td className="px-3 py-2">{events[key] ? <span className="badge-green">开</span> : <span className="badge-gray">关</span>}</td>
+                    <td className="px-3 py-2 t-muted tabular-nums">{last ? relativeTime(last.at) : '从未触发'}</td>
+                    <td className="px-3 py-2">{last ? (ok ? <span className="badge-green">成功</span> : <span className="badge-red">失败/哑</span>) : <span className="t-muted text-xs">—</span>}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {adding && <AddChannelModal onClose={() => setAdding(false)} onSave={addChannel} />}
     </div>

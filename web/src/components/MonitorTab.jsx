@@ -67,19 +67,19 @@ export default function MonitorTab() {
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-4 text-[13px]">
             <div className="card t-surface2 px-3 py-2 text-center">
               <div className="text-lg font-bold t-text">{health.sources?.total ?? '—'}</div>
-              <div className="text-xs t-muted">总源数</div>
+              <div className="text-xs t-muted">总源数（含停用/退役）</div>
             </div>
             <div className="card t-surface2 px-3 py-2 text-center">
               <div className="text-lg font-bold t-success">{health.sources?.enabled ?? '—'}</div>
-              <div className="text-xs t-muted">已启用</div>
+              <div className="text-xs t-muted">已启用（enabled=1）</div>
             </div>
             <div className="card t-surface2 px-3 py-2 text-center">
               <div className="text-lg font-bold t-warn">{health.sources?.error ?? '—'}</div>
-              <div className="text-xs t-muted">异常</div>
+              <div className="text-xs t-muted">异常（启用中且报错）</div>
             </div>
             <div className="card t-surface2 px-3 py-2 text-center">
               <div className="text-lg font-bold t-danger">{health.sources?.frozen ?? '—'}</div>
-              <div className="text-xs t-muted">已熔断</div>
+              <div className="text-xs t-muted">熔断冻结（失败≥3 且停用，不含人工关闭）</div>
             </div>
           </div>
         ) : (
@@ -87,17 +87,15 @@ export default function MonitorTab() {
         )}
       </section>
 
-      {/* 任务队列状态 */}
+      {/* 待处理清单（T3-8 批次3：running/completed/dead 是本地调度器概念，云端恒零占位——摘除，只留真值两格） */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">任务队列</h3>
+        <h3 className="text-sm font-semibold t-text">待处理清单</h3>
+        <div className="mt-1 text-xs t-muted">任务队列是本地调度器的概念，云端没有这张表——这里只显示真实的待处理条目（媒体队列等），其余三格恒零已摘除。</div>
         {queueStats ? (
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-[13px]">
+          <div className="mt-3 grid grid-cols-2 gap-3 text-[13px]">
             {[
-              { label: 'Pending', value: qs.pending ?? 0, cls: 't-muted' },
-              { label: 'Running', value: qs.running ?? 0, cls: 't-accent' },
-              { label: 'Completed', value: qs.completed ?? 0, cls: 't-success' },
-              { label: 'Failed', value: qs.failed ?? 0, cls: 't-danger' },
-              { label: 'Dead', value: qs.dead ?? 0, cls: 't-danger' },
+              { label: '待处理', value: qs.pending ?? 0, cls: 't-muted' },
+              { label: '失败', value: qs.failed ?? 0, cls: 't-danger' },
             ].map((s) => (
               <div key={s.label} className="card t-surface2 px-3 py-2 text-center">
                 <div className={`text-lg font-bold tabular-nums ${s.cls}`}>{s.value}</div>
@@ -113,7 +111,7 @@ export default function MonitorTab() {
       {/* 各源成功率 */}
       <section className="card p-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold t-text">源抓取成功率（近 {sourceStats?.days || 7} 天）</h3>
+          <h3 className="text-sm font-semibold t-text">源健康近似值 <span className="text-xs t-muted font-normal">（按当前状态近似，无历史分母——"近 N 天"参数在云端无实效）</span></h3>
           <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={load} disabled={loading}>
             {loading ? '刷新中…' : '刷新'}
           </button>
