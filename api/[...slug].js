@@ -997,9 +997,34 @@ async function handleStatus(req) {
   // ② 消费方只有阅读器右侧概览栏，可懒加载。改走 GET /api/status/daily-sources。
   const pausedCount = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=0 AND COALESCE(fail_count,0)>=3')).c;
 
+  // H55④ 状态卡修真：补 wechat/bilibili 段，只给云端真值（库计数 + runner 采集的真值字段）。
+  // OPML 运行态是本地调度器概念，云端无此链路——显式 null 让前端显示 '—'，不拿本地字段名伪造。
+  const [wxLocal, wxSub, wxArt, wxErr, rssNext, biliSrc, biliVid, biliCookie] = await Promise.all([
+    qOne("SELECT COUNT(*) c FROM sources WHERE type='wechat'"),
+    qOne("SELECT COUNT(*) c FROM sources WHERE type='wechat' AND enabled=1"),
+    qOne('SELECT COUNT(*) c FROM articles'),
+    qOne("SELECT COUNT(*) c FROM sources WHERE status='error'"),
+    qOne("SELECT MIN(next_fetch_at) t FROM sources WHERE enabled=1 AND type IN ('wechat','rss','x')"),
+    qOne("SELECT COUNT(*) c FROM sources WHERE type='bilibili'"),
+    qOne("SELECT COUNT(*) c FROM videos WHERE platform='bilibili'"),
+    qOne("SELECT cookie FROM credentials WHERE platform='bilibili'"),
+  ]);
+
   const result = jsonOk({
     intervals, lastSync: { rss: rssLast, bilibili: biliLast },
     overview, pausedSources: { count: pausedCount },
+    wechat: {
+      opmlStatus: null, opmlLastSync: null, opmlNextSync: null, opmlLastResult: null,
+      localCount: wxLocal?.c || 0, subscribedCount: wxSub?.c || 0,
+      articleCount: wxArt?.c || 0, errorCount: wxErr?.c || 0,
+      rssLastFetch: rssLast, rssNextFetch: rssNext?.t || null,
+    },
+    bilibili: {
+      mode: '云端 runner', // B 站采集在 GH runner 上跑（FEATURE_MATRIX §0），非本机
+      sourceCount: biliSrc?.c || 0, videoCount: biliVid?.c || 0,
+      lastFetch: biliLast, intervalMin: Number(intervals.bilibili),
+      cookieConfigured: !!(biliCookie && biliCookie.cookie),
+    },
   });
   _statusCache.val = result;
   _statusCache.ts = Date.now();
@@ -1682,6 +1707,9 @@ async function handleSourcesLibrary(req) {
   for (const row of await qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id')) {
     videoCounts[row.source_id] = row.c;
   }
+  // B79 订阅态可见化：与我的早报消费方同源读生效订阅集合（键缺失兜底 spotlight），
+  // 不读原始键——徽章要回答的是"这个源现在进不进我的早报"，不是"settings 里声明过什么"。
+  const subscribedIds = new Set(await axes.resolveSubscriptionIds({ qAll, getSetting }));
   const items = sources.map(s => {
     const kind = VIDEO_TYPES_SET.has(s.type) ? 'video' : 'article';
     const itemCount = kind === 'video' ? (videoCounts[s.id] || 0) : (articleCounts[s.id] || 0);
@@ -1692,7 +1720,7 @@ async function handleSourcesLibrary(req) {
     for (const k of EXTRA_PUBLIC_KEYS) {
       if (extra[k] !== undefined) safeExtra[k] = extra[k];
     }
-    return { ...s, extra: JSON.stringify(safeExtra), contentKind: kind, itemCount };
+    return { ...s, extra: JSON.stringify(safeExtra), contentKind: kind, itemCount, subscribed: subscribedIds.has(s.id) };
   });
   return jsonOk({ items });
 }
@@ -1938,12 +1966,8 @@ async function handleUnfreezeOne(req, id) {
 }
 
 // ─── 队列 ───
-const QUEUE_DEFS = [
-  { name: 'wechat', endpoint: 'wechat-rss-queue.php' },
-  { name: 'bilibili', endpoint: 'bilibili-video-queue.php' },
-  { name: 'douyin', endpoint: 'douyin-video-queue.php' },
-];
-
+// H40 收摊（10-04 终裁①）：POST /api/queue/sync 与 QUEUE_DEFS 已摘——手机→PHP 云端队列
+// 是未采用的半成品（H40），云端只剩下面三个只读路由供存量数据展示；本地 queue 路由保留（本地调度器链路是活的）。
 // GET /api/queue/pending?type=
 async function handleQueuePending(req) {
   const conds = [];
@@ -1975,69 +1999,6 @@ async function handleQueueFailed(req) {
   const limit = Math.min(Number(req.query.limit) || 10, 50);
   const items = await qAll("SELECT * FROM pending_items WHERE status='failed' ORDER BY id DESC LIMIT ?", [limit]);
   return jsonOk({ items });
-}
-
-// POST /api/queue/sync {name?} — 拉取 PHP 云端队列 → pending_items → 清空云端
-async function handleQueueSync(req) {
-  const name = req.body && req.body.name ? String(req.body.name) : null;
-  const defs = name ? QUEUE_DEFS.filter((d) => d.name === name) : QUEUE_DEFS;
-  if (name && !defs.length) return { status: 400, body: jsonErr(`未知队列: ${name}`) };
-  const q = await getSetting('queue', {});
-  const baseUrl = String(q.baseUrl || '').replace(/\/+$/, '');
-  const token = q.token || '';
-  if (!baseUrl || !token) return { status: 400, body: jsonErr('未配置队列地址或 Token（settings.queue）') };
-
-  let imported = 0, updated = 0, cleared = 0;
-  const errors = [];
-  for (const def of defs) {
-    try {
-      const res = await fetch(`${baseUrl}/${def.endpoint}?token=${encodeURIComponent(token)}&action=pull`, {
-        signal: AbortSignal.timeout(8000),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || '云端返回失败');
-      const items = Array.isArray(data.items) ? data.items : [];
-      const count = Number(data.count) || 0;
-      for (const it of items) {
-        const url = String((it && it.url) || '').trim();
-        if (!url) continue;
-        const itemName = String((it && it.name) || '').trim();
-        const existing = await qOne('SELECT * FROM pending_items WHERE type=? AND url=?', [def.name, url]);
-        if (existing) {
-          if (existing.status === 'failed') {
-            await qRun("UPDATE pending_items SET name=?, imported_at=?, status='pending', error=NULL WHERE id=?",
-              [itemName || existing.name, nowIso(), existing.id]);
-          } else {
-            await qRun('UPDATE pending_items SET name=?, imported_at=? WHERE id=?',
-              [itemName || existing.name, nowIso(), existing.id]);
-          }
-          updated++;
-        } else {
-          await qRun("INSERT INTO pending_items(type, url, name, status, imported_at) VALUES(?,?,?,'pending',?)",
-            [def.name, url, itemName, nowIso()]);
-          imported++;
-        }
-      }
-      if (count > 0) {
-        await fetch(`${baseUrl}/${def.endpoint}?token=${encodeURIComponent(token)}&action=clear`, {
-          signal: AbortSignal.timeout(8000),
-        });
-        cleared += count;
-      }
-    } catch (err) {
-      errors.push(`${def.name}: ${err.message}`);
-    }
-  }
-  await setSetting('queue.lastSyncAt', nowIso());
-  await auditRecord('queue.sync', { detail: { imported, updated, cleared } });
-  if (errors.length && imported + updated === 0 && errors.length === defs.length) {
-    return { status: 500, body: jsonErr(errors.join('；')) };
-  }
-  return jsonOk({
-    imported, updated, cleared,
-    errors: errors.length ? errors : undefined,
-    message: `导入 ${imported} 个，更新 ${updated} 个，清空云端 ${cleared} 个（视频类解析订阅在本地端执行）`,
-  });
 }
 
 // ─── OPML / RSS ───
@@ -3025,7 +2986,7 @@ async function dispatch(req) {
   if (path === '/api/health/unfreeze-all' && method === 'POST') return handleUnfreezeAll(req);
   const unfreezeMatch = path.match(/^\/api\/health\/unfreeze\/(\d+)$/);
   if (unfreezeMatch && method === 'POST') return handleUnfreezeOne(req, Number(unfreezeMatch[1]));
-  if (path === '/api/queue/sync' && method === 'POST') return handleQueueSync(req);
+  // H40 收摊：POST /api/queue/sync 分发行已摘（handleQueueSync 与 QUEUE_DEFS 同批删除）
   if ((path === '/api/opml/sync' || path === '/api/rss/sync') && method === 'POST') return handleOpmlSync(req);
   if (path === '/api/opml/export' && method === 'GET') return handleOpmlExport(req);
   if ((path === '/api/rss/refresh' || path === '/api/opml/refresh') && method === 'POST') return handleRssRefresh(req);

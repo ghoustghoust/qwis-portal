@@ -7,7 +7,6 @@ import { copyText } from '../util';
 import IntervalEditor from './IntervalEditor.jsx';
 import StatusCard from './StatusCard.jsx';
 import SourceTable, { StatusBadge } from './SourceTable.jsx';
-import QueuePanel from './QueuePanel.jsx';
 
 // 公众号 RSS Tab（F21~F27）
 export default function WechatTab() {
@@ -17,7 +16,6 @@ export default function WechatTab() {
   const [backup, setBackup] = useState(null);
   const [busy, setBusy] = useState('');
   const [pending, setPending] = useState([]);
-  const [queueError, setQueueError] = useState('');
 
   // T44：海外源入口（F47/F48）：任意 RSS 地址 / YouTube 频道链接 / X 用户名
   const [extSources, setExtSources] = useState([]);
@@ -90,36 +88,34 @@ export default function WechatTab() {
     loadExtSources();
   }, [loadSources, loadBackup, loadPending, loadExtSources]);
 
-  const onQueueSynced = useCallback(
-    (result) => {
-      setQueueError(result.ok ? '' : result.message);
-      loadPending();
-    },
-    [loadPending]
-  );
+  // H40 收摊：同步入口（QueuePanel 的「同步队列」→ POST /api/queue/sync）已随 H40 摘除，
+  // onQueueSynced/queueError 同批删除；待提交区保留只读展示（本地存量 pending 仍可见）。
 
-  // 自动识别输入类型：X/Twitter 链接走 x 适配器；YouTube 链接走官方 RSS；http(s) 链接按 RSS；否则按 X 用户名
+  // 自动识别输入类型：X/Twitter 链接走 x 适配器；YouTube 链接走官方 RSS；http(s) 链接按 RSS；
+  // 其余（裸用户名）不再猜 X——H40 收摊后 X 用户名入口摘除，识别不了就报错
   const detectExtKind = (v) => {
     if (/(?:^|\.)(x\.com|twitter\.com)\//i.test(v)) return 'x';
     if (/youtube\.com|youtu\.be/i.test(v)) return 'youtube';
     if (/^https?:\/\//i.test(v)) return 'rss';
-    return 'x';
+    return null;
   };
 
   const addExtSource = async () => {
     const v = extInput.trim();
     if (!v) {
-      setExtError('请粘贴 RSS 地址、YouTube 频道链接或 X 用户名');
+      setExtError('请粘贴 RSS 地址或 YouTube 频道链接');
       return;
     }
     setExtError('');
     setBusy('addExt');
     try {
       const kind = extKind === 'auto' ? detectExtKind(v) : extKind;
-      const body =
-        kind === 'x'
-          ? { type: 'x', url: v.replace(/^@/, '') }
-          : { type: 'rss', url: v };
+      if (!kind) {
+        setExtError('无法识别输入：请粘贴完整链接（RSS 地址或 YouTube 频道）');
+        return;
+      }
+      // X 链接（auto 识别）仍存为 x 源走既有适配器（T3-5 桥接观察不动）；摘掉的只是裸用户名猜测
+      const body = kind === 'x' ? { type: 'x', url: v.replace(/^@/, '') } : { type: 'rss', url: v };
       await api.post('/api/sources', { ...body, name: extName.trim() || undefined });
       toast('订阅已添加');
       setExtInput('');
@@ -224,7 +220,7 @@ export default function WechatTab() {
     <div className="space-y-6">
       {/* F23：8 张状态卡 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatusCard label="OPML 状态" value={wx.opml_status || wx.opmlStatus || '空闲'} />
+        <StatusCard label="OPML 状态" value={wx.opml_status ?? wx.opmlStatus ?? '—'} />
         <StatusCard label="OPML 最近同步" value={formatDateTime(wx.opml_last_sync || wx.opmlLastSync)} />
         <StatusCard label="OPML 下次同步" value={formatDateTime(wx.opml_next_sync || wx.opmlNextSync)} />
         <StatusCard label="OPML 最近结果" value={lastResultText} />
@@ -234,6 +230,10 @@ export default function WechatTab() {
         <StatusCard label="刷新异常" value={wx.error_count ?? wx.errorCount}
           sub={paused.length ? `已自动暂停（连续失败 ≥3 次）：${paused.map((s) => s.name).join('、')}` : undefined} />
       </div>
+      {/* H55④ 修真：云端无 OPML 调度链路，后端显式给 null（不伪造），前端恒显示 — */}
+      {wx.opmlStatus === null && (
+        <p className="text-xs t-muted">OPML 运行态为本地调度器专属；云端（runner 采集）恒显示 —，RSS 刷新与库计数为云端真值。</p>
+      )}
 
       {/* F21：OPML 配置 */}
       <section className="card p-5">
@@ -296,16 +296,8 @@ export default function WechatTab() {
       <section className="card p-5">
         <h3 className="text-sm font-semibold t-text">待提交公众号信息</h3>
         <p className="mt-2 text-xs t-muted">
-          手机提交的公众号仅保存在本地供手动复制（不自动提交到第三方网页）；点「同步队列」拉取后出现条目。
+          手机提交的公众号仅保存在本地供手动复制（不自动提交到第三方网页）。
         </p>
-        {queueError && (
-          <div
-            className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed"
-            style={{ color: 'var(--red)', background: 'var(--surface-2)' }}
-          >
-            同步失败：{queueError}
-          </div>
-        )}
         <div className="mt-3">
           {pending.length === 0 ? (
             <div className="rounded-lg border border-dashed t-border py-6 text-center text-xs t-muted">
@@ -334,13 +326,7 @@ export default function WechatTab() {
         </div>
       </section>
 
-      {/* F25：公众号队列 API 折叠区 */}
-      <QueuePanel
-        type="wechat"
-        title="公众号队列 API"
-        endpointFile="wechat-rss-queue.php"
-        onSynced={onQueueSynced}
-      />
+      {/* F25：公众号队列 API —— H40 收摊（10-04 终裁①）：同步入口已摘，待提交区保留只读展示 */}
 
       {/* F26：数据备份区（配置轻量迁移；整库快照见「数据」Tab） */}
       <section className="card p-5">
@@ -404,23 +390,21 @@ export default function WechatTab() {
         />
       </section>
 
-      {/* T44（F47/F48）：海外源入口 —— 任意 RSS 地址 / YouTube 频道链接 / X 用户名 */}
+      {/* T44（F47/F48）：扩展源入口 —— H40 收摊后摘掉「X 用户名」猜测入口（X 链接仍可经 auto 识别添加，存量 X 源不动） */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">扩展源（RSS / YouTube / X）</h3>
+        <h3 className="text-sm font-semibold t-text">扩展源（RSS / YouTube）</h3>
         <p className="mt-1 text-xs t-muted">
-          支持任意 RSS 地址、YouTube 频道链接（自动转换为官方频道 RSS）和 X 用户名；X 依赖第三方 RSS 服务（如
-          RSSHub）将时间线转为 RSS 订阅。
+          支持任意 RSS 地址和 YouTube 频道链接（自动转换为官方频道 RSS）。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <select className="input !w-32" value={extKind} onChange={(e) => setExtKind(e.target.value)}>
             <option value="auto">自动识别</option>
             <option value="rss">RSS 地址</option>
             <option value="youtube">YouTube 频道</option>
-            <option value="x">X 用户名</option>
           </select>
           <input
             className="input flex-1 min-w-[240px]"
-            placeholder="粘贴 RSS 地址 / YouTube 频道链接 / X 用户名"
+            placeholder="粘贴 RSS 地址 / YouTube 频道链接"
             value={extInput}
             onChange={(e) => setExtInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addExtSource()}
@@ -449,7 +433,7 @@ export default function WechatTab() {
       <section>
         <h3 className="text-sm font-semibold t-text mb-2">扩展源订阅列表</h3>
         <SourceTable
-          empty="暂无扩展源，先添加一个 RSS / YouTube / X 订阅"
+          empty="暂无扩展源，先添加一个 RSS / YouTube 订阅"
           columns={[
             {
               key: 'name',

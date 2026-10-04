@@ -114,13 +114,16 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       const spotlightN = members.filter((s) => s.spotlight).length;
       const mutedN = members.filter((s) => s.muted).length;
       const invisibleN = members.filter((s) => s.reader_visible === 0).length;
+      // B79 订阅态可见化：subscribed 由后端按生效订阅集合（与我的早报消费同源）给出
+      const subN = members.filter((s) => s.subscribed).length;
       cards.push({
         gid, name: g ? g.name : '未分组', kind: g ? g.kind : null, total, okN,
         okRate: total ? Math.round((okN / total) * 100) : 100,
         breakerN, errorN, disabledN, issueN, intervalText,
-        spotlightN, mutedN, invisibleN,
+        spotlightN, mutedN, invisibleN, subN,
         allDisabled: disabledN + breakerN === total,
         allSpotlight: spotlightN === total, allMuted: mutedN === total,
+        allSubscribed: subN === total,
       });
     }
     // 需要处理的组排前（含熔断/报错），其余按源数降序
@@ -172,6 +175,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     if (filterStatus === 'disabled') arr = arr.filter((s) => !s.enabled && s.type !== 'wemp');
     else if (filterStatus === 'breaker') arr = arr.filter((s) => !s.enabled && s.fail_count >= 3);
     else if (filterStatus === 'spotlight') arr = arr.filter((s) => s.spotlight);
+    else if (filterStatus === 'subscribed') arr = arr.filter((s) => s.subscribed);
     else if (filterStatus === 'muted') arr = arr.filter((s) => s.muted);
     else if (filterStatus === 'invisible') arr = arr.filter((s) => s.reader_visible === 0);
     return arr;
@@ -328,10 +332,10 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   onClick={() => doGroup(c.gid, c.allSpotlight ? 'unspotlight' : 'spotlight')}
                 >重点 {c.spotlightN}</button>
                 <button
-                  className="pill cursor-pointer"
-                  title="订阅轴：高分内容进「我的早报」（整组加入订阅）"
-                  onClick={() => doGroup(c.gid, 'subscribe', {}, `把「${c.name}」整组加入我的早报订阅？`)}
-                >订阅</button>
+                  className={`pill cursor-pointer ${c.allSubscribed ? 'on' : ''}`}
+                  title={`订阅轴：高分内容进「我的早报」（生效订阅口径，当前 ${c.subN}/${c.total}）——点击${c.allSubscribed ? '全组退订' : '全组加入'}订阅`}
+                  onClick={() => doGroup(c.gid, c.allSubscribed ? 'unsubscribe' : 'subscribe', {}, c.allSubscribed ? undefined : `把「${c.name}」整组加入我的早报订阅？`)}
+                >订阅 {c.subN}</button>
                 <button
                   className={`pill cursor-pointer ${c.allMuted ? 'on' : ''}`}
                   title={`屏蔽轴：从热点榜/阅读器排除（当前 ${c.mutedN}/${c.total}）——点击${c.allMuted ? '全组解除' : '全组屏蔽'}`}
@@ -470,6 +474,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           <option value="disabled">仅未启用</option>
           <option value="breaker">仅熔断</option>
           <option value="spotlight">仅重点</option>
+          <option value="subscribed">仅订阅</option>
           <option value="muted">仅屏蔽</option>
           <option value="invisible">仅未收录</option>
         </select>
@@ -595,6 +600,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                       <div className="flex items-center gap-1">
                         <span className="truncate max-w-[200px]" title={s.name}>{s.name}</span>
                         {locked && <LockIcon size={12} className="t-muted flex-none" title="手动锁定" />}
+                        {!!s.subscribed && <span className="badge-green flex-none" title="订阅轴：该源在生效订阅集合中，高分内容进「我的早报」">订</span>}
                         {!!s.muted && <span className="badge-gray flex-none" title="屏蔽轴：热点榜/阅读器已排除">屏</span>}
                         {s.reader_visible === 0 && <span className="badge-gray flex-none" title="收录轴：已移出阅读器列表">藏</span>}
                       </div>

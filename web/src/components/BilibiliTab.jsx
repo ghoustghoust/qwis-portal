@@ -6,7 +6,6 @@ import { useSettings, useStatus } from '../useSettings';
 import IntervalEditor from './IntervalEditor.jsx';
 import StatusCard from './StatusCard.jsx';
 import PendingList from './PendingList.jsx';
-import QueuePanel from './QueuePanel.jsx';
 import SourceTable, { StatusBadge } from './SourceTable.jsx';
 
 // B站 Tab（F28~F35）
@@ -87,54 +86,8 @@ export default function BilibiliTab() {
     }
   };
 
-  // F32c: 批量解冻已熔断的 B 站订阅（兼容旧 API）
-  const unfreezeAll = async () => {
-    const frozenBili = paused.filter((s) => s.type === 'bilibili');
-    if (!frozenBili.length) {
-      toast('没有已熔断的 B 站订阅');
-      return;
-    }
-    if (!window.confirm(`确定批量解冻 ${frozenBili.length} 个熔断的 B 站订阅？将清零失败计数并重新启用`)) return;
-    setBusy('unfreeze');
-    try {
-      let restored = 0;
-      for (const s of frozenBili) {
-        await api.put(`/api/sources/${s.id}/toggle`).catch(() => {});
-        restored++;
-      }
-      toast(`已恢复 ${restored} 个 B 站订阅`);
-      loadSources();
-      reloadStatus();
-    } catch (e) {
-      toast(e.message || '解冻失败');
-    } finally {
-      setBusy('');
-    }
-  };
-
-  // ✅ P3: 一键批量恢复（解冻 + 刷新）所有 B 站熔断源
-  const restoreAllWithRefresh = async () => {
-    const frozenBili = paused.filter((s) => s.type === 'bilibili');
-    if (!frozenBili.length) {
-      toast('没有已熔断的 B 站订阅可恢复');
-      return;
-    }
-    if (!window.confirm(`确定批量恢复 ${frozenBili.length} 个熔断的 B 站订阅？将立即解冻并启动刷新`)) return;
-    setBusy('restore');
-    try {
-      const r = await api.post('/api/sources/restore-all', {
-        type: 'bilibili',
-        refreshImmediately: true,
-      });
-      toast(`批量恢复完成：解冻 ${r.restored} 个，刷新成功 ${r.refreshed} 个，失败 ${r.failed} 个`);
-      loadSources();
-      reloadStatus();
-    } catch (e) {
-      toast(e.message || '批量恢复失败');
-    } finally {
-      setBusy('');
-    }
-  };
+  // H55④（10-04 批次4）：批量解冻/批量恢复两按钮摘除而不是修活——批量恢复会把真死源放回，
+  // 污染活源计数（H15 判法未走）；自愈落地后由采集批次尾部自动恢复接管（用户拍板形态）。
 
   const saveInterval = async () => {
     if (busy) return;
@@ -222,7 +175,7 @@ export default function BilibiliTab() {
     <div className="space-y-6">
       {/* F28：状态卡 + 就绪提示 */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <StatusCard label="运行模式" value={bili.mode || '本机模式'} />
+        <StatusCard label="运行模式" value={bili.mode || '—'} />
         <StatusCard label="订阅源数" value={bili.source_count ?? bili.sourceCount ?? sources.length}
           sub={paused.length ? `已自动暂停（连续失败 ≥3 次）：${paused.map((s) => s.name).join('、')}，重新开启开关可恢复` : undefined} />
         <StatusCard label="视频数" value={bili.video_count ?? bili.videoCount} />
@@ -241,22 +194,6 @@ export default function BilibiliTab() {
             title="批量刷新所有已启用的 B 站订阅（跳过熔断检查）"
           >
             {busy === 'refreshAll' ? '刷新中…' : '批量刷新已启用'}
-          </button>
-          <button
-            className="btn-ghost text-xs"
-            disabled={!!busy || paused.length === 0}
-            onClick={unfreezeAll}
-            title="逐个解冻所有熔断的 B 站订阅（不立即刷新）"
-          >
-            {busy === 'unfreeze' ? '恢复中…' : `批量解冻（${paused.filter(s => s.type === 'bilibili').length}）`}
-          </button>
-          <button
-            className="btn-primary text-xs"
-            disabled={!!busy || paused.length === 0}
-            onClick={restoreAllWithRefresh}
-            title="一键完成解冻 + 刷新一体化管理（推荐）"
-          >
-            {busy === 'restore' ? '恢复中…' : `⚡ 批量恢复（${paused.filter(s => s.type === 'bilibili').length}）`}
           </button>
         </div>
       </div>
@@ -319,14 +256,7 @@ export default function BilibiliTab() {
         )}
       </section>
 
-      {/* F31：B站队列同步折叠区 */}
-      <QueuePanel
-        type="bilibili"
-        title="B站队列同步"
-        endpointFile="bilibili-video-queue.php"
-        note="云端任务会先导入本地待处理区，再立即清空云端；失败重试只在本机追踪。"
-        onSynced={loadPending}
-      />
+      {/* F31：B站队列同步折叠区 —— H40 收摊（10-04 终裁①）：同步入口已摘，待处理区保留只读展示 */}
 
       {/* F32：本地待处理订阅列表 */}
       <section>

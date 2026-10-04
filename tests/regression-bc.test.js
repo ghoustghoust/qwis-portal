@@ -120,7 +120,9 @@ test('C27: SourceTable 无消费方的批量选择已整体移除，伪防抖已
   assert.ok(!src.includes('setSearch(search)'), '伪防抖必须删除');
   assert.ok(!src.includes('checkbox'), '复选框列必须移除');
   assert.ok(!fs.existsSync(path.join(ROOT, 'web/src/components/DailySettingsModal.jsx')), '双实现弹窗已移除');
-  for (const f of ['web/src/components/BilibiliTab.jsx', 'web/src/components/DouyinTab.jsx']) {
+  // 锚点搬家（10-04 批次4，H40 收摊+抖音裁撤的用户裁决）：DouyinTab.jsx 已整文件删除，
+  // 无从检查——摘出循环；锁意图不变（组件不得保留无引用的 refreshAll），BilibiliTab 仍受检。
+  for (const f of ['web/src/components/BilibiliTab.jsx']) {
     assert.ok(!/const refreshAll = /.test(read(f)), `${f} 不得保留无引用的 refreshAll`);
   }
 });
