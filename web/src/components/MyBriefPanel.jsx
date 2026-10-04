@@ -45,6 +45,7 @@ export default function MyBriefPanel() {
   };
 
   if (loading) return <div className="py-12 text-center text-sm t-muted">加载中…</div>;
+  if (!hist) return <div className="py-12 text-center text-sm t-muted">数据加载失败，请刷新重试</div>;
 
   return (
     <div className="space-y-5">

@@ -53,7 +53,7 @@ export default function SourcePickerModal({ open, title, sources = [], selectedI
         <div className="flex gap-2 flex-wrap mb-2">
           <input
             className="input flex-1 min-w-[180px]"
-            placeholder="按名称或链接搜索…"
+            placeholder="按名称搜索…"
             value={q}
             onChange={(e) => { setQ(e.target.value); setPage(1); }}
           />
@@ -104,6 +104,7 @@ export default function SourcePickerModal({ open, title, sources = [], selectedI
             <button className="btn-ghost !py-1 !px-2.5 text-xs" disabled={cur <= 1} onClick={() => setPage(cur - 1)}>上一页</button>
             <button className="btn-ghost !py-1 !px-2.5 text-xs" disabled={cur >= pages} onClick={() => setPage(cur + 1)}>下一页</button>
             <button className="btn-primary !py-1 !px-3 text-xs" onClick={() => onConfirm(draft, draftSpot)}>确定</button>
+            <span className="text-[11px] t-muted">确定=暂存，还需页面底部「保存设置」落库</span>
           </div>
         </div>
       </div>

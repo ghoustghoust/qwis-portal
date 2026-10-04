@@ -26,7 +26,8 @@ export default function BriefOverview() {
   const latestDaily = (hist.daily || []).slice().sort((a, b) => String(b.generatedAt).localeCompare(String(a.generatedAt)))[0] || null;
   const mb = hist.mybrief;
   const dg = hist.digest;
-  const latestWeekly = (hist.weekly || []).length ? hist.weekly[hist.weekly.length - 1] : null; // 归档追加式，最新在末位
+  // 按 issue 最大值取"最新期"——/api/brief/history 已把归档 reverse 过（最新在首位），依赖返回序会取到最旧一期（审查 M1）
+  const latestWeekly = (hist.weekly || []).slice().sort((a, b) => (b.issue || 0) - (a.issue || 0))[0] || null;
 
   const goto = (id) => { window.location.hash = `/${id}`; };
 

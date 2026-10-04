@@ -36,7 +36,8 @@ export default function WeeklyPanel() {
   };
 
   if (loading) return <div className="py-12 text-center text-sm t-muted">加载中…</div>;
-  const weekly = hist?.weekly || [];
+  if (!hist) return <div className="py-12 text-center text-sm t-muted">数据加载失败，请刷新重试</div>;
+  const weekly = hist.weekly || [];
 
   return (
     <div className="space-y-5">

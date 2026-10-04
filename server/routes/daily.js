@@ -41,12 +41,13 @@ router.post('/regenerate', async (req, res) => {
 
 function sourceList(types, selectedIds) {
   const rows = db
-    .prepare(`SELECT id, type, name, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`)
+    .prepare(`SELECT id, type, name, enabled, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`)
     .all(...types);
   return rows.map((s) => ({
     id: s.id,
     type: s.type,
     name: s.name,
+    enabled: s.enabled, // T3-8 批次2 审查修复：选源器状态筛选依赖（与云端同批）
     spotlight: !!s.spotlight, // 27b：原 focus 字段，语义=重点轴
     selected: selectedIds ? selectedIds.includes(s.id) : true, // 未配置=全选
   }));
@@ -82,6 +83,7 @@ function sanitizeColumns(cols) {
     const special = c.special === 'focus' ? 'spotlight' : c.special;
     if (special === 'spotlight' || special === 'fallback') {
       out.special = special;
+      if (c.desc !== undefined) out.desc = String(c.desc); // B10 闭环：与云端同批
     } else {
       if (c.desc !== undefined) out.desc = String(c.desc);
       out.keywords = Array.isArray(c.keywords)

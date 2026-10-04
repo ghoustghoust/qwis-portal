@@ -1525,6 +1525,7 @@ async function handleAdminTrigger(req) {
         'User-Agent': 'qwis-intel-admin',
       },
       body: JSON.stringify({ ref: 'main', inputs: { mode } }),
+      signal: AbortSignal.timeout(10000), // 审查建议：防 GitHub API 挂起拖满 serverless 时限
     });
   } catch (e) {
     return { status: 502, body: jsonErr('触发请求失败：' + e.message) };
@@ -2336,6 +2337,8 @@ function sanitizeColumns(cols) {
     const special = c.special === 'focus' ? 'spotlight' : c.special;
     if (special === 'spotlight' || special === 'fallback') {
       out.special = special;
+      // B10 闭环：机制栏目也有给人看的注解，保存时保留——否则一次「保存设置」就把 DEFAULT_COLUMNS 的 desc 剥掉
+      if (c.desc !== undefined) out.desc = String(c.desc);
     } else {
       if (c.desc !== undefined) out.desc = String(c.desc);
       out.keywords = Array.isArray(c.keywords)
@@ -2436,9 +2439,10 @@ async function handleDailySettingsGet(req) {
   const columns = (await getSetting('daily.columns', null)) || DAILY_DEFAULT_COLUMNS;
   const sourceList = async (types, selectedIds) => {
     const rows = await qAll(
-      `SELECT id, type, name, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
+      `SELECT id, type, name, enabled, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
     return rows.map((s) => ({
-      id: s.id, type: s.type, name: s.name, spotlight: !!s.spotlight, // 27b：原 focus 字段
+      id: s.id, type: s.type, name: s.name, enabled: s.enabled, spotlight: !!s.spotlight, // 27b：原 focus 字段
+      // T3-8 批次2 审查修复：补 enabled——选源器的状态筛选依赖它（此前主数据路径不返回，筛选恒失效）
       selected: selectedIds ? selectedIds.includes(s.id) : true,
     }));
   };
