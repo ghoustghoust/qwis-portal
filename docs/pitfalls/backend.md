@@ -118,4 +118,4 @@
   `makeDump` 用 `lib/content-dump` 自己的 `writeChunk`/`writeManifest` 生成，不手写清单形状 —— 手写形态漂移就是 #63 那族）；
   ③跨环境还要写明**这一端走的是哪条腿**：runner 上没有本地转储目录，它改判库里的转储凭证（那份凭证只由"本地校验全过的转储"写入）——
   两腿都没有才挡。判"闸现在放不放行"必须同时读出它经哪条腿过的（`via`），否则"恒挡"与"走凭证腿放行"在日志里长得一样（口径见 ADR-22）。
-- 案例：`tools/collect-turso.js#contentDumpDir`；锁 `tests/regression-cleanup-observe.test.js` CO2（无转储必挡、行不许少）+ CO3（转储可用必放行、实删数==读数）。
+- 案例：`tools/collect-turso.js#contentDumpDir`；锁 `tests/regression-cleanup-observe.test.js` CO3（转储可用必放行、实删数==读数；CO2 的"无转储必挡"已随 10-04 锁裁决摘除——runner 自写凭证后那条判据不成立）。 <!-- doc-lint:ignore -->

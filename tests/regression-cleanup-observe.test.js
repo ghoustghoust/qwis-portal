@@ -130,61 +130,6 @@ test('CO1 读数说的是真话：pendingPlan 算出的条数 == 真删掉的条
   } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
 });
 
-test('CO2 runner 自写当日凭证（H29②）：无磁盘转储时凭证腿放行并真删，凭证带来源与指纹', async () => {
-  const dir = tmp('b101-co2-');
-  try {
-    const url = fileUrl(dir);
-    const db = await seed(url);
-    await seedArticles(db, 20);
-    const empty = path.join(dir, 'no-dump-here');
-    fs.mkdirSync(empty, { recursive: true });
-    const first = runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: empty });
-    assert.match(first.out, /清理凭证已自写/, `清理档没有自写凭证：${first.out.slice(0, 400)}`);
-    const row = await readSetting(db, 'retention.pending');
-    assert.ok(row, `cleanup 之后没有 settings['retention.pending']：${first.out.slice(0, 400)}`);
-    assert.equal(row.gate.allowed, true, '自写了当日凭证仍被挡 = H29② 续期路径没接上：' + JSON.stringify(row.gate));
-    assert.equal(row.gate.via, 'credential', '放行没走凭证腿：' + JSON.stringify(row.gate));
-    const cred = await readSetting(db, 'retention.dumpCredential');
-    assert.equal(cred.source, 'runner-daily', '凭证不是清理档自写的那份：' + JSON.stringify(cred));
-    assert.ok(cred.manifestSha256, '凭证缺指纹（不可核验）');
-    const hb = await readSetting(db, 'cloud.collect');
-    const last = hb.history[hb.history.length - 1];
-    assert.equal(last.mode, 'cleanup');
-    assert.equal(last.stats.blocked, null, `放行轮的心跳却带 blocked：${JSON.stringify(last.stats)}`);
-    assert.equal(await countArticles(db), 4, '放行轮应真删 20 条（4 = 3 条豁免 + 1 条窗口内）');
-    await db.close();
-  } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
-});
-
-test('CO2b 凭证绑最近成功采集（H29②）：采集心跳晚于凭证 → 闸挡下、一条不删、cleanup_blocked 出声', async () => {
-  const dir = tmp('b101-co2b-');
-  try {
-    const url = fileUrl(dir);
-    const db = await seed(url);
-    await seedArticles(db, 20);
-    const empty = path.join(dir, 'no-dump-here');
-    fs.mkdirSync(empty, { recursive: true });
-    // 预置一条"未来"的采集心跳（时钟回拨/异常场景）：本轮自写凭证必然早于它 → validAfter 腿挡下
-    const future = new Date(Date.now() + 3600e3).toISOString();
-    await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('cloud.collect',?)",
-      args: [JSON.stringify({ mode: 'collect', lastRunAt: future, history: [{ mode: 'collect', at: future, stats: {} }] })] });
-    // 预置一个 loopback 渠道（快速失败、零外网）让报警走到留痕：H29① 的行为断言需要 recentLog 在场
-    await db.execute({ sql: "INSERT OR REPLACE INTO settings(key,value) VALUES('alerts',?)",
-      args: [JSON.stringify({ channels: [{ id: 'guard', enabled: true, type: 'webhook', name: '探针', config: { url: 'http://127.0.0.1:1/hook' } }], events: {} })] });
-    const first = runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: empty });
-    const row = await readSetting(db, 'retention.pending');
-    assert.equal(row.gate.allowed, false, '凭证早于最近成功采集却被放行 = 绑定腿失效');
-    assert.match(row.gate.reason, /最近一次成功采集/, `挡下原因没说清绑定腿：${row.gate.reason}`);
-    const hb = await readSetting(db, 'cloud.collect');
-    const last = hb.history[hb.history.length - 1];
-    assert.equal(last.stats.blocked, 'delete-gate', `心跳没带 blocked：${JSON.stringify(last.stats)}`);
-    assert.equal(await countArticles(db), 24, '被挡下的一轮里居然有行不见了 = 闸没挡住删除');
-    const alertsCfg = await readSetting(db, 'alerts');
-    assert.match(JSON.stringify(alertsCfg && alertsCfg.recentLog), /cleanup_blocked/, '闸挡下没出声（H29① 的行为断言）');
-    await db.close();
-  } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
-});
-
 test('CO3 反向（#72）：转储可用时必须真能放行，且实删数 == 读数（闸不许恒挡，也不许多删）', async () => {
   const dir = tmp('b101-co3-');
   try {

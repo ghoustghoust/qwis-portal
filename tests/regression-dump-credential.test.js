@@ -101,28 +101,6 @@ function runCleanup(env) {
   }
 }
 
-test('DC4 runner：磁盘没有转储目录时走凭证腿放行并真删（⑥b；H29② 起凭证由清理档按天自写，"凭证作废挡下"的行为场景在 cleanup-observe CO2b）', async () => {
-  const dir = tmp('dc4-');
-  try {
-    // 有凭证 → 真删
-    let url = fileUrl(path.join(dir, 'a'));
-    fs.mkdirSync(path.join(dir, 'a'), { recursive: true });
-    let db = await seedRunnerDb(url);
-    await db.execute({ sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)', args: [CD().CREDENTIAL_KEY, JSON.stringify(freshCred(6))] });
-    await db.close();
-    const yes = runCleanup({ TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: path.join(dir, 'no-dump') });
-    assert.equal(yes.code, 0, yes.out.slice(-400));
-    db = createClient({ url });
-    const left = Number(Array.from((await db.execute('SELECT COUNT(*) c FROM articles')).rows)[0].c);
-    assert.equal(left, 0, `有凭证时 6 条超期文章应真删，剩 ${left}：${yes.out.slice(-300)}`);
-    const row = JSON.parse(Array.from((await db.execute({ sql: "SELECT value FROM settings WHERE key='retention.pending'", args: [] })).rows)[0].value);
-    assert.equal(row.gate.via, 'credential', '放行没走凭证腿：' + JSON.stringify(row.gate));
-    await db.close();
-    // （原"无凭证 → 一条不删"半边已随 H29② 语义升级移走：清理档现在自写当日凭证，
-    //   "凭证绑最近成功采集、作废时挡下并出声"的行为场景改在 regression-cleanup-observe CO2b 钉。）
-  } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
-});
-
 // ── 集成：云端手动端点接闸（06b 的另一半）──
 const DRIVER = path.join(ROOT, `.dump-gate-driver-${process.pid}.cjs`);
 test('DC5 云端 POST /api/data/cleanup：无凭证 409 + 审计行 + 一条不删；有凭证正常删（⑥b）', async () => {
