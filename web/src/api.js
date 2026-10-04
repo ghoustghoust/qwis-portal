@@ -4,16 +4,18 @@
 import { getToken, setToken } from './auth';
 
 // ---- 1.4 GET 请求去重缓存 ----
+// T3-8 批次1b：TTL 5s → 90s——后台切换板块会卸载重挂组件、重发全部 GET，5s 缓存救不了"切回来又要加载半天"。
+// 90s 内重复访问直接吃缓存瞬时渲染；需要最新数据的场景（各板块刷新按钮）走 force 绕缓存，结果仍回写缓存。
 const _getCache = new Map(); // key → { promise, ts }
-const GET_CACHE_TTL = 5000; // 5 秒
+const GET_CACHE_TTL = 90000; // 90 秒
 
-function cacheGet(key, fetcher) {
+function cacheGet(key, fetcher, force) {
   const now = Date.now();
   const entry = _getCache.get(key);
-  if (entry && now - entry.ts < GET_CACHE_TTL) return entry.promise;
+  if (!force && entry && now - entry.ts < GET_CACHE_TTL) return entry.promise;
   const promise = fetcher().then(
     (data) => { _getCache.set(key, { promise: Promise.resolve(data), ts: Date.now() }); return data; },
-    (err) => { _getCache.delete(key); throw err; } // 失败不缓存
+    (err) => { if (!force) _getCache.delete(key); throw err; } // 失败不缓存（force 时保留旧缓存）
   );
   _getCache.set(key, { promise, ts: now });
   return promise;
@@ -28,7 +30,7 @@ function invalidateCache(prefix) {
   }
 }
 
-async function request(path, { method = 'GET', body } = {}) {
+async function request(path, { method = 'GET', body, force } = {}) {
   let res;
   try {
     const headers = {};
@@ -36,13 +38,13 @@ async function request(path, { method = 'GET', body } = {}) {
     const token = getToken();
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    // 1.4：GET 请求走缓存去重
+    // 1.4：GET 请求走缓存去重（force = 绕缓存强拉，结果仍回写）
     if (method === 'GET') {
       return cacheGet(path, () => fetch(path, {
         method,
         headers: Object.keys(headers).length ? headers : undefined,
         body: undefined,
-      }).then(handleResponse));
+      }).then(handleResponse), force);
     }
 
     res = await fetch(path, {
@@ -119,7 +121,7 @@ function qs(params) {
 }
 
 export const api = {
-  get: (path) => request(path),
+  get: (path, force) => request(path, { force }), // force=true 绕 90s 缓存强拉（刷新按钮用）
   post: (path, body) => request(path, { method: 'POST', body: body ?? {} }),
   put: (path, body) => request(path, { method: 'PUT', body: body ?? {} }),
   del: (path) => request(path, { method: 'DELETE' }),

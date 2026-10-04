@@ -45,8 +45,8 @@ const SECTIONS = [
   {
     parent: '源',
     items: [
-      { id: 'library', label: '源库', ref: 'library', wide: true, render: () => <SourceLibraryTab /> },
-      { id: 'platform', label: '平台接入', ref: 'library', wide: true, render: () => <SourceLibraryTab initialView="platform" /> },
+      { id: 'library', label: '源库', ref: 'library', wide: true, render: () => <SourceLibraryTab key="library" /> },
+      { id: 'platform', label: '平台接入', ref: 'library', wide: true, render: () => <SourceLibraryTab key="platform" initialView="platform" /> },
       { id: 'hot', label: '热点榜', ref: 'hot', render: () => <HotSettings /> },
     ],
   },
@@ -131,6 +131,20 @@ const readHash = () => {
   return ALL_ITEMS.some((i) => i.id === id) ? id : 'library';
 };
 
+// 空闲预热全部板块 chunk：lazy() 与这里的 import() 同路径会被打包器合并为同一模块，
+// 预热完成后切换子板块零 chunk 下载等待（9 个组件合计约 150kB gzip，一次性成本）
+const WARM_IMPORTS = [
+  () => import('../components/SourceLibraryTab.jsx'),
+  () => import('../components/HotSettings.jsx'),
+  () => import('../components/BriefCenterTab.jsx'),
+  () => import('../components/DailySettingsTab.jsx'),
+  () => import('../components/AiSettingsTab.jsx'),
+  () => import('../components/TranslateSkillTab.jsx'),
+  () => import('../components/DataTab.jsx'),
+  () => import('../components/MonitorTab.jsx'),
+  () => import('../components/AlertsTab.jsx'),
+];
+
 // 管理后台（/admin/；/wechat/ 兼容同渲染）：独立外壳，不带阅读器 IconRail
 export default function AdminPage() {
   const [view, setView] = useState(readHash);
@@ -145,6 +159,12 @@ export default function AdminPage() {
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  // 进入后台 1.5s 后台预热其余板块代码（首屏优先渲染，不抢带宽）
+  useEffect(() => {
+    const t = setTimeout(() => WARM_IMPORTS.forEach((f) => f()), 1500);
+    return () => clearTimeout(t);
   }, []);
   const go = (id) => {
     setView(id);

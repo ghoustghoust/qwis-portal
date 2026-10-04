@@ -319,10 +319,11 @@ export default function AlertsTab() {
   const [page, setPage] = useState(0); // 报警日志分页（每页 10 条）
   const [loading, setLoading] = useState(false); // 刷新加载状态
 
-  const load = useCallback(async () => {
+  // force=true 绕 90s 缓存强拉（刷新按钮用；挂载首渲染吃缓存瞬时呈现）
+  const load = useCallback(async (force) => {
     setLoading(true);
     try {
-      const d = await api.get('/api/alerts/config');
+      const d = await api.get('/api/alerts/config', force);
       setCfg(d);
       setCooldown(String(d.cooldownMin ?? ''));
     } catch (e) {
@@ -537,7 +538,7 @@ export default function AlertsTab() {
           <div className="inline-flex gap-2">
             <button
               className={`btn-ghost inline-flex items-center gap-1 !px-2.5 ${loading ? 'animate-spin' : ''}`}
-              onClick={load}
+              onClick={() => load(true)}
               disabled={loading}
               title="刷新报警记录"
             >

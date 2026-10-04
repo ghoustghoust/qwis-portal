@@ -18,14 +18,15 @@ export default function MonitorTab() {
   const [collectHistory, setCollectHistory] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  // force=true 绕 90s 缓存强拉（手动刷新按钮与 60s 自动轮询用；挂载首渲染吃缓存瞬时呈现）
+  const load = useCallback(async (force) => {
     setLoading(true);
     try {
       const [h, qs, ss, ch] = await Promise.all([
-        api.get('/api/health/status').catch(() => null),
-        api.get('/api/queue/stats').catch(() => null),
-        api.get('/api/health/source-stats?days=7').catch(() => null),
-        api.get('/api/health/collect-history').catch(() => null),
+        api.get('/api/health/status', force).catch(() => null),
+        api.get('/api/queue/stats', force).catch(() => null),
+        api.get('/api/health/source-stats?days=7', force).catch(() => null),
+        api.get('/api/health/collect-history', force).catch(() => null),
       ]);
       setHealth(h);
       setQueueStats(qs);
@@ -40,9 +41,9 @@ export default function MonitorTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  // 自动刷新（60s）
+  // 自动刷新（60s；force 绕缓存保数据新鲜）
   useEffect(() => {
-    const t = setInterval(load, 60000);
+    const t = setInterval(() => load(true), 60000);
     return () => clearInterval(t);
   }, [load]);
 

@@ -79,9 +79,10 @@ export default function DataTab() {
   const [preview, setPreview] = useState(null); // 清理预览计数
   const [settings, setSettings] = useState(null); // 加载当前设置
 
-  const loadStats = useCallback(async () => {
+  // force=true 绕 90s 缓存强拉（刷新按钮用；挂载首渲染吃缓存瞬时呈现）
+  const loadStats = useCallback(async (force) => {
     try {
-      const d = await api.get('/api/data/stats');
+      const d = await api.get('/api/data/stats', force);
       setStats(d?.stats || d);
       setReady(true);
     } catch {
@@ -103,9 +104,9 @@ export default function DataTab() {
     }
   }, []);
 
-  const loadSnaps = useCallback(async () => {
+  const loadSnaps = useCallback(async (force) => {
     try {
-      const d = await api.get('/api/data/list');
+      const d = await api.get('/api/data/list', force);
       // 能力位优先于列表长度：fileSnapshots:false 时「空列表」的意思是"这端做不到"，不是"还没做"
       setSnapshotsUnsupported(d?.fileSnapshots === false);
       setSnapNote(String(d?.note || ''));
@@ -393,7 +394,7 @@ export default function DataTab() {
           <span className="t-muted">
             库体积：<b className="t-text tabular-nums">{dbSize ? fmtSize(dbSize) : (stats?.sizeNote || '—')}</b>
           </span>
-          <button className="btn-ghost !py-1 !px-2.5" disabled={!ready || !!busy} onClick={() => { loadStats(); loadSnaps(); }}>
+          <button className="btn-ghost !py-1 !px-2.5" disabled={!ready || !!busy} onClick={() => { loadStats(true); loadSnaps(true); }}>
             刷新
           </button>
         </div>
