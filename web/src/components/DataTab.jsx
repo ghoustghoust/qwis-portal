@@ -232,7 +232,8 @@ export default function DataTab() {
     setBusy('preview');
     try {
       const d = await api.post('/api/data/cleanup/preview', { days: Number(days) });
-      setPreview(d?.willDelete || d?.preview || d);
+      // 审查必①:gate 必须随 preview 一起存——只存 willDelete 会把删除闸状态截掉,红字永不显示
+      setPreview({ ...(d?.willDelete || d?.preview || {}), gate: d?.gate });
     } catch (e) {
       toast(e.message || '预览失败');
     } finally {

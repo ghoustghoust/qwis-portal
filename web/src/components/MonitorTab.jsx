@@ -79,7 +79,7 @@ export default function MonitorTab() {
             </div>
             <div className="card t-surface2 px-3 py-2 text-center">
               <div className="text-lg font-bold t-danger">{health.sources?.frozen ?? '—'}</div>
-              <div className="text-xs t-muted">熔断冻结（失败≥3 且停用，不含人工关闭）</div>
+              <div className="text-xs t-muted">熔断冻结（失败≥3 且停用；合并退役亦计入，与解冻清单同口径）</div>
             </div>
           </div>
         ) : (

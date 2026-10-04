@@ -1,0 +1,5 @@
+H35 取证 · 2026-10-04T11:18:53.010Z（一次性只读）
+列: id, at, user, action, target, detail, ip
+
+{"id":1607,"at":"2026-10-04T10:53:19.484Z","user":"admin","action":"alerts.test","target":null,"detail":"{\"channelId\":\"feishu-1788064687082-y28w\",\"sent\":1}","ip":null}
+{"id":1606,"at":"2026-10-04T09:52:48.111Z","user":"admin","action":"alerts.dispatch","target":null,"detail":"{\"event\":\"mybrief\",\"title\":\"☀️ 我的早报 · 10月4日\",\"sent\":1,\"total\":1}","ip":null}

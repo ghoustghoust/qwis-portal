@@ -1106,6 +1106,9 @@ async function handleSettings(req) {
         locked: 'env', // 13-settings-write：云端主设置端点对 AI 段拒写（真写入口在专用端点，写后探测+审计）
       };
     })(),
+    // T3-8 批次3（审查必②）：坏值回落留痕此前零读端点，日志板块恒假空态——透出给界面。
+    // raw 已在写入侧截 80 字符；凭据类键不进设置读取回退路径，若未来接入需先过掩码。
+    valueFallbacks: await getSetting('settings.valueFallbacks', []),
   });
 }
 

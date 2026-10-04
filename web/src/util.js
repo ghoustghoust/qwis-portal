@@ -12,6 +12,13 @@ export function imgUrl(url) {
 }
 
 // 相对时间（与后端 server/util/time.js 口径一致）：8h / 1天 / N天前
+
+// eventMeta 标题可能带 emoji 前缀，剥掉保持界面零 emoji（lib/alert-events.js 的明文契约；
+// 此前只有 AlertsTab 有一份，日志板块接入后收编为共用）
+export function cleanTitle(t) {
+  return String(t || '').replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, '');
+}
+
 export function relativeTime(iso) {
   if (!iso) return '—';
   const t = new Date(iso).getTime();

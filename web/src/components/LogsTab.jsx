@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { relativeTime } from '../util';
+import { relativeTime, cleanTitle } from '../util';
 import InfoTip from './InfoTip.jsx';
 
 // T3-8 批次3：日志板块（观测面）——报警板块只管配置，发生过的记录都在这里（用户标注"报警、日志、监控各归各"）。
@@ -73,10 +73,10 @@ export default function LogsTab() {
     ? (brief.weekly || []).slice().sort((a, b) => (b.issue || 0) - (a.issue || 0))[0]
     : null;
   const jobs = [
-    { name: '全量采集（runner，每 15 分钟）', at: lastCollect?.at, info: lastCollect ? `档位 ${lastCollect.mode || '—'}` : '暂无心跳', ok: !!lastCollect },
+    { name: '全量采集（runner，节奏见作业文件）', at: lastCollect?.at, info: lastCollect ? `档位 ${lastCollect.mode || '—'}` : '暂无心跳', ok: !!lastCollect },
     { name: '每日早报（AI 批）', at: latestDaily?.generatedAt, info: latestDaily ? `${latestDaily.totalItems ?? 0} 条` : '暂无', ok: !!latestDaily },
     { name: '我的早报', at: mb?.generatedAt, info: mb && !mb.empty ? `${(mb.counts?.top || 0) + (mb.counts?.featured || 0) + (mb.counts?.rest || 0)} 条` : mb ? (mb.empty === 'no-subscription' ? '空态：无订阅源' : '空态') : '暂无', ok: !!mb },
-    { name: '精选周刊', at: latestWeekly?.generatedAt, info: latestWeekly ? `第 ${latestWeekly.issue} 期 · ${latestWeekly.count} 条` : '暂无', ok: !!latestWeekly },
+    { name: '精选周刊', at: latestWeekly?.dateEnd, info: latestWeekly ? `第 ${latestWeekly.issue} 期 · ${latestWeekly.count} 条` : '暂无', ok: !!latestWeekly, atNote: '以内容窗口结束日计（生成时刻不在该接口返回中）' },
     { name: '阅读足迹小结', at: brief?.digest?.generatedAt || brief?.digest?.date, info: brief?.digest ? `读 ${brief.digest.readCount} 篇` : '暂无', ok: !!brief?.digest },
   ];
 
@@ -88,7 +88,7 @@ export default function LogsTab() {
   const curPage = Math.min(page, totalPages - 1);
   const pageLog = log.slice(curPage * PAGE_SIZE, curPage * PAGE_SIZE + PAGE_SIZE);
   const pageIndexOffset = curPage * PAGE_SIZE;
-  const metaTitle = (m) => (typeof m === 'string' ? m : m && m.title ? m.title : m);
+  const metaTitle = (m) => cleanTitle(typeof m === 'string' ? m : (m && m.title) || '');
 
   // ── 数据层失败 ──
   const fb = Array.isArray(fallbacks) ? fallbacks : [];
@@ -119,7 +119,7 @@ export default function LogsTab() {
               {jobs.map((j) => (
                 <tr key={j.name} className="border-t t-border">
                   <td className="px-3 py-2 t-text">{j.name}</td>
-                  <td className="px-3 py-2 t-muted tabular-nums">{j.at ? relativeTime(j.at) : '—'}</td>
+                  <td className="px-3 py-2 t-muted tabular-nums" title={j.atNote || ''}>{j.at ? relativeTime(j.at) : '—'}</td>
                   <td className="px-3 py-2 t-muted">{j.info}</td>
                   <td className="px-3 py-2">{j.ok ? <span className="badge-green">有留痕</span> : <span className="badge-gray">无记录</span>}</td>
                 </tr>

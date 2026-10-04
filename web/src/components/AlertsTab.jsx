@@ -1,36 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { relativeTime } from '../util';
+import { relativeTime, cleanTitle } from '../util';
 import InfoTip from './InfoTip.jsx';
-import { PlusIcon, XIcon, ExternalIcon, BellIcon, RefreshIcon } from './icons.jsx';
+import { PlusIcon, XIcon, ExternalIcon, BellIcon } from './icons.jsx';
 
-// 垃圾桶图标（删除单条日志）
-function TrashIcon(props) {
-  return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M3 6h18" />
-      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-      <line x1="10" y1="11" x2="10" y2="17" />
-      <line x1="14" y1="11" x2="14" y2="17" />
-    </svg>
-  );
-}
-
-// 报警管理 Tab（九期）：渠道卡片 + 添加渠道两步向导 + 事件开关 + 冷却时长 + 最近报警记录
-// 接口：GET/PUT /api/alerts/config、POST /api/alerts/test {channelId?}、GET /api/alerts/log
+// 报警管理（T3-8 批次3 改造：配置面——渠道 + 添加渠道两步向导 + 报警覆盖矩阵 + 事件开关 + 冷却时长）
+// 报警记录（观测面）已迁至 LogsTab；接口：GET/PUT /api/alerts/config、POST /api/alerts/test {channelId?}、POST /api/alerts/clear-cooldowns
 
 // 六种渠道类型：tagline 一句定位（第 1 步卡片）+ steps 编号指引 / doc 文档链接 / note 特别提示（第 2 步表单页）
 // dingtalk/feishu 的 config.secret 为可选加签密钥（九期后端补丁）
@@ -138,11 +114,8 @@ function HomeLink({ url, help, className = '' }) {
 
 // B109/B45（spec 37-2 第 3 条）：事件说明原来在这里写死第 4 份（还只覆盖 3 个事件）。
 // 现在 title/desc 都由 GET /api/alerts/config 的 eventMeta 一次带来 —— 一份事实一次传输。
+// cleanTitle 已收编进 web/src/util.js（LogsTab 消费同一份）。
 
-// eventMeta 标题可能带 emoji 前缀，剥掉保持界面零 emoji
-function cleanTitle(t) {
-  return String(t || '').replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, '');
-}
 // B109：eventMeta 的值从"标题字符串"升级成"{title, desc}"，两个消费点都从这里取值，
 // 免得再写两份 typeof 判断（日志列那里历史上传进来的一直是字符串，所以两种形状都要吃）。
 const metaTitle = (m) => cleanTitle(typeof m === 'string' ? m : (m && m.title) || '');
@@ -375,7 +348,9 @@ export default function AlertsTab() {
     try {
       const d = await api.post('/api/alerts/test', { channelId: c.id });
       const r = (d.results || [])[0];
-      if (r?.ok) toast(`「${c.name}」测试成功，消息已送达`);
+      if (d.skipped === 'channel-disabled') toast(`「${c.name}」已停用——先启用再测试`);
+      else if (d.skipped === 'channel-not-found') toast(`「${c.name}」不存在（可能已被删除）`);
+      else if (r?.ok) toast(`「${c.name}」测试成功，消息已送达`);
       else toast(`「${c.name}」测试失败：${r?.error || '未知错误'}`);
     } catch (e) {
       toast(e.message || '测试失败');
