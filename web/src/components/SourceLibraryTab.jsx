@@ -55,8 +55,9 @@ const VIEW_LABEL = { groups: '组合', issues: '问题源', search: '检索', pl
 
 // 29-source-groups（2026-09-15）：源库从「1500 行表格」重构为三视图——
 // 组合视图（默认，组为卡片）/ 问题源视图（只列异常）/ 检索视图（原全量表格）+ 平台接入（spec30 并入）
-export default function SourceLibraryTab() {
-  const [view, setView] = useState('groups');
+// T3-8 批次1：左栏导航的「平台接入」子板块直接落在本组件的平台视图——initialView 由 AdminPage 传入
+export default function SourceLibraryTab({ initialView = 'groups' }) {
+  const [view, setView] = useState(initialView);
   const [items, setItems] = useState([]);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);

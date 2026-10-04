@@ -1,13 +1,15 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeButton } from '../theme.jsx';
 import { RadarLogo } from '../components/icons.jsx';
 import ErrorBoundary from '../components/ErrorBoundary.jsx';
 import AdminRefCard from '../components/AdminRefCard.jsx';
 import { SkeletonList } from '../components/Skeleton.jsx';
 
-// 2.2 性能优化：管理后台 Tab 懒加载（用户每次只看一个 Tab，无需同步加载全部 ~2500 行组件）
-// spec30（2026-09-15）：12 Tab 收敛为 5——公众号RSS/B站并入源库「平台接入」视图；日报设置并入早报中心；
-// 翻译 Skill 并入 AI 能力；数据/监控/报警并入系统；抖音板块下架（T5-10，永不云端化的本地功能退出后台）
+// 管理后台懒加载（用户每次只看一个板块，无需同步加载全部组件）
+// spec30（2026-09-15）：12 Tab 收敛为 5；抖音板块下架（T5-10）
+// T3-8 批次1（2026-10-04）：顶部横向 Tab → 左栏父/子板块两级导航（用户拍板）。
+// 本批零功能改动：现有组件按子板块重新分组，子板块=导航定位（进 URL hash，刷新不丢）；
+// render 只在该子板块激活时调用，lazy 语义不变。首页仪表盘在批次 6 加入，届时左栏顶部新增。
 const SourceLibraryTab = lazy(() => import('../components/SourceLibraryTab.jsx'));
 const HotSettings = lazy(() => import('../components/HotSettings.jsx'));
 const DataTab = lazy(() => import('../components/DataTab.jsx'));
@@ -18,7 +20,7 @@ const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
 const BriefCenterTab = lazy(() => import('../components/BriefCenterTab.jsx'));
 
-// Tab 切换时的加载占位（B11：文字「加载中…」→ 骨架屏，与前台同语言）
+// Tab 切换时的加载占位（B11：骨架屏，与前台同语言）
 function TabLoader() {
   return (
     <div className="card">
@@ -38,93 +40,190 @@ function Zone({ title, note, children }) {
   );
 }
 
+// 子板块定义。id=导航定位；ref=前台对照卡的口径（AdminRefCard 只认五 Tab 值）；wide=内容区宽版
+const SECTIONS = [
+  {
+    parent: '源',
+    items: [
+      { id: 'library', label: '源库', ref: 'library', wide: true, render: () => <SourceLibraryTab /> },
+      { id: 'platform', label: '平台接入', ref: 'library', wide: true, render: () => <SourceLibraryTab initialView="platform" /> },
+      { id: 'hot', label: '热点榜', ref: 'hot', render: () => <HotSettings /> },
+    ],
+  },
+  {
+    parent: '报',
+    items: [
+      { id: 'brief', label: '早报中心', ref: 'brief', render: () => <BriefCenterTab /> },
+      {
+        id: 'daily',
+        label: '每日早报设置',
+        ref: 'brief',
+        render: () => (
+          <Zone title="每日早报设置" note="作用于 每日早报（/daily/）的统计窗口/生成时间/来源勾选/栏目">
+            <DailySettingsTab />
+          </Zone>
+        ),
+      },
+    ],
+  },
+  {
+    parent: 'AI',
+    items: [
+      {
+        id: 'ai',
+        label: 'AI 配置',
+        ref: 'ai',
+        render: () => (
+          <>
+            <Zone title="AI 能力配置" note="作用于 早报策展 / 六维评分 / 摘要（全部 AI 产出页）">
+              <AiSettingsTab />
+            </Zone>
+            <Zone title="翻译 Skill" note="作用于 阅读器与早报的中英对照（runner 每 15 分钟出队）">
+              <TranslateSkillTab />
+            </Zone>
+          </>
+        ),
+      },
+    ],
+  },
+  {
+    parent: '系统',
+    items: [
+      {
+        id: 'data',
+        label: '数据',
+        ref: 'system',
+        render: () => (
+          <Zone title="数据" note="作用于 存储占用与内容保留策略（Turso 云库）">
+            <DataTab />
+          </Zone>
+        ),
+      },
+      {
+        id: 'monitor',
+        label: '监控',
+        ref: 'system',
+        render: () => (
+          <Zone title="监控" note="作用于 采集心跳与源健康（全站）">
+            <MonitorTab />
+          </Zone>
+        ),
+      },
+      {
+        id: 'alerts',
+        label: '报警',
+        ref: 'system',
+        render: () => (
+          <Zone title="报警" note="作用于 熔断/停滞/失败事件的 webhook 推送">
+            <AlertsTab />
+          </Zone>
+        ),
+      },
+    ],
+  },
+];
+
+const ALL_ITEMS = SECTIONS.flatMap((g) => g.items);
+const itemOf = (id) => ALL_ITEMS.find((i) => i.id === id) || ALL_ITEMS[0];
+const parentOf = (id) => SECTIONS.find((g) => g.items.some((i) => i.id === id)) || SECTIONS[0];
+const readHash = () => {
+  const id = window.location.hash.replace(/^#\/?/, '');
+  return ALL_ITEMS.some((i) => i.id === id) ? id : 'library';
+};
+
 // 管理后台（/admin/；/wechat/ 兼容同渲染）：独立外壳，不带阅读器 IconRail
-// 顶部标题栏（RadarLogo + 标题 + 主题切换/返回阅读器）+ 横向 Tab 导航
-// spec30：5 Tab（源库/早报中心/热点榜策展/AI能力/系统）+ 每 Tab 顶部前台对照卡（C1）
 export default function AdminPage() {
-  const [tab, setTab] = useState('library');
-  const tabs = [
-    { id: 'library', label: '源库' },
-    { id: 'brief', label: '早报中心' },
-    { id: 'hot', label: '热点榜策展' },
-    { id: 'ai', label: 'AI 能力' },
-    { id: 'system', label: '系统' },
-  ];
+  const [view, setView] = useState(readHash);
+  const [parent, setParent] = useState(() => parentOf(readHash()));
+
+  // hash 同步：刷新/直链不丢位置，浏览器前进后退可用
+  useEffect(() => {
+    const onHash = () => {
+      const id = readHash();
+      setView(id);
+      setParent(parentOf(id));
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const go = (id) => {
+    setView(id);
+    setParent(parentOf(id));
+    window.location.hash = `/${id}`;
+  };
+
+  const item = itemOf(view);
   return (
     <div className="flex flex-col h-screen t-bg t-text overflow-hidden">
       {/* 顶部标题栏 */}
       <header className="flex-none border-b t-border t-surface">
-        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 pt-4">
-          <div className="flex items-center gap-2.5">
-            <span className="logo-radar t-accent flex items-center" title="全网情报系统">
-              <RadarLogo size={22} />
-            </span>
-            <h1 className="text-lg font-bold t-text">全网情报 · 管理后台</h1>
-            <span className="flex-1" />
-            <ThemeButton />
-            <a href="/reader/" className="btn-ghost">
-              返回阅读器
-            </a>
-          </div>
-          {/* 横向 Tab 导航（pill 式；移动端横向滚动） */}
-          <div className="mt-3 pb-3 flex gap-1.5 overflow-x-auto">
-            {tabs.map((t) => (
+        <div className="px-4 sm:px-6 pt-4 pb-3 flex items-center gap-2.5">
+          <span className="logo-radar t-accent flex items-center" title="全网情报系统">
+            <RadarLogo size={22} />
+          </span>
+          <h1 className="text-lg font-bold t-text">全网情报 · 管理后台</h1>
+          <span className="flex-1" />
+          <ThemeButton />
+          <a href="/reader/" className="btn-ghost">
+            返回阅读器
+          </a>
+        </div>
+        {/* 移动端（md 以下）：父板块行 + 当前父的子板块行，两级横向滚动 */}
+        <div className="md:hidden px-4 pb-3 space-y-2">
+          <div className="flex gap-1.5 overflow-x-auto">
+            {SECTIONS.map((g) => (
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`pill !px-3.5 !py-1.5 !text-[13px] flex-none ${tab === t.id ? 'on' : ''}`}
+                key={g.parent}
+                onClick={() => setParent(g)}
+                className={`pill !px-3 !py-1 !text-[12px] flex-none ${parent.parent === g.parent ? 'on' : ''}`}
               >
-                {t.label}
+                {g.parent}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto">
+            {parent.items.map((it) => (
+              <button
+                key={it.id}
+                onClick={() => go(it.id)}
+                className={`pill !px-3 !py-1 !text-[12px] flex-none ${view === it.id ? 'on' : ''}`}
+              >
+                {it.label}
               </button>
             ))}
           </div>
         </div>
       </header>
-      <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
-        <div className={tab === 'library' ? 'max-w-[1160px] mx-auto' : 'max-w-[960px] mx-auto'}>
-          <AdminRefCard tab={tab} />
-          <ErrorBoundary fallback="当前标签页">
-            <Suspense fallback={<TabLoader />}>
-              {tab === 'library' && <SourceLibraryTab />}
-              {tab === 'brief' && (
-                <>
-                  <BriefCenterTab />
-                  <div className="mt-8 pt-6 border-t t-border">
-                    <Zone title="每日早报设置" note="作用于 每日早报（/daily/）的统计窗口/生成时间/来源勾选/栏目">
-                      <DailySettingsTab />
-                    </Zone>
-                  </div>
-                </>
-              )}
-              {tab === 'hot' && <HotSettings />}
-              {tab === 'ai' && (
-                <>
-                  <Zone title="AI 能力配置" note="作用于 早报策展 / 六维评分 / 摘要（全部 AI 产出页）">
-                    <AiSettingsTab />
-                  </Zone>
-                  <Zone title="翻译 Skill" note="作用于 阅读器与早报的中英对照（runner 每 15 分钟出队）">
-                    <TranslateSkillTab />
-                  </Zone>
-                </>
-              )}
-              {tab === 'system' && (
-                <>
-                  <Zone title="数据" note="作用于 存储占用与内容保留策略（Turso 云库）">
-                    <DataTab />
-                  </Zone>
-                  <Zone title="监控" note="作用于 采集心跳与源健康（全站）">
-                    <MonitorTab />
-                  </Zone>
-                  <Zone title="报警管理" note="作用于 熔断/停滞/失败事件的 webhook 推送">
-                    <AlertsTab />
-                  </Zone>
-                </>
-              )}
-            </Suspense>
-          </ErrorBoundary>
-          <div className="h-8" />
-        </div>
-      </main>
+      <div className="flex flex-1 overflow-hidden">
+        {/* 桌面左栏（md 以上）：父板块分组标题 + 子板块条目 */}
+        <nav className="hidden md:flex flex-none w-44 lg:w-48 border-r t-border t-surface overflow-y-auto px-2.5 py-4 flex-col gap-5">
+          {SECTIONS.map((g) => (
+            <div key={g.parent}>
+              <div className="text-[11px] t-muted px-2.5 mb-1.5 font-semibold tracking-wide">{g.parent}</div>
+              {g.items.map((it) => (
+                <button
+                  key={it.id}
+                  onClick={() => go(it.id)}
+                  className={`block w-full text-left px-2.5 py-1.5 rounded-lg text-[13px] mb-0.5 ${
+                    view === it.id ? 't-accent font-semibold t-surface2' : 't-text'
+                  }`}
+                >
+                  {it.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </nav>
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
+          <div className={item.wide ? 'max-w-[1160px] mx-auto' : 'max-w-[960px] mx-auto'}>
+            <AdminRefCard tab={item.ref} />
+            <ErrorBoundary fallback="当前板块">
+              <Suspense fallback={<TabLoader />}>{item.render()}</Suspense>
+            </ErrorBoundary>
+            <div className="h-8" />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
