@@ -1639,12 +1639,28 @@ async function handleAiConfig(req) {
     const body = req.body || {};
     const cur = await getSetting('ai', {});
     const next = { ...cur };
-    if (body.model !== undefined) next.model = String(body.model).trim();
-    if (body.apiBase !== undefined) next.apiBase = String(body.apiBase).trim();
-    if (body.apiKey && body.apiKey.trim()) next.apiKey = body.apiKey.trim();
+    const changed = [];
+    if (body.model !== undefined && String(body.model).trim() !== (cur.model || '')) { next.model = String(body.model).trim(); changed.push('model'); }
+    if (body.apiBase !== undefined && String(body.apiBase).trim() !== (cur.apiBase || '')) { next.apiBase = String(body.apiBase).trim(); changed.push('apiBase'); }
+    if (body.apiKey && body.apiKey.trim() && body.apiKey.trim() !== (cur.apiKey || '')) { next.apiKey = body.apiKey.trim(); changed.push('apiKey'); }
     // B51：ai.features 曾在这里被写、又在 GET 里回显给同一个界面，全库没有任何行为读它——假开关已随 39-2 摘除
+    if (!changed.length) return jsonOk({ ok: true, changed: [] });
     await setSetting('ai', next);
-    return jsonOk({ ok: true });
+    // BL9 ②（写后探测失败即回滚）：用新配置真调一次；失败回滚写前快照并明示调用方——
+    // 探测失败也可能是供应商抖动，但配置写面的语义按裁决从紧：探不通就不留新值。
+    const probe = await _ai.aiChat([{ role: 'user', content: '请回复"连通成功"四个字。' }], { kind: 'chat', timeoutMs: 20000 });
+    if (!probe.ok) {
+      await setSetting('ai', cur);
+      await auditRecord('ai.config.rejected', { detail: { changed, error: String(probe.error || '').slice(0, 200) } });
+      return { status: 502, body: jsonErr(`写后探测失败，已回滚旧配置：${probe.error || '未知错误'}`) };
+    }
+    // BL9 ①（审计）：detail 只落变更字段名与探测结果，密钥值永不入审计
+    await auditRecord('ai.config.update', { detail: { changed, provider: probe.provider, model: probe.model } });
+    // BL9 ③（变更告警）：事件开关可关（ai_config_changed 进覆盖矩阵）
+    try {
+      await _alerts.dispatch('ai_config_changed', { title: 'AI 配置变更', text: `变更字段：${changed.join('、')}；写后探测通过（provider=${probe.provider}，model=${probe.model}）` });
+    } catch { /* 告警失败不阻断配置写 */ }
+    return jsonOk({ ok: true, changed, probe: { provider: probe.provider, model: probe.model } });
   }
   return { status: 405, body: jsonErr('Method Not Allowed') };
 }
@@ -1677,9 +1693,64 @@ async function aiChatCloud(messages, { temperature = 0.7, timeoutMs = 30000, mod
 }
 
 async function handleAiPing(req) {
+  // 批次5：补 elapsedMs——管理台延迟红黄绿的依据（单次真调用的墙钟耗时，含限流排队与重试）
+  const t0 = Date.now();
   const r = await aiChatCloud([{ role: 'user', content: '请回复"连通成功"四个字。' }], { timeoutMs: 15000 });
-  if (!r.ok) return jsonOk({ ok: false, error: r.error });
-  return jsonOk({ ok: true, provider: r.provider, model: r.model, reply: r.reply });
+  const elapsedMs = Date.now() - t0;
+  if (!r.ok) return jsonOk({ ok: false, error: r.error, elapsedMs });
+  return jsonOk({ ok: true, provider: r.provider, model: r.model, reply: r.reply, elapsedMs });
+}
+
+// POST /api/ai/models {apiBase?, apiKey?} — 列出该供应商可用模型（OpenAI 兼容 GET {base}/models）
+// 只读不落库；body 覆盖 base/key 仅用于本次调用（key 不回显、不写日志）。浏览器直连第三方会有
+// CORS + 密钥暴露问题，必须走云端代理。
+async function handleAiModels(req) {
+  const body = req.body || {};
+  const cfg = await getSetting('ai', {});
+  const chain = await aiProviderChain(cfg);
+  if (!chain.length) return { status: 400, body: jsonErr('未配置 API Key（settings.ai 或 AGNES_API_KEY）') };
+  const p = chain[0];
+  const base = body.apiBase
+    ? String(body.apiBase).trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '')
+    : p.base;
+  const key = (body.apiKey && body.apiKey.trim()) || p.key;
+  try {
+    const res = await fetch(`${base}/models`, {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(12000),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { status: 502, body: jsonErr(`供应商返回 ${res.status}：${String(JSON.stringify(data)).slice(0, 200)}`) };
+    const models = Array.isArray(data?.data) ? data.data.map((m) => m && m.id).filter(Boolean).sort() : [];
+    if (!models.length) return { status: 502, body: jsonErr('供应商响应里没有模型列表（非 OpenAI 兼容 /models？）——请手填模型名') };
+    return jsonOk({ models, provider: p.name, base });
+  } catch (e) {
+    return { status: 502, body: jsonErr(`列模型失败：${e.message}`) };
+  }
+}
+
+// GET /api/ai/usage — 各管线 AI 用量（批次5：ai.stats 的第一个读端点，此前"加载不了也看不到"）
+// 口径：近 24h 滑动窗；统计环上限见 api/_ai.js STATS_MAX——调用密集时窗口内计数是下界。
+async function handleAiUsage(req) {
+  const stats = (await getSetting('ai.stats', { calls: [] })) || { calls: [] };
+  const day = Date.now() - 86400e3;
+  const recent = (stats.calls || []).filter((c) => Date.parse(c.at) >= day);
+  const byKind = new Map();
+  for (const c of recent) {
+    const k = c.kind || 'chat';
+    if (!byKind.has(k)) byKind.set(k, { calls: 0, failed: 0, msSum: 0, msN: 0 });
+    const b = byKind.get(k);
+    b.calls++;
+    if (!c.ok) b.failed++;
+    else if (c.ms) { b.msSum += c.ms; b.msN++; }
+  }
+  const kinds = [...byKind.entries()]
+    .map(([kind, b]) => ({ kind, calls: b.calls, failed: b.failed, avgMs: b.msN ? Math.round(b.msSum / b.msN) : null }))
+    .sort((a, b) => b.calls - a.calls);
+  return jsonOk({
+    windowHours: 24, total: recent.length, failed: recent.filter((c) => !c.ok).length,
+    kinds, statsCap: _ai.STATS_MAX,
+  });
 }
 
 // POST /api/ai/chat — 通用 AI 对话（调试用）
@@ -3032,6 +3103,8 @@ async function dispatch(req) {
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
   if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
+  if (path === '/api/ai/models' && method === 'POST') return handleAiModels(req);
+  if (path === '/api/ai/usage' && method === 'GET') return handleAiUsage(req);
   if (path === '/api/ai/chat' && method === 'POST') return handleAiChat(req);
 
   // GET 路由

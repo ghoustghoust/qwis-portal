@@ -526,5 +526,6 @@ async function generateTheme(items) {
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats, effectiveAiConfig,
   refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateThemeDetailed, pickThemeReply, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
+  STATS_MAX, // 批次5：/api/ai/usage 的口径标签用（统计环上限，单一来源在本文件）
   _setProviderOverride, // tests only
 };

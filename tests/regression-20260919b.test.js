@@ -60,12 +60,14 @@ test('B48: 报警记录视图不得再把全角括号写成 JSX 文本转义', (
   assert.match(src, /\{'（'\}\{rr\.error\}\{'）'\}/);
 });
 
-// ── B52 云端缺路由时不得恒「加载中」 ──
-test('B52: TranslateSkillTab 加载失败必须显式报错，不能停在加载中', () => {
+// ── B52 云端缺路由时不得恒「加载中」（锚点搬家 10-04 批次5：翻译区按用户已拍 C 方案改为
+//    静态只读指引卡，不再发任何请求——"加载失败显式报错"的意图在无加载行为下结构性成立；
+//    新断言钉两件事：不再引用已摘的写壳路由 + 不得再出现"加载中"挡渲染的假态） ──
+test('B52: TranslateSkillTab 不得回到假「加载中」/死写壳（C 方案只读形态）', () => {
   const src = read('web/src/components/TranslateSkillTab.jsx');
-  assert.match(src, /setLoadError/);
-  assert.match(src, /if \(!loadError\)[\s\S]*加载中/, '只有「仍在请求中」才显示加载中');
-  assert.match(src, /翻译配置端点不可用/);
+  assert.ok(!/api\.(get|post|put|del)\(\s*['"`]\/api\/ai\/translate/.test(src), '写壳路由调用不得回来（云端 404，点了必失败）');
+  assert.ok(!/加载中/.test(src), '不得出现"加载中"挡渲染（静态卡永远完整渲染，无加载态可骗）');
+  assert.match(src, /待立项/, '云端化（A 半）立项前必须明示"只读"原因');
 });
 
 // ── B59 云端补 /api/auth/me（本地早有，云端漏移植） ──
