@@ -60,10 +60,6 @@ __pycache__/
 # 里面有 /api/* 响应与 GH Actions 日志，一次 `git add -A` 就会把外部产物混进提交（同 B113/放行清单 #14 的形状）
 .tmpchk/
 
-# 审计图产物整目录（B113）：`tools/audit-graph.cjs` 把 `dbState.settings[*].value` 原样落盘，
-# 里面含真实飞书 webhook 明文，而该路径此前既未跟踪也未被忽略 → 一次 `git add docs/` 就连凭据一起提交
-docs/eval/audit/
-
 # 一次性诊断/取证探针（放行清单 #14 选项②）。实测边界必须写清：本模式之前
 # 已有 22 份 `tools/_*.cjs` 被跟踪并进了历史（含 FEATURE_MATRIX 引用的 _probe-*-selftest.cjs），
 # 所以这一行只挡住「今后新增的」误加，不撤销历史。要提交常驻探针须显式 `git add -f`，
@@ -71,11 +67,3 @@ docs/eval/audit/
 tools/_*.cjs
 # 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
 archive/_diag/portal-quarantine/vercel-env-production.local
-
-# e2e 截图不入库（b42e6f1 起惯例：只提交 report.json/env_lock.json；649 张 PNG ≈130MB 留本地）
-# 历史已跟踪的 255 张不撤销，本行只挡今后新增
-docs/eval/e2e/*/screens/
-
-# golden 冻结集是第三方正文快照（单条最长 8000 字，逐轮累积，B70③）——
-# 与 e2e 截图同一取舍：报告 JSON 入库，正文快照留本地
-docs/eval/content/golden-*.json
