@@ -37,6 +37,7 @@ export default function AiSettingsTab() {
   const [testing, setTesting] = useState(false);
   const [ping, setPing] = useState(null); // { ok, provider, model, reply, elapsedMs, error }
   const [models, setModels] = useState(null); // 数组或 null
+  const [manualModel, setManualModel] = useState(false); // 对抗审查 D2：列模型成功后仍保留手输通道
   const [loadingModels, setLoadingModels] = useState(false);
   const [modelsError, setModelsError] = useState('');
   const [message, setMessage] = useState('');
@@ -82,6 +83,7 @@ export default function AiSettingsTab() {
       }
       setForm((prev) => ({ ...prev, apiKey: '' }));
       loadConfig();
+      loadUsage(); // 对抗审查 D4 附注：保存探测本身记一条 chat 统计，立即刷新用量
     } catch (err) {
       setMessage('保存失败: ' + err.message);
     }
@@ -108,6 +110,7 @@ export default function AiSettingsTab() {
       if (form.apiKey.trim()) body.apiKey = form.apiKey;
       const r = await api.post('/api/ai/models', body);
       setModels(r.models || []);
+      setManualModel(false); // 列表成功回到下拉；「手输」按钮随时可切回（对抗审查 D2）
       if (!r.models?.length) setModelsError(r.error || '供应商未返回模型');
     } catch (err) {
       setModels(null);
@@ -177,22 +180,30 @@ export default function AiSettingsTab() {
             </div>
             <div>
               <label className="block text-xs t-muted mb-1">模型</label>
-              {models && models.length ? (
-                <select
-                  className="input font-mono !text-xs"
-                  value={models.includes(form.model) ? form.model : ''}
-                  onChange={(e) => setForm(prev => ({ ...prev, model: e.target.value }))}
-                >
-                  {!models.includes(form.model) && <option value="">（当前值不在列表中，手输）</option>}
-                  {models.map((m) => <option key={m} value={m}>{m}</option>)}
-                </select>
+              {models && models.length && !manualModel ? (
+                <div className="flex gap-1.5">
+                  <select
+                    className="input font-mono !text-xs"
+                    value={models.includes(form.model) ? form.model : ''}
+                    onChange={(e) => { if (e.target.value) setForm(prev => ({ ...prev, model: e.target.value })); }}
+                  >
+                    {!models.includes(form.model) && <option value="">（当前值 {form.model || '为空'}，不在列表）</option>}
+                    {models.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                  <button type="button" className="btn-ghost !py-1 !px-2 !text-xs flex-none" onClick={() => setManualModel(true)} title="切回手动输入模型名">手输</button>
+                </div>
               ) : (
-                <input
-                  type="text"
-                  value={form.model}
-                  onChange={(e) => setForm(prev => ({ ...prev, model: e.target.value }))}
-                  className="input font-mono !text-xs"
-                />
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={form.model}
+                    onChange={(e) => setForm(prev => ({ ...prev, model: e.target.value }))}
+                    className="input font-mono !text-xs"
+                  />
+                  {models && models.length > 0 && (
+                    <button type="button" className="btn-ghost !py-1 !px-2 !text-xs flex-none" onClick={() => setManualModel(false)} title="从已列出的模型中选择">从列表选</button>
+                  )}
+                </div>
               )}
             </div>
           </div>

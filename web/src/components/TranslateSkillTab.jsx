@@ -14,7 +14,7 @@ export default function TranslateSkillTab() {
         <h3 className="font-semibold t-text text-sm">翻译现在怎么跑</h3>
         <ul className="list-disc pl-5 space-y-1.5 t-text">
           <li>翻译跑在 <strong>GH runner 的采集批次</strong>里（tools/collect-turso.js 翻译档），直写云端库；云端读层没有翻译配置的路由。</li>
-          <li>提示词只有一份实现，由统一 AI 通道按管线加载（api/_ai.js 的 loadPrompt）；本地端管理台可编辑。</li>
+          <li>提示词按管线分档存放（<code>ai.prompt.*</code> 键，统一通道 loadPrompt 加载）：runner 批量翻译读 <code>translate</code> / <code>translate-refine</code> / <code>translate-polish</code> 三档；本地端「翻译」页编辑的是<strong>精翻（translate-skill）档</strong>——两套键互不相通。</li>
           <li>配额优先级：早报 / 周刊生成 <strong>&gt; 翻译</strong>——生成窗口前后翻译批次自动缩小上限（可为 0），窗口外恢复。</li>
           <li>调用统计（次数 / 失败 / 耗时）进统一 AI 通道的统计环，看「AI 配置」板块的「各管线用量」。</li>
         </ul>
@@ -23,7 +23,8 @@ export default function TranslateSkillTab() {
       <section className="card p-5 space-y-3 text-sm leading-relaxed">
         <h3 className="font-semibold t-text text-sm">要改配置去哪</h3>
         <ul className="list-disc pl-5 space-y-1.5 t-text">
-          <li>提示词编辑、翻译开关、自动翻译：<strong>本地端管理台</strong>的翻译页（server/routes/ai.js 提供）。</li>
+          <li>精翻提示词、翻译开关、自动翻译：<strong>本地端管理台</strong>的翻译页（server/routes/ai.js 提供）——注意它编辑的是精翻档。</li>
+          <li>runner 批量翻译的三个提示词档（translate / refine / polish）当前<strong>没有后台写入口</strong>，要改只能写库或改代码。</li>
           <li>云端管理台暂不提供翻译配置写入口——不是坏了，是云端化改造（A 半）待立项；立项后本区块恢复可写。</li>
         </ul>
       </section>

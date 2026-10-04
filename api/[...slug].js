@@ -1648,7 +1648,14 @@ async function handleAiConfig(req) {
     await setSetting('ai', next);
     // BL9 ②（写后探测失败即回滚）：用新配置真调一次；失败回滚写前快照并明示调用方——
     // 探测失败也可能是供应商抖动，但配置写面的语义按裁决从紧：探不通就不留新值。
-    const probe = await _ai.aiChat([{ role: 'user', content: '请回复"连通成功"四个字。' }], { kind: 'chat', timeoutMs: 20000 });
+    // 总闸 15s（对抗审查 A5）：探测走 _ai 全局串行队列 + 单次 10s × 重试链，最坏可远超
+    // Vercel 函数预算 30s——被平台杀掉时回滚不执行、库留未验证配置。总闸超时一律按
+    // 探测失败走回滚分支，保证任何路径下回滚都在函数预算内完成（race 输掉的底层调用
+    // 会继续跑完并只影响统计环，无害）。
+    const probe = await Promise.race([
+      _ai.aiChat([{ role: 'user', content: '请回复"连通成功"四个字。' }], { kind: 'chat', timeoutMs: 10000 }),
+      new Promise((resolve) => setTimeout(() => resolve({ ok: false, error: '写后探测超时（15s 总闸）——已回滚' }), 15000)),
+    ]);
     if (!probe.ok) {
       await setSetting('ai', cur);
       await auditRecord('ai.config.rejected', { detail: { changed, error: String(probe.error || '').slice(0, 200) } });
@@ -1708,12 +1715,26 @@ async function handleAiModels(req) {
   const body = req.body || {};
   const cfg = await getSetting('ai', {});
   const chain = await aiProviderChain(cfg);
-  if (!chain.length) return { status: 400, body: jsonErr('未配置 API Key（settings.ai 或 AGNES_API_KEY）') };
-  const p = chain[0];
+  // body.apiKey 先于判空（对抗审查 B3：全新部署无已存 key 时，表单里粘的新 key 应可用）
+  const key = (body.apiKey && body.apiKey.trim()) || (chain.length ? chain[0].key : '');
+  if (!key) return { status: 400, body: jsonErr('未配置 API Key（settings.ai 或 AGNES_API_KEY，或在上方粘贴新 Key）') };
+  const p = chain.length ? chain[0] : { name: 'custom', base: '', model: '' };
   const base = body.apiBase
     ? String(body.apiBase).trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '')
     : p.base;
-  const key = (body.apiKey && body.apiKey.trim()) || p.key;
+  // SSRF 面收窄（对抗审查 B1；与 H3 图片代理同族意识）：仅 https + 拒环回/私网/链路本地
+  // （含 169.254 云元数据）。静态判断不是 DNS 级防护，但本端点仅 admin 鉴权后可达，收窄主面即可。
+  try {
+    const u = new URL(base);
+    const host = u.hostname;
+    const privateHost = /^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.0\.0\.0|\[::1\]|\[fe80)/i.test(host)
+      || /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+    if (u.protocol !== 'https:' || privateHost) {
+      return { status: 400, body: jsonErr('API Base 仅支持公网 https 地址') };
+    }
+  } catch {
+    return { status: 400, body: jsonErr('API Base 不是合法 URL') };
+  }
   try {
     const res = await fetch(`${base}/models`, {
       headers: { Authorization: `Bearer ${key}` },
