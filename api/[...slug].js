@@ -2004,9 +2004,13 @@ async function handleDashboard(req) {
   const history = Array.isArray(hb.history) ? hb.history : [];
   const recent = history.slice(-24).map((h) => ({
     at: h.at || null, mode: h.mode || null,
-    total: h.stats && typeof h.stats.total === 'number' ? h.stats.total : null,
-    success: h.stats && typeof h.stats.success === 'number' ? h.stats.success : null,
-    articles: h.stats && typeof h.stats.articles === 'number' ? h.stats.articles : null,
+    // 嵌套 stats 结构与 CollectTrendChart 的消费形状一致（对抗审查 C-2：展平字段会被
+    // 它的 filter(h.stats) 全数滤掉，图永远空）
+    stats: {
+      total: h.stats && typeof h.stats.total === 'number' ? h.stats.total : null,
+      success: h.stats && typeof h.stats.success === 'number' ? h.stats.success : null,
+      articles: h.stats && typeof h.stats.articles === 'number' ? h.stats.articles : null,
+    },
   }));
   // AI 用量（与 /api/ai/usage 同口径：近 24h 滑动窗按 kind 聚合）
   const day = Date.now() - 86400e3;
@@ -2024,7 +2028,9 @@ async function handleDashboard(req) {
   const daily = dailyRows.map((r) => {
     let st = {};
     try { st = JSON.parse(r.stats || '{}'); } catch { /* 坏行 */ }
-    const ai = (() => { try { return briefGuards.isAiDailyReport(r); } catch { return !!st.schemaVersion; } })();
+    // 裸调与 handleBriefHistory 同构（对抗审查 A-1：isAiDailyReport 内部自带坏行兜底永不
+    // throw，外层 try/catch 是死防御且 catch 回落口径不同，埋分叉雷）
+    const ai = briefGuards.isAiDailyReport(r);
     return { generatedAt: r.generated_at, totalItems: st.totalItems || 0, degraded: !!st.degraded, tier: st.degraded ? 'degraded' : (ai ? 'ai' : 'keyword') };
   });
   const weeklyArcArr = Array.isArray(weeklyArc) ? weeklyArc : [];

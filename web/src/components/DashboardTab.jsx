@@ -18,13 +18,19 @@ function jump(id) {
   window.location.hash = `/${id}`;
 }
 
-// 指标大卡：数值 + 口径标签 + 整卡可跳转
+const EMPTY_LABEL = { 'no-subscription': '无订阅源', 'no-content': '订阅源当日无内容' }; // 与 BriefOverview 同映射
+
+// 指标大卡：数值 + 口径标签 + 整卡可跳转（根用 div：卡内 InfoTip 自带 button，嵌套 button
+// 会把点"？"冒泡成整卡跳转且 HTML 不允许——对抗审查 C-1）
 function MetricCard({ label, value, sub, tone, to, tip }) {
+  const clickable = !!to;
   return (
-    <button
-      onClick={() => to && jump(to)}
-      className="card p-4 text-left w-full hover:t-surface2 transition-colors"
-      style={{ cursor: to ? 'pointer' : 'default' }}
+    <div
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(to); } } : undefined}
+      onClick={clickable ? () => jump(to) : undefined}
+      className={`card p-4 text-left w-full ${clickable ? 'hover:t-surface2 cursor-pointer' : ''}`}
     >
       <div className="flex items-center gap-1.5">
         <span className="text-[11px] t-muted">{label}</span>
@@ -32,7 +38,7 @@ function MetricCard({ label, value, sub, tone, to, tip }) {
       </div>
       <div className={`mt-1 text-2xl font-bold tabular-nums ${tone || 't-text'}`}>{value ?? '—'}</div>
       {sub && <div className="mt-0.5 text-[11px] t-muted">{sub}</div>}
-    </button>
+    </div>
   );
 }
 
@@ -41,10 +47,12 @@ const TIER_LABEL = { ai: 'AI 档', keyword: '关键词档', degraded: '降级' }
 export default function DashboardTab() {
   const [data, setData] = useState(null);
   const [topSources, setTopSources] = useState(null);
+  const [topError, setTopError] = useState('');
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
     setError('');
+    setTopError('');
     const [d, ts] = await Promise.allSettled([
       api.get('/api/dashboard'),
       api.get('/api/status/daily-sources'),
@@ -52,6 +60,7 @@ export default function DashboardTab() {
     if (d.status === 'fulfilled') setData(d.value);
     else setError('仪表盘数据加载失败: ' + d.reason?.message);
     if (ts.status === 'fulfilled') setTopSources(ts.value?.overview || null);
+    else setTopError(ts.reason?.message || '加载失败'); // 对抗审查 C-3：失败要有出口，不许恒"加载中"
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -161,7 +170,7 @@ export default function DashboardTab() {
               <div className="flex items-center gap-2">
                 <span className={briefs.mybrief.empty ? 'badge-gray' : 'badge-green'}>我的早报</span>
                 <span className="t-muted flex-1">{briefs.mybrief.generatedAt ? formatDateTime(briefs.mybrief.generatedAt) : '—'}</span>
-                {briefs.mybrief.empty && <span className="t-muted">{briefs.mybrief.empty}</span>}
+                {briefs.mybrief.empty && <span className="t-muted">{EMPTY_LABEL[briefs.mybrief.empty] || briefs.mybrief.empty}</span>}
               </div>
             )}
           </div>
@@ -174,7 +183,8 @@ export default function DashboardTab() {
             <button className="btn-ghost !py-1 !px-2 text-xs" onClick={() => jump('library')}>进源库 →</button>
           </div>
           <div className="mt-2 space-y-1.5 text-xs">
-            {!topSources && <div className="t-muted">加载中…</div>}
+            {topError && <div style={{ color: 'var(--red)' }}>入报统计加载失败：{topError}</div>}
+            {!topError && !topSources && <div className="t-muted">加载中…</div>}
             {topSources && topSources.dailyTopSources?.length === 0 && <div className="t-muted">近 7 天无入报条目</div>}
             {(topSources?.dailyTopSources || []).map((t, i) => (
               <div key={t.name} className="flex items-center gap-2">
