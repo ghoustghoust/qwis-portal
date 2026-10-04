@@ -185,7 +185,7 @@ export default function LogsTab() {
                         title={rr.ok ? rr.channel : `${rr.channel}：${rr.error || '发送失败'}`}
                       >
                         {rr.ok ? '✓' : '✗'} {rr.channel}
-                        {!rr.ok && rr.error && <span className="ml-1 opacity-80">（{rr.error}）</span>}
+                        {!rr.ok && rr.error && <span className="ml-1 opacity-80">{'（'}{rr.error}{'）'}</span>}
                       </span>
                     ))}
                   </div>

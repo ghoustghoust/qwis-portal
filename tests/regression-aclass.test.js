@@ -142,8 +142,9 @@ test('A7: 抖音登录契约端点存在，getLoginStatus 可读', () => {
 });
 
 // ---------- A8：AlertsTab 删除 ----------
-test('A8: AlertsTab 删除走真实接口（带 at 指纹防 TOCTOU），后端有单条删除路由', () => {
-  const src = read('web/src/components/AlertsTab.jsx');
+test('A8: 报警记录删除走真实接口（带 at 指纹防 TOCTOU），后端有单条删除路由', () => {
+  // T3-8 批次3（用户 10-04 拍板拆分）：记录块自 AlertsTab 迁至 LogsTab——锁意图不变，锚点随代码搬家
+  const src = read('web/src/components/LogsTab.jsx');
   assert.ok(!/api\s*\.\s*delete\s*\(/.test(src), 'api 封装只导出 del，没有 delete');
   assert.match(src, /api\.del\(`\/api\/alerts\/log\/\$\{index\}\?at=/, '单条删除必须带 at 指纹调后端');
   const routes = read('server/routes/alerts.js');

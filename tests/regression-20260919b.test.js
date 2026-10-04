@@ -53,8 +53,9 @@ test('B47: MonitorTab 必须读 queueStats.overall（后端返回 {overall,byTyp
 });
 
 // ── B48 JSX 文本里的 \\uff08 不会被解析 ──
-test('B48: AlertsTab 不得再把全角括号写成 JSX 文本转义', () => {
-  const src = read('web/src/components/AlertsTab.jsx');
+test('B48: 报警记录视图不得再把全角括号写成 JSX 文本转义', () => {
+  // T3-8 批次3（用户 10-04 拍板拆分）：报警记录块自 AlertsTab 迁至 LogsTab——锁意图不变，锚点随代码搬家
+  const src = read('web/src/components/LogsTab.jsx');
   assert.ok(!/>\s*\\uff08/.test(src), 'JSX 文本子节点不解析 \\u 转义，会渲染成字面串');
   assert.match(src, /\{'（'\}\{rr\.error\}\{'）'\}/);
 });
