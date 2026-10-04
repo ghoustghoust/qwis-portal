@@ -261,7 +261,7 @@ export default function BilibiliTab() {
       {/* F32：本地待处理订阅列表 */}
       <section>
         <h3 className="text-sm font-semibold t-text mb-2">本地待处理订阅</h3>
-        <PendingList items={pending} empty="暂无待处理订阅，可从手机分享链接到云端队列后点「同步队列」" />
+        <PendingList items={pending} empty="暂无待处理订阅" />
       </section>
 
       {/* F33：已订阅 UP 主列表 */}

@@ -94,7 +94,9 @@ export default function WechatTab() {
   // 自动识别输入类型：X/Twitter 链接走 x 适配器；YouTube 链接走官方 RSS；http(s) 链接按 RSS；
   // 其余（裸用户名）不再猜 X——H40 收摊后 X 用户名入口摘除，识别不了就报错
   const detectExtKind = (v) => {
-    if (/(?:^|\.)(x\.com|twitter\.com)\//i.test(v)) return 'x';
+    // 串首/字面点/斜杠 三种边界后才认 x.com|twitter.com（对抗审查实测：原(?:^|\.)漏掉
+    // 带协议的 https://x.com/…，最常见形态被误存 rss 源、采集必失败——10-04 批次4 顺带修）
+    if (/(?:^|\/\/|\.)(?:www\.)?(x\.com|twitter\.com)\//i.test(v)) return 'x';
     if (/youtube\.com|youtu\.be/i.test(v)) return 'youtube';
     if (/^https?:\/\//i.test(v)) return 'rss';
     return null;
