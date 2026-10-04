@@ -1217,7 +1217,7 @@ async function runDailyAiGuarded() {
   }
   const hasProduct = await eb.hasAiProductToday(qOne);
   const claim = await getSetting(eb.CLAIM_KEY, null);
-  const d = eb.claimDecision(claim, { slot, hasProductToday: hasProduct, nowMs: Date.now(), force });
+  const d = eb.claimDecision(claim, { slot, cycleStartMs: tw.beijingDayStartMs(), hasProductToday: hasProduct, nowMs: Date.now(), force });
   if (!d.run) { log(`[H27] AI 批（${slot}）跳过：${d.why}`); return; }
   await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'started' });
   try {
@@ -1225,6 +1225,33 @@ async function runDailyAiGuarded() {
     await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'ok' });
   } catch (e) {
     await putSetting(eb.CLAIM_KEY, { date: tw.beijingDateStr(), slot, at: nowIso(), status: 'failed', error: String(e.message || '').slice(0, 200) });
+    throw e;
+  }
+}
+
+// H27②（10-04 推广到周刊档）：与 runDailyAiGuarded 同一套三判据，"本期"的分母是周生成周期
+// （北京周五 18:00 锚点）。schedule 那根周五 cron 保留为第二路径，丢轮由 15min dispatch 轮补上。
+async function runWeeklyGuarded() {
+  const eb = require('../lib/daily-ai-claim');
+  const tw = require('../lib/time-window');
+  const force = process.env.GH_INPUT_MODE === 'weekly';
+  if (WINDOW_GUARD && !force && !eb.weeklyWindowOpen(Date.now())) {
+    log('[H27] 周刊不在生成窗口（北京周五 18:00 ~ 周日）——dispatch 轮跳过');
+    return;
+  }
+  const hasProduct = await eb.hasWeeklyProductInCycle(qOne);
+  const claim = await getSetting(eb.WEEKLY_CLAIM_KEY, null);
+  const d = eb.claimDecision(claim, {
+    slot: 'weekly', cycleStartMs: eb.weeklyCycleStartMs(), hasProductToday: hasProduct,
+    productWhy: '本周五 18:00 后已生成过周刊', nowMs: Date.now(), force,
+  });
+  if (!d.run) { log(`[H27] 周刊跳过：${d.why}`); return; }
+  await putSetting(eb.WEEKLY_CLAIM_KEY, { date: tw.beijingDateStr(), slot: 'weekly', at: nowIso(), status: 'started' });
+  try {
+    await runWeekly();
+    await putSetting(eb.WEEKLY_CLAIM_KEY, { date: tw.beijingDateStr(), slot: 'weekly', at: nowIso(), status: 'ok' });
+  } catch (e) {
+    await putSetting(eb.WEEKLY_CLAIM_KEY, { date: tw.beijingDateStr(), slot: 'weekly', at: nowIso(), status: 'failed', error: String(e.message || '').slice(0, 200) });
     throw e;
   }
 }
@@ -2232,7 +2259,7 @@ async function runTranslate() {
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
     else if (MODE === 'daily-ai') await runDailyAiGuarded();
-    else if (MODE === 'weekly') await runWeekly();
+    else if (MODE === 'weekly') await runWeeklyGuarded();
     else if (MODE === 'mybrief') {
       // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）
       await runMyBrief([]);

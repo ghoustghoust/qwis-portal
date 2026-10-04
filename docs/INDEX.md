@@ -3,7 +3,7 @@
 > 所有有效文档的路径与用途速查，供 Agent 和开发者快速定位上下文。
 > **本文件是全量地图**：`docs/` 下在用的 `.md`/`.json` 都在此登记（逐篇或目录级）；`eval/`、`archive/` 按治理只作域级一句话。文件级悬空由 `tools/doc-lint.cjs` 兜底。
 > 文档自身的清洁与归档规则 → `docs/DOC_GOVERNANCE.md`。
-> 最后更新：2026-10-04（域 2「页面消费位」行的"其余待建"摘下——空态/降级形态已分别落在三份功能文档里，与维护规则 ③"当前没有待建行"对齐）
+> 最后更新：2026-10-04（模块地图域 1 加「管理后台」板块边界行；功能文档登记 admin-console.md 总规格）
 
 ---
 
@@ -85,6 +85,7 @@
 
 | 模块 | 子模块 | 用户在这里改什么 | 改完之后会发生什么 | 现役依据 | 有效性 |
 |---|---|---|---|---|---|
+| 管理后台 | 板块边界与职责线 | ——（信息架构，不是控件） | 后台按五分区组织（首页 / 源 / 报 / AI / 系统），热点榜策展归源分区视图；界面缺陷一律挂后台域，逐板块小规格批准后动代码 | `features/admin-console.md`、`docs/DEVELOPMENT_STANDARDS.md` §8 | 板块边界已批准（10-04），各板块待建；早报中心（T3-2）是第一板块 |
 | 设置写入通道 | 生效档位 | 一切设置项的总入口 | 写进**哪个库**决定谁能看见：本地一份、云库一份，互不同步；云与本地各有短缓存，生产链路每批次现读 | `features/settings-plane.md`、`adr/17-不做云数据同步.md` | 现役。**讲任何"改设置"的话都必须先说清改的是哪份库**；两地不同步是决策不是缺陷（代价与例外见 ADR-17） |
 | 设置写入通道 | 未知键处理 | —— | 本地端认不出的键照样回「成功」，前端提示已保存、回读显示默认值 | `features/settings-plane.md` | ⚠ **已知缺陷未修**：静默假保存，是本项目唯一会主动骗人的可改面（账在 `ISSUES.md`） |
 | 订阅源与分组 | 源增删启停 | 加源、停源、删源 | 进入采集排队 → 抓回内容入库 → 源列表与未读数变化 | `features/collectors.md`、`features/source-library-autoclassify.md` | 现役 |
@@ -144,7 +145,7 @@
 以自然语言为主，**严禁堆砌类名/函数名**——这些名字在重构中必然变化，文档留着旧名字会让后来者找不到而开始猜；
 关键链路只在篇末保留少量源码入口作索引（只给路径，不给行号）。
 
-已有：`test-harness.md`（测试地基与打桩）· `collectors.md`（采集器与信源）· `scheduler.md`（本地调度器）· `task-queue.md`（SQLite 队列）· `daily-report.md`（日报）· `events-alerts.md`（事件与报警）· `source-library-autoclassify.md`（源库与自动分类）· `my-reading.md`（我的阅读）· `settings-plane.md`（设置面：改一项设置之后发生什么）· `my-brief.md`（我的早报：选择集→生成→版面→推送）· `hot-and-weekly.md`（热榜与周刊：两个聚合层的口径与写死边界）· `deploy-and-ci.md`（部署面：一次推送与一趟批次各自经过哪些判定）
+已有：`test-harness.md`（测试地基与打桩）· `collectors.md`（采集器与信源）· `scheduler.md`（本地调度器）· `task-queue.md`（SQLite 队列）· `daily-report.md`（日报）· `events-alerts.md`（事件与报警）· `source-library-autoclassify.md`（源库与自动分类）· `my-reading.md`（我的阅读）· `settings-plane.md`（设置面：改一项设置之后发生什么）· `my-brief.md`（我的早报：选择集→生成→版面→推送）· `hot-and-weekly.md`（热榜与周刊：两个聚合层的口径与写死边界）· `deploy-and-ci.md`（部署面：一次推送与一趟批次各自经过哪些判定）· `admin-console.md`（管理后台：板块边界与职责线总规格）
 
 ## 决策件（docs/adr/）· 一主题一号，只写最新标准
 

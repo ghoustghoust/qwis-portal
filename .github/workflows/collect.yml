@@ -202,30 +202,57 @@ jobs:
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
         run: node tools/collect-turso.js mybrief
 
-  # ─── 精选周刊（北京周五 18:03；schedule 或 dispatch mode=weekly）───
+  # ─── 精选周刊（北京周五 18:03；schedule 或 dispatch）───
   # 2026-09-18：原先只有 schedule 且每周仅此一次，GH 丢一次 run 就整周断更且无报警
+  # H27②（10-04 推广）：周刊搭上手动触发通道（每 15min dispatch 稳定敲门）——丢轮 15 分钟内被 dispatch
+  # 轮补上。窗口 = 北京周五 18:00 ~ 周日；跑不跑由步骤内窗口 + 本期产物 + 认领键判（lib/daily-ai-claim.js）。
+  # dispatch 轮窗口外秒级退出（不 npm ci）；schedule 与显式 mode=weekly 补跑不查窗、可强制重跑。
   weekly:
-    if: github.event.schedule == '3 10 * * 5' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'weekly')
+    if: github.event.schedule == '3 10 * * 5' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
+      # 窗口判据必须在 npm ci 之前完成——窗口外整 job 成本压到秒级（与 daily-ai-evening 同理）
+      - name: Window check (dispatch 轮)
+        id: win
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.mode }}" != "weekly" ]; then
+            DOW=$(TZ='Asia/Shanghai' date +%u)
+            HM=$(TZ='Asia/Shanghai' date +%H%M)
+            echo "北京 周$DOW $HM"
+            if { [ "$DOW" -ge 1 ] && [ "$DOW" -le 4 ]; } || { [ "$DOW" = "5" ] && [ "$HM" -lt 1800 ]; }; then
+              echo "in_window=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "in_window=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "in_window=true" >> "$GITHUB_OUTPUT"  # schedule 与显式 mode=weekly 补跑不查窗
+          fi
+
       - name: Checkout repository
+        if: steps.win.outputs.in_window == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: steps.win.outputs.in_window == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install dependencies
+        if: steps.win.outputs.in_window == 'true'
         run: npm ci --ignore-scripts
 
       - name: Generate weekly picks → Turso
+        if: steps.win.outputs.in_window == 'true'
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
-        run: node tools/collect-turso.js weekly
+          # 窗口守卫只对"无 mode 的 dispatch 轮"生效；显式 mode=weekly 补跑（GH_INPUT_MODE）可强制重跑
+          WINDOW_GUARD: '1'
+          GH_INPUT_MODE: ${{ github.event.inputs.mode }}
+        run: node tools/collect-turso.js weekly --window-guard
 
   # ─── 静态快照生成（北京时间 09:33；仅 schedule） ───
   snapshot:
