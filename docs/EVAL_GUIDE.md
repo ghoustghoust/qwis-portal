@@ -6,9 +6,9 @@
 
 每轮交付的准绳只有一份：`AGENTS.md` §3 的固定交付链（其中每轮必过的门以 `docs/FEATURE_MATRIX.md` §1.5 的标记为准，本文件不数门）。现役 harness 三件：
 
-- `npm test` —— `tests/` 的行为锁：钉现役功能的既定行为与修过的线上事故；
-- `node smoke-test.js` —— 冒烟：生产库副本上跑主要路径，零副作用；
-- `npm run lint:docs` + `node tools/doc-stamp.cjs` —— 文档门禁与改动戳。
+- `npm test` —— `tests/` 的行为锁：钉现役功能的既定行为与修过的线上事故（**功能验收轮的门**；开发阶段不强制，10-04 锁裁决）；
+- `node smoke-test.js` —— 冒烟：生产库副本上跑主要路径，零副作用（同上）；
+- `npm run lint:docs` + `node tools/doc-stamp.cjs` —— 文档门禁与改动戳（每轮的门，不在锁裁决范围）。
 
 上面只点名三件现役装置是哪些；各命令的用法与读数口径的唯一清单在 `docs/FEATURE_MATRIX.md` §1.5，本文不复制用法。
 

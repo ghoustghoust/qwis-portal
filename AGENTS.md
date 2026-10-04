@@ -1,6 +1,6 @@
 # AGENTS.md — 全网情报系统 · Agent 协作规则
 
-> 最后更新：2026-10-03（收敛轮：凭据同步口径对齐 ADR-12 全持有方；代理端口改指 HANDOVER §1.5）
+> 最后更新：2026-10-04（锁裁决：开发阶段不跑 npm test / smoke-test.js——修复中的代码处于"非正确答案"态，锁会造成四方对抗；验收价值留给功能验收轮。交付链其余步骤照旧）
 > 任何 AI Agent 接手本项目前**必读**。本文件是项目级强制约束，优先级高于其它文档。
 > 原则：**文档从真实环境逆推，不是约束；线上实测是唯一验收标准。**
 ## 品味
@@ -66,17 +66,17 @@
   - 每条锁的 diff 必须带"为什么"——指到用户的一句话（裁决/新要求）或一个实测数字；指不到 = 红灯。对抗审查必查这一条。
   - 锁红了 = 报给用户三选一（修代码 / 修锁 / 摘锁记理由），**agent 不许自己改锁消红**。
   - 文档改动是交付物不是嫌疑人；要被审查的只有锁。
+- **开发阶段不跑测试类验收（用户 10-04 锁裁决）**：`npm test` 与 `node smoke-test.js` 这两条**不是**每轮必过的门——修复中的代码处于"非正确答案、可能调整"态，锁会造成"我 + 决策 + 明文决策 + 测试"四方对抗。这两条的验收价值留给**功能验收轮**（用户验收通过后）；日常开发/修复交付跳过它们，不记"没做"。白盒/端到端同理（早已摘除）。
 - 验收 = 下面每条都跑并留证据：
-  1. `npm test` 全绿（硬门；条数唯一写死处见 `docs/FEATURE_MATRIX.md` §1.5，本文件不复制；引用 server/* 的测试文件先 require tests/helpers）
-  2. `node smoke-test.js` 冒烟（生产库副本，零副作用）
-  3. `npm run build:vercel` 无错
-  4. `npm run lint:docs` 零错 + `node tools/doc-stamp.cjs` 刷新 STAMPS（文档门禁规则见 `docs/DOC_GOVERNANCE.md`）
-  5. 云端实测：先 `/api/meta` 的 `commit == origin/main`，再按 `docs/DELIVERY_VERIFICATION.md` 打真实端点（需代理 + `--ssl-no-revoke`），curl/截图才算证据
-  6. 对抗性审查：不能只靠自己复查——至少一个独立 reviewer 看这批改动（范围含锁 diff 的"为什么"）
-  7. 数据链路改动配一次性只读探针直读生产真值，产物落 `docs/eval/`（过去两周最大的 bug 都是探针抓的，比门禁诚实）；**探针脚本是一次性的，跑完即删不入库**——产物留，脚本不留
+  1. `npm run build:vercel` 无错
+  2. `npm run lint:docs` 零错 + `node tools/doc-stamp.cjs` 刷新 STAMPS（文档门禁规则见 `docs/DOC_GOVERNANCE.md`）
+  3. 云端实测：先 `/api/meta` 的 `commit == origin/main`，再按 `docs/DELIVERY_VERIFICATION.md` 打真实端点（需代理 + `--ssl-no-revoke`），curl/截图才算证据
+  4. 对抗性审查：不能只靠自己复查——至少一个独立 reviewer 看这批改动（范围含锁 diff 的"为什么"）
+  5. 数据链路改动配一次性只读探针直读生产真值，产物落 `docs/eval/`（过去两周最大的 bug 都是探针抓的，比门禁诚实）；**探针脚本是一次性的，跑完即删不入库**——产物留，脚本不留
+  6. ~~`npm test` 全绿~~ / ~~`node smoke-test.js` 冒烟~~：**开发阶段不按 10-04 锁裁决强制**；功能验收轮要跑（行为锁钉已验收的线上事故，不为开发中的代码新立锁）
 - **固定交付链（一轮都不许跳）**：
-  改完 → **`npm test`** → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`ci.yml` push-CI 绿 + `collect.yml` 最近批次无红 → **Vercel 真实云端实测** → **冒烟测试 `node smoke-test.js`** → **对抗性审查** → **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号），最后 `npm run lint:docs` + `node tools/doc-stamp.cjs` 收口。
-  跳过其中任何一步都必须在交付说明里写明"没做"及原因。
+  改完 → **`git push`（每次功能修复后立刻推，不攒批）** → **GitHub Actions 检查**：`ci.yml` push-CI 绿 + `collect.yml` 最近批次无红 → **Vercel 真实云端实测** → **对抗性审查** → **同步全部文档**（`FEATURE_MATRIX.md` / `ISSUES.md` / `NEXT-DEV-REQS.md` / `ARCHITECTURE.md` / `RUNBOOK.md` / `CLOUD_PIPELINE_GUIDE.md` / 坑编号），最后 `npm run lint:docs` + `node tools/doc-stamp.cjs` 收口。
+  跳过其中任何一步都必须在交付说明里写明"没做"及原因（`npm test` 与 `smoke-test.js` 除外——锁裁决豁免）。
 
 ## 4. 常用入口
 

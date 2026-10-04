@@ -57,7 +57,7 @@ npm run build          :: 改了 web/src 后必须重建前端
 ## 6. 健康自检与报警
 
 ```powershell
-npm test                      # 回归网（条数以实际输出为准）
+npm test                      # 回归网（条数以实际输出为准；功能验收轮的门，开发阶段不强制——锁裁决 10-04）
 node smoke-test.js            # 冒烟（跑生产库副本，零副作用）
 node tools/audit-cloud.js     # 云端只读巡检（项数以脚本自身输出为准）
 node tools/ops-toolkit.js check    # 健康总览
