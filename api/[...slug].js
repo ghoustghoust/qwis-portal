@@ -1499,6 +1499,41 @@ async function handleLogin(req) {
   return jsonOk({ token, user });
 }
 
+// POST /api/admin/trigger —— 后台一键触发生成批次（T3-8 批次2：真触发入口，替代"生成时间与手动触发"纯文本壳）
+// 只触发不等结果：GitHub workflow_dispatch 返回 204 即入队，真执行在 GH runner（ADR-35 同形状）。
+// 凭据：Vercel env 的 GH_TRIGGER_PAT（与外置触发器同一把 PAT；轮换时按 ADR-12 同批改所有持有方）。
+const TRIGGER_MODES = {
+  'daily-ai-evening': '每日早报（晚间批）',
+  'daily-ai': '每日早报（备跑）',
+  'mybrief': '我的早报',
+  'weekly': '精选周刊',
+};
+async function handleAdminTrigger(req) {
+  const mode = (req.body || {}).mode;
+  if (!TRIGGER_MODES[mode]) return { status: 400, body: jsonErr('mode 必须是：' + Object.keys(TRIGGER_MODES).join(' / ')) };
+  const pat = process.env.GH_TRIGGER_PAT;
+  if (!pat) return { status: 400, body: jsonErr('未配置触发凭据：Vercel 环境变量缺 GH_TRIGGER_PAT') };
+  let r;
+  try {
+    r = await fetch('https://api.github.com/repos/ghoustghoust/qwis-portal/actions/workflows/collect.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${pat}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+        'User-Agent': 'qwis-intel-admin',
+      },
+      body: JSON.stringify({ ref: 'main', inputs: { mode } }),
+    });
+  } catch (e) {
+    return { status: 502, body: jsonErr('触发请求失败：' + e.message) };
+  }
+  if (r.status === 204) return jsonOk({ ok: true, mode, message: `已触发「${TRIGGER_MODES[mode]}」——生成需几十分钟，进度见 GitHub Actions 的 collect 运行` });
+  const t = await r.text().catch(() => '');
+  return { status: 502, body: jsonErr(`GitHub API 返回 ${r.status}${t ? '：' + t.slice(0, 160) : ''}`) };
+}
+
 // POST /api/articles/:id/read
 async function handleArticleRead(req, id) {
   const body = req.body || {};
@@ -2966,6 +3001,9 @@ async function dispatch(req) {
 
   // POST /api/daily/regenerate（P1-11 修复，必须在 /daily GET 之前）
   if (path === '/api/daily/regenerate' && method === 'POST') return handleDailyRegenerate(req);
+
+  // POST /api/admin/trigger（T3-8 批次2：后台一键触发生成批次；鉴权走入口统一门——公开白名单不包含它，默认需要 Bearer）
+  if (path === '/api/admin/trigger' && method === 'POST') return handleAdminTrigger(req);
 
   // POST /api/sources/:id/toggle
   const toggleMatch = path.match(/^\/api\/sources\/(\d+)\/toggle$/);

@@ -18,7 +18,9 @@ const DailySettingsTab = lazy(() => import('../components/DailySettingsTab.jsx')
 const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
-const BriefCenterTab = lazy(() => import('../components/BriefCenterTab.jsx'));
+const BriefOverview = lazy(() => import('../components/BriefOverview.jsx'));
+const MyBriefPanel = lazy(() => import('../components/MyBriefPanel.jsx'));
+const WeeklyPanel = lazy(() => import('../components/WeeklyPanel.jsx'));
 
 // Tab 切换时的加载占位（B11：骨架屏，与前台同语言）
 function TabLoader() {
@@ -53,17 +55,15 @@ const SECTIONS = [
   {
     parent: '报',
     items: [
-      { id: 'brief', label: '早报中心', ref: 'brief', render: () => <BriefCenterTab /> },
+      { id: 'brief', label: '总览', ref: 'brief', render: () => <BriefOverview /> },
       {
         id: 'daily',
-        label: '每日早报设置',
+        label: '每日早报',
         ref: 'brief',
-        render: () => (
-          <Zone title="每日早报设置" note="作用于 每日早报（/daily/）的统计窗口/生成时间/来源勾选/栏目">
-            <DailySettingsTab />
-          </Zone>
-        ),
+        render: () => <DailySettingsTab />,
       },
+      { id: 'mybrief', label: '我的早报', ref: 'brief', render: () => <MyBriefPanel /> },
+      { id: 'weekly', label: '周刊', ref: 'brief', render: () => <WeeklyPanel /> },
     ],
   },
   {
@@ -136,7 +136,9 @@ const readHash = () => {
 const WARM_IMPORTS = [
   () => import('../components/SourceLibraryTab.jsx'),
   () => import('../components/HotSettings.jsx'),
-  () => import('../components/BriefCenterTab.jsx'),
+  () => import('../components/BriefOverview.jsx'),
+  () => import('../components/MyBriefPanel.jsx'),
+  () => import('../components/WeeklyPanel.jsx'),
   () => import('../components/DailySettingsTab.jsx'),
   () => import('../components/AiSettingsTab.jsx'),
   () => import('../components/TranslateSkillTab.jsx'),

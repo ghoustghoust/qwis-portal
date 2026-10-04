@@ -52,7 +52,9 @@ test('B39-3 档位投影：AI 增强 / 裸关键词必须由 brief-guards 单一
   const api = read('api/[...slug].js');
   assert.match(api, /isAiDailyReport/, '云端历史接口必须复用 isAiDailyReport，不得自己再判一次 schemaVersion');
 
-  const ui = read('web/src/components/BriefCenterTab.jsx');
+  // T3-8 批次2（用户 10-04 拍板拆组）：生成历史块自 BriefCenterTab 迁至 BriefOverview——
+  // 锁意图（前端读接口回传的 windowDays，不写死窗口）不变，锚点随代码搬家
+  const ui = read('web/src/components/BriefOverview.jsx');
   assert.ok(!/生成历史（近 7 天）/.test(ui), '前端标题不得把窗口写死，必须由接口回传的 windowDays 决定');
   assert.match(ui, /windowDays|window_days/, '前端应读接口回传的窗口天数');
 });

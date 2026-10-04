@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
+import SourcePickerModal from './SourcePickerModal.jsx';
+import TriggerButton from './TriggerButton.jsx';
+import InfoTip from './InfoTip.jsx';
 
-// 管理后台日报设置 Tab（F18）：统计窗口/生成时间/来源勾选 + 重点关照/栏目管理
-// 替代 DailySettingsModal 弹窗，独立页面展示
+// 管理后台·每日早报设置（F18 → T3-8 批次2 改造）：
+// ①生成管理（真触发入口，替代旧的纯文本命令壳）②基础设置 ③每源配额 ④来源勾选（选源器弹窗，替代全量平铺）⑤栏目管理（只读过渡，T5-3 将替代）
 export default function DailySettingsTab() {
   const [loading, setLoading] = useState(true); // 初始必须为 true：首帧渲染 form=null 时不得穿透到表单（2026-09-12 日报设置崩溃根因）
   const [saving, setSaving] = useState(false);
@@ -16,6 +19,8 @@ export default function DailySettingsTab() {
   // 级3 每源配额：独立于 form —— 它落在 settings 的点分键 prescreen.perSourceCap（不走 /api/settings/daily）
   const [capVal, setCapVal] = useState(2);
   const [capSaving, setCapSaving] = useState(false);
+  // T3-8 批次2：选源器弹窗（null=关闭；'article'/'video'）——替代全量平铺勾选列表
+  const [picker, setPicker] = useState(null);
 
   const list = (d) => (Array.isArray(d) ? d : d?.items || d?.sources || []);
 
@@ -74,21 +79,7 @@ export default function DailySettingsTab() {
       : <div className="py-12 text-center text-sm t-muted">日报设置加载失败，请检查网络后<button className="ml-2 underline" onClick={() => { setLoading(true); load(); }}>重试</button></div>;
   }
 
-  const toggleIn = (arr, id) => (arr.includes(id) ? arr.filter((x) => x !== id) : [...arr, id]);
   const patch = (p) => setForm((f) => ({ ...f, ...p }));
-
-  const restoreColumns = async () => {
-    try {
-      await api.put('/api/settings/daily', { restoreDefaultColumns: true });
-      await load();
-      toast('已恢复默认四栏目');
-    } catch (e) {
-      toast(e.message);
-    }
-  };
-
-  const addColumn = () =>
-    setColumns((cs) => [...cs, { id: `c${Date.now()}`, name: '', desc: '', kwText: '' }]);
 
   const save = async () => {
     setSaving(true);
@@ -99,15 +90,13 @@ export default function DailySettingsTab() {
         articleSourceIds: form.articleSourceIds,
         videoSourceIds: form.videoSourceIds,
         spotlightSourceIds: [...focusA, ...focusV],
+        // 栏目管理只读过渡（用户 10-04 拍板）：columns 原样回传不改动，保存行为对后端无感
         columns: columns.map((c) => {
-          const base = { id: c.id, name: c.name.trim(), desc: (c.desc || '').trim() };
+          const base = { id: c.id, name: (c.name || '').trim(), desc: (c.desc || '').trim() };
           if (c.special) return { ...base, special: c.special };
           return {
             ...base,
-            keywords: (c.kwText || '')
-              .split(/[,，]/)
-              .map((s) => s.trim())
-              .filter(Boolean),
+            keywords: (c.keywords || []),
           };
         }),
       };
@@ -120,58 +109,36 @@ export default function DailySettingsTab() {
     }
   };
 
-  const renderSourceList = (sources, selectedKey, focusIds, setFocusIds) => {
-    const selected = form[selectedKey];
-    const allChecked = sources.length > 0 && sources.every((s) => selected.includes(s.id));
-    return (
-      <div className="card divide-y divide-[var(--border)]">
-        <label className="flex items-center gap-2 px-4 py-2.5 text-[13px] t-text cursor-pointer">
-          <input
-            type="checkbox"
-            checked={allChecked}
-            onChange={(e) =>
-              patch({ [selectedKey]: e.target.checked ? sources.map((s) => s.id) : [] })
-            }
-          />
-          全选（{selected.length}/{sources.length}）
-        </label>
-        {sources.map((s) => {
-          const focused = focusIds.includes(s.id);
-          return (
-            <div key={s.id} className="flex items-center gap-3 px-4 py-2.5">
-              <label className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(s.id)}
-                  onChange={() => patch({ [selectedKey]: toggleIn(selected, s.id) })}
-                />
-                <span className="text-[13px] t-text truncate">{s.name || s.url}</span>
-              </label>
-              {focused && (
-                <span className="badge-red flex-none">重点</span>
-              )}
-              <button
-                className={`switch ${focused ? 'on' : ''}`}
-                style={focused ? { background: 'var(--red)' } : undefined}
-                title="重点：该来源内容全部进入每日早报「重点更新」栏，并在阅读器智能排序中优先"
-                onClick={() => setFocusIds(toggleIn(focusIds, s.id))}
-              />
-            </div>
-          );
-        })}
-        {sources.length === 0 && (
-          <div className="px-4 py-6 text-center text-xs t-muted">暂无订阅源</div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col gap-6">
+      {/* 生成管理（T3-8 批次2：真触发入口——旧版此处是三条本地命令的纯文本壳） */}
+      <section>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <div className="text-base font-bold t-text">生成管理</div>
+            <InfoTip
+              what="手动触发一次每日早报生成，跑在 GitHub runner 上（不是这个页面自己跑）。"
+              how="点「重新生成」并确认即可；不需要等生成窗口。"
+              effect="触发后几十分钟内出新一期，进度在 GitHub Actions 的 collect 运行里看。"
+            />
+          </div>
+          <TriggerButton mode="daily-ai-evening" label="重新生成每日早报" confirmText="确认触发每日早报重新生成？生成需几十分钟，AI 额度照常消耗。" />
+        </div>
+        <div className="text-[11px] t-muted">
+          自动生成：每晚 21:30（滚动 24h 窗口）、00:32 备跑（自然日窗口）；生成 &gt; 翻译：保护窗内翻译批次自动让路。
+        </div>
+      </section>
+
       {/* 基础设置 */}
       <section>
-        <div className="text-base font-bold t-text mb-1">基础设置</div>
-        <div className="text-[11px] t-muted mb-3">配置日报统计窗口和每日自动生成时间</div>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="text-base font-bold t-text">基础设置</div>
+          <InfoTip
+            what="每日早报的统计窗口与自动生成时刻。"
+            how="窗口为小时数；生成时间只影响本地调度器——生产链路的点位在作业文件里，界面改不动。"
+            effect="保存后的下一个生成批次生效。"
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-[13px] font-medium t-text">统计窗口（小时）</label>
@@ -197,10 +164,13 @@ export default function DailySettingsTab() {
 
       {/* 级3 每源配额（44 号 spec 步1）：独立保存，不跟底部「保存设置」按钮走（它写的是另一个键） */}
       <section>
-        <div className="text-base font-bold t-text mb-1">每源每日配额（进模型前先削减）</div>
-        <div className="text-[11px] t-muted mb-3">
-          初筛的职责是削减、不是理解：每个源每天最多送 N 篇进模型，其余按源丢弃。
-          日更 ≤N 的小源完全不受影响。改这个数不改变送模型总量（仍截 500 篇），改的是这 500 篇覆盖多少个源。
+        <div className="flex items-center gap-2 mb-1">
+          <div className="text-base font-bold t-text">每源每日配额（进模型前先削减）</div>
+          <InfoTip
+            what="每个源每天最多送 N 篇进模型，其余按源丢弃——换的是源覆盖宽度，不是进报门槛。"
+            how="填 1~100，独立保存（不跟底部按钮走）；日更 ≤N 的小源完全不受影响。"
+            effect="下一个生成批次生效；改它不改变送模型总量（仍截 500 篇），改的是这 500 篇覆盖多少个源。"
+          />
         </div>
         <div className="flex items-end gap-3">
           <div className="w-48">
@@ -236,96 +206,77 @@ export default function DailySettingsTab() {
         </div>
       </section>
 
-      {/* 文章来源 */}
+      {/* 文章来源（T3-8 批次2：选源器弹窗，按用户样图形态——搜索/筛选/批量/已选计数） */}
       <section>
-        <div className="text-base font-bold t-text mb-1">公众号文章来源</div>
-        <div className="text-[11px] t-muted mb-3">
-          勾选纳入日报统计的来源；「重点」来源的内容全部进入「重点更新」栏。
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <div className="text-base font-bold t-text">公众号文章来源</div>
+            <InfoTip
+              what="哪些来源的内容参与每日早报的候选池；「重点」来源的内容全部进「重点更新」栏。"
+              how="点「选择来源」打开选源器：搜索、按状态筛选、勾选、全选筛选结果；★ 标重点。改完点底部「保存设置」落库。"
+              effect="保存后的下一个生成批次生效。"
+            />
+          </div>
+          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
+            选择来源（已选 {form.articleSourceIds.length}/{articleSources.length}）
+          </button>
         </div>
-        {renderSourceList(articleSources, 'articleSourceIds', focusA, setFocusA)}
+        <div className="text-[11px] t-muted mb-3">
+          重点来源 {focusA.length} 个；来源的增删与启停在「源库」板块。
+        </div>
       </section>
 
       {/* 视频来源 */}
       <section>
-        <div className="text-base font-bold t-text mb-1">视频订阅来源</div>
-        {renderSourceList(videoSources, 'videoSourceIds', focusV, setFocusV)}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <div className="text-base font-bold t-text">视频订阅来源</div>
+            <InfoTip
+              what="哪些视频/播客源参与每日早报候选。"
+              how="与文章来源同一套选源器；改完点底部「保存设置」落库。"
+              effect="保存后的下一个生成批次生效。"
+            />
+          </div>
+          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
+            选择来源（已选 {form.videoSourceIds.length}/{videoSources.length}）
+          </button>
+        </div>
       </section>
 
-      {/* 栏目管理 */}
+      {/* 栏目管理（只读过渡：用户 10-04 拍板——关键词归栏将被 AI 选题聚类 T5-3 替代，不再投入编辑面） */}
       <section>
-        <div className="flex items-center justify-between mb-1">
-          <div className="text-base font-bold t-text">栏目管理</div>
-          <div className="flex gap-2">
-            <button className="btn-ghost !py-1 !px-2 text-xs" onClick={addColumn}>
-              ＋ 新增栏目
-            </button>
-            <button className="btn-ghost !py-1 !px-2 text-xs" onClick={restoreColumns}>
-              恢复默认四栏目
-            </button>
-          </div>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="text-base font-bold t-text">栏目管理（只读）</div>
+          <InfoTip
+            what="当前栏目表：关键词命中标题或内容即归入该栏；「重点更新」「其它重要」是机制栏目（重点来源全量入栏 / 未命中兜底）。"
+            how="此板块已冻结编辑——关键词归栏是过渡机制，将由 AI 选题聚类（T5-3，栏目名随当天内容决定）替代。"
+            effect="栏目调整暂无法在界面进行；要改需等 T5-3 落地或改栏目表实现。"
+          />
         </div>
-        <div className="text-[11px] t-muted mb-3">
-          栏目按顺序展示；关键词命中标题或内容即归入该栏，逗号分隔。
-        </div>
-        <div className="flex flex-col gap-3">
+        <div className="text-[11px] t-muted mb-3">栏目按顺序展示；以下为当前生效配置（改栏目暂不可用，属过渡机制）。</div>
+        <div className="flex flex-col gap-2">
           {columns.map((c, i) => (
-            <div key={c.id || i} className="card p-3">
+            <div key={c.id || i} className="card px-3 py-2.5 text-[13px]">
               <div className="flex items-center gap-2">
-                <input
-                  className="input"
-                  value={c.name}
-                  placeholder="栏目名称"
-                  onChange={(e) =>
-                    setColumns((cs) =>
-                      cs.map((x, j) => (j === i ? { ...x, name: e.target.value } : x))
-                    )
-                  }
-                />
-                <button
-                  className="btn-ghost !py-1 !px-2 text-xs flex-none"
-                  disabled={!!c.special}
-                  title={c.special ? '机制栏目不可删除' : '删除栏目'}
-                  onClick={() => setColumns((cs) => cs.filter((_, j) => j !== i))}
-                >
-                  删除
-                </button>
+                <span className="t-muted flex-none tabular-nums">{i + 1}.</span>
+                <span className="font-medium t-text">{c.name || '(未命名)'}</span>
+                {c.special && <span className="badge-gray flex-none">机制栏目</span>}
               </div>
               {c.special ? (
-                <div className="mt-2 text-[11px] t-muted">
+                <div className="mt-1 text-[11px] t-muted">
                   {c.special === 'spotlight' || c.special === 'focus'
-                    ? '机制栏目：重点来源的内容全部进入此栏，按时间倒序，不限数量。'
-                    : '机制栏目：未命中任何栏目的入选内容进入此栏兜底。'}
+                    ? '重点来源的内容全部进入此栏，按时间倒序，不限数量。'
+                    : '未命中任何栏目的入选内容进入此栏兜底。'}
                 </div>
               ) : (
-                <>
-                  <input
-                    className="input mt-2"
-                    value={c.desc || ''}
-                    placeholder="说明文字（显示在栏目右侧）"
-                    onChange={(e) =>
-                      setColumns((cs) =>
-                        cs.map((x, j) => (j === i ? { ...x, desc: e.target.value } : x))
-                      )
-                    }
-                  />
-                  <input
-                    className="input mt-2"
-                    value={c.kwText}
-                    placeholder="命中关键词，逗号分隔"
-                    onChange={(e) =>
-                      setColumns((cs) =>
-                        cs.map((x, j) => (j === i ? { ...x, kwText: e.target.value } : x))
-                      )
-                    }
-                  />
-                </>
+                <div className="mt-1 text-[11px] t-muted truncate">
+                  {c.desc ? `${c.desc} · ` : ''}关键词：{(c.keywords || []).length ? (c.keywords || []).join('，') : '（无）'}
+                </div>
               )}
             </div>
           ))}
           {columns.length === 0 && (
-            <div className="card px-4 py-6 text-center text-xs t-muted">
-              暂无栏目，可新增或恢复默认四栏目
-            </div>
+            <div className="card px-4 py-6 text-center text-xs t-muted">暂无栏目配置</div>
           )}
         </div>
       </section>
@@ -339,6 +290,26 @@ export default function DailySettingsTab() {
           {saving ? '保存中…' : '保存设置'}
         </button>
       </div>
+
+      {/* 选源器弹窗：确认后写回本地暂存，仍需底部「保存设置」落库 */}
+      <SourcePickerModal
+        open={picker === 'article'}
+        title="选择公众号文章来源"
+        sources={articleSources}
+        selectedIds={form.articleSourceIds}
+        spotlightIds={focusA}
+        onClose={() => setPicker(null)}
+        onConfirm={(ids, spots) => { patch({ articleSourceIds: ids }); setFocusA(spots); setPicker(null); }}
+      />
+      <SourcePickerModal
+        open={picker === 'video'}
+        title="选择视频订阅来源"
+        sources={videoSources}
+        selectedIds={form.videoSourceIds}
+        spotlightIds={focusV}
+        onClose={() => setPicker(null)}
+        onConfirm={(ids, spots) => { patch({ videoSourceIds: ids }); setFocusV(spots); setPicker(null); }}
+      />
     </div>
   );
 }
