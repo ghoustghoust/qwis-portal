@@ -63,7 +63,7 @@ function isIssueSource(s, nowMs) {
   return false;
 }
 
-const VIEW_LABEL = { groups: '健康概览', issues: '问题源', issues_cleanup: '清理', search: '检索', platform: '平台接入' };
+const VIEW_LABEL = { groups: '健康概览', issues: '问题源', selfheal: '自愈', issues_cleanup: '清理', search: '检索', platform: '平台接入' };
 const VIEW_HINT = {
   groups: '各文件夹的健康概况。组级操作（暂停/频率/备用/屏蔽）在卡片「⋯」菜单；单源细处理点「进入」。',
   issues: '只列需要你处理的源（异常 / 异常暂停 / 新增未确认），处理完就从这里消失。',
@@ -174,7 +174,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
 
   // 自愈调试面板：进问题源视图时拉
   useEffect(() => {
-    if (view !== 'issues' || heal) return;
+    if (view !== 'selfheal' || heal) return;
     (async () => {
       try { setHeal(await api.get('/api/self-heal', true)); } catch { /* 拉不到不阻断 */ }
     })();
@@ -509,7 +509,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     <div>
       {/* 视图切换 */}
       <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-        {['groups', 'issues', 'issues_cleanup', 'search', 'platform'].map((v) => (
+        {['groups', 'issues', 'selfheal', 'issues_cleanup', 'search', 'platform'].map((v) => (
           <button
             key={v}
             className={`pill !px-3 !py-1.5 !text-[13px] cursor-pointer ${view === v ? 'on' : ''}`}
@@ -638,43 +638,6 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
             </div>
           </div>
         )}
-        {heal && (heal.resumedTotal > 0 || heal.coolingTotal > 0) && (
-          <div className="card p-4 mb-4">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold t-text">自愈调试</h3>
-              <span className="text-[11px] t-muted">冻结超 {heal.rules.autoResumeAfterHours}h 自动恢复（错峰）· 连续 {heal.rules.cooldownAfterFails} 次仍熔断则冷却 {heal.rules.cooldownDays} 天</span>
-            </div>
-            <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* 恢复过——活了没有 */}
-              <div>
-                <div className="text-xs t-muted mb-1.5">曾被自动恢复（共 {heal.resumedTotal} 个）· <span className="text-[var(--green)]">现在健康 {heal.aliveAfterResume}</span> / <span style={{ color: 'var(--red)' }}>又熔断 {heal.resumedTotal - heal.aliveAfterResume}</span></div>
-                <div className="space-y-1 max-h-56 overflow-y-auto">
-                  {heal.resumed.map((r) => (
-                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
-                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
-                      <span className="t-muted flex-none">第 {r.resumeCount} 次</span>
-                      <span className={`flex-none ${r.aliveNow ? 'text-[var(--green)]' : 'text-[var(--red)]'}`}>{r.aliveNow ? '健康' : '又熔断'}</span>
-                    </div>
-                  ))}
-                  {heal.resumed.length === 0 && <div className="text-xs t-muted py-2">还没有自动恢复记录</div>}
-                </div>
-              </div>
-              {/* 冷却中——什么时候轮到它 */}
-              <div>
-                <div className="text-xs t-muted mb-1.5">冷却中（共 {heal.coolingTotal} 个）· 到点自动恢复</div>
-                <div className="space-y-1 max-h-56 overflow-y-auto">
-                  {heal.cooling.map((r) => (
-                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
-                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
-                      <span className="t-muted flex-none tabular-nums" title={`预计 ${r.resumeAt ? formatDateTime(r.resumeAt) : '—'}`}>{r.coolingLeftMs < 3600e3 ? `${Math.ceil(r.coolingLeftMs / 60000)} 分钟后` : `${Math.ceil(r.coolingLeftMs / 3600e3)} 小时后`}</span>
-                    </div>
-                  ))}
-                  {heal.cooling.length === 0 && <div className="text-xs t-muted py-2">没有冷却中的源</div>}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         {issueSources.length === 0 ? (
           <div className="text-center py-12 t-muted text-sm">没有需要处理的源——都正常。</div>
         ) : (
@@ -726,6 +689,47 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           </div>
         )}
         </>
+      ) : view === 'selfheal' ? (
+        /* ── 自愈调试（10-05 用户点单）：自愈引擎的观测面——曾被恢复/冷却中/规则 ── */
+        !heal ? (
+          <div className="text-center py-12 t-muted text-sm">加载中…</div>
+        ) : (
+          <div className="card p-5">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold t-text">自愈调试</h3>
+              <span className="text-[11px] t-muted">冻结超 {heal.rules.autoResumeAfterHours}h 自动恢复（错峰）· 连续 {heal.rules.cooldownAfterFails} 次仍熔断则冷却 {heal.rules.cooldownDays} 天</span>
+            </div>
+            <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* 恢复过——活了没有 */}
+              <div>
+                <div className="text-xs t-muted mb-1.5">曾被自动恢复（共 {heal.resumedTotal} 个）· <span className="text-[var(--green)]">现在健康 {heal.aliveAfterResume}</span> / <span style={{ color: 'var(--red)' }}>又熔断 {heal.resumedTotal - heal.aliveAfterResume}</span></div>
+                <div className="space-y-1 max-h-56 overflow-y-auto">
+                  {heal.resumed.map((r) => (
+                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
+                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
+                      <span className="t-muted flex-none">第 {r.resumeCount} 次</span>
+                      <span className={`flex-none ${r.aliveNow ? 'text-[var(--green)]' : 'text-[var(--red)]'}`}>{r.aliveNow ? '健康' : '又熔断'}</span>
+                    </div>
+                  ))}
+                  {heal.resumed.length === 0 && <div className="text-xs t-muted py-2">还没有自动恢复记录</div>}
+                </div>
+              </div>
+              {/* 冷却中——什么时候轮到它 */}
+              <div>
+                <div className="text-xs t-muted mb-1.5">冷却中（共 {heal.coolingTotal} 个）· 到点自动恢复</div>
+                <div className="space-y-1 max-h-56 overflow-y-auto">
+                  {heal.cooling.map((r) => (
+                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
+                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
+                      <span className="t-muted flex-none tabular-nums" title={`预计 ${r.resumeAt ? formatDateTime(r.resumeAt) : '—'}`}>{r.coolingLeftMs < 3600e3 ? `${Math.ceil(r.coolingLeftMs / 60000)} 分钟后` : `${Math.ceil(r.coolingLeftMs / 3600e3)} 小时后`}</span>
+                    </div>
+                  ))}
+                  {heal.cooling.length === 0 && <div className="text-xs t-muted py-2">没有冷却中的源</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       ) : view === 'issues_cleanup' ? (
         /* ── 死源清理器（10-05 用户点单①）：从未成功/超两周没活的源，批量停用或删除 ── */
         !cleanup ? (
