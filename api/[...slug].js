@@ -1974,10 +1974,10 @@ async function handleHealthStatus(req) {
 // lastError 只有字符串无语义字段——读层规则桶（写入侧不动；将来要更准应在写侧加 errorKind）。
 // 系统性簇（同类型同指纹 ≥10 个）置顶——80 个 YouTube 全 404 这类"一种病一片"就是要被发现的对象。
 const ERROR_BUCKETS = [
-  { key: 'http_404', label: '404 源没了/路径失效', match: (e) => /404/i.test(e) },
-  { key: 'http_403', label: '403 被拒（多半是反爬/封 IP）', match: (e) => /403|forbidden/i.test(e) },
-  { key: 'http_401', label: '401 登录态/Cookie 失效', match: (e) => /401|unauthorized|cookie.*(过期|失效)|SESSDATA/i.test(e) },
-  { key: 'http_429', label: '429 触发限流', match: (e) => /429|rate.?limit/i.test(e) },
+  { key: 'http_404', label: '404 源没了/路径失效', match: (e) => /\b404\b/i.test(e) },
+  { key: 'http_403', label: '403 被拒（多半是反爬/封 IP）', match: (e) => /\b403\b|forbidden/i.test(e) },
+  { key: 'http_401', label: '401 登录态/Cookie 失效', match: (e) => /\b401\b|unauthorized|cookie.*(过期|失效)|SESSDATA/i.test(e) },
+  { key: 'http_429', label: '429 触发限流', match: (e) => /\b429\b|rate.?limit/i.test(e) },
   { key: 'timeout', label: '超时', match: (e) => /timeout|timed? ?out|ETIMEDOUT|ECONNRESET|socket/i.test(e) },
   { key: 'parse', label: '解析失败（多半是返回的不是 RSS/页面变了）', match: (e) => /parse|XML|Invalid|Unexpected|non-XML|doctype|html/i.test(e) },
   { key: 'network', label: '网络层失败（DNS/连接/TLS）', match: (e) => /ENOTFOUND|ECONNREFUSED|fetch failed|certificate|CERT|TLS|SSL|EPROTO/i.test(e) },
