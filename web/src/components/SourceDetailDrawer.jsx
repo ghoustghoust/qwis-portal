@@ -189,6 +189,16 @@ export default function SourceDetailDrawer({ source, groups = [], onClose, onRef
           <section className="card p-4">
             <div className="flex items-center gap-2">
               <button className="btn-ghost !py-1.5 !px-4 !text-xs" onClick={() => onRefresh(s)}>立即抓取</button>
+              {(!s.enabled || s.status === 'error' || (s.fail_count || 0) > 0) && (
+                <button
+                  className="btn-ghost !py-1.5 !px-4 !text-xs"
+                  title={!s.enabled ? '解除熔断并重新启用' : '清失败计数并立即重试'}
+                  onClick={() => {
+                    if (!s.enabled) onToggle(s);
+                    onRefresh(s);
+                  }}
+                >重启</button>
+              )}
               <span className="flex-1" />
               <button
                 className="btn-ghost !py-1.5 !px-4 !text-xs hover:text-red-500"
