@@ -109,7 +109,7 @@ function CardMenu({ items }) {
 // 健康概览（原组合视图，只看+进组）/ 问题源 / 检索（干活）+ 平台接入。
 // 功能隔离（10-05）：重点轴归「报 → 每日早报」的选源器、订阅轴归「报 → 我的早报」——
 // 源库不再设这两轴的操作入口（查看筛选保留），星标/订阅按钮已从此处摘除。
-export default function SourceLibraryTab({ initialView = 'groups' }) {
+export default function SourceLibraryTab({ initialView = 'search' }) {
   const [view, setView] = useState(initialView);
   const [items, setItems] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -245,6 +245,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   }
 
   function enterGroup(gid) {
+    // "进入"= 该文件夹的管理视图：检索视图带组筛选——行悬停操作/勾选批量/移动全可用
     setFilterGroup(gid === null ? 'none' : String(gid));
     setFilterKind('all');
     setFilterStatus('all');
@@ -550,7 +551,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   {issueN > 0 && <span className="text-[var(--red)]">{issueN} 异常</span>}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <button className="btn-primary !py-1.5 !px-5 !text-xs" onClick={() => enterGroup(c.gid)}>进入</button>
+                  <button className="btn-primary !py-1.5 !px-5 !text-xs" onClick={() => enterGroup(c.gid)} title="进入该文件夹的管理视图（批量操作/移动/频率全在此）">管理</button>
                   <span className="flex-1" />
                   {c.gid !== null && (
                     <CardMenu

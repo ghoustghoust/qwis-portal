@@ -239,7 +239,7 @@ export default function WechatTab() {
 
       {/* F21：OPML 配置 */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">OPML 配置</h3>
+        <h3 className="text-sm font-semibold t-text">OPML 配置 <span className="text-[10px] t-muted font-normal">（本地端调度器专属——云端只读展示）</span></h3>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
           <label className="t-muted">同步间隔（小时）</label>
           <input
@@ -270,7 +270,7 @@ export default function WechatTab() {
 
       {/* F22：RSS 配置 */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">RSS 配置</h3>
+        <h3 className="text-sm font-semibold t-text">RSS 配置 <span className="text-[10px] t-muted font-normal">（云端 runner 按源级/全局间隔抓取，此开关云端不生效）</span></h3>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
           <label className="t-muted">文章刷新间隔（小时）</label>
           <input
@@ -297,9 +297,9 @@ export default function WechatTab() {
       {/* F24：待提交公众号信息区 */}
       <section className="card p-5">
         <h3 className="text-sm font-semibold t-text">待提交公众号信息</h3>
-        <p className="mt-2 text-xs t-muted">
-          手机提交的公众号仅保存在本地供手动复制（不自动提交到第三方网页）。
-        </p>
+        <div className="mt-2 rounded-lg px-3 py-2 text-xs" style={{ color: 'var(--warn)', background: 'var(--surface-2)' }}>
+          本地端功能——云端管理台看不到这条链路的数据（手机提交走本地 Express，云端部署形态无此入口）。此列表在云端恒为空。
+        </div>
         <div className="mt-3">
           {pending.length === 0 ? (
             <div className="rounded-lg border border-dashed t-border py-6 text-center text-xs t-muted">

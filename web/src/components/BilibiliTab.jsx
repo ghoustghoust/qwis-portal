@@ -193,7 +193,7 @@ export default function BilibiliTab() {
             onClick={refreshAllEnabled}
             title="批量刷新所有开着采集的 B 站订阅（跳过熔断检查）"
           >
-            {busy === 'refreshAll' ? '刷新中…' : '批量刷新开着的'}
+            {busy === 'refreshAll' ? '刷新中…' : '批量刷新'}
           </button>
         </div>
       </div>
@@ -201,6 +201,7 @@ export default function BilibiliTab() {
       {/* F29：自动刷新 */}
       <section className="card p-5">
         <h3 className="text-sm font-semibold t-text">自动刷新</h3>
+        <span className="relative inline-flex items-center"><span className="text-[10px] t-muted">（云端 runner 按此间隔抓取）</span></span>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
           <label className="t-muted">内容刷新间隔（分钟）</label>
           <input
@@ -339,11 +340,6 @@ export default function BilibiliTab() {
         </div>
       </section>
 
-      {/* F34：高级与诊断折叠区 */}
-      <details className="card p-5">
-        <summary className="text-sm font-semibold t-text cursor-pointer select-none">高级与诊断</summary>
-        <p className="mt-2 text-xs t-muted">运行日志与诊断信息将在此展示。</p>
-      </details>
     </div>
   );
 }

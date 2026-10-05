@@ -56,8 +56,7 @@ const SECTIONS = [
   {
     parent: '源',
     items: [
-      { id: 'library', label: '源库', ref: 'library', wide: true, render: () => <SourceLibraryTab key="library" /> },
-      { id: 'platform', label: '平台接入', ref: 'library', wide: true, render: () => <SourceLibraryTab key="platform" initialView="platform" /> },
+      { id: 'library', label: '源库', ref: 'library', wide: true, render: () => <SourceLibraryTab key="library" initialView="search" /> },
       { id: 'hot', label: '热点榜', ref: 'hot', render: () => <HotSettings /> },
     ],
   },
