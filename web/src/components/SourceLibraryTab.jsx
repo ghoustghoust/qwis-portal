@@ -127,6 +127,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [intervalPick, setIntervalPick] = useState(null); // {kind:'one'|'group', target}：频率预设选择器（10-05 用户点单④）
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
   const [clusters, setClusters] = useState(null); // 失败原因聚类（10-05 用户点单③）
+  const [heal, setHeal] = useState(null); // 自愈调试面板（10-05 用户点单）
   const [cleanupSel, setCleanupSel] = useState(new Set());
   const [cleanupBusy, setCleanupBusy] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -167,6 +168,14 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       try { setClusters(await api.get('/api/sources/error-clusters', true)); } catch { /* 拉不到不阻断 */ }
     })();
   }, [view, clusters]);
+
+  // 自愈调试面板：进问题源视图时拉
+  useEffect(() => {
+    if (view !== 'issues' || heal) return;
+    (async () => {
+      try { setHeal(await api.get('/api/self-heal', true)); } catch { /* 拉不到不阻断 */ }
+    })();
+  }, [view, heal]);
 
   // ── 健康概览聚合：组卡片数据（需要处理的组排前） ──
   const groupCards = useMemo(() => {
@@ -586,6 +595,43 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+        {heal && (heal.resumedTotal > 0 || heal.coolingTotal > 0) && (
+          <div className="card p-4 mb-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold t-text">自愈调试</h3>
+              <span className="text-[11px] t-muted">冻结超 {heal.rules.autoResumeAfterHours}h 自动恢复（错峰）· 连续 {heal.rules.cooldownAfterFails} 次仍熔断则冷却 {heal.rules.cooldownDays} 天</span>
+            </div>
+            <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* 恢复过——活了没有 */}
+              <div>
+                <div className="text-xs t-muted mb-1.5">曾被自动恢复（共 {heal.resumedTotal} 个）· <span className="text-[var(--green)]">现在健康 {heal.aliveAfterResume}</span> / <span style={{ color: 'var(--red)' }}>又熔断 {heal.resumedTotal - heal.aliveAfterResume}</span></div>
+                <div className="space-y-1 max-h-56 overflow-y-auto">
+                  {heal.resumed.map((r) => (
+                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
+                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
+                      <span className="t-muted flex-none">第 {r.resumeCount} 次</span>
+                      <span className={`flex-none ${r.aliveNow ? 'text-[var(--green)]' : 'text-[var(--red)]'}`}>{r.aliveNow ? '健康' : '又熔断'}</span>
+                    </div>
+                  ))}
+                  {heal.resumed.length === 0 && <div className="text-xs t-muted py-2">还没有自动恢复记录</div>}
+                </div>
+              </div>
+              {/* 冷却中——什么时候轮到它 */}
+              <div>
+                <div className="text-xs t-muted mb-1.5">冷却中（共 {heal.coolingTotal} 个）· 到点自动恢复</div>
+                <div className="space-y-1 max-h-56 overflow-y-auto">
+                  {heal.cooling.map((r) => (
+                    <div key={r.id} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
+                      <button className="truncate flex-1 text-left t-text hover:t-accent" onClick={() => setDetail(items.find((x) => x.id === r.id) || r)}>{r.name}</button>
+                      <span className="t-muted flex-none tabular-nums" title={`预计 ${r.resumeAt ? formatDateTime(r.resumeAt) : '—'}`}>{r.coolingLeftMs < 3600e3 ? `${Math.ceil(r.coolingLeftMs / 60000)} 分钟后` : `${Math.ceil(r.coolingLeftMs / 3600e3)} 小时后`}</span>
+                    </div>
+                  ))}
+                  {heal.cooling.length === 0 && <div className="text-xs t-muted py-2">没有冷却中的源</div>}
+                </div>
+              </div>
             </div>
           </div>
         )}

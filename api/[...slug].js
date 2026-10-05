@@ -1970,6 +1970,42 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/self-heal — 自愈调试面板（10-05 用户点单：专门调试自愈的板块）
+// 自愈引擎现状（T4-1 Q7 已在 runner 批次尾部跑）：冻结超 48h 自动重新启用（错峰），
+// 连续自动恢复 3 次仍熔断则冷却延长到 7 天。resumeCount/frozenAt 在 extra 里——
+// 面板把"谁被自动恢复过、恢复后活了没有、谁还在冷却"三个问题的真值摊开。
+async function handleSelfHeal(req) {
+  const rows = await qAll("SELECT id, name, type, group_id, enabled, status, fail_count, extra, last_fetched_at FROM sources WHERE type != 'wemp'");
+  const now = Date.now();
+  const resumed = [];   // 曾被自动恢复过（resumeCount>0）——恢复后活了没有
+  const cooling = [];   // 还在冷却中（熔断中/停用且有 frozenAt）
+  for (const r of rows) {
+    let ex = {};
+    try { ex = JSON.parse(r.extra || '{}'); } catch { /* ignore */ }
+    const resumeCount = Number(ex.resumeCount || 0);
+    const frozenAt = Date.parse(ex.frozenAt || ex.lastErrorAt || '') || 0;
+    const shape = { id: r.id, name: r.name, type: r.type, groupId: r.group_id, enabled: !!r.enabled,
+      failCount: r.fail_count || 0, resumeCount, frozenAt: frozenAt ? new Date(frozenAt).toISOString() : null,
+      lastFetchedAt: r.last_fetched_at || null,
+      lastError: ex.lastError ? String(ex.lastError).slice(0, 160) : null };
+    if (resumeCount > 0) resumed.push({ ...shape, aliveNow: r.enabled && r.status !== 'error' && (r.fail_count || 0) === 0 });
+    else if (!r.enabled && frozenAt) {
+      const waitMs = resumeCount >= 3 ? 7 * 86400e3 : 48 * 3600e3;
+      cooling.push({ ...shape, resumeAt: new Date(frozenAt + waitMs).toISOString(), coolingLeftMs: Math.max(0, frozenAt + waitMs - now) });
+    }
+  }
+  resumed.sort((a, b) => (b.resumeCount - a.resumeCount) || String(a.name).localeCompare(String(b.name), 'zh-Hans-CN'));
+  cooling.sort((a, b) => a.coolingLeftMs - b.coolingLeftMs);
+  return jsonOk({
+    rules: { autoResumeAfterHours: 48, cooldownAfterFails: 3, cooldownDays: 7, jitterHours: 6 },
+    resumed: resumed.slice(0, 50),
+    resumedTotal: resumed.length,
+    aliveAfterResume: resumed.filter((r) => r.aliveNow).length,
+    cooling: cooling.slice(0, 50),
+    coolingTotal: cooling.length,
+  });
+}
+
 // GET /api/sources/error-clusters — 失败原因聚类（10-05 用户点单③）
 // lastError 只有字符串无语义字段——读层规则桶（写入侧不动；将来要更准应在写侧加 errorKind）。
 // 系统性簇（同类型同指纹 ≥10 个）置顶——80 个 YouTube 全 404 这类"一种病一片"就是要被发现的对象。
@@ -3293,7 +3329,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
-    if (path === '/api/sources/error-clusters' && method === 'GET') return handleErrorClusters(req);
+    if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);
+  if (path === '/api/sources/error-clusters' && method === 'GET') return handleErrorClusters(req);
   if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
   if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
   if (path === '/api/health/collect-history') return handleCollectHistory(req);
