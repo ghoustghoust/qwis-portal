@@ -49,7 +49,7 @@ const SECTIONS = [
   {
     parent: '首页',
     items: [
-      { id: 'home', label: '仪表盘', ref: null, wide: true, render: () => <DashboardTab /> },
+      { id: 'home', label: '仪表盘', ref: null, wide: true, wider: true, render: () => <DashboardTab /> },
     ],
   },
   {
@@ -257,8 +257,8 @@ export default function AdminPage() {
           ))}
         </nav>
         <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
-          <div className={item.wide ? 'max-w-[1160px] mx-auto' : 'max-w-[960px] mx-auto'}>
-            <AdminRefCard tab={item.ref} />
+          <div className={item.wider ? 'max-w-[1500px] mx-auto' : item.wide ? 'max-w-[1160px] mx-auto' : 'max-w-[960px] mx-auto'}>
+            {item.ref ? <AdminRefCard tab={item.ref} /> : null}
             <ErrorBoundary fallback="当前板块">
               <Suspense fallback={<TabLoader />}>{item.render()}</Suspense>
             </ErrorBoundary>

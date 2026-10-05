@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 // 搜索 + 状态筛选 + 排序 + 行内勾选与重点标记 + 全选筛选结果 + 已选常显计数 + 分页。
 // 每日早报的「文章来源 / 视频来源」用它；批次4 的源库总览检索共用此形态。
 // 替代的旧形态：全量平铺 checkbox 列表、无搜索无批量（千级源只能线性滚动逐个点）。
-export default function SourcePickerModal({ open, title, sources = [], selectedIds = [], spotlightIds = [], onClose, onConfirm }) {
+// showSpotlight=false：隐藏重点轴（订阅管理等单轴场景，单一职责）——默认 true 保持旧用法。
+export default function SourcePickerModal({ open, title, sources = [], selectedIds = [], spotlightIds = [], showSpotlight = true, onClose, onConfirm }) {
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('all'); // all|on|off
   const [sort, setSort] = useState('default'); // default|name
@@ -47,7 +48,7 @@ export default function SourcePickerModal({ open, title, sources = [], selectedI
       <div className="card p-4 w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 mb-3">
           <div className="text-sm font-semibold t-text flex-1">{title}</div>
-          <span className="text-xs t-muted tabular-nums">已选 {draft.length}（重点 {draftSpot.length}）</span>
+          <span className="text-xs t-muted tabular-nums">{showSpotlight ? `已选 ${draft.length}（重点 ${draftSpot.length}）` : `已选 ${draft.length}`}</span>
           <button className="btn-ghost !py-1 !px-2 text-xs" onClick={onClose}>关闭</button>
         </div>
         <div className="flex gap-2 flex-wrap mb-2">
@@ -86,13 +87,15 @@ export default function SourcePickerModal({ open, title, sources = [], selectedI
                   <span className={`text-[13px] truncate ${on ? 't-text' : 't-muted'}`}>{s.name || s.url}</span>
                 </label>
                 {s.enabled === 0 && <span className="badge-gray flex-none">停用</span>}
-                <button
-                  className={`flex-none text-sm ${spot ? 't-accent' : 't-muted'}`}
-                  title="重点：该来源内容全部进入每日早报「重点更新」栏，并在阅读器智能排序中优先"
-                  onClick={() => setDraftSpot((d) => toggle(d, s.id))}
-                >
-                  {spot ? '★' : '☆'}
-                </button>
+                {showSpotlight && (
+                  <button
+                    className={`flex-none text-sm ${spot ? 't-accent' : 't-muted'}`}
+                    title="重点：该来源内容全部进入每日早报「重点更新」栏，并在阅读器智能排序中优先"
+                    onClick={() => setDraftSpot((d) => toggle(d, s.id))}
+                  >
+                    {spot ? '★' : '☆'}
+                  </button>
+                )}
               </div>
             );
           })}

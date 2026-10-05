@@ -7,6 +7,7 @@ import {
   FolderIcon, ChevronDownIcon, RefreshIcon, TrashIcon,
 } from './icons.jsx';
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
+import SourcePickerModal from './SourcePickerModal.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 平台接入（spec30：公众号 RSS / B站 两个平台 Tab 并入源库，功能零丢失）
@@ -69,6 +70,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [showBackfill, setShowBackfill] = useState(false);
+  const [showSubManager, setShowSubManager] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -235,6 +237,32 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       await load();
     } catch (e) {
       toast(e.message);
+    }
+  }
+
+  // 订阅管理（用户验收反馈 10-05：找不到勾订阅的入口）——选源器 + 与生效集合 diff 成
+  // subscribe/unsubscribe 两批。保存=显式接管 subscription.ids：此后「我的早报」只认这里勾的
+  // 源，重点兜底（resolveSubscriptionIds 的键缺失回落）不再生效——confirm 文案里讲清这一跃迁。
+  const subscribedIds = items.filter((s) => s.subscribed).map((s) => s.id);
+  async function applySubscription(ids) {
+    const cur = new Set(subscribedIds);
+    const next = new Set(ids);
+    const add = ids.filter((id) => !cur.has(id));
+    const del = [...cur].filter((id) => !next.has(id));
+    if (!add.length && !del.length) { setShowSubManager(false); return; }
+    try {
+      if (add.length) {
+        await api.post('/api/sources/batch', { ids: add, action: 'subscribe' });
+        toast(`已订阅 ${add.length} 个源`);
+      }
+      if (del.length) {
+        await api.post('/api/sources/batch', { ids: del, action: 'unsubscribe' });
+        toast(`已退订 ${del.length} 个源`);
+      }
+      setShowSubManager(false);
+      await load();
+    } catch (e) {
+      toast('订阅更新失败: ' + e.message);
     }
   }
 
@@ -524,6 +552,13 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         <button className="btn-ghost text-sm flex items-center gap-1" onClick={() => setShowBackfill(true)}>
           <SparklesIcon size={15} /> 自动分类回填
         </button>
+        <button
+          className="btn-ghost text-sm flex items-center gap-1"
+          title="管理「我的早报」的订阅来源（勾选 + 搜索 + 批量）"
+          onClick={() => setShowSubManager(true)}
+        >
+          <StarIcon size={15} /> 管理订阅（{subscribedIds.length}）
+        </button>
       </div>
 
       {/* 批量浮动条（27b：四轴批量操作） */}
@@ -665,6 +700,21 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           onApplied={() => { setShowBackfill(false); load(); }}
         />
       )}
+
+      {/* 订阅管理弹窗：勾选=显式接管订阅集合（confirm 讲清与重点兜底的跃迁） */}
+      <SourcePickerModal
+        open={showSubManager}
+        title="管理订阅 ·「我的早报」来源"
+        sources={items}
+        selectedIds={subscribedIds}
+        showSpotlight={false}
+        onClose={() => setShowSubManager(false)}
+        onConfirm={(ids) => {
+          const curN = subscribedIds.length;
+          if (!window.confirm(`把订阅集合更新为 ${ids.length} 个源（现生效 ${curN} 个）？\n\n保存后「我的早报」只认本次勾选；当前靠「重点」兜底进订阅的源若未勾选将退出订阅。`)) return;
+          applySubscription(ids);
+        }}
+      />
     </div>
   );
 }

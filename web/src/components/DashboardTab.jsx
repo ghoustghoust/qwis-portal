@@ -30,13 +30,13 @@ function MetricCard({ label, value, sub, tone, to, tip }) {
       tabIndex={clickable ? 0 : undefined}
       onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(to); } } : undefined}
       onClick={clickable ? () => jump(to) : undefined}
-      className={`card p-4 text-left w-full ${clickable ? 'hover:t-surface2 cursor-pointer' : ''}`}
+      className={`card p-5 text-left w-full ${clickable ? 'hover:t-surface2 cursor-pointer' : ''}`}
     >
       <div className="flex items-center gap-1.5">
         <span className="text-[11px] t-muted">{label}</span>
         {tip && <InfoTip {...tip} />}
       </div>
-      <div className={`mt-1 text-2xl font-bold tabular-nums ${tone || 't-text'}`}>{value ?? '—'}</div>
+      <div className={`mt-1.5 text-3xl font-bold tabular-nums ${tone || 't-text'}`}>{value ?? '—'}</div>
       {sub && <div className="mt-0.5 text-[11px] t-muted">{sub}</div>}
     </div>
   );
@@ -77,8 +77,8 @@ export default function DashboardTab() {
 
   return (
     <div className="space-y-5">
-      {/* 第一行：四指标大卡（节点可跳转） */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* 第一行：四指标大卡（节点可跳转）——用户验收反馈"仪表盘只有一小块"：加大卡体量 */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           label="抓取源" value={sources.enabled} to="library"
           sub={`总 ${sources.total}（含停用/退役） · 口径：启用且非噪声`}
@@ -104,8 +104,8 @@ export default function DashboardTab() {
       </div>
 
       {/* 第二行：采集趋势 + AI 用量 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <section className="card p-4 lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <section className="card p-5 lg:col-span-2">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold t-text">采集趋势</h3>
             <InfoTip what="最近采集批次的成功率与单轮入库量。" how="自动加载；完整历史与口径在「监控」。"
@@ -114,10 +114,10 @@ export default function DashboardTab() {
             <button className="btn-ghost !py-1 !px-2 text-xs" onClick={() => jump('monitor')}>进监控 →</button>
           </div>
           <div className="mt-2">
-            <CollectTrendChart history={collect.recent} height={150} />
+            <CollectTrendChart history={collect.recent} height={230} />
           </div>
         </section>
-        <section className="card p-4">
+        <section className="card p-5">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold t-text">AI 用量</h3>
             <InfoTip what="各 AI 管线近 24h 的调用与失败。" how="自动加载；完整口径在「AI 配置」的「各管线用量」。"
@@ -143,8 +143,8 @@ export default function DashboardTab() {
       </div>
 
       {/* 第三行：生成历史 + 入报 Top5 + 阅读侧 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <section className="card p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <section className="card p-5">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold t-text">生成历史（末 3 期）</h3>
             <span className="flex-1" />
@@ -176,7 +176,7 @@ export default function DashboardTab() {
           </div>
         </section>
 
-        <section className="card p-4">
+        <section className="card p-5">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold t-text">近 7 天入报 Top5</h3>
             <span className="flex-1" />
@@ -198,7 +198,7 @@ export default function DashboardTab() {
           </div>
         </section>
 
-        <section className="card p-4">
+        <section className="card p-5">
           <h3 className="text-sm font-semibold t-text">阅读侧</h3>
           <div className="mt-2 grid grid-cols-2 gap-3 text-center">
             <div className="t-surface2 rounded-lg px-3 py-3">
