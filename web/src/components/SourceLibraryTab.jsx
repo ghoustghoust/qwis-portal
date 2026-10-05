@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { relativeTime } from '../util';
+import { relativeTime, formatDateTime } from '../util';
 import {
   SearchIcon, LockIcon,
   FolderIcon, RefreshIcon, TrashIcon,
