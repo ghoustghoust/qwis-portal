@@ -128,6 +128,9 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
   const [clusters, setClusters] = useState(null); // 失败原因聚类（10-05 用户点单③）
   const [heal, setHeal] = useState(null); // 自愈调试面板（10-05 用户点单）
+  const [importOpml, setImportOpml] = useState(false);
+  const [importBusy, setImportBusy] = useState(false);
+  const fileRef = useRef(null);
   const [cleanupSel, setCleanupSel] = useState(new Set());
   const [cleanupBusy, setCleanupBusy] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -426,6 +429,42 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   }
 
   // 新建文件夹 → 立即选源移入（10-05：创建/设置/选源一步完成）
+  // OPML 导入（10-05 用户点单⑤）：前端解析 XML（无 multipart 后端——文件不走服务端，浏览器侧
+  // 读 XML 出 {url,name} 列表），分批调 POST /api/sources（自带 url 幂等查重——重复源会跳过）。
+  // 分批 20/请求防超时（创建源逐条写库，同自动分类教训）。
+  async function importOpmlFlow(file) {
+    if (!file) return;
+    setImportBusy(true);
+    try {
+      const xml = await file.text();
+      const doc = new DOMParser().parseFromString(xml, 'text/xml');
+      if (doc.querySelector('parsererror')) { toast('不是合法的 OPML/XML 文件'); setImportBusy(false); return; }
+      const outlines = [...doc.querySelectorAll('outline[xmlUrl]')];
+      const feeds = outlines.map((o) => ({ url: o.getAttribute('xmlUrl'), name: o.getAttribute('title') || o.getAttribute('text') || '' }))
+        .filter((f) => f.url && /^https?:/i.test(f.url));
+      if (!feeds.length) { toast('OPML 里没有可导入的订阅源'); setImportBusy(false); return; }
+      if (!window.confirm(`从「${file.name}」读到 ${feeds.length} 个订阅源。导入会逐条创建（已有同 url 的自动跳过）。开始？`)) { setImportBusy(false); return; }
+      let created = 0, dup = 0, failed = 0;
+      for (let i = 0; i < feeds.length; i += 20) {
+        for (const f of feeds.slice(i, i + 20)) {
+          try {
+            const r = await api.post('/api/sources', { url: f.url, name: f.name || undefined });
+            if (r.duplicated) dup++; else created++;
+          } catch { failed++; }
+        }
+        toast(`导入中… ${Math.min(i + 20, feeds.length)}/${feeds.length}`);
+      }
+      toast(`导入完成：新建 ${created} · 已存在跳过 ${dup}${failed ? ` · 失败 ${failed}` : ''}`);
+      setImportOpml(false);
+      await load();
+    } catch (e) {
+      toast('导入失败: ' + e.message);
+    } finally {
+      setImportBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
   async function createGroupFlow() {
     const name = window.prompt('新文件夹名称：');
     if (!name || !name.trim()) return;
@@ -458,6 +497,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         <div className="absolute right-0 z-30 card p-1 w-44 shadow-lg">
           <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); createGroupFlow(); }}>新建文件夹</button>
           <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); dedupeFlow(); }}>查重合并</button>
+          <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); setImportOpml(true); }}>导入 OPML</button>
           <a className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" href="/api/opml/export" download="qwis-sources.opml" onClick={() => setToolsOpen(false)}>导出 OPML</a>
           <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); setShowBackfill(true); }}>自动分类回填</button>
         </div>
@@ -961,6 +1001,25 @@ ${s.url}`}>{s.name || s.url}</div>
         onClose={() => setIntervalPick(null)}
         onPick={applyInterval}
       />
+
+      {/* OPML 导入弹窗（10-05 用户点单⑤） */}
+      {importOpml && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,.35)' }} onClick={() => setImportOpml(false)}>
+          <div className="card p-5 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="text-sm font-semibold t-text">导入 OPML</div>
+            <div className="mt-1 text-[11px] t-muted">从其他 RSS 阅读器导出的 OPML/XML 文件，一次性批量迁入订阅源；已有同链接的自动跳过，重复导入安全。</div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".opml,.xml"
+              className="mt-4 w-full text-sm t-text"
+              onChange={(e) => importOpmlFlow(e.target.files?.[0])}
+              disabled={importBusy}
+            />
+            {importBusy && <div className="mt-3 text-xs t-muted">导入中（逐条创建，大文件需要一两分钟）…</div>}
+          </div>
+        </div>
+      )}
 
       {/* 源详情抽屉（10-05 用户点单②）：点源名看全——操作后同步刷新库数据 */}
       {detail && (
