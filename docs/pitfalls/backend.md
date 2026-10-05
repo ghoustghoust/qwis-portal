@@ -119,3 +119,11 @@
   ③跨环境还要写明**这一端走的是哪条腿**：runner 上没有本地转储目录，它改判库里的转储凭证（那份凭证只由"本地校验全过的转储"写入）——
   两腿都没有才挡。判"闸现在放不放行"必须同时读出它经哪条腿过的（`via`），否则"恒挡"与"走凭证腿放行"在日志里长得一样（口径见 ADR-22）。
 - 案例：`tools/collect-turso.js#contentDumpDir`；锁 `tests/regression-cleanup-observe.test.js` CO3（转储可用必放行、实删数==读数；CO2 的"无转储必挡"已随 10-04 锁裁决摘除——runner 自写凭证后那条判据不成立）。 <!-- doc-lint:ignore -->
+
+### #77 体积读数不带 `--compressed` 会把 gzip 后的传输误判成十倍级问题（2026-10-05 H57 收口时实测）
+- 症状：`curl -w '%{size_download}B'` 实测 admin GET "693kB/333kB/329kB/104kB"，据此立了"响应异常大"的账；
+  同端点带 `--compressed` 复测：118kB / **11.7kB** / **9.5kB** / 19kB——四条里三条的"异常大"不成立。
+- 根因：curl 默认不发 `Accept-Encoding`，Vercel 对 JSON 自动 gzip；浏览器恒带该头，所以"未压缩读数"是用户永远不会经历的场景。
+- 规则：①凡读**传输体积**（time_total/size_download），curl 必带 `--compressed`，账上写明口径；②"体积大"的判级先看 gzip 口径再看字段占比（JSON 键名重复约占三成，压缩比天然高）；
+  ③响应裁剪的真正依据是**消费方盘点**（零消费字段投影掉），不是未压缩总字节——形状错误 gzip 后也仍是形状错误（health/status 曾把 168 条心跳全量塞进只要 lastRunAt 的响应）。
+- 案例：`docs/eval/2026-10-05-h57-gzip-audit.txt`（双口径读数 + 字段占比 + 消费方盘点）；H57 已随之收口删账。 <!-- doc-lint:ignore -->

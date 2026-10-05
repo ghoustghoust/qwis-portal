@@ -1,0 +1,29 @@
+H57 后台大响应口径审计（2026-10-05，一次性只读探针产物）
+
+== 一、口径订正：H57 原读数（10-04）为未压缩口径 ==
+curl 不带 --compressed 时 size_download 是未压缩字节；浏览器恒带 Accept-Encoding: gzip，
+Vercel 对 application/json 自动 gzip。同端点双口径实测（a633b18 部署前）：
+  sources/library        未压缩 693kB -> gzip 118kB
+  health/status          未压缩 333kB -> gzip 11.7kB
+  health/collect-history 未压缩 329kB -> gzip 9.5kB
+  settings/daily         未压缩 104kB -> gzip 19kB
+=> gzip 口径下仅 library 真实偏大；"异常大"三条中两条不成立。
+
+== 二、裁剪后复测（a633b18 部署后，gzip 口径）==
+  health/status          11.7kB -> 374B   （collect 只投影 lastRunAt/mode；frozenList/cookieIssues 摘除）
+  collect-history        9.5kB  -> 5.0kB   （默认末120条+投影掉 stats.failures；totalInStore=168 报存量）
+  sources/library        118kB  -> 99kB    （SELECT 明确列裁 uid/focus/next_fetch_at；extra 白名单裁 marksFeatured/domain/etag/lastModified）
+  settings/daily         19kB，不动（前端复用 sources 缓存的改动面>收益，知情接受）
+
+== 三、library 字段字节占比（裁剪前，1300 行 JSON 本体 407kB）==
+  avatar 20% / url 18% / extra 18% / next_fetch_at 8% / created_at 8% / last_fetched_at 8% / name 4%
+  extra 内键分布: origin 559 / etag 460 / lastModified 358 / lastError 142 / lastErrorAt 142 / intervalMin 71 / domain 29 / aggregator 2 / marksFeatured 1
+  avatar 为 URL 非 dataURL（大体积不在此）
+
+== 四、消费方盘点（裁剪依据）==
+  health/status: MonitorTab 只读 sources 四计数；AdminRefCard 只读 collect.lastRunAt；frozenList/cookieIssues/alertsSummary 前端零消费——alertsSummary 因 AE3 锁（B69 形状）保留
+  collect-history: TrendChart 用末72条的 at/mode/stats.total/success/articles；LogsTab 用末1条的 at/mode；stats.failures 零消费
+  library: SourceLibraryTab 全字段表格 + AdminRefCard 计数；extra 实收键=aggregator/origin/intervalMin/categoryLocked/lastError(lastErrorAt)
+
+== 五、遗留 ==
+  首载 0.4~4.2s 波动的主因是 Vercel 冷启动（平台特性，前端/响应侧解不了）——知情接受。
