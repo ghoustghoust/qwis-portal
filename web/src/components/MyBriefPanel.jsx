@@ -3,15 +3,21 @@ import { api } from '../api';
 import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
 import TriggerButton from './TriggerButton.jsx';
+import SourcePickerModal from './SourcePickerModal.jsx';
 
 // T3-8 批次2：我的早报子板块——推送开关、探索强度、兴趣画像（只读，ADR-23）、Domain 篇数配额
 // （各块自原 BriefCenterTab 迁移，逻辑未改；新增页头真触发入口）
+// 10-05 功能隔离（用户验收反馈）：订阅集合的勾选入口从源库迁到本板块——「我的早报」的源
+// 在「我的早报」里管；源库只管源本身（采集/健康/分组）。
 export default function MyBriefPanel() {
   const [hist, setHist] = useState(null);
   const [mybriefCfg, setMybriefCfg] = useState(null);
   const [quotas, setQuotas] = useState({});
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [subPicker, setSubPicker] = useState(false);
+  const [libItems, setLibItems] = useState([]);
+  const [subscribedIds, setSubscribedIds] = useState([]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -30,6 +36,40 @@ export default function MyBriefPanel() {
     }
   }, []);
   useEffect(() => { load(); }, [load]);
+
+  // 订阅集合数据（选源器打开时拉取；生效口径与我的早报消费同源——/api/sources/library 的 subscribed）
+  const openSubPicker = async () => {
+    try {
+      const d = await api.get('/api/sources/library');
+      const items = d.items || [];
+      setLibItems(items);
+      setSubscribedIds(items.filter((s) => s.subscribed).map((s) => s.id));
+      setSubPicker(true);
+    } catch (e) {
+      toast('加载源列表失败: ' + e.message);
+    }
+  };
+
+  async function applySubscription(ids) {
+    const cur = new Set(subscribedIds);
+    const next = new Set(ids);
+    const add = ids.filter((id) => !cur.has(id));
+    const del = [...cur].filter((id) => !next.has(id));
+    if (!add.length && !del.length) { setSubPicker(false); return; }
+    try {
+      if (add.length) {
+        await api.post('/api/sources/batch', { ids: add, action: 'subscribe' });
+        toast(`已订阅 ${add.length} 个源`);
+      }
+      if (del.length) {
+        await api.post('/api/sources/batch', { ids: del, action: 'unsubscribe' });
+        toast(`已退订 ${del.length} 个源`);
+      }
+      setSubPicker(false);
+    } catch (e) {
+      toast('订阅更新失败: ' + e.message);
+    }
+  }
 
   const saveCfg = async (section, patch) => {
     setBusy(true);
@@ -62,7 +102,22 @@ export default function MyBriefPanel() {
           </div>
           <TriggerButton mode="mybrief" label="重新生成我的早报" confirmText="确认触发我的早报重生成？生成需几十分钟，AI 额度照常消耗。" />
         </div>
-        <div className="text-[11px] t-muted">订阅源在「源库」组合视图/批量条中加入订阅（订阅轴与重点轴各自独立）；探索位按多样性选内容，不改动你的订阅集合。</div>
+        <div className="text-[11px] t-muted">探索位按多样性选内容，不改动你的订阅集合。</div>
+      </section>
+
+      {/* 订阅来源（10-05 功能隔离迁入：从源库迁来——「我的早报」的源在这里管） */}
+      <section className="card p-5">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold t-text">订阅来源</h3>
+          <InfoTip
+            what="「我的早报」从哪些源取内容——生效口径与生成批次消费完全同源。"
+            how="点「管理订阅来源」打开选源器：搜索、筛选、批量勾选，确认即生效（无需再保存）。"
+            effect="保存后下一批生成即按新集合取内容；当前靠「重点」兜底进订阅的源，在你第一次保存勾选后会以本次勾选为准。"
+          />
+          <span className="flex-1" />
+          <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds.length || '…'} 个</span>
+          <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
+        </div>
       </section>
 
       {/* 我的早报设置（原块迁移） */}
@@ -157,6 +212,21 @@ export default function MyBriefPanel() {
           </div>
         )}
       </section>
+
+      {/* 订阅选源器（打开时才拉源列表；确认即生效） */}
+      <SourcePickerModal
+        open={subPicker}
+        title="管理订阅 ·「我的早报」来源"
+        note="作用对象：「我的早报」（订阅集合）。每日早报的来源范围是另一份配置，在「每日早报」板块的来源勾选里改——两处各管各的报。"
+        sources={libItems}
+        selectedIds={subscribedIds}
+        showSpotlight={false}
+        onClose={() => setSubPicker(false)}
+        onConfirm={(ids) => {
+          if (!window.confirm(`把订阅集合更新为 ${ids.length} 个源（现生效 ${subscribedIds.length} 个）？\n\n保存后「我的早报」只认本次勾选；当前靠「重点」兜底进订阅的源若未勾选将退出订阅。`)) return;
+          applySubscription(ids);
+        }}
+      />
     </div>
   );
 }

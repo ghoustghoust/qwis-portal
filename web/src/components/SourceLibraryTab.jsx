@@ -1,18 +1,25 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import { relativeTime } from '../util';
 import {
-  SearchIcon, SparklesIcon, LockIcon, StarIcon,
-  FolderIcon, ChevronDownIcon, RefreshIcon, TrashIcon,
+  SearchIcon, LockIcon,
+  FolderIcon, RefreshIcon, TrashIcon,
 } from './icons.jsx';
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
-import SourcePickerModal from './SourcePickerModal.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 平台接入（spec30：公众号 RSS / B站 两个平台 Tab 并入源库，功能零丢失）
 const WechatTab = lazy(() => import('./WechatTab.jsx'));
 const BilibiliTab = lazy(() => import('./BilibiliTab.jsx'));
+
+// ── 用户语言术语表（10-05 验收反馈：熔断/调频/failover/跟随全局 是工程话，全部换掉） ──
+const T = {
+  breaker: '异常暂停',   // 连续失败被自动停用
+  freq: '抓取频率',
+  failover: '备用切换',
+  followDefault: '跟随默认',
+};
 
 // 类型判定（与 plan 模块设计对齐）
 const VIDEO_TYPES_SET = new Set(['bilibili', 'douyin', 'youtube']);
@@ -28,35 +35,76 @@ function displayKind(s) {
   return 'article';
 }
 const KIND_LABEL = { article: '文章', video: '视频', podcast: '播客', tweet: '推文', hotlist: '热榜', retired: '已退役' };
-const KIND_ORDER = { article: 0, podcast: 1, video: 2, tweet: 3, hotlist: 4, retired: 5 };
 
-// 状态判定（2026-09-05 视觉精修：收敛为 badge 三态）
+// 统一状态模型（10-05 反馈第 4 条）：一个源只三种状态——正常 / 异常 / 已停用（已退役是引擎事实，保留）。
+// "熔断中(10)" 的括号数字没人懂，去掉；红色只留给「需要你现在处理」的形态（问题源视图/异常暂停）。
 function healthStatus(s) {
-  if (s.type === 'wemp') return { label: '已退役', cls: 'badge-gray' };
-  if (!s.enabled && s.fail_count >= 3) return { label: `熔断中(${s.fail_count})`, cls: 'badge-red' };
-  if (!s.enabled) return { label: '已停用', cls: 'badge-gray' };
-  return { label: '正常', cls: 'badge-green' };
+  if (s.type === 'wemp') return { label: '已退役', tone: 'gray' };
+  if (!s.enabled) return (s.fail_count || 0) >= 3 ? { label: T.breaker, tone: 'red' } : { label: '已停用', tone: 'gray' };
+  if (s.status === 'error' || (s.fail_count || 0) > 0) return { label: '异常', tone: 'orange' };
+  return { label: '正常', tone: 'green' };
 }
+const TONE_CLS = { green: 'text-[var(--green)]', orange: 'text-[var(--warn)]', red: 'text-[var(--red)]', gray: 't-muted' };
 
 function extraOf(s) {
   try { return JSON.parse(s.extra || '{}'); } catch { return {}; }
 }
 
-// 问题源判定（29-source-groups「问题源视图」）：熔断/报错/近 48h 新增待确认
+// 需要处理的源（问题源视图）：异常 / 异常暂停 / 近 48h 新增未确认
 function isIssueSource(s, nowMs) {
   if (s.type === 'wemp') return false;
-  if (!s.enabled && (s.fail_count || 0) >= 3) return true; // 熔断
-  if (s.status === 'error' || (s.fail_count || 0) > 0) return true; // 报错/有失败计数
+  if (!s.enabled && (s.fail_count || 0) >= 3) return true;
+  if (s.status === 'error' || (s.fail_count || 0) > 0) return true;
   const created = Date.parse(s.created_at || '');
-  if (Number.isFinite(created) && nowMs - created < 48 * 3600e3) return true; // 新增未确认
+  if (Number.isFinite(created) && nowMs - created < 48 * 3600e3) return true;
   return false;
 }
 
-const VIEW_LABEL = { groups: '组合', issues: '问题源', search: '检索', platform: '平台接入' };
+const VIEW_LABEL = { groups: '健康概览', issues: '问题源', search: '检索', platform: '平台接入' };
+const VIEW_HINT = {
+  groups: '各文件夹的健康概况——只看哪里要处理；具体操作在点「进入」后的检索视图。',
+  issues: '只列需要你处理的源（异常 / 异常暂停 / 新增未确认），处理完就从这里消失。',
+  search: '干活视图：搜索、单源操作（抓取频率 / 移动 / 删除）、勾选后底部批量。',
+  platform: '公众号 RSS 与 B 站的平台级配置（Cookie、间隔、队列）。',
+};
 
-// 29-source-groups（2026-09-15）：源库从「1500 行表格」重构为三视图——
-// 组合视图（默认，组为卡片）/ 问题源视图（只列异常）/ 检索视图（原全量表格）+ 平台接入（spec30 并入）
-// T3-8 批次1：左栏导航的「平台接入」子板块直接落在本组件的平台视图——initialView 由 AdminPage 传入
+// ── 卡片「⋯」菜单（10-05 反馈第 2 条：主操作唯一化，低频操作收进菜单） ──
+function CardMenu({ items }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+  if (!items.length) return null;
+  return (
+    <span className="relative inline-flex" ref={ref}>
+      <button
+        className="icon-btn !w-7 !h-7 t-muted"
+        aria-label="更多操作"
+        onClick={() => setOpen(!open)}
+      >⋯</button>
+      {open && (
+        <div className="absolute right-0 z-30 card p-1 w-44 shadow-lg">
+          {items.map((it) => (
+            <button
+              key={it.label}
+              className={`block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 ${it.danger ? 'text-[var(--red)]' : 't-text'}`}
+              onClick={() => { setOpen(false); it.onClick(); }}
+            >{it.label}</button>
+          ))}
+        </div>
+      )}
+    </span>
+  );
+}
+
+// 29-source-groups（2026-09-15）：三视图。10-05 按用户验收反馈按「任务导向」重排：
+// 健康概览（原组合视图，只看+进组）/ 问题源 / 检索（干活）+ 平台接入。
+// 功能隔离（10-05）：重点轴归「报 → 每日早报」的选源器、订阅轴归「报 → 我的早报」——
+// 源库不再设这两轴的操作入口（查看筛选保留），星标/订阅按钮已从此处摘除。
 export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [view, setView] = useState(initialView);
   const [items, setItems] = useState([]);
@@ -70,8 +118,9 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [showBackfill, setShowBackfill] = useState(false);
-  const [showSubManager, setShowSubManager] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
+  const toolsRef = useRef(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,7 +140,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
 
   useEffect(() => { load(); }, [load]);
 
-  // ── 组合视图聚合：组卡片数据（29 验收①：组为卡片单位；需要处理的组排前） ──
+  // ── 健康概览聚合：组卡片数据（需要处理的组排前） ──
   const groupCards = useMemo(() => {
     const nowMs = Date.now();
     const byGroup = new Map(); // gid | null → members[]
@@ -110,25 +159,15 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       const disabledN = members.filter((s) => !s.enabled && (s.fail_count || 0) < 3).length;
       const issueN = members.filter((s) => isIssueSource(s, nowMs)).length;
       const intervals = members.map((s) => Number(extraOf(s).intervalMin)).filter((n) => Number.isFinite(n) && n > 0);
-      const intervalText = intervals.length === 0 ? '跟随全局'
-        : new Set(intervals).size === 1 ? `${intervals[0]}min` : '混合';
-      // 四轴计数（组卡一键设轴的现状反馈）
-      const spotlightN = members.filter((s) => s.spotlight).length;
-      const mutedN = members.filter((s) => s.muted).length;
-      const invisibleN = members.filter((s) => s.reader_visible === 0).length;
-      // B79 订阅态可见化：subscribed 由后端按生效订阅集合（与我的早报消费同源）给出
-      const subN = members.filter((s) => s.subscribed).length;
+      const intervalText = intervals.length === 0 ? T.followDefault
+        : new Set(intervals).size === 1 ? `每 ${intervals[0]} 分钟` : '混合频率';
       cards.push({
-        gid, name: g ? g.name : '未分组', kind: g ? g.kind : null, total, okN,
+        gid, name: g ? g.name : '未分组', total, okN,
         okRate: total ? Math.round((okN / total) * 100) : 100,
         breakerN, errorN, disabledN, issueN, intervalText,
-        spotlightN, mutedN, invisibleN, subN,
         allDisabled: disabledN + breakerN === total,
-        allSpotlight: spotlightN === total, allMuted: mutedN === total,
-        allSubscribed: subN === total,
       });
     }
-    // 需要处理的组排前（含熔断/报错），其余按源数降序
     cards.sort((a, b) => (b.issueN - a.issueN) || (b.total - a.total));
     return cards;
   }, [items, groups]);
@@ -139,15 +178,15 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       .sort((a, b) => (b.fail_count || 0) - (a.fail_count || 0) || (Date.parse(b.created_at || '') || 0) - (Date.parse(a.created_at || '') || 0));
   }, [items]);
 
-  // 组级操作（27b ②：源库可对组批量设各轴；组级走 groupScopeId 单条 SQL）
+  // 组级操作（27b ②：组级走 groupScopeId 单条 SQL）
   async function doGroup(gid, action, extra = {}, confirmText) {
     if (confirmText && !window.confirm(confirmText)) return;
     try {
       const r = await api.post('/api/sources/batch', { groupScopeId: gid, action, ...extra });
-      toast(`组级 ${action} 完成：${r.succeeded} 个源${r.group ? `（${r.group}）` : ''}`);
+      toast(`完成：${r.succeeded} 个源${r.group ? `（${r.group}）` : ''}`);
       await load();
     } catch (e) {
-      toast('组级操作失败: ' + e.message);
+      toast('操作失败: ' + e.message);
     }
   }
 
@@ -176,6 +215,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     }
     if (filterStatus === 'disabled') arr = arr.filter((s) => !s.enabled && s.type !== 'wemp');
     else if (filterStatus === 'breaker') arr = arr.filter((s) => !s.enabled && s.fail_count >= 3);
+    else if (filterStatus === 'erroring') arr = arr.filter((s) => s.enabled && (s.status === 'error' || (s.fail_count || 0) > 0));
     else if (filterStatus === 'spotlight') arr = arr.filter((s) => s.spotlight);
     else if (filterStatus === 'subscribed') arr = arr.filter((s) => s.subscribed);
     else if (filterStatus === 'muted') arr = arr.filter((s) => s.muted);
@@ -210,7 +250,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     setBatchBusy(true);
     try {
       const res = await api.post('/api/sources/batch', { ids: [...selected], action, ...extra });
-      toast(`${action} 完成：成功 ${res.succeeded}${res.failed ? `，失败 ${res.failed}` : ''}`);
+      toast(`完成：成功 ${res.succeeded}${res.failed ? `，失败 ${res.failed}` : ''}`);
       setSelected(new Set());
       await load();
     } catch (e) {
@@ -230,6 +270,16 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     }
   }
 
+  // 单源立即抓取（runner 侧 next_fetch_at 置到期，15 分钟节奏内被拾起）
+  async function refreshOne(s) {
+    try {
+      await api.post(`/api/sources/${s.id}/refresh`);
+      toast(`已安排「${s.name || s.url}」尽快抓取`);
+    } catch (e) {
+      toast(e.message);
+    }
+  }
+
   // 单点改组
   async function doMove(id, groupId) {
     try {
@@ -240,30 +290,19 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     }
   }
 
-  // 订阅管理（用户验收反馈 10-05：找不到勾订阅的入口）——选源器 + 与生效集合 diff 成
-  // subscribe/unsubscribe 两批。保存=显式接管 subscription.ids：此后「我的早报」只认这里勾的
-  // 源，重点兜底（resolveSubscriptionIds 的键缺失回落）不再生效——confirm 文案里讲清这一跃迁。
-  const subscribedIds = items.filter((s) => s.subscribed).map((s) => s.id);
-  async function applySubscription(ids) {
-    const cur = new Set(subscribedIds);
-    const next = new Set(ids);
-    const add = ids.filter((id) => !cur.has(id));
-    const del = [...cur].filter((id) => !next.has(id));
-    if (!add.length && !del.length) { setShowSubManager(false); return; }
-    try {
-      if (add.length) {
-        await api.post('/api/sources/batch', { ids: add, action: 'subscribe' });
-        toast(`已订阅 ${add.length} 个源`);
-      }
-      if (del.length) {
-        await api.post('/api/sources/batch', { ids: del, action: 'unsubscribe' });
-        toast(`已退订 ${del.length} 个源`);
-      }
-      setShowSubManager(false);
-      await load();
-    } catch (e) {
-      toast('订阅更新失败: ' + e.message);
-    }
+  // 单源删除
+  async function deleteOne(s) {
+    if (!window.confirm(`确认删除源「${s.name || s.url}」？其全部内容将一并删除，不可恢复。`)) return;
+    try { await api.del('/api/sources/' + s.id); toast('已删除'); load(); } catch (e) { toast(e.message); }
+  }
+
+  // 单源抓取频率（prompt 与组菜单同一交互）
+  function promptInterval(s) {
+    const ex = extraOf(s);
+    const v = window.prompt(`「${s.name || s.url}」的${T.freq}（分钟，留空=${T.followDefault}）：`, ex.intervalMin || '');
+    if (v === null) return;
+    const t = v.trim();
+    doSingle(s.id, 'interval', { intervalMin: t === '' ? null : Number(t) });
   }
 
   // 筛选用的文件夹列表（按 kind 过滤）
@@ -273,44 +312,54 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     return groups.filter((g) => g.kind === 'article');
   }, [groups, filterKind]);
 
-  // ── 表格行（检索视图与问题源视图共用的单源操作列） ──
-  const rowOps = (s) => (
-    <>
-      <button
-        className="icon-btn !w-7 !h-7"
-        title={s.spotlight ? '取消重点（每日早报重点栏 + 智能排序加权）' : '设为重点（每日早报重点栏 + 智能排序加权）'}
-        onClick={() => doSingle(s.id, s.spotlight ? 'unspotlight' : 'spotlight')}
-      >
-        <StarIcon
-          size={14}
-          className={s.spotlight ? 't-accent' : ''}
-          style={s.spotlight ? { fill: 'currentColor' } : undefined}
-        />
-      </button>
-      <button
-        className="icon-btn !w-7 !h-7 t-muted hover:text-red-500"
-        title="删除源（级联删除其全部文章/视频，不可恢复）"
-        onClick={async () => {
-          if (!window.confirm('确认删除源「' + s.name + '」？其全部文章/视频将一并删除。')) return;
-          try { await api.del('/api/sources/' + s.id); toast('已删除 ' + s.name); load(); } catch (e) { toast(e.message); }
-        }}
-      >
-        <TrashIcon size={13} />
-      </button>
-      <button
-        className={`switch ${s.enabled ? 'on' : ''}`}
-        style={s.type === 'wemp' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
-        disabled={s.type === 'wemp'}
-        onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}
-        title={s.type === 'wemp' ? '已退役：该源采集引擎已下线，无法重新启用——请改用 wechat2rss 新源' : (s.enabled ? '点击停用' : '点击启用')}
-      />
-    </>
+  // 工具菜单（低频工具收纳：10-05 反馈第 5 条）
+  useEffect(() => {
+    if (!toolsOpen) return;
+    const onDoc = (e) => { if (toolsRef.current && !toolsRef.current.contains(e.target)) setToolsOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [toolsOpen]);
+
+  async function dedupeFlow() {
+    try {
+      const prev = await api.post('/api/sources/dedupe', {});
+      if (!prev.groups) return toast('查重完成：无重复');
+      if (!window.confirm(`发现 ${prev.groups} 组重复源。\n合并将停用每组冗余源（保留启用中/失败最少的一个）并标记。\n执行合并？`)) return;
+      const r = await api.post('/api/sources/dedupe', { apply: true });
+      toast(`已合并 ${r.merged} 个冗余源（${r.groups} 组）`);
+      load();
+    } catch (e) { toast(e.message); }
+  }
+
+  async function createGroupFlow() {
+    const name = window.prompt('新文件夹名称：');
+    if (!name || !name.trim()) return;
+    const kind = filterKind === 'video' ? 'video' : 'article';
+    try {
+      await api.post('/api/groups', { name: name.trim(), kind });
+      toast('已创建文件夹「' + name.trim() + '」');
+      load();
+    } catch (e) { toast(e.message); }
+  }
+
+  const toolsMenu = (
+    <span className="relative inline-flex" ref={toolsRef}>
+      <button className="btn-ghost text-sm" onClick={() => setToolsOpen(!toolsOpen)}>批量工具 ▾</button>
+      {toolsOpen && (
+        <div className="absolute right-0 z-30 card p-1 w-44 shadow-lg">
+          <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); createGroupFlow(); }}>新建文件夹</button>
+          <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); dedupeFlow(); }}>查重合并</button>
+          <a className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" href="/api/opml/export" download="qwis-sources.opml" onClick={() => setToolsOpen(false)}>导出 OPML</a>
+          <button className="block w-full text-left px-3 py-1.5 text-xs rounded hover:t-surface2 t-text" onClick={() => { setToolsOpen(false); setShowBackfill(true); }}>自动分类回填</button>
+        </div>
+      )}
+    </span>
   );
 
   return (
     <div>
-      {/* 视图切换（29：默认组合视图） */}
-      <div className="flex items-center gap-1.5 mb-4 flex-wrap">
+      {/* 视图切换 */}
+      <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
         {['groups', 'issues', 'search', 'platform'].map((v) => (
           <button
             key={v}
@@ -326,94 +375,82 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         <span className="flex-1" />
         <span className="text-xs t-muted">{items.length} 源 · {groups.length} 组</span>
       </div>
+      {/* 指引行（10-05 反馈：指引不清晰——每个视图一句话说清它是干嘛的） */}
+      <div className="text-[11px] t-muted mb-4">{VIEW_HINT[view]}</div>
 
       {loading ? (
         <div className="text-center py-12 t-muted text-sm">加载中…</div>
       ) : view === 'groups' ? (
-        /* ── 组合视图：组卡片（需要处理的组排前） ── */
+        /* ── 健康概览：健康度图形化（10-05 反馈第 3 条）+ 主操作唯一化（第 2 条）——只看+进组 ── */
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {groupCards.map((c) => (
-            <div key={c.gid ?? 'none'} className="card p-4">
-              <div className="flex items-center gap-2">
-                <FolderIcon size={15} className="t-muted flex-none" />
-                <span className="font-medium t-text truncate flex-1" title={c.name}>{c.name}</span>
-                {c.breakerN > 0 && <span className="badge-red flex-none">熔断 {c.breakerN}</span>}
-                {c.errorN > 0 && <span className="badge-red flex-none">报错 {c.errorN}</span>}
-              </div>
-              <div className="mt-2 flex items-center gap-2 text-[11px] t-muted tabular-nums flex-wrap">
-                <span>{c.total} 源</span>
-                <span className="sep">·</span>
-                <span className={c.okRate >= 90 ? 'text-[var(--green)]' : c.okRate >= 70 ? '' : 'text-[var(--red)]'}>正常率 {c.okRate}%</span>
-                <span className="sep">·</span>
-                <span>{c.intervalText}</span>
-              </div>
-              {/* 四轴现状（27b：一轴一控件只管一件事，点按=全组设置/取消）
-                  未分组卡（gid=null）无组级操作目标——后端 groupScopeId 需非空 id，禁用并引导去检索视图（对抗审查 P1-1） */}
-              {c.gid === null ? (
-                <div className="mt-2.5 text-[11px] t-muted">
-                  {c.total} 个源还没分进文件夹（多为历史批量导入）。点「进入」后在检索视图可搜索、批量勾选，用「移动到」归类；
-                  不分类也能正常采集和订阅，分组只是为了好找。
+          {groupCards.map((c) => {
+            const issueN = c.breakerN + c.errorN;
+            const okPct = c.total ? (c.okN / c.total) * 100 : 100;
+            const issuePct = c.total ? (issueN / c.total) * 100 : 0;
+            const healthTone = issueN === 0 ? 'green' : (c.okRate >= 70 ? 'orange' : 'red');
+            return (
+              <div key={c.gid ?? 'none'} className="card p-5">
+                <div className="flex items-center gap-2">
+                  <FolderIcon size={15} className="t-muted flex-none" />
+                  <span className="font-medium t-text truncate flex-1" title={c.name}>{c.name}</span>
+                  <span className={`flex-none text-xs ${TONE_CLS[healthTone]}`}>
+                    {issueN === 0 ? '●' : '●'} {c.okRate}% 正常
+                  </span>
                 </div>
-              ) : (
-              <>
-              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[11px]">
-                <button
-                  className={`pill cursor-pointer ${c.allSpotlight ? 'on' : ''}`}
-                  title={`重点轴：进每日早报「重点更新」栏 + 智能排序加权（当前 ${c.spotlightN}/${c.total}）——点击${c.allSpotlight ? '全组取消' : '全组设为'}重点`}
-                  onClick={() => doGroup(c.gid, c.allSpotlight ? 'unspotlight' : 'spotlight')}
-                >重点 {c.spotlightN}</button>
-                <button
-                  className={`pill cursor-pointer ${c.allSubscribed ? 'on' : ''}`}
-                  title={`订阅轴：高分内容进「我的早报」（生效订阅口径，当前 ${c.subN}/${c.total}）——点击${c.allSubscribed ? '全组退订' : '全组加入'}订阅`}
-                  onClick={() => doGroup(c.gid, c.allSubscribed ? 'unsubscribe' : 'subscribe', {}, c.allSubscribed ? undefined : `把「${c.name}」整组加入我的早报订阅？`)}
-                >订阅 {c.subN}</button>
-                <button
-                  className={`pill cursor-pointer ${c.allMuted ? 'on' : ''}`}
-                  title={`屏蔽轴：从热点榜/阅读器排除（当前 ${c.mutedN}/${c.total}）——点击${c.allMuted ? '全组解除' : '全组屏蔽'}`}
-                  onClick={() => doGroup(c.gid, c.allMuted ? 'unmute' : 'mute', {}, c.allMuted ? undefined : `屏蔽「${c.name}」整组？其内容将从热点榜/阅读器隐藏（数据仍在，检索源时可见）`)}
-                >屏蔽 {c.mutedN}</button>
-                <button
-                  className={`pill cursor-pointer ${c.invisibleN === c.total ? 'on' : ''}`}
-                  title={`收录轴：内容是否进阅读器列表（当前 ${c.total - c.invisibleN}/${c.total} 收录）——点击全组${c.invisibleN === c.total ? '恢复收录' : '移出阅读器'}`}
-                  onClick={() => doGroup(c.gid, c.invisibleN === c.total ? 'visible' : 'invisible')}
-                >收录 {c.total - c.invisibleN}</button>
-              </div>
-              <div className="mt-2.5 pt-2.5 border-t t-border flex items-center gap-1.5 flex-wrap">
-                <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => enterGroup(c.gid)}>进入</button>
-                {c.allDisabled ? (
-                  <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => doGroup(c.gid, 'enable')}>恢复组</button>
-                ) : (
-                  <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => doGroup(c.gid, 'disable', {}, `暂停「${c.name}」整组（${c.total} 源停止采集，数据保留）？`)}>暂停组</button>
+                {/* 健康度一条进度条说完：绿=正常 红=异常 灰=已停用 */}
+                <div className="mt-3 h-1.5 rounded-full overflow-hidden flex bg-[var(--surface-2)]">
+                  <div style={{ width: `${okPct}%`, background: 'var(--green)' }} />
+                  <div style={{ width: `${issuePct}%`, background: 'var(--red)' }} />
+                </div>
+                <div className="mt-2 flex items-center text-[11px] t-muted">
+                  <span className="flex-1">{c.total} 源 · {c.intervalText}</span>
+                  {issueN > 0 && <span className="text-[var(--red)]">{issueN} 异常</span>}
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <button className="btn-primary !py-1.5 !px-5 !text-xs" onClick={() => enterGroup(c.gid)}>进入</button>
+                  <span className="flex-1" />
+                  {c.gid !== null && (
+                    <CardMenu
+                      items={[
+                        c.allDisabled
+                          ? { label: '恢复整组采集', onClick: () => doGroup(c.gid, 'enable') }
+                          : { label: '暂停整组采集', onClick: () => doGroup(c.gid, 'disable', {}, `暂停「${c.name}」整组（${c.total} 源停止采集，数据保留）？`) },
+                        {
+                          label: `整组${T.freq}…`,
+                          onClick: () => {
+                            const v = window.prompt(`「${c.name}」整组${T.freq}（分钟，留空=${T.followDefault}）：`, '');
+                            if (v === null) return;
+                            const t = v.trim();
+                            doGroup(c.gid, 'interval', { intervalMin: t === '' ? null : Number(t) });
+                          },
+                        },
+                        {
+                          label: `${T.failover}…`,
+                          onClick: () => {
+                            const v = window.prompt(`「${c.name}」${T.failover}组名（同名字母互为备用，主源异常暂停时自动换备用；留空清除）：`, '');
+                            if (v === null) return;
+                            doGroup(c.gid, 'failover', { failoverGroup: v.trim() });
+                          },
+                        },
+                        { label: '整组屏蔽（热点榜/阅读器隐藏）', onClick: () => doGroup(c.gid, 'mute', {}, `屏蔽「${c.name}」整组？其内容将从热点榜/阅读器隐藏（数据仍在）`) },
+                        { label: '整组恢复显示', onClick: () => doGroup(c.gid, 'unmute') },
+                      ].filter(Boolean)}
+                    />
+                  )}
+                </div>
+                {c.gid === null && (
+                  <div className="mt-2 text-[11px] t-muted">
+                    这些源还没分进文件夹（多为历史批量导入）。不分类也能正常采集；想归类：进入后勾选「移动到」，或用「批量工具 → 自动分类回填」一键按内容归类。
+                  </div>
                 )}
-                <button
-                  className="btn-ghost !py-1 !px-2.5 text-xs"
-                  title="整组刷新间隔（分钟）；留空=跟随全局"
-                  onClick={() => {
-                    const v = window.prompt(`「${c.name}」整组调频（分钟，留空跟随全局）：`, '');
-                    if (v === null) return;
-                    const t = v.trim();
-                    doGroup(c.gid, 'interval', { intervalMin: t === '' ? null : Number(t) });
-                  }}
-                >调频</button>
-                <button
-                  className="btn-ghost !py-1 !px-2.5 text-xs"
-                  title="failover 组标记：同组名互为备用，主源熔断时 runner 自动换备用源（T4-2 R2）；留空清除"
-                  onClick={() => {
-                    const v = window.prompt(`「${c.name}」failover 组名（同名字母互为备用；留空清除）：`, '');
-                    if (v === null) return;
-                    doGroup(c.gid, 'failover', { failoverGroup: v.trim() });
-                  }}
-                >failover</button>
               </div>
-              </>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : view === 'issues' ? (
-        /* ── 问题源视图：只列熔断/报错/新增未确认（29 验收②） ── */
+        /* ── 问题源视图：只列需要处理的（任务导向正面样本，保留） ── */
         issueSources.length === 0 ? (
-          <div className="text-center py-12 t-muted text-sm">🎉 没有需要处理的问题源</div>
+          <div className="text-center py-12 t-muted text-sm">没有需要处理的源——都正常。</div>
         ) : (
           <div className="overflow-x-hidden">
             <table className="w-full text-sm">
@@ -424,8 +461,8 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   <th className="py-2 px-1.5 text-left w-24">文件夹</th>
                   <th className="py-2 px-1.5 text-left w-24">状态</th>
                   <th className="py-2 px-1.5 text-left">最近错误</th>
-                  <th className="py-2 px-1.5 text-left w-24">入库时间</th>
-                  <th className="py-2 px-1.5 w-24">操作</th>
+                  <th className="py-2 px-1.5 text-left w-24">加入时间</th>
+                  <th className="py-2 px-1.5 w-28">操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -438,15 +475,21 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                     <tr key={s.id} className="border-b t-border/50 hover:t-surface/50">
                       <td className="py-2 px-1.5"><SourceAvatar name={s.name} avatar={s.avatar} size={24} /></td>
                       <td className="py-2 px-1.5">
-                        <span className="truncate max-w-[200px] inline-block align-middle" title={s.name}>{s.name}</span>
+                        <span className="truncate max-w-[200px] inline-block align-middle" title={s.name}>{s.name || s.url}</span>
                         {isNew && <span className="pill on ml-1.5">新增</span>}
                       </td>
                       <td className="py-2 px-1.5 text-xs t-muted">{g ? g.name : '未分组'}</td>
-                      <td className="py-2 px-1.5"><span className={hs.cls}>{hs.label}</span></td>
+                      <td className="py-2 px-1.5"><span className={`text-xs font-medium ${TONE_CLS[hs.tone]}`}>{hs.label}</span></td>
                       <td className="py-2 px-1.5 text-xs t-muted truncate max-w-[260px]" title={ex.lastError || ''}>{ex.lastError || '—'}</td>
                       <td className="py-2 px-1.5 text-xs t-muted">{s.created_at ? relativeTime(s.created_at) : '—'}</td>
                       <td className="py-2 px-1.5">
-                        <div className="flex items-center gap-1">{rowOps(s)}</div>
+                        <div className="flex items-center gap-1">
+                          {!s.enabled && (s.fail_count || 0) >= 3 && (
+                            <button className="btn-ghost !py-1 !px-2 text-xs" onClick={() => doSingle(s.id, 'enable')}>重新启用</button>
+                          )}
+                          <button className="icon-btn !w-7 !h-7 t-muted" title={`${T.freq}`} onClick={() => promptInterval(s)}>⏱</button>
+                          <button className="icon-btn !w-7 !h-7 t-muted hover:text-red-500" title="删除" onClick={() => deleteOne(s)}><TrashIcon size={13} /></button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -456,7 +499,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           </div>
         )
       ) : view === 'platform' ? (
-        /* ── 平台接入（spec30：公众号 RSS / B站 原独立 Tab 并入，功能零丢失） ── */
+        /* ── 平台接入（spec30） ── */
         <div className="space-y-8">
           <section>
             <div className="text-base font-bold t-text mb-1">公众号 RSS</div>
@@ -474,9 +517,9 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           </section>
         </div>
       ) : (
-        /* ── 检索视图：原全量表格（29 验收④：现全部能力移入此视图） ── */
+        /* ── 检索视图：干活的地方（10-05 反馈第 5/6 条：表格降噪 + 可调控件补齐） ── */
         <>
-      {/* 工具栏 */}
+      {/* 工具栏：搜索 + 筛选 + 批量工具（低频工具收进菜单） */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="flex items-center gap-1.5 t-surface border t-border rounded-lg px-2.5 py-1.5 flex-1 min-w-[200px] max-w-[320px]">
           <SearchIcon size={15} className="t-muted flex-none" />
@@ -502,82 +545,28 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         </select>
         <select className="input !w-auto" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}>
           <option value="all">全部状态</option>
-          <option value="disabled">仅未启用</option>
-          <option value="breaker">仅熔断</option>
-          <option value="spotlight">仅重点</option>
-          <option value="subscribed">仅订阅</option>
+          <option value="erroring">仅异常</option>
+          <option value="breaker">仅异常暂停</option>
+          <option value="disabled">仅已停用</option>
+          <option value="spotlight">仅重点（每日早报）</option>
+          <option value="subscribed">仅订阅（我的早报）</option>
           <option value="muted">仅屏蔽</option>
           <option value="invisible">仅未收录</option>
         </select>
         <span className="flex-1" />
-        <button
-          className="btn-ghost text-sm flex items-center gap-1"
-          title="新建文件夹后可在行内下拉把源移动进去"
-          onClick={async () => {
-            const name = window.prompt('新文件夹名称：');
-            if (!name || !name.trim()) return;
-            const kind = filterKind === 'video' ? 'video' : 'article';
-            try {
-              await api.post('/api/groups', { name: name.trim(), kind });
-              toast('已创建文件夹「' + name.trim() + '」');
-              load();
-            } catch (e) { toast(e.message); }
-          }}
-        >
-          <FolderIcon size={15} /> 新建文件夹
-        </button>
-        <button
-          className="btn-ghost text-sm flex items-center gap-1"
-          title="同 URL 或 同名同域 的重复源合并：每组保留最优，其余停用并标记"
-          onClick={async () => {
-            try {
-              const prev = await api.post('/api/sources/dedupe', {});
-              if (!prev.groups) return toast('查重完成：无重复');
-              if (!window.confirm(`发现 ${prev.groups} 组重复源。
-合并将停用每组冗余源（保留启用中/失败最少的一个）并标记 mergedInto。
-执行合并？`)) return;
-              const r = await api.post('/api/sources/dedupe', { apply: true });
-              toast(`已合并 ${r.merged} 个冗余源（${r.groups} 组）`);
-              load();
-            } catch (e) { toast(e.message); }
-          }}
-        >
-          查重合并
-        </button>
-        <a
-          className="btn-ghost text-sm flex items-center gap-1"
-          href="/api/opml/export"
-          download="qwis-sources.opml"
-          title="导出全部订阅源为标准 OPML，可导入其他 RSS 阅读器"
-        >
-          <RefreshIcon size={15} /> 导出 OPML
-        </a>
-        <button className="btn-ghost text-sm flex items-center gap-1" onClick={() => setShowBackfill(true)}>
-          <SparklesIcon size={15} /> 自动分类回填
-        </button>
-        <button
-          className="btn-ghost text-sm flex items-center gap-1"
-          title="管理「我的早报」的订阅来源（勾选 + 搜索 + 批量）"
-          onClick={() => setShowSubManager(true)}
-        >
-          <StarIcon size={15} /> 管理订阅（{subscribedIds.length}）
-        </button>
+        {toolsMenu}
       </div>
 
-      {/* 批量浮动条（27b：四轴批量操作） */}
+      {/* 批量浮动条：勾选后浮出（重点/订阅轴已按功能隔离迁往早报板块） */}
       {selected.size > 0 && (
         <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg t-accent-soft border t-border flex-wrap">
           <span className="text-sm font-medium t-text">已选 {selected.size} 项</span>
           <span className="flex-1" />
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('enable')}>启用</button>
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('disable')}>停用</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} title="重点轴：进每日早报重点栏 + 智能排序加权" onClick={() => doBatch('spotlight')}>设重点</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('unspotlight')}>取消重点</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} title="订阅轴：高分内容进我的早报" onClick={() => doBatch('subscribe')}>订阅</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('unsubscribe')}>退订</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} title="屏蔽轴：从热点榜/阅读器排除" onClick={() => doBatch('mute')}>屏蔽</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('unmute')}>解除屏蔽</button>
-          <button className="btn-ghost text-xs" disabled={batchBusy} title="收录轴：移出阅读器列表（数据保留，检索源可见）" onClick={() => doBatch('invisible')}>移出阅读器</button>
+          <button className="btn-ghost text-xs" disabled={batchBusy} title="从热点榜/阅读器隐藏（数据保留）" onClick={() => doBatch('mute')}>屏蔽</button>
+          <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('unmute')}>恢复显示</button>
+          <button className="btn-ghost text-xs" disabled={batchBusy} title="移出阅读器列表（数据保留）" onClick={() => doBatch('invisible')}>移出阅读器</button>
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('visible')}>恢复收录</button>
           <div className="flex items-center gap-1">
             <span className="text-xs t-muted">移动到</span>
@@ -591,7 +580,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         </div>
       )}
 
-      {/* 表格 */}
+      {/* 表格：常驻 4 元素（勾选/名称块/开关），其余 hover 出现 */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 t-muted text-sm">
           {items.length === 0 ? '源库为空，请先添加订阅源' : '没有匹配筛选条件的源'}
@@ -604,68 +593,69 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                 <th className="py-2 px-1.5 w-8">
                   <input type="checkbox" checked={allPageSelected} onChange={toggleSelectAll} />
                 </th>
-                <th className="py-2 px-1.5 w-9"></th>
-                <th className="py-2 px-1.5 text-left">名称</th>
-                <th className="py-2 px-1.5 text-left w-16">类型</th>
-                <th className="py-2 px-1.5 text-left w-32">文件夹</th>
-                <th className="py-2 px-1.5 text-left w-20">状态</th>
-                <th className="py-2 px-1.5 text-right w-16">条目</th>
-                <th className="py-2 px-1.5 text-left w-24">最近抓取</th>
-                <th className="py-2 px-1.5 w-8" title="重点（每日早报重点栏 + 智能排序加权）">☆</th>
-                <th className="py-2 px-1.5 w-8" title="删除源（级联删除其文章/视频）">删</th>
-                <th className="py-2 px-1.5 w-10">启用</th>
+                <th className="py-2 px-1.5 text-left">源</th>
+                <th className="py-2 px-1.5 text-right w-16 text-xs font-normal" title="启用 = 是否采集；异常暂停的源用它重新启用">采集</th>
               </tr>
             </thead>
             <tbody>
               {pageItems.map((s) => {
                 const kind = displayKind(s);
                 const hs = healthStatus(s);
-                let extra = {};
-                try { extra = JSON.parse(s.extra || '{}'); } catch { /* ignore */ }
-                const locked = !!extra.categoryLocked;
-                // 文件夹下拉可用的组（同 kind）
+                const ex = extraOf(s);
+                const locked = !!ex.categoryLocked;
+                const g = groups.find((x) => x.id === s.group_id);
                 const sourceKind = VIDEO_TYPES_SET.has(s.type) ? 'video' : 'article';
-                const availableGroups = groups.filter((g) => g.kind === sourceKind);
+                const availableGroups = groups.filter((x) => x.kind === sourceKind);
+                const stateWord = hs.label === '正常' ? null : hs.label;
                 return (
-                  <tr key={s.id} className="border-b t-border/50 hover:t-surface/50">
-                    <td className="py-2 px-1.5">
+                  <tr key={s.id} className="group border-b t-border/50 hover:t-surface/50">
+                    <td className="py-2.5 px-1.5 align-middle">
                       <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggleSelect(s.id)} />
                     </td>
-                    <td className="py-2 px-1.5">
-                      <SourceAvatar name={s.name} avatar={s.avatar} size={24} />
-                    </td>
-                    <td className="py-2 px-1.5">
-                      <div className="flex items-center gap-1">
-                        <span className="truncate max-w-[200px]" title={s.name}>{s.name}</span>
-                        {locked && <LockIcon size={12} className="t-muted flex-none" title="手动锁定" />}
-                        {!!s.subscribed && <span className="badge-green flex-none" title="订阅轴：该源在生效订阅集合中，高分内容进「我的早报」">订</span>}
-                        {!!s.muted && <span className="badge-gray flex-none" title="屏蔽轴：热点榜/阅读器已排除">屏</span>}
-                        {s.reader_visible === 0 && <span className="badge-gray flex-none" title="收录轴：已移出阅读器列表">藏</span>}
+                    <td className="py-2.5 px-1.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <SourceAvatar name={s.name} avatar={s.avatar} size={30} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="truncate font-medium t-text max-w-[220px]" title={s.name}>{s.name || s.url}</span>
+                            {locked && <LockIcon size={12} className="t-muted flex-none" title="手动锁定（自动分类不改动它）" />}
+                          </div>
+                          <div className="mt-0.5 text-[11px] t-muted truncate">
+                            {KIND_LABEL[kind] || kind}
+                            <span className="mx-1">·</span>{g ? g.name : '未分组'}
+                            {stateWord && (<><span className="mx-1">·</span><span className={TONE_CLS[hs.tone]}>{stateWord}</span></>)}
+                            <span className="mx-1">·</span>{s.itemCount} 条
+                            <span className="mx-1">·</span>{s.last_fetched_at ? relativeTime(s.last_fetched_at) : '未抓取过'}
+                          </div>
+                        </div>
+                        {/* hover 才出现的行操作（10-05 反馈第 5 条）：立即抓取 / 抓取频率 / 移动 / 删除 */}
+                        <div className="hidden group-hover:flex items-center gap-1 flex-none">
+                          <button className="icon-btn !w-7 !h-7" title="立即抓取（下个采集批次优先处理）" onClick={() => refreshOne(s)}><RefreshIcon size={13} /></button>
+                          <button className="icon-btn !w-7 !h-7" title={`${T.freq}（分钟；现为 ${ex.intervalMin ? `${ex.intervalMin} 分钟` : T.followDefault}）`} onClick={() => promptInterval(s)}>⏱</button>
+                          <select
+                            className="input !py-0.5 !px-1 !text-xs !w-auto max-w-[110px] opacity-70"
+                            title="移动到文件夹"
+                            value={s.group_id ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              doMove(s.id, val === '' ? null : Number(val));
+                            }}
+                          >
+                            <option value="">未分组</option>
+                            {availableGroups.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                          </select>
+                          <button className="icon-btn !w-7 !h-7 t-muted hover:text-red-500" title="删除源（级联删除内容，不可恢复）" onClick={() => deleteOne(s)}><TrashIcon size={13} /></button>
+                        </div>
                       </div>
                     </td>
-                    <td className="py-2 px-1.5">
-                      <span className="pill">{KIND_LABEL[kind] || kind}</span>
-                    </td>
-                    <td className="py-2 px-1.5">
-                      <select
-                        className="input !py-0.5 !px-1.5 !text-xs w-full"
-                        value={s.group_id ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          doMove(s.id, val === '' ? null : Number(val));
-                        }}
-                      >
-                        <option value="">未分组</option>
-                        {availableGroups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-                      </select>
-                    </td>
-                    <td className="py-2 px-1.5">
-                      <span className={hs.cls}>{hs.label}</span>
-                    </td>
-                    <td className="py-2 px-1.5 text-right tabular-nums">{s.itemCount}</td>
-                    <td className="py-2 px-1.5 text-xs t-muted">{s.last_fetched_at ? relativeTime(s.last_fetched_at) : '—'}</td>
-                    <td className="py-2 px-1.5" colSpan={3}>
-                      <div className="flex items-center gap-1">{rowOps(s)}</div>
+                    <td className="py-2.5 px-1.5 text-right align-middle">
+                      <button
+                        className={`switch ${s.enabled ? 'on' : ''}`}
+                        style={s.type === 'wemp' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
+                        disabled={s.type === 'wemp'}
+                        onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}
+                        title={s.type === 'wemp' ? '已退役：采集引擎已下线，无法重新启用' : (s.enabled ? '点击停用采集' : '点击启用采集')}
+                      />
                     </td>
                   </tr>
                 );
@@ -675,7 +665,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         </div>
       )}
 
-      {/* 分页（2026-09-05 视觉精修：页码 pill 化） */}
+      {/* 分页 */}
       {filtered.length > pageSize && (
         <div className="flex items-center justify-between mt-4 text-xs t-muted">
           <div className="flex items-center gap-2">
@@ -703,22 +693,6 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           onApplied={() => { setShowBackfill(false); load(); }}
         />
       )}
-
-      {/* 订阅管理弹窗：勾选=显式接管订阅集合（confirm 讲清与重点兜底的跃迁） */}
-      <SourcePickerModal
-        open={showSubManager}
-        title="管理订阅 ·「我的早报」来源"
-        note="作用对象：「我的早报」（订阅集合）。每日早报的来源范围是另一份配置，在「报 → 每日早报」的来源勾选里改——两处各管各的报。"
-        sources={items}
-        selectedIds={subscribedIds}
-        showSpotlight={false}
-        onClose={() => setShowSubManager(false)}
-        onConfirm={(ids) => {
-          const curN = subscribedIds.length;
-          if (!window.confirm(`把订阅集合更新为 ${ids.length} 个源（现生效 ${curN} 个）？\n\n保存后「我的早报」只认本次勾选；当前靠「重点」兜底进订阅的源若未勾选将退出订阅。`)) return;
-          applySubscription(ids);
-        }}
-      />
     </div>
   );
 }
