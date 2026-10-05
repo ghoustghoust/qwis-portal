@@ -1785,11 +1785,14 @@ async function handleAiChat(req) {
 }
 
 // ─── P1-1: GET /api/sources/library — 源库列表（含 itemCount + contentKind + extra 脱敏） ───
-const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'marksFeatured', 'aggregator', 'domain', 'etag', 'lastModified', 'categoryLocked', 'origin', 'failoverGroup'];
+// H57 裁剪（10-05）：extra 白名单按前端实收收紧（marksFeatured/domain/etag/lastModified 零消费——
+// etag/lastModified 是采集侧条件请求字段，不进管理界面）；SELECT 明确列替代 *（uid/focus/next_fetch_at 零消费）。
+const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'aggregator', 'categoryLocked', 'origin', 'failoverGroup'];
+const LIBRARY_COLUMNS = 'id, type, name, url, avatar, group_id, spotlight, muted, reader_visible, enabled, fail_count, status, last_fetched_at, created_at, extra';
 const VIDEO_TYPES_SET = new Set(['bilibili', 'douyin', 'youtube']);
 
 async function handleSourcesLibrary(req) {
-  const sources = await qAll('SELECT * FROM sources ORDER BY id');
+  const sources = await qAll(`SELECT ${LIBRARY_COLUMNS} FROM sources ORDER BY id`);
   // 聚合计数
   const articleCounts = {};
   const videoCounts = {};
@@ -1941,26 +1944,15 @@ async function handleHealthStatus(req) {
   const enabled = (await qOne('SELECT COUNT(*) c FROM sources WHERE enabled=1')).c;
   const errorSources = (await qOne("SELECT COUNT(*) c FROM sources WHERE status='error' AND enabled=1")).c;
   const frozen = (await qOne('SELECT COUNT(*) c FROM sources WHERE fail_count >= 3 AND enabled=0')).c;
-  const frozenRows = await qAll(
-    'SELECT id, name, type, fail_count, extra FROM sources WHERE fail_count >= 3 AND enabled=0 ORDER BY fail_count DESC LIMIT 20'
-  );
-  const frozenList = frozenRows.map((r) => {
-    let extra = {};
-    try { extra = JSON.parse(r.extra || '{}'); } catch { /* 忽略 */ }
-    return {
-      id: r.id, name: r.name, type: r.type, failCount: r.fail_count,
-      lastError: extra.lastError ? String(extra.lastError).slice(0, 200) : null,
-      lastErrorAt: extra.lastErrorAt || null,
-    };
-  });
-  const errRows = await qAll("SELECT id, name, type, extra FROM sources WHERE status='error' AND extra LIKE '%lastError%'");
-  const cookieIssues = errRows.filter((r) => {
-    let extra = {};
-    try { extra = JSON.parse(r.extra || '{}'); } catch { return false; }
-    return /-2012|cookie.*(过期|失效)|登录态失效|401|-101|SESSDATA/i.test(extra.lastError || '');
-  }).map((r) => ({ id: r.id, name: r.name, type: r.type }));
+  // H57 裁剪：原 frozenRows/frozenList（LIMIT 20 行带 lastError）前端零消费，已摘——
+  // 熔断明细的消费面在源库问题源视图与 /api/dashboard 的计数。
   // 云端特有：采集心跳（方案A runner 直采每轮写入）
-  const collect = await getSetting('cloud.collect', null);
+  // H57 裁剪（10-05 实测口径订正后保留的形状修正）：此处曾把 cloud.collect 整包塞进响应
+  // （168 条心跳 history 全量=333kB 未压缩口径的主体），而消费方只有 AdminRefCard 的
+  // lastRunAt——折线图有独立的 /api/health/collect-history。只投影两个标量。
+  // frozenList/cookieIssues 同批摘除：前端零消费（健康四计数在 sources；明细看源库问题源视图）。
+  const collectRaw = await getSetting('cloud.collect', null);
+  const collect = collectRaw ? { lastRunAt: collectRaw.lastRunAt || null, mode: collectRaw.mode || null } : null;
   // B69：报警出口判定与本地端/preflight 同一份（usableChannels）；只出计数与投递态，不回显 URL
   const alertsCfg = await getSetting('alerts', {});
   const alertChannels = Array.isArray(alertsCfg.channels) ? alertsCfg.channels : [];
@@ -1973,7 +1965,8 @@ async function handleHealthStatus(req) {
   };
   return jsonOk({
     sources: { total, enabled, error: errorSources, frozen },
-    frozenList, cookieIssues, collect, alerts: alertsSummary, checkedAt: nowIso(),
+    // H57 裁剪：frozenList/cookieIssues 前端零消费（健康四计数在 sources；明细看源库问题源视图）
+    collect, alerts: alertsSummary, checkedAt: nowIso(),
   });
 }
 
@@ -2050,10 +2043,20 @@ async function handleDashboard(req) {
 }
 
 // GET /api/health/collect-history — 采集心跳历史（T3-2 监控折线图数据源）
+// H57 裁剪（10-05）：折线图用末 72 条、日志板块用末 1 条——全量 168 条（含每条 failures
+// 数组）零消费。默认回末 120 条并投影掉 stats.failures；?limit= 可要更多（原始值仍在 settings）。
 async function handleCollectHistory(req) {
   const hb = await getSetting('cloud.collect', {});
-  const history = Array.isArray(hb.history) ? hb.history : [];
-  return jsonOk({ lastRunAt: hb.lastRunAt || null, mode: hb.mode || null, history });
+  const limit = Math.min(Number(req.query.limit) || 120, 500);
+  const raw = Array.isArray(hb.history) ? hb.history : [];
+  const history = raw.slice(-limit).map((h) => {
+    if (!h || typeof h !== 'object') return h;
+    const { stats, ...rest } = h;
+    if (!stats || typeof stats !== 'object') return { ...rest, stats };
+    const { failures, ...slimStats } = stats;
+    return { ...rest, stats: slimStats };
+  });
+  return jsonOk({ lastRunAt: hb.lastRunAt || null, mode: hb.mode || null, history, totalInStore: raw.length });
 }
 
 // GET /api/brief/history — 早报中心生成历史（T3-2 R1）
