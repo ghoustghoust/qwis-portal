@@ -61,10 +61,11 @@ function isIssueSource(s, nowMs) {
   return false;
 }
 
-const VIEW_LABEL = { groups: '健康概览', issues: '问题源', search: '检索', platform: '平台接入' };
+const VIEW_LABEL = { groups: '健康概览', issues: '问题源', issues_cleanup: '清理', search: '检索', platform: '平台接入' };
 const VIEW_HINT = {
   groups: '各文件夹的健康概况。组级操作（暂停/频率/备用/屏蔽）在卡片「⋯」菜单；单源细处理点「进入」。',
   issues: '只列需要你处理的源（异常 / 异常暂停 / 新增未确认），处理完就从这里消失。',
+  issues_cleanup: '从未抓到内容 / 长期没活的启用源——批量停用或删除，一次清一片。',
   search: '干活视图：搜索、单源操作（行悬停出现）、勾选后上方浮出批量条。',
   platform: '公众号 RSS 与 B 站的平台级配置（Cookie、间隔、队列）。',
 };
@@ -120,6 +121,8 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [pageSize, setPageSize] = useState(50);
   const [showBackfill, setShowBackfill] = useState(false);
   const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
+  const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
+  const [cleanupSel, setCleanupSel] = useState(new Set());
   const [toolsOpen, setToolsOpen] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
   const toolsRef = useRef(null);
@@ -141,6 +144,14 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // 死源清理器候选：进问题源视图时拉一次
+  useEffect(() => {
+    if (view !== 'issues' || cleanup) return;
+    (async () => {
+      try { setCleanup(await api.get('/api/sources/cleanup-candidates')); } catch { /* 拉不到不阻断 */ }
+    })();
+  }, [view, cleanup]);
 
   // ── 健康概览聚合：组卡片数据（需要处理的组排前） ──
   const groupCards = useMemo(() => {
@@ -294,6 +305,32 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     }
   }
 
+  // 死源清理动作（停用=可回退的常态操作；删除=级联清内容，confirm 更狠）
+  async function cleanupBatch(action) {
+    const ids = [...cleanupSel];
+    if (!ids.length) return toast('先勾选要清理的源');
+    const text = action === 'disable'
+      ? `停用勾选的 ${ids.length} 个源？（停止采集，数据保留，随时可启用回来）`
+      : `删除勾选的 ${ids.length} 个源？其全部内容将级联删除，不可恢复——建议先停用观察。`;
+    if (!window.confirm(text)) return;
+    try {
+      let done = 0;
+      for (let i = 0; i < ids.length; i += 25) {
+        const chunk = ids.slice(i, i + 25);
+        if (action === 'disable') {
+          const r = await api.post('/api/sources/batch', { ids: chunk, action: 'disable' });
+          done += r.succeeded || 0;
+        } else {
+          for (const id of chunk) { await api.del('/api/sources/' + id); done++; }
+        }
+      }
+      toast(`${action === 'disable' ? '已停用' : '已删除'} ${done} 个源`);
+      setCleanupSel(new Set());
+      setCleanup(null);
+      await load();
+    } catch (e) { toast('清理失败: ' + e.message); }
+  }
+
   // 单源立即抓取（runner 侧 next_fetch_at 置到期，15 分钟节奏内被拾起）
   async function refreshOne(s) {
     try {
@@ -399,7 +436,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     <div>
       {/* 视图切换 */}
       <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-        {['groups', 'issues', 'search', 'platform'].map((v) => (
+        {['groups', 'issues', 'issues_cleanup', 'search', 'platform'].map((v) => (
           <button
             key={v}
             className={`pill !px-3 !py-1.5 !text-[13px] cursor-pointer ${view === v ? 'on' : ''}`}
@@ -548,6 +585,73 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
               </tbody>
             </table>
           </div>
+        )
+      ) : view === 'issues_cleanup' ? (
+        /* ── 死源清理器（10-05 用户点单①）：从未成功/超两周没活的源，批量停用或删除 ── */
+        !cleanup ? (
+          <div className="text-center py-12 t-muted text-sm">加载中…</div>
+        ) : cleanup.items.length === 0 ? (
+          <div className="text-center py-12 t-muted text-sm">库很干净——没有从未成功或长期没活的启用源。</div>
+        ) : (
+          <>
+          <div className="card p-4 mb-3">
+            <div className="flex items-center gap-3 flex-wrap text-[13px]">
+              <span className="t-text font-medium">勾选要清理的源（已选 {cleanupSel.size} / {cleanup.items.length}）</span>
+              <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setCleanupSel(new Set(cleanup.items.map((x) => x.id)))}>全选</button>
+              <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setCleanupSel(new Set())}>全不选</button>
+              <span className="flex-1" />
+              <button className="btn-ghost !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size} onClick={() => cleanupBatch('disable')}>停用勾选</button>
+              <button className="btn-primary !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size} onClick={() => cleanupBatch('delete')}>删除勾选</button>
+            </div>
+            <div className="mt-2 text-[11px] t-muted">
+              判据：{Object.entries(cleanup.rules).map(([k, v]) => v).join('；')}。这些源启用中但从未抓到内容——
+              停用=停止采集可回退；删除=级联清内容不可恢复，建议先停用观察。
+            </div>
+          </div>
+          <div className="overflow-x-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b t-border text-xs t-muted">
+                  <th className="py-2 px-1.5 w-8"></th>
+                  <th className="py-2 px-1.5 text-left">名称</th>
+                  <th className="py-2 px-1.5 text-left w-16">类型</th>
+                  <th className="py-2 px-1.5 text-left w-24">文件夹</th>
+                  <th className="py-2 px-1.5 text-left w-28">情况</th>
+                  <th className="py-2 px-1.5 text-left w-24">加入时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cleanup.items.map((s) => {
+                  const g = groups.find((x) => x.id === s.groupId);
+                  return (
+                    <tr key={s.id} className="border-b t-border/50 hover:t-surface/50">
+                      <td className="py-2 px-1.5">
+                        <input
+                          type="checkbox"
+                          checked={cleanupSel.has(s.id)}
+                          onChange={() => {
+                            const next = new Set(cleanupSel);
+                            if (next.has(s.id)) next.delete(s.id); else next.add(s.id);
+                            setCleanupSel(next);
+                          }}
+                        />
+                      </td>
+                      <td className="py-2 px-1.5">
+                        <div className="truncate max-w-[260px]" title={`${s.name || s.url}
+${s.url}`}>{s.name || s.url}</div>
+                        <div className="text-[11px] t-muted truncate max-w-[260px]">{s.url}</div>
+                      </td>
+                      <td className="py-2 px-1.5 t-muted">{s.type}</td>
+                      <td className="py-2 px-1.5 text-xs t-muted">{g ? g.name : '未分组'}</td>
+                      <td className="py-2 px-1.5 text-xs" style={{ color: 'var(--warn)' }}>{s.reason === 'never_ok' ? '从未抓到内容' : '长期没抓到'}</td>
+                      <td className="py-2 px-1.5 text-xs t-muted">{s.createdAt ? relativeTime(s.createdAt) : '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          </>
         )
       ) : view === 'platform' ? (
         /* ── 平台接入（spec30） ── */

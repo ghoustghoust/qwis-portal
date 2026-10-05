@@ -1970,6 +1970,36 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/sources/cleanup-candidates — 死源清理器（10-05 用户点单①）
+// 判据（真值驱动，已逐档验证）："从未成功抓取且入库 >7 天"（itemCount=0 + last_fetched_at 为空 +
+// created_at 超过 7 天——排除刚加的新源），外加"长期没抓到内容"（last_fetched_at 超 14 天）。
+// 90 天窗口不成立：runner 2026-06 才上线、服务器有断层，last_fetched_at 是"尝试抓取"不是"有产出"
+// ——真死源 = 从未成功过/超两周没活，不是"没到 90 天"。
+async function handleCleanupCandidates(req) {
+  const now = Date.now();
+  const d7 = new Date(now - 7 * 86400e3).toISOString();
+  const d14 = new Date(now - 14 * 86400e3).toISOString();
+  const [neverOk, stale] = await Promise.all([
+    qAll(`SELECT id, name, type, url, group_id, created_at, fail_count
+          FROM sources WHERE enabled=1 AND type != 'wemp'
+          AND COALESCE((SELECT COUNT(*) FROM articles a WHERE a.source_id=sources.id),0)
+            + COALESCE((SELECT COUNT(*) FROM videos v WHERE v.source_id=sources.id),0) = 0
+          AND (last_fetched_at IS NULL OR last_fetched_at='' OR last_fetched_at='null')
+          AND created_at < ?`, [d7]),
+    qAll(`SELECT id, name, type, url, group_id, last_fetched_at, fail_count
+          FROM sources WHERE enabled=1 AND type != 'wemp'
+          AND last_fetched_at IS NOT NULL AND last_fetched_at != '' AND last_fetched_at != 'null'
+          AND last_fetched_at < ?`, [d14]),
+  ]);
+  const shape = (r, reason) => ({ id: r.id, name: r.name, type: r.type, url: r.url, groupId: r.group_id,
+    reason, failCount: r.fail_count || 0, createdAt: r.created_at || null, lastFetchedAt: r.last_fetched_at || null });
+  const items = [
+    ...neverOk.map((r) => shape(r, 'never_ok')),
+    ...stale.map((r) => shape(r, 'stale_14d')),
+  ].sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
+  return jsonOk({ items, rules: { never_ok: '从未成功抓取且入库 >7 天', stale_14d: '超过 14 天没抓到内容' } });
+}
+
 // GET /api/dashboard — 首页仪表盘轻聚合（T3-8 批次6）
 // H57 教训内建：严控投影与响应体积（计数与末 N 条投影，不出大列表）；入报 Top5 不在这里
 // （贵查询），前端并行拉现成的 /api/status/daily-sources（自带 60s 缓存，B26 懒加载设计）。
@@ -3218,7 +3248,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
-    if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
+    if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
+  if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
   if (path === '/api/health/collect-history') return handleCollectHistory(req);
     if (path === '/api/brief/history') return handleBriefHistory(req);
     if (path === '/api/queue/pending') return handleQueuePending(req);
