@@ -7,6 +7,19 @@ import SourceAvatar from './ui/SourceAvatar.jsx';
 // 内容：身份信息 / 健康（状态+最近错误+连续失败）/ 最近抓取 / 内容样例（最近 5 条）/
 // 轴状态（重点·订阅·屏蔽·收录 只读——操作入口各在早报板块）/ 操作（启停·立即抓取·删除）。
 const VIDEO_TYPES = new Set(['bilibili', 'douyin', 'youtube']);
+// 与 SourceLibraryTab 的 displayKind 同口径（对抗审查 A：contentKind 只有 video/article 二元，
+// 播客/推文/热榜在列表里是细分标签、抽屉不能退化成"文章"）
+function displayKind(s) {
+  if (s.type === 'wemp') return 'retired';
+  if (s.type === 'x') return 'tweet';
+  if (s.type === 'hotlist' || (s.extra && JSON.parse(s.extra || '{}').aggregator)) return 'hotlist';
+  if (s.type === 'rss') {
+    const ex = JSON.parse(s.extra || '{}');
+    if (ex.origin === 'bestblogs-podcast' || (s.url || '').includes('xiaoyuzhoufm')) return 'podcast';
+  }
+  if (VIDEO_TYPES.has(s.type)) return 'video';
+  return 'article';
+}
 const KIND_LABEL = { article: '文章', video: '视频', podcast: '播客', tweet: '推文', hotlist: '热榜', retired: '已退役' };
 const TONE_CLS = { green: 'text-[var(--green)]', orange: 'text-[var(--warn)]', red: 'text-[var(--red)]', gray: 't-muted' };
 
@@ -42,7 +55,8 @@ export default function SourceDetailDrawer({ source, groups = [], onClose, onRef
           ? `/api/videos?source_id=${s.id}&limit=5`
           : `/api/articles?source_id=${s.id}&limit=5`;
         const d = await api.get(ep);
-        setRecent(d.items || []);
+        // H31 口径：limit 参数两端都不读（PAGE_SIZE=30 写死）——前端自己截前 5 条，对齐标题（对抗审查 B）
+        setRecent((d.items || []).slice(0, 5));
       } catch (e) {
         setRecentError(e.message || '加载失败');
       }
@@ -75,7 +89,7 @@ export default function SourceDetailDrawer({ source, groups = [], onClose, onRef
           <div className="min-w-0 flex-1">
             <div className="font-semibold t-text leading-snug break-all">{s.name || s.url}</div>
             <div className="mt-0.5 text-[11px] t-muted">
-              {KIND_LABEL[s.contentKind] || s.type} · {g ? g.name : '未分组'} · 加入 {s.created_at ? relativeTime(s.created_at) : '—'}
+              {KIND_LABEL[displayKind(s)] || s.type} · {g ? g.name : '未分组'} · 加入 {s.created_at ? relativeTime(s.created_at) : '—'}
             </div>
             <a className="mt-1 block text-[11px] t-accent break-all" href={s.url} target="_blank" rel="noopener noreferrer">{s.url}</a>
           </div>
@@ -83,7 +97,9 @@ export default function SourceDetailDrawer({ source, groups = [], onClose, onRef
             <button className="icon-btn" onClick={onClose} title="关闭">✕</button>
             <button
               className={`switch ${s.enabled ? 'on' : ''}`}
-              title={s.enabled ? '点击停用采集' : '点击启用采集'}
+              style={s.type === 'wemp' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
+              disabled={s.type === 'wemp'}
+              title={s.type === 'wemp' ? '已退役：采集引擎已下线，无法启用' : (s.enabled ? '点击停用采集' : '点击启用采集')}
               onClick={() => onToggle(s)}
             />
           </div>
