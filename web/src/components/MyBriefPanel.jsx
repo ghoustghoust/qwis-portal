@@ -17,7 +17,7 @@ export default function MyBriefPanel() {
   const [loading, setLoading] = useState(true);
   const [subPicker, setSubPicker] = useState(false);
   const [libItems, setLibItems] = useState([]);
-  const [subscribedIds, setSubscribedIds] = useState([]);
+  const [subscribedIds, setSubscribedIds] = useState(null); // null=未加载（区别于真 0）
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -66,6 +66,7 @@ export default function MyBriefPanel() {
         toast(`已退订 ${del.length} 个源`);
       }
       setSubPicker(false);
+      await openSubPicker(); // 保存后刷新计数（对抗审查 D：header 别停在旧值）
     } catch (e) {
       toast('订阅更新失败: ' + e.message);
     }
@@ -115,7 +116,7 @@ export default function MyBriefPanel() {
             effect="保存后下一批生成即按新集合取内容；当前靠「重点」兜底进订阅的源，在你第一次保存勾选后会以本次勾选为准。"
           />
           <span className="flex-1" />
-          <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds.length || '…'} 个</span>
+          <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds === null ? '…' : subscribedIds.length} 个</span>
           <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
         </div>
       </section>
@@ -219,11 +220,12 @@ export default function MyBriefPanel() {
         title="管理订阅 ·「我的早报」来源"
         note="作用对象：「我的早报」（订阅集合）。每日早报的来源范围是另一份配置，在「每日早报」板块的来源勾选里改——两处各管各的报。"
         sources={libItems}
-        selectedIds={subscribedIds}
+        selectedIds={subscribedIds === null ? [] : subscribedIds}
         showSpotlight={false}
+        instantApply
         onClose={() => setSubPicker(false)}
         onConfirm={(ids) => {
-          if (!window.confirm(`把订阅集合更新为 ${ids.length} 个源（现生效 ${subscribedIds.length} 个）？\n\n保存后「我的早报」只认本次勾选；当前靠「重点」兜底进订阅的源若未勾选将退出订阅。`)) return;
+          if (!window.confirm(`把订阅集合更新为 ${ids.length} 个源（现生效 ${subscribedIds === null ? '?' : subscribedIds.length} 个）？\n\n保存后「我的早报」只认本次勾选；当前靠「重点」兜底进订阅的源若未勾选将退出订阅。`)) return;
           applySubscription(ids);
         }}
       />

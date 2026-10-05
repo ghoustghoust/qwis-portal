@@ -54,7 +54,7 @@ function extraOf(s) {
 function isIssueSource(s, nowMs) {
   if (s.type === 'wemp') return false;
   if (!s.enabled && (s.fail_count || 0) >= 3) return true;
-  if (s.status === 'error' || (s.fail_count || 0) > 0) return true;
+  if (s.enabled && (s.status === 'error' || (s.fail_count || 0) > 0)) return true; // 手动停用=已处理，不再算待处理
   const created = Date.parse(s.created_at || '');
   if (Number.isFinite(created) && nowMs - created < 48 * 3600e3) return true;
   return false;
@@ -62,9 +62,9 @@ function isIssueSource(s, nowMs) {
 
 const VIEW_LABEL = { groups: '健康概览', issues: '问题源', search: '检索', platform: '平台接入' };
 const VIEW_HINT = {
-  groups: '各文件夹的健康概况——只看哪里要处理；具体操作在点「进入」后的检索视图。',
+  groups: '各文件夹的健康概况。组级操作（暂停/频率/备用/屏蔽）在卡片「⋯」菜单；单源细处理点「进入」。',
   issues: '只列需要你处理的源（异常 / 异常暂停 / 新增未确认），处理完就从这里消失。',
-  search: '干活视图：搜索、单源操作（抓取频率 / 移动 / 删除）、勾选后底部批量。',
+  search: '干活视图：搜索、单源操作（行悬停出现）、勾选后上方浮出批量条。',
   platform: '公众号 RSS 与 B 站的平台级配置（Cookie、间隔、队列）。',
 };
 
@@ -161,10 +161,13 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       const intervals = members.map((s) => Number(extraOf(s).intervalMin)).filter((n) => Number.isFinite(n) && n > 0);
       const intervalText = intervals.length === 0 ? T.followDefault
         : new Set(intervals).size === 1 ? `每 ${intervals[0]} 分钟` : '混合频率';
+      const mutedN = members.filter((s) => s.muted).length;
+      const invisibleN = members.filter((s) => s.reader_visible === 0).length;
       cards.push({
         gid, name: g ? g.name : '未分组', total, okN,
         okRate: total ? Math.round((okN / total) * 100) : 100,
         breakerN, errorN, disabledN, issueN, intervalText,
+        mutedN, invisibleN,
         allDisabled: disabledN + breakerN === total,
       });
     }
@@ -384,7 +387,9 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         /* ── 健康概览：健康度图形化（10-05 反馈第 3 条）+ 主操作唯一化（第 2 条）——只看+进组 ── */
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {groupCards.map((c) => {
-            const issueN = c.breakerN + c.errorN;
+            // 异常数用 c.issueN（isIssueSource 按源去重）——breakerN/errorN 不互斥（熔断源
+            // status='error' 不复位，两集合必交），双计数会污染进度条与异常数（对抗审查 A）
+            const issueN = c.issueN;
             const okPct = c.total ? (c.okN / c.total) * 100 : 100;
             const issuePct = c.total ? (issueN / c.total) * 100 : 0;
             const healthTone = issueN === 0 ? 'green' : (c.okRate >= 70 ? 'orange' : 'red');
@@ -394,7 +399,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   <FolderIcon size={15} className="t-muted flex-none" />
                   <span className="font-medium t-text truncate flex-1" title={c.name}>{c.name}</span>
                   <span className={`flex-none text-xs ${TONE_CLS[healthTone]}`}>
-                    {issueN === 0 ? '●' : '●'} {c.okRate}% 正常
+                    ● {c.okRate}% 正常
                   </span>
                 </div>
                 {/* 健康度一条进度条说完：绿=正常 红=异常 灰=已停用 */}
@@ -432,8 +437,12 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                             doGroup(c.gid, 'failover', { failoverGroup: v.trim() });
                           },
                         },
-                        { label: '整组屏蔽（热点榜/阅读器隐藏）', onClick: () => doGroup(c.gid, 'mute', {}, `屏蔽「${c.name}」整组？其内容将从热点榜/阅读器隐藏（数据仍在）`) },
-                        { label: '整组恢复显示', onClick: () => doGroup(c.gid, 'unmute') },
+                        c.mutedN === c.total
+                          ? { label: '整组恢复显示（解除屏蔽）', onClick: () => doGroup(c.gid, 'unmute') }
+                          : { label: '整组屏蔽（热点榜/阅读器隐藏）', onClick: () => doGroup(c.gid, 'mute', {}, `屏蔽「${c.name}」整组？其内容将从热点榜/阅读器隐藏（数据仍在）`) },
+                        c.invisibleN === c.total
+                          ? { label: '整组恢复收录（回阅读器）', onClick: () => doGroup(c.gid, 'visible') }
+                          : { label: '整组移出阅读器', onClick: () => doGroup(c.gid, 'invisible') },
                       ].filter(Boolean)}
                     />
                   )}
@@ -487,7 +496,8 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                           {!s.enabled && (s.fail_count || 0) >= 3 && (
                             <button className="btn-ghost !py-1 !px-2 text-xs" onClick={() => doSingle(s.id, 'enable')}>重新启用</button>
                           )}
-                          <button className="icon-btn !w-7 !h-7 t-muted" title={`${T.freq}`} onClick={() => promptInterval(s)}>⏱</button>
+                          <button className="icon-btn !w-7 !h-7 t-muted" title={s.enabled ? '停用采集' : '启用采集'} onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}>⏸</button>
+                          <button className="icon-btn !w-7 !h-7 t-muted" title={T.freq} onClick={() => promptInterval(s)}>⏱</button>
                           <button className="icon-btn !w-7 !h-7 t-muted hover:text-red-500" title="删除" onClick={() => deleteOne(s)}><TrashIcon size={13} /></button>
                         </div>
                       </td>
@@ -629,7 +639,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                           </div>
                         </div>
                         {/* hover 才出现的行操作（10-05 反馈第 5 条）：立即抓取 / 抓取频率 / 移动 / 删除 */}
-                        <div className="hidden group-hover:flex items-center gap-1 flex-none">
+                        <div className="flex md:opacity-0 md:group-hover:opacity-100 transition-opacity items-center gap-1 flex-none">
                           <button className="icon-btn !w-7 !h-7" title="立即抓取（下个采集批次优先处理）" onClick={() => refreshOne(s)}><RefreshIcon size={13} /></button>
                           <button className="icon-btn !w-7 !h-7" title={`${T.freq}（分钟；现为 ${ex.intervalMin ? `${ex.intervalMin} 分钟` : T.followDefault}）`} onClick={() => promptInterval(s)}>⏱</button>
                           <select

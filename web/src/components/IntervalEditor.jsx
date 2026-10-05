@@ -32,7 +32,7 @@ export default function IntervalEditor({ source, onSaved }) {
         min="1"
         className="input !w-16 !px-1.5 !py-0.5 !text-[11px]"
         placeholder="默认"
-        title="刷新间隔（分钟），留空跟随全局"
+        title="刷新间隔（分钟），留空跟随默认"
         value={val}
         onChange={(e) => setVal(e.target.value)}
       />
@@ -47,7 +47,7 @@ export default function IntervalEditor({ source, onSaved }) {
         <button
           className="btn-ghost !px-2 !py-0.5 !text-[11px] t-muted"
           disabled={busy}
-          title="清除源级覆盖，跟随全局间隔"
+          title="清除源级覆盖，跟随默认间隔"
           onClick={() => save(null)}
         >
           恢复默认

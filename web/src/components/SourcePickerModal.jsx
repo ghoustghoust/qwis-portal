@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 // 每日早报的「文章来源 / 视频来源」用它；批次4 的源库总览检索共用此形态。
 // 替代的旧形态：全量平铺 checkbox 列表、无搜索无批量（千级源只能线性滚动逐个点）。
 // showSpotlight=false：隐藏重点轴（订阅管理等单轴场景，单一职责）——默认 true 保持旧用法。
-export default function SourcePickerModal({ open, title, note, sources = [], selectedIds = [], spotlightIds = [], showSpotlight = true, onClose, onConfirm }) {
+export default function SourcePickerModal({ open, title, note, sources = [], selectedIds = [], spotlightIds = [], showSpotlight = true, instantApply = false, onClose, onConfirm }) {
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('all'); // all|on|off
   const [sort, setSort] = useState('default'); // default|name
@@ -108,7 +108,8 @@ export default function SourcePickerModal({ open, title, note, sources = [], sel
             <button className="btn-ghost !py-1 !px-2.5 text-xs" disabled={cur <= 1} onClick={() => setPage(cur - 1)}>上一页</button>
             <button className="btn-ghost !py-1 !px-2.5 text-xs" disabled={cur >= pages} onClick={() => setPage(cur + 1)}>下一页</button>
             <button className="btn-primary !py-1 !px-3 text-xs" onClick={() => onConfirm(draft, draftSpot)}>确定</button>
-            <span className="text-[11px] t-muted">确定=暂存，还需页面底部「保存设置」落库</span>
+        {!instantApply && (<div className="text-[11px] t-muted pt-2">确定=暂存，还需页面底部「保存设置」落库。</div>)}
+        {instantApply && <div className="text-[11px] t-muted pt-2">点「确定」即生效，无需再保存。</div>}
           </div>
         </div>
       </div>
