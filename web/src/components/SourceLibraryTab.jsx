@@ -124,6 +124,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
   const [detail, setDetail] = useState(null); // 源详情抽屉（10-05 用户点单②）
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
+  const [clusters, setClusters] = useState(null); // 失败原因聚类（10-05 用户点单③）
   const [cleanupSel, setCleanupSel] = useState(new Set());
   const [cleanupBusy, setCleanupBusy] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -156,6 +157,14 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       try { setCleanup(await api.get('/api/sources/cleanup-candidates', true)); } catch { /* 拉不到不阻断 */ }
     })();
   }, [view, cleanup]);
+
+  // 失败原因聚类：进问题源视图时拉
+  useEffect(() => {
+    if (view !== 'issues' || clusters) return;
+    (async () => {
+      try { setClusters(await api.get('/api/sources/error-clusters', true)); } catch { /* 拉不到不阻断 */ }
+    })();
+  }, [view, clusters]);
 
   // ── 健康概览聚合：组卡片数据（需要处理的组排前） ──
   const groupCards = useMemo(() => {
@@ -544,7 +553,41 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         </div>
       ) : view === 'issues' ? (
         /* ── 问题源视图：只列需要处理的（任务导向正面样本，保留） ── */
-        issueSources.length === 0 ? (
+        <>
+        {clusters && clusters.clusters.length > 0 && (
+          <div className="card p-4 mb-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold t-text">按原因聚类</h3>
+              <span className="text-[11px] t-muted">同一种病的源放一起——系统级问题（≥10 个同类型同错）排最前</span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {clusters.clusters.map((c) => (
+                <div key={c.key} className="rounded-lg border t-border p-3" style={c.systemic ? { borderLeft: '3px solid var(--red)' } : undefined}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[13px] font-medium t-text">{c.label}</span>
+                    <span className={`text-xs tabular-nums ${c.count >= 10 ? 'text-[var(--red)] font-semibold' : 't-muted'}`}>{c.count} 个源</span>
+                    {c.systemic && <span className="badge-red">系统级 · 全是 {c.systemic}</span>}
+                    <span className="flex-1" />
+                    <button
+                      className="btn-ghost !py-1 !px-2.5 text-xs"
+                      onClick={() => {
+                        setFilterStatus('erroring');
+                        setFilterKind('all');
+                        setFilterGroup('all');
+                        setSearch('');
+                        setView('search');
+                      }}
+                    >去检索处理 →</button>
+                  </div>
+                  <div className="mt-1.5 text-[11px] t-muted">
+                    {c.items.slice(0, 6).map((it) => it.name || it.type).join('、')}{c.count > 6 ? ` 等 ${c.count} 个` : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {issueSources.length === 0 ? (
           <div className="text-center py-12 t-muted text-sm">没有需要处理的源——都正常。</div>
         ) : (
           <div className="overflow-x-hidden">
@@ -593,7 +636,8 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
               </tbody>
             </table>
           </div>
-        )
+        )}
+        </>
       ) : view === 'issues_cleanup' ? (
         /* ── 死源清理器（10-05 用户点单①）：从未成功/超两周没活的源，批量停用或删除 ── */
         !cleanup ? (

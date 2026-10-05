@@ -1970,6 +1970,47 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/sources/error-clusters — 失败原因聚类（10-05 用户点单③）
+// lastError 只有字符串无语义字段——读层规则桶（写入侧不动；将来要更准应在写侧加 errorKind）。
+// 系统性簇（同类型同指纹 ≥10 个）置顶——80 个 YouTube 全 404 这类"一种病一片"就是要被发现的对象。
+const ERROR_BUCKETS = [
+  { key: 'http_404', label: '404 源没了/路径失效', match: (e) => /404/i.test(e) },
+  { key: 'http_403', label: '403 被拒（多半是反爬/封 IP）', match: (e) => /403|forbidden/i.test(e) },
+  { key: 'http_401', label: '401 登录态/Cookie 失效', match: (e) => /401|unauthorized|cookie.*(过期|失效)|SESSDATA/i.test(e) },
+  { key: 'http_429', label: '429 触发限流', match: (e) => /429|rate.?limit/i.test(e) },
+  { key: 'timeout', label: '超时', match: (e) => /timeout|timed? ?out|ETIMEDOUT|ECONNRESET|socket/i.test(e) },
+  { key: 'parse', label: '解析失败（多半是返回的不是 RSS/页面变了）', match: (e) => /parse|XML|Invalid|Unexpected|non-XML|doctype|html/i.test(e) },
+  { key: 'network', label: '网络层失败（DNS/连接/TLS）', match: (e) => /ENOTFOUND|ECONNREFUSED|fetch failed|certificate|CERT|TLS|SSL|EPROTO/i.test(e) },
+];
+function errorBucket(err) {
+  const e = String(err || '');
+  for (const b of ERROR_BUCKETS) { if (b.match(e)) return b; }
+  return { key: 'other', label: '其他' };
+}
+
+async function handleErrorClusters(req) {
+  const rows = await qAll("SELECT id, name, type, group_id, fail_count, extra FROM sources WHERE enabled=1 AND status='error'");
+  const byKey = new Map();
+  for (const r of rows) {
+    let extra = {};
+    try { extra = JSON.parse(r.extra || '{}'); } catch { /* ignore */ }
+    if (!extra.lastError) continue;
+    const b = errorBucket(extra.lastError);
+    if (!byKey.has(b.key)) byKey.set(b.key, { key: b.key, label: b.label, count: 0, items: [], byType: {} });
+    const c = byKey.get(b.key);
+    c.count++;
+    c.byType[r.type] = (c.byType[r.type] || 0) + 1;
+    if (c.items.length < 20) c.items.push({ id: r.id, name: r.name, type: r.type, groupId: r.group_id, failCount: r.fail_count || 0, error: String(extra.lastError).slice(0, 160), lastErrorAt: extra.lastErrorAt || null });
+  }
+  const clusters = [...byKey.values()].sort((a, b) => b.count - a.count);
+  // 系统性标记：同桶 ≥10 且单一类型占比 ≥80%——系统级问题（一种病一片），不是散源故障
+  for (const c of clusters) {
+    const topType = Object.entries(c.byType).sort((x, y) => y[1] - x[1])[0];
+    if (c.count >= 10 && topType && topType[1] / c.count >= 0.8) c.systemic = topType[0];
+  }
+  return jsonOk({ clusters, total: rows.length, buckets: clusters.map((c) => ({ key: c.key, label: c.label })) });
+}
+
 // GET /api/sources/cleanup-candidates — 死源清理器（10-05 用户点单①）
 // 判据（真值驱动，已逐档验证）："从未成功抓取且入库 >7 天"（itemCount=0 + last_fetched_at 为空 +
 // created_at 超过 7 天——排除刚加的新源），外加"长期没抓到内容"（last_fetched_at 超 14 天）。
@@ -3252,7 +3293,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
-    if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
+    if (path === '/api/sources/error-clusters' && method === 'GET') return handleErrorClusters(req);
+  if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
   if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
   if (path === '/api/health/collect-history') return handleCollectHistory(req);
     if (path === '/api/brief/history') return handleBriefHistory(req);
