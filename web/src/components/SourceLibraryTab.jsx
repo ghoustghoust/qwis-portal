@@ -350,7 +350,10 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
               {/* 四轴现状（27b：一轴一控件只管一件事，点按=全组设置/取消）
                   未分组卡（gid=null）无组级操作目标——后端 groupScopeId 需非空 id，禁用并引导去检索视图（对抗审查 P1-1） */}
               {c.gid === null ? (
-                <div className="mt-2.5 text-[11px] t-muted">未分组源请「进入」后在检索视图按 ids 批量操作</div>
+                <div className="mt-2.5 text-[11px] t-muted">
+                  {c.total} 个源还没分进文件夹（多为历史批量导入）。点「进入」后在检索视图可搜索、批量勾选，用「移动到」归类；
+                  不分类也能正常采集和订阅，分组只是为了好找。
+                </div>
               ) : (
               <>
               <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[11px]">
@@ -705,6 +708,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
       <SourcePickerModal
         open={showSubManager}
         title="管理订阅 ·「我的早报」来源"
+        note="作用对象：「我的早报」（订阅集合）。每日早报的来源范围是另一份配置，在「报 → 每日早报」的来源勾选里改——两处各管各的报。"
         sources={items}
         selectedIds={subscribedIds}
         showSpotlight={false}

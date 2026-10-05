@@ -1215,7 +1215,9 @@ async function runDailyAiGuarded() {
     log(`[H27] AI 批（${slot}）不在晚间窗口（北京 21:25 后）——dispatch 轮跳过`);
     return;
   }
-  const hasProduct = await eb.hasAiProductToday(qOne);
+  // H54（用户 10-05 拍板：夜间主批为正，备跑让路）：产物判据按档分——主批判今晚 21:25 后
+  // （备跑凌晨的产物不再压主批）；备批判昨晚 21:25 后（主批昨晚出档则备跑让路，只兜底补缺）。
+  const hasProduct = await eb.hasAiProduct(qOne, slot);
   const claim = await getSetting(eb.CLAIM_KEY, null);
   const d = eb.claimDecision(claim, { slot, cycleStartMs: tw.beijingDayStartMs(), hasProductToday: hasProduct, nowMs: Date.now(), force });
   if (!d.run) { log(`[H27] AI 批（${slot}）跳过：${d.why}`); return; }

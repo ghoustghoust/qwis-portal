@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 // 每日早报的「文章来源 / 视频来源」用它；批次4 的源库总览检索共用此形态。
 // 替代的旧形态：全量平铺 checkbox 列表、无搜索无批量（千级源只能线性滚动逐个点）。
 // showSpotlight=false：隐藏重点轴（订阅管理等单轴场景，单一职责）——默认 true 保持旧用法。
-export default function SourcePickerModal({ open, title, sources = [], selectedIds = [], spotlightIds = [], showSpotlight = true, onClose, onConfirm }) {
+export default function SourcePickerModal({ open, title, note, sources = [], selectedIds = [], spotlightIds = [], showSpotlight = true, onClose, onConfirm }) {
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('all'); // all|on|off
   const [sort, setSort] = useState('default'); // default|name
@@ -51,6 +51,7 @@ export default function SourcePickerModal({ open, title, sources = [], selectedI
           <span className="text-xs t-muted tabular-nums">{showSpotlight ? `已选 ${draft.length}（重点 ${draftSpot.length}）` : `已选 ${draft.length}`}</span>
           <button className="btn-ghost !py-1 !px-2 text-xs" onClick={onClose}>关闭</button>
         </div>
+        {note && <div className="text-[11px] t-muted mb-2">{note}</div>}
         <div className="flex gap-2 flex-wrap mb-2">
           <input
             className="input flex-1 min-w-[180px]"
