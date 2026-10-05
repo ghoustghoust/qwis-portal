@@ -9,6 +9,7 @@ import {
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
 import SourcePickerModal from './SourcePickerModal.jsx';
 import SourceDetailDrawer from './SourceDetailDrawer.jsx';
+import IntervalPicker from './IntervalPicker.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 平台接入（spec30：公众号 RSS / B站 两个平台 Tab 并入源库，功能零丢失）
@@ -123,6 +124,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [showBackfill, setShowBackfill] = useState(false);
   const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
   const [detail, setDetail] = useState(null); // 源详情抽屉（10-05 用户点单②）
+  const [intervalPick, setIntervalPick] = useState(null); // {kind:'one'|'group', target}：频率预设选择器（10-05 用户点单④）
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
   const [clusters, setClusters] = useState(null); // 失败原因聚类（10-05 用户点单③）
   const [cleanupSel, setCleanupSel] = useState(new Set());
@@ -374,13 +376,18 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     try { await api.del('/api/sources/' + s.id); toast('已删除'); load(); } catch (e) { toast(e.message); }
   }
 
-  // 单源抓取频率（prompt 与组菜单同一交互）
+  // 单源抓取频率：预设选择器（10-05 用户点单④：弹窗输数字 → 预设按钮）
   function promptInterval(s) {
-    const ex = extraOf(s);
-    const v = window.prompt(`「${s.name || s.url}」的${T.freq}（分钟，留空=${T.followDefault}）：`, ex.intervalMin || '');
-    if (v === null) return;
-    const t = v.trim();
-    doSingle(s.id, 'interval', { intervalMin: t === '' ? null : Number(t) });
+    setIntervalPick({ kind: 'one', target: s });
+  }
+  function applyInterval(min) {
+    if (!intervalPick) return;
+    if (intervalPick.kind === 'one') {
+      doSingle(intervalPick.target.id, 'interval', { intervalMin: min === null ? null : Number(min) });
+    } else {
+      doGroup(intervalPick.target.gid, 'interval', { intervalMin: min === null ? null : Number(min) });
+    }
+    setIntervalPick(null);
   }
 
   // 筛选用的文件夹列表（按 kind 过滤）
@@ -517,12 +524,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                           : { label: '暂停整组采集', onClick: () => doGroup(c.gid, 'disable', {}, `暂停「${c.name}」整组（${c.total} 源停止采集，数据保留）？`) },
                         {
                           label: `整组${T.freq}…`,
-                          onClick: () => {
-                            const v = window.prompt(`「${c.name}」整组${T.freq}（分钟，留空=${T.followDefault}）：`, '');
-                            if (v === null) return;
-                            const t = v.trim();
-                            doGroup(c.gid, 'interval', { intervalMin: t === '' ? null : Number(t) });
-                          },
+                          onClick: () => setIntervalPick({ kind: 'group', target: c }),
                         },
                         {
                           label: `${T.failover}…`,
@@ -904,6 +906,15 @@ ${s.url}`}>{s.name || s.url}</div>
           onApplied={() => { setShowBackfill(false); load(); }}
         />
       )}
+
+      {/* 抓取频率预设选择器（10-05 用户点单④） */}
+      <IntervalPicker
+        open={!!intervalPick}
+        title={intervalPick?.kind === 'group' ? `「${intervalPick.target.name}」整组${T.freq}` : `「${intervalPick?.target?.name || intervalPick?.target?.url || ''}」${T.freq}`}
+        currentMin={intervalPick ? (intervalPick.kind === 'group' ? null : (extraOf(intervalPick.target).intervalMin ?? null)) : null}
+        onClose={() => setIntervalPick(null)}
+        onPick={applyInterval}
+      />
 
       {/* 源详情抽屉（10-05 用户点单②）：点源名看全——操作后同步刷新库数据 */}
       {detail && (
