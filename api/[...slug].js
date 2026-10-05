@@ -3182,6 +3182,11 @@ async function dispatch(req) {
   if (srcDeleteMatch && method === 'DELETE') return handleSourceDelete(req, Number(srcDeleteMatch[1]));
   if (path === '/api/groups' && method === 'POST') return handleGroupCreate(req);
   if (path === '/api/groups/move' && method === 'POST') return handleGroupMove(req);
+  // H55 同族补路由（10-05 用户反馈"分组不能自己设置"）：handleGroupUpdate/handleGroupDelete
+  // 此前已实现但分发行缺失——管理台重命名/删除文件夹点了必 404。本地端 PUT/DELETE /:id 早已在用。
+  const groupWMatch = path.match(/^\/api\/groups\/(\d+)$/);
+  if (groupWMatch && method === 'PUT') return handleGroupUpdate(req, Number(groupWMatch[1]));
+  if (groupWMatch && method === 'DELETE') return handleGroupDelete(req, Number(groupWMatch[1]));
   const groupMatch = path.match(/^\/api\/groups\/(\d+)$/);
   if (groupMatch && method === 'PUT') return handleGroupUpdate(req, Number(groupMatch[1]));
   if (groupMatch && method === 'DELETE') return handleGroupDelete(req, Number(groupMatch[1]));

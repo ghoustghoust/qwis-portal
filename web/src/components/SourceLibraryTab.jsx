@@ -7,6 +7,7 @@ import {
   FolderIcon, RefreshIcon, TrashIcon,
 } from './icons.jsx';
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
+import SourcePickerModal from './SourcePickerModal.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 平台接入（spec30：公众号 RSS / B站 两个平台 Tab 并入源库，功能零丢失）
@@ -118,6 +119,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [showBackfill, setShowBackfill] = useState(false);
+  const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
   const [toolsOpen, setToolsOpen] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
   const toolsRef = useRef(null);
@@ -191,6 +193,25 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     } catch (e) {
       toast('操作失败: ' + e.message);
     }
+  }
+
+  // 组管理（10-05 用户反馈"分组不能自己创建/设置"）：重命名与删除——云端路由随本批补齐
+  async function renameGroup(g) {
+    const name = window.prompt(`重命名文件夹「${g.name}」：`, g.name);
+    if (!name || !name.trim() || name.trim() === g.name) return;
+    try {
+      await api.put(`/api/groups/${g.id}`, { name: name.trim() });
+      toast('已重命名');
+      await load();
+    } catch (e) { toast(e.message); }
+  }
+  async function deleteGroup(g) {
+    if (!window.confirm(`删除文件夹「${g.name}」？其中的源不会被删，会回到「未分组」。`)) return;
+    try {
+      await api.del(`/api/groups/${g.id}`);
+      toast('文件夹已删除');
+      await load();
+    } catch (e) { toast(e.message); }
   }
 
   function enterGroup(gid) {
@@ -334,15 +355,30 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
     } catch (e) { toast(e.message); }
   }
 
+  // 新建文件夹 → 立即选源移入（10-05：创建/设置/选源一步完成）
   async function createGroupFlow() {
     const name = window.prompt('新文件夹名称：');
     if (!name || !name.trim()) return;
     const kind = filterKind === 'video' ? 'video' : 'article';
     try {
-      await api.post('/api/groups', { name: name.trim(), kind });
-      toast('已创建文件夹「' + name.trim() + '」');
-      load();
+      const r = await api.post('/api/groups', { name: name.trim(), kind });
+      const gid = r.item?.id;
+      toast('已创建文件夹「' + name.trim() + '」，现在选择要放进去的源');
+      await load();
+      setPendingMove({ gid, name: name.trim() });
     } catch (e) { toast(e.message); }
+  }
+
+  // 创建后选源批量移入（分批 25/请求，防逐条写超时——与自动分类同教训）
+  async function batchMove(ids, groupId) {
+    let done = 0;
+    for (let i = 0; i < ids.length; i += 25) {
+      const chunk = ids.slice(i, i + 25);
+      const r = await api.post('/api/sources/batch', { ids: chunk, action: 'move', groupId });
+      done += r.succeeded || 0;
+    }
+    toast(`已把 ${done} 个源移入文件夹`);
+    await load();
   }
 
   const toolsMenu = (
@@ -417,6 +453,11 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                   {c.gid !== null && (
                     <CardMenu
                       items={[
+                        {
+                          label: '重命名文件夹…',
+                          onClick: () => renameGroup(groups.find((x) => x.id === c.gid) || { id: c.gid, name: c.name }),
+                        },
+                        { label: '删除文件夹（源回到未分组）', danger: true, onClick: () => deleteGroup(groups.find((x) => x.id === c.gid) || { id: c.gid, name: c.name }) },
                         c.allDisabled
                           ? { label: '恢复整组采集', onClick: () => doGroup(c.gid, 'enable') }
                           : { label: '暂停整组采集', onClick: () => doGroup(c.gid, 'disable', {}, `暂停「${c.name}」整组（${c.total} 源停止采集，数据保留）？`) },
@@ -703,6 +744,23 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
           onApplied={() => { setShowBackfill(false); load(); }}
         />
       )}
+
+      {/* 新建文件夹后的选源移入（确认即移入，可跳过） */}
+      <SourcePickerModal
+        open={!!pendingMove}
+        title={`把源移进「${pendingMove?.name || ''}」`}
+        note="勾选后点确定即移入；也可以先跳过，之后在行内「移动到」里随时归类。"
+        sources={items}
+        selectedIds={[]}
+        showSpotlight={false}
+        instantApply
+        onClose={() => setPendingMove(null)}
+        onConfirm={(ids) => {
+          const target = pendingMove;
+          setPendingMove(null);
+          if (target && ids.length) batchMove(ids, target.gid);
+        }}
+      />
     </div>
   );
 }
