@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import SourceAvatar from './ui/SourceAvatar.jsx';
+import { relativeTime } from '../util';
 
 // 选源器（T3-8 批次2，形态基准：用户样图 docs/archive/样图/源库/1.png）
 // 搜索 + 状态筛选 + 排序 + 行内勾选与重点标记 + 全选筛选结果 + 已选常显计数 + 分页。
@@ -81,13 +83,24 @@ export default function SourcePickerModal({ open, title, note, sources = [], sel
           {slice.map((s) => {
             const on = draft.includes(s.id);
             const spot = draftSpot.includes(s.id);
+            const st = s.enabled === 0 ? '已停用' : (s.status === 'error' || (s.fail_count || 0) > 0) ? '异常' : '正常';
+            const stCls = st === '正常' ? 'text-[var(--green)]' : st === '异常' ? 'text-[var(--warn)]' : 't-muted';
             return (
               <div key={s.id} className="flex items-center gap-3 px-2 py-2">
                 <label className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer">
-                  <input type="checkbox" checked={on} onChange={() => setDraft((d) => toggle(d, s.id))} />
-                  <span className={`text-[13px] truncate ${on ? 't-text' : 't-muted'}`}>{s.name || s.url}</span>
+                  <input type="checkbox" checked={on} onChange={() => setDraft((d) => toggle(d, s.id))} className="flex-none" />
+                  <SourceAvatar name={s.name} avatar={s.avatar} size={22} />
+                  <span className="min-w-0 flex-1">
+                    <span className={`block text-[13px] truncate ${on ? 't-text' : 't-muted'}`}>{s.name || s.url}</span>
+                    <span className="block text-[10px] t-muted truncate mt-0.5">
+                      {s.type}
+                      {s.itemCount != null && ` · ${s.itemCount} 条`}
+                      {s.last_fetched_at && ` · ${relativeTime(s.last_fetched_at)}`}
+                      <span className={`ml-1.5 ${stCls}`}>{st}</span>
+                    </span>
+                  </span>
                 </label>
-                {s.enabled === 0 && <span className="badge-gray flex-none">停用</span>}
+                {s.enabled === 0 && <span className="badge-gray flex-none">已停用</span>}
                 {showSpotlight && (
                   <button
                     className={`flex-none text-sm ${spot ? 't-accent' : 't-muted'}`}

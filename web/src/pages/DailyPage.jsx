@@ -38,6 +38,11 @@ function lsSet(key, val) {
 
 export default function DailyPage() {
   const [report, setReport] = useState(undefined); // undefined=加载中，null=尚未生成
+  const [dateParam, setDateParam] = useState(() => {
+    const q = new URLSearchParams(window.location.search).get('date');
+    return /^\d{4}-\d{2}-\d{2}$/.test(q || '') ? q : null;
+  });
+  const [dailyArchive, setDailyArchive] = useState([]); // 往期日期列表（A）
   const [dailySettings, setDailySettings] = useState(null);
   const [regenerating, setRegenerating] = useState(false);
   const [autoGen, setAutoGen] = useState(false); // T13/F3：stale 打开即补的「正在生成」态
@@ -67,7 +72,7 @@ export default function DailyPage() {
 
   const load = useCallback(async () => {
     try {
-      const data = await api.get('/api/daily');
+      const data = await api.get(dateParam ? `/api/daily?date=${dateParam}` : '/api/daily');
       setReport(data?.report ?? null);
       // T13/F3：打开即补——今日生成时间已过且今日无日报时自动触发生成
       if (data?.stale === true && !autoGenRef.current) {
@@ -86,6 +91,32 @@ export default function DailyPage() {
   useEffect(() => {
     load();
   }, [load]);
+  // 往期日期列表（A：近 30 天有日报的北京日）
+  useEffect(() => {
+    api.get('/api/brief/history').then((d) => {
+      const days = [...new Set((d?.daily || []).map((r) => String(r.generatedAt || '').slice(0, 10)).filter(Boolean))].sort().reverse();
+      setDailyArchive(days);
+    }).catch(() => {});
+  }, []);
+
+  // 往期切换条（A）
+  const archiveBar = dailyArchive.length > 0 && (
+    <div className="mb-3 flex items-center gap-1.5 flex-wrap">
+      <span className="text-[11px] t-muted">往期：</span>
+      <button
+        className={`pill !text-[11px] cursor-pointer ${!dateParam ? 'on' : ''}`}
+        onClick={() => setDateParam(null)}
+      >最新</button>
+      {dailyArchive.slice(0, 14).map((d) => (
+        <button
+          key={d}
+          className={`pill !text-[11px] cursor-pointer ${dateParam === d ? 'on' : ''}`}
+          onClick={() => setDateParam(d)}
+        >{d.slice(5)}</button>
+      ))}
+      {dailyArchive.length > 14 && <span className="text-[11px] t-muted">…</span>}
+    </div>
+  );
 
   const windowHours = report?.window_hours ?? dailySettings?.windowHours ?? 48;
   const sections = report?.sections || [];
@@ -273,7 +304,8 @@ export default function DailyPage() {
           )}
 
           {/* 栏目区（F15，2026-09-05b 混合式） */}
-          {report && (
+          {archiveBar}
+      {report && (
             <div className="mt-6 sm:mt-8 flex flex-col gap-8 sm:gap-10">
               {sections.map((sec, i) => {
                 const key = secKey(sec, i);

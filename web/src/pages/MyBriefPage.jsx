@@ -26,6 +26,11 @@ const TYPES = [
 
 export default function MyBriefPage() {
   const [data, setData] = useState(undefined);
+  const [issueParam, setIssueParam] = useState(() => {
+    const q = new URLSearchParams(window.location.search).get('issue');
+    const n = Number(q);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  });
   const [err, setErr] = useState(null);
   const [type, setType] = useState('all');
   const [studyItem, setStudyItem] = useState(null);
@@ -41,10 +46,10 @@ export default function MyBriefPage() {
     setData(undefined);
     // 2026-09-18：原先 .catch(()=>setData(null)) 把任何接口失败（401/500/504）都变成 data=null，
     // 而下方所有分支都以 data 存在为前提 → 整页一个字都不剩，用户与排障者都无从判断是"没内容"还是"挂了"。
-    api.get('/api/mybrief').then(setData).catch((e) => setErr(String(e?.message || e)));
+    api.get(issueParam ? `/api/mybrief/archive/${issueParam}` : '/api/mybrief').then(setData).catch((e) => setErr(String(e?.message || e)));
   };
 
-  useEffect(() => { load(); loadArchive(); }, []);
+  useEffect(() => { load(); loadArchive(); }, [issueParam]);
 
   const report = data?.report;
   const digest = data?.digest;
@@ -121,7 +126,11 @@ export default function MyBriefPage() {
                     <div className="text-[11px] tracking-widest t-muted">往期早报</div>
                     <ul className="mt-2 space-y-1.5">
                       {archive.slice(0, 30).map((x) => (
-                        <li key={x.issue} className="text-[12.5px] t-muted">
+                        <li
+                          key={x.issue}
+                          className={`text-[12.5px] cursor-pointer ${issueParam === x.issue ? 't-accent font-medium' : 't-muted hover:t-accent'}`}
+                          onClick={() => setIssueParam(x.issue)}
+                        >
                           第 {x.issue} 期 · {x.date}
                           {x.theme ? ` · ${String(x.theme).slice(0, 40)}` : ''}
                           {x.counts ? `（${(x.counts.top || 0) + (x.counts.featured || 0) + (x.counts.rest || 0)} 条）` : ''}
