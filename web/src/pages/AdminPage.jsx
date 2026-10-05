@@ -15,6 +15,7 @@ const HotSettings = lazy(() => import('../components/HotSettings.jsx'));
 const DataTab = lazy(() => import('../components/DataTab.jsx'));
 const AlertsTab = lazy(() => import('../components/AlertsTab.jsx'));
 const LogsTab = lazy(() => import('../components/LogsTab.jsx'));
+const SelfHealTab = lazy(() => import('../components/SelfHealTab.jsx'));
 const DailySettingsTab = lazy(() => import('../components/DailySettingsTab.jsx'));
 const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
@@ -128,6 +129,16 @@ const SECTIONS = [
         ),
       },
       {
+        id: 'selfheal',
+        label: '自愈',
+        ref: 'system',
+        render: () => (
+          <Zone title="自愈" note="源的自动恢复：周期性被限流的源到点重启，不是坏了——观测恢复记录与一键重启">
+            <SelfHealTab />
+          </Zone>
+        ),
+      },
+      {
         id: 'logs',
         label: '日志',
         ref: 'system',
@@ -165,6 +176,7 @@ const WARM_IMPORTS = [
   () => import('../components/MonitorTab.jsx'),
   () => import('../components/AlertsTab.jsx'),
   () => import('../components/LogsTab.jsx'),
+  () => import('../components/SelfHealTab.jsx'),
 ];
 
 // 管理后台（/admin/；/wechat/ 兼容同渲染）：独立外壳，不带阅读器 IconRail
