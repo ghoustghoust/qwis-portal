@@ -1797,6 +1797,43 @@ async function handleAiChat(req) {
   return jsonOk({ ok: true, reply: r.reply, provider: r.provider });
 }
 
+// ─── 术语表管理（10-05 用户点单：沉淀术语对照的能力要有管理界面） ───
+// 现状：ai.glossary 自动生长（runner 翻译时沉淀术语对，locked=人工固化不被覆盖，
+// 置信度<0.7 丢弃）。此前没有管理界面——只能写库。本端点：看/加/锁/删。
+async function handleGlossary(req) {
+  if (req.method === 'GET') {
+    const g = await _ai.loadGlossary();
+    return jsonOk({ items: g, total: g.length });
+  }
+  if (req.method === 'POST') {
+    const body = req.body || {};
+    const g = await _ai.loadGlossary();
+    const changed = [];
+    if (body.add && body.add.en && body.add.zh) {
+      const norm = String(body.add.en).trim().toLowerCase();
+      if (!g.some((t) => String(t.en).trim().toLowerCase() === norm)) {
+        g.push({ en: String(body.add.en).trim(), zh: String(body.add.zh).trim(), domain: String(body.add.domain || ''), occurrenceCount: 0, locked: !!body.add.locked, addedAt: nowIso() });
+        changed.push('add');
+      }
+    }
+    if (body.toggleLock !== undefined && body.toggleLock.en) {
+      const norm = String(body.toggleLock.en).trim().toLowerCase();
+      const t = g.find((x) => String(x.en).trim().toLowerCase() === norm);
+      if (t) { t.locked = !t.locked; changed.push(t.locked ? 'lock' : 'unlock'); }
+    }
+    if (body.remove && body.remove.en) {
+      const norm = String(body.remove.en).trim().toLowerCase();
+      const i = g.findIndex((x) => String(x.en).trim().toLowerCase() === norm);
+      if (i >= 0) { g.splice(i, 1); changed.push('remove'); }
+    }
+    if (!changed.length) return jsonOk({ ok: true, changed: [] });
+    await setSetting('ai.glossary', g);
+    await auditRecord('ai.glossary.update', { detail: { changed, total: g.length } });
+    return jsonOk({ ok: true, changed, total: g.length });
+  }
+  return { status: 405, body: jsonErr('Method Not Allowed') };
+}
+
 // ─── T3-9: 翻译配置云端化（GET/PUT /api/ai/translate/config） ───
 // 读：透 runner 三档提示词的真值（translate/refine/polish——loadPrompt 读 settings['ai.prompt.*']，
 // 不存在则回默认）+ translate 段开关（enabled/autoTranslate，runner 读 settings['translate']）。
@@ -1810,6 +1847,7 @@ async function handleTranslateConfig(req) {
     return jsonOk({
       enabled: cfg.enabled !== false,
       autoTranslate: cfg.autoTranslate !== false,
+      minChars: Number(cfg.minChars) || 0,
       prompts: { translate: pTranslate, refine: pRefine, polish: pPolish },
       note: 'prompts 三档=runner 批量翻译用；本地「翻译」页的精翻档（translate-skill）是另一套键（互不相通，见 T3-9 立项说明）',
     });
@@ -1821,6 +1859,7 @@ async function handleTranslateConfig(req) {
     const next = { ...cur };
     if (body.enabled !== undefined) { next.enabled = !!body.enabled; changed.push('enabled'); }
     if (body.autoTranslate !== undefined) { next.autoTranslate = !!body.autoTranslate; changed.push('autoTranslate'); }
+    if (body.minChars !== undefined) { next.minChars = Math.max(0, Number(body.minChars) || 0); changed.push('minChars'); }
     // 提示词写：三档各写一个键（ai.prompt.translate / .translate-refine / .translate-polish）
     for (const [field, key] of [['promptTranslate', 'ai.prompt.translate'], ['promptRefine', 'ai.prompt.translate-refine'], ['promptPolish', 'ai.prompt.translate-polish']]) {
       if (body[field] !== undefined) {
@@ -3400,6 +3439,7 @@ async function dispatch(req) {
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
   if (path === '/api/ai/translate/config') return handleTranslateConfig(req);
+  if (path === '/api/ai/glossary') return handleGlossary(req);
   if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
   if (path === '/api/ai/models' && method === 'POST') return handleAiModels(req);
   if (path === '/api/ai/usage' && method === 'GET') return handleAiUsage(req);
