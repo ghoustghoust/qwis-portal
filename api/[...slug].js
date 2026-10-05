@@ -1797,6 +1797,48 @@ async function handleAiChat(req) {
   return jsonOk({ ok: true, reply: r.reply, provider: r.provider });
 }
 
+// ─── T3-9: 翻译配置云端化（GET/PUT /api/ai/translate/config） ───
+// 读：透 runner 三档提示词的真值（translate/refine/polish——loadPrompt 读 settings['ai.prompt.*']，
+// 不存在则回默认）+ translate 段开关（enabled/autoTranslate，runner 读 settings['translate']）。
+// 写：BL9 同口径——保留可写 + 审计 + 变更告警（ai_config_changed 同事件键）。
+async function handleTranslateConfig(req) {
+  if (req.method === 'GET') {
+    const cfg = await getSetting('translate', {});
+    const [pTranslate, pRefine, pPolish] = await Promise.all([
+      _ai.loadPrompt('translate'), _ai.loadPrompt('translate-refine'), _ai.loadPrompt('translate-polish'),
+    ]);
+    return jsonOk({
+      enabled: cfg.enabled !== false,
+      autoTranslate: cfg.autoTranslate !== false,
+      prompts: { translate: pTranslate, refine: pRefine, polish: pPolish },
+      note: 'prompts 三档=runner 批量翻译用；本地「翻译」页的精翻档（translate-skill）是另一套键（互不相通，见 T3-9 立项说明）',
+    });
+  }
+  if (req.method === 'PUT') {
+    const body = req.body || {};
+    const cur = await getSetting('translate', {});
+    const changed = [];
+    const next = { ...cur };
+    if (body.enabled !== undefined) { next.enabled = !!body.enabled; changed.push('enabled'); }
+    if (body.autoTranslate !== undefined) { next.autoTranslate = !!body.autoTranslate; changed.push('autoTranslate'); }
+    // 提示词写：三档各写一个键（ai.prompt.translate / .translate-refine / .translate-polish）
+    for (const [field, key] of [['promptTranslate', 'ai.prompt.translate'], ['promptRefine', 'ai.prompt.translate-refine'], ['promptPolish', 'ai.prompt.translate-polish']]) {
+      if (body[field] !== undefined) {
+        await setSetting(key, String(body[field]).trim());
+        changed.push(key);
+      }
+    }
+    if (!changed.length) return jsonOk({ ok: true, changed: [] });
+    if (Object.keys(next).length) await setSetting('translate', next);
+    await auditRecord('ai.translate.config.update', { detail: { changed } });
+    try {
+      await _alerts.dispatch('ai_config_changed', { title: '翻译配置变更', text: `变更：${changed.join('、')}` });
+    } catch { /* 告警失败不阻断 */ }
+    return jsonOk({ ok: true, changed });
+  }
+  return { status: 405, body: jsonErr('Method Not Allowed') };
+}
+
 // ─── P1-1: GET /api/sources/library — 源库列表（含 itemCount + contentKind + extra 脱敏） ───
 // H57 裁剪（10-05）：extra 白名单按前端实收收紧（marksFeatured/domain/etag/lastModified 零消费——
 // etag/lastModified 是采集侧条件请求字段，不进管理界面）；SELECT 明确列替代 *（uid/focus/next_fetch_at 零消费）。
@@ -3357,6 +3399,7 @@ async function dispatch(req) {
 
   // ─── AI 路由（需鉴权） ───
   if (path === '/api/ai/config') return handleAiConfig(req);
+  if (path === '/api/ai/translate/config') return handleTranslateConfig(req);
   if (path === '/api/ai/ping' && method === 'POST') return handleAiPing(req);
   if (path === '/api/ai/models' && method === 'POST') return handleAiModels(req);
   if (path === '/api/ai/usage' && method === 'GET') return handleAiUsage(req);

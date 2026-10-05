@@ -60,14 +60,16 @@ test('B48: 报警记录视图不得再把全角括号写成 JSX 文本转义', (
   assert.match(src, /\{'（'\}\{rr\.error\}\{'）'\}/);
 });
 
-// ── B52 云端缺路由时不得恒「加载中」（锚点搬家 10-04 批次5：翻译区按用户已拍 C 方案改为
-//    静态只读指引卡，不再发任何请求——"加载失败显式报错"的意图在无加载行为下结构性成立；
-//    新断言钉两件事：不再引用已摘的写壳路由 + 不得再出现"加载中"挡渲染的假态） ──
-test('B52: TranslateSkillTab 不得回到假「加载中」/死写壳（C 方案只读形态）', () => {
+// ── B52 云端缺路由时不得恒「加载中」（锚点搬家 10-05：T3-9 A 半落地——翻译配置云端化，
+//    只读指引卡被可写配置页取代。锁意图不变（不许假加载中/死写壳），新断言钉两件事：
+//    云端真写路由存在（GET/PUT /api/ai/translate/config）+ 写面有审计与告警） ──
+test('B52: TranslateSkillTab 可写形态——云端写路由存在且写面带审计/告警（A 半落地）', () => {
+  const cloud = read('api/[...slug].js');
+  assert.match(cloud, /path === '\/api\/ai\/translate\/config'/, '云端翻译配置路由必须在（T3-9 已落地）');
+  assert.match(cloud, /auditRecord\('ai\.translate\.config\.update'/, '翻译写面必须有审计');
+  assert.match(cloud, /_alerts\.dispatch\('ai_config_changed'/, '翻译写面必须有变更告警');
   const src = read('web/src/components/TranslateSkillTab.jsx');
-  assert.ok(!/api\.(get|post|put|del)\(\s*['"`]\/api\/ai\/translate/.test(src), '写壳路由调用不得回来（云端 404，点了必失败）');
-  assert.ok(!/加载中/.test(src), '不得出现"加载中"挡渲染（静态卡永远完整渲染，无加载态可骗）');
-  assert.match(src, /待立项/, '云端化（A 半）立项前必须明示"只读"原因');
+  assert.ok(/加载中…/.test(src) && /加载失败/.test(src), '可写页允许加载态，但失败必须显式出口（不许恒加载中）');
 });
 
 // ── B59 云端补 /api/auth/me（本地早有，云端漏移植） ──
