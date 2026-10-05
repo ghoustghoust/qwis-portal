@@ -8,6 +8,7 @@ import {
 } from './icons.jsx';
 import BackfillPreviewModal from './BackfillPreviewModal.jsx';
 import SourcePickerModal from './SourcePickerModal.jsx';
+import SourceDetailDrawer from './SourceDetailDrawer.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 平台接入（spec30：公众号 RSS / B站 两个平台 Tab 并入源库，功能零丢失）
@@ -121,6 +122,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [pageSize, setPageSize] = useState(50);
   const [showBackfill, setShowBackfill] = useState(false);
   const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
+  const [detail, setDetail] = useState(null); // 源详情抽屉（10-05 用户点单②）
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
   const [cleanupSel, setCleanupSel] = useState(new Set());
   const [cleanupBusy, setCleanupBusy] = useState(false);
@@ -568,7 +570,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                     <tr key={s.id} className="border-b t-border/50 hover:t-surface/50">
                       <td className="py-2 px-1.5"><SourceAvatar name={s.name} avatar={s.avatar} size={24} /></td>
                       <td className="py-2 px-1.5">
-                        <span className="truncate max-w-[200px] inline-block align-middle" title={s.name}>{s.name || s.url}</span>
+                        <button className="truncate max-w-[200px] inline-block align-middle hover:t-accent cursor-pointer" title="查看源详情" onClick={() => setDetail(s)}>{s.name || s.url}</button>
                         {isNew && <span className="pill on ml-1.5">新增</span>}
                       </td>
                       <td className="py-2 px-1.5 text-xs t-muted">{g ? g.name : '未分组'}</td>
@@ -778,7 +780,11 @@ ${s.url}`}>{s.name || s.url}</div>
                         <SourceAvatar name={s.name} avatar={s.avatar} size={30} />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <span className="truncate font-medium t-text max-w-[220px]" title={s.name}>{s.name || s.url}</span>
+                            <button
+                              className="truncate font-medium t-text max-w-[220px] text-left hover:t-accent cursor-pointer"
+                              title="查看源详情"
+                              onClick={() => setDetail(s)}
+                            >{s.name || s.url}</button>
                             {locked && <LockIcon size={12} className="t-muted flex-none" title="手动锁定（自动分类不改动它）" />}
                           </div>
                           <div className="mt-0.5 text-[11px] t-muted truncate">
@@ -852,6 +858,18 @@ ${s.url}`}>{s.name || s.url}</div>
         <BackfillPreviewModal
           onClose={() => setShowBackfill(false)}
           onApplied={() => { setShowBackfill(false); load(); }}
+        />
+      )}
+
+      {/* 源详情抽屉（10-05 用户点单②）：点源名看全——操作后同步刷新库数据 */}
+      {detail && (
+        <SourceDetailDrawer
+          source={items.find((x) => x.id === detail.id) || detail}
+          groups={groups}
+          onClose={() => setDetail(null)}
+          onRefresh={refreshOne}
+          onToggle={(src) => doSingle(src.id, src.enabled ? 'disable' : 'enable')}
+          onDelete={(src) => { setDetail(null); deleteOne(src); }}
         />
       )}
 
