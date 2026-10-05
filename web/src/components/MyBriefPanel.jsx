@@ -18,17 +18,20 @@ export default function MyBriefPanel() {
   const [subPicker, setSubPicker] = useState(false);
   const [libItems, setLibItems] = useState([]);
   const [subscribedIds, setSubscribedIds] = useState(null); // null=未加载（区别于真 0）
+  const [contrib, setContrib] = useState(null); // 源贡献榜（10-05 用户点单⑥）
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [h, st] = await Promise.all([
+      const [h, st, cb] = await Promise.all([
         api.get('/api/brief/history').catch(() => null),
         api.get('/api/settings').catch(() => null),
+        api.get('/api/sources/contribution').catch(() => null),
       ]);
       setHist(h);
       setMybriefCfg(st?.mybrief || {});
       setQuotas(h?.domainQuotas || {});
+      setContrib(cb);
     } catch (e) {
       toast('加载失败: ' + e.message);
     } finally {
@@ -120,6 +123,38 @@ export default function MyBriefPanel() {
           <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
         </div>
       </section>
+
+      {/* 源贡献榜（10-05 用户点单⑥）：近 7 天谁喂了「我的早报」——低贡献=退订候选 */}
+      {contrib && (
+        <section className="card p-5">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold t-text">源贡献榜（近 7 天）</h3>
+            <InfoTip
+              what="近 7 天各源喂进「我的早报」的条数（按每日早报生成产物聚合，已排热榜/聚合源）。"
+              how="只读，随批次自动更新。"
+              effect="低贡献或零贡献的订阅源就是退订候选——订阅了没喂报的源列在下方；要退订去上方「管理订阅来源」。"
+            />
+          </div>
+          {contrib.sources.length === 0 ? (
+            <div className="mt-3 text-sm t-muted">近 7 天无入报条目</div>
+          ) : (
+            <div className="mt-3 space-y-1.5 max-h-64 overflow-y-auto">
+              {contrib.sources.map((t, i) => (
+                <div key={t.name} className="flex items-center gap-2 text-xs py-1 border-b t-border/40">
+                  <span className="t-muted tabular-nums w-5 flex-none">{i + 1}</span>
+                  <span className="t-text truncate flex-1" title={t.name}>{t.name}</span>
+                  <span className="t-muted tabular-nums flex-none">{t.count} 条</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {contrib.subZeroCount > 0 && (
+            <div className="mt-3 pt-3 border-t t-border text-xs t-muted">
+              订阅了但近 7 天零贡献（{contrib.subZeroCount}/{contrib.subscribedTotal}）：{contrib.subZero.map((x) => x.name).join('、')}{contrib.subZeroCount > 20 ? ' 等' : ''}——可去「管理订阅来源」里清掉。
+            </div>
+          )}
+        </section>
+      )}
 
       {/* 我的早报设置（原块迁移） */}
       <section className="card p-5">

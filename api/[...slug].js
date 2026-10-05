@@ -1970,6 +1970,34 @@ async function handleHealthStatus(req) {
   });
 }
 
+// GET /api/sources/contribution — 源贡献榜（10-05 用户点单⑥）：近 7 天各源喂进
+// 「我的早报」的条数——低贡献的源就是退订候选，订阅管理闭环。
+// 口径与「近 7 天入报 Top5」同源（daily_reports.sections 按 source 聚合，排噪声/合成条目），
+// 但全量排序不限 Top5；附带生效订阅集合的对照（订阅了却没喂报=待退订）。
+async function handleSourceContribution(req) {
+  const since = new Date(Date.now() - 7 * 86400e3).toISOString();
+  const reports = await qAll('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
+  const noiseNames = new Set((await qAll(`SELECT name FROM sources WHERE ${isNoiseSql('')}`)).map((r) => r.name));
+  const tally = new Map();
+  for (const rep of reports) {
+    let sections = [];
+    try { sections = JSON.parse(rep.sections || '[]'); } catch { /* 忽略坏行 */ }
+    for (const col of sections) {
+      for (const it of (col.items || [])) {
+        const nm = it.source || it.source_name;
+        if (!nm || /^\d+ 源$/.test(nm) || noiseNames.has(nm)) continue;
+        tally.set(nm, (tally.get(nm) || 0) + 1);
+      }
+    }
+  }
+  const sources = [...tally.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count }));
+  // 订阅对照：生效订阅集合里近 7 天零贡献的（待退订候选）
+  const subIds = await axes.resolveSubscriptionIds({ qAll, getSetting });
+  const subRows = subIds.length ? await qAll(`SELECT id, name FROM sources WHERE id IN (${subIds.map(() => '?').join(',')})`, subIds) : [];
+  const subZero = subRows.filter((r) => !tally.has(r.name)).map((r) => ({ id: r.id, name: r.name }));
+  return jsonOk({ windowDays: 7, sources, subZeroCount: subZero.length, subZero: subZero.slice(0, 20), subscribedTotal: subIds.length });
+}
+
 // GET /api/self-heal — 自愈调试面板（10-05 用户点单：专门调试自愈的板块）
 // 自愈引擎现状（T4-1 Q7 已在 runner 批次尾部跑）：冻结超 48h 自动重新启用（错峰），
 // 连续自动恢复 3 次仍熔断则冷却延长到 7 天。resumeCount/frozenAt 在 extra 里——
@@ -3329,7 +3357,8 @@ async function dispatch(req) {
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
-    if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);
+    if (path === '/api/sources/contribution' && method === 'GET') return handleSourceContribution(req);
+  if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);
   if (path === '/api/sources/error-clusters' && method === 'GET') return handleErrorClusters(req);
   if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
   if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
