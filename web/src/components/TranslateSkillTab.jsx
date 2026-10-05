@@ -5,6 +5,14 @@ import { api } from '../api';
 import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
 
+const THRESHOLD_FIELDS = [
+  { key: 'latinMin', label: '拉丁字符占比下限', note: '判英文（默认 0.5）', min: 0.1, max: 0.9, step: 0.05 },
+  { key: 'cjkMax', label: '中文字符占比上限', note: '判英文（默认 0.2）', min: 0, max: 0.5, step: 0.05 },
+  { key: 'minTextLen', label: '最短文本长度', note: '短于此不判英文（默认 20）', min: 5, max: 200, step: 1 },
+  { key: 'thinBodyMax', label: '薄正文阈值', note: '低于此走仅标题通道（默认 400）', min: 100, max: 2000, step: 50 },
+  { key: 'refineMinLen', label: '长文精翻阈值', note: '高于此走第三轮润色（默认 1500）', min: 500, max: 5000, step: 100 },
+];
+
 const PROMPT_TABS = [
   { key: 'promptTranslate', field: 'translate', label: '初翻', note: '原文 → 初译' },
   { key: 'promptRefine', field: 'refine', label: '精翻', note: '初译 → 术语对齐' },
@@ -47,10 +55,10 @@ export default function TranslateSkillTab() {
 
   // 开关改为本地暂存，统一保存（用户反馈：要有明确的保存动作）
   const [draft, setDraft] = useState(null); // {enabled, autoTranslate, minChars}
-  const openDraft = () => setDraft({ enabled: cfg.enabled !== false, autoTranslate: cfg.autoTranslate !== false, minChars: cfg.minChars || 0 });
+  const openDraft = () => setDraft({ enabled: cfg.enabled !== false, autoTranslate: cfg.autoTranslate !== false, minChars: cfg.minChars || 0, ...Object.fromEntries(THRESHOLD_FIELDS.map(f => [f.key, cfg[f.key]])) });
   const saveAll = async () => {
     if (!draft) return;
-    await save({ enabled: draft.enabled, autoTranslate: draft.autoTranslate, minChars: draft.minChars }, '已保存');
+    await save({ enabled: draft.enabled, autoTranslate: draft.autoTranslate, minChars: draft.minChars, ...Object.fromEntries(THRESHOLD_FIELDS.map(f => [f.key, draft[f.key]])) }, '已保存');
     setDraft(null);
   };
 
@@ -113,9 +121,27 @@ export default function TranslateSkillTab() {
               type="number" min="0" className="input !w-20 !py-1 !text-xs"
               value={draft ? draft.minChars : (cfg.minChars || 0)}
               disabled={busy === 'save'}
-              onChange={(e) => { const d = draft || { enabled: cfg.enabled !== false, autoTranslate: cfg.autoTranslate !== false, minChars: cfg.minChars || 0 }; setDraft({ ...d, minChars: Number(e.target.value) || 0 }); }}
+              onChange={(e) => { const d = draft || { enabled: cfg.enabled !== false, autoTranslate: cfg.autoTranslate !== false, minChars: cfg.minChars || 0, ...Object.fromEntries(THRESHOLD_FIELDS.map(f => [f.key, cfg[f.key]])) }; setDraft({ ...d, minChars: Number(e.target.value) || 0 }); }}
             />
             <span className="t-muted text-xs">字的内容不翻译（0=都翻译）。短文（标题式提交信息）不烧额度。</span>
+          </div>
+          {/* 五档细腻调节（10-05 用户反馈"太粗犷"） */}
+          <div className="mt-3 pt-3 border-t t-border">
+            <div className="text-xs t-muted mb-2">翻译判据（五档可调——默认与现状一致，改了下一批翻译生效）：</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {THRESHOLD_FIELDS.map((f) => (
+                <label key={f.key} className="flex items-center gap-2 text-xs">
+                  <span className="t-muted w-32 flex-none" title={f.note}>{f.label}</span>
+                  <input
+                    type="number" min={f.min} max={f.max} step={f.step} className="input !w-20 !py-1 !text-xs"
+                    value={draft ? (draft[f.key] ?? cfg[f.key]) : cfg[f.key]}
+                    disabled={busy === 'save'}
+                    onChange={(e) => { const d = draft || { enabled: cfg.enabled !== false, autoTranslate: cfg.autoTranslate !== false, minChars: cfg.minChars || 0, ...Object.fromEntries(THRESHOLD_FIELDS.map(x => [x.key, cfg[x.key]])) }; setDraft({ ...d, [f.key]: Number(e.target.value) }); }}
+                  />
+                  <span className="text-[10px] t-muted">{f.note}</span>
+                </label>
+              ))}
+            </div>
           </div>
           <div className="pt-2 flex items-center gap-2">
             <button

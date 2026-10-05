@@ -1975,10 +1975,24 @@ async function runDaily() {
 // （收口前这里另有一份 `TRANSLATE_DEFAULT_PROMPT`，与精翻模块那份**字对字相同**且**全文件无人引用**，
 //  实测读数记在 docs/ISSUES.md B111 行 —— 删掉它不改变任何行为，因为从来没有代码读过它）。
 
-function isEnglish(text) {
+// 翻译判据五档可配（10-05：云端 translate 段透出，runner 读配置——默认与旧写死值一致）
+async function translateThresholds() {
+  const cfg = await getSetting('translate', {});
+  return {
+    latinMin: cfg.latinMin ?? 0.5,
+    cjkMax: cfg.cjkMax ?? 0.2,
+    minTextLen: cfg.minTextLen ?? 20,
+    thinBodyMax: cfg.thinBodyMax ?? 400,
+    refineMinLen: cfg.refineMinLen ?? 1500,
+  };
+}
+
+// 同步版（批量过滤用）：阈值由调用方在循环外预取——translatePipeline 是 async 可以 await，
+// 批量过滤的 .filter() 回调是 sync 不能 await，所以分两个形状。
+function isEnglishSync(text, t) {
   if (!text) return false;
   const s = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, '');
-  if (s.length < 20) return false;
+  if (s.length < (t?.minTextLen ?? 20)) return false;
   let cjk = 0, latin = 0;
   for (const ch of s) {
     const cp = ch.codePointAt(0);
@@ -1986,12 +2000,27 @@ function isEnglish(text) {
     else if ((cp >= 0x41 && cp <= 0x5a) || (cp >= 0x61 && cp <= 0x7a)) latin++;
   }
   const total = cjk + latin || 1;
-  return (latin / total) > 0.5 && (cjk / total) < 0.2;
+  return (latin / total) > (t?.latinMin ?? 0.5) && (cjk / total) < (t?.cjkMax ?? 0.2);
+}
+
+async function isEnglish(text, t) {
+  if (!text) return false;
+  const s = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, '');
+  if (s.length < (t?.minTextLen ?? 20)) return false;
+  let cjk = 0, latin = 0;
+  for (const ch of s) {
+    const cp = ch.codePointAt(0);
+    if (cp >= 0x4e00 && cp <= 0x9fff) cjk++;
+    else if ((cp >= 0x41 && cp <= 0x5a) || (cp >= 0x61 && cp <= 0x7a)) latin++;
+  }
+  const total = cjk + latin || 1;
+  return (latin / total) > (t?.latinMin ?? 0.5) && (cjk / total) < (t?.cjkMax ?? 0.2);
 }
 
 // 16-ai-infra：翻译改走统一通道（串行限流 + Agnes→Bing→Google 降级链 + 术语库注入）
 // 17-translate：多轮管线 轮1初翻 → 轮2词库对照 → 轮3精翻（长文）
 async function translatePipeline(article) {
+  const TH = await translateThresholds();
   const _ai = require('../api/_ai');
   const title = String(article.title || '').trim();
   const plainText = String(article.content_html || '')
@@ -2007,7 +2036,7 @@ async function translatePipeline(article) {
   // 2026-09-15 阻塞修复：薄正文（<400 字符纯文本，桥接源如 hnrss 只有 Article/Comments 链接列表）
   // 走「仅标题」通道——单轮直译标题，不进多轮精翻/术语生长。
   // 根因：薄正文 + 推理模型多轮精翻 = 复述指令（"用户要求我作为术语校对专家…"25 篇）/胡编标题（"评论：0"）入库。
-  if (title && plainText.length < 400) {
+  if (title && plainText.length < TH.thinBodyMax) {
     const r = await _ai.translateText(title, { kind: 'translate' });
     if (!r.ok) throw new Error(r.error || '标题翻译失败');
     let t = _ai.sanitizeTranslationReply(r.text, '').split('\n')[0].trim();
@@ -2033,7 +2062,7 @@ async function translatePipeline(article) {
     const refined = await _ai.refineWithGlossary(input, reply);
     if (refined !== reply) rounds = 2;
     reply = refined;
-    if (plainText.length >= 1500) {
+    if (plainText.length >= TH.refineMinLen) {
       reply = await _ai.refinePass(input, reply);
       rounds = 3;
     }
@@ -2190,8 +2219,9 @@ async function runTranslate() {
     log(`优先级补扫：${extra.length}/${missingPri.length} 条早报/周刊/热点条目在 5000 扫描窗外，已直接补入候选池`);
   }
   const priCount = { 1: 0, 2: 0, 3: 0, 4: 0, 7: 0 };
+  const th = await translateThresholds(); // 批量过滤在 sync 上下文——阈值循环外预取
   const sorted = titleRows
-    .filter(a => isEnglish(a.title))
+    .filter(a => isEnglishSync(a.title, th))
     .map(a => ({ ...a, _p: priMap.get(a.id) ?? 7 }))
     .sort((a, b) => a._p - b._p);
   for (const c of sorted) priCount[c._p]++;

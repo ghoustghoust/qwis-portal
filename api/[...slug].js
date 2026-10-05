@@ -1848,6 +1848,11 @@ async function handleTranslateConfig(req) {
       enabled: cfg.enabled !== false,
       autoTranslate: cfg.autoTranslate !== false,
       minChars: Number(cfg.minChars) || 0,
+      latinMin: cfg.latinMin ?? 0.5,
+      cjkMax: cfg.cjkMax ?? 0.2,
+      minTextLen: cfg.minTextLen ?? 20,
+      thinBodyMax: cfg.thinBodyMax ?? 400,
+      refineMinLen: cfg.refineMinLen ?? 1500,
       prompts: { translate: pTranslate, refine: pRefine, polish: pPolish },
       note: 'prompts 三档=runner 批量翻译用；本地「翻译」页的精翻档（translate-skill）是另一套键（互不相通，见 T3-9 立项说明）',
     });
@@ -1860,6 +1865,23 @@ async function handleTranslateConfig(req) {
     if (body.enabled !== undefined) { next.enabled = !!body.enabled; changed.push('enabled'); }
     if (body.autoTranslate !== undefined) { next.autoTranslate = !!body.autoTranslate; changed.push('autoTranslate'); }
     if (body.minChars !== undefined) { next.minChars = Math.max(0, Number(body.minChars) || 0); changed.push('minChars'); }
+    // 细腻调节（10-05 用户反馈"太粗犷"）：翻译判据五档可调——默认值与 runner 现状一致
+    const THRESHOLDS = {
+      latinMin: { def: 0.5, min: 0.1, max: 0.9, desc: '拉丁字符占比下限（判英文）' },
+      cjkMax: { def: 0.2, min: 0, max: 0.5, desc: '中文字符占比上限（判英文）' },
+      minTextLen: { def: 20, min: 5, max: 200, desc: '最短文本长度（短于此不判英文）' },
+      thinBodyMax: { def: 400, min: 100, max: 2000, desc: '薄正文阈值（低于此走仅标题通道）' },
+      refineMinLen: { def: 1500, min: 500, max: 5000, desc: '长文精翻阈值（高于此走第三轮润色）' },
+    };
+    for (const [key, spec] of Object.entries(THRESHOLDS)) {
+      if (body[key] !== undefined) {
+        const v = Number(body[key]);
+        if (Number.isFinite(v) && v >= spec.min && v <= spec.max) {
+          next[key] = v;
+          changed.push(key);
+        }
+      }
+    }
     // 提示词写：三档各写一个键（ai.prompt.translate / .translate-refine / .translate-polish）
     for (const [field, key] of [['promptTranslate', 'ai.prompt.translate'], ['promptRefine', 'ai.prompt.translate-refine'], ['promptPolish', 'ai.prompt.translate-polish']]) {
       if (body[field] !== undefined) {
