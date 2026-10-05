@@ -671,7 +671,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
                           {s.status === 'error' && s.enabled && (
                             <button className="btn-ghost !py-1 !px-2 text-xs" title="立即重试抓取（清失败计数）" onClick={() => refreshOne(s)}>重启抓取</button>
                           )}
-                          <button className="icon-btn !w-7 !h-7 t-muted" title={s.enabled ? '停用采集' : '启用采集'} onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}>⏸</button>
+                          <button className="icon-btn !w-7 !h-7 t-muted" title={s.enabled ? '暂停采集' : '恢复采集'} onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}>⏸</button>
                           <button className="icon-btn !w-7 !h-7 t-muted" title={T.freq} onClick={() => promptInterval(s)}>⏱</button>
                           <button className="icon-btn !w-7 !h-7 t-muted hover:text-red-500" title="删除" onClick={() => deleteOne(s)}><TrashIcon size={13} /></button>
                         </div>
@@ -911,7 +911,7 @@ ${s.url}`}>{s.name || s.url}</div>
                         style={s.type === 'wemp' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
                         disabled={s.type === 'wemp'}
                         onClick={() => doSingle(s.id, s.enabled ? 'disable' : 'enable')}
-                        title={s.type === 'wemp' ? '已退役：采集引擎已下线，无法重新启用' : (s.enabled ? '点击停用采集' : '点击启用采集')}
+                        title={s.type === 'wemp' ? '已退役：采集引擎已下线，无法恢复' : (s.enabled ? '点击暂停采集' : '点击恢复采集')}
                       />
                     </td>
                   </tr>

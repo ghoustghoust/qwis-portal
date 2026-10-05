@@ -294,7 +294,7 @@ export default function DataTab() {
         <div className="mt-4 card overflow-hidden">
           {snapshotsUnsupported ? (
             <div className="px-4 py-6 text-center text-xs t-muted">
-              {snapNote || '当前部署（云端 Turso）没有文件系统，不支持整库 .db 快照/恢复。'}
+              {snapNote || '云端部署（Vercel + Turso）不支持整库 .db 快照/恢复——存储与体积在 Turso 控制台看；要迁移用「配置备份/恢复」。'}
               {'——这不是"还没有快照"，而是本部署形态不提供该能力，故按钮已禁用。'}
             </div>
           ) : snaps.length === 0 ? (

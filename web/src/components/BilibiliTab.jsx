@@ -65,12 +65,12 @@ export default function BilibiliTab() {
     loadPending();
   }, [loadPending]);
 
-  // F32b: 批量刷新已启用的 B 站订阅
+  // F32b: 批量刷新开着的的 B 站订阅
   const refreshAllEnabled = async () => {
     if (busy) return;
     const enabledCount = sources.filter((s) => s.enabled !== 0).length;
     if (!enabledCount) {
-      toast('没有已启用的 B 站订阅可刷新');
+      toast('没有开着采集的 B 站订阅可刷新');
       return;
     }
     setBusy('refreshAll');
@@ -191,9 +191,9 @@ export default function BilibiliTab() {
             className="btn-ghost text-xs"
             disabled={!!busy}
             onClick={refreshAllEnabled}
-            title="批量刷新所有已启用的 B 站订阅（跳过熔断检查）"
+            title="批量刷新所有开着采集的 B 站订阅（跳过熔断检查）"
           >
-            {busy === 'refreshAll' ? '刷新中…' : '批量刷新已启用'}
+            {busy === 'refreshAll' ? '刷新中…' : '批量刷新开着的'}
           </button>
         </div>
       </div>

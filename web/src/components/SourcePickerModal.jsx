@@ -48,7 +48,7 @@ export default function SourcePickerModal({ open, title, note, sources = [], sel
       <div className="card p-4 w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 mb-3">
           <div className="text-sm font-semibold t-text flex-1">{title}</div>
-          <span className="text-xs t-muted tabular-nums">{showSpotlight ? `已选 ${draft.length}（重点 ${draftSpot.length}）` : `已选 ${draft.length}`}</span>
+          <span className="text-xs t-muted tabular-nums">{showSpotlight ? `已选 ${draft.length} · 其中重点 ${draftSpot.length}` : `已选 ${draft.length}`}</span>
           <button className="btn-ghost !py-1 !px-2 text-xs" onClick={onClose}>关闭</button>
         </div>
         {note && <div className="text-[11px] t-muted mb-2">{note}</div>}

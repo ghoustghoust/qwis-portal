@@ -435,44 +435,6 @@ export default function AlertsTab() {
         </div>
       </div>
 
-      {/* 事件开关 + 冷却时长 */}
-      <div className="card p-4">
-        <div className="text-sm font-medium t-text">报警事件</div>
-        <div className="mt-1 text-xs t-muted">勾选哪些事件需要推送报警；同一事件在冷却期内只发一次。</div>
-        <div className="mt-3 space-y-2.5">
-          {Object.entries(meta).map(([key, m]) => (
-            <label key={key} className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                className="mt-0.5 accent-[var(--accent)]"
-                checked={!!events[key]}
-                onChange={() => toggleEvent(key)}
-              />
-              <span>
-                <span className="text-[13px] t-text">{metaTitle(m)}</span>
-                {typeof m !== 'string' && m && m.desc && (
-                  <span className="block text-[11px] t-muted mt-0.5">{m.desc}</span>
-                )}
-              </span>
-            </label>
-          ))}
-        </div>
-        <div className="mt-4 pt-3 border-t t-border flex items-center gap-2 text-[13px]">
-          <span className="t-text">冷却时长</span>
-          <input
-            type="number"
-            min="5"
-            className="input !w-24"
-            value={cooldown}
-            onChange={(e) => setCooldown(e.target.value)}
-            onBlur={saveCooldown}
-            onKeyDown={(e) => e.key === 'Enter' && saveCooldown()}
-          />
-          <span className="t-muted text-xs">分钟（同一事件冷却期内不重复推送，最小 5）</span>
-          <button className="text-xs t-muted hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">清空冷却</button>
-        </div>
-      </div>
-
       {/* 报警覆盖矩阵（T3-8 批次3：治"有的模块根本没在报警"——判据/启用/最近触发/送达一览） */}
       <section className="card p-4">
         <div className="flex items-center gap-2">
@@ -513,6 +475,44 @@ export default function AlertsTab() {
           </table>
         </div>
       </section>
+
+      {/* 事件开关 + 冷却时长 */}
+      <div className="card p-4">
+        <div className="text-sm font-medium t-text">报警事件</div>
+        <div className="mt-1 text-xs t-muted">勾选哪些事件需要推送报警；同一事件在冷却期内只发一次。</div>
+        <div className="mt-3 space-y-2.5">
+          {Object.entries(meta).map(([key, m]) => (
+            <label key={key} className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-0.5 accent-[var(--accent)]"
+                checked={!!events[key]}
+                onChange={() => toggleEvent(key)}
+              />
+              <span>
+                <span className="text-[13px] t-text">{metaTitle(m)}</span>
+                {typeof m !== 'string' && m && m.desc && (
+                  <span className="block text-[11px] t-muted mt-0.5">{m.desc}</span>
+                )}
+              </span>
+            </label>
+          ))}
+        </div>
+        <div className="mt-4 pt-3 border-t t-border flex items-center gap-2 text-[13px]">
+          <span className="t-text">冷却时长</span>
+          <input
+            type="number"
+            min="5"
+            className="input !w-24"
+            value={cooldown}
+            onChange={(e) => setCooldown(e.target.value)}
+            onBlur={saveCooldown}
+            onKeyDown={(e) => e.key === 'Enter' && saveCooldown()}
+          />
+          <span className="t-muted text-xs">分钟（同一事件冷却期内不重复推送，最小 5）</span>
+          <button className="text-xs t-muted hover:underline font-medium" onClick={() => clearCooldowns()} title="清除所有报警源的冷却状态，避免重复报警被抑制">清空冷却</button>
+        </div>
+      </div>
 
       {adding && <AddChannelModal onClose={() => setAdding(false)} onSave={addChannel} />}
     </div>

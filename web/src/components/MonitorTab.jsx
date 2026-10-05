@@ -111,7 +111,8 @@ export default function MonitorTab() {
       {/* 各源成功率 */}
       <section className="card p-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold t-text">源健康近似值 <span className="text-xs t-muted font-normal">（按当前状态近似，无历史分母——"近 N 天"参数在云端无实效）</span></h3>
+          <h3 className="text-sm font-semibold t-text">源健康近似值</h3>
+          <span className="text-[11px] t-muted">（按当前状态近似，无历史分母）——口径详见说明</span>
           <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={load} disabled={loading}>
             {loading ? '刷新中…' : '刷新'}
           </button>

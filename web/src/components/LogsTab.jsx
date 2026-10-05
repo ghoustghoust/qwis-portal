@@ -191,6 +191,7 @@ export default function LogsTab() {
                   </div>
                 </div>
                 {r.title && <div className="mt-1.5 text-[13px] t-text leading-snug pl-6 border-l-2 border-[var(--accent)]">{r.title}</div>}
+                {r.text && <div className="mt-1 text-xs t-muted leading-snug pl-6 border-l-2 t-border" title={r.text}>{r.text}</div>}
               </div>
             ))}
           </div>

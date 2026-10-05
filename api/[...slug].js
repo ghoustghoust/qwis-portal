@@ -2066,7 +2066,8 @@ async function handleErrorClusters(req) {
     c.byType[r.type] = (c.byType[r.type] || 0) + 1;
     if (c.items.length < 20) c.items.push({ id: r.id, name: r.name, type: r.type, groupId: r.group_id, failCount: r.fail_count || 0, error: String(extra.lastError).slice(0, 160), lastErrorAt: extra.lastErrorAt || null });
   }
-  const clusters = [...byKey.values()].sort((a, b) => b.count - a.count);
+  // 不足 3 个的桶不入聚类（"其他 1 个源"没意义——散列进问题源表格）
+  const clusters = [...byKey.values()].filter((c) => c.count >= 3).sort((a, b) => b.count - a.count);
   // 系统性标记：同桶 ≥10 且单一类型占比 ≥80%——系统级问题（一种病一片），不是散源故障
   for (const c of clusters) {
     const topType = Object.entries(c.byType).sort((x, y) => y[1] - x[1])[0];
