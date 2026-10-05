@@ -2,6 +2,8 @@
 /**
  * 全网情报系统运维工具箱 v2.0（Node 版）
  * 用途：无需 AI Agent 介入的独立运维操作集
+ * 适用面：仅本地端（直读本地 db / localhost API）——Cookie 失效告警读的 cookieIssues
+ *       字段云端 /api/health/status 已随 H57 裁剪摘除，把 API_BASE 指向云端会静默失效
  * 用法：
  *   node tools/ops-toolkit.js check          系统健康总览（主服务 + 报警渠道）
  *   node tools/ops-toolkit.js frozen         查看熔断源清单

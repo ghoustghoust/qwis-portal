@@ -2047,7 +2047,8 @@ async function handleDashboard(req) {
 // 数组）零消费。默认回末 120 条并投影掉 stats.failures；?limit= 可要更多（原始值仍在 settings）。
 async function handleCollectHistory(req) {
   const hb = await getSetting('cloud.collect', {});
-  const limit = Math.min(Number(req.query.limit) || 120, 500);
+  // Math.trunc+max 闭合负数/小数边界（对抗审查 B：limit=-5 曾返回开头而非末尾、0.5 曾绕过裁剪回全量）
+  const limit = Math.max(1, Math.min(Math.trunc(Number(req.query.limit)) || 120, 500));
   const raw = Array.isArray(hb.history) ? hb.history : [];
   const history = raw.slice(-limit).map((h) => {
     if (!h || typeof h !== 'object') return h;
