@@ -123,6 +123,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
   const [pendingMove, setPendingMove] = useState(null); // {gid, name}：新建文件夹后等待选源移入
   const [cleanup, setCleanup] = useState(null); // 死源清理器候选（10-05 用户点单①）
   const [cleanupSel, setCleanupSel] = useState(new Set());
+  const [cleanupBusy, setCleanupBusy] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
   const toolsRef = useRef(null);
@@ -145,11 +146,12 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
 
   useEffect(() => { load(); }, [load]);
 
-  // 死源清理器候选：进问题源视图时拉一次
+  // 死源清理器候选：进清理视图时拉（对抗审查 C：条件此前写错视图名=直进清理页/批量操作
+  // 后永久卡"加载中"；force 绕过 90s GET 缓存——失效匹配是精确路径打不掉本端点）
   useEffect(() => {
-    if (view !== 'issues' || cleanup) return;
+    if (view !== 'issues_cleanup' || cleanup) return;
     (async () => {
-      try { setCleanup(await api.get('/api/sources/cleanup-candidates')); } catch { /* 拉不到不阻断 */ }
+      try { setCleanup(await api.get('/api/sources/cleanup-candidates', true)); } catch { /* 拉不到不阻断 */ }
     })();
   }, [view, cleanup]);
 
@@ -307,12 +309,14 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
 
   // 死源清理动作（停用=可回退的常态操作；删除=级联清内容，confirm 更狠）
   async function cleanupBatch(action) {
+    if (cleanupBusy) return; // 对抗审查 C：busy 锁防双击并发重入
     const ids = [...cleanupSel];
     if (!ids.length) return toast('先勾选要清理的源');
     const text = action === 'disable'
       ? `停用勾选的 ${ids.length} 个源？（停止采集，数据保留，随时可启用回来）`
       : `删除勾选的 ${ids.length} 个源？其全部内容将级联删除，不可恢复——建议先停用观察。`;
     if (!window.confirm(text)) return;
+    setCleanupBusy(true);
     try {
       let done = 0;
       for (let i = 0; i < ids.length; i += 25) {
@@ -323,12 +327,14 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
         } else {
           for (const id of chunk) { await api.del('/api/sources/' + id); done++; }
         }
+        toast(`处理中… ${done}/${ids.length}`); // 进度反馈（无进度可双击的根因）
       }
       toast(`${action === 'disable' ? '已停用' : '已删除'} ${done} 个源`);
       setCleanupSel(new Set());
       setCleanup(null);
       await load();
     } catch (e) { toast('清理失败: ' + e.message); }
+    finally { setCleanupBusy(false); }
   }
 
   // 单源立即抓取（runner 侧 next_fetch_at 置到期，15 分钟节奏内被拾起）
@@ -600,11 +606,11 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
               <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setCleanupSel(new Set(cleanup.items.map((x) => x.id)))}>全选</button>
               <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setCleanupSel(new Set())}>全不选</button>
               <span className="flex-1" />
-              <button className="btn-ghost !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size} onClick={() => cleanupBatch('disable')}>停用勾选</button>
-              <button className="btn-primary !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size} onClick={() => cleanupBatch('delete')}>删除勾选</button>
+              <button className="btn-ghost !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size || cleanupBusy} onClick={() => cleanupBatch('disable')}>{cleanupBusy ? '处理中…' : '停用勾选'}</button>
+              <button className="btn-primary !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size || cleanupBusy} onClick={() => cleanupBatch('delete')}>{cleanupBusy ? '处理中…' : '删除勾选'}</button>
             </div>
             <div className="mt-2 text-[11px] t-muted">
-              判据：{Object.entries(cleanup.rules).map(([k, v]) => v).join('；')}。这些源启用中但库里没内容——
+              判据：{Object.entries(cleanup.rules).map(([k, v]) => v).join('；')}。这些源启用中但库里没内容——注意：将来内容清理（按保留天数）放行后，低频活源的旧内容也会过保被删，届时要配合"最近入库时间"再判。
               停用=停止采集可回退；删除=级联清内容不可恢复，建议先停用观察。
             </div>
           </div>

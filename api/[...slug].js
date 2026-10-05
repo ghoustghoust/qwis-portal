@@ -1995,10 +1995,12 @@ async function handleCleanupCandidates(req) {
   ]);
   const shape = (r, reason) => ({ id: r.id, name: r.name, type: r.type, url: r.url, groupId: r.group_id,
     reason, failCount: r.fail_count || 0, createdAt: r.created_at || null, lastFetchedAt: r.last_fetched_at || null });
-  const items = [
-    ...neverOk.map((r) => shape(r, 'never_ok')),
-    ...stale.map((r) => shape(r, 'stale_14d')),
-  ].sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
+  // 按 id 去重（对抗审查 A：never_ok 不限 last_fetched 后与 stale_14d 存在交集——线上实存
+  // id=1093 双命中，不去重批量删除会二次请求同一 id 以 404 中断；never_ok 优先）
+  const seen = new Set();
+  const items = [...neverOk.map((r) => shape(r, 'never_ok')), ...stale.map((r) => shape(r, 'stale_14d'))]
+    .filter((it) => { if (seen.has(it.id)) return false; seen.add(it.id); return true; })
+    .sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
   return jsonOk({ items, rules: { never_ok: '库里没有内容且入库 >7 天（抓取成功但没产出：feed 真空 / 内容全被拒）', stale_14d: '超过 14 天没抓到内容' } });
 }
 
