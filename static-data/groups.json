@@ -71,13 +71,6 @@
       "source_count": 0
     },
     {
-      "id": 11,
-      "kind": "article",
-      "name": "创投",
-      "sort": 11,
-      "source_count": 0
-    },
-    {
       "id": 12,
       "kind": "article",
       "name": "财经",
@@ -110,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 0
+      "source_count": 17
     },
     {
       "id": 17,
@@ -124,14 +117,14 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 35
+      "source_count": 87
     },
     {
       "id": 19,
       "kind": "article",
       "name": "编程技术",
       "sort": 19,
-      "source_count": 31
+      "source_count": 68
     },
     {
       "id": 20,
@@ -145,28 +138,28 @@
       "kind": "article",
       "name": "生活方式与文化",
       "sort": 21,
-      "source_count": 11
+      "source_count": 19
     },
     {
       "id": 22,
       "kind": "article",
       "name": "商业科技",
       "sort": 22,
-      "source_count": 31
+      "source_count": 37
     },
     {
       "id": 23,
       "kind": "article",
       "name": "金融经济",
       "sort": 23,
-      "source_count": 11
+      "source_count": 12
     },
     {
       "id": 24,
       "kind": "article",
       "name": "产品",
       "sort": 24,
-      "source_count": 10
+      "source_count": 13
     },
     {
       "id": 25,
@@ -180,21 +173,42 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 0
+      "source_count": 9
+    },
+    {
+      "id": 30,
+      "kind": "article",
+      "name": "X 推文",
+      "sort": 26,
+      "source_count": 72
     },
     {
       "id": 27,
       "kind": "video",
       "name": "编程技术",
       "sort": 27,
-      "source_count": 0
+      "source_count": 3
+    },
+    {
+      "id": 32,
+      "kind": "article",
+      "name": "GitHub 项目",
+      "sort": 27,
+      "source_count": 10
     },
     {
       "id": 28,
       "kind": "video",
       "name": "产品",
       "sort": 28,
-      "source_count": 0
+      "source_count": 2
+    },
+    {
+      "id": 33,
+      "kind": "article",
+      "name": "公众号新站",
+      "sort": 28,
+      "source_count": 18
     },
     {
       "id": 29,
@@ -202,7 +216,21 @@
       "name": "影音创作",
       "sort": 29,
       "source_count": 1
+    },
+    {
+      "id": 34,
+      "kind": "article",
+      "name": "国际新闻媒体",
+      "sort": 29,
+      "source_count": 15
+    },
+    {
+      "id": 35,
+      "kind": "article",
+      "name": "播客国际",
+      "sort": 30,
+      "source_count": 5
     }
   ],
-  "generated_at": "2026-10-04T07:08:26.157Z"
+  "generated_at": "2026-10-05T07:21:53.416Z"
 }

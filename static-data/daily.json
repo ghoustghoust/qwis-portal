@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 93,
-    "generated_at": "2026-10-04T06:41:28.946Z",
+    "id": 96,
+    "generated_at": "2026-10-05T06:41:46.081Z",
     "window_hours": 30,
     "sections": [
       {
@@ -9,14 +9,44 @@
         "desc": "新公开的课程、训练营与社群招募",
         "items": [
           {
-            "id": 2701386,
-            "title": "倒计时7天！Design360设计节2026招募即将截止",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODM1NTMzMQ==&mid=2247805510&idx=1&sn=f3528a2a3d15ff200739f8c5a90b6191",
-            "source": "Design360",
-            "published_at": "2026-10-03T03:14:00.000Z",
+            "id": 2981346,
+            "title": "数学家爬到山顶，发现AI早就等在那里了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656209885&idx=2&sn=d84dc7862509ff0c69ff138a770614c0",
+            "source": "虎嗅APP",
+            "published_at": "2026-10-04T13:33:00.000Z",
             "score": null,
-            "summary": "Design360设计节2026招募即将截止，点击《OPEN CALL｜Design360设计节2026招募开启》了解活动详情。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6314239f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fh21aqWdeNNbaxF0JhwiakkDia0Nuh7YFkayOWjdtQo0wvkmFVxKGL33PSAu2QiaLLyH1GJtNowCBGiadznqY6Sy3K6AXRxibOdHboOSwbibErh8jg%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "一个专注于“元认知”的跨学科思想平台。由得到App《人生算法》课程主理人、中信出版社年度作者老喻原创，100万深度思考者订阅的决策指南。融合科学、哲学、与概率论，系统性拆解AI、投资与复杂决策问题，与你一起探索理性边界，实现丰盛人生。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=db1d8908&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F87nD5Qvn8kIXFXLib8SMqJIDPOI03nT10sFWibDSCLDcHGV57ltFnNMd9ocnV0o9qfJwM2JpPzXtlXvJ9nn9kTV7lHsK4hicath4dBRDUgg2tc%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2922658,
+            "title": "课程 | 如何系统理解人类决策？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkxNzg2MzkxNg==&mid=2247548139&idx=2&sn=51b9fdadc1004e72347fdf5c5b93eee2",
+            "source": "神经现实",
+            "published_at": "2026-10-04T10:03:00.000Z",
+            "score": null,
+            "summary": "在21世纪的科技版图上，神经科学正成为定义未来的核心学科。世界顶尖大学纷纷扩大神经科学系/脑科学研究机构，中国、美国、欧盟等国家级脑科学战略项目陆续启动，科技产业也将“脑机接口”视为下一场智能产业革命。神经科学正借助多种前沿技术，从神经元到整个大脑系统揭示思维与行为的机制。通过功能磁共振成像、双光子显微镜和光遗传学等技术，研究者得以观察、追踪甚至操控神经活动，解码大脑底层机制。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=964d57db&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fzicns1lXib7pMclzGD1zBOO0wwSys3s50ibapMyf3XicJqyktiauZbzNBIysWfTqNRS6vmoib0BQtghk0fGx4jaPlHcicTHACrrRbTfkFibQU8Dov1w%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3013345,
+            "title": "当中年人遭遇“就业极化”，职业技能培训有用吗？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjY2NzgwMjU0MA==&mid=2650331549&idx=1&sn=f1503d202ce9d6007ae481c4d64adc48",
+            "source": "财新",
+            "published_at": "2026-10-04T08:46:00.000Z",
+            "score": null,
+            "summary": "瞄准结构性失业，多地开展职业技能培训，聚焦新质生产力和新兴职业等领域，职业培训补贴各地执行情况不一",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=57c1f730&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhVxEntyefTkKib9EROHgzZYaTTtiaKGy1da0DySzIsQ1EaaeXFcXdHDcVzV6F6Ja8SktIazNIEz1ynouZrib5ianjMzeeJflJtngibiaIUVYv5Biao%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2936711,
+            "title": "Anthropic 开班：投入 1 亿美金，培训 1 万名 FDE 工程师",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkzNDQxOTU2MQ==&mid=2247521327&idx=1&sn=048c037c90fa6c3017a10d59e9b99bb8",
+            "source": "赛博禅心",
+            "published_at": "2026-10-04T01:08:00.000Z",
+            "score": null,
+            "summary": "Anthropic 宣布投入 1 亿美元 成立 Claude Frontier Academy（Claude 前沿学院），要在 2027 年底前培养出 1 万名 FDE",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=edcfdca5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FjXSGuwJvpdia01sX6MUkeYAkib4Q07fsjwcFkFNQsK7EmUvA1rvHoAWnQll8LLdI9ThKadfdpfDBIxeGbdiaBV8MmVhjjksW04cg2Jrg9CgPF4%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -25,154 +55,154 @@
         "desc": "",
         "items": [
           {
-            "id": 2804115,
-            "title": "早知天下事〔2026.10.04〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650242906&idx=1&sn=6bd7357433d7f2d3d1ea4131c9c3a293",
+            "id": 3030174,
+            "title": "早知天下事〔2026.10.05〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650243179&idx=1&sn=dbf000eb960a89de3ed46f3307fb018b",
             "source": "新华社",
-            "published_at": "2026-10-03T22:00:00.000Z",
+            "published_at": "2026-10-04T22:00:00.000Z",
             "score": null,
-            "summary": "家国同庆，文明同行。国庆期间，全国各地的新时代文明实践中心（所、站），广泛开展“迎国庆·文明实践我行动”主题活动，进一步激发人们心中的爱国情感，营造热烈喜庆、文明祥和的节日氛围。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6c2fb4a4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOITahcYDF9vG6ebOx26uYCr1LX7Gn4g7Pnu5upmicw8rb34Zx5PCgHk5eHfBbl2Fibe4AfuibxgibzS7VK03wF5ETTeBMO47PBeZbBA%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "10月1日至4日，累计全社会跨区域人员流动量预计12.45亿人次，同比增长0.1%。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=792afe77&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIQDx1icfP4UTrhibMsCqiazLtGNnY4FCd8siaGWZZXqnM7cP2yWegxlUJxC2gtrzHticYbbUkQn4IDic9CHWmEJIWnxB2EkZV8ibDVoK4%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2789795,
-            "title": "For some Brazilians, this election is a vote on Trump",
-            "url": "https://www.npr.org/2026/10/03/nx-s1-5989699/for-some-brazilians-this-election-is-a-vote-on-trump",
+            "id": 3015701,
+            "title": "The Amazon's future is on the ballot in Brazil. Many voters aren't focused on it",
+            "url": "https://www.npr.org/2026/10/04/nx-s1-5986271/the-amazons-future-is-on-the-ballot-in-brazil-many-voters-arent-focused-on-it",
             "source": "NPR Topics: World",
-            "published_at": "2026-10-03T21:57:36.000Z",
+            "published_at": "2026-10-04T21:57:06.000Z",
             "score": null,
-            "summary": "President Trump says he's been having success winning races in Latin America. As Brazilian voters go to the polls, they're also deciding how much influence Trump should have in their country.",
+            "summary": "Brazil's environment is a global concern. But on the campaign trail, it's struggling to get voters' attention.",
             "cover": null
           },
           {
-            "id": 2789796,
-            "title": "France arrests 5,000 people, mostly teens, as school protests spread",
-            "url": "https://www.npr.org/2026/10/03/nx-s1-5989532/france-arrests-5-000-people-mostly-teens-as-school-protests-spread",
+            "id": 3015702,
+            "title": "Brazil's election could shift its ties with the U.S. and China",
+            "url": "https://www.npr.org/2026/10/04/nx-s1-5989593/brazils-election-could-shift-its-ties-with-the-u-s-and-china",
             "source": "NPR Topics: World",
-            "published_at": "2026-10-03T21:57:35.000Z",
+            "published_at": "2026-10-04T21:53:15.000Z",
             "score": null,
-            "summary": "High school students say their classrooms are overcrowded, teachers are missing and buildings need repairs. The protests have spread to cities across France, and some 5,000 people have been arrested.",
+            "summary": "Brazil is a global supplier of oil, soybeans and critical minerals. Americas Quarterly editor in chief Brian Winter explains how Brazil's presidential election could impact trade with the U.S. and Chi",
             "cover": null
           },
           {
-            "id": 2794837,
-            "title": "\"Accepted papers must be imported\" deadline NeurIPS 2026 [D]",
-            "url": "https://www.reddit.com/r/MachineLearning/comments/1wwz403/accepted_papers_must_be_imported_deadline_neurips/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-10-03T21:55:48.000Z",
-            "score": null,
-            "summary": "On the NeurIPS 2026 Dates site it says that there is 1 day remaining for the &quot;Accepted papers must be imported&quot; deadline. This is my first research paper ever and I couldn&#39;t find anythin",
-            "cover": null
-          },
-          {
-            "id": 2783858,
-            "title": "Configuring postfix and dovecot on Debian Trixie",
-            "url": "https://www.reddit.com/r/selfhosted/comments/1wwyqan/configuring_postfix_and_dovecot_on_debian_trixie/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-10-03T21:38:05.000Z",
-            "score": null,
-            "summary": "As promised earlier today, here is an in-depth write-up of how I got postfix and dovecot to play together on a Debian Trixie VPS targeting both system and virtual users, and multiple domains.",
-            "cover": null
-          },
-          {
-            "id": 2788888,
-            "title": "Israeli settlers attack Palestinian farmers during olive harvest",
-            "url": "https://www.aljazeera.com/video/2026/10/3/israeli-settlers-attack-palestinian-farmers-during-olive-harvest-2?traffic_source=rss",
+            "id": 3015164,
+            "title": "Cornell case puts New York’s progressive image at odds with its rape laws",
+            "url": "https://www.aljazeera.com/news/2026/10/4/cornell-case-puts-new-yorks-progressive-image-at-odds-with-its-rape-laws?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-10-03T21:15:05.000Z",
+            "published_at": "2026-10-04T21:39:55.000Z",
             "score": null,
-            "summary": "Israeli settlers attack Palestinian farmers during olive harvest",
+            "summary": "New York lawmakers will review sexual-assault laws, including voluntary intoxication rule at the heart of Cornell case.",
             "cover": null
           },
           {
-            "id": 2788889,
-            "title": "Fernandes denies Portugal rift, hails Ronaldo after walk out",
-            "url": "https://www.aljazeera.com/video/newsfeed/2026/10/3/fernandes-denies-portugal-rift-hails-ronaldo-after-walk-out?traffic_source=rss",
+            "id": 3015165,
+            "title": "Ireland refuse handshake with Israel and don armbands in Nations League tie",
+            "url": "https://www.aljazeera.com/sports/2026/10/4/ireland-refuse-handshake-with-israel-and-don-armbands-in-nations-league-tie?traffic_source=rss",
             "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
-            "published_at": "2026-10-03T21:02:22.000Z",
+            "published_at": "2026-10-04T21:30:22.000Z",
             "score": null,
-            "summary": "Bruno Fernandes says he has spoken to Cristiano Ronaldo and denies a rift within Portugal’s squad.",
+            "summary": "Republic of Ireland football players again wear black armbands and refuse handshakes with Israel in UEFA Nations League.",
             "cover": null
           },
           {
-            "id": 2798136,
-            "title": "Reasons I didn't become an EMT, ranked",
-            "url": "https://ben.stolovitz.com/posts/reasons-not-emt-ranked/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-10-03T20:49:15.000Z",
-            "score": null,
-            "summary": "Article URL: https://ben.stolovitz.com/posts/reasons-not-emt-ranked/",
-            "cover": null
-          },
-          {
-            "id": 2787411,
-            "title": "Surely you have ultra-wideband radios on your bins too?",
-            "url": "https://sjg.io/writing/binrange-have-you-actually-put-the-bins-out/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-10-03T20:27:44.000Z",
-            "score": null,
-            "summary": "Article URL: https://sjg.io/writing/binrange-have-you-actually-put-the-bins-out/",
-            "cover": null
-          },
-          {
-            "id": 2773138,
-            "title": "Your agent made a mistake. Can you turn it into a test?\r\n\r\nZubin Aysola (@wandb) turns an ARIA product...",
-            "url": "https://x.com/aiDotEngineer/status/2106459270019694768",
-            "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-10-03T19:00:00.000Z",
-            "score": null,
-            "summary": "Your agent made a mistake. Can you turn it into a test?Zubin Aysola (@wandb) turns an ARIA production trace into an eval and benchmarks the fix.World’s Fair recording: youtu.be/XyV6bSMyq-IMeet the bui",
-            "cover": "https://pbs.twimg.com/media/HTujj9nWsAAheMS.jpg"
-          },
-          {
-            "id": 2764944,
-            "title": "We go really deep and somewhat technical here with the brilliant @alexatallah of OpenRouter. Enjoy!",
-            "url": "https://x.com/amasad/status/2106450234369085609",
-            "source": "Amjad Masad(@amasad)",
-            "published_at": "2026-10-03T18:24:06.000Z",
-            "score": null,
-            "summary": "We go really deep and somewhat technical here with the brilliant @alexatallah of OpenRouter. Enjoy!a16z@a16z.@OpenRouter co-founder Alex Atallah, in his first podcast since Stripe acquired the company",
-            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
-          },
-          {
-            "id": 2745134,
-            "title": "US Coast Guard searches for missing air ambulance off coast of Massachusetts",
-            "url": "https://www.theguardian.com/us-news/2026/oct/03/us-coast-guard-missing-air-ambulance-massachusetts",
-            "source": "World news | The Guardian",
-            "published_at": "2026-10-03T17:03:54.000Z",
-            "score": null,
-            "summary": "The plane was undertaking a medical evacuation from Bermuda with six people onboard when it lost contact",
-            "cover": null
-          },
-          {
-            "id": 2751253,
-            "title": "Capcom is preparing for a ‘future where we create games together with AI’",
-            "url": "https://www.theverge.com/games/1004418/capcom-ai-game-development",
-            "source": "The Verge",
-            "published_at": "2026-10-03T16:49:10.000Z",
-            "score": null,
-            "summary": "Capcom's Pragmata might be all about the horrors of AI, but in practice the studio doesn't seem so down on the tech. During the Capcom Open Conference RE: 2026 programmer Satoshi Ishida gave a present",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/02/RE9_SS_08.png?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 2734603,
-            "title": "Tennessee prison chief to resign after Christa Pike's failed execution, governor says",
-            "url": "https://www.bbc.co.uk/news/articles/c8zxl62yzxzxo?at_medium=RSS&at_campaign=rss",
+            "id": 3005725,
+            "title": "Polls close in Brazil as Lula and Flávio Bolsonaro remain neck and neck",
+            "url": "https://www.bbc.co.uk/news/articles/ck1l34ed592no?at_medium=RSS&at_campaign=rss",
             "source": "BBC News — News",
-            "published_at": "2026-10-03T16:18:04.000Z",
+            "published_at": "2026-10-04T21:11:49.000Z",
             "score": null,
-            "summary": "Pike survived two lethal injections on Wednesday and is currently in critical condition in hospital.",
+            "summary": "If no candidate gets more than 50% of the vote, the election will go to a run-off on 25 October.",
             "cover": null
           },
           {
-            "id": 2735412,
-            "title": "GitLab Vulnerability Under Active Exploitation Enables Unauthenticated Data Exfiltration",
-            "url": "https://www.infoq.com/news/2026/10/gitlab-critical-vulnerabilities/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
-            "source": "InfoQ — News",
-            "published_at": "2026-10-03T16:00:00.000Z",
+            "id": 3003792,
+            "title": "Court Tosses ​​Sentence After A.I. Video of Victim ‘Forgiving’ His Killer Is Played",
+            "url": "https://www.nytimes.com/2026/10/04/us/manslaughter-conviction-overturned-ai-video-statement.html",
+            "source": "NYT &gt; Technology",
+            "published_at": "2026-10-04T21:04:44.000Z",
             "score": null,
-            "summary": "CVE-2026-85706 is a critical GitLab path-traversal vulnerability that has moved beyond theoretical risk into confirmed exploitation. It affects self-managed GitLab CE/EE and could allow an unauthentic",
-            "cover": "https://res.infoq.com/news/2026/10/gitlab-critical-vulnerabilities/en/headerimage/gitlab-cloud-seed-preview-1791042234130.jpeg"
+            "summary": "An appellate court in Arizona threw out the prison sentence of a man convicted of manslaughter after an A.I.-generated video of his victim was played in court.",
+            "cover": null
+          },
+          {
+            "id": 3000178,
+            "title": "The new Fitbit Edge leaks",
+            "url": "https://www.theverge.com/gadgets/1004616/the-new-fitbit-edge-leaks",
+            "source": "The Verge",
+            "published_at": "2026-10-04T21:02:09.000Z",
+            "score": null,
+            "summary": "We don't know a ton about the Fitbit Edge, but it appears to be a successor to the midrange Charge line. It had leaked previously, but we can clearly see in these images posted by Android Headlines, y",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24438538/Fitbit_STK151_01.jpg?quality=90&strip=all&crop=0,0,100,100"
+          },
+          {
+            "id": 3035960,
+            "title": "In the wake of closure, a digital archive of animated materials appears online",
+            "url": "https://filmstories.co.uk/news/tippett-studios-in-the-wake-of-its-closure-a-digital-archive-of-animated-materials-appears-online/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-04T21:01:28.000Z",
+            "score": null,
+            "summary": "Article URL: https://filmstories.co.uk/news/tippett-studios-in-the-wake-of-its-closure-a-digital-archive-of-animated-materials-appears-online/",
+            "cover": null
+          },
+          {
+            "id": 3011490,
+            "title": "Your agent can read the table. Can it find it?\r\n\r\n@aditabrm of @reductoai explains why a text summary ...",
+            "url": "https://x.com/aiDotEngineer/status/2106851854546243591",
+            "source": "AI Engineer(@aiDotEngineer)",
+            "published_at": "2026-10-04T21:00:00.000Z",
+            "score": null,
+            "summary": "Your agent can read the table. Can it find it?@aditabrm of @reductoai explains why a text summary helps retrieval, while a structured table helps reasoning.World&#39;s Fair 2026 talk: youtube.com/watc",
+            "cover": "https://pbs.twimg.com/media/HTxs57ZWgAArRFq.jpg"
+          },
+          {
+            "id": 3005487,
+            "title": "Bosnian Serb nationalist Dodik declares party victory in Bosnia election",
+            "url": "https://www.theguardian.com/world/2026/oct/04/bosnian-serb-nationalist-dodik-declares-party-victory-in-bosnia-election",
+            "source": "World news | The Guardian",
+            "published_at": "2026-10-04T20:42:08.000Z",
+            "score": null,
+            "summary": "Staunchly pro-Russia politician has dominated campaign and inflamed divisions despite not appearing on ballot",
+            "cover": null
+          },
+          {
+            "id": 2989007,
+            "title": "Prick’s theatrical industrial punk is perfect for spooky season",
+            "url": "https://www.theverge.com/entertainment/1004595/prick-industrial-glam-punk-album-review",
+            "source": "The Verge",
+            "published_at": "2026-10-04T20:00:00.000Z",
+            "score": null,
+            "summary": "While deep in the recording process for The Downward Spiral, Trent Reznor lent some of his production talents to old friend Kevin McMahon, from the new wave band Lucky Pierre (which Reznor was briefly",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/Prick.jpg?quality=90&strip=all&crop=0,0,100,100"
+          },
+          {
+            "id": 3002036,
+            "title": "I asked Claude build a physically accurate O'Neill cylinder you can walk around",
+            "url": "https://island-three.gruberbuilds.workers.dev/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-04T19:49:12.000Z",
+            "score": 62,
+            "summary": "Article URL: https://island-three.gruberbuilds.workers.dev/",
+            "cover": null
+          },
+          {
+            "id": 2993941,
+            "title": "Brazil presidential election 2026: first-round live results",
+            "url": "https://www.theguardian.com/world/ng-interactive/2026/oct/04/brazil-presidential-election-2026-first-round-live-results",
+            "source": "World news | The Guardian",
+            "published_at": "2026-10-04T19:01:28.000Z",
+            "score": null,
+            "summary": "Luiz Inácio Lula da Silva is standing against Flávio Bolsonaro in the first round of the presidential race",
+            "cover": null
+          },
+          {
+            "id": 2965960,
+            "title": "Learn Claude Managed Agents with @AnthropicAI.\r\n\r\n@cjav_dev and Harrison Stall lead the Oct 12 worksho...",
+            "url": "https://x.com/aiDotEngineer/status/2106791464373997855",
+            "source": "AI Engineer(@aiDotEngineer)",
+            "published_at": "2026-10-04T17:00:02.000Z",
+            "score": 42,
+            "summary": "Learn Claude Managed Agents with @AnthropicAI.@cjav_dev and Harrison Stall lead the Oct 12 workshop at AI Engineer New York.Learn the latest Managed Agent features.Workshops are an add-on to a confere",
+            "cover": "https://pbs.twimg.com/media/HTxMPReXYAAYsio.jpg"
           }
         ]
       },
@@ -181,154 +211,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 2790085,
-            "title": "Tell HN: I Hate Codex with Passion",
-            "url": "https://news.ycombinator.com/item?id=49948107",
-            "source": "Ask HN",
-            "published_at": "2026-10-03T21:46:33.000Z",
-            "score": 38,
-            "summary": "OpenAI would have you believe you can do real work with Codex.I have a $20 OpenAI subscription and a $20 Claude subscription.With Codex I can barely get one meaningful coding task done in the 5h limit",
+            "id": 3012403,
+            "title": "[Ongoing Billing Issue] Infinite billing glitch; OpenAI continues to bill our org illegally",
+            "url": "https://community.openai.com/t/ongoing-billing-issue-infinite-billing-glitch-openai-continues-to-bill-our-org-illegally/1403298",
+            "source": "OpenAI Developer Community · API",
+            "published_at": "2026-10-04T21:39:12.000Z",
+            "score": 58,
+            "summary": "Our Agents API session with an OpenAI-hosted sandbox is stuck `in_progress` after every turn already completed or failed. Cancel returns 202 but nothing changes; DELETE returns 409 (session must be du",
             "cover": null
           },
           {
-            "id": 2781371,
-            "title": "Antigravity is now quite insane\r\n\r\nYou can use Claude Opus 5.5 and Sonnet 5.5 directly inside it... in...",
-            "url": "https://x.com/itsPaulAi/status/2106489266473771306",
-            "source": "Paul Couvert(@itsPaulAi)",
-            "published_at": "2026-10-03T20:59:12.000Z",
-            "score": 56,
-            "summary": "Antigravity is now quite insaneYou can use Claude Opus 5.5 and Sonnet 5.5 directly inside it... in addition to Gemini 3.8 Flash.So basically my workflow is now:- Opus 5.5 for planning- Sonnet 5.5 for ",
-            "cover": null
+            "id": 3002649,
+            "title": "[分享创造] [问书] 自主学习网站",
+            "url": "https://www.v2ex.com/t/1246438#reply0",
+            "source": "V2EX",
+            "published_at": "2026-10-04T20:40:15.000Z",
+            "score": null,
+            "summary": "简介：将任意电子书蒸馏知识为 skills ，然后对话提问学习，自行配置模型信息，可导出导入蒸馏后的 skills ，有本地书架功能",
+            "cover": "https://github.com/ns2250225/ask-book/blob/main/demo.gif?raw=true"
           },
           {
-            "id": 2753262,
-            "title": "好事情，Google 的  Antigravity 也能用 Opus 5.5 和 Sonnet 5.5 了",
-            "url": "https://x.com/dotey/status/2106432711527202914",
+            "id": 2980295,
+            "title": "马斯克的这三条确实适合用在 AI Agent 身上，可惜 Agent 不怕你开除它：\r\n\r\n---\r\n马斯克：如果我发送了一封带有明确指令的电子邮件，管理人员只能采取以下三种行动：\r\n\r\n1. 回复邮件向我解释...",
+            "url": "https://x.com/dotey/status/2106805067479212209",
             "source": "宝玉(@dotey)",
-            "published_at": "2026-10-03T17:14:28.000Z",
-            "score": null,
-            "summary": "好事情，Google 的 Antigravity 也能用 Opus 5.5 和 Sonnet 5.5 了Claude Updates@Claudeupdates11🚨 Claude Opus 5.5 and Sonnet 5.5 are now in AntigravityIf you&#39;re a paid user you can use the best Claude models i",
-            "cover": "https://pbs.twimg.com/profile_images/2106000215228416000/fr-nIFid_normal.jpg"
+            "published_at": "2026-10-04T17:54:05.000Z",
+            "score": 46,
+            "summary": "马斯克的这三条确实适合用在 AI Agent 身上，可惜 Agent 不怕你开除它：---马斯克：如果我发送了一封带有明确指令的电子邮件，管理人员只能采取以下三种行动：1. 回复邮件向我解释为什么我说的有误。有时候我也确实会犯错！2. 如果我说得模棱两可，要求进一步澄清。3. 执行指令。如果以上三点都没有做到，该管理人员将被要求立即辞职。Robert Lukoszko@Karmedgei foun",
+            "cover": "https://pbs.twimg.com/profile_images/2081047812331175936/8No01QNj_normal.jpg"
           },
           {
-            "id": 2750864,
-            "title": "Some people have noticed that we've added Claude Opus 5.5 and Sonnet 5.5 for all paid users of Antig...",
-            "url": "https://x.com/_mohansolo/status/2106432039817998463",
-            "source": "Varun Mohan(@_mohansolo)",
-            "published_at": "2026-10-03T17:11:48.000Z",
-            "score": 40,
-            "summary": "Some people have noticed that we&#39;ve added Claude Opus 5.5 and Sonnet 5.5 for all paid users of Antigravity. We want to make sure people have access to the best frontier models and are excited for ",
-            "cover": "https://pbs.twimg.com/media/HTuMFewaQAAkiF6.png"
+            "id": 2948584,
+            "title": "Agents have made CI the bottleneck. Faster pipelines are the wrong fix.",
+            "url": "https://thenewstack.io/ci-bottleneck-agent-verification/",
+            "source": "The New Stack",
+            "published_at": "2026-10-04T15:00:00.000Z",
+            "score": 69,
+            "summary": "Three posts landed in September that I think engineering leaders should read together.",
+            "cover": "https://cdn.thenewstack.io/media/2026/10/800c97d2-zyanya-citlalli-b0hmmckjpro-unsplash-1024x576.jpg"
           },
           {
-            "id": 2754368,
-            "title": "把Depth Anything砍到6M，深度估计终于能跑进Jetson",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557414&idx=1&sn=b6a05b919e2d8802cb5e785287735072",
-            "source": "大模型智能",
-            "published_at": "2026-10-03T16:00:00.000Z",
-            "score": 82,
-            "summary": "过去几年，单目深度估计快速 “Foundation Model 化”。从 Metric3D、Depth Anything 到 UniDepth，大规模数据、更强 backbone 和显式相机建模不断提高模型的跨场景泛化能力。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c30a4876&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FrjiclujBklTwftiayOZ9RD9xiaX2ECdSEwOphnYAcnDpKBEQXchicSG5jgZNhOXhWpq8yZmhKB4ibjay8fYdg9g7pnwiczpicEtyEwZ15lBGIfUtW0%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2739241,
-            "title": "#753.Apps, Agents和聚合：AI Agent 会成为你办事的唯一界面",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6ac12348195d838e2aed0286",
-            "source": "跨国串门儿计划",
-            "published_at": "2026-10-03T15:50:56.000Z",
-            "score": null,
-            "summary": "本期我们克隆了：The Stratechery Podcast · Apps, Agents, and Aggregation",
-            "cover": "https://media.xyzcdn.net/670f3da40d2f24f28978736f/lktcG1eSk7aRBo8fpD0yI7E5iAvw.m4a"
-          },
-          {
-            "id": 2727709,
-            "title": "#752.Vercel CEO 揭秘其智能体工程工作流程：AI 软件工厂瓶颈不在代码，而在人",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6ac10e16e742e36efcbe18d1",
-            "source": "跨国串门儿计划",
-            "published_at": "2026-10-03T14:25:33.000Z",
-            "score": 62,
-            "summary": "本期我们克隆了：David Ondrej · Vercel CEO reveals his Agentic Engineering Workflow",
-            "cover": "https://media.xyzcdn.net/670f3da40d2f24f28978736f/lkh31ulYaNz5gpK3Qa2Pn3g2lejK.m4a"
-          },
-          {
-            "id": 2802923,
-            "title": "人脑为何布满“核桃纹”？科学家解析古老基因调控机制",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NTk1MDMxMg==&mid=2653149819&idx=2&sn=9bd32fcb2721c37be26db721cff625bb",
-            "source": "科普中国",
-            "published_at": "2026-10-03T13:30:00.000Z",
-            "score": null,
-            "summary": "如果你观察过人类大脑的模型或照片，一定会对它满布沟回的“核桃纹”印象深刻。中国科学家一项研究揭示了“核桃纹”进化的奥秘，该成果于9月29日发表在国际期刊《自然-遗传学》上。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=57ee703a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FcibkWHO4xKB1IyiahM5IKlQxUhxdHwMfOdgyWl0gmP0YdJXXzBsvzcAs9FBEC4CJhMP4Uib6rzs4T8DqJic09Jyvsa7SreQVTYXJbhNuuXMQ5PI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2713896,
-            "title": "颠覆刻板印象！Flash模型卷前端，效果硬刚Opus 5.5",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4MTQ4NjQzMw==&mid=2652811507&idx=1&sn=61ca4c9a39ee2aca6af9c741faf5d49e",
-            "source": "智东西",
-            "published_at": "2026-10-03T11:18:00.000Z",
-            "score": null,
-            "summary": "MiniMax M3.1-Flash，这个在国庆前夕上线并开启公测的模型，成了假期里颇受关注的新宠。M3.1-Flash被玩出了新花样，3D网页、动效设计、品牌广告、教学动画，开发者们用模型制作出了各种各样炫酷的短片和应用。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3523210c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8Eyv4o4Acuq9b3I8t76eIRGraHdsrMjkn84nNK05NPpLib8BDbGIPcVLn4SHuJS0ua76toDHM6d0hVXcYLQFEkLOmlgiabEa24qJM2TnXPsXA%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 2693378,
-            "title": "CVE-2026-90970: Critical GitLab AI Gateway Flaw Fixed",
-            "url": "https://securityaffairs.com/200283/hacking/cve-2026-90970-critical-gitlab-ai-gateway-flaw-fixed.html",
-            "source": "Security Affairs",
-            "published_at": "2026-10-03T10:43:39.000Z",
-            "score": null,
-            "summary": "GitLab has released patches for a critical vulnerability in its AI Gateway, tracked as CVE-2026-90970 (CVSS score of 9.9), that could allow an authenticated user with access to the Duo Agent Platform ",
+            "id": 2941398,
+            "title": "多用AI探索，就好比逛陌生的地方等于前额叶训练",
+            "url": "https://www.ccgxk.com/codeother/905.html",
+            "source": "串串狗小刊 ⭐️",
+            "published_at": "2026-10-04T14:38:38.000Z",
+            "score": 53,
+            "summary": "开源的普通电脑能运行的 qwen 小模型，已经有很高的智商了，未来只会更聪明。以后没有 AI 的时代已经回不去了。只要有电就有 AI 。 再说了，离开干啥。AI 是很厉害的催化剂，对于项目开发只有好处没有坏处。 至于基本功，我作为资深的前端开发程序员，我觉得基本功没什么意义了，还不如直接学习怎么操控 AI ，后者比你想象中难。前者却没那么重要了。为什么？AI... 阅读全文",
             "cover": null
           },
           {
-            "id": 2701022,
-            "title": "AI不是新物种，而是软件！黄仁勋：如果产品不安全，就别发布，与其争论末日，不如解决失控风险",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODI5Njc2MA==&mid=2655943180&idx=1&sn=34956f99ff3543d1721e1764673634d1",
-            "source": "51CTO技术栈",
-            "published_at": "2026-10-03T10:20:00.000Z",
-            "score": null,
-            "summary": "Agent已经不只在聊天框里生成答案。它能打开网页、读取文件、调用工具，甚至替人操作一部分业务系统。模型每多拿到一项权限，能完成的工作会增加，误操作和攻击面的范围也会跟着扩大。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9701598d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FZhxqo7xEfgKwmJ0Q0DwHmFFIiaXoemusdA4gVeaKvIIZjnlppjIu8oUCY25XTMBJNC283AoqiaSL8HTWG8UCzp5AQNVnZks5Gibh81wL3bbKEg%2F0%3Fwx_fmt%3Djpeg"
+            "id": 2944303,
+            "title": "Pi Agent 1.0 的 MCP 集成源码解析：工具发现、代码编排与提示词压缩",
+            "url": "https://nicksxs.me/2026/10/04/Pi-Agent-1-0-MCP%E9%9B%86%E6%88%90%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E5%B7%A5%E5%85%B7%E5%8F%91%E7%8E%B0%E4%B8%8E%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%8E%8B%E7%BC%A9/",
+            "source": "Nicksxs's Blog",
+            "published_at": "2026-10-04T14:30:00.000Z",
+            "score": 52,
+            "summary": "",
+            "cover": null
           },
           {
-            "id": 2676642,
-            "title": "Anthropic’s answer to Dots and Muse is already inside Claude",
-            "url": "https://thenewstack.io/claude-answer-to-dots-muse/",
-            "source": "The New Stack",
-            "published_at": "2026-10-03T10:11:00.000Z",
-            "score": 53,
-            "summary": "I&#8217;m Matt Burns, Chief Content Officer at Insight Media Group. Each week, I round up the most important AI developments, explaining what they mean for people and organizations putting this techno",
-            "cover": "https://cdn.thenewstack.io/media/2026/10/afe55952-claud-muse-dots-grok-bots-1024x576.png"
+            "id": 2940163,
+            "title": "Same here. \r\n\r\nI used the terminal for a long time, and I loved it. \r\n\r\nAgents have changed all of that....",
+            "url": "https://x.com/omarsar0/status/2106752111874593186",
+            "source": "elvis(@omarsar0)",
+            "published_at": "2026-10-04T14:23:39.000Z",
+            "score": null,
+            "summary": "Same here. I used the terminal for a long time, and I loved it. Agents have changed all of that. I didn&#39;t imagine that that day would arrive, but I have completely moved away from the terminal.You",
+            "cover": "https://pbs.twimg.com/profile_images/1319081238439751681/kCcqnwoF_normal.jpg"
           },
           {
-            "id": 2685199,
-            "title": "最近看到有一些朋友 GitHub 被封了，其实挺麻烦，应该是通过一些自动化的 Agent 模拟浏览器操作违反了官方规定。\r\n\r\n小伙们们用各种 Agent 时候，特别是最近大火的各种 Personal A...",
-            "url": "https://x.com/HiTw93/status/2106324829104148583",
-            "source": "Tw93(@HiTw93)",
-            "published_at": "2026-10-03T10:05:47.000Z",
+            "id": 3053592,
+            "title": "高能量人都在追求的这件事，正在悄悄毁掉你的前额叶？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTc5MTU3NTYyMQ==&mid=2651605505&idx=1&sn=1e53dd95c5f7497f3fcc9a97a35dec78",
+            "source": "三联生活周刊",
+            "published_at": "2026-10-04T13:21:00.000Z",
             "score": null,
-            "summary": "最近看到有一些朋友 GitHub 被封了，其实挺麻烦，应该是通过一些自动化的 Agent 模拟浏览器操作违反了官方规定。小伙们们用各种 Agent 时候，特别是最近大火的各种 Personal Agent时候，建议给他加一条硬规则，不要直接通过浏览器自动化操作自己的重要账号，尤其是 X、Reddit、小红书，以及 GitHub、Gmail。能用官方 API 就用官方 API，有官方 CLI 就用 ",
-            "cover": "https://pbs.twimg.com/media/HTspWRnbIAAQdO6.jpg"
+            "summary": "人脑可以随时通过学习充实颞叶，但目前的AI还无法做到随时更新基础模型，这就是人类大脑的优势所在。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0a90dfde&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FViaCdVrcARqDZvYsqu0j1KGqPougljsWN4UmwtNzAWcfZrqtaBiaYMoK0ukwCZpnzQfrH4IjpSHMlqmqIpT0W1Rls08REiauMPibc8Iu48wPxHI%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2679026,
-            "title": "AI正在造AI",
-            "url": "https://www.tmtpost.com/8158706.html",
-            "source": "钛媒体：引领未来商业与生活新知",
-            "published_at": "2026-10-03T09:33:39.000Z",
-            "score": null,
-            "summary": "当你的代码编辑器开始建议下一行代码，当你的企业用AI生成的报告去训练下一个AI模型，当一个人花一周时间&ldquo;手搓&rdquo;出服务十五万用户的产品&hellip;&hellip;",
-            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/asd_a_3.png"
+            "id": 2930818,
+            "title": "YC合伙人建议你先亲手联系一百个客户再考虑自动化丨Y Combinator",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzcxMDA5NTI0OA==&mid=2247489159&idx=1&sn=4b13d9ed15bd09603a941f8f122048fa",
+            "source": "晚点再听LaterCast",
+            "published_at": "2026-10-04T13:04:00.000Z",
+            "score": 67,
+            "summary": "发出一千封邮件却没有回复，问题可能在收件人名单上。OneSchema 创始人讲述她如何找客户、写邮件，并从每一次回应里学到东西。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3b48bc98&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FUNwPtic6UWKbWYMQlMibG3ANXckn0LeG5WdwOIGJCOMEm2okc6DeC3rASQqpgWu3xO2AqIY8lmQLezARhaXW3icKaeYZzA09ia9dtPZ40LDVdOk%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2721522,
-            "title": "Claude Mod 实测：让雨姐与你一同 Coding",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkzNDQxOTU2MQ==&mid=2247521319&idx=1&sn=e6d7355c6e06dd363e383f3bc54317d5",
-            "source": "赛博禅心",
-            "published_at": "2026-10-03T07:34:00.000Z",
+            "id": 2935492,
+            "title": "DeepSeek 回应「抄作业」：不是被迫或模仿",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAyNDUyMA==&mid=2651110800&idx=1&sn=2b05933cc1c865c1e878f72211cae8e5",
+            "source": "APPSO",
+            "published_at": "2026-10-04T11:29:00.000Z",
             "score": null,
-            "summary": "前两天 Claude Code 更新了 Mod 功能，允许用户自定义自己的界面，而大家也都知道，我有些很棒的癖好...于是，我就搭了这个....哎年少不知雨姐好，错把 xx 当成宝",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b5a03844&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FjXSGuwJvpdiaal90CBzdsKCVu1jt3ER6Knom0zYic79PbDB59gKiaSFPgmVFdMcO3nLOhUpZZLEicRkBcuufCBVzicviaiaTKOJwUvOCMqt9kJTvVA%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "DeepSeek Harness 新增 Claude Code Mods 兼容层后，崔添翼在知乎发了长文回答。他直接回应了「抄作业」的争议，否认了是被迫或模仿别人才做开放可扩展的。",
+            "cover": null
+          },
+          {
+            "id": 3006717,
+            "title": "Karpathy 大神最近分享了一个很有意思的推文：随着大模型越来越强，未来人类可能会花更多时间去“理解 AI 的输出”，而不是亲自完成所有",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&mid=2650454779&idx=1&sn=feada516b667fc1cb5e298a859b177c7",
+            "source": "AINLP",
+            "published_at": "2026-10-04T10:03:00.000Z",
+            "score": null,
+            "summary": "Karpathy 大神最近分享了一个很有意思的推文：随着大模型越来越强，未来人类可能会花更多时间去“理解 AI 的输出”，而不是亲自完成所有具体工作。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f2253a5a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQsOstc0fpvlsp21By69YZ5GwskRQMwDRgeNGWnpaNbM7XWvzhaDUk90MC6FrNHHfVwE1czkDy3OgPeJCe9JkW5iaOdg49uEJQkyekjPCPBNg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3031416,
+            "title": "整个假期没干别的，就更新 magpie 去了，对我们到处找模型用的兄弟实在太友好，把能嫖到的所有大模型统一管起来，用不完，根本用不完～",
+            "url": "https://x.com/geekbb/status/2106675602849923480",
+            "source": "Geek(@geekbb)",
+            "published_at": "2026-10-04T09:19:38.000Z",
+            "score": null,
+            "summary": "整个假期没干别的，就更新 magpie 去了，对我们到处找模型用的兄弟实在太友好，把能嫖到的所有大模型统一管起来，用不完，根本用不完～💬15🔄6❤️96👀20183📊38⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HTxpl_PakAAoAoY.jpg"
+          },
+          {
+            "id": 2905322,
+            "title": "刚刚，Karpathy公开私藏提示词：大模型4级玩法",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3MTkxMjYzOA==&mid=2247519429&idx=1&sn=3338b05325f1fe826b4b136c1ccdde4b",
+            "source": "AI寒武纪",
+            "published_at": "2026-10-04T09:13:00.000Z",
+            "score": 63,
+            "summary": "卡帕西最新推文指出，人类未来会花大量时间去理解大模型的输出，并公开了他日常让大模型把内容讲透的四套实操技巧。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=914ea4ad&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkJjlNiczXgKrKic2ayOiafFsjdOPialmqIL3W6jIRFq4WyNThwwPib1XTz4TWMENp0xCbOhlRaia8tBTx16XSmoXt74sTd3MlsgGPLOTy6U251AuA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2894069,
+            "title": "拿 Codex 协助清理磁盘，挺 Nice",
+            "url": "https://sugarat.top/essay/dev/clean-mac.html",
+            "source": "粥里有勺糖",
+            "published_at": "2026-10-04T08:44:12.000Z",
+            "score": 40,
+            "summary": "先把 old_homebrew 搞了，再把一些很久远的文档视频图片这些搬到硬盘里。+20G",
+            "cover": "https://cdn.upyun.sugarat.top/mdImg/sugar/2e2b0412f6a5313dde8dc25df586d722"
+          },
+          {
+            "id": 2893176,
+            "title": "AI Slop 看太多之后\r\n人类的幻觉越来越严重了",
+            "url": "https://x.com/oran_ge/status/2106665093295702032",
+            "source": "orange.ai(@oran_ge)",
+            "published_at": "2026-10-04T08:37:52.000Z",
+            "score": 68,
+            "summary": "AI Slop 看太多之后人类的幻觉越来越严重了sleepy.md@sleepy0x13Anthropic 最近干了件很硅谷、也很宗教的事，把一群神父、拉比、宗教学者秘密请到旧金山，签完 NDA，然后花几个小时告诉他们，Claude 可能真的有意识，甚至可能会痛苦。从去年秋天开始，Anthropic 联创 Christopher Olah 就在接触不同宗教传统的学者。今年 3 月开始，他们在旧金山",
+            "cover": "https://pbs.twimg.com/profile_images/1943343935700537350/aL3hisoI_normal.jpg"
           }
         ]
       },
@@ -337,112 +367,122 @@
         "desc": "",
         "items": [
           {
-            "id": 2835786,
-            "title": "看到 Chuttamalle 的 AI 深伪事件后，我做了一个强调安全与尊重的 AI 视频工具",
-            "url": "https://www.v2ex.com/t/1246325#reply1",
-            "source": "V2EX · 创意",
-            "published_at": "2026-10-03T21:59:18.000Z",
-            "score": 72,
-            "summary": "最近看到一条新闻：印度电影《 Devara 》中的歌曲《 Chuttamalle 》，被人用 AI 制作成涉及演员 Janhvi Kapoor 的色情深伪视频。Jr NTR 随后公开谴责，表示将对制作和传播者采取法律行动。",
-            "cover": null
+            "id": 2955839,
+            "title": "AI 创造了更多价值，谁有资格把它变成收入？",
+            "url": "https://www.huxiu.com/article/4895393.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-10-04T16:06:40.000Z",
+            "score": 83,
+            "summary": "现实却恰恰相反。许多全职投入AI漫剧的团队发现：效率提高了，账反而更难算了。内容供给猛增，竞争更激烈，投流竞价更高，原本省下来的制作成本，迅速被塞回流量采购里，甚至还要额外倒贴。",
+            "cover": "https://img.huxiucdn.com/article/content/26-10-05/a93e3db9-09b7-4a88-b42d-7e895a3399ae.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 2629532,
-            "title": "That video is 2 years old.\r\nTwo years later, we are still far from human-level AI.\r\n\r\nSure, AI has supe...",
-            "url": "https://x.com/ylecun/status/2106237721215725582",
-            "source": "Yann LeCun(@ylecun)",
-            "published_at": "2026-10-03T04:19:39.000Z",
-            "score": 72,
-            "summary": "That video is 2 years old.Two years later, we are still far from human-level AI.Sure, AI has superhuman performance in a number of tasks (particularly in mathematics and coding and answering questions",
-            "cover": null
-          },
-          {
-            "id": 2847089,
-            "title": "相比 AI 的能力，觉得更可怕是它进步的速度、变化的幅度。",
-            "url": "https://www.v2ex.com/t/1246322#reply16",
-            "source": "V2EX · 技术",
-            "published_at": "2026-10-03T17:47:32.000Z",
-            "score": 68,
-            "summary": "在 Reddit 看到一位做游戏开发的老哥发飙，说 AI 先在的能力，开始让他都不知道怎么排期了……https://www.reddit.com/r/gamedev/comments/1wo5asm/comment/pdnbnwt/?context=3&amp;sort=confidenceV2EX 上也有朋友，表达了类似感受。我的个人经历：23 年，收集、打磨提示词。24 年，研究 LangCh",
-            "cover": null
-          },
-          {
-            "id": 2656494,
-            "title": "AI 视频榜全球第二，藏着一家新影视公司的野心",
-            "url": "https://www.ifanr.com/1682888?utm_source=rss&utm_medium=rss&utm_campaign=",
+            "id": 2872794,
+            "title": "OpenAI元老的一封离职信，揭开了奥特曼最不想承认的真相",
+            "url": "https://www.ifanr.com/1682922?utm_source=rss&utm_medium=rss&utm_campaign=",
             "source": "爱范儿",
-            "published_at": "2026-10-03T07:00:20.000Z",
-            "score": 68,
-            "summary": "1895 年，《火车进站》让观众惊慌躲闪。1927 年，《爵士歌手》一声开口，默片时代逐渐谢幕。1995 年，《玩具总动员》甚至让观众忘了它是完全由电脑生成。",
-            "cover": "https://s3.ifanr.com/wp-content/uploads/2026/10/lark2pad-1790995052029-4.png"
+            "published_at": "2026-10-04T07:08:18.000Z",
+            "score": 78,
+            "summary": "如果说现在形容一件事很厉害，最常见的用词不是「牛 X」，而是「瘫坐在地，仿佛看到了核爆炸。」",
+            "cover": "https://s3.ifanr.com/wp-content/uploads/2026/10/lark2pad-1791097513169-1.png"
           },
           {
-            "id": 2630864,
-            "title": "IROS 2026中国力量：当「实体能力」成为具身智能新硬通货",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651757766&idx=1&sn=1ae0eb60569d757615df8cc1488d3b7e",
-            "source": "雷峰网",
-            "published_at": "2026-10-03T03:00:00.000Z",
-            "score": 68,
-            "summary": "IROS 重回匹兹堡，中国力量正在完成从零部件、数据产能到算法范式的全纵向实体覆盖。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d89334c9&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FACzflXDibhg6MHWoQ6zWEqVcphqQmZax1OJJN5P3YLaey5yKgl9LvcD2XFtygR3bSD3OeBclqDsCWyNLwciaCicRz0h0d2UBeeCfcJ4psldTXU%2F0%3Fwx_fmt%3Djpeg"
+            "id": 2905837,
+            "title": "Valor 与 Atreides 合领四轮，光互连领投席换人",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MDU4ODkyNg==&mid=2247513203&idx=1&sn=4c051957e5ebf79dac7be91337f9a362",
+            "source": "硅谷科技评论",
+            "published_at": "2026-10-04T02:30:00.000Z",
+            "score": 78,
+            "summary": "9 月 30 日，光互连公司 CScale 结束隐身状态，完成1.45 亿美元 C 轮融资，由 Atreides 与 Valor 联合领投，这是这两家 9 月第 4 次联合领投。Valor 是 SpaceX 上市前第二大股东，Atreides 在美股重仓 Astera Labs、Credo。我们关注的是：AI 互连公司的价格，正在由谁来定。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8cc65250&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FKy2X3s1TSMUS74Cq8YbjoOJibdoaF1LTMgIiak0Mkic0N7o51RbFkU1Rrpfj6lChlqSFEHtjTOZ2ZSn6vS006chLy5Q177fHXfmDD7VvEvwxmc%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2535607,
-            "title": "Paper-Writing-Tips | 4.6k Star 的论文写作避坑指南更新，新增论文写作检查 Skill！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557407&idx=1&sn=d70ff0ea7cda1fde716286d26675bcec",
-            "source": "大模型智能",
-            "published_at": "2026-10-02T16:00:00.000Z",
-            "score": 68,
-            "summary": "MLNLP社区的愿景是促进国内外自然语言处理学术界、产业界和广大爱好者之间的交流和进步。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fd47edef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FrjiclujBklTxgBdxatE5R0IOkxibplI3zTEEkwunB5lm6m0wFnJkxQmIArdtlicrTeNfEfyNAfPiayswZx1poZ5fmCgzbOeCw3EpFvKUWloYdfw%2F0%3Fwx_fmt%3Djpeg"
+            "id": 2891267,
+            "title": "中年人的健康，最怕这几个“灯下黑”",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NjAxOTU4MA==&mid=3009374653&idx=1&sn=6e610cdf54a5bd8be3fd299e8d85466b",
+            "source": "罗辑思维",
+            "published_at": "2026-10-03T22:30:00.000Z",
+            "score": 78,
+            "summary": "很多健康风险，并不是突然出现的。腰围一点点变大，体检指标还没越线，情绪爆发后觉得“发泄出来就好了”，这些看上去都不算大事，却可能已经在提醒你：身体的稳态正在发生变化。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ab9ce38b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FF1wRK2rOmZxYATA1fqTJLZdhdPVRWnfOy2pRibbnzD3x8Vvv4BYMiaLHXnlMR95pFFOdd8RHR7ojdcSVmCfCPxydIUY2xkWEP2C2Rxia9EE0mI%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2710726,
-            "title": "AI is speeding up exploits. Vulnerability spreadsheets can’t keep up.",
-            "url": "https://thenewstack.io/cve-vulnerability-risk-management/",
-            "source": "The New Stack",
-            "published_at": "2026-10-03T14:00:00.000Z",
-            "score": 67,
-            "summary": "Artificial intelligence has changed almost every aspect of software development and cybersecurity. But perhaps one of the most profound changes is happening in an area that has traditionally received ",
-            "cover": "https://cdn.thenewstack.io/media/2026/10/955c4801-markus-spiske-vo5w2ida70s-unsplash-1024x683.jpg"
+            "id": 2920566,
+            "title": "AI“读心术”更进一步：仅凭脑扫描，就能重建你正在看的画面",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI5MTcxMTA3Mw==&mid=2247511329&idx=1&sn=bb4739d2a9e375e90a14a2bcffb3ef3d",
+            "source": "麻省理工科技评论APP",
+            "published_at": "2026-10-04T10:00:00.000Z",
+            "score": 76,
+            "summary": "一款新的AI工具，只需分析你的脑部扫描，就能猜出你正在看什么，甚至能以惊人的精度重新生成那幅画面。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=15b60e84&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnbCqOqFndepWq9ic6MB7xzYJvkEm4ZicnSdqmfquicibvSic4ltUic6y74ReNkQWFs16xKSWXZjVTRgusoMfIukhjmiaqepM0RGicAaMmqchdWV2uiaE%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 2670337,
-            "title": "苹果将收紧macOS完全磁盘访问权限 AI驱动的智能体是重点关注对象",
-            "url": "https://www.landian.news/archives/127173.html",
-            "source": "蓝点网",
-            "published_at": "2026-10-03T08:06:52.000Z",
-            "score": 62,
-            "summary": "#系统资讯 苹果将收紧 macOS 完全磁盘访问权限，AI 驱动的智能体是重点关注对象，该权限会放大隐私风险。完全磁盘访问最初只用于备份工具、磁盘分析工具和安全软件，但现在很多 AI 应用都在使用这个权限。问题在于，获得该权限后用户的所有文件包括邮件、信息、浏览器记录等同样可能会被访问，所以苹果准备优化该权限避免 AI 应用泄露用户隐私。查看全文：https://ourl.co/127173",
+            "id": 2935552,
+            "title": "衰老带来的肌无力，可能不只是肌肉变少了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDU1MDY5OA==&mid=2653247055&idx=1&sn=b7b401dc0679e937b94de1ac1a8fbc59",
+            "source": "原理",
+            "published_at": "2026-10-04T12:36:00.000Z",
+            "score": 75,
+            "summary": "近几十年来，人类的期望寿命不断延长，但健康寿命却没有同步增长。而造成这种差异的重要因素之一，便是随着年龄增长而出现的行动能力下降。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=29004773&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FtIcW54Co1nOeRqMUBlCBTap3bFoERicGYyIXac7SjvDkMa5ATRnITU9YSVM75jdj9NOV4bCDicdfP9TE47ooQqTz2YJNQklAX4RzsBkk7Qia20%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 2906078,
+            "title": "与亚马逊、OpenAI达成新合作，这家AI芯片设计龙头势头正猛 | 巴伦投资",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkzMjY0NTI0NA==&mid=2247554050&idx=2&sn=e15f853ad6ccb58322744e178dade009",
+            "source": "Barrons巴伦",
+            "published_at": "2026-10-04T08:00:00.000Z",
+            "score": 74,
+            "summary": "新思科技（Synopsys）正努力向市场证明，自己将是AI浪潮里的赢家。这家芯片设计软件公司接连拿下OpenAI、亚马逊两大合作，成为公司重要筹码。过去一周，该股累计上涨15.06%。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b9b3a5b4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXduvHtdibh3xqicDJ5VGHVYibUezyGxibicV33f2op3BH7UJNiaqydpL5gnqpIelSIPibHelFkhYROs0sP18qsErUhj2m2SGmHm9TqFa3ANeeJmqKI%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3002242,
+            "title": "Full-fabric VHDL LLM inference engine. Runs Qwen3.5-class transformer inference",
+            "url": "https://github.com/Nero7991/llm.vhdl",
+            "source": "Hacker News - Newest: &quot;LLM&quot;",
+            "published_at": "2026-10-04T20:48:43.000Z",
+            "score": 72,
+            "summary": "Article URL: https://github.com/Nero7991/llm.vhdl",
             "cover": null
           },
           {
-            "id": 2778282,
-            "title": "cool project by @dbreunig\r\n\r\nin langchain this is ModelRouterMiddleware - jev reads the first message,...",
-            "url": "https://x.com/hwchase17/status/2106475668804657555",
-            "source": "Harrison Chase(@hwchase17)",
-            "published_at": "2026-10-03T20:05:10.000Z",
-            "score": 60,
-            "summary": "cool project by @dbreunigin langchain this is ModelRouterMiddleware - jev reads the first message, picks the model, and that model handles the whole runjev is cheap enough that you can also re-pick af",
-            "cover": "https://pbs.twimg.com/profile_images/1247992288552214528/dExsBwMe_normal.jpg"
+            "id": 2937907,
+            "title": "How to Submit a Quarterly Update to HMRC's Making Tax Digital API",
+            "url": "https://www.freecodecamp.org/news/how-to-submit-a-quarterly-update-to-hmrc-making-tax-digital-api/",
+            "source": "freeCodeCamp.org",
+            "published_at": "2026-10-04T12:11:49.000Z",
+            "score": 72,
+            "summary": "Four times a year, every sole trader and landlord in Making Tax Digital (MTD) for Income Tax has to send HMRC a summary of their income and expenses.",
+            "cover": "https://cdn.hashnode.com/uploads/covers/5ff319e8638f6a0ef52a6236/99a6968f-6e49-4056-b589-dc73b899b946.png"
+          },
+          {
+            "id": 2895974,
+            "title": "Vivaldi 8.2 把 Chrome 扩展带到 Android，桌面上的浏览器工作流也能带到手机上了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI2MjEyODE4OA==&mid=2650484519&idx=1&sn=e38c77ef7f553359d2fc0008b391199a",
+            "source": "效率火箭",
+            "published_at": "2026-10-04T07:30:00.000Z",
+            "score": 72,
+            "summary": "有人用扩展改善阅读体验，有人用它执行自己的网页过滤规则，也有人习惯把文章按照固定模板保存进 Obsidian。像我自己会使用 Raindrop。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=aad87b8a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FewVQS3ZTL3oXzTNzgZfa9ItN6baHHm5DFwDVYd0S1trXIamDicxOWcicHmOEic2nMPSTOnUYTS5oHQtnAaEnGeHf6XBJgKBmfubpGLL9YwA0yE%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 433,
-      "articles": 433,
+      "candidates": 405,
+      "articles": 405,
       "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 3262,
-        "poolSources": 280,
-        "kept": 449,
-        "keptSources": 280
+        "pool": 2711,
+        "poolSources": 260,
+        "kept": 415,
+        "keptSources": 260
       },
-      "totalItems": 40
+      "totalItems": 44
     }
   },
-  "generated_at": "2026-10-04T07:08:25.684Z"
+  "generated_at": "2026-10-05T07:21:52.879Z"
 }
