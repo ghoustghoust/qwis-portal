@@ -62,7 +62,7 @@ export default function SelfHealTab() {
   if (error) return <div className="py-8 text-center text-sm" style={{ color: 'var(--red)' }}>加载失败：{error}</div>;
   if (!data) return <div className="py-8 text-center text-sm t-muted">加载中…</div>;
 
-  const { rules, resumed, resumedTotal, aliveAfterResume, cooling, coolingTotal } = data;
+  const { rules, resumed, resumedTotal, aliveAfterResume, cooling, coolingTotal, throttled, throttledTotal } = data;
   const failedAgain = resumedTotal - aliveAfterResume;
 
   return (
@@ -170,7 +170,27 @@ export default function SelfHealTab() {
         </section>
       )}
 
-      {resumedTotal === 0 && coolingTotal === 0 && (
+      {/* 已被系统性降频（自愈动作的留痕） */}
+      {throttledTotal > 0 && (
+        <section className="card p-5">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold t-text">已被自动降频（{throttledTotal}）</h3>
+            <span className="text-[11px] t-muted">同型同错 ≥10 个 = 平台级问题，自愈把整簇降到每 6 小时一次，省下白烧的重试；恢复后不自动回升（可在源库行内调回）</span>
+          </div>
+          <div className="mt-3 space-y-1 max-h-64 overflow-y-auto">
+            {throttled.map((r) => (
+              <div key={r.id} className="flex items-center gap-2 text-xs py-1.5 border-b t-border/40">
+                <span className="t-text truncate flex-1" title={r.name}>{r.name}</span>
+                <span className="badge-gray flex-none">{r.bucket}</span>
+                <span className="t-muted flex-none tabular-nums">{r.intervalMin ? `每 ${r.intervalMin} 分钟` : '—'}</span>
+                <span className="t-muted flex-none">{r.throttledAt ? relativeTime(r.throttledAt) : '—'}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {resumedTotal === 0 && coolingTotal === 0 && throttledTotal === 0 && (
         <div className="text-center py-8 t-muted text-sm">还没有自动恢复记录——自愈引擎在采集批次尾部跑，第一批记录要等熔断产生后 48h。</div>
       )}
     </div>

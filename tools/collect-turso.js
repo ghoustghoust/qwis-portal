@@ -32,6 +32,7 @@ const Parser = require('rss-parser');
 const { cleanTitle, decodeXmlEntities } = require('../lib/text-clean'); // B94：标题/源名/属性实体解码唯一实现
 // B90：北京日界/日报窗口/北京日期串的唯一口径（原来这个文件里手搓了 4 遍 +8h 换算）
 const { beijingNow, beijingDateStr, beijingDayStartMs, dailyReportWindowIso } = require('../lib/time-window');
+const { errorBucket, isSystemic } = require('../lib/error-buckets');
 // B107：噪声（热榜/聚合）判定的轴只有一份实现，runner 侧不再手写第 N 份
 const { notNoiseSql, notHotlistSql } = require('../lib/noise');
 
@@ -852,6 +853,48 @@ async function runCleanup() {
       log(`自动恢复熔断源 #${s.id} ${String(s.name).slice(0, 24)}（第 ${extra.resumeCount} 次）`);
     }
   } catch (e) { log(`自动恢复失败（不阻断）: ${e.message}`); }
+
+  // 3b) 系统性错误自动降频（H14 框架内，10-05）：同类型同错误指纹 ≥10 个（单一类型占比 ≥80%）
+  //  = 平台级问题（如 YouTube 官方 RSS 全链 404）——对簇内启用中的源自动降频到 6h，避免按默认频率
+  //  白烧重试；标记 extra.throttledByHeal 供自愈面板观测。恢复后不自动回升（避免震荡），可手动调回。
+  //  配置：settings['heal.systemicThrottle'] {enabled, minCluster, typeRatio, throttleMin}。
+  let sysThrottled = 0;
+  try {
+    const hcfg = await getSetting('heal.systemicThrottle', {});
+    if (hcfg.enabled !== false) {
+      const minCluster = Number(hcfg.minCluster) || 10;
+      const typeRatio = Number(hcfg.typeRatio) || 0.8;
+      const throttleMin = Number(hcfg.throttleMin) || 360;
+      const errRows = await qAll("SELECT id, type, extra FROM sources WHERE enabled=1 AND status='error'");
+      const clusters = new Map();
+      for (const r of errRows) {
+        let ex = {}; try { ex = JSON.parse(r.extra || '{}'); } catch { /* 无 extra */ }
+        if (!ex.lastError) continue;
+        const b = errorBucket(ex.lastError);
+        if (!clusters.has(b.key)) clusters.set(b.key, { ids: [], byType: {} });
+        const c = clusters.get(b.key);
+        c.ids.push({ id: r.id, type: r.type });
+        c.byType[r.type] = (c.byType[r.type] || 0) + 1;
+      }
+      const systemicIds = new Set();
+      for (const c of clusters.values()) {
+        if (c.ids.length < minCluster) continue;
+        if (!isSystemic(c.ids.length, c.byType)) continue;
+        for (const x of c.ids) systemicIds.add(x.id);
+      }
+      for (const id of systemicIds) {
+        const r = errRows.find((x) => x.id === id);
+        let ex = {}; try { ex = JSON.parse(r.extra || '{}'); } catch { /* 无 extra */ }
+        if (ex.throttledByHeal) continue; // 已降过，不重复写
+        ex.throttledByHeal = errorBucket(ex.lastError).key;
+        ex.throttledAt = nowIso();
+        ex.intervalMin = Math.max(Number(ex.intervalMin) || 0, throttleMin);
+        await qRun('UPDATE sources SET extra=? WHERE id=?', [JSON.stringify(ex), id]);
+        sysThrottled++;
+      }
+      if (sysThrottled) log(`自愈·系统性降频：${sysThrottled} 个源降频至 ${throttleMin}min（同型同错簇 ≥${minCluster}）`);
+    }
+  } catch (e) { log(`系统性降频失败（不阻断）: ${e.message}`); }
 
   // 4) 频率自适应（T4-2 R3）：仅 extra.autoInterval===true 的源，按近 14 天实测出文频率调 intervalMin
   //    （≥10 篇/天→60min；3-10→120；1-3→240；<1→720）。批量导入源将 autoInterval 打开即自动分层

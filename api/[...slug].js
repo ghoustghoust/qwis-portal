@@ -365,6 +365,7 @@ async function handleVideoFavorite(req, id) {
 const { aiRelevanceCond, aiTitleConds } = require('../lib/ai-relevance');
 // ─── 源四轴（27b，2026-09-15）：订阅集合/轴 action/组级 SQL 与 runner、本地路由共用 ───
 const axes = require('../lib/source-axes');
+const { errorBucket, isSystemic } = require('../lib/error-buckets');
 // ─── 热搜事件聚合：共享纯函数 lib/hot-events.js（runner 预聚合写 settings，云端读缓存优先） ───
 const { aggregateEventRows, EVENTS_SAMPLE_SQL, EVENTS_WINDOW_H, pickZhDigest, hasCJK } = require('../lib/hot-events');
 // 播客音频识别（cover 里的音频 enclosure → audio_url）；audioCoverSql 是其 SQL 镜像，全库唯一口径
@@ -2123,11 +2124,17 @@ async function handleSelfHeal(req) {
   const now = Date.now();
   const resumed = [];   // 曾被自动恢复过（resumeCount>0）——恢复后活了没有
   const cooling = [];   // 还在冷却中（熔断中/停用且有 frozenAt）
+  const throttled = []; // 已被系统性降频（throttledByHeal 标记）——面板可见
   for (const r of rows) {
     let ex = {};
     try { ex = JSON.parse(r.extra || '{}'); } catch { /* ignore */ }
     const resumeCount = Number(ex.resumeCount || 0);
     const frozenAt = Date.parse(ex.frozenAt || ex.lastErrorAt || '') || 0;
+    if (ex.throttledByHeal) {
+      throttled.push({ id: r.id, name: r.name, type: r.type, groupId: r.group_id, enabled: !!r.enabled,
+        bucket: ex.throttledByHeal, intervalMin: Number(ex.intervalMin) || null,
+        throttledAt: ex.throttledAt || null, lastError: ex.lastError ? String(ex.lastError).slice(0, 120) : null });
+    }
     const shape = { id: r.id, name: r.name, type: r.type, groupId: r.group_id, enabled: !!r.enabled,
       failCount: r.fail_count || 0, resumeCount, frozenAt: frozenAt ? new Date(frozenAt).toISOString() : null,
       lastFetchedAt: r.last_fetched_at || null,
@@ -2140,6 +2147,7 @@ async function handleSelfHeal(req) {
   }
   resumed.sort((a, b) => (b.resumeCount - a.resumeCount) || String(a.name).localeCompare(String(b.name), 'zh-Hans-CN'));
   cooling.sort((a, b) => a.coolingLeftMs - b.coolingLeftMs);
+  throttled.sort((a, b) => String(b.throttledAt || '').localeCompare(String(a.throttledAt || '')));
   return jsonOk({
     rules: { autoResumeAfterHours: 48, cooldownAfterFails: 3, cooldownDays: 7, jitterHours: 6 },
     resumed: resumed.slice(0, 50),
@@ -2147,26 +2155,15 @@ async function handleSelfHeal(req) {
     aliveAfterResume: resumed.filter((r) => r.aliveNow).length,
     cooling: cooling.slice(0, 50),
     coolingTotal: cooling.length,
+    throttled: throttled.slice(0, 100),
+    throttledTotal: throttled.length,
   });
 }
 
 // GET /api/sources/error-clusters — 失败原因聚类（10-05 用户点单③）
 // lastError 只有字符串无语义字段——读层规则桶（写入侧不动；将来要更准应在写侧加 errorKind）。
 // 系统性簇（同类型同指纹 ≥10 个）置顶——80 个 YouTube 全 404 这类"一种病一片"就是要被发现的对象。
-const ERROR_BUCKETS = [
-  { key: 'http_404', label: '404 源没了/路径失效', match: (e) => /\b404\b/i.test(e) },
-  { key: 'http_403', label: '403 被拒（多半是反爬/封 IP）', match: (e) => /\b403\b|forbidden/i.test(e) },
-  { key: 'http_401', label: '401 登录态/Cookie 失效', match: (e) => /\b401\b|unauthorized|cookie.*(过期|失效)|SESSDATA/i.test(e) },
-  { key: 'http_429', label: '429 触发限流', match: (e) => /\b429\b|rate.?limit/i.test(e) },
-  { key: 'timeout', label: '超时', match: (e) => /timeout|timed? ?out|ETIMEDOUT|ECONNRESET|socket/i.test(e) },
-  { key: 'parse', label: '解析失败（多半是返回的不是 RSS/页面变了）', match: (e) => /parse|XML|Invalid|Unexpected|non-XML|doctype|html/i.test(e) },
-  { key: 'network', label: '网络层失败（DNS/连接/TLS）', match: (e) => /ENOTFOUND|ECONNREFUSED|fetch failed|certificate|CERT|TLS|SSL|EPROTO/i.test(e) },
-];
-function errorBucket(err) {
-  const e = String(err || '');
-  for (const b of ERROR_BUCKETS) { if (b.match(e)) return b; }
-  return { key: 'other', label: '其他' };
-}
+// ERROR_BUCKETS/errorBucket/isSystemic 收编 lib/error-buckets.js（10-05：runner 自愈也用同一份规则）
 
 async function handleErrorClusters(req) {
   const rows = await qAll("SELECT id, name, type, group_id, fail_count, extra FROM sources WHERE enabled=1 AND status='error'");
@@ -2184,10 +2181,10 @@ async function handleErrorClusters(req) {
   }
   // 不足 3 个的桶不入聚类（"其他 1 个源"没意义——散列进问题源表格）
   const clusters = [...byKey.values()].filter((c) => c.count >= 3).sort((a, b) => b.count - a.count);
-  // 系统性标记：同桶 ≥10 且单一类型占比 ≥80%——系统级问题（一种病一片），不是散源故障
+  // 系统性标记（lib/error-buckets 唯一实现）：同桶 ≥10 且单一类型占比 ≥80%
   for (const c of clusters) {
-    const topType = Object.entries(c.byType).sort((x, y) => y[1] - x[1])[0];
-    if (c.count >= 10 && topType && topType[1] / c.count >= 0.8) c.systemic = topType[0];
+    const sys = isSystemic(c.count, c.byType);
+    if (sys) c.systemic = sys;
   }
   return jsonOk({ clusters, total: rows.length, buckets: clusters.map((c) => ({ key: c.key, label: c.label })) });
 }
