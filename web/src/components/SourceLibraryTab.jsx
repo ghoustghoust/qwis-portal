@@ -65,7 +65,7 @@ const VIEW_LABEL = { groups: '健康概览', issues: '问题源', issues_cleanup
 const VIEW_HINT = {
   groups: '各文件夹的健康概况。组级操作（暂停/频率/备用/屏蔽）在卡片「⋯」菜单；单源细处理点「进入」。',
   issues: '只列需要你处理的源（异常 / 异常暂停 / 新增未确认），处理完就从这里消失。',
-  issues_cleanup: '从未抓到内容 / 长期没活的启用源——批量停用或删除，一次清一片。',
+  issues_cleanup: '库里没内容 / 长期没活到的启用源——批量停用或删除，一次清一片。',
   search: '干活视图：搜索、单源操作（行悬停出现）、勾选后上方浮出批量条。',
   platform: '公众号 RSS 与 B 站的平台级配置（Cookie、间隔、队列）。',
 };
@@ -604,7 +604,7 @@ export default function SourceLibraryTab({ initialView = 'groups' }) {
               <button className="btn-primary !py-1.5 !px-4 !text-xs" disabled={!cleanupSel.size} onClick={() => cleanupBatch('delete')}>删除勾选</button>
             </div>
             <div className="mt-2 text-[11px] t-muted">
-              判据：{Object.entries(cleanup.rules).map(([k, v]) => v).join('；')}。这些源启用中但从未抓到内容——
+              判据：{Object.entries(cleanup.rules).map(([k, v]) => v).join('；')}。这些源启用中但库里没内容——
               停用=停止采集可回退；删除=级联清内容不可恢复，建议先停用观察。
             </div>
           </div>
@@ -643,7 +643,7 @@ ${s.url}`}>{s.name || s.url}</div>
                       </td>
                       <td className="py-2 px-1.5 t-muted">{s.type}</td>
                       <td className="py-2 px-1.5 text-xs t-muted">{g ? g.name : '未分组'}</td>
-                      <td className="py-2 px-1.5 text-xs" style={{ color: 'var(--warn)' }}>{s.reason === 'never_ok' ? '从未抓到内容' : '长期没抓到'}</td>
+                      <td className="py-2 px-1.5 text-xs" style={{ color: 'var(--warn)' }}>{s.reason === 'never_ok' ? '抓到但没产出' : '长期没抓到'}</td>
                       <td className="py-2 px-1.5 text-xs t-muted">{s.createdAt ? relativeTime(s.createdAt) : '—'}</td>
                     </tr>
                   );

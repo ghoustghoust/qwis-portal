@@ -1979,12 +1979,14 @@ async function handleCleanupCandidates(req) {
   const now = Date.now();
   const d7 = new Date(now - 7 * 86400e3).toISOString();
   const d14 = new Date(now - 14 * 86400e3).toISOString();
+  // 修正（10-05 实测复核）：never_ok 档原要求 last_fetched_at 为空——但 242 个 0 条源
+  // last_fetched_at 全有值（抓取"成功"却没产出：feed 真空/内容全被拒，fail_count=0）。
+  // 判据按真值改为：启用 + 库里无内容 + 入库 >7 天，不管最近有没有"抓到"——抓到≠有产出。
   const [neverOk, stale] = await Promise.all([
-    qAll(`SELECT id, name, type, url, group_id, created_at, fail_count
+    qAll(`SELECT id, name, type, url, group_id, created_at, fail_count, last_fetched_at
           FROM sources WHERE enabled=1 AND type != 'wemp'
           AND COALESCE((SELECT COUNT(*) FROM articles a WHERE a.source_id=sources.id),0)
             + COALESCE((SELECT COUNT(*) FROM videos v WHERE v.source_id=sources.id),0) = 0
-          AND (last_fetched_at IS NULL OR last_fetched_at='' OR last_fetched_at='null')
           AND created_at < ?`, [d7]),
     qAll(`SELECT id, name, type, url, group_id, last_fetched_at, fail_count
           FROM sources WHERE enabled=1 AND type != 'wemp'
@@ -1997,7 +1999,7 @@ async function handleCleanupCandidates(req) {
     ...neverOk.map((r) => shape(r, 'never_ok')),
     ...stale.map((r) => shape(r, 'stale_14d')),
   ].sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
-  return jsonOk({ items, rules: { never_ok: '从未成功抓取且入库 >7 天', stale_14d: '超过 14 天没抓到内容' } });
+  return jsonOk({ items, rules: { never_ok: '库里没有内容且入库 >7 天（抓取成功但没产出：feed 真空 / 内容全被拒）', stale_14d: '超过 14 天没抓到内容' } });
 }
 
 // GET /api/dashboard — 首页仪表盘轻聚合（T3-8 批次6）
