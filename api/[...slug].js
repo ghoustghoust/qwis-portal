@@ -3248,7 +3248,7 @@ async function handleAlertsConfigPut(req) {
     const next = { ...cur, ...(body.alerts || body) };
     if (next.channels) next.channels = _alerts.mergeChannelSecrets(cur.channels, next.channels);
     require('../lib/alert-channels').assertEnabledChannelsHaveExit(next.channels); // H52：启用渠道回调必须过真出口判据，门上拒哨兵
-    delete next.recentLog; // 日志不随配置回写
+    next.recentLog = cur.recentLog || []; // 审查 P3（H55⑤ 同批）：原写法 delete next.recentLog 会让整键 UPSERT 写回的 JSON 缺 recentLog 字段——每次保存报警配置等于清空日志，架空 LogsTab 的日志管理。日志以库内现值为准（同本地端 PUT 保留日志的语义），前端回传的旧快照一律丢弃
     await _alerts.saveConfig(next);
     await auditRecord('alerts.config', { detail: { channels: (next.channels || []).length } });
     return jsonOk({});
