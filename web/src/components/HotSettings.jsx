@@ -171,6 +171,7 @@ export default function HotSettings() {
           </div>
         )}
       </div>
+      )}
 
       {/* 分类规则表（只读） */}
       <div className="mt-4">
