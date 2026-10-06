@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
+import TriggerButton from './TriggerButton.jsx';
+import SourcePickerModal from './SourcePickerModal.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
 // 订阅源重叠头像行（与 DailySettingsTab 的 SelectedAvatars 同形态——默认一行微叠头像+统计小字，
