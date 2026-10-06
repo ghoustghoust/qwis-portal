@@ -217,7 +217,7 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
           <span className="truncate">
             {item.source_name || ''}
             {item.source_name ? ' · ' : ''}
-            {item.kind === 'video' ? '视频' : '公众号'} · {relativeTime(item.published_at)}
+            {item.kind === 'video' ? '视频' : item.kind === 'podcast' ? '播客' : '文章'} · {relativeTime(item.published_at)}
           </span>
         </div>
       </div>

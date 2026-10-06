@@ -990,6 +990,22 @@ async function runWeekly() {
     }
     if (wVideos.length) log(`周刊视频候选 +${wVideos.length}`);
   } catch { /* 不阻断 */ }
+  // T4-3 周报播客入报（10-05 补差量）：播客（音频封面特征条目）与视频同待遇——并入候选深析，
+  // kind=podcast；查询口径与日报媒体栏一致（lib/media.audioCoverSql）
+  try {
+    const wPods = await qAll(
+      `SELECT a.id, a.source_id, a.title, a.url, a.summary, a.published_at, s.name AS source_name
+       FROM articles a LEFT JOIN sources s ON s.id = a.source_id
+       WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
+         AND ${require('../lib/media').audioCoverSql('a.cover')}
+       ORDER BY a.published_at DESC LIMIT 10`,
+      [startUtc, endUtc]
+    );
+    for (const a of wPods) {
+      valid.push({ ...a, kind: 'podcast', content_html: a.summary || '' });
+    }
+    if (wPods.length) log(`周刊播客候选 +${wPods.length}`);
+  } catch { /* 不阻断 */ }
   // B17 预筛降量（lib/weekly-prefilter 唯一实现）：初筛预算只够 ~maxFilter 次调用，
   // 全部候选按时间倒序跑 = 只策展最新前缀（09-21 实测病根）。规则：≥60 分与视频全收，
   // 其余槽位按时间倒序补满预算——让预算覆盖「全周的高分内容」而不是「最新几小时」。
