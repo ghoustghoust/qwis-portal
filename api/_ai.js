@@ -271,7 +271,7 @@ async function renderTranslatePrompt(glossaryHits, text) {
 
 // ═══ 初筛器（F3，BestBlogs Issue #564 范式：不传全文） ═══
 async function filterArticle(meta) {
-  const threshold = Number(await getSetting('ai.filterThreshold', 30));
+  const threshold = Number(await getSetting('ai.filterThreshold', 50)); // T5-13（用户拍）：30 形同虚设——GitHub 提交信息式条目 0-8 分照进深析，阈值提至 50 拦这批
   const tpl = await loadPrompt('filter');
   const input = `标题：${meta.title || ''}\n来源：${meta.source || ''}\n分类：${meta.category || ''}\n摘要：${String(meta.summary || '').slice(0, 200)}`;
   // 2026-09-23（P0-2）：agnes 是推理模型，128 常全烧在思考上 → 无 content → 抛错 → 放行 50 分，
