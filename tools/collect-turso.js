@@ -1481,6 +1481,43 @@ async function runDailyAi() {
     if (protectedItems.length) log(`L5b 低曝光保护位: ${protectedItems.map((p) => p.source_name).join('/')}`);
   } catch (e) { log(`L5b 保护位失败（不阻断）: ${e.message}`); }
 
+  // ── T5-3 栏目聚类（10-05 用户点单）：栏目名随当天内容决定，替换关键词固定栏 ──
+  // AI 对深析后的高分条目做选题聚类（一次调用，输出 JSON [{name, ids}]，ids 是清单编号）。
+  // 机制栏目（重点更新 spotlight / 其它重要 fallback）保留：重点来源仍直进重点栏，未聚类条目仍走兜底。
+  // 失败/关闭 → 回退关键词栏（ADR-26：增强环节失败不阻断主链路）。开关 settings['daily.aiColumns'].enabled。
+  let aiClusters = null;
+  try {
+    const aiColsCfg = await getSetting('daily.aiColumns', {});
+    if (aiColsCfg.enabled !== false) {
+      const pool = analyzed
+        .filter((a) => !a.source_spotlight && Number.isFinite(Number(a.id)))
+        .sort((x, y) => (y.totalScore || 0) - (x.totalScore || 0))
+        .slice(0, 30);
+      if (pool.length >= 6) {
+        const listText = pool
+          .map((a, i) => `${i + 1}. ${String(a.translated_title || a.title || '').slice(0, 60)}`)
+          .join('\n');
+        const tpl = await _ai.loadPrompt('daily-columns');
+        const r = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 文章清单\n\n${listText}` }], { kind: 'theme', maxTokens: 600, temperature: 0.2 });
+        if (r.ok) {
+          const m = r.reply.match(/\[[\s\S]*\]/);
+          const parsed = m ? JSON.parse(m[0]) : null;
+          if (Array.isArray(parsed)) {
+            const clean = parsed
+              .filter((c) => c && typeof c.name === 'string' && c.name.trim() && Array.isArray(c.ids) && c.ids.length)
+              .map((c) => ({ name: String(c.name).trim().slice(0, 12), ids: c.ids.map(Number).filter((n) => Number.isFinite(n) && n >= 1 && n <= pool.length) }))
+              .filter((c) => c.ids.length >= 2)
+              .slice(0, 5);
+            if (clean.length >= 2) {
+              aiClusters = clean;
+              log(`T5-3 栏目聚类: ${clean.length} 簇（${clean.map((c) => `${c.name}×${c.ids.length}`).join('、')}）`);
+            }
+          }
+        }
+      }
+    }
+  } catch (e) { log(`栏目聚类失败（回退关键词栏，不阻断）: ${e.message}`); }
+
   // 栏目组装（沿用 columns 语义：spotlight 优先 → 关键词 → fallback 按总分；27b 兼容旧 special 值 'focus'）
   // L3 单源配额：同源单日入报 ≤3（跨栏计数，防单源刷屏）；全局总条数 ≤36
   const columns = await getSetting('daily.columns', null) || DEFAULT_COLUMNS;
@@ -1504,6 +1541,7 @@ async function runDailyAi() {
   };
   for (const col of columns) {
     const items = [];
+    if (aiClusters && col.special === 'fallback') continue; // T5-3：兜底挪到 AI 簇之后（否则它会抢走高分条目饿死聚类）
     if (col.special === 'spotlight' || col.special === 'focus') {
       for (const a of analyzed) {
         if (used.has(a.id)) continue;
@@ -1512,6 +1550,8 @@ async function runDailyAi() {
     } else if (col.special === 'fallback') {
       const rest = analyzed.filter((a) => !used.has(a.id)).sort((x, y) => y.totalScore - x.totalScore).slice(0, 10);
       for (const a of rest) { if (take(a)) items.push(fmt(a)); }
+    } else if (aiClusters) {
+      // T5-3：AI 聚类启用时，关键词栏位不再按关键词匹配（机制栏照常走上面分支）——跳过
     } else if (col.keywords && col.keywords.length) {
       for (const a of analyzed) {
         if (used.has(a.id)) continue;
@@ -1521,6 +1561,24 @@ async function runDailyAi() {
     }
     const deduped = dedupItems(items);
     if (deduped.length) sections.push({ column: col.name, desc: col.desc || '', items: deduped.slice(0, 15) });
+  }
+  // T5-3：AI 簇组装在机制栏之后插入（栏目名随当天内容；条目按总分降序，同一 take 配额与去重）
+  if (aiClusters) {
+    for (const c of aiClusters) {
+      const items = [];
+      for (const n of c.ids) {
+        const a = analyzed.filter((x) => !x.source_spotlight && Number.isFinite(Number(x.id)))[n - 1];
+        if (!a || used.has(a.id)) continue;
+        if (take(a)) items.push(fmt(a));
+      }
+      const deduped = dedupItems(items);
+      if (deduped.length >= 2) sections.push({ column: c.name, desc: '按当天内容聚类', items: deduped.slice(0, 15) });
+    }
+    // 兜底后置：未进任何簇的条目按总分取 10（机制"其它重要"栏，位置在 AI 簇之后）
+    const rest = analyzed.filter((a) => !used.has(a.id)).sort((x, y) => y.totalScore - x.totalScore).slice(0, 10);
+    const restItems = [];
+    for (const a of rest) { if (take(a)) restItems.push(fmt(a)); }
+    if (restItems.length) sections.push({ column: '其它重要', desc: '未归入主题栏目的条目兜底', items: restItems });
   }
   // L5b 保底注入：保护位条目若未被任何栏收纳，插入第一个栏目第 2 位
   if (sections.length && protectedItems.length) {
@@ -1592,6 +1650,8 @@ async function runDailyAi() {
   } catch { /* 统计失败不阻断 */ }
   const stats = {
     schemaVersion: require('../lib/brief-guards').DAILY_SCHEMA_VERSION.AI, theme, degraded: false, themes,
+    // T5-3 观测：本期栏目模式（ai=聚类成功 / keyword=关闭或失败回退）与簇数
+    aiColumns: { mode: aiClusters ? 'ai' : 'keyword', clusters: aiClusters ? aiClusters.length : 0 },
     // 导语为空时的归因（H30）：'ai_failed' 模型没答 / 'all_lines_rejected' 答了但每行都像污染元文本 /
     // 'picked_vetoed' 挑出来的那句被一票否决 / 'throw' 调用抛错。有 theme 时该键不落（null 不留噪声键）。
     ...(theme ? {} : { themeSkip: { why: th.why || 'unlabeled', err: th.err, detail: th.detail, lines: th.lines } }),

@@ -21,6 +21,9 @@ export default function DailySettingsTab() {
   const [capSaving, setCapSaving] = useState(false);
   // T3-8 批次2：选源器弹窗（null=关闭；'article'/'video'）——替代全量平铺勾选列表
   const [picker, setPicker] = useState(null);
+  // T5-3：AI 动态栏目开关（daily.aiColumns.enabled——栏目名随当天内容，替换关键词归栏）
+  const [aiCols, setAiCols] = useState(null); // null=未加载
+  const [aiColsSaving, setAiColsSaving] = useState(false);
 
   const list = (d) => (Array.isArray(d) ? d : d?.items || d?.sources || []);
 
@@ -192,7 +195,8 @@ export default function DailySettingsTab() {
               try {
                 await api.put('/api/settings', { prescreen: { perSourceCap: Number(capVal) } });
                 const g = await api.get('/api/settings');
-                setCapVal(g?.prescreen?.perSourceCap ?? 2); // 回读归一值：填 0/1.5/abc 会被后端退回默认，界面不骗人
+                setCapVal(g?.prescreen?.perSourceCap ?? 2);
+      api.get('/api/settings').then((st) => setAiCols(st?.daily?.aiColumns || { enabled: true })).catch(() => setAiCols({ enabled: true })); // 回读归一值：填 0/1.5/abc 会被后端退回默认，界面不骗人
                 toast('每源配额已保存');
               } catch (e) {
                 toast(e.message);
@@ -246,14 +250,35 @@ export default function DailySettingsTab() {
       {/* 栏目管理（只读过渡：用户 10-04 拍板——关键词归栏将被 AI 选题聚类 T5-3 替代，不再投入编辑面） */}
       <section>
         <div className="flex items-center gap-2 mb-1">
-          <div className="text-base font-bold t-text">栏目管理（只读）</div>
+          <div className="text-base font-bold t-text">栏目管理</div>
           <InfoTip
-            what="当前栏目表：关键词命中标题或内容即归入该栏；「重点更新」「其它重要」是机制栏目（重点来源全量入栏 / 未命中兜底）。"
-            how="此板块已冻结编辑——关键词归栏是过渡机制，将由 AI 选题聚类（T5-3，栏目名随当天内容决定）替代。"
-            effect="栏目调整暂无法在界面进行；要改需等 T5-3 落地或改栏目表实现。"
+            what="AI 动态栏目（T5-3）：AI 按当天内容把高分条目聚成 3~5 个主题栏（栏目名随内容变，如「模型发布」「行业动态」）。「重点更新」「其它重要」是机制栏目，始终保留。"
+            how="开关打开即启用 AI 聚类（夜间主批生效，AI 聚类失败自动回退关键词栏）；关闭则回到下方关键词表归栏。"
+            effect="下一期日报生效。启用的期，产物 stats.aiColumns.mode='ai'，前台栏目名每期可能不同——这是设计而非故障。"
           />
         </div>
-        <div className="text-[11px] t-muted mb-3">栏目按顺序展示；以下为当前生效配置（改栏目暂不可用，属过渡机制）。</div>
+        <div className="text-[11px] t-muted mb-3">
+          {aiCols?.enabled !== false
+            ? '当前：AI 动态栏目已启用——下方关键词表不参与归栏（AI 聚类失败时自动回退到它）。'
+            : '当前：AI 动态栏目已关闭——按下方关键词表归栏。'}
+        </div>
+        <div className="mb-3 flex items-center gap-2 text-[13px]">
+          <button
+            className={`pill !px-3 !py-1.5 cursor-pointer ${aiCols?.enabled !== false ? 'on' : ''}`}
+            disabled={aiColsSaving}
+            onClick={async () => {
+              setAiColsSaving(true);
+              try {
+                const next = { ...(aiCols || {}), enabled: !(aiCols?.enabled !== false) };
+                await api.put('/api/settings/daily', { aiColumns: next });
+                setAiCols(next);
+                toast(next.enabled !== false ? 'AI 动态栏目已启用' : 'AI 动态栏目已关闭');
+              } catch (e) { toast(e.message); }
+              finally { setAiColsSaving(false); }
+            }}
+          >{aiCols?.enabled !== false ? 'AI 动态栏目：开' : 'AI 动态栏目：关'}</button>
+          <span className="text-[11px] t-muted">点按切换（写 settings daily.aiColumns，下一期生效）</span>
+        </div>
         <div className="flex flex-col gap-2">
           {columns.map((c, i) => (
             <div key={c.id || i} className="card px-3 py-2.5 text-[13px]">
