@@ -76,7 +76,8 @@ export default function BilibiliTab() {
     setBusy('refreshAll');
     try {
       const r = await api.post(`/api/sources/refresh-all?skipBreaker=1&type=bilibili`);
-      toast(`批量刷新完成：成功 ${r.succeeded} / 失败 ${r.failed}`);
+      // H55③：云端语义是"标记到期、runner ≤15min 补抓"（回 affected/deferred/message），本地是串行真抓（回 succeeded/failed）——按各自回包渲染，别读错键出 undefined
+      toast(r.deferred ? (r.message || `已将 ${r.affected} 个源标记为立即到期，最迟 15 分钟内采集`) : `批量刷新完成：成功 ${r.succeeded ?? 0} / 失败 ${r.failed ?? 0}`);
       loadSources();
       reloadStatus();
     } catch (e) {

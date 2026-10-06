@@ -17,7 +17,7 @@
 //   POST /api/auth/login        登录获取 JWT
 //   POST /api/articles/:id/read 标记已读
 //   POST /api/articles/:id/later 稍后读
-//   POST /api/sources/:id/toggle 启用/停用源
+//   POST|PUT /api/sources/:id/toggle 启用/停用源（PUT 对齐前端与本地端）
 //   ... 更多写操作路由
 
 const { createClient } = require('@libsql/client');
@@ -1597,7 +1597,7 @@ async function handleArticleLater(req, id) {
   return jsonOk({ ok: true, later: laterVal });
 }
 
-// POST /api/sources/:id/toggle
+// POST|PUT /api/sources/:id/toggle —— 解冻语义与本地端一致（启用时清 fail_count/lastError）
 async function handleSourceToggle(req, id) {
   const row = await qOne('SELECT enabled FROM sources WHERE id=?', [id]);
   if (!row) return { status: 404, body: jsonErr('源不存在') };
@@ -1960,6 +1960,36 @@ async function handleAlertsConfig(req) {
 async function handleAlertsLog(req) {
   const cfg = await getSetting('alerts', {});
   return jsonOk({ log: Array.isArray(cfg.recentLog) ? cfg.recentLog : [] });
+}
+
+// ─── H55⑤: DELETE /api/alerts/log 与 /api/alerts/log/:index —— 报警日志删除 ───
+// 前端 LogsTab「清空全部 / 删除该条」此前在云端无路由必失败。语义与本地 server/routes/alerts.js 一致：
+// recentLog 挂在 alerts 整键里（cooldowns 是独立键，不受影响），整键读改写，同 api/_alerts.js 的 saveConfig 姿势。
+async function handleAlertsLogClear() {
+  const a = (await getSetting('alerts', {})) || {};
+  a.recentLog = [];
+  await setSetting('alerts', a);
+  await auditRecord('alerts.clear-log', {});
+  return jsonOk({ ok: true });
+}
+
+async function handleAlertsLogDelete(req, index) {
+  const a = (await getSetting('alerts', {})) || {};
+  const log = Array.isArray(a.recentLog) ? a.recentLog : [];
+  if (!Number.isInteger(index) || index < 0 || index >= log.length) {
+    return { status: 400, body: jsonErr('无效的日志序号') };
+  }
+  let i = index;
+  const at = req.query.at;
+  if (at && log[i].at !== at) {
+    // 下标已位移（删除瞬间有新报警插入）：按 at 指纹重新定位
+    i = log.findIndex((r) => r.at === at);
+    if (i === -1) return { status: 404, body: jsonErr('该条记录已不存在') };
+  }
+  log.splice(i, 1);
+  a.recentLog = log;
+  await setSetting('alerts', a);
+  return jsonOk({ ok: true });
 }
 
 // ─── P1-11: POST /api/daily/regenerate — 手动重新生成日报 ───
@@ -3398,9 +3428,9 @@ async function dispatch(req) {
   // POST /api/admin/trigger（T3-8 批次2：后台一键触发生成批次；鉴权走入口统一门——公开白名单不包含它，默认需要 Bearer）
   if (path === '/api/admin/trigger' && method === 'POST') return handleAdminTrigger(req);
 
-  // POST /api/sources/:id/toggle
+  // POST|PUT /api/sources/:id/toggle —— H55①：前端 B 站/公众号行内启停发 PUT（与本地端 server/routes/sources.js 同方法），云端此前只收 POST → 点击必 404
   const toggleMatch = path.match(/^\/api\/sources\/(\d+)\/toggle$/);
-  if (toggleMatch && method === 'POST') return handleSourceToggle(req, Number(toggleMatch[1]));
+  if (toggleMatch && (method === 'POST' || method === 'PUT')) return handleSourceToggle(req, Number(toggleMatch[1]));
 
   // ─── 管理功能移植路由（2026-09-11，全部需鉴权） ───
   if (path === '/api/sources/restore-all' && method === 'POST') return handleRestoreAll(req);
@@ -3447,6 +3477,10 @@ async function dispatch(req) {
   if (path === '/api/alerts/config' && method === 'PUT') return handleAlertsConfigPut(req);
   if (path === '/api/alerts/test' && method === 'POST') return handleAlertsTest(req);
   if (path === '/api/alerts/clear-cooldowns' && method === 'POST') return handleAlertsClearCooldowns(req);
+  // H55⑤：报警日志删除——写路由放 GET 块外（同 weeklyDelMatch 的教训）
+  if (path === '/api/alerts/log' && method === 'DELETE') return handleAlertsLogClear();
+  const alertLogIdxMatch = path.match(/^\/api\/alerts\/log\/(\d+)$/);
+  if (alertLogIdxMatch && method === 'DELETE') return handleAlertsLogDelete(req, Number(alertLogIdxMatch[1]));
 
   // DELETE /api/weekly/archive/:issue（T3-2 R1）
   // 2026-09-18 修复：这条原先被误写在下方 `if (method === 'GET')` 块内，块内 method==='DELETE'
