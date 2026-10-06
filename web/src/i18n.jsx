@@ -63,6 +63,7 @@ const DICT = {
   'hot.featured':          { zh: 'AI 精选',            en: 'AI Picks' },
   'hot.all':               { zh: 'AI 信息实时流',      en: 'AI Live Feed' },
   'hot.events':            { zh: '热搜事件',           en: 'Hot Events' },
+  'hot.hotlist':           { zh: '纯热榜',             en: 'Raw Hotlists' },
   'hot.sourceAll':         { zh: '来源：全部',         en: 'Source: All' },
   'hot.sourceFilter':      { zh: '按来源筛选',         en: 'Filter by source' },
   'hot.searchPlaceholder': { zh: '搜索标题、摘要…',    en: 'Search title, summary…' },

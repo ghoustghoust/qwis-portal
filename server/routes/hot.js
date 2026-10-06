@@ -83,6 +83,7 @@ router.post('/enrich', async (req, res) => {
 router.get('/', (req, res) => {
   const tab = req.query.tab || 'featured';
   const { items, nextCursor } = hot.query({
+    hotlistOnly: tab === 'hotlist', // H49④：纯热榜档（与云端 handleHot 的 tab=hotlist 分支同口径）
     category: tab === 'featured' ? (req.query.category || '') : '', // tab=featured 时 category 生效
     q: tab === 'all' ? (req.query.q || '') : '', // tab=all 时 q 生效
     source: tab === 'all' ? (req.query.source || '') : '', // tab=all 时 source 生效

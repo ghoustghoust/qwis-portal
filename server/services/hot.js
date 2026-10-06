@@ -8,7 +8,7 @@ const PAGE_SIZE = 30;
 // 六类与默认映射的唯一实现在 lib/hot-categories.js（B58）；本文件只做 re-export，不再各留一份
 const { CATEGORIES, DEFAULT_CATEGORY_MAP } = require('../../lib/hot-categories');
 // B107：聚合器轴（"哪些源是聚合源"）由 lib/noise.js 生成，本文件不再手写第二份 json_extract
-const { aggregatorCondSql } = require('../../lib/noise');
+const { aggregatorCondSql, hotlistCondSql } = require('../../lib/noise');
 
 
 function categoryMap() {
@@ -52,10 +52,12 @@ function feedNameOf(author) {
 // GET /api/hot 查询：聚合源文章；category 应用层过滤（mapCategory 结果比对）；q 标题/正文搜索；
 // source 按 author 精确筛选（七期 F3 来源下拉）；排序键游标与文章列表一致（sort_key|id 复合，时间倒序）
 // 七期 F3/F4：返回富字段 score/reason/tags/featured/original_url/has_original
-function query({ category, q, source, cursor } = {}) {
+function query({ category, q, source, cursor, hotlistOnly } = {}) {
   // 27b：屏蔽(muted)源从热点榜排除（与云端 handleHot 同口径）
   const conds = [aggregatorCondSql('s'), 'COALESCE(s.muted,0)=0'];
   const args = [];
+  // H49④（用户拍 G5）：纯热榜档——此前服务端只有云端有此分支，本地连这一档都没有
+  if (hotlistOnly) conds.push(hotlistCondSql('s'));
   if (q) {
     // H29③（同批第三处）：搜索只扫 title/summary 轻列——与两端 articles 路由同一契约，正文命中不再算搜索命中
     conds.push('(a.title LIKE ? OR a.summary LIKE ?)');

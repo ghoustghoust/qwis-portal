@@ -422,15 +422,11 @@ async function handleHot(req) {
     conds.push("s.name NOT LIKE 'Recent Commits to %'");
   }
 
-  // 真实分类过滤（T5-1）：分类映射到 tags 关键词组（实际词表为 模型发布/论文/研究/大佬观点 等复合词）
-  const CATEGORY_KWS = {
-    '模型': ['模型'],
-    '产品': ['产品'],
-    '行业': ['行业', '现象/趋势', '产业', '市场'],
-    '论文': ['论文', '研究', 'arXiv'],
-    '教程': ['教程', '实战', '指南', '入门', '手把手'],
-    '观点': ['观点', '思考', '评论', '观察'],
-  };
+  // 真实分类过滤（T5-1）：分类映射到 tags 关键词组。
+  // H49①（用户拍 G1）：词表单一实现在 lib/hot-categories.js（DEFAULT_FILTER_KWS），
+  // settings['hot.categoryKeywords']（同名形状）可整表覆盖——此前这份词表内联在端点里，
+  // "改分类"在界面/设置键/云端过滤三处都做不到。注意与 hot.categories（feed 归类映射）是两个维度。
+  const { map: CATEGORY_KWS } = hotCats.filterKwsOf(await getSetting('hot.categoryKeywords', null));
   if (category && CATEGORY_KWS[category]) {
     // 匹配 标题/摘要/tags（tags 只有深析文章才有，单靠 tags 命中率过低）
     conds.push(`(${CATEGORY_KWS[category].map(() => '(a.title LIKE ? OR a.summary LIKE ? OR a.tags LIKE ?)').join(' OR ')})`);
@@ -554,7 +550,8 @@ async function handleHotGroups(req) {
 // 映射在 API 边界就被丢掉，前端 if (d?.map) 永不成立，于是分类表一直在显示前端自带过时的默认值。
 async function handleHotCategories(req) {
   const { map, source } = hotCats.categoryMapOf(await getSetting('hot.categories', null));
-  return jsonOk({ categories: Object.keys(map), map, categorySource: source });
+  const filterKws = hotCats.filterKwsOf(await getSetting('hot.categoryKeywords', null)); // H49①：过滤词表生效值一并回显
+  return jsonOk({ categories: Object.keys(map), map, categorySource: source, filterKws: filterKws.map, filterKwsSource: filterKws.source });
 }
 
 // GET /api/hot/sources — 实时流来源下拉（2026-09-14：改为全量源计数，此前只查聚合热榜源，下拉里全是「xx热榜」）

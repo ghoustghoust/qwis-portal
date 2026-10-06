@@ -316,6 +316,7 @@ export default function HotPage() {
               {[
                 { id: 'featured', label: t('hot.featured') },
                 { id: 'all', label: t('hot.all') },
+                { id: 'hotlist', label: t('hot.hotlist') }, // H49④：纯热榜档入口（服务端 tab=hotlist 分支早已存在，此前前端无入口）
                 { id: 'events', label: t('hot.events') },
               ].map((item) => (
                 <button
