@@ -404,6 +404,38 @@ export default function DataTab() {
             刷新
           </button>
         </div>
+        {/* Turso 平台用量（用户 10-06 提供 Management API 凭据——如图 Reads/Writes/Storage 用量条） */}
+        {stats?.tursoUsage && (
+          <div className="mt-4 card t-surface2 p-4">
+            <div className="text-xs t-muted mb-3">Turso 平台用量（{stats.tursoUsage.databases} 个数据库）</div>
+            <div className="space-y-2.5">
+              {[
+                { label: 'Reads', value: stats.tursoUsage.rowsRead, quota: stats.tursoUsage.quota.rowsRead, fmt: (n) => (n / 1e6).toFixed(1) + 'M' },
+                { label: 'Writes', value: stats.tursoUsage.rowsWritten, quota: stats.tursoUsage.quota.rowsWritten, fmt: (n) => (n / 1e6).toFixed(2) + 'M' },
+                { label: 'Storage', value: stats.tursoUsage.storageBytes, quota: stats.tursoUsage.quota.storageBytes, fmt: (n) => fmtSize(n) },
+              ].map((row) => {
+                const pct = Math.min((row.value / row.quota) * 100, 100);
+                const over = pct > 90;
+                return (
+                  <div key={row.label}>
+                    <div className="flex items-center justify-between text-[12px]">
+                      <span className="t-text font-medium">{row.label}</span>
+                      <span className={`tabular-nums ${over ? 'text-[var(--red)] font-medium' : 't-muted'}`}>
+                        {row.fmt(row.value)} / {row.fmt(row.quota)}
+                      </span>
+                    </div>
+                    <div className="mt-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-3, var(--border))' }}>
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${pct}%`, background: over ? 'var(--red)' : 'var(--accent)' }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {/* 5.3 数据库体积趋势（基于快照历史） */}
         {snaps.length >= 2 && (
           <div className="mt-3 card t-surface2 px-4 py-3">

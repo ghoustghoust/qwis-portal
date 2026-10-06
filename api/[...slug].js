@@ -2623,7 +2623,32 @@ async function handleDataStats(req) {
   for (const t of DATA_TABLES) {
     tables[t] = (await qOne(`SELECT COUNT(*) c FROM ${t}`)).c;
   }
-  return jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables });
+  // Turso 平台用量（用户 10-06 提供 Management API 凭据）：Reads/Writes/Storage 如图
+  // 凭据走 env TURSO_ORG + TURSO_API_TOKEN（不是数据库连接串——平台级只读用量）。
+  let tursoUsage = null;
+  const org = process.env.TURSO_ORG;
+  const apiToken = process.env.TURSO_API_TOKEN;
+  if (org && apiToken) {
+    try {
+      const r = await fetch(`https://api.turso.tech/v1/organizations/${org}/usage`, {
+        headers: { Authorization: `Bearer ${apiToken}` },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (r.ok) {
+        const d = await r.json();
+        const u = d?.organization?.usage;
+        if (u) {
+          tursoUsage = {
+            rowsRead: u.rows_read, rowsWritten: u.rows_written,
+            storageBytes: u.storage_bytes, databases: u.databases,
+            // 免费层配额（Starter）写死——Turso 文档口径，超了会显示红
+            quota: { rowsRead: 500e6, rowsWritten: 10e6, storageBytes: 5 * 1024 ** 3 },
+          };
+        }
+      }
+    } catch { /* 拉不到不阻断本端点 */ }
+  }
+  return jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables, tursoUsage });
 }
 
 // GET /api/data/list — 云端无文件快照，返回配置备份信息
