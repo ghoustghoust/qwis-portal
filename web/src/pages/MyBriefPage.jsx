@@ -51,7 +51,7 @@ export default function MyBriefPage() {
 
   useEffect(() => { load(); loadArchive(); }, [issueParam]);
 
-  const report = data?.report;
+  const report = data?.report || data?.entry; // 往期端点返回 {entry}，最新返回 {report}——用户 10-06：点往期除了最新都不行（report undefined 页面空）
   const digest = data?.digest;
   const empty = data?.empty || report?.empty;
 
