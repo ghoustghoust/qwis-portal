@@ -941,9 +941,9 @@ async function handleSources(req) {
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const rows = await qAll(
     `SELECT s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.spotlight, s.muted, s.reader_visible, s.enabled, s.status,
-     s.last_fetched_at, s.next_fetch_at, s.fail_count, s.created_at, s.intro, g.name AS group_name
+     s.last_fetched_at, s.next_fetch_at, s.fail_count, s.created_at, g.name AS group_name
      FROM sources s LEFT JOIN groups g ON g.id=s.group_id ${where} ORDER BY s.enabled DESC, s.name`, args
-  ); // 用户 10-06：选择来源弹窗要显示分组名与介绍
+  ); // 用户 10-06：选择来源弹窗要显示分组名；intro 云端生产库无此列（本地 lib/db.js 有云端没有，两端 schema 不一致——撤掉）
   // 未读=近 3 天（27-reader-today：历史未读自动归档，焦虑数字消失）；视频源保持总条数
   const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
   const unreadRows = await qAll(
