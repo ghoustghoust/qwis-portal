@@ -165,7 +165,7 @@ test('P6-5: 重构后文档体系完整', () => {
     'docs/changes/archive/2026-09-12-my-brief.md', 'docs/changes/archive/2026-09-12-sources-write.md',
     'docs/changes/archive/2026-09-13-delivery-emergency-fixes.md',
   ];
-  assert.equal(deletedGone.length, 24, '反向断言的清单必须与 docs/ISSUES.md「作废登记」里的 19+5 对齐');
+  assert.equal(deletedGone.length, 24, '反向断言的清单是 19+5=24 份（改动前先确认你改的是什么）');
   for (const f of deletedGone) {
     assert.ok(!fs.existsSync(path.join(ROOT, f)), `已作废的历史件复活: ${f}`);
   }
@@ -239,7 +239,7 @@ test('P6-9: 活跃文件无指向已移动文件的裸引用', () => {
     const content = fs.readFileSync(f, 'utf-8');
     const rel = path.relative(ROOT, f);
 
-    // 归档层已不收文字件（2026-10-01 整批清空，登记见 docs/ISSUES.md 作废登记），
+    // 归档层已不收文字件（2026-10-01 整批清空，反查走 git 删除批次提交信息），
     // 所以这批旧文档名**任何形态都不许再被现行文档引用**——原先放行 `archive/docs-deprecated/` 前缀
     // 是因为那时那个目录里真有份留底；现在放行前缀等于放行一条指向不存在文件的死指针。
     const anyAClass = content.match(/A_CLASS_FIX_REPORT\.md/g);

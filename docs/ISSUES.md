@@ -102,19 +102,3 @@
 | # | 现在坏着什么 | 下一步（谁的动作） | 怎么验 |
 |---|---|---|---|
 | H43 | **模块地图与需求队列互相对账靠人自觉**：地图的"待建行必须回队列挂号"与队列的"某行已履行就摘掉"这两条，没有机器判据兜住，一轮忘了就没人知道 | 要真解决得给文档门禁加一条判据（**写代码，本轮禁止**）。逐格过的判据一直是同一条：**删读数不删语义，只留"现在是什么 + 现读哪里能验"，不许为消警压语义** | 现读法：`node tools/doc-lint.cjs` 的错误/警告读数（长度与悬空都在里面）；两份文件各自的待办段读一遍，看互指是否成对 |
-
-## 🗂 作废登记（整批删除的唯一反查锚点）
-
-| 删了什么 | 份数 | 删除前 tree | 反查命令 | 内容去向与声明 |
-|---|---|---|---|---|
-| `docs/specs/` 全部历史规格（spec/plan/task/checklist 与单文件决策件） | 65 | 删除发生在 `f1124ae`，**删除前的内容在父提交 `2e9f73f`** | 看原文 `git show 2e9f73f:docs/specs/<原路径>`；列出全部 `git ls-tree -r --name-only 2e9f73f -- docs/specs`（实测 65 条）；还原 `git restore --source=2e9f73f -- docs/specs/` | 仍生效的取舍已逐条搬走：**新建 11 件** ADR-25~35，**8 份既有件补边界** ADR-02/03/08/10/14/15/16/22；评测侧"既有红三族读法"进 `docs/EVAL_GUIDE.md`（判红分族一节），"一条陈述的三种去处"尺子进 `docs/DOC_GOVERNANCE.md` §2.5，"加字段先问要不要被查询"进 `docs/DEVELOPMENT_STANDARDS.md` §9；足迹面的三条"结构上没有这条路"进 `docs/features/my-reading.md`。**随本批一并摘除门禁判据 #11（父 spec 背景段出处）——它的判据对象不再存在，留着就是一条永远零命中却看起来在把关的判据**。**自此所有 spec 编号（含更早作废的 35~43 与 `NN-*/task.md` 这类子号）只作历史编号读，不得当"方案已存在"引用**；要指路只许指向 ADR / `docs/features/` / 现行手册 |
-
-| `docs/archive/` 全部**文字件**（旧规格副本 + 门户/自建引擎时代的部署运维手册 + 各期审计报告 + 核销底稿 + 一次性运行输出） | 85（66 `.md` + 18 `.txt` + 1 `.html`）；**图片与脚本本轮未动**（用户 10-01：图片先不急） | 删除发生在 `72db954`，**删除前的内容在 `ed85f00`** | 看原文 `git show ed85f00:<原路径>`（路径按下面那条"列出清单"的命令取）；列出清单 `git ls-tree -r --name-only ed85f00 -- docs/archive`；还原 `git restore --source=ed85f00 -- docs/archive/` | 删前按 §2.5 逐份过完：**9 条仍生效的取舍/护栏/结构性事实搬进** 坑 #73/#74/#75、ADR-03 边界、`features/hot-and-weekly.md` §六、`features/events-alerts.md`、`RUNBOOK.md` §2、H51/H52/H53（登记见本表）；其余是流水、一次性读数、以及描述已被 ADR-01/02/03/25 判死方案的手册。**这批的入站引用实测为零**（现行文档 grep 全部 52 个可辨识文件名与标志读数，唯一命中的是改动戳与两条防复活断言）。**政策随之内转**：归档层从此只放素材，`docs/archive/**.md` 由门禁判红（治理 §2.2/§2.3/§4.1、§5 第 4 条）；"核销 → 搬进归档层"这条流程从此不存在 |
-
-| `docs/ROADMAP-2026-09.md` + `memory/`（2 份）+ `static-data/aihot.json` | 4 | 删除发生在 `275e079`，**删除前的内容在 `6aee937`** | 看原文 `git show 6aee937:<原路径>`；还原 `git restore --source=6aee937 -- docs/ROADMAP-2026-09.md memory/ static-data/aihot.json`（本行含已删路径，刻意引用） <!-- doc-lint:ignore --> | 路线图过期（活文档只写现状，现行文档零引用）；`memory/` 是 09-02 一次性会话记录，无活引用；`aihot.json` 是门户时代快照，唯一出现处是 `tools/export-portal.js` 的**生成侧**（writeJson，链路默认关闭），读侧零消费、前端不 fetch 该文件。**`docs/archive/` 的图片与脚本按用户 10-01「先不急」未删**（上批曾误入工作树删除状态，本批已 `git restore` 恢复） |
-
-| `docs/eval/` 三个一次性探针脚本（`probe-imgproxy-20260926.cjs`、`probe-imgproxy-census-20260926.cjs`、`probe-queue-wiring-20260926.cjs`） | 3 | 删除发生在 `a7a8995`，**删除前的内容在 `275e079`** | 看原文 `git show 275e079:<原路径>`；还原 `git restore --source=275e079 -- docs/eval/probe-imgproxy-20260926.cjs docs/eval/probe-imgproxy-census-20260926.cjs docs/eval/probe-queue-wiring-20260926.cjs`（本行含已删路径，刻意引用） <!-- doc-lint:ignore --> | AGENTS §3 第 7 条：探针脚本一次性，跑完即删不入库。三个脚本均已跑完（09-26）；同名 `.txt` 产物当时保留，已随下行 10-02 清理批一并删除 |
-
-| `docs/eval/` 的 e2e/（截图与运行报告）、f2p/（改前红取证）、content/，加散件 boundaries、prescreen-step1、delivery-readouts、citation-audit、bl10-null-audit、_run-npmtest-latest.log、3 个 probe `.txt`（共 399 份） | 399 | 删除发生在 `75b802d`，**删除前的内容在 `e032c90`** | 看原文 `git show e032c90:<原路径>`；列出清单 `git ls-tree -r --name-only e032c90 -- docs/eval`；还原 `git restore --source=e032c90 -- docs/eval/`（本行含已删路径，刻意引用） <!-- doc-lint:ignore --> | 用户 10-02 裁「一起清理」。这是已摘除评测装置的历史产物与一次性读数，其结论此前已由 09-30 那轮搬进 T3-7、ADR-33/34、ISSUES 对应行。**保留 6 份**：`2026-09-24-prescreen-labels.md`（待勾表+回测口径，ADR-33/34、T3-7、ISSUES「等你操作」引用）、`2026-09-24-source-diagnosis.md`（分桶方法，H36 引用）、`2026-09-24-turso-read-amp.md`（证据底稿，daily-report 引用）、b10/b79/b119 三个备份 JSON（B10/B79 还开着、B119 已收尾，是那几笔写操作唯一的还原底牌，不属评测产物） |
-
-> 本表（阻塞中的长期项）2026-10-04 起为空：最后一笔 BL9 已随批次5 收口（AI 配置写面四条全落地，反查 git 02475c1 + 9781783；口径见链路指南的 AI 配置写入口径一节）。

@@ -389,7 +389,7 @@ function findUncitedF2pCounts(text) {
 
 // （原判据 #11「父 spec 背景段的实测断言要带出处」随 `docs/specs/` 整批作废一并摘除：
 //   它的判据对象只剩归档件，留着就是一条"永远零命中但看起来在把关"的判据 —— 正是下面自证段要防的形状。
-//   语义没丢，改写进 `docs/DOC_GOVERNANCE.md` §2.5 的"一次性读数"那一行。作废登记见 `docs/ISSUES.md`。）
+//   语义没丢，改写进 `docs/DOC_GOVERNANCE.md` §2.5 的"一次性读数"那一行。反查走 git（删除批次提交信息）。）
 
 const SELF_TEST = process.argv.includes('--self-test');
 if (SELF_TEST) {
