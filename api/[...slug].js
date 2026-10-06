@@ -1051,10 +1051,11 @@ const _dailySourcesCache = { val: null, ts: 0 };
 const DAILY_SOURCES_TTL = 60000;
 async function handleStatusDailySources() {
   if (_dailySourcesCache.val && Date.now() - _dailySourcesCache.ts < DAILY_SOURCES_TTL) return _dailySourcesCache.val;
-  const overview = { dailyItemCount: 0, dailyTopSources: [] };
+  const overview = { dailyItemCount: 0, dailyTopSources: [], dailyTodayCount: 0 }; // T3-4：补"当日"口径（原 dailyItemCount 是近7天累计）
+  const todayStr = new Date().toISOString().slice(0, 10); // 北京时间日历日（generated_at 是 ISO 串，substr 即可）
   try {
     const since = new Date(Date.now() - 7 * 86400e3).toISOString();
-    const reports = await qAll('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
+    const reports = await qAll('SELECT generated_at, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
     // B26 对账（2026-09-19 独立对抗审查查出）：本地端 computeDailySources 会排掉
     // 「N 源」合成条目与噪声源名，云端此前不排 → 两端同一句话两个算法（近 7 天线上数据恰好
     // 没有这类条目，所以是潜伏差异而非已显现）。现在云端补齐同一规则，契约才真叫一致。
@@ -1067,6 +1068,7 @@ async function handleStatusDailySources() {
       for (const col of sections) {
         for (const it of (col.items || [])) {
           itemCount++;
+          if (String(rep.generated_at || '').slice(0, 10) === todayStr) overview.dailyTodayCount++; // T3-4 当日口径
           const nm = it.source || it.source_name;
           if (!nm || /^\d+ 源$/.test(nm) || noiseNames.has(nm)) continue; // 破茧合成条目与聚合源不进榜
           srcCount[nm] = (srcCount[nm] || 0) + 1;

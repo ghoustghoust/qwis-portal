@@ -23,10 +23,11 @@ const NOISE = isNoiseSql('s');
 // 窗口取近 7 天，与云端 api/[...slug].js 的同名统计、以及界面文案「近7天入早报」一致
 // （本地此前只算最新 1 期 daily_reports，标签写着近 7 天、数字却是单期——同一句话两端不同值）。
 function computeDailySources() {
-  const out = { dailyItemCount: 0, dailyTopSources: [] };
+  const out = { dailyItemCount: 0, dailyTopSources: [], dailyTodayCount: 0 }; // T3-4：补"当日"口径（与云端同名端点同形状）
+  const todayStr = new Date().toISOString().slice(0, 10);
   try {
     const since = new Date(Date.now() - 7 * 86400e3).toISOString();
-    const rows = db.prepare('SELECT sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7').all(since);
+    const rows = db.prepare('SELECT generated_at, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7').all(since);
     const noiseNames = new Set(db.prepare(`SELECT name FROM sources s WHERE ${NOISE}`).all().map((r) => r.name));
     const tally = new Map();
     for (const rep of rows) {
@@ -35,6 +36,7 @@ function computeDailySources() {
       for (const sec of sections) {
         for (const it of sec.items || []) {
           out.dailyItemCount += 1;
+          if (String(rep.generated_at || '').slice(0, 10) === todayStr) out.dailyTodayCount += 1; // T3-4 当日口径（与云端同）
           const name = it.source_name || it.source || '';
           if (!name || /^\d+ 源$/.test(name) || noiseNames.has(name)) continue; // 破茧栏合成条目与聚合源不计
           tally.set(name, (tally.get(name) || 0) + 1);

@@ -73,7 +73,8 @@ export default function OverviewRail() {
             <StatCard compact label="未读文章" value={ov?.unreadArticles ?? '—'} tone="soft" />
             <StatCard compact label="今日新增" value={ov?.todayNew ?? '—'} tone="surface" />
             <StatCard compact label="近7天更新" value={ov?.weekNew ?? '—'} tone="surface2" />
-            <StatCard compact label="入早报条目" value={heavy?.loadError ? '—' : (heavy?.dailyItemCount ?? '—')} tone="soft" />
+            {/* T3-4：第4卡改"今日入报"（当日口径，读 dailyTodayCount）；原"入早报条目"是近7天累计口径，与卡片字面不符 */}
+            <StatCard compact label="今日入报" value={heavy?.loadError ? '—' : (heavy?.dailyTodayCount ?? '—')} tone="soft" />
           </div>
         </div>
 
