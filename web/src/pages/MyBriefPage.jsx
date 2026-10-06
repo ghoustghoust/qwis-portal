@@ -59,7 +59,34 @@ export default function MyBriefPage() {
     <div className="flex h-full">
       <IconRail />
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10 flex gap-6">
+          {/* T5-6 同款左栏：往期早报索引（sticky；用户 10-06 反馈：往期放左侧，不要底部纯文本列表） */}
+          {archive !== null && archive.length > 0 && (
+            <aside className="hidden lg:block w-32 flex-none">
+              <div className="sticky top-8">
+                <div className="text-[11px] tracking-widest t-muted font-medium mb-2">往期早报</div>
+                <div className="space-y-1 max-h-[70vh] overflow-y-auto">
+                  <button
+                    className={`block w-full text-left pill !text-[11px] cursor-pointer ${!issueParam ? 'on' : ''}`}
+                    onClick={() => setIssueParam(null)}
+                  >
+                    最新
+                  </button>
+                  {archive.slice(0, 30).map((x) => (
+                    <button
+                      key={x.issue}
+                      className={`block w-full text-left pill !text-[11px] cursor-pointer ${issueParam === x.issue ? 'on' : ''}`}
+                      title={`${x.date}${x.theme ? '｜' + String(x.theme).slice(0, 40) : ''}`}
+                      onClick={() => setIssueParam(x.issue)}
+                    >
+                      第 {x.issue} 期
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          )}
+          <div className="flex-1 min-w-0 max-w-3xl">
           {err && (
             <div className="card px-6 py-16 text-center">
               <SunIcon className="mx-auto t-accent" />
@@ -121,24 +148,7 @@ export default function MyBriefPage() {
                 {report.degraded && (
                   <div className="mt-2 text-[11px] t-muted">（今日为降级版：AI 不可用，已回退关键词策展）</div>
                 )}
-                {archive !== null && archive.length > 0 && (
-                  <section className="mt-10 border-t t-border pt-4">
-                    <div className="text-[11px] tracking-widest t-muted">往期早报</div>
-                    <ul className="mt-2 space-y-1.5">
-                      {archive.slice(0, 30).map((x) => (
-                        <li
-                          key={x.issue}
-                          className={`text-[12.5px] cursor-pointer ${issueParam === x.issue ? 't-accent font-medium' : 't-muted hover:t-accent'}`}
-                          onClick={() => setIssueParam(x.issue)}
-                        >
-                          第 {x.issue} 期 · {x.date}
-                          {x.theme ? ` · ${String(x.theme).slice(0, 40)}` : ''}
-                          {x.counts ? `（${(x.counts.top || 0) + (x.counts.featured || 0) + (x.counts.rest || 0)} 条）` : ''}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                )}
+
               </header>
               <ThemePanorama themes={report.themes} />
 
@@ -186,6 +196,7 @@ export default function MyBriefPage() {
           )}
 
           <div className="h-16" />
+          </div>
         </div>
       </main>
       {studyItem && <QuickStudyModal item={studyItem} onClose={() => setStudyItem(null)} />}

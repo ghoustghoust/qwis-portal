@@ -86,7 +86,7 @@ export default function DailyPage() {
       .get('/api/settings/daily')
       .then((d) => setDailySettings(d?.settings || d))
       .catch(() => setDailySettings(null));
-  }, [regenerate]);
+  }, [dateParam, regenerate]); // 用户 10-06：往期切换没反应——load 闭包不含 dateParam，改日期后 useEffect 不重跑
 
   useEffect(() => {
     load();
