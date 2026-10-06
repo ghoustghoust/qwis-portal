@@ -99,25 +99,6 @@ export default function DailyPage() {
     }).catch(() => {});
   }, []);
 
-  // 往期切换条（A）
-  const archiveBar = dailyArchive.length > 0 && (
-    <div className="mb-3 flex items-center gap-1.5 flex-wrap">
-      <span className="text-[11px] t-muted">往期：</span>
-      <button
-        className={`pill !text-[11px] cursor-pointer ${!dateParam ? 'on' : ''}`}
-        onClick={() => setDateParam(null)}
-      >最新</button>
-      {dailyArchive.slice(0, 14).map((d) => (
-        <button
-          key={d}
-          className={`pill !text-[11px] cursor-pointer ${dateParam === d ? 'on' : ''}`}
-          onClick={() => setDateParam(d)}
-        >{d.slice(5)}</button>
-      ))}
-      {dailyArchive.length > 14 && <span className="text-[11px] t-muted">…</span>}
-    </div>
-  );
-
   const windowHours = report?.window_hours ?? dailySettings?.windowHours ?? 48;
   const sections = report?.sections || [];
 
@@ -178,7 +159,33 @@ export default function DailyPage() {
     <div className="flex h-screen t-bg t-text overflow-hidden">
       <IconRail />
       <main className="flex-1 overflow-y-auto min-w-0">
-        <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex gap-6">
+          {/* 往期左侧索引（用户 10-06：和我的早报/周刊同款——顶部 pill 改左侧 sticky） */}
+          {dailyArchive.length > 0 && (
+            <aside className="hidden lg:block w-28 flex-none">
+              <div className="sticky top-8">
+                <div className="text-[11px] tracking-widest t-muted font-medium mb-2">往期早报</div>
+                <div className="space-y-1 max-h-[70vh] overflow-y-auto">
+                  <button
+                    className={`block w-full text-left pill !text-[11px] cursor-pointer ${!dateParam ? 'on' : ''}`}
+                    onClick={() => setDateParam(null)}
+                  >
+                    最新
+                  </button>
+                  {dailyArchive.slice(0, 30).map((d) => (
+                    <button
+                      key={d}
+                      className={`block w-full text-left pill !text-[11px] cursor-pointer ${dateParam === d ? 'on' : ''}`}
+                      onClick={() => setDateParam(d)}
+                    >
+                      {d.slice(5)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          )}
+          <div className="flex-1 min-w-0 max-w-[1080px]">
           {/* 生成提示条（F19） */}
           {notice && (
             <div
@@ -304,7 +311,6 @@ export default function DailyPage() {
           )}
 
           {/* 栏目区（F15，2026-09-05b 混合式） */}
-          {archiveBar}
       {report && (
             <div className="mt-6 sm:mt-8 flex flex-col gap-8 sm:gap-10">
               {sections.map((sec, i) => {
@@ -331,6 +337,7 @@ export default function DailyPage() {
           )}
 
           <div className="h-16" />
+          </div>
         </div>
       </main>
 
