@@ -628,7 +628,7 @@ async function runQuickScore() {
       const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
       const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
       if (r && Number.isFinite(r.totalScore)) {
-        await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, a.id]);
+        await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, r.summary || null, a.id]); // T5-13②：深析 summary 写回——此前只写分数理由，articles.summary 永远是采集器原始摘要
         scored++;
         log(`  ✓ [补分] #${a.id} ${Math.round(r.totalScore)}分 ${String(a.title).slice(0, 36)}`);
       }
@@ -1800,7 +1800,7 @@ async function runMyBrief(analyzed) {
     if (r) {
       minePool.push({ ...a, ...r });
       if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
-        try { await qRun('UPDATE articles SET score=?, reason=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, a.id]); } catch { /* 回写失败不阻断 */ }
+        try { await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, r.summary || null, a.id]); } catch { /* 回写失败不阻断 */ } // T5-13②：深析 summary 写回
       }
     }
   }
