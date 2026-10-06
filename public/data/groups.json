@@ -12,7 +12,7 @@
       "kind": "article",
       "name": "综合热搜",
       "sort": 2,
-      "source_count": 9
+      "source_count": 10
     },
     {
       "id": 3,
@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 17
+      "source_count": 9
     },
     {
       "id": 17,
@@ -117,7 +117,7 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 87
+      "source_count": 88
     },
     {
       "id": 19,
@@ -173,21 +173,21 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 9
+      "source_count": 11
     },
     {
       "id": 30,
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 72
+      "source_count": 71
     },
     {
       "id": 27,
       "kind": "video",
       "name": "编程技术",
       "sort": 27,
-      "source_count": 3
+      "source_count": 4
     },
     {
       "id": 32,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-10-05T07:21:53.416Z"
+  "generated_at": "2026-10-06T07:48:20.829Z"
 }
