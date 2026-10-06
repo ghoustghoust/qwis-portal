@@ -2273,6 +2273,21 @@ async function handleCleanupCandidates(req) {
 async function handleDashboard(req) {
   const dayStartIso = beijingDayStartIso(Date.now());
   const weekAgo = weekAgoIso(Date.now());
+  // Turso 平台用量（用户 10-06：仪表盘也要——与 handleDataStats 同一份调用，env TURSO_ORG+TURSO_API_TOKEN）
+  let tursoUsage = null;
+  if (process.env.TURSO_ORG && process.env.TURSO_API_TOKEN) {
+    try {
+      const r = await fetch(`https://api.turso.tech/v1/organizations/${process.env.TURSO_ORG}/usage`, {
+        headers: { Authorization: `Bearer ${process.env.TURSO_API_TOKEN}` },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (r.ok) {
+        const d = await r.json();
+        const u = d?.organization?.usage;
+        if (u) tursoUsage = { rowsRead: u.rows_read, rowsWritten: u.rows_written, storageBytes: u.storage_bytes, quota: { rowsRead: 500e6, rowsWritten: 10e6, storageBytes: 5 * 1024 ** 3 } };
+      }
+    } catch { /* 拉不到不阻断 */ }
+  }
   const notNoiseJoin = notNoiseJoinSql({ item: 'a' });
   const [total, enabled, errCnt, frozen, today, week, unread, hbRow, aiRaw, dailyRows, weeklyArc, mb, digest] = await Promise.all([
     qOne('SELECT COUNT(*) c FROM sources'),
@@ -2329,13 +2344,18 @@ async function handleDashboard(req) {
     sources: { total: total?.c || 0, enabled: enabled?.c || 0, errorActive: errCnt?.c || 0, frozen: frozen?.c || 0 },
     ingest: { todayNew: today?.c || 0, weekNew: week?.c || 0, unread3d: unread?.c || 0 },
     collect: { lastRunAt: hb.lastRunAt || null, mode: hb.mode || null, recent },
-    ai: { total24h: calls.length, failed24h: calls.filter((c) => !c.ok).length, kinds: aiKinds, statsCap: _ai.STATS_MAX },
+    ai: {
+      total24h: calls.length, failed24h: calls.filter((c) => !c.ok).length, kinds: aiKinds, statsCap: _ai.STATS_MAX,
+      model: (await getSetting('ai', {})).model || process.env.AGNES_MODEL || 'agnes-2.5-flash', // 用户 10-06：AI 用量要显示具体什么 AI
+      hourly: (() => { const b = {}; for (const c of calls) { const h = String(c.at || '').slice(11, 13); b[h] = (b[h] || 0) + 1; } return Object.entries(b).map(([h, n]) => ({ h: Number(h), n })).sort((x, y) => x.h - y.h); })(), // 24h 分时调用量（mini 趋势图）
+    },
     briefs: {
       daily,
       weekly: weeklyLast ? { issue: weeklyLast.issue, dateEnd: weeklyLast.dateEnd || null, count: weeklyLast.count || 0, degraded: !!(weeklyLast.report && weeklyLast.report.degraded) } : null,
       mybrief: mb ? { generatedAt: mb.generatedAt || null, empty: mb.empty || null } : null,
       digest: digest ? { date: digest.date, readCount: digest.readCount } : null,
     },
+    tursoUsage, // 用户 10-06：仪表盘展示 Turso 额度
   });
 }
 

@@ -77,8 +77,8 @@ export default function DashboardTab() {
 
   return (
     <div className="space-y-5">
-      {/* 第一行：四指标大卡（节点可跳转）——用户验收反馈"仪表盘只有一小块"：加大卡体量 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 第一行：五指标大卡（节点可跳转）——用户验收反馈"仪表盘只有一小块"：加大卡体量；10-06 加 Turso 额度卡 */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricCard
           label="抓取源" value={sources.enabled} to="library"
           sub={`总 ${sources.total}（含停用/退役） · 口径：启用且非噪声`}
@@ -94,6 +94,14 @@ export default function DashboardTab() {
           tone={sources.frozen > 0 ? 'text-[var(--red)]' : 'text-[var(--green)]'}
           sub="连续失败 ≥3 次被自动停用"
           tip={{ what: '被熔断机制自动停用的源数。', how: '「监控」看明细；逐个恢复走源库行内开关（批量恢复已按 H15 摘除）。', effect: '数字上涨通常是源失效或网络故障；自愈（批次尾部自动恢复）落地后此处会自动回落。' }}
+        />
+        <MetricCard
+          label="Turso Reads"
+          value={data.tursoUsage ? `${(data.tursoUsage.rowsRead / 1e6).toFixed(0)}M` : '—'}
+          to="data"
+          tone={data.tursoUsage && data.tursoUsage.rowsRead / data.tursoUsage.quota.rowsRead > 0.9 ? 'text-[var(--red)]' : ''}
+          sub={data.tursoUsage ? `Writes ${(data.tursoUsage.rowsWritten / 1e6).toFixed(1)}M · 存储 ${(data.tursoUsage.storageBytes / 1024 ** 2).toFixed(0)}MB` : '平台用量'}
+          tip={{ what: 'Turso 平台用量（Reads/Writes/Storage）。', how: '数据页看完整三条用量条与按表条目数。', effect: 'Reads 是最大头——超 90% 时考虑优化查询或升级。' }}
         />
         <MetricCard
           label="报错源" value={sources.errorActive} to="monitor"
@@ -129,15 +137,47 @@ export default function DashboardTab() {
             <span className="text-2xl font-bold tabular-nums t-text">{ai.total24h}</span>
             <span className="text-xs t-muted">次 / 24h</span>
             <span className={`text-xs ${ai.failed24h > 0 ? 'text-[var(--red)]' : 't-muted'}`}>失败 {ai.failed24h}</span>
+            <span className="flex-1" />
+            <span className="text-[10px] t-muted tabular-nums" title="当前模型">{ai.model || '—'}</span>
           </div>
-          <div className="mt-2 space-y-1">
+          {/* 24h 分时 mini 趋势（用户 10-06：AI 用量要动态直观） */}
+          {Array.isArray(ai.hourly) && ai.hourly.length > 1 && (
+            <svg viewBox="0 0 240 40" className="w-full mt-2" role="img" aria-label="AI 调用量 24h 分时">
+              {(() => {
+                const max = Math.max(...ai.hourly.map((b) => b.n), 1);
+                const pts = ai.hourly.map((b, i) => `${(i / (ai.hourly.length - 1)) * 240},${40 - (b.n / max) * 36}`).join(' ');
+                return (
+                  <>
+                    <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinejoin="round" />
+                    <polygon points={`${pts} 240,40 0,40`} fill="var(--accent)" opacity="0.1" />
+                  </>
+                );
+              })()}
+            </svg>
+          )}
+          <div className="mt-2 space-y-1.5">
             {ai.kinds.length === 0 && <div className="text-xs t-muted">近 24h 无调用</div>}
-            {ai.kinds.map((k) => (
-              <div key={k.kind} className="flex items-center gap-2 text-xs">
-                <span className="t-text flex-1">{KIND_LABEL[k.kind] || k.kind}</span>
-                <span className="tabular-nums t-muted">{k.calls} 次{k.failed ? ` · 失败 ${k.failed}` : ''}</span>
-              </div>
-            ))}
+            {ai.kinds.map((k) => {
+              const failRate = k.calls ? (k.failed / k.calls) * 100 : 0;
+              return (
+                <div key={k.kind}>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="t-text flex-1">{KIND_LABEL[k.kind] || k.kind}</span>
+                    <span className="tabular-nums t-muted">{k.calls} 次{k.failed ? ` · 失败 ${k.failed}` : ''}</span>
+                  </div>
+                  {/* 失败率进度条（用户 10-06：直观） */}
+                  {k.calls > 0 && (
+                    <div className="mt-0.5 h-1 rounded-full overflow-hidden" style={{ background: 'var(--surface-2, var(--border))' }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${100 - failRate}%`, background: failRate > 30 ? 'var(--red)' : failRate > 10 ? 'var(--yellow, #b45309)' : 'var(--green)' }}
+                        title={`成功率 ${(100 - failRate).toFixed(0)}%`}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

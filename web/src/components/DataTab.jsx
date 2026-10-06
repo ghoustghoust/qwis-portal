@@ -398,7 +398,7 @@ export default function DataTab() {
         <h3 className="text-sm font-semibold t-text">存储统计</h3>
         <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
           <span className="t-muted">
-            库体积：<b className="t-text tabular-nums">{dbSize ? fmtSize(dbSize) : (stats?.sizeNote || '—')}</b>
+            库体积：<b className="t-text tabular-nums">{dbSize ? fmtSize(dbSize) : (stats?.tursoUsage ? `见下方平台用量（${(stats.tursoUsage.storageBytes / 1024 ** 2).toFixed(0)}MB）` : (stats?.sizeNote || '—'))}</b>
           </span>
           <button className="btn-ghost !py-1 !px-2.5" disabled={!ready || !!busy} onClick={() => { loadStats(true); loadSnaps(true); }}>
             刷新
@@ -489,7 +489,7 @@ export default function DataTab() {
                               } catch (e) { toast('清空失败: ' + e.message); } finally { setBusy(''); }
                             }}
                           >
-                            {busy === 'table-' + k ? '清空中…' : '清空'}
+                            {busy === 'table-' + k ? '清空中…' : '清空此表'}
                           </button>
                         )}
                       </td>
