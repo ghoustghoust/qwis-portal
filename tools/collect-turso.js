@@ -72,6 +72,25 @@ if (process.env.HTTPS_PROXY) {
 
 // ─── 数据库 ───
 let _db = null;
+// 失败留痕（用户 10-06：待处理清单云端化第一步——失败留痕，非可操作队列）
+// runner 批次尾部把本轮失败源写进云端 collect_failures 表，监控页展示；可操作重试是第二阶段。
+let _schemaReady = false;
+async function ensureCollectFailuresSchema() {
+  if (_schemaReady) return;
+  await qRun(`CREATE TABLE IF NOT EXISTS collect_failures (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_id INTEGER,
+    source_name TEXT,
+    source_type TEXT,
+    err_msg TEXT,
+    suppressed INTEGER DEFAULT 0,
+    batch_at TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`);
+  await qRun('CREATE INDEX IF NOT EXISTS idx_cf_batch ON collect_failures(batch_at DESC)');
+  _schemaReady = true;
+}
+
 function getDb() {
   if (!_db) {
     const url = process.env.TURSO_DATABASE_URL;
@@ -587,6 +606,18 @@ async function runCollect() {
   await runHotEventsCache(); // 热搜事件预聚合（云端读层主路径；失败不阻断采集退出码）
   await runQuickScore(); // 精选即时补分（六维评分原来只有早晚报批次才跑，白天精选无今日内容——用户 2026-09-14 验收发现）
   await writeHeartbeat('collect', stats);
+  // 失败留痕（云端表，监控页展示用——与 writeHeartbeat 的 slim failures 同批）
+  try {
+    await ensureCollectFailuresSchema();
+    const failures = (stats.failures || []).slice(-50); // 单批上限 50 条（防一次代理故障灌爆）
+    for (const f of failures) {
+      await qRun(
+        'INSERT INTO collect_failures(source_id, source_name, source_type, err_msg, suppressed, batch_at, created_at) VALUES(?,?,?,?,?,?,?)',
+        [f.source?.id || null, f.source?.name || '', f.source?.type || '', String(f.errMsg || '').slice(0, 300), f.suppressed ? 1 : 0, nowIso(), nowIso()]
+      );
+    }
+    if (failures.length) log(`失败留痕: ${failures.length} 条写入 collect_failures`);
+  } catch (e) { log(`失败留痕写入失败（不阻断）: ${e.message}`); }
   await postRunAlerts(stats); // 15-cloud-alerts：批次尾部报警（失败隔离，绝不影响退出码）
   return stats;
 }

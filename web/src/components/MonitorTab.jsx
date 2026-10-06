@@ -16,22 +16,25 @@ export default function MonitorTab() {
   const [queueStats, setQueueStats] = useState(null);
   const [sourceStats, setSourceStats] = useState(null);
   const [collectHistory, setCollectHistory] = useState(null);
+  const [collectFailures, setCollectFailures] = useState(null); // 失败留痕（collect_failures 表）
   const [loading, setLoading] = useState(true);
 
   // force=true 绕 90s 缓存强拉（手动刷新按钮与 60s 自动轮询用；挂载首渲染吃缓存瞬时呈现）
   const load = useCallback(async (force) => {
     setLoading(true);
     try {
-      const [h, ss, ch] = await Promise.all([
+      const [h, ss, ch, cf] = await Promise.all([
         api.get('/api/health/status', force).catch(() => null),
         // /api/queue/stats 云端路由已摘（10-06 pending_items 收摊）——本地端仍有，云端不再拉
         api.get('/api/health/source-stats?days=7', force).catch(() => null),
         api.get('/api/health/collect-history', force).catch(() => null),
+        api.get('/api/health/collect-failures?days=7', force).catch(() => null), // 失败留痕（10-06 云端化第一步）
       ]);
       setHealth(h);
       setQueueStats(null); // 云端无此端点（10-06 摘）——卡片显示"云端无此数据"
       setSourceStats(ss);
       setCollectHistory(ch);
+      setCollectFailures(cf);
     } catch (e) {
       toast('加载监控数据失败: ' + e.message);
     } finally {
@@ -82,6 +85,35 @@ export default function MonitorTab() {
               <div className="text-xs t-muted">熔断冻结（失败≥3 且停用；合并退役亦计入，与解冻清单同口径）</div>
             </div>
           </div>
+        ) : (
+          <div className="mt-3 text-xs t-muted">加载中…</div>
+        )}
+      </section>
+
+      {/* 失败留痕（用户 10-06：待处理清单云端化第一步——runner 批次尾部写 collect_failures 表） */}
+      <section className="card p-5">
+        <h3 className="text-sm font-semibold t-text">采集失败留痕<span className="ml-2 text-[11px] t-muted font-normal">（近 7 天，runner 批次尾部写入）</span></h3>
+        <div className="mt-1 text-xs t-muted">本轮采集失败的源逐条留痕，按批次分组；可操作重试是第二阶段。</div>
+        {collectFailures && (collectFailures.batches || []).length > 0 ? (
+          <div className="mt-3 space-y-3 max-h-96 overflow-y-auto">
+            {(collectFailures.batches || []).slice(0, 10).map((b) => (
+              <div key={b.at} className="card t-surface2 p-3">
+                <div className="text-[11px] t-muted tabular-nums mb-2">{new Date(b.at).toLocaleString('zh-CN', { hour12: false })} · {b.items.length} 个源失败</div>
+                <div className="space-y-1.5">
+                  {b.items.slice(0, 8).map((it) => (
+                    <div key={it.id} className="flex items-start gap-2 text-[12px]">
+                      <span className={`flex-none badge-${it.suppressed ? 'gray' : 'red'} !text-[10px]`}>{it.suppressed ? '系统性' : '失败'}</span>
+                      <span className="flex-1 min-w-0 t-text truncate" title={it.err}>{it.name || `#${it.sourceId}`}</span>
+                      <span className="flex-none text-[10px] t-muted max-w-[40%] truncate" title={it.err}>{String(it.err || '').slice(0, 60)}</span>
+                    </div>
+                  ))}
+                  {b.items.length > 8 && <div className="text-[10px] t-muted">另有 {b.items.length - 8} 条</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : collectFailures ? (
+          <div className="mt-3 text-xs t-muted">近 7 天无失败留痕（或 runner 还没跑过带留痕的批次）</div>
         ) : (
           <div className="mt-3 text-xs t-muted">加载中…</div>
         )}

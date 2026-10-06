@@ -2339,6 +2339,30 @@ async function handleDashboard(req) {
   });
 }
 
+// GET /api/health/collect-failures — 失败留痕（用户 10-06：待处理清单云端化第一步）
+// runner 批次尾部写入 collect_failures 表；读层按批次分组展示最近 7 天。
+async function handleCollectFailures(req) {
+  const days = Math.min(Number(req.query.days) || 7, 30);
+  const since = new Date(Date.now() - days * 86400e3).toISOString();
+  try {
+    const rows = await qAll(
+      `SELECT id, source_id, source_name, source_type, err_msg, suppressed, batch_at
+       FROM collect_failures WHERE batch_at >= ? ORDER BY batch_at DESC, id DESC LIMIT 200`, [since]
+    );
+    const batches = {};
+    for (const r of rows) {
+      const key = String(r.batch_at || '').slice(0, 16);
+      if (!batches[key]) batches[key] = { at: r.batch_at, items: [] };
+      batches[key].items.push({ id: r.id, sourceId: r.source_id, name: r.source_name, type: r.source_type, err: r.err_msg, suppressed: !!r.suppressed });
+    }
+    const list = Object.values(batches).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    return jsonOk({ batches: list, total: rows.length, days });
+  } catch (err) {
+    if (/no such table/i.test(String(err.message || ''))) return jsonOk({ batches: [], total: 0, days, note: 'collect_failures 表尚未创建（runner 还没跑过带留痕的批次）' });
+    return { status: 500, body: jsonErr(String(err.message || err)) };
+  }
+}
+
 // GET /api/health/collect-history — 采集心跳历史（T3-2 监控折线图数据源）
 // H57 裁剪（10-05）：折线图用末 72 条、日志板块用末 1 条——全量 168 条（含每条 failures
 // 数组）零消费。默认回末 120 条并投影掉 stats.failures；?limit= 可要更多（原始值仍在 settings）。
@@ -3530,6 +3554,7 @@ async function dispatch(req) {
   if (path === '/api/sources/cleanup-candidates' && method === 'GET') return handleCleanupCandidates(req);
   if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
   if (path === '/api/health/collect-history') return handleCollectHistory(req);
+  if (path === '/api/health/collect-failures') return handleCollectFailures(req);
     if (path === '/api/brief/history') return handleBriefHistory(req);
     if (path === '/api/backup/latest') return handleBackupLatest(req);
     if (path === '/api/data/list') return handleDataList(req);
