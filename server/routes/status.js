@@ -2,7 +2,7 @@
 const express = require('express');
 const { db, getSetting } = require('../db');
 // B90：「今日/近 7 天」的唯一口径（北京日界，不随容器时区漂）
-const { beijingDayStartIso, weekAgoIso } = require('../../lib/time-window');
+const { beijingDayStartIso, weekAgoIso, beijingDateStr } = require('../../lib/time-window');
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ const NOISE = isNoiseSql('s');
 // （本地此前只算最新 1 期 daily_reports，标签写着近 7 天、数字却是单期——同一句话两端不同值）。
 function computeDailySources() {
   const out = { dailyItemCount: 0, dailyTopSources: [], dailyTodayCount: 0 }; // T3-4：补"当日"口径（与云端同名端点同形状）
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = beijingDateStr(); // 北京日历日走 lib/time-window 唯一实现（B4 同族）
   try {
     const since = new Date(Date.now() - 7 * 86400e3).toISOString();
     const rows = db.prepare('SELECT generated_at, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7').all(since);

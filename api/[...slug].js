@@ -1052,7 +1052,7 @@ const DAILY_SOURCES_TTL = 60000;
 async function handleStatusDailySources() {
   if (_dailySourcesCache.val && Date.now() - _dailySourcesCache.ts < DAILY_SOURCES_TTL) return _dailySourcesCache.val;
   const overview = { dailyItemCount: 0, dailyTopSources: [], dailyTodayCount: 0 }; // T3-4：补"当日"口径（原 dailyItemCount 是近7天累计）
-  const todayStr = new Date().toISOString().slice(0, 10); // 北京时间日历日（generated_at 是 ISO 串，substr 即可）
+  const todayStr = beijingDateStr(); // 北京日历日走 lib/time-window 唯一实现（B4：不许第二份 +8h 换算）
   try {
     const since = new Date(Date.now() - 7 * 86400e3).toISOString();
     const reports = await qAll('SELECT generated_at, sections FROM daily_reports WHERE generated_at >= ? ORDER BY id DESC LIMIT 7', [since]);
