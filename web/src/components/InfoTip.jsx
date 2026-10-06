@@ -12,8 +12,14 @@ export default function InfoTip({ what, how, effect }) {
     return () => document.removeEventListener('mousedown', onDoc);
   }, [open]);
   if (!what && !how && !effect) return null;
+  // 用户 10-06 反馈：tips 应该悬浮即见，不该要点一下——hover 开 + 保留点击（触屏无 hover）
   return (
-    <span className="relative inline-flex items-center" ref={ref}>
+    <span
+      className="relative inline-flex items-center"
+      ref={ref}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
       <button
         type="button"
         onClick={() => setOpen(!open)}

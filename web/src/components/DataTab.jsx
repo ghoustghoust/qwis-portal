@@ -433,12 +433,37 @@ export default function DataTab() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(tables).map(([k, v]) => (
-                  <tr key={k} className="border-t t-border">
-                    <td className="px-4 py-2 t-text">{TABLE_LABELS[k] || k}</td>
-                    <td className="px-4 py-2 t-muted tabular-nums">{Number(v).toLocaleString()}</td>
-                  </tr>
-                ))}
+                {Object.entries(tables).map(([k, v]) => {
+                  const CLEANABLE = new Set(['articles', 'videos', 'pending_items', 'daily_reports', 'audit_log']);
+                  return (
+                    <tr key={k} className="border-t t-border">
+                      <td className="px-4 py-2 t-text">{TABLE_LABELS[k] || k}</td>
+                      <td className="px-4 py-2 t-muted tabular-nums">
+                        {Number(v).toLocaleString()}
+                        {CLEANABLE.has(k) && v > 0 && (
+                          <button
+                            className="ml-2 text-[10px] hover:underline"
+                            style={{ color: 'var(--red)' }}
+                            title={`清空「${TABLE_LABELS[k] || k}」全部 ${v} 条（不可恢复，二次确认）`}
+                            disabled={!!busy}
+                            onClick={async () => {
+                              if (!window.confirm(`⚠️ 危险：清空「${TABLE_LABELS[k] || k}」全部 ${Number(v).toLocaleString()} 条？此操作不可恢复！`)) return;
+                              if (!window.confirm(`再次确认：真的要清空「${TABLE_LABELS[k] || k}」吗？`)) return;
+                              setBusy('table-' + k);
+                              try {
+                                const r = await api.post('/api/data/table-cleanup', { table: k, confirm: true });
+                                toast(`已清空 ${TABLE_LABELS[k] || k}：删除 ${r.deleted} 条`);
+                                loadStats(true);
+                              } catch (e) { toast('清空失败: ' + e.message); } finally { setBusy(''); }
+                            }}
+                          >
+                            {busy === 'table-' + k ? '清空中…' : '清空'}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

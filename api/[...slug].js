@@ -940,10 +940,10 @@ async function handleSources(req) {
   if (req.query.enabled !== undefined) { conds.push('enabled=?'); args.push(Number(req.query.enabled)); }
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const rows = await qAll(
-    `SELECT id, type, name, url, avatar, uid, group_id, spotlight, muted, reader_visible, enabled, status,
-     last_fetched_at, next_fetch_at, fail_count, created_at
-     FROM sources ${where} ORDER BY enabled DESC, name`, args
-  );
+    `SELECT s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.spotlight, s.muted, s.reader_visible, s.enabled, s.status,
+     s.last_fetched_at, s.next_fetch_at, s.fail_count, s.created_at, s.intro, g.name AS group_name
+     FROM sources s LEFT JOIN groups g ON g.id=s.group_id ${where} ORDER BY s.enabled DESC, s.name`, args
+  ); // 用户 10-06：选择来源弹窗要显示分组名与介绍
   // 未读=近 3 天（27-reader-today：历史未读自动归档，焦虑数字消失）；视频源保持总条数
   const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
   const unreadRows = await qAll(
@@ -2633,6 +2633,30 @@ async function handleDataCleanupPreview(req) {
   }
 }
 
+// POST /api/data/table-cleanup {table, confirm:true}——按表清空（危险操作，白名单非核心表）
+// 用户 10-06：数据页要"可管控删除"——按表清，不是按天数清。核心表（sources/groups/settings/credentials）不开放。
+const TABLE_CLEANUP_ALLOW = new Set(['articles', 'videos', 'pending_items', 'daily_reports', 'audit_log']);
+async function handleDataTableCleanup(req) {
+  const body = req.body || {};
+  if (body.confirm !== true) return { status: 400, body: jsonErr('需 confirm:true 确认执行') };
+  const table = String(body.table || '');
+  if (!TABLE_CLEANUP_ALLOW.has(table)) {
+    return { status: 400, body: jsonErr(`不允许清空该表（白名单：${[...TABLE_CLEANUP_ALLOW].join('/')}）`) };
+  }
+  const gate = credentialGate(await getSetting(CREDENTIAL_KEY, null), { maxAgeHours: GATE_MAX_AGE_H });
+  if (!gate.allowed) {
+    await auditRecord('data.table-cleanup.blocked', { detail: { table, reason: gate.reason } });
+    return { status: 409, body: jsonErr(`删除闸挡下：${gate.reason}`) };
+  }
+  try {
+    const n = (await qRun(`DELETE FROM ${table}`)).changes;
+    await auditRecord('data.table-cleanup', { detail: { table, deleted: n } });
+    return jsonOk({ table, deleted: n });
+  } catch (err) {
+    return { status: 500, body: jsonErr(String(err.message || err)) };
+  }
+}
+
 // POST /api/data/cleanup {days, confirm:true}
 async function handleDataCleanup(req) {
   const body = req.body || {};
@@ -3437,6 +3461,7 @@ async function dispatch(req) {
   if (path === '/api/backup/restore' && method === 'POST') return handleBackupRestore(req);
   if (path === '/api/data/cleanup/preview' && method === 'POST') return handleDataCleanupPreview(req);
   if (path === '/api/data/cleanup' && method === 'POST') return handleDataCleanup(req);
+  if (path === '/api/data/table-cleanup' && method === 'POST') return handleDataTableCleanup(req);
   if ((path === '/api/data/snapshot' || path === '/api/data/restore' || path === '/api/data/upload') && method === 'POST') return handleDataUnsupported(req);
   if (path === '/api/audit' && method === 'DELETE') return handleAuditCleanup(req);
   // 设置写（13-settings-write）

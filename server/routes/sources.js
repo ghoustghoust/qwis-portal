@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
   if (req.query.type) { conds.push('type=?'); args.push(req.query.type); }
   if (req.query.enabled !== undefined) { conds.push('enabled=?'); args.push(Number(req.query.enabled)); }
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
-  const rows = db.prepare(`SELECT * FROM sources ${where} ORDER BY id`).all(...args);
+  const rows = db.prepare(`SELECT s.*, g.name AS group_name FROM sources s LEFT JOIN groups g ON g.id=s.group_id ${where} ORDER BY s.id`).all(...args); // 用户 10-06：选择来源弹窗要显示分组名
   // 1.1 性能优化：批量聚合未读计数，消除 N+1 查询（原逐源查询在源数量增长后线性退化）
   // 27-reader-today（2026-09-15）：未读口径收敛为「近 3 天」——历史未读自动视为归档（L4），
   // 不再制造「未读 25096」式焦虑数字；数据本身不变，仅计数口径。

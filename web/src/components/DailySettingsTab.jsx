@@ -222,7 +222,7 @@ export default function DailySettingsTab() {
             />
           </div>
           <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
-            选择来源（已选 {form.articleSourceIds.length}/{articleSources.length}）
+            选择来源（已选 {form.articleSourceIds.length || focusA.length}/{articleSources.length}）
           </button>
         </div>
         <div className="text-[11px] t-muted mb-3">
@@ -242,7 +242,7 @@ export default function DailySettingsTab() {
             />
           </div>
           <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
-            选择来源（已选 {form.videoSourceIds.length}/{videoSources.length}）
+            选择来源（已选 {form.videoSourceIds.length || focusV.length}/{videoSources.length}）
           </button>
         </div>
       </section>
@@ -321,7 +321,7 @@ export default function DailySettingsTab() {
         open={picker === 'article'}
         title="选择公众号文章来源"
         sources={articleSources}
-        selectedIds={form.articleSourceIds}
+        selectedIds={form.articleSourceIds.length ? form.articleSourceIds : focusA} // 空数组=靠 spotlight 兜底，弹窗显示 spotlight 为已选
         spotlightIds={focusA}
         onClose={() => setPicker(null)}
         onConfirm={(ids, spots) => { patch({ articleSourceIds: ids }); setFocusA(spots); setPicker(null); }}
@@ -330,7 +330,7 @@ export default function DailySettingsTab() {
         open={picker === 'video'}
         title="选择视频订阅来源"
         sources={videoSources}
-        selectedIds={form.videoSourceIds}
+        selectedIds={form.videoSourceIds.length ? form.videoSourceIds : focusV} // 空数组=靠 spotlight 兜底
         spotlightIds={focusV}
         onClose={() => setPicker(null)}
         onConfirm={(ids, spots) => { patch({ videoSourceIds: ids }); setFocusV(spots); setPicker(null); }}

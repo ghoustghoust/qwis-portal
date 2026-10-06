@@ -515,7 +515,14 @@ export default function SourceLibraryTab({ initialView = 'search' }) {
           </button>
         ))}
         <span className="flex-1" />
-        <span className="text-xs t-muted">{items.length} 源 · {groups.length} 组</span>
+        <span className="text-xs t-muted">
+          {items.length} 源 · {groups.length} 组
+          {(() => {
+            const breakerN = items.filter((x) => !x.enabled && (x.fail_count || 0) >= 3).length;
+            const errorN = items.filter((x) => x.enabled && (x.status === 'error' || (x.fail_count || 0) > 0)).length;
+            return breakerN + errorN > 0 ? ` · ${errorN} 异常 / ${breakerN} 异常暂停` : '';
+          })()}
+        </span>
       </div>
       {/* 指引行（10-05 反馈：指引不清晰——每个视图一句话说清它是干嘛的） */}
       <div className="text-[11px] t-muted mb-4">{VIEW_HINT[view]}</div>
@@ -817,6 +824,23 @@ ${s.url}`}>{s.name || s.url}</div>
           <span className="text-sm font-medium t-text">已选 {selected.size} 项</span>
           <span className="flex-1" />
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('enable')}>启用</button>
+          <button
+            className="btn-ghost text-xs"
+            disabled={batchBusy}
+            title="一键恢复所有异常暂停的源（连续失败被自动停用的那些）——不用逐个勾选"
+            onClick={async () => {
+              const breakerIds = items.filter((x) => !x.enabled && (x.fail_count || 0) >= 3).map((x) => x.id);
+              if (!breakerIds.length) { toast('当前没有异常暂停的源'); return; }
+              if (!window.confirm(`一键恢复全部 ${breakerIds.length} 个异常暂停源？（重新启用并清失败计数）`)) return;
+              setBatchBusy(true);
+              try {
+                const res = await api.post('/api/sources/batch', { ids: breakerIds, action: 'enable' });
+                toast(`已恢复 ${res.succeeded} 个异常暂停源${res.failed ? `，失败 ${res.failed}` : ''}`);
+                setSelected(new Set());
+                await load();
+              } catch (e) { toast('恢复失败: ' + e.message); } finally { setBatchBusy(false); }
+            }}
+          >恢复异常暂停</button>
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('disable')}>停用</button>
           <button className="btn-ghost text-xs" disabled={batchBusy} title="从热点榜/阅读器隐藏（数据保留）" onClick={() => doBatch('mute')}>屏蔽</button>
           <button className="btn-ghost text-xs" disabled={batchBusy} onClick={() => doBatch('unmute')}>恢复显示</button>

@@ -98,6 +98,12 @@ export default function SourcePickerModal({ open, title, note, sources = [], sel
                       {s.last_fetched_at && ` · ${relativeTime(s.last_fetched_at)}`}
                       <span className={`ml-1.5 ${stCls}`}>{st}</span>
                     </span>
+                    {/* 用户 10-06 反馈：选择来源要有介绍——源 intro 或分组信息 */}
+                    {(s.intro || s.group_name) && (
+                      <span className="block text-[10px] t-muted truncate mt-0.5" title={s.intro || s.group_name}>
+                        {s.group_name ? `📁 ${s.group_name}` : ''}{s.group_name && s.intro ? ' · ' : ''}{s.intro ? String(s.intro).slice(0, 50) : ''}
+                      </span>
+                    )}
                   </span>
                 </label>
                 {s.enabled === 0 && <span className="badge-gray flex-none">已停用</span>}
