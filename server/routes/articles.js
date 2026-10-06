@@ -6,7 +6,13 @@ const { nowIso } = require('../util/time');
 const { beijingDayRangeIso } = require('../../lib/time-window');
 
 const router = express.Router();
-const PAGE_SIZE = 30;
+const DEFAULT_PAGE_SIZE = 30;
+// H31：每页条数可传（钳位 1-100，非法回默认），响应回显生效值——此前静默写死 30，传什么都一样，
+// 取证脚本以为在取小样本实际每次拉满。云端 api/[...slug].js handleArticles 同款，改钳位规则必须两端同步。
+function clampPageSize(raw) {
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 1 ? Math.min(100, Math.floor(n)) : DEFAULT_PAGE_SIZE;
+}
 
 const LIST_FIELDS = `a.id, a.source_id, a.title, a.url, a.author, a.cover, a.summary,
   a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
@@ -86,6 +92,7 @@ router.get('/', (req, res) => {
   const { where, args } = buildWhere(req.query);
   const sortMode = req.query.sort; // new|old|smart
   const dir = sortMode === 'old' ? 'ASC' : 'DESC';
+  const PAGE_SIZE = clampPageSize(req.query.pageSize); // H31：handler 内生效值（遮蔽模块默认）
   // 十一期：smart 排序——重点(spotlight)源获 3 天（259200s）时间加成（27b：focus 已退役改 spotlight）
   const keyExpr = sortMode === 'smart'
     ? '(unixepoch(COALESCE(a.published_at,a.created_at)) + COALESCE(s.spotlight,0)*259200)'
@@ -130,7 +137,7 @@ router.get('/', (req, res) => {
       SELECT MIN(${keyExpr}) AS min, MAX(${keyExpr}) AS max
       FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where}
     `).get(...args);
-    return res.json({ ok: true, items: page, nextCursor, span, deduped: true, totalClusters: clusters.length, counts: articleCounts() });
+    return res.json({ ok: true, items: page, nextCursor, pageSize: PAGE_SIZE, span, deduped: true, totalClusters: clusters.length, counts: articleCounts() });
   }
 
   // ---- 十一期：lang 超采样模式 ----
@@ -178,7 +185,7 @@ router.get('/', (req, res) => {
       FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where}
     `).get(...args);
     return res.json({
-      ok: true, items, nextCursor: hasMore && last ? `${last.sort_key}|${last.id}` : null, span, counts: articleCounts(),
+      ok: true, items, nextCursor: hasMore && last ? `${last.sort_key}|${last.id}` : null, pageSize: PAGE_SIZE, span, counts: articleCounts(),
     });
   }
 
@@ -211,7 +218,7 @@ router.get('/', (req, res) => {
     SELECT MIN(${keyExpr}) AS min, MAX(${keyExpr}) AS max
     FROM articles a LEFT JOIN sources s ON s.id=a.source_id ${where}
   `).get(...args);
-  res.json({ ok: true, items, nextCursor: hasMore && last ? `${last.sort_key}|${last.id}` : null, span, counts: articleCounts() });
+  res.json({ ok: true, items, nextCursor: hasMore && last ? `${last.sort_key}|${last.id}` : null, pageSize: PAGE_SIZE, span, counts: articleCounts() });
 });
 
 // POST /api/articles/read-all —— 按当前过滤条件全部标为已读（须先注册于 /:id 之前）

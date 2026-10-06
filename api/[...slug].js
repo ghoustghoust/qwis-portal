@@ -124,7 +124,9 @@ function requireAuth(req) {
 // GET /api/articles
 async function handleArticles(req) {
   const q = req.query;
-  const PAGE_SIZE = 30;
+  // H31：每页条数可传（钳位 1-100，非法回默认 30），响应回显生效值——此前静默写死 30，
+  // 传什么都一样，取证脚本以为在取小样本实际每次拉满（本地 server/routes/articles.js 同款）
+  const PAGE_SIZE = (() => { const n = Number(q.pageSize); return Number.isFinite(n) && n >= 1 ? Math.min(100, Math.floor(n)) : 30; })();
   const tab = q.tab || 'all';
   const sort = q.sort || 'new';
   const dir = sort === 'old' ? 'ASC' : 'DESC';
@@ -209,7 +211,7 @@ async function handleArticles(req) {
   const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
   const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
 
-  return jsonOk({ items: rows, nextCursor, counts: { today: todayCount, later: laterCount, history: historyCount } });
+  return jsonOk({ items: rows, nextCursor, pageSize: PAGE_SIZE, counts: { today: todayCount, later: laterCount, history: historyCount } });
 }
 
 // GET /api/articles/since?ts=<ISO> — 增量计数（无感刷新轮询专用，返回极小）
@@ -624,7 +626,7 @@ async function handleHotEvents(req) {
   // 列表瘦身（2026-09-14：全量 items 曾使列表响应 246KB、页面长时间「加载中」）——
   // 列表只带报道摘要 digest + 信源/趋势，明细留给 /api/hot/events/:rank
   const list = result.map(({ items, ...e }) => ({ ...e, digest: (items?.[0]?.summary || '').slice(0, 200) }));
-  return jsonOk({ events: list, domains, stale: _eventsCache.stale || false });
+  return jsonOk({ events: list, domains, stale: _eventsCache.stale || false, cachedAt: _eventsCache.at || null });
 }
 
 // GET /api/hot/events/:rank — 事件详情

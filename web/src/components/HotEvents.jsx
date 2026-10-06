@@ -182,6 +182,7 @@ export default function HotEvents() {
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [detail, setDetail] = useState(null); // 展开的事件详情
+  const [freshness, setFreshness] = useState(null); // H49②：{stale, cachedAt}——stale 这端点早就在回，页面此前不消费
 
   // 切领域重新请求
   useEffect(() => {
@@ -194,6 +195,7 @@ export default function HotEvents() {
         if (cancelled) return;
         setEvents(Array.isArray(d?.events) ? d.events : []);
         if (Array.isArray(d?.domains)) setDomains(d.domains);
+        setFreshness({ stale: !!d?.stale, cachedAt: d?.cachedAt || null });
         setFailed(false);
       })
       .catch(() => {
@@ -234,10 +236,21 @@ export default function HotEvents() {
           </button>
         ))}
       </div>
-      {/* 更新机制说明（2026-09-14 用户问）：聚合节奏 / 下榜规则 / 趋势口径 */}
+      {/* 更新机制说明（2026-09-14 用户问）：聚合节奏 / 窗口 / 趋势口径。H49③：原句"每 10 分钟聚合/窗口近 7 天/满 7 天下榜"与实现不符——
+          实际是 runner 每 15 分钟预聚合（api handleHotEvents 注释）、采样窗口 72h（lib/hot-events.js EVENTS_WINDOW_H）、热度按 24h 半衰衰减自然沉底，无硬下榜 */}
       <div className="mt-2 text-[11px] t-muted">
-        每 10 分钟聚合一次（采集每 15 分钟入库） · 事件窗口近 7 天，无新报道满 7 天自动下榜 · 趋势图=事件生命周期内 24 时段的报道密度
+        runner 每 15 分钟预聚合一次 · 事件窗口近 3 天（72 小时采样，热度按 24h 半衰衰减） · 趋势图=事件生命周期内 24 时段的报道密度
       </div>
+      {/* H49②：数据新鲜度标注——正常时灰色显示聚合时刻，超 45 分钟未刷新（stale）红字警示 */}
+      {freshness && freshness.cachedAt ? (
+        freshness.stale ? (
+          <div className="mt-1 text-[11px]" style={{ color: 'var(--red)' }}>
+            ⚠ 以下为 {relativeTime(freshness.cachedAt)} 的聚合结果（超 45 分钟未刷新，runner 聚合可能异常）
+          </div>
+        ) : (
+          <div className="mt-1 text-[11px] t-muted">聚合于 {relativeTime(freshness.cachedAt)}</div>
+        )
+      ) : null}
 
       {/* 事件列表（2026-09-14 对齐样图：左排名号 / 中标题+摘要+信源 / 右大热度+趋势折线） */}
       <div className="mt-4 space-y-3">

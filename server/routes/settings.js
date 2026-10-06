@@ -68,7 +68,7 @@ router.put('/', (req, res) => {
   const body = req.body || {};
   // H41①：未知区/闭集区未知键 → 400 点名，不许静默假保存；保留键任何端不收（判定唯一在 lib/settings-schema）
   const schema = require('../../lib/settings-schema');
-  const reg = schema.checkWritableKeys(body, { allowSections: ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'views', 'bilibili', 'ai'] });
+  const reg = schema.checkWritableKeys(body, { allowSections: ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'prescreen', 'views', 'bilibili', 'ai'] });
   if (!reg.ok) return res.status(400).json({ ok: false, error: reg.error });
   const blocked = schema.findBlocklistedKeys(body);
   if (blocked.length) return res.status(400).json({ ok: false, error: `含系统保留键 ${blocked.join(', ')}，禁止写入` });
@@ -90,6 +90,7 @@ router.put('/', (req, res) => {
   if (body.queue) mergeSetting('queue', body.queue, ['token']);
   if (dailyPatch) mergeSetting('daily', dailyPatch);
   if (body.hot) mergeSetting('hot', body.hot); // F8：热榜启用开关
+  if (body.prescreen) mergeSetting('prescreen', body.prescreen); // H56：每源预配额，与云端写分支对齐（消费方 lib/prescreen，闭集仅 perSourceCap）
   if (body.data) {
     // 3.4 校验保留天数范围（1-90 天）
     if (body.data.retentionDays !== undefined) {
