@@ -57,13 +57,13 @@ export default function WechatTab() {
     }
   }, []);
 
-  // F24：待提交公众号信息（云端队列拉取后保存在本地，仅手动复制）
+  // F24：待提交公众号信息（pending_items 云端只读路由已摘 10-06——云端无此数据，本地端保留）
   const loadPending = useCallback(async () => {
     try {
       const data = await api.get('/api/queue/pending?type=wechat');
       setPending(data?.items || []);
     } catch (e) {
-      setPending([]);
+      setPending([]); // 云端 404 时空态（本地端正常）
     }
   }, []);
 

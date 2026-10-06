@@ -22,14 +22,14 @@ export default function MonitorTab() {
   const load = useCallback(async (force) => {
     setLoading(true);
     try {
-      const [h, qs, ss, ch] = await Promise.all([
+      const [h, ss, ch] = await Promise.all([
         api.get('/api/health/status', force).catch(() => null),
-        api.get('/api/queue/stats', force).catch(() => null),
+        // /api/queue/stats 云端路由已摘（10-06 pending_items 收摊）——本地端仍有，云端不再拉
         api.get('/api/health/source-stats?days=7', force).catch(() => null),
         api.get('/api/health/collect-history', force).catch(() => null),
       ]);
       setHealth(h);
-      setQueueStats(qs);
+      setQueueStats(null); // 云端无此端点（10-06 摘）——卡片显示"云端无此数据"
       setSourceStats(ss);
       setCollectHistory(ch);
     } catch (e) {
@@ -87,10 +87,10 @@ export default function MonitorTab() {
         )}
       </section>
 
-      {/* 待处理清单（T3-8 批次3：running/completed/dead 是本地调度器概念，云端恒零占位——摘除，只留真值两格） */}
+      {/* 待处理清单（pending_items 云端只读路由已摘 10-06——云端无此数据，本地端保留 queue 路由） */}
       <section className="card p-5">
-        <h3 className="text-sm font-semibold t-text">待处理清单</h3>
-        <div className="mt-1 text-xs t-muted">任务队列是本地调度器的概念，云端没有这张表——这里只显示真实的待处理条目（媒体队列等），其余三格恒零已摘除。</div>
+        <h3 className="text-sm font-semibold t-text">待处理清单<span className="ml-2 text-[11px] t-muted font-normal">（云端无此数据，本地端专属）</span></h3>
+        <div className="mt-1 text-xs t-muted">任务队列是本地调度器的概念，云端没有这张表——本地端显示真实待处理条目，云端此区为空。</div>
         {queueStats ? (
           <div className="mt-3 grid grid-cols-2 gap-3 text-[13px]">
             {[

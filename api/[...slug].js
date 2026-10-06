@@ -2433,38 +2433,7 @@ async function handleUnfreezeOne(req, id) {
 // ─── 队列 ───
 // H40 收摊（10-04 终裁①）：POST /api/queue/sync 与 QUEUE_DEFS 已摘——手机→PHP 云端队列
 // 是未采用的半成品（H40），云端只剩下面三个只读路由供存量数据展示；本地 queue 路由保留（本地调度器链路是活的）。
-// GET /api/queue/pending?type=
-async function handleQueuePending(req) {
-  const conds = [];
-  const args = [];
-  if (req.query.type) { conds.push('type=?'); args.push(String(req.query.type)); }
-  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
-  const items = await qAll(`SELECT * FROM pending_items ${where} ORDER BY id DESC`, args);
-  return jsonOk({ items });
-}
-
-// GET /api/queue/stats — 云端概览（job_queue 为本地调度器概念，云端返回 pending_items 统计 + 零值占位）
-async function handleQueueStats(req) {
-  const byType = await qAll(
-    `SELECT type, COUNT(*) total,
-       SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) pending,
-       SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) failed,
-       SUM(CASE WHEN status='resolved' THEN 1 ELSE 0 END) resolved
-     FROM pending_items GROUP BY type`
-  );
-  const totalPending = byType.reduce((n, r) => n + (r.pending || 0), 0);
-  return jsonOk({
-    overall: { pending: totalPending, running: 0, completed: 0, failed: byType.reduce((n, r) => n + (r.failed || 0), 0), dead: 0 },
-    byType,
-  });
-}
-
-// GET /api/queue/failed /dead — 云端无本地任务队列，返回 pending_items 中 failed 项
-async function handleQueueFailed(req) {
-  const limit = Math.min(Number(req.query.limit) || 10, 50);
-  const items = await qAll("SELECT * FROM pending_items WHERE status='failed' ORDER BY id DESC LIMIT ?", [limit]);
-  return jsonOk({ items });
-}
+// pending_items 云端只读路由已摘（用户 10-06 拍 A 收）：H40 收摊后这些只读路由显示的是永不更新的存量快照——假口，本地端 queue 路由保留（server/routes/queue.js）
 
 // ─── OPML / RSS ───
 function parseOpml(xml) {
@@ -3537,9 +3506,6 @@ async function dispatch(req) {
   if (path === '/api/dashboard' && method === 'GET') return handleDashboard(req);
   if (path === '/api/health/collect-history') return handleCollectHistory(req);
     if (path === '/api/brief/history') return handleBriefHistory(req);
-    if (path === '/api/queue/pending') return handleQueuePending(req);
-    if (path === '/api/queue/stats') return handleQueueStats(req);
-    if (path === '/api/queue/failed' || path === '/api/queue/dead') return handleQueueFailed(req);
     if (path === '/api/backup/latest') return handleBackupLatest(req);
     if (path === '/api/data/list') return handleDataList(req);
     if (path === '/api/data/stats') return handleDataStats(req);

@@ -51,13 +51,13 @@ export default function BilibiliTab() {
     loadSources();
   }, [loadSources]);
 
-  // F32：本地待处理订阅列表
+  // F32：本地待处理订阅列表（pending_items 云端只读路由已摘 10-06——云端无此数据，本地端保留）
   const loadPending = useCallback(async () => {
     try {
       const data = await api.get('/api/queue/pending?type=bilibili');
       setPending(data?.items || []);
     } catch (e) {
-      setPending([]);
+      setPending([]); // 云端 404 时空态（本地端正常）
     }
   }, []);
 
@@ -262,7 +262,7 @@ export default function BilibiliTab() {
 
       {/* F32：本地待处理订阅列表 */}
       <section>
-        <h3 className="text-sm font-semibold t-text mb-2">本地待处理订阅</h3>
+        <h3 className="text-sm font-semibold t-text mb-2">本地待处理订阅<span className="ml-2 text-[11px] t-muted font-normal">（云端无此数据，本地端专属）</span></h3>
         <PendingList items={pending} empty="暂无待处理订阅" />
       </section>
 
