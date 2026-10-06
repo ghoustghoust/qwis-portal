@@ -1079,9 +1079,12 @@ async function runWeekly() {
 
   // 2026-09-18：条数不足先放弃——别为一期注定不发布的内容花导语/周总结/杂志结构三笔 AI 开销。
   // 落库守卫在 saveWeekly 里（同一份 lib/brief-guards 口径），这里只是前置省配额。
-  let theme = null; let weeklySummary = null; let magazine = null;
+  let theme = null; let weeklySummary = null; let magazine = null; let themeSkip = null; // H30：导语失败归因（与日报同形状）
   if (require('../lib/brief-guards').canPublishWeekly(items)) {
-    theme = await _ai.generateTheme(items.map((it) => ({ title: it.title, reason: it.reason }))).catch((e) => { log(`周刊导语生成失败: ${e.message}`); return null; });
+    // H30（用户拍 E1）：归因接周刊——改调 detailed 版（generateTheme 只留 .theme 丢归因），失败时随 report 落 themeSkip
+    const thW = await _ai.generateThemeDetailed(items.map((it) => ({ title: it.title, reason: it.reason }))).catch((e) => ({ theme: null, why: 'throw', err: String(e.message || '').slice(0, 160) }));
+    theme = thW.theme;
+    if (!theme) { themeSkip = { why: thW.why || 'unlabeled', err: thW.err, detail: thW.detail, lines: thW.lines }; log(`周刊导语归因: ${JSON.stringify(themeSkip)}`); }
     // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
     weeklySummary = await _ai.generateWeeklySummary(items).catch((e) => { log(`周刊周总结失败: ${e.message}`); return null; });
     // 周刊杂志结构（构成边界 ADR-31）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
@@ -1131,6 +1134,7 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
   const report = {
     issue, dateStart, dateEnd, theme, degraded: degradedFlag,
     spineMissing: spine.spineMissing, spineMissingParts: spine.missing, weeklySummary,
+    ...(theme ? {} : { themeSkip }), // H30：与日报同形状的导语归因（有导语时不留噪声键）
     ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
     generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 6000) / 10,
     items,
@@ -1190,27 +1194,36 @@ async function buildThemePanorama(items) {
     .slice(0, 4); // 最多 4 个主题，控 AI 配额
   const VIEWS = ['事件', '领域', '人物', '产品对比'];
   const themes = [];
+  // H32②（用户拍 B1：不吃簇）：命名环节四出口失败时不再整簇丢弃——降级为"未命名主题"保留条目，
+  // 聚类成果不陪葬。drops 照记（归因不变）；named 只数成功命名的（namedOk），保住
+  // "named + 四出口 drops == rated" 这条计数的可判别性（锁 T10 随 B1 需更新为 named + unnamedKept + drops == rated，验收轮处理）。
+  const unnamed = (c) => ({
+    name: null, viewpoint: '事件', summary: '', unnamed: true,
+    items: c.items.map((i) => ({ id: i.id, title: i.translated_title || i.title, url: i.url, source: i.source_name, kind: i.kind || 'article' })),
+  });
+  let namedOk = 0;
   for (const c of rated) {
     // 2026-09-14 修复：输入不再带「评语」——AI 曾把综述写成对评语的元评论（"分歧在于评语高度相似…"），
     // 综述应总结事件/主题本身的事实与各源侧重（用户验收：「这个地方不是总结吗？」）
     const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.summary ? `｜摘要：${String(i.summary).slice(0, 80)}` : ''}`).join('\n');
     const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述：概括这件事/这个主题本身的事实与各源侧重；禁止评论文章质量、评分或'评语'，禁止出现'评语'二字"}\n\n${list}`;
     const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
-    if (!r.ok) { bump('ai_failed'); continue; }
+    if (!r.ok) { bump('ai_failed'); themes.push(unnamed(c)); continue; }
     const m = String(r.reply || '').match(/\{[\s\S]*\}/);
-    if (!m) { bump('no_json'); continue; }
+    if (!m) { bump('no_json'); themes.push(unnamed(c)); continue; }
     try {
       const j = JSON.parse(m[0]);
-      if (!j.name || !j.summary) { bump('incomplete'); continue; }
+      if (!j.name || !j.summary) { bump('incomplete'); themes.push(unnamed(c)); continue; }
       themes.push({
         name: String(j.name).slice(0, 20),
         viewpoint: VIEWS.includes(j.viewpoint) ? j.viewpoint : '事件',
         summary: String(j.summary).slice(0, 160),
         items: c.items.map((i) => ({ id: i.id, title: i.translated_title || i.title, url: i.url, source: i.source_name, kind: i.kind || 'article' })),
       });
-    } catch { bump('bad_json'); /* 跳过坏簇 */ }
+      namedOk++;
+    } catch { bump('bad_json'); themes.push(unnamed(c)); /* H32②：坏 JSON 也降级保留 */ }
   }
-  return { themes, found: clusters.length, multi, rated: rated.length, named: themes.length, drops };
+  return { themes, found: clusters.length, multi, rated: rated.length, named: namedOk, unnamedKept: themes.length - namedOk, drops };
 }
 
 // ─── 模式：daily-ai（18-daily-ai-v2：AI 策展早报） ───
@@ -1889,8 +1902,11 @@ async function runMyBrief(analyzed) {
     }
     if (mediaItems.length) sections.media = mediaItems;
   } catch (e) { log(`mybrief 媒体栏失败（不阻断）: ${e.message}`); }
-  // 编辑导语 + 关键词标签行
-  const theme = await _ai.generateTheme(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch((e) => { log(`我的早报导语生成失败（本期无今日聚焦）: ${e.message}`); return null; });
+  // 编辑导语 + 关键词标签行。H30（用户拍 E1）：归因接我的早报——改调 detailed 版，失败随 report 落 themeSkip
+  const thM = await _ai.generateThemeDetailed(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch((e) => ({ theme: null, why: 'throw', err: String(e.message || '').slice(0, 160) }));
+  const theme = thM.theme;
+  const themeSkip = theme ? null : { why: thM.why || 'unlabeled', err: thM.err, detail: thM.detail, lines: thM.lines };
+  if (themeSkip) log(`我的早报导语归因: ${JSON.stringify(themeSkip)}`);
   const tagFreq = {};
   for (const m of mine) for (const t of m.tags || []) tagFreq[t] = (tagFreq[t] || 0) + 1;
   const keywords = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
@@ -1909,7 +1925,7 @@ async function runMyBrief(analyzed) {
   const { resolveMyBriefIssue } = require('../lib/brief-guards');
   const prevArch = (await getSetting('mybrief.archive', [])) || [];
   const issueInfo = resolveMyBriefIssue(prevArch, dateStr);
-  const report = { date: dateStr, theme, keywords, degraded: false, generatedAt: nowIso(), sections, themes, issue: issueInfo.issue };
+  const report = { date: dateStr, theme, ...(theme ? {} : { themeSkip }), keywords, degraded: false, generatedAt: nowIso(), sections, themes, issue: issueInfo.issue };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
   const entry = { issue: issueInfo.issue, date: dateStr, generatedAt: report.generatedAt, theme: report.theme, keywords, degraded: false, sections, themes };
   const nextArch = prevArch.slice();

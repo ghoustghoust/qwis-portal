@@ -31,7 +31,7 @@ function latencyBand(ms) {
 
 export default function AiSettingsTab() {
   const [config, setConfig] = useState(null);
-  const [form, setForm] = useState({ apiKey: '', apiBase: '', model: '' });
+  const [form, setForm] = useState({ apiKey: '', apiBase: '', model: '', minIntervalMs: '' });
   const [provider, setProvider] = useState('openai');
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -47,7 +47,7 @@ export default function AiSettingsTab() {
     try {
       const data = await api.get('/api/ai/config');
       setConfig(data);
-      setForm({ apiKey: '', apiBase: data.apiBase || '', model: data.model || '' });
+      setForm({ apiKey: '', apiBase: data.apiBase || '', model: data.model || '', minIntervalMs: String(data.minIntervalMs ?? '') });
       const hit = PROVIDERS.find((p) => p.base && p.base === (data.apiBase || ''));
       setProvider(hit ? hit.id : 'openai');
     } catch (err) {
@@ -75,6 +75,7 @@ export default function AiSettingsTab() {
     try {
       const payload = { apiBase: form.apiBase, model: form.model };
       if (form.apiKey.trim()) payload.apiKey = form.apiKey;
+      if (String(form.minIntervalMs).trim() !== '') payload.minIntervalMs = Number(form.minIntervalMs); // H28：节流间隔（≥1000ms）
       const r = await api.put('/api/ai/config', payload);
       if (r.changed && r.changed.length === 0) {
         setMessage('配置无变化，未写库');
@@ -165,6 +166,18 @@ export default function AiSettingsTab() {
               onChange={(e) => setForm(prev => ({ ...prev, apiKey: e.target.value }))}
               placeholder={config.apiKeyConfigured ? '已配置，留空保持不变' : '输入 API Key'}
               className="input"
+            />
+          </div>
+          <div>
+            <label className="block text-xs t-muted mb-1">AI 调用最小间隔（毫秒，≥1000；H28 已可配，留空保持现值）</label>
+            <input
+              type="number"
+              min="1000"
+              step="500"
+              value={form.minIntervalMs}
+              onChange={(e) => setForm(prev => ({ ...prev, minIntervalMs: e.target.value }))}
+              placeholder="4000（默认）"
+              className="input font-mono !text-xs"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

@@ -1649,6 +1649,8 @@ async function handleAiConfig(req) {
       apiKeyConfigured: !!apiKey,
       apiBase: cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE,
       model: cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL,
+      // H28（用户拍 F1）：节流间隔现值回显（独立键 ai.minIntervalMs，消费方 lib/ai-throttle）
+      minIntervalMs: await getSetting('ai.minIntervalMs', 4000),
     });
   }
   if (req.method === 'PUT') {
@@ -1656,6 +1658,16 @@ async function handleAiConfig(req) {
     const cur = await getSetting('ai', {});
     const next = { ...cur };
     const changed = [];
+    // H28（用户拍 F1）：节流间隔开进白名单——此前部署面零写点永远吃代码缺省 4s，想压间隔换时间调不动。
+    // 注意它是**独立点分键** ai.minIntervalMs（api/_ai.js:157 那个读法），不是 ai 对象字段——塞进 next 没人读。
+    let minIntervalSnapshot = null; // BL9②：探测失败回滚时一并恢复（快照在写入前取）
+    let minIntervalPrev = null;
+    if (body.minIntervalMs !== undefined) {
+      const n = Number(body.minIntervalMs);
+      if (!Number.isFinite(n) || n < 1000) return { status: 400, body: jsonErr('minIntervalMs 须为 ≥1000 的毫秒数') };
+      minIntervalPrev = await getSetting('ai.minIntervalMs', 4000);
+      if (n !== minIntervalPrev) { minIntervalSnapshot = minIntervalPrev; await setSetting('ai.minIntervalMs', n); changed.push('minIntervalMs'); }
+    }
     if (body.model !== undefined && String(body.model).trim() !== (cur.model || '')) { next.model = String(body.model).trim(); changed.push('model'); }
     if (body.apiBase !== undefined && String(body.apiBase).trim() !== (cur.apiBase || '')) { next.apiBase = String(body.apiBase).trim(); changed.push('apiBase'); }
     if (body.apiKey && body.apiKey.trim() && body.apiKey.trim() !== (cur.apiKey || '')) { next.apiKey = body.apiKey.trim(); changed.push('apiKey'); }
@@ -1674,6 +1686,7 @@ async function handleAiConfig(req) {
     ]);
     if (!probe.ok) {
       await setSetting('ai', cur);
+      if (minIntervalSnapshot !== null) await setSetting('ai.minIntervalMs', minIntervalSnapshot); // H28：独立键同滚，别让新间隔残留库里
       await auditRecord('ai.config.rejected', { detail: { changed, error: String(probe.error || '').slice(0, 200) } });
       return { status: 502, body: jsonErr(`写后探测失败，已回滚旧配置：${probe.error || '未知错误'}`) };
     }

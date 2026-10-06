@@ -482,7 +482,15 @@ async function generateWeeklyEditorNote(items, storylines) {
 async function generateThemeDetailed(items) {
   const tpl = await loadPrompt('daily-theme');
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
-  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
+  // H33（用户拍 D1）："仅含 reasoning 无 content(finish=length)" 是已知截断形态（B19/W6 同根）——
+  // max_tokens 被 reasoning 烧穿，且 _aiChatInner 的自动重试只认 429/5xx（此错无 status 不重试）。
+  // 周刊同款已用"退避 15s 重试一次"治好（B121②）；只对该错误形态重试，其余失败不烧配额。
+  const ask = () => aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
+  let r = await ask();
+  if (!r.ok && /仅含 reasoning|finish=length/.test(String(r.error || ''))) {
+    await new Promise((res) => setTimeout(res, 15000));
+    r = await ask();
+  }
   if (!r.ok) return { theme: null, why: 'ai_failed', err: String(r.error || 'no error').slice(0, 160) };
   return pickThemeReply(r.reply);
 }

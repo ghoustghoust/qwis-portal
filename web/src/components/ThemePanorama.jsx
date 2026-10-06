@@ -44,11 +44,13 @@ function ThemeCard({ theme }) {
         >
           {theme.viewpoint}
         </span>
-        <h3 className="serif text-[15px] font-bold t-text flex-1 min-w-0 truncate"><MdText text={theme.name} /></h3>
+        <h3 className="serif text-[15px] font-bold t-text flex-1 min-w-0 truncate" title={theme.unnamed ? 'AI 命名失败，簇降级保留（H32②）' : undefined}>
+          <MdText text={theme.unnamed ? '未命名主题' : theme.name} />
+        </h3>
         {/* 原先显示 items.length 却标「源」，同题转载时两者不等；改按去重后的来源数 */}
         <span className="flex-none text-[11px] t-muted tabular-nums">{sourceCount || rows.length} 源</span>
       </div>
-      <p className="mt-2 text-[13px] leading-relaxed t-muted"><MdText text={theme.summary} /></p>
+      <p className="mt-2 text-[13px] leading-relaxed t-muted">{theme.unnamed ? '（AI 命名失败，簇内条目降级保留）' : <MdText text={theme.summary} />}</p>
       <div className="mt-2 flex flex-col gap-1">
         {shown.map((r) => (
           <a
@@ -77,7 +79,8 @@ export default function ThemePanorama({ themes }) {
     <section className="mt-6 sm:mt-8">
       <div className="text-[11px] tracking-widest t-accent font-medium">主题全景</div>
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {themes.map((t) => <ThemeCard key={t.name} theme={t} />)}
+        {/* H32②：起名失败的簇降级保留（name=null）——key 用首条 id 兜底，防多个未命名簇 key 撞车 */}
+        {themes.map((t, i) => <ThemeCard key={t.name || `unnamed-${(t.items && t.items[0] && t.items[0].id) ?? i}`} theme={t} />)}
       </div>
     </section>
   );
