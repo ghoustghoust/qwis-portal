@@ -139,19 +139,21 @@ export default function HotSettings() {
         )}
       </div>
 
-      {/* 回填历史（七期 F2）：sitemap 历史条目一次性补抓，进度轮询 */}
+      {/* 回填历史（七期 F2）：sitemap 历史条目一次性补抓，进度轮询。
+          H55⑦（用户拍 J4 摘除假口）：长回填作业在云端 serverless 超时约束下跑不动，回填接口不就绪（云端）时
+          整块不渲染——不再渲染一个永远禁用 +"施工中"的按钮骗位置；本地端接口就绪，功能保留 */}
+      {backfillReady && (
       <div className="mt-4">
         <div className="flex flex-wrap items-center gap-3 text-[13px]">
           <span className="t-muted">历史内容回填（AIHOT sitemap，一次性补抓入库）</span>
           <button
             className="btn-ghost"
-            disabled={!backfillReady || !!backfill?.running}
+            disabled={!!backfill?.running}
             onClick={startBackfill}
-            title={backfillReady ? '抓取 sitemap 中尚未入库的历史条目' : '回填接口尚未就绪（后端施工中）'}
+            title="抓取 sitemap 中尚未入库的历史条目"
           >
             {backfill?.running ? '回填中…' : '回填历史'}
           </button>
-          {!backfillReady && <span className="text-xs t-muted">回填接口尚未就绪</span>}
         </div>
         {backfill && (backfill.running || backfill.total > 0) && (
           <div className="mt-2">

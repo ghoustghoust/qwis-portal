@@ -2715,7 +2715,7 @@ async function handleAuditCleanup(req) {
 // 与本地 server/routes/settings.js + routes/daily.js settingsRouter 语义对齐
 // H41①：合法区/闭集键/保留键的唯一判定在 lib/settings-schema.js（两端共用，不许各写一份）
 const SETTINGS_BLOCKLIST = require('../lib/settings-schema').BLOCKLIST;
-const SETTINGS_ALLOW_SECTIONS = ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'mybrief', 'weekly', 'prescreen', 'views'];
+const SETTINGS_ALLOW_SECTIONS = ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'mybrief', 'weekly', 'prescreen', 'views', 'bilibili']; // H55②：补 bilibili 段——写库分支（credentials 表）早已在而白名单缺段，保存必 400，分支成死代码
 
 // 栏目表/入报源类型：见文件上方对 lib/daily-columns.js 的唯一引用（B10，此处曾另抄一份）
 
