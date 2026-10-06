@@ -4,42 +4,47 @@ import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
-// 订阅源卡片网格（与 DailySettingsTab 的 SelectedAvatars 同形态——图标+名字，默认收起 12 个+展开全部）
+// 订阅源重叠头像行（与 DailySettingsTab 的 SelectedAvatars 同形态——默认一行微叠头像+统计小字，
+// hover 出名字 tooltip，点 +N 展开为两列紧凑列表，点“管理订阅来源”进弹窗）
 function SubGrid({ items, onManage }) {
   const [expanded, setExpanded] = useState(false);
   if (!items || !items.length) return null;
-  const shown = expanded ? items : items.slice(0, 12);
+  const shown = items.slice(0, 8);
+  const more = items.length - shown.length;
   return (
     <div className="mt-3">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5">
-        {shown.map((x) => (
-          <button
-            key={x.id}
-            type="button"
-            onClick={onManage}
-            title={`${x.name}（点按进选源器管理）`}
-            className="card !p-2 flex items-center gap-1.5 min-w-0 hover:border-[var(--accent)] transition-colors cursor-pointer text-left"
-          >
-            <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
-            <span className="text-[11px] t-text truncate flex-1 min-w-0">{x.name}</span>
-          </button>
-        ))}
-      </div>
-      {items.length > 12 && (
-        <button type="button" className="mt-1.5 text-[11px] t-muted hover:t-accent" onClick={() => setExpanded(!expanded)}>
-          {expanded ? '收起 ▴' : `展开全部 ${items.length} 个 ▾`}
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={onManage} className="flex items-center flex-none cursor-pointer" title="管理订阅来源">
+          {shown.map((x, i) => (
+            <span key={x.id} className="rounded-full overflow-hidden flex-none transition-transform hover:scale-110 hover:z-20"
+              style={{ marginLeft: i ? -8 : 0, border: '2px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}
+              title={x.name}>
+              <SourceAvatar name={x.name} avatar={x.avatar} size={24} />
+            </span>
+          ))}
         </button>
+        {more > 0 && (
+          <button type="button" className="text-[11px] t-muted hover:t-accent tabular-nums" onClick={() => setExpanded(!expanded)}>
+            {expanded ? '收起 ▴' : `+${more} ▾`}
+          </button>
+        )}
+      </div>
+      {expanded && (
+        <div className="mt-2 grid grid-cols-2 gap-x-4 max-h-64 overflow-y-auto">
+          {items.map((x) => (
+            <button key={x.id} type="button" onClick={onManage}
+              className="flex items-center gap-2 py-1.5 min-w-0 text-left border-b border-[var(--border)] hover:bg-[var(--surface-2)] transition-colors"
+              title={x.name}>
+              <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
+              <span className="text-[12px] t-text truncate flex-1 min-w-0">{x.name}</span>
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
 }
-import TriggerButton from './TriggerButton.jsx';
-import SourcePickerModal from './SourcePickerModal.jsx';
 
-// T3-8 批次2：我的早报子板块——推送开关、探索强度、兴趣画像（只读，ADR-23）、Domain 篇数配额
-// （各块自原 BriefCenterTab 迁移，逻辑未改；新增页头真触发入口）
-// 10-05 功能隔离（用户验收反馈）：订阅集合的勾选入口从源库迁到本板块——「我的早报」的源
-// 在「我的早报」里管；源库只管源本身（采集/健康/分组）。
 export default function MyBriefPanel() {
   const [hist, setHist] = useState(null);
   const [mybriefCfg, setMybriefCfg] = useState(null);

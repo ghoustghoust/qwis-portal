@@ -6,39 +6,51 @@ import TriggerButton from './TriggerButton.jsx';
 import InfoTip from './InfoTip.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
-// 已选源卡片网格（用户 10-06：像个栏目铺开看到订了哪些——图标+名字，默认收起 12 个+展开全部）
+// 已选源重叠头像行（用户 10-06 拍：重叠头像行——默认一行微叠头像+统计小字，版面成本≈0；
+// hover 单个出名字/分组 tooltip，点 +N 展开为两列紧凑列表（无边框），点“管理来源”进弹窗）
 function SelectedAvatars({ sources, ids, onManage }) {
   const [expanded, setExpanded] = useState(false);
   const list = (ids || []).map((id) => (sources || []).find((x) => x.id === id)).filter(Boolean);
   if (!list.length) return null;
-  const shown = expanded ? list : list.slice(0, 12);
+  const shown = list.slice(0, 8);
+  const more = list.length - shown.length;
+  const spotN = list.filter((x) => x.spotlight).length;
   return (
     <div className="mt-2">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5">
-        {shown.map((x) => (
-          <button
-            key={x.id}
-            type="button"
-            onClick={onManage}
-            title={`${x.name}${x.group_name ? ` · ${x.group_name}` : ''}（点按进选源器管理）`}
-            className="card !p-2 flex items-center gap-1.5 min-w-0 hover:border-[var(--accent)] transition-colors cursor-pointer text-left"
-          >
-            <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
-            <span className="text-[11px] t-text truncate flex-1 min-w-0">{x.name}</span>
-          </button>
-        ))}
-      </div>
-      {list.length > 12 && (
-        <button type="button" className="mt-1.5 text-[11px] t-muted hover:t-accent" onClick={() => setExpanded(!expanded)}>
-          {expanded ? '收起 ▴' : `展开全部 ${list.length} 个 ▾`}
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={onManage} className="flex items-center flex-none cursor-pointer" title="管理来源">
+          {shown.map((x, i) => (
+            <span key={x.id} className="rounded-full overflow-hidden flex-none transition-transform hover:scale-110 hover:z-20"
+              style={{ marginLeft: i ? -8 : 0, border: '2px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}
+              title={`${x.name}${x.group_name ? ` · ${x.group_name}` : ''}${x.spotlight ? ' · 重点' : ''}`}>
+              <SourceAvatar name={x.name} avatar={x.avatar} size={24} />
+            </span>
+          ))}
         </button>
+        {more > 0 && (
+          <button type="button" className="text-[11px] t-muted hover:t-accent tabular-nums" onClick={() => setExpanded(!expanded)}>
+            {expanded ? '收起 ▴' : `+${more} ▾`}
+          </button>
+        )}
+        <span className="text-[11px] t-muted tabular-nums">{list.length} 个源{spotN ? ` · ${spotN} 重点` : ''}</span>
+      </div>
+      {expanded && (
+        <div className="mt-2 grid grid-cols-2 gap-x-4 max-h-64 overflow-y-auto">
+          {list.map((x) => (
+            <button key={x.id} type="button" onClick={onManage}
+              className="flex items-center gap-2 py-1.5 min-w-0 text-left border-b border-[var(--border)] hover:bg-[var(--surface-2)] transition-colors"
+              title={`${x.name}${x.group_name ? ` · ${x.group_name}` : ''}`}>
+              <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
+              <span className="text-[12px] t-text truncate flex-1 min-w-0">{x.name}</span>
+              {x.spotlight ? <span className="text-[10px] t-accent flex-none">★</span> : null}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-// 管理后台·每日早报设置（F18 → T3-8 批次2 改造）：
-// ①生成管理（真触发入口，替代旧的纯文本命令壳）②基础设置 ③每源配额 ④来源勾选（选源器弹窗，替代全量平铺）⑤栏目管理（只读过渡，T5-3 将替代）
 export default function DailySettingsTab() {
   const [loading, setLoading] = useState(true); // 初始必须为 true：首帧渲染 form=null 时不得穿透到表单（2026-09-12 日报设置崩溃根因）
   const [saving, setSaving] = useState(false);
