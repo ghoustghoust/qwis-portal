@@ -3391,9 +3391,18 @@ async function handleWeekly(req) {
     return jsonOk({ report: await enrichBriefTitles(hit.report) });
   }
   const report = await getSetting('weekly.latest', null);
-  if (!report) return jsonOk({ empty: 'no-content' });
+  if (!report) return jsonOk({ empty: 'no-content' }); // 三态之一：从没跑过
+  // H50②③（用户拍 K2a/K3）：周刊对读者不再"盲"——
+  // ③ 新鲜度守卫：上一期 dateEnd 距今超 10 天（>1.5 个生成周期）时不再顶着"本周"给出，
+  //    归因给到页面上（日报按档期选窗口同族；此前上一期可无限期被当"本周"）
+  // ② 空态三态：no-content（从没跑过）/ stale（守卫拦下）/ 正常（附 staleDays 供页面提示）
+  const lastAgeDays = Math.max(0, Math.floor((Date.now() - new Date(`${report.dateEnd}T23:59:59+08:00`).getTime()) / 86400e3));
   const archive = (await getSetting('weekly.archive', [])) || [];
-  return jsonOk({ report: await enrichBriefTitles(report), archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
+  if (lastAgeDays > 10) {
+    return jsonOk({ empty: 'stale', staleDays: lastAgeDays, lastIssue: report.issue, lastDateEnd: report.dateEnd,
+      archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })) });
+  }
+  return jsonOk({ report: await enrichBriefTitles(report), archive: archive.map((a) => ({ issue: a.issue, dateStart: a.dateStart, dateEnd: a.dateEnd, theme: a.theme, count: a.count })), staleDays: lastAgeDays });
 }
 
 // GET /api/sources/bilibili-diagnose — B站 Cookie/wbi/登录态诊断（21-bilibili-runner）

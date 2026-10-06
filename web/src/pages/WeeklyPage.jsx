@@ -112,6 +112,23 @@ export default function WeeklyPage() {
             </div>
           )}
 
+          {/* H50②③：空态三态之二——守卫拦下的过期期（此前上一期可无限期顶"本周"） */}
+          {data?.empty === 'stale' && (
+            <div className="card px-6 py-16 text-center">
+              <DocIcon className="mx-auto" />
+              <div className="serif mt-4 text-xl font-bold t-text">本周精选尚未生成</div>
+              <p className="mt-3 text-[13px] t-muted">
+                上一期为第 {data.lastIssue} 期（截至 {data.lastDateEnd}，距今 {data.staleDays} 天），已超过一个生成周期——
+                本期可能尚未生成或因条数不足被放弃发布（放弃时会发报警）。
+              </p>
+              {Array.isArray(data.archive) && data.archive.length > 0 && (
+                <p className="mt-2 text-[12px] t-muted">
+                  历史期共 {data.archive.length} 期，最近一期：第 {data.archive[data.archive.length - 1]?.issue} 期 · {data.archive[data.archive.length - 1]?.dateEnd}
+                </p>
+              )}
+            </div>
+          )}
+
           {report && (
             <>
               {/* 封面头（杂志版：有 coverTheme 用大字主题，否则回退期号） */}
@@ -123,6 +140,12 @@ export default function WeeklyPage() {
                 <div className="mt-1 text-[13px] t-muted">
                   {report.coverTheme ? `本周必看 ${report.items?.length || 0} 条 · ` : ''}{report.dateStart} ~ {report.dateEnd}
                 </div>
+                {/* H50③：新鲜度提示——超过 2 天（半个生成周期）未更新时明示，不再让旧期无声顶"本周" */}
+                {(data?.staleDays ?? 0) > 2 && (
+                  <div className="mt-2 text-[11px]" style={{ color: 'var(--yellow, #b45309)' }}>
+                    最新一期截至 {report.dateEnd}（距今 {data.staleDays} 天）——本期可能尚未生成或被放弃发布
+                  </div>
+                )}
                 {report.theme && (
                   <MdRich text={report.theme} className="serif mt-3 text-base sm:text-xl italic leading-relaxed t-muted" />
                 )}

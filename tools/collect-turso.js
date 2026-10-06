@@ -1114,6 +1114,14 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
     const n = Array.isArray(items) ? items.length : 0;
     log(`周刊放弃发布：本期仅 ${n} 条（< ${guards.WEEKLY_MIN_ITEMS}），保留上一期 weekly.latest 不被覆盖`);
     await writeHeartbeat('weekly', { published: false, count: n, reason: 'below-min-items', degraded: !!degraded });
+    // H50①（用户拍 K1）：放弃发布接一条报警——此前只有作业心跳留痕，没人看心跳就不知道这周没出
+    // （与 cleanup_blocked/cleanup_missed 同族；事件不在配置矩阵=默认发送，可在报警界面关）
+    try {
+      await require('../api/_alerts').dispatch('weekly_skip', {
+        title: '周刊放弃发布',
+        text: `本期仅 ${n} 条（< ${guards.WEEKLY_MIN_ITEMS}），未达发布门槛，上一期 weekly.latest 保留未覆盖。`,
+      });
+    } catch { /* 报警失败不阻断守卫 */ }
     return false;
   }
   // 对抗性审查补丁（2026-09-13）：周报引用的文章打 featured=1——cleanup 的保留清理豁免 featured，
