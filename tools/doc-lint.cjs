@@ -147,13 +147,17 @@ function findArchivedText(paths) {
 }
 for (const f of findArchivedText(docsFiles)) errors.push(`[归档收文字] ${rel(f)} —— 归档层不再收文字件：仍成立的搬进 adr/features/pitfalls，其余就地删（反查走 git）`);
 
-// 5 活文档超长（提示核销轮，不算不通过）
-const LIMITS = { 'docs/ISSUES.md': 130, 'ARCHITECTURE.md': 400, 'docs/NEXT-DEV-REQS.md': 260, 'docs/FEATURE_MATRIX.md': 200 };
-for (const [f, max] of Object.entries(LIMITS)) {
+// 5 活文档超长（提示核销轮，不算不通过）——用户 10-06 裁决：删写死行数、只留语义判据。
+// 语义判据（DOC_GOVERNANCE §4.1）：一份活文档超长的信号不是"超过某行数"，而是"里面有该走的内容没走"——
+//   决策该在 adr/ 没走 / 在途规格该在 specs/ 没走 / 已验收功能该在 features/ 没走。
+// 行数只是代理指标，拿代理指标当门会奖励"拆行不删字"（治理 §4.1 原话）。这条改为：
+// 只报"这 4 份核心文档当前行数"，让你自己判断要不要核销；不再有固定阈值判红。
+const CORE_DOCS = ['docs/ISSUES.md', 'ARCHITECTURE.md', 'docs/NEXT-DEV-REQS.md', 'docs/FEATURE_MATRIX.md'];
+for (const f of CORE_DOCS) {
   const abs = path.join(ROOT, f);
   if (!fs.existsSync(abs)) continue;
   const n = read(abs).split('\n').length;
-  if (n > max) warnings.push(`[超长] ${f} ${n} 行 > ${max}，按 DOC_GOVERNANCE §3 Step4 做核销轮`);
+  console.log(`  [行数] ${f} ${n} 行`);
 }
 
 // 6 明文密钥扫描（判据本体 `lib/secrets.js`，与锁 tests/regression-secrets.test.js 同源）
