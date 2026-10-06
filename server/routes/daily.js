@@ -40,8 +40,9 @@ router.post('/regenerate', async (req, res) => {
 });
 
 function sourceList(types, selectedIds) {
+  // 用户 10-06：补 avatar/group_name（弹窗图标与介绍依赖，与云端同批）
   const rows = db
-    .prepare(`SELECT id, type, name, enabled, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`)
+    .prepare(`SELECT s.id, s.type, s.name, s.enabled, s.spotlight, s.avatar, g.name AS group_name FROM sources s LEFT JOIN groups g ON g.id=s.group_id WHERE s.type IN (${types.map(() => '?').join(',')}) ORDER BY s.id`)
     .all(...types);
   return rows.map((s) => ({
     id: s.id,
@@ -49,6 +50,8 @@ function sourceList(types, selectedIds) {
     name: s.name,
     enabled: s.enabled, // T3-8 批次2 审查修复：选源器状态筛选依赖（与云端同批）
     spotlight: !!s.spotlight, // 27b：原 focus 字段，语义=重点轴
+    avatar: s.avatar || null,
+    group_name: s.group_name || null,
     selected: selectedIds ? selectedIds.includes(s.id) : true, // 未配置=全选
   }));
 }

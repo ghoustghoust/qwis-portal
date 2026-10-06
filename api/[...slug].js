@@ -2931,11 +2931,12 @@ async function handleDailySettingsGet(req) {
   const cfg = (await getSetting('daily', {})) || {};
   const columns = (await getSetting('daily.columns', null)) || DAILY_DEFAULT_COLUMNS;
   const sourceList = async (types, selectedIds) => {
+    // 用户 10-06：弹窗图标全是字母 fallback——此投影缺 avatar（/api/sources 有），补上；group_name 一并
     const rows = await qAll(
-      `SELECT id, type, name, enabled, spotlight FROM sources WHERE type IN (${types.map(() => '?').join(',')}) ORDER BY id`, types);
+      `SELECT s.id, s.type, s.name, s.enabled, s.spotlight, s.avatar, g.name AS group_name FROM sources s LEFT JOIN groups g ON g.id=s.group_id WHERE s.type IN (${types.map(() => '?').join(',')}) ORDER BY s.id`, types);
     return rows.map((s) => ({
-      id: s.id, type: s.type, name: s.name, enabled: s.enabled, spotlight: !!s.spotlight, // 27b：原 focus 字段
-      // T3-8 批次2 审查修复：补 enabled——选源器的状态筛选依赖它（此前主数据路径不返回，筛选恒失效）
+      id: s.id, type: s.type, name: s.name, enabled: s.enabled, spotlight: !!s.spotlight,
+      avatar: s.avatar || null, group_name: s.group_name || null,
       selected: selectedIds ? selectedIds.includes(s.id) : true,
     }));
   };

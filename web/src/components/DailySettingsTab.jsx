@@ -4,6 +4,25 @@ import { toast } from '../toast';
 import SourcePickerModal from './SourcePickerModal.jsx';
 import TriggerButton from './TriggerButton.jsx';
 import InfoTip from './InfoTip.jsx';
+import SourceAvatar from './ui/SourceAvatar.jsx';
+
+// 已选源头像堆叠预览（用户 10-06：前 6 个头像 + 超了 +N——看到订阅了什么）
+function SelectedAvatars({ sources, ids }) {
+  const list = (ids || []).map((id) => (sources || []).find((x) => x.id === id)).filter(Boolean);
+  if (!list.length) return null;
+  const shown = list.slice(0, 6);
+  const more = list.length - shown.length;
+  return (
+    <span className="flex items-center" title={list.map((x) => x.name).join('、')}>
+      {shown.map((x, i) => (
+        <span key={x.id} className="rounded-full overflow-hidden flex-none" style={{ marginLeft: i ? -6 : 0, border: '1.5px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}>
+          <SourceAvatar name={x.name} avatar={x.avatar} size={20} />
+        </span>
+      ))}
+      {more > 0 && <span className="text-[10px] t-muted ml-1.5 tabular-nums">+{more}</span>}
+    </span>
+  );
+}
 
 // 管理后台·每日早报设置（F18 → T3-8 批次2 改造）：
 // ①生成管理（真触发入口，替代旧的纯文本命令壳）②基础设置 ③每源配额 ④来源勾选（选源器弹窗，替代全量平铺）⑤栏目管理（只读过渡，T5-3 将替代）
@@ -221,9 +240,16 @@ export default function DailySettingsTab() {
               effect="保存后的下一个生成批次生效。"
             />
           </div>
-          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
-            选择来源（已选 {form.articleSourceIds.length || focusA.length}/{articleSources.length}）
-          </button>
+          {/* 已选源头像堆叠预览（用户 10-06：选了 57 个源要能看到订阅了什么——前 6 个头像 + 省略号 + 总数） */}
+          <span className="flex items-center gap-1.5">
+            <SelectedAvatars
+              sources={articleSources}
+              ids={form.articleSourceIds.length ? form.articleSourceIds : focusA}
+            />
+            <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
+              选择来源（已选 {form.articleSourceIds.length || focusA.length}/{articleSources.length}）
+            </button>
+          </span>
         </div>
         <div className="text-[11px] t-muted mb-3">
           重点来源 {focusA.length} 个；来源的增删与启停在「源库」板块。
@@ -241,9 +267,15 @@ export default function DailySettingsTab() {
               effect="保存后的下一个生成批次生效。"
             />
           </div>
-          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
-            选择来源（已选 {form.videoSourceIds.length || focusV.length}/{videoSources.length}）
-          </button>
+          <span className="flex items-center gap-1.5">
+            <SelectedAvatars
+              sources={videoSources}
+              ids={form.videoSourceIds.length ? form.videoSourceIds : focusV}
+            />
+            <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
+              选择来源（已选 {form.videoSourceIds.length || focusV.length}/{videoSources.length}）
+            </button>
+          </span>
         </div>
       </section>
 

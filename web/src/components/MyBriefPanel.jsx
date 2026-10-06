@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
+import SourceAvatar from './ui/SourceAvatar.jsx';
 import TriggerButton from './TriggerButton.jsx';
 import SourcePickerModal from './SourcePickerModal.jsx';
 
@@ -18,6 +19,7 @@ export default function MyBriefPanel() {
   const [subPicker, setSubPicker] = useState(false);
   const [libItems, setLibItems] = useState([]);
   const [subscribedIds, setSubscribedIds] = useState(null); // null=未加载（区别于真 0）
+  const [subPreview, setSubPreview] = useState([]); // 订阅源预览（头像堆叠用，含 name/avatar）
   const [contrib, setContrib] = useState(null); // 源贡献榜（10-05 用户点单⑥）
 
   const load = useCallback(async () => {
@@ -41,12 +43,22 @@ export default function MyBriefPanel() {
   useEffect(() => { load(); }, [load]);
 
   // 订阅集合数据（选源器打开时拉取；生效口径与我的早报消费同源——/api/sources/library 的 subscribed）
-  const openSubPicker = async () => {
+  // 订阅源预览常驻拉取（用户 10-06：不进弹窗也要看到订阅了什么的头像堆叠）
+  const loadSubscribed = async () => {
     try {
       const d = await api.get('/api/sources/library');
       const items = d.items || [];
       setLibItems(items);
-      setSubscribedIds(items.filter((s) => s.subscribed).map((s) => s.id));
+      const sub = items.filter((s) => s.subscribed);
+      setSubscribedIds(sub.map((s) => s.id));
+      setSubPreview(sub); // 含 name/avatar 供头像堆叠
+    } catch { /* 拉不到不阻断 */ }
+  };
+  useEffect(() => { loadSubscribed(); }, []);
+
+  const openSubPicker = async () => {
+    try {
+      await loadSubscribed();
       setSubPicker(true);
     } catch (e) {
       toast('加载源列表失败: ' + e.message);
@@ -119,8 +131,21 @@ export default function MyBriefPanel() {
             effect="保存后下一批生成即按新集合取内容；当前靠「重点」兜底进订阅的源，在你第一次保存勾选后会以本次勾选为准。"
           />
           <span className="flex-1" />
-          <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds === null ? '…' : subscribedIds.length} 个</span>
-          <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
+          {/* 已订阅源头像堆叠预览（用户 10-06：看到订阅了什么——前 6 个 + 省略号 + 总数） */}
+          <span className="flex items-center gap-1.5">
+            {subPreview.length > 0 && (
+              <span className="flex items-center" title={subPreview.map((x) => x.name).join('、')}>
+                {subPreview.slice(0, 6).map((x, i) => (
+                  <span key={x.id} className="rounded-full overflow-hidden flex-none" style={{ marginLeft: i ? -6 : 0, border: '1.5px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}>
+                    <SourceAvatar name={x.name} avatar={x.avatar} size={20} />
+                  </span>
+                ))}
+                {subscribedIds !== null && subscribedIds.length > 6 && <span className="text-[10px] t-muted ml-1.5 tabular-nums">+{subscribedIds.length - 6}</span>}
+              </span>
+            )}
+            <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds === null ? '…' : subscribedIds.length} 个</span>
+            <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
+          </span>
         </div>
       </section>
 
