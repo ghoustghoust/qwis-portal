@@ -3,6 +3,36 @@ import { api } from '../api';
 import { toast } from '../toast';
 import InfoTip from './InfoTip.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
+
+// 订阅源卡片网格（与 DailySettingsTab 的 SelectedAvatars 同形态——图标+名字，默认收起 12 个+展开全部）
+function SubGrid({ items, onManage }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!items || !items.length) return null;
+  const shown = expanded ? items : items.slice(0, 12);
+  return (
+    <div className="mt-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5">
+        {shown.map((x) => (
+          <button
+            key={x.id}
+            type="button"
+            onClick={onManage}
+            title={`${x.name}（点按进选源器管理）`}
+            className="card !p-2 flex items-center gap-1.5 min-w-0 hover:border-[var(--accent)] transition-colors cursor-pointer text-left"
+          >
+            <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
+            <span className="text-[11px] t-text truncate flex-1 min-w-0">{x.name}</span>
+          </button>
+        ))}
+      </div>
+      {items.length > 12 && (
+        <button type="button" className="mt-1.5 text-[11px] t-muted hover:t-accent" onClick={() => setExpanded(!expanded)}>
+          {expanded ? '收起 ▴' : `展开全部 ${items.length} 个 ▾`}
+        </button>
+      )}
+    </div>
+  );
+}
 import TriggerButton from './TriggerButton.jsx';
 import SourcePickerModal from './SourcePickerModal.jsx';
 
@@ -131,22 +161,11 @@ export default function MyBriefPanel() {
             effect="保存后下一批生成即按新集合取内容；当前靠「重点」兜底进订阅的源，在你第一次保存勾选后会以本次勾选为准。"
           />
           <span className="flex-1" />
-          {/* 已订阅源头像堆叠预览（用户 10-06：看到订阅了什么——前 6 个 + 省略号 + 总数） */}
-          <span className="flex items-center gap-1.5">
-            {subPreview.length > 0 && (
-              <span className="flex items-center" title={subPreview.map((x) => x.name).join('、')}>
-                {subPreview.slice(0, 6).map((x, i) => (
-                  <span key={x.id} className="rounded-full overflow-hidden flex-none" style={{ marginLeft: i ? -6 : 0, border: '1.5px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}>
-                    <SourceAvatar name={x.name} avatar={x.avatar} size={20} />
-                  </span>
-                ))}
-                {subscribedIds !== null && subscribedIds.length > 6 && <span className="text-[10px] t-muted ml-1.5 tabular-nums">+{subscribedIds.length - 6}</span>}
-              </span>
-            )}
-            <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds === null ? '…' : subscribedIds.length} 个</span>
-            <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
-          </span>
+          <span className="text-xs t-muted tabular-nums">当前生效 {subscribedIds === null ? '…' : subscribedIds.length} 个</span>
+          <button className="btn-primary !py-1.5 !px-4 !text-xs" onClick={openSubPicker}>管理订阅来源</button>
         </div>
+        {/* 订阅源卡片网格（用户 10-06：像个栏目铺开看到订了哪些，默认收起 12 个+展开全部） */}
+        <SubGrid items={subPreview} onManage={openSubPicker} />
       </section>
 
       {/* 源贡献榜（10-05 用户点单⑥）：近 7 天谁喂了「我的早报」——低贡献=退订候选 */}

@@ -6,21 +6,34 @@ import TriggerButton from './TriggerButton.jsx';
 import InfoTip from './InfoTip.jsx';
 import SourceAvatar from './ui/SourceAvatar.jsx';
 
-// 已选源头像堆叠预览（用户 10-06：前 6 个头像 + 超了 +N——看到订阅了什么）
-function SelectedAvatars({ sources, ids }) {
+// 已选源卡片网格（用户 10-06：像个栏目铺开看到订了哪些——图标+名字，默认收起 12 个+展开全部）
+function SelectedAvatars({ sources, ids, onManage }) {
+  const [expanded, setExpanded] = useState(false);
   const list = (ids || []).map((id) => (sources || []).find((x) => x.id === id)).filter(Boolean);
   if (!list.length) return null;
-  const shown = list.slice(0, 6);
-  const more = list.length - shown.length;
+  const shown = expanded ? list : list.slice(0, 12);
   return (
-    <span className="flex items-center" title={list.map((x) => x.name).join('、')}>
-      {shown.map((x, i) => (
-        <span key={x.id} className="rounded-full overflow-hidden flex-none" style={{ marginLeft: i ? -6 : 0, border: '1.5px solid var(--surface-card, #fff)', position: 'relative', zIndex: 10 - i }}>
-          <SourceAvatar name={x.name} avatar={x.avatar} size={20} />
-        </span>
-      ))}
-      {more > 0 && <span className="text-[10px] t-muted ml-1.5 tabular-nums">+{more}</span>}
-    </span>
+    <div className="mt-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5">
+        {shown.map((x) => (
+          <button
+            key={x.id}
+            type="button"
+            onClick={onManage}
+            title={`${x.name}${x.group_name ? ` · ${x.group_name}` : ''}（点按进选源器管理）`}
+            className="card !p-2 flex items-center gap-1.5 min-w-0 hover:border-[var(--accent)] transition-colors cursor-pointer text-left"
+          >
+            <SourceAvatar name={x.name} avatar={x.avatar} size={18} />
+            <span className="text-[11px] t-text truncate flex-1 min-w-0">{x.name}</span>
+          </button>
+        ))}
+      </div>
+      {list.length > 12 && (
+        <button type="button" className="mt-1.5 text-[11px] t-muted hover:t-accent" onClick={() => setExpanded(!expanded)}>
+          {expanded ? '收起 ▴' : `展开全部 ${list.length} 个 ▾`}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -240,17 +253,16 @@ export default function DailySettingsTab() {
               effect="保存后的下一个生成批次生效。"
             />
           </div>
-          {/* 已选源头像堆叠预览（用户 10-06：选了 57 个源要能看到订阅了什么——前 6 个头像 + 省略号 + 总数） */}
-          <span className="flex items-center gap-1.5">
-            <SelectedAvatars
-              sources={articleSources}
-              ids={form.articleSourceIds.length ? form.articleSourceIds : focusA}
-            />
-            <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
-              选择来源（已选 {form.articleSourceIds.length || focusA.length}/{articleSources.length}）
-            </button>
-          </span>
+          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('article')}>
+            选择来源（已选 {form.articleSourceIds.length || focusA.length}/{articleSources.length}）
+          </button>
         </div>
+        {/* 已选源卡片网格（铺满宽度，用户 10-06：像个栏目铺开） */}
+        <SelectedAvatars
+          sources={articleSources}
+          ids={form.articleSourceIds.length ? form.articleSourceIds : focusA}
+          onManage={() => setPicker('article')}
+        />
         <div className="text-[11px] t-muted mb-3">
           重点来源 {focusA.length} 个；来源的增删与启停在「源库」板块。
         </div>
@@ -267,16 +279,15 @@ export default function DailySettingsTab() {
               effect="保存后的下一个生成批次生效。"
             />
           </div>
-          <span className="flex items-center gap-1.5">
-            <SelectedAvatars
-              sources={videoSources}
-              ids={form.videoSourceIds.length ? form.videoSourceIds : focusV}
-            />
-            <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
-              选择来源（已选 {form.videoSourceIds.length || focusV.length}/{videoSources.length}）
-            </button>
-          </span>
+          <button className="btn-ghost !py-1 !px-2.5 text-xs" onClick={() => setPicker('video')}>
+            选择来源（已选 {form.videoSourceIds.length || focusV.length}/{videoSources.length}）
+          </button>
         </div>
+        <SelectedAvatars
+          sources={videoSources}
+          ids={form.videoSourceIds.length ? form.videoSourceIds : focusV}
+          onManage={() => setPicker('video')}
+        />
       </section>
 
       {/* 栏目管理（只读过渡：用户 10-04 拍板——关键词归栏将被 AI 选题聚类 T5-3 替代，不再投入编辑面） */}
