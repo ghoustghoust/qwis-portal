@@ -5,6 +5,7 @@ import { toast } from '../toast';
 import DailyHeader from '../components/DailyHeader.jsx';
 import StatCards from '../components/StatCards.jsx';
 import ColumnSection from '../components/ColumnSection.jsx';
+import IssueIndex from '../components/IssueIndex.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import MdText from '../components/ui/MdText.jsx';
@@ -129,6 +130,26 @@ export default function DailyPage() {
   const totalItems = useMemo(
     () => sections.reduce((n, s) => n + (s.items?.length || 0), 0),
     [sections]
+  );
+
+  // 本期索引数据（用户 10-07：周刊同款右栏）。条目锚点 di-{id} 挂在 ColumnSection 的卡片/列表行上，
+  // colKey 随条目带上——折叠中的栏目点击索引时先展开再滚。
+  const indexGroups = useMemo(
+    () =>
+      sections.map((sec, i) => {
+        const key = secKey(sec, i);
+        return {
+          key,
+          title: sec.column,
+          items: (sec.items || []).map((it) => ({
+            id: it.id,
+            anchor: `di-${it.id}`,
+            title: it.title || '',
+            colKey: key,
+          })),
+        };
+      }).filter((g) => g.items.length),
+    [sections, secKey]
   );
 
   const toggleCol = useCallback(
@@ -351,6 +372,19 @@ export default function DailyPage() {
 
           <div className="h-16" />
           </div>
+
+          {/* 本期内容索引（用户 10-07：周刊同款右栏——按栏目分组列条目，点击展开折叠栏并滚动到条目） */}
+          {report && indexGroups.length > 0 && (
+            <IssueIndex
+              groups={indexGroups}
+              onJump={(it) => {
+                if (it.colKey && collapsed[it.colKey]) toggleCol(it.colKey); // 折叠中的栏目先展开，否则锚点不存在
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                  document.getElementById(it.anchor)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }));
+              }}
+            />
+          )}
         </div>
       </main>
 

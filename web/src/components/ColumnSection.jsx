@@ -155,6 +155,7 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
 function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
   return (
     <article
+      id={item.id != null ? `di-${item.id}` : undefined}
       className={`card card-lift overflow-hidden cursor-pointer ${wide ? 'sm:flex sm:items-stretch' : ''}`}
       onClick={() => onOpen?.(item)}
     >
@@ -240,6 +241,7 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
 function CompactRow({ item, index, keywords, highlight, onOpen }) {
   return (
     <div
+      id={item.id != null ? `di-${item.id}` : undefined}
       className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)] overflow-hidden"
       onClick={() => onOpen?.(item)}
       style={{ borderColor: 'var(--border)' }}

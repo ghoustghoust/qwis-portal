@@ -12,6 +12,7 @@ import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
 import { SunIcon, PlayIcon, HeadphonesIcon } from '../components/icons.jsx';
 import { SkeletonCards } from '../components/Skeleton.jsx';
+import IssueIndex from '../components/IssueIndex.jsx';
 
 const TYPES = [
   { key: 'all', label: '全部' },
@@ -52,6 +53,22 @@ export default function MyBriefPage() {
 
   const report = data?.report || data?.entry; // 往期端点返回 {entry}，最新返回 {report}——用户 10-06：点往期除了最新都不行（report undefined 页面空）
   const empty = data?.empty || report?.empty;
+
+  // 本期内容索引（用户 10-07：周刊同款右栏）。锚点 bi-{id} 挂在三种条目行上；
+  // 锚点 id 与条目 key 同源（runner fmt 的 id：文章数字 id、媒体 'v{id}'）。
+  const indexGroups = report && !empty
+    ? [
+        { key: 'top', title: '头条推荐', items: report.sections?.top },
+        { key: 'featured', title: '精选内容', items: report.sections?.featured },
+        { key: 'rest', title: '补充阅读', items: report.sections?.rest },
+        { key: 'media', title: '视频与播客', items: report.sections?.media },
+      ]
+        .filter((g) => g.items?.length)
+        .map((g) => ({
+          ...g,
+          items: g.items.map((it) => ({ id: it.id, anchor: `bi-${it.id}`, title: it.title || '' })),
+        }))
+    : [];
 
   return (
     <div className="flex h-full">
@@ -182,6 +199,15 @@ export default function MyBriefPage() {
 
           <div className="h-16" />
           </div>
+
+          {/* 本期内容索引（用户 10-07：周刊同款右栏——top/featured/rest/media 四组，点击滚动到条目；
+              类型筛选可能隐藏目标条目，跳不到时静默） */}
+          {report && !empty && (
+            <IssueIndex
+              groups={indexGroups}
+              onJump={(it) => document.getElementById(it.anchor)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            />
+          )}
         </div>
       </main>
       {studyItem && <QuickStudyModal item={studyItem} onClose={() => setStudyItem(null)} />}
@@ -227,7 +253,7 @@ function MediaRow({ item, onOpen }) {
   const isPod = item.kind === 'podcast';
   const Glyph = isPod ? HeadphonesIcon : PlayIcon;
   return (
-    <article className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
+    <article id={`bi-${item.id}`} className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
       {item.cover
         ? (
           <div className="relative flex-none w-32 sm:w-40">
@@ -288,7 +314,7 @@ function boostTitle(item) {
 
 function BriefCard({ item, rank, onOpen }) {
   return (
-    <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
+    <article id={`bi-${item.id}`} className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
       <div className="flex gap-4 p-3 sm:p-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -361,7 +387,7 @@ function BriefCard({ item, rank, onOpen }) {
 
 function RestRow({ item, onOpen }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
+    <div id={`bi-${item.id}`} className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
       {/* 原先硬编码 index+4 当序号：top3+featured7 之后 rest 实际从 11 开始，显示的是错号。
           补充阅读不是排名列表，去掉序号而不是补一个更复杂的偏移。 */}
       <span className="flex-1 min-w-[10rem]">
