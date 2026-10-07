@@ -268,6 +268,26 @@ export default function QuickStudyModal({ item, onClose }) {
               <p className="mt-2 text-[13px] leading-relaxed t-text whitespace-pre-wrap">
                 {item.summary}
               </p>
+              {/* 用户 10-07 分层方案：关键观点/金句从日报卡片下沉到这里（阅读层），
+                  仅日报条目携带这两个字段时渲染，普通文章详情不受影响 */}
+              {Array.isArray(item.points) && item.points.length > 0 && (
+                <ul className="mt-3 space-y-1.5">
+                  {item.points.map((p, pi) => (
+                    <li key={pi} className="text-[13px] leading-relaxed t-text flex gap-1.5">
+                      <span className="flex-none" style={{ color: 'var(--green)' }}>{pi + 1}.</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {item.quote ? (
+                <blockquote
+                  className="mt-3 pl-3 border-l-2 text-[12.5px] italic leading-relaxed t-muted"
+                  style={{ borderColor: 'var(--green)' }}
+                >
+                  {item.quote}
+                </blockquote>
+              ) : null}
             </div>
           ) : null}
 

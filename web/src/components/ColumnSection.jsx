@@ -51,7 +51,9 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
   const rawItems = section?.items || [];
   const items = useMemo(() => sortItems(rawItems, sort), [rawItems, sort]);
 
-  // 混合式分流：有封面者优先进卡片位（保持排序序），其余进紧凑列表
+  // 混合式分流：有封面者优先进卡片位（保持排序序），其余进紧凑列表。
+  // 用户 10-07：卡片区 1-2 张时保留，但宽度要撑满——1 张改图左文右特写横排（wide），
+  // 2 张双列均分，3 张三列；不再让 1-2 张卡按三列布局留出空格或挤在 1/3 宽里。
   const { cards, rows } = useMemo(() => {
     const cs = [];
     const rs = [];
@@ -101,7 +103,11 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
       ) : (
         <>
           {cards.length > 0 && (
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div
+              className={`mt-4 grid grid-cols-1 gap-4 ${
+                cards.length === 2 ? 'sm:grid-cols-2' : cards.length >= 3 ? 'sm:grid-cols-2 xl:grid-cols-3' : ''
+              }`}
+            >
               {cards.map((item, i) => (
                 <DailyCard
                   key={`${item.kind}-${item.ref_id}-${i}`}
@@ -109,6 +115,7 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
                   keywords={keywords}
                   highlight={highlight}
                   onOpen={onOpen}
+                  wide={cards.length === 1}
                 />
               ))}
             </div>
@@ -145,23 +152,37 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
   );
 }
 
-function DailyCard({ item, keywords, highlight, onOpen }) {
+function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
   return (
     <article
-      className="card card-lift overflow-hidden cursor-pointer"
+      className={`card card-lift overflow-hidden cursor-pointer ${wide ? 'sm:flex sm:items-stretch' : ''}`}
       onClick={() => onOpen?.(item)}
     >
       {item.cover ? (
-        <img
-          referrerPolicy="no-referrer"
-          src={imgUrl(item.cover)}
-          alt=""
-          loading="lazy"
-          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          className="w-full aspect-[16/9] object-cover"
-        />
+        wide ? (
+          // 特写横排（栏首仅 1 张卡时）：图占左固定宽、随文字撑高，避免 16:9 全宽图把卡撑到 600px 高
+          <div className="relative flex-none w-full h-48 sm:h-auto sm:w-72 sm:min-h-[210px]">
+            <img
+              referrerPolicy="no-referrer"
+              src={imgUrl(item.cover)}
+              alt=""
+              loading="lazy"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <img
+            referrerPolicy="no-referrer"
+            src={imgUrl(item.cover)}
+            alt=""
+            loading="lazy"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            className="w-full aspect-[16/9] object-cover"
+          />
+        )
       ) : null}
-      <div className="p-3 sm:p-4">
+      <div className="p-3 sm:p-4 flex-1 min-w-0">
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0 mt-1">
             <h3 className="text-[15px] font-bold leading-snug t-text line-clamp-2">
@@ -186,30 +207,19 @@ function DailyCard({ item, keywords, highlight, onOpen }) {
             另有 {item.related.length} 家信源报道
           </div>
         )}
+        {/* 卡片层只做"扫读"：摘要统一 3 行截断（用户 10-07：长短卡片高度要齐整、
+            一句话摘要的卡与长摘要的卡不再差出一截）；关键观点/金句是阅读层内容，
+            下沉到快速学习弹窗（QuickStudyModal），卡片不再逐条堆叠导致过长。 */}
         {item.summary ? (
-          <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-5 whitespace-pre-line">
+          <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-3 whitespace-pre-line">
             <MdText text={item.summary} />
           </p>
         ) : null}
         {/* 18-daily-ai-v2：AI 推荐理由 + 金句 + 关键观点 */}
         {item.reason ? (
-          <p className="mt-2 text-[12px] leading-relaxed t-accent">
+          <p className="mt-2 text-[12px] leading-relaxed t-accent line-clamp-2">
             推荐：<MdText text={item.reason} />
           </p>
-        ) : null}
-        {item.quote ? (
-          <blockquote className="mt-2 pl-3 border-l-2 text-[12px] italic leading-relaxed t-muted" style={{ borderColor: 'var(--accent)' }}>
-            {item.quote}
-          </blockquote>
-        ) : null}
-        {Array.isArray(item.points) && item.points.length > 0 ? (
-          <ul className="mt-2 space-y-1">
-            {item.points.map((p, pi) => (
-              <li key={pi} className="text-[12px] leading-relaxed t-text flex gap-1.5">
-                <span className="t-accent flex-none">·</span><span>{p}</span>
-              </li>
-            ))}
-          </ul>
         ) : null}
         {/* 2026-09-05 视觉精修：标签胶囊行（最多 3 个，无 tags 字段时不渲染） */}
         <TagPills tags={item.tags} max={3} className="mt-2.5" />
@@ -280,10 +290,12 @@ function CompactRow({ item, index, keywords, highlight, onOpen }) {
           {item.source_name ? '· ' : ''}{relativeTime(item.published_at)}
         </span>
       </span>
-      {item.cover ? (
+      {/* 缩略图兜底：播客条目 cover 为空（音频地址归位到 audio_url），节目封面在 source_avatar——
+          用户 10-07：播客行要与视频行一样有图，否则整栏"视频有图、播客没图"不同步 */}
+      {(item.cover || item.source_avatar) ? (
         <img
           referrerPolicy="no-referrer"
-          src={imgUrl(item.cover)}
+          src={imgUrl(item.cover || item.source_avatar)}
           alt=""
           loading="lazy"
           onError={(e) => { e.currentTarget.style.display = 'none'; }}

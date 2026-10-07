@@ -10,7 +10,6 @@ import TagPills from '../components/ui/TagPills.jsx';
 import MdText from '../components/ui/MdText.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import ThemePanorama from '../components/ThemePanorama.jsx';
-import SourceAvatar from '../components/ui/SourceAvatar.jsx';
 import { SunIcon, PlayIcon, HeadphonesIcon } from '../components/icons.jsx';
 import { SkeletonCards } from '../components/Skeleton.jsx';
 
@@ -52,7 +51,6 @@ export default function MyBriefPage() {
   useEffect(() => { load(); loadArchive(); }, [issueParam]);
 
   const report = data?.report || data?.entry; // 往期端点返回 {entry}，最新返回 {report}——用户 10-06：点往期除了最新都不行（report undefined 页面空）
-  const digest = data?.digest;
   const empty = data?.empty || report?.empty;
 
   return (
@@ -175,25 +173,7 @@ export default function MyBriefPage() {
             </>
           )}
 
-          {/* T3-1 R7：阅读足迹小结（晚间批生成；读不到不给键） */}
-          {digest && (
-            <section className="mt-8 card p-4 sm:p-5">
-              <div className="text-[11px] tracking-widest t-accent font-medium">阅读足迹 · {digest.date}</div>
-              <div className="mt-2 text-[13px] t-text">
-                过去 24 小时读了 <b className="t-accent">{digest.readCount}</b> 篇 · 稍后读 {digest.laterCount} 条
-              </div>
-              {digest.topSources?.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-                  {digest.topSources.map((src) => (
-                    <span key={src.name} className="flex items-center gap-1.5 text-[12px] t-muted">
-                      <SourceAvatar name={src.name} avatar={src.avatar} size={16} />
-                      {src.name} · {src.count}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
+          {/* 阅读足迹板块已按用户 10-07 裁决整体摘除（"不需要阅读足迹"）；后端 digest 字段仍在响应里，前端不再消费 */}
 
           <div className="h-16" />
           </div>
@@ -258,13 +238,21 @@ function MediaRow({ item, onOpen }) {
             </span>
           </div>
         )
-        : (
-          // 无封面 ≠ 无图：lib/media.js 的约定是播客把封面挪到 audio_url、cover 置空，
-          // 显示层由「源头像 / 首字块」兜底。原先这里只有一枚 emoji（用户批注「没有图标」= B84）。
-          <div className="flex-none w-14 flex flex-col items-center justify-center gap-1.5" style={{ background: 'var(--surface-2)' }}>
-            <SourceAvatar name={item.source_name || item.source || ''} avatar={item.source_avatar} size={40} />
-            <Glyph size={13} className="t-accent" />
+        : item.source_avatar ? (
+          // 无封面 ≠ 无图：lib/media.js 的约定是播客把音频挪到 audio_url、cover 置空，
+          // 节目封面在 source_avatar。用户 10-07：播客图要与视频缩略图同长宽比、
+          // 且不再在 logo 下挂耳机小图标（B84 的 40px 头像+图标列由此整体退场）。
+          <div className="relative flex-none w-32 sm:w-40">
+            <img
+              referrerPolicy="no-referrer" src={imgUrl(item.source_avatar)} alt="" loading="lazy"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
+        )
+        : (
+          // 连源头像也没有的罕见条目：保底灰块占位，不出现无图的塌行。
+          <div className="flex-none w-14" style={{ background: 'var(--surface-2)' }} />
         )}
       <div className="flex-1 min-w-0 p-3 sm:p-4">
         <div className="flex items-center gap-2">

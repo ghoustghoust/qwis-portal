@@ -1399,7 +1399,7 @@ async function runDailyAi() {
     sql += ` AND a.source_id IN (${selectedIds.map(() => '?').join(',')})`;
     args.push(...selectedIds);
   }
-  sql += ` ORDER BY a.published_at DESC LIMIT ${CANDIDATE_POOL_READ}`;
+  sql += ` ORDER BY ${require('../lib/prescreen').CANDIDATE_ORDER_SQL} LIMIT ${CANDIDATE_POOL_READ}`;
   const candidates = await qAll(sql, args);
   const AI_LIMIT = Number(process.env.DAILY_AI_LIMIT) || Infinity; // 调试用：限制候选数
   const clean = candidates.filter((a) => !hasMojibake(a.title) && !isErrorPageItem(a));
@@ -2074,7 +2074,7 @@ async function runDaily() {
     args.push(...selectedIds);
   }
   sql += ' AND ' + notNoiseSql('s');
-  sql += ` ORDER BY a.published_at DESC LIMIT ${CANDIDATE_POOL_READ}`;
+  sql += ` ORDER BY ${require('../lib/prescreen').CANDIDATE_ORDER_SQL} LIMIT ${CANDIDATE_POOL_READ}`;
 
   // 级3 每源预配额（44 号 spec 步1）：裸报告虽不花 AI 额度，但**候选语义必须与另三份同一份实现**
   // ——B20 的教训就是"门槛只接在 3/5 份"，表现成"大部分天正常、个别天混进低质条目"。
