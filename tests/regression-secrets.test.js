@@ -78,7 +78,14 @@ test('S6 真库两面都必须 0 命中，且分母非空（"0 处"必须同时�
   const readRel = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
   const tracked = sec().listTracked(ROOT);
   const others = sec().listUntrackedNotIgnored(ROOT);
-  assert.ok(tracked.length > 1000, `已跟踪面只 ${tracked.length} 份，取法可疑`);
+  // 分母按「门禁真会读的文本语料」计，不按全仓文件总数。为什么改（锁的纪律：指到裁决 + 实测数字）：
+  //   用户 10-07 批准删除 docs/archive/analysis 抓帧素材 516 份 + .cluster 34 份（原话"这些都是过去的开发样图，
+  //   只用删除 …/analysis"、"这个测试文件以当前实际为准"），全仓跟踪数从 1080 → 530，旧断言 tracked.length>1000
+  //   当场把清洁判成红（实测 pass 7 / fail 1）。png/jpg 从来不是密钥扫描的语料，旧口径锁的是"素材有多少"而不是"取法对不对"。
+  //   扫描面本身没有缩小：下面的 scanFiles 仍吃过 tracked 全量，改的只是"非空"的判据口径。
+  //   同一条锁的未跟踪面 09-21 已犯过同族病（见下一段注释），这次换到已跟踪面——代理指标选错的两副面孔。
+  const corpus = tracked.filter(f => /\.(md|js|cjs|mjs|jsx|json|ya?ml|txt|sql)$/i.test(f));
+  assert.ok(corpus.length > 200, `文本语料面只 ${corpus.length} 份（全仓跟踪 ${tracked.length}），取法可疑`);
   // 未跟踪面的分母与门禁自报数对账（同一份 lib/secrets.js 取数，一致 = 没在扫空气）。
   // 旧写法断言 >100，那是"工作区必然很脏"的暗含假设——09-21 清洁轮把 787 份收敛到个位数后它把清洁误判成红
   const lintOut = require('child_process').execFileSync('node', ['tools/doc-lint.cjs'], { cwd: ROOT, encoding: 'utf8' });
