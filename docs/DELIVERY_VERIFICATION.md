@@ -10,8 +10,8 @@
 ## 0. 系统拓扑（验证前必须建立的脑图）
 
 ```
-GitHub Actions runner ──直写──▶ Turso (libSQL, 东京) ◀──读── Vercel Serverless API ◀── 浏览器
-  (采集/日报/清理等档, 节奏见作业文件)                    (api/*.js 无缓存)
+GitHub Actions runner ──直写──▶ Turso (libSQL, 东京) ◀──读── Vercel Serverless API (hnd1) ◀── Vercel CDN ◀── 浏览器
+  (采集/日报/清理等档, 节奏见作业文件)      (公开 GET 有 CDN 分档缓存；写操作/鉴权 GET 直达函数)
 ```
 
 **三个独立系统，三处独立凭据**（改一处不同步 = 静默故障，本项目最大血泪坑）：
@@ -146,7 +146,7 @@ curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status
 | 阅读器视图 | `GET /api/articles?limit=3&sort=new`（不带 include_hot） | `published_at`（**发布时间**，≠入库时间，会比 created_at 旧，属正常） |
 | 日报 | `GET /api/daily` | `report.generated_at` 是今天（曾为 null = 日报链断） |
 | 备份采集端点 | `POST /api/collect?key=<COLLECT_KEY>` | 200 + `stats`；403 = 密钥不一致 |
-| API 缓存 | `curl -sSI .../api/articles` | 应为 `max-age=0` + `X-Vercel-Cache: MISS`（API 无缓存，慢=库没新数据，不是缓存） |
+| API 缓存 | `curl -sSI .../api/articles` | 公开 GET 有 CDN 分档缓存（2026-10-07 起：`Cache-Control: public, s-maxage=30, stale-while-revalidate=120`；since 10s / meta 300s）。第一跳 `X-Vercel-Cache: MISS`，TTL 内第二跳 `HIT`；带 `Authorization` 的请求永远 MISS（CDN 不缓存鉴权响应）。**测真实函数耗时用带 token 请求**，慢=库慢不是缓存 |
 | 静态导出物 | `GET /data/articles.json` | `generated_at` 日期（由那条定时作业刷新，时刻见作业文件）。它是每日导出物，页面不依赖它刷新，**不是兜底/降级路径**（ADR-05） |
 
 ### 3.3 页面显示时间的解读（避免误判）
