@@ -386,7 +386,7 @@ function ReadingRow({ it, selectMode, checked, onToggle, t }) {
   const isVideo = it.item_type === 'video';
 
   return (
-    <div className={`card card-lift flex items-start gap-3 p-3 ${selectMode ? 'cursor-pointer' : ''}`}>
+    <div className={`card card-lift flex items-start gap-3 p-3 cv-card ${selectMode ? 'cursor-pointer' : ''}`}>
       {/* 选择框 */}
       {selectMode && (
         <label className="flex-none mt-1 cursor-pointer" onClick={(e) => { e.stopPropagation(); onToggle(); }}>

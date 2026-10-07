@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { ThemeProvider, ThemeButton } from './theme.jsx';
@@ -152,8 +152,12 @@ function App() {
   else if (known) page = <ReaderPage />;
   else page = <NotFoundPage path={path} />;
 
+  // value 记忆化（2026-10-06）：只在 path 变化时换引用，避免 App 其它 state 变化
+  // 连带全树导航消费者重渲
+  const nav = useMemo(() => ({ path, navigate }), [path, navigate]);
+
   return (
-    <NavCtx.Provider value={{ path, navigate }}>
+    <NavCtx.Provider value={nav}>
       <LanguageProvider>
         <StoreProvider>
           <ThemeProvider>

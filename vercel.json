@@ -28,8 +28,8 @@
     }
   ],
   "functions": {
-    "api/collect.js": { "maxDuration": 60 },
-    "api/daily-generate.js": { "maxDuration": 60 },
-    "api/[...slug].js": { "maxDuration": 30 }
+    "api/collect.js": { "maxDuration": 60, "regions": ["hnd1"] },
+    "api/daily-generate.js": { "maxDuration": 60, "regions": ["hnd1"] },
+    "api/[...slug].js": { "maxDuration": 30, "regions": ["hnd1"] }
   }
 }

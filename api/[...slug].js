@@ -81,6 +81,24 @@ async function setSetting(key, val) {
   );
   _settingsCache.set(key, { val, ts: Date.now() });
 }
+// 批量读设置（2026-10-06）：handleSettings 这类一次要十几键的端点，逐键 getSetting 冷缓存时
+// 是 15 次串行 Turso 往返（每次 ~200ms）——合成一次 IN 查询，未命中键按 getSetting 同语义
+// 缓存回落默认值（含负缓存，防缺失键每请求重查）。entries: [[key, defaultValue], ...]
+async function getSettings(entries) {
+  const now = Date.now();
+  const fresh = (k) => { const c = _settingsCache.get(k); return c && now - c.ts < CACHE_TTL; };
+  const missing = entries.filter(([k]) => !fresh(k));
+  if (missing.length) {
+    const rows = await qAll(`SELECT key, value FROM settings WHERE key IN (${missing.map(() => '?').join(',')})`, missing.map(([k]) => k));
+    const found = new Map();
+    for (const r of rows) { let val; try { val = JSON.parse(r.value); } catch { val = undefined; } found.set(r.key, val); }
+    for (const [k, def] of missing) {
+      const raw = found.has(k) ? found.get(k) : undefined;
+      _settingsCache.set(k, { val: (raw === undefined || raw === null) ? def : raw, ts: now });
+    }
+  }
+  return entries.map(([k]) => _settingsCache.get(k).val);
+}
 const SETTING_STORE = { getSetting, setSetting }; // H41③：回落留痕的读写面（prescreen 等消费方传这个）
 
 // ─── 鉴权 ───
@@ -174,10 +192,21 @@ async function handleArticles(req) {
     a.published_at, a.read_at, a.later, a.created_at, s.name AS source_name,
     s.spotlight AS source_spotlight, s.avatar AS source_avatar, a.score, a.tags, a.reason, a.word_count`;
 
-  const rows = (await qAll(
-    `SELECT ${fields} FROM articles a JOIN sources s ON s.id=a.source_id ${where}${cursorCond} ORDER BY ${orderExpr} ${dir}, a.id ${dir} LIMIT ?`,
-    [...args, PAGE_SIZE + 1]
-  )).map((r) => {
+  // 计数与主查询无依赖，全部并发（2026-10-06：原串行 4 次 Turso 往返，每次 ~200ms 纯等待）
+  const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
+  const [rawRows, todayRow, laterRow, historyRow] = await Promise.all([
+    qAll(
+      `SELECT ${fields} FROM articles a JOIN sources s ON s.id=a.source_id ${where}${cursorCond} ORDER BY ${orderExpr} ${dir}, a.id ${dir} LIMIT ?`,
+      [...args, PAGE_SIZE + 1]
+    ),
+    qOne(
+      `SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id
+       WHERE COALESCE(a.published_at, a.created_at) >= ? AND ${NOT_NOISE_READER}`,
+      [dayAgo]),
+    qOne('SELECT COUNT(*) c FROM articles WHERE later=1'),
+    qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL'),
+  ]);
+  const rows = rawRows.map((r) => {
     const m = mapAudioFields(r); // 播客音频识别（cover 里的 enclosure 音频 → audio_url）
     if (m.translated_title) m.translated_title = cleanTranslatedTitle(m.translated_title);
     if (m.cover === 'null') m.cover = null;
@@ -203,13 +232,9 @@ async function handleArticles(req) {
   // 计数（轻量级：只查 later/history 总数，不做 NOT EXISTS 子查询）
   // 27-reader-today：补 today（近 24h 条数，「今日」视图导航计数）
   // 对抗审查 P2-1 修：today 与本地 articleCounts 同口径（排噪），否则云端数字显著虚高
-  const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
-  const todayCount = (await qOne(
-    `SELECT COUNT(*) c FROM articles a JOIN sources s ON s.id=a.source_id
-     WHERE COALESCE(a.published_at, a.created_at) >= ? AND ${NOT_NOISE_READER}`,
-    [dayAgo])).c;
-  const laterCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE later=1')).c;
-  const historyCount = (await qOne('SELECT COUNT(*) c FROM articles WHERE read_at IS NOT NULL')).c;
+  const todayCount = todayRow.c;
+  const laterCount = laterRow.c;
+  const historyCount = historyRow.c;
 
   return jsonOk({ items: rows, nextCursor, pageSize: PAGE_SIZE, counts: { today: todayCount, later: laterCount, history: historyCount } });
 }
@@ -390,10 +415,29 @@ const { notNoiseSql, notNoiseExistsSql, notNoiseJoinSql, notHotlistSql, hotlistC
 const { eventsState, eventMetaTable } = require('../lib/alert-events');
 const NOT_NOISE_READER = notNoiseSql('s', { reader: true });
 
+// ─── /api/hot 家族进程内缓存（2026-10-06） ───
+// tab=all/featured 的 aiRelevanceCond 展开为 ~110 个 LIKE 逐行评估（7 天窗实测 45.9k 行，
+// 单次 2-3s），同窗口扫描在 hot/hotGroups/hotSources 各重复一次。查询组合有限（首屏无游标
+// 的几种形态占绝大多数流量），60s 缓存 + 出口 CDN s-maxage 挡绝大部分重复；游标翻页组合多，
+// Map 设上限防撑爆。
+const _hotCache = new Map();
+const HOT_CACHE_TTL = 60000;
+function hotCacheGet(key) {
+  const c = _hotCache.get(key);
+  return (c && Date.now() - c.ts < HOT_CACHE_TTL) ? c.val : null;
+}
+function hotCacheSet(key, val) {
+  if (_hotCache.size > 200) _hotCache.clear();
+  _hotCache.set(key, { val, ts: Date.now() });
+}
+
 // GET /api/hot — 热点榜（读自有评分源为主、热榜聚合为辅；三个视图的口径差异见 docs/features/hot-and-weekly.md）
 // tab: all(AI 信息实时流=全源 AI 相关内容时间序) | featured(AI 精选=自有源六维≥60 且 AI 相关) | hotlist(纯热搜子视图)
 // 分类=gname(分组名，重名分组合并) / category(六类关键词) / q / source / cursor；时间窗默认 7 天（days 可调，上限 30）
 async function handleHot(req) {
+  const cacheKey = `hot|${req.url}`;
+  const cached = hotCacheGet(cacheKey);
+  if (cached) return cached;
   const q = req.query;
   const tab = q.tab || 'all';
   const category = q.category || '';
@@ -518,12 +562,17 @@ async function handleHot(req) {
       scoreFormatted: formatHeat(r.score),
     });
   });
-  return jsonOk({ items, nextCursor });
+  const out = jsonOk({ items, nextCursor });
+  hotCacheSet(cacheKey, out);
+  return out;
 }
 
 // GET /api/hot/groups?tab= — 当前 tab 下有内容的分组计数（2026-09-14：分类 pills 数据源；
 // 按分组名聚合自动合并重名分组，只返回有内容的组，前端不再出现「点进去为空」的分类）
 async function handleHotGroups(req) {
+  const cacheKey = `hotgroups|${req.url}`;
+  const cached = hotCacheGet(cacheKey);
+  if (cached) return cached;
   const tab = req.query.tab || 'all';
   const conds = ['a.published_at >= ?'];
   const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
@@ -542,7 +591,9 @@ async function handleHotGroups(req) {
      GROUP BY g.name ORDER BY count DESC`,
     args
   );
-  return jsonOk({ groups: rows });
+  const out = jsonOk({ groups: rows });
+  hotCacheSet(cacheKey, out);
+  return out;
 }
 
 // GET /api/hot/categories — 分类清单 + 生效映射（B58）
@@ -557,6 +608,9 @@ async function handleHotCategories(req) {
 // GET /api/hot/sources — 实时流来源下拉（2026-09-14：改为全量源计数，此前只查聚合热榜源，下拉里全是「xx热榜」）
 // 与实时流同口径（AI 相关 + 7 天窗 + 噪声源排除），保证选中的源一定有内容
 async function handleHotSources(req) {
+  const cacheKey = `hotsources|${req.url}`;
+  const cached = hotCacheGet(cacheKey);
+  if (cached) return cached;
   const args = [new Date(Date.now() - 7 * 86400e3).toISOString()];
   const aiCond = aiRelevanceCond(args);
   const rows = await qAll(
@@ -567,7 +621,9 @@ async function handleHotSources(req) {
      GROUP BY s.name ORDER BY count DESC LIMIT 200`,
     args
   );
-  return jsonOk({ sources: rows });
+  const out = jsonOk({ sources: rows });
+  hotCacheSet(cacheKey, out);
+  return out;
 }
 
 // ─── 事件聚合引擎：逻辑在 lib/hot-events.js（纯函数，runner/云端共用） ───
@@ -843,8 +899,11 @@ async function handleDaily(req) {
   // 2026-09-18 修复：不再只取最新一行。collect.yml 的 daily-report（非 AI，09:03 北京）与下面的
   // 内联兜底都会插入 window_hours=30、无 theme/themes/六维 的裸报告，一旦它比 daily-ai 产物更晚，
   // `ORDER BY generated_at DESC LIMIT 1` 就让每日早报整天退化成裸版（线上实测 id100 遮蔽 id99）。
-  const rows = await qAll('SELECT * FROM daily_reports ORDER BY generated_at DESC LIMIT 20');
-  const row = briefGuards.pickDailyReport(rows);
+  // 2026-10-06 瘦身：先取轻列挑期（pickDailyReport 只用 stats/generated_at），挑中再按 id 取 sections——
+  // 原 SELECT * LIMIT 20 把 20 期 sections 大 BLOB 全取回（B26 实测同型读取 214KB/2.0s）
+  const candidates = await qAll('SELECT id, generated_at, window_hours, stats FROM daily_reports ORDER BY generated_at DESC LIMIT 20');
+  const picked = briefGuards.pickDailyReport(candidates);
+  const row = picked ? await qOne('SELECT * FROM daily_reports WHERE id=?', [picked.id]) : null;
 
   // 检查是否需要自动生成
   if (row) {
@@ -939,18 +998,22 @@ async function handleSources(req) {
   if (req.query.type) { conds.push('type=?'); args.push(req.query.type); }
   if (req.query.enabled !== undefined) { conds.push('enabled=?'); args.push(Number(req.query.enabled)); }
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
-  const rows = await qAll(
-    `SELECT s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.spotlight, s.muted, s.reader_visible, s.enabled, s.status,
-     s.last_fetched_at, s.next_fetch_at, s.fail_count, s.created_at, g.name AS group_name
-     FROM sources s LEFT JOIN groups g ON g.id=s.group_id ${where} ORDER BY s.enabled DESC, s.name`, args
-  ); // 用户 10-06：选择来源弹窗要显示分组名；intro 云端生产库无此列（本地 lib/db.js 有云端没有，两端 schema 不一致——撤掉）
+  // 用户 10-06：选择来源弹窗要显示分组名；intro 云端生产库无此列（本地 lib/db.js 有云端没有，两端 schema 不一致——撤掉）
   // 未读=近 3 天（27-reader-today：历史未读自动归档，焦虑数字消失）；视频源保持总条数
+  // 三条查询无依赖，并发（2026-10-06：原串行 3 次 Turso 往返）
   const threeDaysAgo = new Date(Date.now() - 3 * 86400e3).toISOString();
-  const unreadRows = await qAll(
-    'SELECT source_id, COUNT(*) c FROM articles WHERE read_at IS NULL AND COALESCE(published_at, created_at) >= ? GROUP BY source_id',
-    [threeDaysAgo]
-  );
-  const videoRows = await qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id');
+  const [rows, unreadRows, videoRows] = await Promise.all([
+    qAll(
+      `SELECT s.id, s.type, s.name, s.url, s.avatar, s.uid, s.group_id, s.spotlight, s.muted, s.reader_visible, s.enabled, s.status,
+       s.last_fetched_at, s.next_fetch_at, s.fail_count, s.created_at, g.name AS group_name
+       FROM sources s LEFT JOIN groups g ON g.id=s.group_id ${where} ORDER BY s.enabled DESC, s.name`, args
+    ),
+    qAll(
+      'SELECT source_id, COUNT(*) c FROM articles WHERE read_at IS NULL AND COALESCE(published_at, created_at) >= ? GROUP BY source_id',
+      [threeDaysAgo]
+    ),
+    qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id'),
+  ]);
   const unreadMap = new Map(unreadRows.map((r) => [r.source_id, r.c]));
   const videoMap = new Map(videoRows.map((r) => [r.source_id, r.c]));
   const VIDEO_TYPES = new Set(['bilibili', 'douyin', 'youtube']);
@@ -1095,27 +1158,31 @@ async function handleStatusDailySources() {
 
 // GET /api/settings
 async function handleSettings(req) {
-  const daily = await getSetting('daily', {});
-  const intervals = await getSetting('intervals', {});
-  const queue = await getSetting('queue', {});
-  const data = await getSetting('data', {});
-  const mybriefCfg = await getSetting('mybrief', {});
-  const weeklyCfg = await getSetting('weekly', {});
-  const hot = await getSetting('hot', {});
-  const views = await getSetting('reader.views', []);
-  const aiCfg = await getSetting('ai', {});
+  // 批量预取（2026-10-06）：原 16 次 getSetting 冷缓存时串行 16 次 Turso 往返（~3s），
+  // 现一次 IN 查询 + 一次 credentials 查询并发，共 2 次往返
+  const [settingsVals, creds] = await Promise.all([
+    getSettings([
+      ['daily', {}], ['intervals', {}], ['queue', {}], ['data', {}], ['mybrief', {}],
+      ['weekly', {}], ['hot', {}], ['reader.views', []], ['ai', {}], ['subscription.ids', []],
+      ['opml.url', ''], ['opml.enabled', true], ['prescreen.perSourceCap', null],
+      ['wechat.lastSyncAt', null], ['wechat.lastResult', null], ['settings.valueFallbacks', []],
+    ]),
+    qAll('SELECT platform, cookie FROM credentials'),
+  ]);
+  const [
+    daily, intervals, queue, data, mybriefCfg, weeklyCfg, hot, views, aiCfg,
+    subIds, opmlUrl, opmlEnabled, prescreenCapRaw, wxLastSync, wxLastResult, valueFallbacks,
+  ] = settingsVals;
   // 凭据存在性（不落值）
-  const creds = await qAll('SELECT platform, cookie FROM credentials');
   const credSet = new Set(creds.filter((c) => c.cookie).map((c) => c.platform));
   // queue.token 脱敏：只回是否已配置（与本地 maskSection 一致）
   const queueOut = { intervalMin: 10, enabled: false, ...queue };
   if ('token' in queueOut) { queueOut.tokenConfigured = !!queueOut.token; delete queueOut.token; }
   // 27b：订阅轴透出（早报中心对照卡「订阅源数」用）
-  const subIds = await getSetting('subscription.ids', []);
   return jsonOk({
     subscription: { ids: Array.isArray(subIds) ? subIds : [], count: Array.isArray(subIds) ? subIds.length : 0 },
     intervals: { opml: 12, rss: 0.5, bilibili: 60, douyin: 360, queue: 10, ...intervals },
-    opml: { url: await getSetting('opml.url', ''), enabled: await getSetting('opml.enabled', true) },
+    opml: { url: opmlUrl, enabled: opmlEnabled },
     queue: queueOut,
     daily: { time: '08:00', windowHours: 48, ...daily },
     data: { retentionDays: 7, ...data },
@@ -1126,12 +1193,12 @@ async function handleSettings(req) {
     // 级3 每源配额透出：回的是**归一后的值**（坏值/缺键 → 2），与四个消费方实际执行的数一模一样。
     // 为什么不透出：UI 上有格子却读不到现值 = 半接线（用户 09-24「要能让功能正式可以使用，而不是验证一半、未开发一半」）。
     // 这里只回一个整数，不涉及任何凭据（本响应里 ai 段历来只回布尔/是否已配置）。
-    prescreen: { perSourceCap: require('../lib/prescreen').prescreenCapOf(await getSetting('prescreen.perSourceCap', null)) },
+    prescreen: { perSourceCap: require('../lib/prescreen').prescreenCapOf(prescreenCapRaw) },
     bilibili: { cookieConfigured: credSet.has('bilibili') },
     douyin: { cookieConfigured: credSet.has('douyin') },
     wechat: {
-      lastSyncAt: await getSetting('wechat.lastSyncAt', null),
-      lastResult: await getSetting('wechat.lastResult', null),
+      lastSyncAt: wxLastSync,
+      lastResult: wxLastResult,
     },
     ai: (() => {
       // H41②：回显与执行共用同一次解析（api/_ai.js effectiveAiConfig），逐字段标出来源层——
@@ -1148,7 +1215,7 @@ async function handleSettings(req) {
     })(),
     // T3-8 批次3（审查必②）：坏值回落留痕此前零读端点，日志板块恒假空态——透出给界面。
     // raw 已在写入侧截 80 字符；凭据类键不进设置读取回退路径，若未来接入需先过掩码。
-    valueFallbacks: await getSetting('settings.valueFallbacks', []),
+    valueFallbacks,
   });
 }
 
@@ -2042,7 +2109,9 @@ async function handleImg(req) {
     // 现与本地 server/util/safeimg.js 同语义：DNS 解析后校验、逐跳校验重定向目标、
     // 只允许 image/*、流式累计字节上限（api/_safeimg.js）。
     const { contentType, body } = await require('./_safeimg').fetchImageSafe(url);
-    return { raw: true, body, headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=86400' } };
+    // 图片按 URL 即不可变资源：浏览器 1 天 + Vercel CDN 7 天（2026-10-06：此前只有浏览器缓存，
+    // 每张代理图都回源实时中转，首屏封面墙 = 几十次函数调用排队）
+    return { raw: true, body, headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400' } };
   } catch (err) {
     const msg = String(err.message || '');
     if (/forbidden host|bad url|not an image/.test(msg)) return { status: 400, body: jsonErr(msg) };
@@ -2639,10 +2708,11 @@ function cutoffIso(days) {
 
 // GET /api/data/stats
 async function handleDataStats(req) {
+  // 各表 COUNT 无依赖，并发（2026-10-06：原 for 循环串行 10 次 Turso 往返）
+  const tableNames = [...DATA_TABLES];
+  const counts = await Promise.all(tableNames.map((t) => qOne(`SELECT COUNT(*) c FROM ${t}`)));
   const tables = {};
-  for (const t of DATA_TABLES) {
-    tables[t] = (await qOne(`SELECT COUNT(*) c FROM ${t}`)).c;
-  }
+  tableNames.forEach((t, i) => { tables[t] = counts[i].c; });
   // Turso 平台用量（用户 10-06 提供 Management API 凭据）：Reads/Writes/Storage 如图
   // 凭据走 env TURSO_ORG + TURSO_API_TOKEN（不是数据库连接串——平台级只读用量）。
   let tursoUsage = null;
@@ -3316,6 +3386,7 @@ async function handleGroupMove(req) {
 // ═══ 报警配置写（15-cloud-alerts, 2026-09-12） ═══
 const _alerts = require('./_alerts');
 const _ai = require('./_ai'); // 16-ai-infra：统一 AI 通道
+_ai.setDb(getDb); // 2026-10-06：复用主连接（传函数=懒注入，首次 AI 调用才建连），同实例不再持两份 libsql client
 
 // PUT /api/alerts/config — 整体写（掩码合并：掩码/空值保留旧密钥）
 async function handleAlertsConfigPut(req) {
@@ -3666,6 +3737,22 @@ async function dispatch(req) {
 }
 
 // ─── Serverless 入口 ───
+// 公开只读 GET 的 CDN 缓存档（2026-10-06）：此前全部 JSON API 零 HTTP 缓存，前端每次跳转/轮询
+// 都打穿到函数 + Turso。带 Authorization 的请求 Vercel CDN 不缓存，所以前端 api.js 对公开端点
+// 不再附带 token（同批改动）。轮询端点 since 给最短档；meta/categories 近乎静态给最长档。
+function cacheControlFor(req) {
+  if (req.method !== 'GET') return null;
+  const path = req.url.split('?')[0];
+  const isPublic = PUBLIC_GET_PATHS.has(path)
+    || /^\/api\/articles\/\d+$/.test(path)
+    || /^\/api\/videos\/\d+(\/play)?$/.test(path)
+    || /^\/api\/hot\/events\/\d+$/.test(path);
+  if (!isPublic) return null;
+  if (path === '/api/articles/since') return 'public, s-maxage=10, stale-while-revalidate=30';
+  if (path === '/api/meta' || path === '/api/hot/categories') return 'public, s-maxage=300, stale-while-revalidate=600';
+  return 'public, s-maxage=30, stale-while-revalidate=120';
+}
+
 module.exports = async (req, res) => {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -3687,6 +3774,8 @@ module.exports = async (req, res) => {
       for (const [k, v] of Object.entries(result.headers || {})) res.setHeader(k, v);
       return res.status(200).send(result.body);
     }
+    const cc = cacheControlFor(req);
+    if (cc) res.setHeader('Cache-Control', cc);
     if (result && result.status) {
       return res.status(result.status).json(result.body);
     }

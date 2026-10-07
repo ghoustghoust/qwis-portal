@@ -17,11 +17,14 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   const contentRef = useRef(null);
   const { t } = useI18n();
 
-  // 正文内图片/视频处理：图片加载失败隐藏破图；视频补 controls 并在失效时替换为「打开原文」提示
+  // 正文内图片/视频处理：图片懒加载 + 加载失败隐藏破图；视频补 controls 并在失效时替换为「打开原文」提示
+  // 2026-10-06：正文图补 loading=lazy——长文几十张原图此前全部即刻下载，打开文章时整页卡顿
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
     el.querySelectorAll('img').forEach((img) => {
+      img.loading = 'lazy';
+      img.decoding = 'async';
       img.onerror = () => { img.style.display = 'none'; };
       if (img.complete && img.naturalWidth === 0) img.style.display = 'none';
     });

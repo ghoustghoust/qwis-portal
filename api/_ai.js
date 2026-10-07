@@ -7,11 +7,21 @@ const { gapMs, DEFAULT_GAP_MS } = require('../lib/ai-throttle');
 const { promptText, settingKey: promptSettingKey } = require('../lib/ai-prompts');
 
 let _db = null;
+let _dbProvider = null; // 宿主注入的懒连接函数（2026-10-06：模块加载时库里环境变量可能未就绪，不许顶层建连）
 function getDb() {
   if (!_db) {
-    _db = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
+    _db = _dbProvider
+      ? _dbProvider()
+      : createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
   }
   return _db;
+}
+// 宿主注入共享连接（2026-10-06）：[...slug].js 已持有一个模块级 client，
+// 本模块再建一个 = 同实例两份连接；注入后复用（runner 不注入，走上面的自建路径）。
+// 传函数=懒注入（首次用才建连）；传 client 实例=立即复用。
+function setDb(dbOrProvider) {
+  if (typeof dbOrProvider === 'function') _dbProvider = dbOrProvider;
+  else if (dbOrProvider) _db = dbOrProvider;
 }
 async function qOne(sql, args = []) { return Array.from((await getDb().execute({ sql, args })).rows)[0]; }
 function nowIso() { return new Date().toISOString(); }
@@ -534,6 +544,7 @@ async function generateTheme(items) {
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats, effectiveAiConfig,
   refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateThemeDetailed, pickThemeReply, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
+  setDb, // 宿主注入共享 libsql 连接（省一个 client）
   STATS_MAX, // 批次5：/api/ai/usage 的口径标签用（统计环上限，单一来源在本文件）
   _setProviderOverride, // tests only
 };

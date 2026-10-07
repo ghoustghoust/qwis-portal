@@ -54,6 +54,18 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
   const boxRef = useRef(null);
   const loadingRef = useRef(false);
 
+  // 搜索输入防抖（2026-10-06）：此前 onChange 直通 onSearch→q，每个按键都触发列表清空重拉
+  // （同站 HotPage/MyReadingPage 早有 300-350ms 防抖，此处漏了）。输入框用本地值即时回显，
+  // 生效值 350ms 后上报；外部清空（切板块/切模式）时同步回来。
+  const [qInput, setQInput] = useState(q || '');
+  useEffect(() => { setQInput(q || ''); }, [q]);
+  const searchTimer = useRef(null);
+  const onSearchInput = useCallback((v) => {
+    setQInput(v);
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => onSearch(v), 350);
+  }, [onSearch]);
+
   const toggleDedup = () => {
     setDedup((v) => {
       const next = !v;
@@ -217,8 +229,8 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
         <input
           className="input mt-2 !py-1.5 text-xs"
           placeholder={filter.tab === 'history' ? '搜索历史标题和内容' : filter.tab === 'all' ? '输入关键词即进入检索…' : '搜索当前列表…'}
-          value={q}
-          onChange={(e) => onSearch(e.target.value)}
+          value={qInput}
+          onChange={(e) => onSearchInput(e.target.value)}
         />
       </div>
       {/* 27-reader-today ①：今日早报摘要卡（今日视图顶部主入口） */}
@@ -249,7 +261,7 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
               key={a.id}
               onClick={() => onSelect(a.id)}
               style={active ? { borderColor: 'var(--accent)' } : undefined}
-              className={`card card-lift p-3 cursor-pointer relative ${unread ? 'unread-bar' : ''} ${
+              className={`card card-lift p-3 cursor-pointer relative cv-card ${unread ? 'unread-bar' : ''} ${
                 active ? 't-accent-soft' : ''
               }`}
             >

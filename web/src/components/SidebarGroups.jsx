@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { relativeTime } from '../util';
+import { relativeTime, imgUrl } from '../util';
 import {
   ChevronDownIcon, RefreshIcon, PlusIcon, XIcon, FolderIcon,
 } from './icons.jsx';
@@ -138,7 +138,8 @@ export default function SidebarGroups({ kind, sources, groups, filter, onFilterC
           }`}
         >
           {s.avatar ? (
-            <img referrerPolicy="no-referrer" src={s.avatar} alt=""
+            // 2026-10-06：走 imgUrl 代理白名单——ytimg/twimg 等被墙域名的源头像此前直连必挂
+            <img referrerPolicy="no-referrer" src={imgUrl(s.avatar)} alt=""
               className="w-[18px] h-[18px] rounded-full flex-none object-cover" loading="lazy"
               onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           ) : (

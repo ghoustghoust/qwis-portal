@@ -1,7 +1,7 @@
 // 2.1 全局状态共享层：轻量 React Context，集中管理跨页面共享数据
 // 解决的问题：IconRail/ReaderPage/DailyPage 各自独立请求 /api/settings 等公共数据，
 // 页面切换时全部重新拉取。本 store 在 App 层一次性加载，子组件按需消费。
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
 
 const StoreCtx = createContext(null);
@@ -71,8 +71,16 @@ function StoreProvider({ children }) {
     }));
   }, []);
 
+  // value 记忆化（2026-10-06）：原 `{...state, ...}` 每次渲染新建对象，
+  // 任何一次 setState（哪怕只换一个 key）都广播全部消费者重渲（阅读器三栏整树）。
+  // 现在 value 只在 state 真变时换引用。
+  const value = useMemo(
+    () => ({ ...state, loadAll, refresh, patchSettings }),
+    [state, loadAll, refresh, patchSettings]
+  );
+
   return (
-    <StoreCtx.Provider value={{ ...state, loadAll, refresh, patchSettings }}>
+    <StoreCtx.Provider value={value}>
       {children}
     </StoreCtx.Provider>
   );

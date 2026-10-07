@@ -334,6 +334,14 @@ mark.hl {
   contain-intrinsic-size: auto 480px;
 }
 
+/* 列表卡片跳过屏外渲染（2026-10-06）：文章/热点/阅读三大列表无限累积，滚几百条后
+   布局/绘制成本线性增长。屏外卡片跳过渲染（DOM/页内查找/锚点全部保留），
+   contain-intrinsic-size 给占位高度防滚动条抖动。 */
+.cv-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 120px;
+}
+
 /* ===== 2026-09-05 视觉精修：统一排版 token（全部 var() 驱动，三套主题自适应） ===== */
 
 /* 标签/分类小胶囊（TagPills、分类筛选） */

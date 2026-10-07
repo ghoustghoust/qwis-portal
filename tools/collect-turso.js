@@ -2451,6 +2451,11 @@ async function runTranslate() {
     'CREATE INDEX IF NOT EXISTS idx_articles_pubco ON articles(COALESCE(published_at, created_at))',
     'CREATE INDEX IF NOT EXISTS idx_articles_created ON articles(created_at)',
     'CREATE INDEX IF NOT EXISTS idx_videos_created ON videos(created_at)',
+    // 媒体页播客分支（2026-10-06）：/api/videos 播客侧原对 articles 全表扫 35 个 LIKE
+    // （54.5k 行 × 15KB ≈ 1GB 读取，线上实测 10-17s）。部分索引只纳音频封面行（实测 293 行），
+    // 查询走索引扫描 110ms。WHERE 谓词必须与 handleVideos 用的 audioCoverSql 文本一致
+    // （SQLite 靠表达式等价证明查询隐含索引条件），所以谓词只能来自 lib/media 唯一口径。
+    `CREATE INDEX IF NOT EXISTS idx_articles_audio ON articles(COALESCE(published_at, created_at)) WHERE ${require('../lib/media').audioCoverSql('cover')}`,
   ]) { try { await getDb().execute(ddl); } catch { /* 已存在 */ } }
   // 27b 源四轴（2026-09-15）：补列 + 一次性迁移（focus→spotlight + subscription.ids）
   // runner 也要跑：Vercel ensureSchema 只在读层首请求触发，runner 若先跑会因缺列/未迁移读空

@@ -1,13 +1,35 @@
 // fetch 封装：统一 JSON、错误抛出含 status 与后端 error 文案（T6）
 // 2026-09-05 P0：自动注入 Bearer token；401 时清 token 并广播 'qwis:unauthorized'（LoginGate 负责弹登录框）
 // 1.4 增强：GET 请求 5s TTL 内存缓存（相同 path+query 复用 Promise），写操作自动失效前缀匹配的缓存
+// 2026-10-06 性能批：
+//   ① TTL 90s → 300s（配合云端 s-maxage，跳转回访 5 分钟内秒开；要最新数据仍走 force）
+//   ② 公开只读端点不再附带 Authorization——Vercel CDN 对带鉴权头的请求一律不缓存，
+//     去掉后云端 s-maxage 才生效（CDN 命中 ~100ms vs 冷函数秒级）。
+//     不变量：本清单必须是后端 PUBLIC_GET_PATHS 的**子集**（后端多放行无害，少放行 = 401 弹登录）。
+//   ③ stale-while-error：CDN/函数抖动时有旧缓存先回旧数据（阅读界面优于报错页），401 除外。
 import { getToken, setToken } from './auth';
+
+// 与 api/[...slug].js PUBLIC_GET_PATHS 对齐（只能少不能多）
+const PUBLIC_GET_EXACT = new Set([
+  '/api/articles', '/api/articles/since', '/api/videos', '/api/hot', '/api/daily',
+  '/api/groups', '/api/sources', '/api/status', '/api/status/daily-sources', '/api/settings', '/api/settings/daily',
+  '/api/reading', '/api/img', '/api/meta', '/api/mybrief', '/api/mybrief/archive', '/api/weekly',
+  '/api/hot/events', '/api/hot/categories', '/api/hot/sources', '/api/hot/groups',
+  '/api/opml/export',
+]);
+function isPublicGet(path) {
+  const p = path.split('?')[0];
+  if (PUBLIC_GET_EXACT.has(p)) return true;
+  return /^\/api\/articles\/\d+$/.test(p)
+    || /^\/api\/videos\/\d+(\/play)?$/.test(p)
+    || /^\/api\/hot\/events\/\d+$/.test(p);
+}
 
 // ---- 1.4 GET 请求去重缓存 ----
 // T3-8 批次1b：TTL 5s → 90s——后台切换板块会卸载重挂组件、重发全部 GET，5s 缓存救不了"切回来又要加载半天"。
 // 90s 内重复访问直接吃缓存瞬时渲染；需要最新数据的场景（各板块刷新按钮）走 force 绕缓存，结果仍回写缓存。
 const _getCache = new Map(); // key → { promise, ts }
-const GET_CACHE_TTL = 90000; // 90 秒
+const GET_CACHE_TTL = 300000; // 300 秒（2026-10-06 由 90s 上调）
 
 function cacheGet(key, fetcher, force) {
   const now = Date.now();
@@ -15,16 +37,23 @@ function cacheGet(key, fetcher, force) {
   if (!force && entry && now - entry.ts < GET_CACHE_TTL) return entry.promise;
   const promise = fetcher().then(
     (data) => { _getCache.set(key, { promise: Promise.resolve(data), ts: Date.now() }); return data; },
-    (err) => { if (!force) _getCache.delete(key); throw err; } // 失败不缓存（force 时保留旧缓存）
+    (err) => {
+      const stale = _getCache.get(key);
+      if (!force) _getCache.delete(key); // 失败不缓存（force 时保留旧缓存）
+      // stale-while-error：有旧数据兜底先回旧数据；401 必须放行（登录态失效要弹框）
+      if (stale && err && err.status !== 401) return stale.promise;
+      throw err;
+    }
   );
   _getCache.set(key, { promise, ts: now });
   return promise;
 }
 
-// 失效前缀匹配的缓存条目（写操作后调用）
-function invalidateCache(prefix) {
+// 失效前缀匹配的缓存条目（写操作后调用）；except 列出不该跟着失效的同前缀只读键（如轮询端点）
+function invalidateCache(prefix, { except } = {}) {
   for (const key of _getCache.keys()) {
     if (!prefix || key === prefix || key.startsWith(prefix + '?') || key.startsWith(prefix + '&')) {
+      if (except && except.some((e) => key === e || key.startsWith(e + '?') || key.startsWith(e + '&'))) continue;
       _getCache.delete(key);
     }
   }
@@ -35,8 +64,9 @@ async function request(path, { method = 'GET', body, force } = {}) {
   try {
     const headers = {};
     if (body !== undefined) headers['Content-Type'] = 'application/json';
+    // 公开只读端点不带 token（让 CDN 缓存生效；后端本来就放行，不扩大攻击面）
     const token = getToken();
-    if (token) headers.Authorization = `Bearer ${token}`;
+    if (token && !(method === 'GET' && isPublicGet(path))) headers.Authorization = `Bearer ${token}`;
 
     // 1.4：GET 请求走缓存去重（force = 绕缓存强拉，结果仍回写）
     if (method === 'GET') {
@@ -61,7 +91,9 @@ async function request(path, { method = 'GET', body, force } = {}) {
   if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
     // 提取 API 路径前缀（如 /api/sources/123/toggle → /api/sources）
     const prefix = path.replace(/\/\d+([?/].*)?$/, '').replace(/\?.*$/, '');
-    invalidateCache(prefix);
+    // 2026-10-06 收窄：条目级操作（已读/稍后/收藏）不该把 60s 轮询的 since 基线一起清掉
+    const except = prefix === '/api/articles' ? ['/api/articles/since'] : undefined;
+    invalidateCache(prefix, { except });
     // 通用失效：settings 变更可能影响多处
     if (path.startsWith('/api/settings')) invalidateCache('/api/settings');
   }
@@ -121,7 +153,7 @@ function qs(params) {
 }
 
 export const api = {
-  get: (path, force) => request(path, { force }), // force=true 绕 90s 缓存强拉（刷新按钮用）
+  get: (path, force) => request(path, { force }), // force=true 绕缓存强拉（刷新按钮用）
   post: (path, body) => request(path, { method: 'POST', body: body ?? {} }),
   put: (path, body) => request(path, { method: 'PUT', body: body ?? {} }),
   del: (path) => request(path, { method: 'DELETE' }),

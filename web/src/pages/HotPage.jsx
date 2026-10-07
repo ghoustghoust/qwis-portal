@@ -58,7 +58,7 @@ function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
   const showReason = !!it.reason; // T5-1：时间线卡有推荐理由即展示（自有源深析内容都有）
   return (
     <article
-      className="card card-lift p-4 cursor-pointer"
+      className="card card-lift p-4 cursor-pointer cv-card"
       onClick={() => onOpen(it)}
     >
       <div className="flex items-center gap-2 text-[11px]">

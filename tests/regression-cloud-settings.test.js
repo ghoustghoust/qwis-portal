@@ -45,6 +45,9 @@ const VIEWS = [{ name: '测试视图', filter: { tab: 'all' } }];
   await db.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
   await db.execute('CREATE TABLE IF NOT EXISTS audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, user TEXT DEFAULT \\'admin\\', action TEXT NOT NULL, target TEXT, detail TEXT, ip TEXT)');
   await db.execute('CREATE TABLE IF NOT EXISTS sources (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, name TEXT NOT NULL, url TEXT, avatar TEXT, uid TEXT, group_id INTEGER, focus INTEGER DEFAULT 0, enabled INTEGER DEFAULT 1, status TEXT DEFAULT \\'ok\\', last_fetched_at TEXT, next_fetch_at TEXT, extra TEXT, created_at TEXT, fail_count INTEGER DEFAULT 0, spotlight INTEGER DEFAULT 0, muted INTEGER DEFAULT 0, reader_visible INTEGER DEFAULT 1)');
+  // groups 表：3fed9df 给 handleDailySettingsGet.sourceList 加了 LEFT JOIN groups，驱动漏建此表
+  // → test 6 恒 500（存量红，10-07 性能批用 stash 证实与当轮改动无关）。DDL 与 lib/db.js 生产 schema 同源。
+  await db.execute('CREATE TABLE IF NOT EXISTS groups (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, name TEXT NOT NULL, sort INTEGER DEFAULT 0)');
   for (const id of [1, 2, 3]) {
     await db.execute({ sql: "INSERT OR REPLACE INTO sources(id,type,name,url,enabled,spotlight) VALUES(?,'rss',?,'https://s.example.com/f',1,?)", args: [id, '源' + id, id <= 2 ? 1 : 0] });
   }
