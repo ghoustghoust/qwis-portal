@@ -285,6 +285,15 @@ function BriefCard({ item, rank, onOpen }) {
               </span>
             )}
             <span className="badge-green flex-none">来自你的关注</span>
+            {/* 关注度拆解（ADR-38）：boost>0 时亮出"这条为什么排上来"；旧期数据无 boost 字段不渲染 */}
+            {item.boost > 0 && (
+              <span
+                className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent"
+                title={`全局分 ${item.baseScore ?? item.totalScore} + 关注加成 +${item.boost}`}
+              >
+                关注 +{item.boost}
+              </span>
+            )}
             <span className="text-[11px] t-muted truncate">{item.source}</span>
             <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />
           </div>
@@ -296,7 +305,14 @@ function BriefCard({ item, rank, onOpen }) {
           )}
           {item.summary && <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-4 whitespace-pre-line"><MdText text={item.summary} /></p>}
           {item.reason && (
-            <p className="mt-2 text-[12px] leading-relaxed t-accent">推荐：<MdText text={item.reason} /></p>
+            <p className="mt-2 text-[12px] leading-relaxed t-accent">
+              推荐：<MdText text={item.reason} />
+              {item.boost > 0 && (
+                <span className="t-muted">
+                  {' '}（出现在这里，因为你{Array.isArray(item.boostWhy) && item.boostWhy[0] !== '订阅源' ? `常读 ${item.boostWhy.join('、')} 类内容` : '订阅了该来源'}）
+                </span>
+              )}
+            </p>
           )}
           {Array.isArray(item.points) && item.points.length > 0 && (
             <ul className="mt-2 space-y-1">
@@ -341,6 +357,14 @@ function RestRow({ item, onOpen }) {
         )}
       </span>
       {item.explore && <span className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent" title="探索：来自你未订阅源的高分内容（破茧）">探索</span>}
+      {item.boost > 0 && (
+        <span
+          className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent"
+          title={`全局分 ${item.baseScore ?? item.totalScore} + 关注加成 +${item.boost}`}
+        >
+          关注 +{item.boost}
+        </span>
+      )}
       {item.reason && <span className="flex-none hidden md:inline text-[10px] t-accent max-w-[30%] truncate" title={item.reason}>{item.reason}</span>}
       {/* 来源名不设界会把标题列挤到 0 宽（同 B85 的 CompactRow 根因，字段同源）：自己截断 */}
       <span className="min-w-0 max-w-[15rem] truncate text-[11px] t-muted" title={item.source || ''}>{item.source}</span>

@@ -1835,18 +1835,40 @@ async function runMyBrief(analyzed) {
       }
     }
   }
-  // R5 行为画像加权：条目标签命中画像 Top5 → 每命中 +8（上限 +24，显式行为驱动个性化排序）
+  // 关注度权重（用户 2026-10-07 拍板 A+B：两报分数双轨——daily 用全局原始分，mybrief 用「全局分+关注加成」；
+  // 加成不再暗箱：baseScore/boost/boostWhy 随条目落库，前端可见"这条为什么排上来/分为什么高"）。
+  // 三个权重键都在 settings['mybrief'] 开放集合里，坏值回默认（同 prescreenCapOf 口径：配置缺失/坏值不读成 0）：
+  //   subBoost  订阅源固定加成，默认 6——你主动关注的源，内容天然带关注权重
+  //   boostCap  关注加成总上限，默认 30——防画像/订阅叠乘把低分条目抬进 top（订阅 6 + 画像 24 = 30 与旧上限自然衔接）
+  //   minScore  订阅源入报线，默认 50——与 daily 的 60 分编辑线分治（关注视角门槛更低；探索位维持 ≥70 不变）
+  const numOr = (v, def) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100 ? v : def);
+  const subBoost = numOr(mbCfg.subBoost, 6);
+  const boostCap = numOr(mbCfg.boostCap, 30);
+  const mbMin = numOr(mbCfg.minScore, 50);
   let boostN = 0;
   const profMap = new Map((profile?.tags || []).slice(0, 5).map((t) => [t.tag, t.weight]));
   for (const a of minePool) {
+    a.baseScore = a.totalScore ?? null; // 加权前的全局分
     let hit = 0;
+    const hitTags = [];
     let tags = [];
     try { tags = typeof a.tags === 'string' ? JSON.parse(a.tags) : (a.tags || []); } catch { tags = []; }
-    for (const t of tags) if (profMap.has(t)) hit++;
-    if (hit) { a.totalScore = Math.min(100, (a.totalScore || 0) + Math.min(24, hit * 8)); boostN++; }
+    for (const t of tags) if (profMap.has(t)) { hit++; if (hitTags.length < 2) hitTags.push(t); }
+    const boost = Math.min(boostCap, (subBoost || 0) + hit * 8);
+    if (boost > 0) {
+      a.boost = boost;
+      a.boostWhy = hit > 0 ? hitTags : ['订阅源'];
+      a.totalScore = Math.min(100, (a.totalScore || 0) + boost);
+      boostN++;
+    }
   }
-  const mine = minePool.sort((x, y) => y.totalScore - x.totalScore);
-  if (boostN) log(`mybrief: 行为画像加权 ${boostN} 条`);
+  // 订阅源入报线：加成后仍低于线的**数字分**条目剔掉；未评分（深析失败）不误杀，与 daily 同一安全阀口径
+  const beforeGate = minePool.length;
+  const mine = minePool
+    .filter((a) => { const s = a.totalScore; return !(typeof s === 'number' && Number.isFinite(s)) || s >= mbMin; })
+    .sort((x, y) => (y.totalScore || 0) - (x.totalScore || 0));
+  if (beforeGate !== mine.length) log(`mybrief: 入报线(≥${mbMin} 分,关注加成后) 剔除 ${beforeGate - mine.length} 条`);
+  if (boostN) log(`mybrief: 关注加成 ${boostN} 条（订阅源 +${subBoost} / 画像每命中 +8，总上限 ${boostCap}）`);
 
   // Domain 篇数配额（T3-1 R5）：主标签（tags[0]）超配额的条目移出本日早报
   const quotas = (mbCfg.domainQuotas && typeof mbCfg.domainQuotas === 'object') ? mbCfg.domainQuotas : null;
@@ -1876,6 +1898,8 @@ async function runMyBrief(analyzed) {
     source: a.source_name, cover: a.cover || null, published_at: a.published_at,
     totalScore: a.totalScore, scores: a.scores, reason: a.reason, summary: a.summary,
     quote: a.quote, points: a.points, tags: a.tags, translated: !!a.translated_title,
+    // 关注度拆解（ADR-38）：baseScore=加权前全局分；boost=关注加成；boostWhy=加成依据（命中画像标签或"订阅源"）
+    baseScore: a.baseScore ?? null, boost: a.boost || 0, boostWhy: a.boostWhy || null,
   });
   // 补充阅读固定 10 条（T3-1 R4）：订阅源条目不足时，从共享深析池的**非订阅源**高分内容补足，
   // 标记 explore=true（破茧/探索语义）；补足仅为展示层，不改订阅集合

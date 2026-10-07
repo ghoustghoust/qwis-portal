@@ -239,6 +239,48 @@ export default function MyBriefPanel() {
             </button>
           ))}
         </div>
+        {/* 关注度权重（ADR-38，用户 10-07 拍板 A+B）：两报分数双轨——daily 用全局原始分，mybrief 用「全局分+关注加成」；
+            条目上的「关注 +N」角标即此处加成的展示。本地编辑 + 保存按钮，与 Domain 配额同模式。 */}
+        <div className="mt-4 pt-3 border-t hairline">
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] font-medium t-text">关注度权重</span>
+            <InfoTip
+              what="「我的早报」的个性化权重：订阅源固定加成 + 兴趣画像命中加成（每命中 +8），合计不超过加成上限；另有订阅内容独立入报线（加成后仍低于线的条目不进当期）。与每日早报的 60 分编辑线互不影响。"
+              how="三个数字可改：订阅源加成（默认 6）、加成上限（默认 30）、订阅内容入报线（默认 50）。保存后次日凌晨生成生效。"
+              effect="只改变「我的早报」的排序与收录；每日早报的全局分不受影响。"
+            />
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
+            {[
+              ['subBoost', '订阅源加成', '6'],
+              ['boostCap', '加成上限', '30'],
+              ['minScore', '入报线', '50'],
+            ].map(([key, label, ph]) => (
+              <label key={key} className="flex items-center gap-1.5">
+                <span className="t-muted">{label}</span>
+                <input
+                  type="number" min="0" max="100"
+                  className="input !w-16 !py-1 !text-xs"
+                  value={mybriefCfg?.[key] ?? ''}
+                  placeholder={ph}
+                  disabled={busy}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    const n = v === '' ? undefined : Math.max(0, Math.min(100, Number(v)));
+                    setMybriefCfg((prev) => ({ ...(prev || {}), [key]: n }));
+                  }}
+                />
+              </label>
+            ))}
+            <button
+              className="btn-ghost !py-1 !px-2.5"
+              disabled={busy}
+              onClick={() => saveCfg('mybrief', { ...mybriefCfg, subBoost: mybriefCfg?.subBoost, boostCap: mybriefCfg?.boostCap, minScore: mybriefCfg?.minScore })}
+            >
+              保存权重
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* 行为画像 + Domain 篇数配额（T3-1 R5，原块迁移） */}
