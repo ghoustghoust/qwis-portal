@@ -781,8 +781,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 725,
@@ -1289,20 +1289,6 @@
       "fail_count": 0
     },
     {
-      "id": 619,
-      "type": "youtube",
-      "name": "ByteByteGo",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZgt6AzoyjslHTC9dz0UoTw",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 756,
       "type": "rss",
       "name": "ByteByteGo Newsletter",
@@ -1457,20 +1443,6 @@
       "fail_count": 0
     },
     {
-      "id": 764,
-      "type": "x",
-      "name": "Claude(@claudeai)",
-      "url": "https://api.xgo.ing/rss/user/01f60d63a61b44d692cc35c7feb0b4a4",
-      "avatar": "https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 200,
       "type": "rss",
       "name": "Clip设计夹",
@@ -1513,12 +1485,12 @@
       "fail_count": 0
     },
     {
-      "id": 556,
-      "type": "youtube",
-      "name": "ColdFusion",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A",
-      "avatar": null,
-      "group_id": 16,
+      "id": 767,
+      "type": "rss",
+      "name": "Company | The JetBrains Blog",
+      "url": "https://blog.jetbrains.com/blog/feed",
+      "avatar": "https://blog.jetbrains.com/wp-content/uploads/2024/01/cropped-mstile-310x310-1-32x32.png",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1527,12 +1499,12 @@
       "fail_count": 0
     },
     {
-      "id": 767,
-      "type": "rss",
-      "name": "Company | The JetBrains Blog",
-      "url": "https://blog.jetbrains.com/blog/feed",
-      "avatar": "https://blog.jetbrains.com/wp-content/uploads/2024/01/cropped-mstile-310x310-1-32x32.png",
-      "group_id": 18,
+      "id": 620,
+      "type": "youtube",
+      "name": "Computerphile",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1841,20 +1813,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/0caba9bee40b0d980821bc9e8d5959aa75e6c0c7.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/K6CEv0Hv9DeLrL8HZFphmYcJh9UOzbPxb49TcJ7RbaFWibOgqHicVrCjarntrQbBXzbl2gicoXgwco/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 600,
-      "type": "youtube",
-      "name": "DesignerUp",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCw2R8kz3aotYtV9utqf0uaw",
-      "avatar": null,
-      "group_id": 28,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2325,20 +2283,6 @@
       "fail_count": 0
     },
     {
-      "id": 522,
-      "type": "youtube",
-      "name": "Futurepedia",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC_RovKmk0OCbuZjA8f08opw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 813,
       "type": "rss",
       "name": "GISerlab · 地理空间",
@@ -2387,6 +2331,20 @@
       "url": "https://api.xgo.ing/rss/user/9cb3b60e689e4445a7fbdfd0be144126",
       "avatar": "https://pbs.twimg.com/profile_images/1644898947272671233/7959WGOK_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 818,
+      "type": "x",
+      "name": "Genspark(@genspark_ai)",
+      "url": "https://api.xgo.ing/rss/user/71ffd342cb5d478185ef7d55bdfca011",
+      "avatar": "https://pbs.twimg.com/profile_images/1782715833099382784/R6nadR8G_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3543,6 +3501,20 @@
       "fail_count": 0
     },
     {
+      "id": 893,
+      "type": "rss",
+      "name": "Longlong's Blog",
+      "url": "https://blog.xlonglong.cn/feed/",
+      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -3725,20 +3697,6 @@
       "fail_count": 0
     },
     {
-      "id": 530,
-      "type": "youtube",
-      "name": "Matt Wolfe",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UChpleBmo18P08aKCIgti38g",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 480,
       "type": "rss",
       "name": "Memm设计知识分享",
@@ -3913,20 +3871,6 @@
       "url": "http://lichuanyang.top/atom.xml",
       "avatar": null,
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 624,
-      "type": "youtube",
-      "name": "Modern Software Engineering",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCCfqyGl3nq_V0bo64CjZh8g",
-      "avatar": null,
-      "group_id": 27,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4187,34 +4131,6 @@
       "fail_count": 0
     },
     {
-      "id": 12,
-      "type": "youtube",
-      "name": "NeuralNine",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8wZnXYK_CGKlBcZp-GxYPA",
-      "avatar": "https://www.youtube.com/favicon.ico",
-      "group_id": 27,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 534,
-      "type": "youtube",
-      "name": "Nick Saraev",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbo-KbSjJDG6JWQ_MTZ_rNA",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 931,
       "type": "x",
       "name": "Nick St. Pierre(@nickfloats)",
@@ -4235,20 +4151,6 @@
       "url": "https://nicksxs.me/atom.xml",
       "avatar": null,
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 570,
-      "type": "youtube",
-      "name": "Nikhil Kamath",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCnC8SAZzQiBGYVSKZ_S3y4Q",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4336,20 +4238,6 @@
       "spotlight": 1,
       "muted": 0,
       "reader_visible": 0,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 536,
-      "type": "youtube",
-      "name": "OpenAI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXZCJLdBC09xxGZ6gcdrc6A",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -6049,20 +5937,6 @@
       "fail_count": 0
     },
     {
-      "id": 608,
-      "type": "youtube",
-      "name": "The Futur",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-b3c7kxa5vU-bnmaROgvog",
-      "avatar": null,
-      "group_id": 28,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1050,
       "type": "rss",
       "name": "The GitHub Blog",
@@ -6153,20 +6027,6 @@
       "url": "https://thenewstack.io/feed/",
       "avatar": "https://cdn.thenewstack.io/media/2026/03/b2fc1b22-cropped-89b6d319-download-32x32.png",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 628,
-      "type": "youtube",
-      "name": "The Pragmatic Engineer",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCPbwhExawYrn9xxI21TFfyw",
-      "avatar": null,
-      "group_id": 27,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6363,20 +6223,6 @@
       "url": "https://api.xgo.ing/rss/user/665fc88440fd4436acbc2e630d824926",
       "avatar": "https://pbs.twimg.com/profile_images/1960753219115868169/EOxKSK4w_normal.jpg",
       "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 544,
-      "type": "youtube",
-      "name": "Two Minute Papers",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
-      "avatar": null,
-      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6595,20 +6441,6 @@
       "fail_count": 0
     },
     {
-      "id": 546,
-      "type": "youtube",
-      "name": "Wes Roth",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCqcbQf6yw5KzRoDDcZ_wBSw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 646,
       "type": "rss",
       "name": "What's Next｜科技早知道",
@@ -6782,20 +6614,6 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1092,
-      "type": "rss",
-      "name": "YangXuan's Blog",
-      "url": "https://yangxuan.ai/feed/",
-      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7105,20 +6923,6 @@
       "url": "https://elifesciences.org/rss/recent.xml",
       "avatar": "https://elifesciences.org/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1115,
-      "type": "x",
-      "name": "elvis(@omarsar0)",
-      "url": "https://api.xgo.ing/rss/user/931d6e88e067496cac6bf23f69d60f33",
-      "avatar": "https://pbs.twimg.com/profile_images/939313677647282181/vZjFWtAn_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9433,8 +9237,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 486,
@@ -11673,8 +11477,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1248,
@@ -12173,20 +11977,6 @@
       "url": "https://blog.canyie.top/atom.xml",
       "avatar": null,
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 64,
-      "type": "hotlist",
-      "name": "每天60秒读懂世界",
-      "url": "hotlist60s://60s",
-      "avatar": null,
-      "group_id": 2,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -12929,20 +12719,6 @@
       "url": "https://wangxin.io/atom.xml",
       "avatar": null,
       "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1281,
-      "type": "rss",
-      "name": "王登科-DK博客",
-      "url": "https://greatdk.com/feed",
-      "avatar": "https://greatdk.com/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15177,6 +14953,20 @@
       "fail_count": 0
     },
     {
+      "id": 1325,
+      "type": "rss",
+      "name": "钛媒体：引领未来商业与生活新知",
+      "url": "https://www.tmtpost.com/feed",
+      "avatar": "https://www.tmtpost.com/favicon.ico",
+      "group_id": 22,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 473,
       "type": "rss",
       "name": "银行螺丝钉",
@@ -15225,20 +15015,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/fe0fc82458663820d6e91f6331dea05f3db223d4.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM42HiaOiaJiaVyorCn5AaSIZTxtcxDmxf7apBpJjDcuib3XLQ/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1,
-      "type": "rss",
-      "name": "阮一峰的网络日志",
-      "url": "https://www.ruanyifeng.com/blog/atom.xml",
-      "avatar": "http://www.ruanyifeng.com/favicon.ico",
-      "group_id": 19,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15821,5 +15597,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-06T07:48:20.666Z"
+  "generated_at": "2026-10-07T07:27:51.794Z"
 }
