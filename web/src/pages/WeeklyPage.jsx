@@ -321,8 +321,8 @@ function WeeklyCard({ item, onOpen }) {
             <span className="text-[11px] t-muted truncate">{item.source}</span>
             {item.totalScore != null && <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />}
           </div>
-          <h3 className="mt-2 text-[15px] font-bold leading-snug t-text line-clamp-2">{item.title}</h3>
-          {item.summary && <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-4"><MdText text={item.summary} /></p>}
+          <h3 className="serif mt-2 text-lg sm:text-xl font-bold leading-snug t-text line-clamp-2">{item.title}</h3>
+          {item.summary && <p className="mt-2 text-[13.5px] leading-[1.75] t-muted line-clamp-4"><MdText text={item.summary} /></p>}
           {item.reason && <p className="mt-2 text-[12px] leading-relaxed t-accent">必看：<MdText text={item.reason} /></p>}
           {item.quote && (
             <blockquote className="mt-2 pl-3 border-l-2 text-[12px] italic leading-relaxed t-muted" style={{ borderColor: 'var(--accent)' }}>

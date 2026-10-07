@@ -73,11 +73,12 @@ function TimelineCard({ it, tab, onOpen, onToggleLater, t }) {
           </span>
         )}
         <span className="flex-1" />
-        {/* 自有源：AI 评分右置（对齐样图「AI 评分 85/100」）；热榜：热度值 */}
+        {/* 自有源：AI 评分右置（对齐样图「AI 评分 85/100」）；热榜：热度值。
+            排版一期·页面表情（用户拍板方案）：热点的醒目来自数据——热度值升 14px 加粗 accent */}
         {!!it.score && it.score > 0 && it.score <= 100 ? (
-          <span className="t-accent font-medium tabular-nums text-[11px]">AI 评分 {Math.round(it.score)}/100</span>
+          <span className="t-accent font-bold tabular-nums text-[13px]">AI 评分 {Math.round(it.score)}/100</span>
         ) : it.score != null && it.score > 0 ? (
-          <span className="t-accent font-medium tabular-nums text-[11px]" title={`${t('hot.heat')} ${it.score}`}>
+          <span className="t-accent font-bold tabular-nums text-[14px]" title={`${t('hot.heat')} ${it.score}`}>
             🔥 {formatHeat(it.score)}
           </span>
         ) : null}
@@ -376,7 +377,10 @@ export default function HotPage() {
                     onClick={() => setTab('events')}
                   >
                     <span
-                      className={`flex-none w-5 text-right font-bold tabular-nums ${i < 3 ? 't-accent' : 't-muted'}`}
+                      className={`flex-none w-5 h-5 grid place-items-center rounded-full text-[11px] font-bold tabular-nums ${
+                        i === 0 ? 'text-white' : i < 3 ? 't-accent' : 't-muted'
+                      }`}
+                      style={i === 0 ? { background: 'var(--accent)' } : i === 1 ? { background: 'color-mix(in srgb, var(--accent) 18%, transparent)' } : i === 2 ? { background: 'color-mix(in srgb, var(--accent) 9%, transparent)' } : undefined}
                     >
                       {i + 1}
                     </span>

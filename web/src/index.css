@@ -90,7 +90,10 @@ body {
 
 /* 报纸风衬线（日报页标题/栏目名，F13/F15） */
 .serif {
-  font-family: Georgia, 'Times New Roman', 'Songti SC', 'STSong', 'SimSun', serif;
+  /* 2026-10-07 字体底座（方案三期 a，零成本渐进）：本机装有思源宋体/Noto Serif SC 的
+     直接受益，其余按序回落 Songti/SimSun——解决 Windows SimSun 细碎发虚的优先路径 */
+  font-family: Georgia, 'Times New Roman', 'Noto Serif SC', 'Source Han Serif SC',
+    'Songti SC', 'STSong', 'SimSun', serif;
 }
 
 .btn-primary {

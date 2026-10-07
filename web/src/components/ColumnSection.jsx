@@ -187,7 +187,7 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0 mt-1">
             {/* 特写横排（栏首仅 1 张卡时）标题升衬线 17px——头条要有头条的个头（排版一期） */}
-            <h3 className={`font-bold leading-snug t-text line-clamp-2 ${wide ? 'serif text-[17px]' : 'text-[15px]'}`}>
+            <h3 className={`font-bold leading-snug t-text line-clamp-2 ${wide ? 'serif text-lg' : 'text-[15px]'}`}>
               {highlightTitle(item.title, keywords, highlight)}
             </h3>
             {/* 中英对照：已译条目附英文原标题（2026-09-14） */}
@@ -213,7 +213,7 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
             一句话摘要的卡与长摘要的卡不再差出一截）；关键观点/金句是阅读层内容，
             下沉到快速学习弹窗（QuickStudyModal），卡片不再逐条堆叠导致过长。 */}
         {item.summary ? (
-          <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-3 whitespace-pre-line">
+          <p className="mt-2 text-[13.5px] leading-[1.75] t-muted line-clamp-3 whitespace-pre-line">
             <MdText text={item.summary} />
           </p>
         ) : null}
@@ -225,7 +225,7 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
         ) : null}
         {/* 2026-09-05 视觉精修：标签胶囊行（最多 3 个，无 tags 字段时不渲染） */}
         <TagPills tags={item.tags} max={3} className="mt-2.5" />
-        <div className="mt-3 flex items-center justify-between text-[11px] t-muted">
+        <div className="mt-3 pt-2.5 border-t hairline flex items-center justify-between text-[11px] t-muted">
           <span className="truncate">
             {item.source_name || ''}
             {item.source_name ? ' · ' : ''}

@@ -337,13 +337,13 @@ function BriefCard({ item, rank, onOpen }) {
             <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />
           </div>
           {/* 排版一期：TOP1 头条标题升衬线 17px（头条要有头条的个头）；其余保持 15px */}
-          <h3 className={`mt-2 font-bold leading-snug t-text line-clamp-2 ${rank === 1 ? 'serif text-[17px]' : 'text-[15px]'}`}>{item.title}</h3>
+          <h3 className={`mt-2 font-bold leading-snug t-text line-clamp-2 ${rank === 1 ? 'serif text-lg' : 'text-[15px]'}`}>{item.title}</h3>
           {item.original_title && (
             <div className="mt-0.5 text-[11px] t-muted leading-snug truncate" title={item.original_title}>
               {item.original_title}
             </div>
           )}
-          {item.summary && <p className="mt-2 text-[13px] leading-relaxed t-muted line-clamp-4 whitespace-pre-line"><MdText text={item.summary} /></p>}
+          {item.summary && <p className="mt-2 text-[13.5px] leading-[1.75] t-muted line-clamp-4 whitespace-pre-line"><MdText text={item.summary} /></p>}
           {item.reason && (
             <p className="mt-2 text-[12px] leading-relaxed t-accent">
               推荐：<MdText text={item.reason} />
@@ -368,7 +368,7 @@ function BriefCard({ item, rank, onOpen }) {
               <MdText text={item.quote} />
             </blockquote>
           )}
-          <div className="mt-2.5 flex items-center gap-2">
+          <div className="mt-2.5 pt-2.5 border-t hairline flex items-center gap-2">
             <TagPills tags={item.tags} max={4} />
             <span className="ml-auto text-[11px] t-muted flex-none">{relativeTime(item.published_at)}</span>
           </div>

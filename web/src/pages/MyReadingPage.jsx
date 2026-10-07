@@ -386,7 +386,8 @@ function ReadingRow({ it, selectMode, checked, onToggle, t }) {
   const isVideo = it.item_type === 'video';
 
   return (
-    <div className={`card card-lift flex items-start gap-3 p-3 cv-card ${selectMode ? 'cursor-pointer' : ''}`}>
+    // 排版一期·页面表情（用户拍板方案）：稍后读条目留 accent 左边线——状态一眼可辨
+    <div className={`card card-lift flex items-start gap-3 p-3 cv-card ${selectMode ? 'cursor-pointer' : ''} ${it.later === 1 && !isVideo ? 'border-l-2' : ''}`} style={it.later === 1 && !isVideo ? { borderLeftColor: 'var(--accent)' } : undefined}>
       {/* 选择框 */}
       {selectMode && (
         <label className="flex-none mt-1 cursor-pointer" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
@@ -418,7 +419,8 @@ function ReadingRow({ it, selectMode, checked, onToggle, t }) {
           href={it.url || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[14px] font-medium t-text leading-snug line-clamp-2 hover:t-accent"
+          // 排版一期·页面表情：已读条目标题降透明 55%——一眼分清读过没读
+          className={`text-[14px] font-medium t-text leading-snug line-clamp-2 hover:t-accent ${it.read_at && !isVideo ? 'opacity-55' : ''}`}
           onClick={(e) => { if (selectMode) { e.preventDefault(); onToggle(); } }}
         >
           {it.title || t('reading.noTitle')}
