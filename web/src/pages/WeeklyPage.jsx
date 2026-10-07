@@ -79,16 +79,20 @@ export default function WeeklyPage() {
                   >
                     最新
                   </button>
-                  {[...archive].reverse().map((a) => (
-                    <button
-                      key={a.issue}
-                      className={`block w-full text-left pill !text-[11px] cursor-pointer ${issue === a.issue ? 'on' : ''}`}
-                      title={`${a.dateStart} ~ ${a.dateEnd}${a.theme ? '｜' + a.theme : ''}`}
-                      onClick={() => setIssue(a.issue)}
-                    >
-                      第 {a.issue} 期
-                    </button>
-                  ))}
+                  {[...archive].reverse().map((a) => {
+                    const label = a.theme ? String(a.theme).replace(/^["'「『]|["'」』。]+$/g, '').slice(0, 10) : '';
+                    return (
+                      <button
+                        key={a.issue}
+                        className={`block w-full text-left pill !text-[11px] cursor-pointer ${issue === a.issue ? 'on' : ''}`}
+                        title={`${a.dateStart} ~ ${a.dateEnd}${a.theme ? '｜' + a.theme : ''}`}
+                        onClick={() => setIssue(a.issue)}
+                      >
+                        <span className="block">第 {a.issue} 期</span>
+                        {label && <span className="block truncate text-[10px] t-muted">{label}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>

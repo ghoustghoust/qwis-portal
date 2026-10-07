@@ -70,16 +70,20 @@ export default function MyBriefPage() {
                   >
                     最新
                   </button>
-                  {archive.slice(0, 30).map((x) => (
-                    <button
-                      key={x.issue}
-                      className={`block w-full text-left pill !text-[11px] cursor-pointer ${issueParam === x.issue ? 'on' : ''}`}
-                      title={`${x.date}${x.theme ? '｜' + String(x.theme).slice(0, 40) : ''}`}
-                      onClick={() => setIssueParam(x.issue)}
-                    >
-                      第 {x.issue} 期
-                    </button>
-                  ))}
+                  {archive.slice(0, 30).map((x) => {
+                    const label = x.coverTitle || (x.theme ? String(x.theme).slice(0, 12) : '');
+                    return (
+                      <button
+                        key={x.issue}
+                        className={`block w-full text-left pill !text-[11px] cursor-pointer ${issueParam === x.issue ? 'on' : ''}`}
+                        title={`第 ${x.issue} 期 · ${x.date}${label ? '｜' + label : ''}`}
+                        onClick={() => setIssueParam(x.issue)}
+                      >
+                        <span className="block">第 {x.issue} 期</span>
+                        {label && <span className="block truncate text-[10px] t-muted">{label}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>
@@ -122,13 +126,14 @@ export default function MyBriefPage() {
           {/* 正常态 */}
           {report && !empty && (
             <>
-              {/* 大日期 + 编辑导语 */}
+              {/* 大标题 + 编辑导语。用户 10-07：页头加"由当天内容决定"的标题（coverTitle，与周刊 coverTheme
+                  对齐、随导语同一次 AI 调用产出）——有则标题当 h1、日期并入眉行；旧期无字段回退日期当 h1 */}
               <header>
                 <div className="text-[11px] tracking-widest t-accent font-medium">
-                  我的早报 · 来自你的关注{report.issue ? ` · 第 ${report.issue} 期` : ''}
+                  我的早报 · 来自你的关注{report.issue ? ` · 第 ${report.issue} 期` : ''} · {Number(report.date.slice(5, 7))}月{Number(report.date.slice(8, 10))}日
                 </div>
                 <h1 className="serif mt-2 text-3xl sm:text-5xl font-bold t-text">
-                  {Number(report.date.slice(5, 7))}月{Number(report.date.slice(8, 10))}日
+                  {report.coverTitle || `${Number(report.date.slice(5, 7))}月${Number(report.date.slice(8, 10))}日`}
                 </h1>
                 {Array.isArray(report.keywords) && report.keywords.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -305,7 +310,8 @@ function BriefCard({ item, rank, onOpen }) {
             <span className="text-[11px] t-muted truncate">{item.source}</span>
             <Stars score={item.totalScore} size={11} className="flex-none ml-auto" />
           </div>
-          <h3 className="mt-2 text-[15px] font-bold leading-snug t-text line-clamp-2">{item.title}</h3>
+          {/* 排版一期：TOP1 头条标题升衬线 17px（头条要有头条的个头）；其余保持 15px */}
+          <h3 className={`mt-2 font-bold leading-snug t-text line-clamp-2 ${rank === 1 ? 'serif text-[17px]' : 'text-[15px]'}`}>{item.title}</h3>
           {item.original_title && (
             <div className="mt-0.5 text-[11px] t-muted leading-snug truncate" title={item.original_title}>
               {item.original_title}

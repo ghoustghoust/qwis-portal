@@ -3492,7 +3492,7 @@ async function enrichBriefTitles(report) {
 async function handleMyBriefArchive(req) {
   const archive = (await getSetting('mybrief.archive', [])) || [];
   const issues = archive.map((x) => ({
-    issue: x.issue, date: x.date, generatedAt: x.generatedAt, theme: x.theme || null,
+    issue: x.issue, date: x.date, generatedAt: x.generatedAt, coverTitle: x.coverTitle || null, theme: x.theme || null,
     counts: x.sections ? { top: (x.sections.top || []).length, featured: (x.sections.featured || []).length, rest: (x.sections.rest || []).length } : null,
   })).sort((a, b) => (b.issue || 0) - (a.issue || 0));
   return jsonOk({ issues, total: issues.length });

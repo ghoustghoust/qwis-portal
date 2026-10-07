@@ -510,6 +510,13 @@ async function generateThemeDetailed(items) {
 // 判定规则本身一字未动（那是三轮真实污染喂出来的），只把出口换成可归因的形状。
 function pickThemeReply(reply) {
   const lines = String(reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
+  // 标题行（prompts/daily-theme 10-07 起要求「标题：/导语：」两行）：标题行单独抽出给封面标题，
+  // 不许混进导语候选（模型省略前缀时才落回旧行为）。
+  const titleLine = lines.find((l) => /^标题[:：]/.test(l));
+  const coverTitle = titleLine
+    ? titleLine.replace(/^标题[:：]\s*/, '').replace(/^["'「『]+|["'」』。]+$/g, '').trim().slice(0, 24)
+    : null;
+  const bodyLines = lines.filter((l) => l !== titleLine);
   const isAnalysis = (l) =>
     /^(用户要求|让我|我来|分析|首先|然后|所以|这[几些]|###|\d+\.|[-*•])/.test(l) ||
     /^(Let me|The user|I need|First|Then|So |Looking|Analyzing|Reviewing|Summarizing|Now |Here|The dominant|Overall|These|Based on|As the|I should)/i.test(l) ||
@@ -521,10 +528,10 @@ function pickThemeReply(reply) {
     // 只按句首判，避免误杀「AI 行业的自我定位」这类含"我"的内容陈述。
     /^(我|我们|咱|本人)/.test(l) ||
     /[::：]\s*$/.test(l) || l.length > 120;
-  const candidates = lines.filter((l) => !isAnalysis(l));
+  const candidates = bodyLines.filter((l) => !isAnalysis(l));
   // 2026-09-13：全部行都是分析文本时直接放弃（theme 为 null → 前端无导语展示），
   // 不得回退取分析行——实测曾把英文思维链整段当导语写入 mybrief
-  if (!candidates.length) return { theme: null, why: 'all_lines_rejected', lines: lines.length };
+  if (!candidates.length) return { theme: null, coverTitle, why: 'all_lines_rejected', lines: lines.length };
   // prompt 约定样式「从 X，到 Y，再到 Z，判断 W」（≤60 字）：优先取形状匹配的行
   const shaped = candidates.filter((l) => /^从/.test(l) && /[，,]/.test(l) && l.length <= 70);
   const picked = (shaped[shaped.length - 1] || candidates[candidates.length - 1])
@@ -532,9 +539,9 @@ function pickThemeReply(reply) {
     .replace(/^["'「『]+|["'」』。]+$/g, '').trim();
   // 第一人称/写作过程元文本一票否决（三轮实测污染：英文思维链句/角色复述/「我想到一个更好的方式来组织这个叙事」）
   if (!picked || picked.length > 90 || /我(想|觉得|认为|会|将|来|先|们|打算|想到|需要|必须|应该|要|强调)|叙事|让我|输出|写作|这个方式/.test(picked)) {
-    return { theme: null, why: 'picked_vetoed', lines: lines.length, detail: String(picked || '').slice(0, 60), len: String(picked || '').length };
+    return { theme: null, coverTitle, why: 'picked_vetoed', lines: lines.length, detail: String(picked || '').slice(0, 60), len: String(picked || '').length };
   }
-  return { theme: picked + '。' };
+  return { theme: picked + '。', coverTitle };
 }
 // 旧契约原样保留（周刊/我的早报两个调用方只要字符串）；新增的 detailed 版只给日报写入器用来落归因。
 async function generateTheme(items) {

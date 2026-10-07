@@ -1233,11 +1233,12 @@ async function buildThemePanorama(items) {
     .slice(0, 4); // 最多 4 个主题，控 AI 配额
   const VIEWS = ['事件', '领域', '人物', '产品对比'];
   const themes = [];
-  // H32②（用户拍 B1：不吃簇）：命名环节四出口失败时不再整簇丢弃——降级为"未命名主题"保留条目，
-  // 聚类成果不陪葬。drops 照记（归因不变）；named 只数成功命名的（namedOk），保住
-  // "named + 四出口 drops == rated" 这条计数的可判别性（锁 T10 随 B1 需更新为 named + unnamedKept + drops == rated，验收轮处理）。
+  // H32②（用户拍 B1：不吃簇）：命名环节四出口失败时不再整簇丢弃——降级保留条目，聚类成果不陪葬。
+  // 用户 10-07："AI 命名失败，簇内条目降级保留"这句对读者像报错——名字改用簇首条目标题（截断），
+  // 不再显示"未命名主题"；summary 留空由前端给中性说明。unnamed 标记保留（归因与前端判定用）。
   const unnamed = (c) => ({
-    name: null, viewpoint: '事件', summary: '', unnamed: true,
+    name: String(c.items[0]?.translated_title || c.items[0]?.title || '').slice(0, 20) || null,
+    viewpoint: '事件', summary: '', unnamed: true,
     items: c.items.map((i) => ({ id: i.id, title: i.translated_title || i.title, url: i.url, source: i.source_name, kind: i.kind || 'article' })),
   });
   let namedOk = 0;
@@ -1974,15 +1975,18 @@ async function runMyBrief(analyzed) {
   // 编辑导语 + 关键词标签行。H30（用户拍 E1）：归因接我的早报——改调 detailed 版，失败随 report 落 themeSkip
   const thM = await _ai.generateThemeDetailed(mine.map((m) => ({ title: m.translated_title || m.title, reason: m.reason })).slice(0, 25)).catch((e) => ({ theme: null, why: 'throw', err: String(e.message || '').slice(0, 160) }));
   const theme = thM.theme;
+  const coverTitle = thM.coverTitle || null; // 用户 10-07：页头加"由当天内容决定"的标题（与周刊 coverTheme 对齐）
   const themeSkip = theme ? null : { why: thM.why || 'unlabeled', err: thM.err, detail: thM.detail, lines: thM.lines };
   if (themeSkip) log(`我的早报导语归因: ${JSON.stringify(themeSkip)}`);
   const tagFreq = {};
   for (const m of mine) for (const t of m.tags || []) tagFreq[t] = (tagFreq[t] || 0) + 1;
   const keywords = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
-  // 主题全景（订阅视角）：与 daily-ai 同管线，簇取自 mine
+  // 主题全景（订阅视角）：与 daily-ai 同管线。用户 10-07：订阅源条目少时全景只剩孤卡——
+  // 候选池并入探索位条目（exploreItems，非订阅源高分），它们本来就进本期早报，聚簇素材更多。
   let themes = [];
   try {
-    const myPanorama = await buildThemePanorama(mine);
+    const exploreItems = (selected || []).map((a) => ({ ...a, kind: a.kind || 'article' }));
+    const myPanorama = await buildThemePanorama([...mine, ...exploreItems]);
     themes = myPanorama.themes;
     // 2026-09-18：此处原先是空 catch——主题全景线上长期为空却无任何归因日志。
     // 空簇（Jaccard≥0.45 的 ≥2 条簇不足）与 AI 命名失败是两种不同病因，必须能区分。
@@ -1994,9 +1998,9 @@ async function runMyBrief(analyzed) {
   const { resolveMyBriefIssue } = require('../lib/brief-guards');
   const prevArch = (await getSetting('mybrief.archive', [])) || [];
   const issueInfo = resolveMyBriefIssue(prevArch, dateStr);
-  const report = { date: dateStr, theme, ...(theme ? {} : { themeSkip }), keywords, degraded: false, generatedAt: nowIso(), sections, themes, issue: issueInfo.issue };
+  const report = { date: dateStr, coverTitle, theme, ...(theme ? {} : { themeSkip }), keywords, degraded: false, generatedAt: nowIso(), sections, themes, issue: issueInfo.issue };
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.latest', ?)", args: [JSON.stringify(report)] });
-  const entry = { issue: issueInfo.issue, date: dateStr, generatedAt: report.generatedAt, theme: report.theme, keywords, degraded: false, sections, themes };
+  const entry = { issue: issueInfo.issue, date: dateStr, generatedAt: report.generatedAt, coverTitle, theme: report.theme, keywords, degraded: false, sections, themes };
   const nextArch = prevArch.slice();
   if (issueInfo.replaceIndex >= 0) nextArch[issueInfo.replaceIndex] = entry;
   else nextArch.push(entry);

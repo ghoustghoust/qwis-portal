@@ -42,7 +42,9 @@ export default function DailyPage() {
     const q = new URLSearchParams(window.location.search).get('date');
     return /^\d{4}-\d{2}-\d{2}$/.test(q || '') ? q : null;
   });
-  const [dailyArchive, setDailyArchive] = useState([]); // 往期日期列表（A）
+  // 往期日期列表（A：近 30 天有日报的北京日）——用户 10-07：侧栏升级为"每期索引"，
+  // 对齐周刊：pill 除日期外带当期导语短词（数据源 /api/brief/history 的 daily[].theme，已随接口返回）
+  const [dailyArchive, setDailyArchive] = useState([]); // [{ date, theme }]
   const [dailySettings, setDailySettings] = useState(null);
   const [regenerating, setRegenerating] = useState(false);
   const [autoGen, setAutoGen] = useState(false); // T13/F3：stale 打开即补的「正在生成」态
@@ -94,8 +96,14 @@ export default function DailyPage() {
   // 往期日期列表（A：近 30 天有日报的北京日）
   useEffect(() => {
     api.get('/api/brief/history').then((d) => {
-      const days = [...new Set((d?.daily || []).map((r) => String(r.generatedAt || '').slice(0, 10)).filter(Boolean))].sort().reverse();
-      setDailyArchive(days);
+      const byDay = new Map();
+      for (const r of d?.daily || []) {
+        const day = String(r.generatedAt || '').slice(0, 10);
+        if (!day) continue;
+        // 同一天多批（关键词版/深析版）时保留 AI 版的导语（theme 非空优先）
+        if (!byDay.has(day) || (!byDay.get(day) && r.theme)) byDay.set(day, r.theme || null);
+      }
+      setDailyArchive([...byDay.entries()].map(([date, theme]) => ({ date, theme })).sort((a, b) => b.date.localeCompare(a.date)));
     }).catch(() => {});
   }, []);
 
@@ -172,15 +180,20 @@ export default function DailyPage() {
                   >
                     最新
                   </button>
-                  {dailyArchive.slice(0, 30).map((d) => (
-                    <button
-                      key={d}
-                      className={`block w-full text-left pill !text-[11px] cursor-pointer ${dateParam === d ? 'on' : ''}`}
-                      onClick={() => setDateParam(d)}
-                    >
-                      {d.slice(5)}
-                    </button>
-                  ))}
+                  {dailyArchive.slice(0, 30).map(({ date: d, theme: t }) => {
+                    const label = t ? String(t).replace(/^["'「『]|["'」』。]+$/g, '').slice(0, 12) : '';
+                    return (
+                      <button
+                        key={d}
+                        className={`block w-full text-left pill !text-[11px] cursor-pointer ${dateParam === d ? 'on' : ''}`}
+                        title={`${d}${label ? '｜' + label : ''}`}
+                        onClick={() => setDateParam(d)}
+                      >
+                        <span className="block">{d.slice(5)}</span>
+                        {label && <span className="block truncate text-[10px] t-muted">{label}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>

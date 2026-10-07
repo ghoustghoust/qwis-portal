@@ -6,7 +6,7 @@
 > 已知局限：① 本表按路径查历史，**文件改名/搬家前的历史不跟随**（`--follow` 只能逐文件跑），搬过的文档其提交史从搬家那次起算。② 本表读已提交历史，**正在提交的这一次必然不进表**（显式滞后一轮，配合 `⚠` 可见），下一轮重跑即补上。
 > 未跟踪件不入表：如本地文件 `docs/HANDOVER.md` 按设计永不提交，本就没有提交史可记。
 
-**统计**：底层文档 一致 2 · 待判 12 · 头部超前 0 · 缺头注 0　|　不要求头注 83 份　|　工作区未提交 0 份　|　总计 97 份
+**统计**：底层文档 一致 2 · 待判 12 · 头部超前 0 · 缺头注 0　|　不要求头注 83 份　|　工作区未提交 1 份　|　总计 97 份
 
 ### 底层文档（DOC_GOVERNANCE §2.1 白名单，列最近 3 次改动）（14 份）
 
@@ -104,7 +104,7 @@
 | opml/BestBlogs_RSS_Doc.md | — | 不要求头注 | `4d7fc7c` 2026-09-21 20:50 chore(资产入账): opml/ 18 份订阅源清单(DEV_GUIDE/HANDOVER/NEXT-DEV-REQS 与 spec 09 已引用)与 archive/样图 两个设计参考目录(周报页面设计/热点榜)入库,消除工作区悬浮件 |
 | prompts/daily-analyze.md | — | 不要求头注 | `aa28a1c` 2026-10-06 14:37 fix(T5-13②·深析三层问题): 用户指出'早报还是普遍<50分,之前已经开发过了'——核实为三层叠加,之前只修了一层(prompt 写作纪律):①深析 summary 根本没写回 articles 表(UPDATE 只写 score/reason,articles.summary 永远是采集器 RSS 原始摘要——用户看到的'不知道在说什么'的 summary 不是深析产出,是 IT之家快讯原文摘要;两处 UPDATE 补 summary 写回);②深析评分分布问题(prompt'必须有区分度'是空话,agnes 保守推理模型大部分给 20-40 分;prompt 加分数分布纪律——六维至少一项≥7或≤3,totalScore 应双峰值得进≥60不配≤40,EMBEDDED 同步);③阈值 50 刚改还没生效(今晚主批第一次跑);npm test 437/437 绿<br>`250da26` 2026-10-06 14:19 feat(T5-13·深析质量): 用户'全按推荐'——①重写深析 prompt(daily-analyze.md):加'读者只有30秒'定位与五条写作纪律——summary必须给结论不许抄标题/必须含具体事实/reason必须回答为什么值得读/quote必须原文金句找不到就空/points必须读者能带走,直接治'不知道在说什么'(根因是深析产出本身质量,非阈值漏放);②EMBEDDED 兜底同步(lib/ai-prompts 单一份,防 Vercel 缺文件时回落旧 prompt);③初筛阈值默认 30→50:GitHub 提交信息式条目(perf/refactor 类 0-8 分)在 30 下照进深析,形同虚设——提至 50 拦这批;npm test 437/437 绿 |
 | prompts/daily-columns.md | — | 不要求头注 | `425fa53` 2026-10-06 11:06 feat(批六·测试装置 H37/H38/H39+PR7修): 用户'按推荐'裁决——①H38 派生锁(regression-outbound-sites:扫四目录网络库引入形态,命中必须==已挂号白名单4文件,新增引入点即红并点名;收窄掉就摘条目;宁窄勿假红);②H39 M3 载体已存在(_setProviderOverride 测试专用供应商注入点——防'AI配置错误把测试流量打到真接口',不主张'网络层零出口');③M2 主张降级落文档(test-harness §三:只主张'无明文HTTP外网访问',加密隧道记账仍未覆盖不许引用它证'绝对无外网');④H37 三选一已随 M3+M2 落定(供应商注入点+主张诚实);⑤修 PR7 红(daily-columns 挂号后缺 prompts/daily-columns.md 文件,照 daily-theme.md 形状补——热修 3a7913e 的连带锁,验收轮复跑发现) |
-| prompts/daily-theme.md | — | 不要求头注 | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
+| prompts/daily-theme.md | — | 不要求头注 ⚠ | `c1c5847` 2026-09-13 00:17 feat(daily): 18-daily-ai-v2 AI 策展早报 |
 | prompts/filter.md | — | 不要求头注 | `9a287ae` 2026-09-13 23:14 feat(defense): T4-2 R4 七层防御入报——L3 配额/L4 广告降权/L5 权威加权+低曝光保护位/L6 MMR（阻塞清单第 5 批续，specs/23 L2-L6 完成）<br>`180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |
 | prompts/README.md | — | 不要求头注 | `24e76bf` 2026-09-21 07:15 feat(B111/39-6)+test(PR1~PR7)+feat(W20)+坑#71: 翻译 prompt 收成 lib/ai-prompts.js 一份，三种键名归一<br>`2a13808` 2026-09-20 16:32 docs(B120 收口 + B123): runner 侧证据按坑 #68 补齐，页头写死"关键词规则排序"另立一条 |
 | prompts/term-extract.md | — | 不要求头注 | `180a30f` 2026-09-12 12:57 feat(ai): 16-ai-infra AI 基础设施 |

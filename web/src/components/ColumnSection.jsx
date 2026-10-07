@@ -185,7 +185,8 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
       <div className="p-3 sm:p-4 flex-1 min-w-0">
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0 mt-1">
-            <h3 className="text-[15px] font-bold leading-snug t-text line-clamp-2">
+            {/* 特写横排（栏首仅 1 张卡时）标题升衬线 17px——头条要有头条的个头（排版一期） */}
+            <h3 className={`font-bold leading-snug t-text line-clamp-2 ${wide ? 'serif text-[17px]' : 'text-[15px]'}`}>
               {highlightTitle(item.title, keywords, highlight)}
             </h3>
             {/* 中英对照：已译条目附英文原标题（2026-09-14） */}

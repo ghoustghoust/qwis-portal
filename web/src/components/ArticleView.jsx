@@ -240,8 +240,9 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
       {/* 正文 */}
       <div className="flex-1 overflow-y-auto">
         {loading && <div className="py-16 text-center text-sm t-muted">{t('article.loading')}</div>}
-        {!loading && article && (
-          <article className="max-w-[720px] mx-auto px-6 py-8">
+          {!loading && article && (
+            <article className="max-w-[640px] mx-auto px-6 py-8">
+            {/* 2026-10-07 排版一期：720→640（≈38 中文字/行黄金行长）——正文字号升 16px 后同步收列宽 */}
             <h1 className="text-2xl font-bold leading-snug t-text">
               {showTranslated ? (article.translated_title || article.title) : article.title}
             </h1>

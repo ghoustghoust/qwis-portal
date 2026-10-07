@@ -258,19 +258,34 @@ body {
 .switch.on::after { transform: translateX(1rem); }
 
 /* ===== 公众号正文排版（F5）：图片 / 小标题 / 加粗 ===== */
+/* 2026-10-07 排版一期（用户拍板方案）：阅读层与摘要层拉开字号阶梯、
+   标题回归衬线报纸语言、首字下沉、链接/引用/分隔线按 editorial 口径精修。 */
 .article-content {
-  font-size: 15.5px;
-  line-height: 1.9;
+  font-size: 16px;
+  line-height: 1.95;
   color: var(--text);
   word-break: break-word;
+  font-variant-numeric: tabular-nums;
 }
-.article-content p { margin: 0.9em 0; }
+.article-content p { margin: 1.3em 0; }
+/* 首字下沉：正文第一个段落的第一个字符衬线放大、accent 色（报纸风辨识度最高的一笔）。
+   首段常是导语句，下沉后自然形成"篇首"视觉锚点；英文/数字首字同样成立。 */
+.article-content > p:first-of-type::first-letter {
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'STSong', 'SimSun', serif;
+  float: left;
+  font-size: 3.1em;
+  line-height: 0.85;
+  padding: 0.05em 0.14em 0 0;
+  color: var(--accent);
+  font-weight: 700;
+}
 .article-content img {
   max-width: 100%;
   height: auto;
   display: block;
-  margin: 1em auto;
-  border-radius: 8px;
+  margin: 1.2em auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
 }
 .article-content h1,
 .article-content h2,
@@ -278,25 +293,66 @@ body {
 .article-content h4 {
   font-weight: 700;
   line-height: 1.4;
-  margin: 1.4em 0 0.6em;
+  margin: 1.6em 0 0.7em;
 }
-.article-content h1 { font-size: 1.35em; }
-.article-content h2 { font-size: 1.22em; }
+/* 章节标题回归衬线 + accent 竖条，与栏头同一视觉语言；衬线只用于 ≥1.25em（≈20px），
+   避免 SimSun 小字号发虚。h3/h4 保持黑体做次级层。 */
+.article-content h1 { font-size: 1.4em; }
+.article-content h2 {
+  font-size: 1.25em;
+  padding-left: 0.55em;
+  border-left: 3px solid var(--accent);
+}
 .article-content h3 { font-size: 1.1em; }
 .article-content h4 { font-size: 1em; }
 .article-content strong,
 .article-content b { font-weight: 700; }
+/* 引用块：竖线保留，正文衬线斜体 + 前置大引号（"朱批"感） */
 .article-content blockquote {
   border-left: 3px solid var(--accent);
   padding: 0.2em 0 0.2em 1em;
-  margin: 1em 0;
+  margin: 1.2em 0;
   color: var(--muted);
+  font-family: Georgia, 'Times New Roman', 'Songti SC', 'STSong', 'SimSun', serif;
+  font-style: italic;
+  position: relative;
+}
+.article-content blockquote > *:first-child::before {
+  content: '“';
+  position: absolute;
+  left: -0.1em;
+  top: -0.5em;
+  font-size: 2.2em;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.3;
+  font-style: normal;
 }
 .article-content section { margin: 0.5em 0; }
 .article-content ul,
-.article-content ol { padding-left: 1.4em; margin: 0.8em 0; }
-.article-content a { color: var(--accent); text-decoration: underline; }
+.article-content ol { padding-left: 1.4em; margin: 1em 0; }
+.article-content li { margin: 0.35em 0; }
+/* 链接：下划线离字 3px、线细 1px——默认下划线贴字显脏 */
+.article-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.article-content a:hover { text-decoration-thickness: 2px; }
 .article-content iframe { max-width: 100%; }
+/* 分隔线：居中花饰（章节转折的仪式感），替代默认灰条 */
+.article-content hr {
+  border: none;
+  margin: 1.8em 0;
+  text-align: center;
+}
+.article-content hr::after {
+  content: '❦';
+  color: var(--accent);
+  opacity: 0.45;
+  font-size: 1.1em;
+}
 /* 海外源全文（OpenRSS/Readability）排版归一：隐藏网站功能组件、居中营销块改左对齐、压缩过大气囊 */
 .article-content button,
 .article-content nav,
