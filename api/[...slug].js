@@ -3725,7 +3725,10 @@ async function dispatch(req) {
       const archive = (await getSetting('mybrief.archive', [])) || [];
       const entry = archive.find((a) => Number(a.issue) === issue);
       if (!entry) return { status: 404, body: jsonErr(`第 ${issue} 期不存在`) };
-      return jsonOk({ entry });
+      // 用户 10-07：往期条目显示英文——生成时译文未就绪的条目在快照里固化成原标题，
+      // 而最新视图（handleMyBrief）每次读取都经 enrichBriefTitles 回填。往期走同一回填，两端对称。
+      // enrich 是幂等的（已译条目 hit.zh === it.title 直接跳过），重复执行无害。
+      return jsonOk({ entry: await enrichBriefTitles(entry) });
     }
     if (path === '/api/mybrief') return handleMyBrief(req);
     if (path === '/api/weekly/archive' && method === 'GET') return jsonOk({ archive: (await getSetting('weekly.archive', [])) || [] });
@@ -3736,6 +3739,8 @@ async function dispatch(req) {
     const archive = (await getSetting('weekly.archive', [])) || [];
     const entry = archive.find((a) => Number(a.issue) === issue);
     if (!entry) return { status: 404, body: jsonErr(`第 ${issue} 期不存在`) };
+    // 同 mybrief 往期（用户 10-07）：周刊快照同样固化生成时的未译标题，读时回填与最新视图对称
+    if (entry.report) entry.report = await enrichBriefTitles(entry.report);
     return jsonOk({ entry });
   }
     if (path === '/api/weekly') return handleWeekly(req);
