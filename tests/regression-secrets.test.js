@@ -84,8 +84,11 @@ test('S6 真库两面都必须 0 命中，且分母非空（"0 处"必须同时�
   //   当场把清洁判成红（实测 pass 7 / fail 1）。png/jpg 从来不是密钥扫描的语料，旧口径锁的是"素材有多少"而不是"取法对不对"。
   //   扫描面本身没有缩小：下面的 scanFiles 仍吃过 tracked 全量，改的只是"非空"的判据口径。
   //   同一条锁的未跟踪面 09-21 已犯过同族病（见下一段注释），这次换到已跟踪面——代理指标选错的两副面孔。
-  const corpus = tracked.filter(f => /\.(md|js|cjs|mjs|jsx|json|ya?ml|txt|sql)$/i.test(f));
-  assert.ok(corpus.length > 200, `文本语料面只 ${corpus.length} 份（全仓跟踪 ${tracked.length}），取法可疑`);
+  // 口径取自 lib/secrets.js#isScannable（与被扫描面是同一次判定），**不许在这里再抄一份扩展名表**：
+  //   独立对抗审查实测出抄本的危害——手抄那份缺 ts/html/csv 多 sql，且"把 md 从 scanFiles 摘掉"时实读面 455→358
+  //   而抄本分母纹丝不动、锁照绿。分母与"它要防的事件"脱钩正是本锁要治的病，抄第二份等于把病重新种回去。
+  const corpus = tracked.filter(sec().isScannable);
+  assert.ok(corpus.length > 400, `扫描语料面只 ${corpus.length} 份（全仓跟踪 ${tracked.length}），取法可疑`);
   // 未跟踪面的分母与门禁自报数对账（同一份 lib/secrets.js 取数，一致 = 没在扫空气）。
   // 旧写法断言 >100，那是"工作区必然很脏"的暗含假设——09-21 清洁轮把 787 份收敛到个位数后它把清洁误判成红
   const lintOut = require('child_process').execFileSync('node', ['tools/doc-lint.cjs'], { cwd: ROOT, encoding: 'utf8' });
