@@ -77,13 +77,18 @@ test('I3 B84：三份媒体栏实现（api 日报 / runner 日报 / runner 我�
   assert.ok(pushes >= 6, `媒体项 push 总数=${pushes}（api 2 + runner 日报 2 + runner 我的早报 2）——新增了副本却没同步本锁`);
 });
 
-test('I4 B84：MediaRow 无封面分支渲染 SourceAvatar，不再用 emoji 冒充图标', () => {
+test('I4 B84→10-07 用户裁决：MediaRow 无封面播客渲染满高节目封面图，与视频缩略图同长宽比，不再挂耳机小图标', () => {
+  // 判据更新依据（用户 10-07 原话）："这里是有logo的，我说的是这个耳机符号不该有，
+  // 并且长宽比要和上面的视频一致" —— B84 时代的 40px 头像列+耳机图标形态整体退场，
+  // 无封面分支改为消费 source_avatar 渲染与视频分支同形状的满高图（"无封面时必须有图兜底"的精神保留）。
   const src = read('web', 'src', 'pages', 'MyBriefPage.jsx');
   const row = bodyOf(src, 'function MediaRow');
   assert.ok(row, '找不到 MediaRow');
   assert.ok(!/[🎧]/.test(row) && !/▶/.test(row), `MediaRow 仍有 emoji 角标：${(row.match(/[🎧▶]/g) || []).join('')}`);
-  assert.ok(/<SourceAvatar /.test(row), 'MediaRow 无封面分支没有渲染 SourceAvatar（源头像兜底是 lib/media.js 写死的契约）');
-  assert.ok(/source_avatar/.test(row), 'MediaRow 没有把 source_avatar 传给兜底头像');
+  assert.ok(/source_avatar/.test(row), 'MediaRow 没有消费 source_avatar（无封面播客的图兜底契约）');
+  assert.ok(/item\.source_avatar \? \(/.test(row), 'MediaRow 无封面分支没有用 source_avatar 渲染满高图分支');
+  const grayCol = row.match(/w-14 flex flex-col[^"]*"/);
+  assert.ok(!grayCol, `MediaRow 又出现了"头像列+图标"旧形态：${grayCol && grayCol[0]}`);
   // 契约文档与实现必须同口径，否则下一轮又会"文档说有、实现没有"
   const lib = read('lib', 'media.js');
   assert.ok(/source_avatar/.test(lib), 'lib/media.js 的兜底口径没写明承载字段，读的人仍会以为只是"源头像"');
