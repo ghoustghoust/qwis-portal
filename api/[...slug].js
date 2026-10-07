@@ -1989,17 +1989,22 @@ const EXTRA_PUBLIC_KEYS = ['intervalMin', 'lastError', 'lastErrorAt', 'aggregato
 const LIBRARY_COLUMNS = 'id, type, name, url, avatar, group_id, spotlight, muted, reader_visible, enabled, fail_count, status, last_fetched_at, created_at, extra';
 const VIDEO_TYPES_SET = new Set(['bilibili', 'douyin', 'youtube']);
 
+// 30s 进程内缓存（2026-10-07 后台流畅性补刀）：双全表 GROUP BY + sources 主查询实测 1.1s/590KB，
+// 是源库页进入/切回的最大单点。写操作（/api/sources*、restore-all、unfreeze）在入口统一失效。
+const _libCache = { val: null, ts: 0 };
+const LIB_CACHE_TTL = 30000;
 async function handleSourcesLibrary(req) {
+  if (_libCache.val && Date.now() - _libCache.ts < LIB_CACHE_TTL) return _libCache.val;
   const sources = await qAll(`SELECT ${LIBRARY_COLUMNS} FROM sources ORDER BY id`);
-  // 聚合计数
+  // 聚合计数（两表无依赖，并发）
+  const [articleCountRows, videoCountRows] = await Promise.all([
+    qAll('SELECT source_id, COUNT(*) c FROM articles GROUP BY source_id'),
+    qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id'),
+  ]);
   const articleCounts = {};
   const videoCounts = {};
-  for (const row of await qAll('SELECT source_id, COUNT(*) c FROM articles GROUP BY source_id')) {
-    articleCounts[row.source_id] = row.c;
-  }
-  for (const row of await qAll('SELECT source_id, COUNT(*) c FROM videos GROUP BY source_id')) {
-    videoCounts[row.source_id] = row.c;
-  }
+  for (const row of articleCountRows) articleCounts[row.source_id] = row.c;
+  for (const row of videoCountRows) videoCounts[row.source_id] = row.c;
   // B79 订阅态可见化：与我的早报消费方同源读生效订阅集合（键缺失兜底 spotlight），
   // 不读原始键——徽章要回答的是"这个源现在进不进我的早报"，不是"settings 里声明过什么"。
   const subscribedIds = new Set(await axes.resolveSubscriptionIds({ qAll, getSetting }));
@@ -2015,7 +2020,10 @@ async function handleSourcesLibrary(req) {
     }
     return { ...s, extra: JSON.stringify(safeExtra), contentKind: kind, itemCount, subscribed: subscribedIds.has(s.id) };
   });
-  return jsonOk({ items });
+  const out = jsonOk({ items });
+  _libCache.val = out;
+  _libCache.ts = Date.now();
+  return out;
 }
 
 // ─── P1-2: GET /api/alerts/config — 报警配置（渠道密钥脱敏） ───
@@ -2707,7 +2715,12 @@ function cutoffIso(days) {
 }
 
 // GET /api/data/stats
+// 30s 进程内缓存（2026-10-07 后台流畅性补刀）：10 表 COUNT 并发后仍 1.2s（全表 COUNT 本身是
+// Turso 重读），是数据页切回的最大单点。清理/恢复等写操作在入口统一失效。
+const _dataStatsCache = { val: null, ts: 0 };
+const DATA_STATS_TTL = 30000;
 async function handleDataStats(req) {
+  if (_dataStatsCache.val && Date.now() - _dataStatsCache.ts < DATA_STATS_TTL) return _dataStatsCache.val;
   // 各表 COUNT 无依赖，并发（2026-10-06：原 for 循环串行 10 次 Turso 往返）
   const tableNames = [...DATA_TABLES];
   const counts = await Promise.all(tableNames.map((t) => qOne(`SELECT COUNT(*) c FROM ${t}`)));
@@ -2738,7 +2751,10 @@ async function handleDataStats(req) {
       }
     } catch { /* 拉不到不阻断本端点 */ }
   }
-  return jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables, tursoUsage });
+  const out = jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables, tursoUsage });
+  _dataStatsCache.val = out;
+  _dataStatsCache.ts = Date.now();
+  return out;
 }
 
 // GET /api/data/list — 云端无文件快照，返回配置备份信息
@@ -3766,6 +3782,14 @@ module.exports = async (req, res) => {
   // 鉴权检查
   const authErr = requireAuth(req);
   if (authErr) return res.status(authErr.status).json(authErr.body);
+
+  // 写操作即时失效进程内聚合缓存（2026-10-07）：sources/data 的读缓存 30s，若不失效，
+  // 管理台"启停源/清理"后刷新会看到旧值。放入口统一做，避免每个写 handler 各记一处。
+  if (req.method !== 'GET') {
+    const p = req.url.split('?')[0];
+    if (p.startsWith('/api/sources') || p.startsWith('/api/health/unfreeze')) _libCache.val = null;
+    if (p.startsWith('/api/data')) _dataStatsCache.val = null;
+  }
 
   try {
     const result = await dispatch(req);
