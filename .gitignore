@@ -67,3 +67,4 @@ __pycache__/
 tools/_*.cjs
 # 含 VERCEL_OIDC_TOKEN 真实凭据,物证只留本地
 archive/_diag/portal-quarantine/vercel-env-production.local
+ci-log.txt
