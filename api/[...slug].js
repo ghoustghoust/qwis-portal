@@ -131,6 +131,7 @@ function requireAuth(req) {
     if (/^\/api\/articles\/\d+$/.test(path)) return null;
     if (/^\/api\/videos\/\d+(\/play)?$/.test(path)) return null;
     if (/^\/api\/hot\/events\/\d+$/.test(path)) return null;
+    if (/^\/api\/mybrief\/archive\/\d+$/.test(path)) return null;
   }
   const user = verifyAuth(req);
   if (!user) return { status: 401, body: jsonErr('Unauthorized') };
@@ -3769,7 +3770,8 @@ function cacheControlFor(req) {
   const isPublic = PUBLIC_GET_PATHS.has(path)
     || /^\/api\/articles\/\d+$/.test(path)
     || /^\/api\/videos\/\d+(\/play)?$/.test(path)
-    || /^\/api\/hot\/events\/\d+$/.test(path);
+    || /^\/api\/hot\/events\/\d+$/.test(path)
+    || /^\/api\/mybrief\/archive\/\d+$/.test(path);
   if (!isPublic) return null;
   if (path === '/api/articles/since') return 'public, s-maxage=10, stale-while-revalidate=30';
   if (path === '/api/meta' || path === '/api/hot/categories') return 'public, s-maxage=300, stale-while-revalidate=600';

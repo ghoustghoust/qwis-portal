@@ -22,7 +22,8 @@ function isPublicGet(path) {
   if (PUBLIC_GET_EXACT.has(p)) return true;
   return /^\/api\/articles\/\d+$/.test(p)
     || /^\/api\/videos\/\d+(\/play)?$/.test(p)
-    || /^\/api\/hot\/events\/\d+$/.test(p);
+    || /^\/api\/hot\/events\/\d+$/.test(p)
+    || /^\/api\/mybrief\/archive\/\d+$/.test(p);
 }
 
 // ---- 1.4 GET 请求去重缓存 ----
