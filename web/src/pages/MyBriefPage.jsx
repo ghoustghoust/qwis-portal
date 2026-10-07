@@ -273,6 +273,14 @@ function MediaRow({ item, onOpen }) {
   );
 }
 
+// 关注加成的悬浮拆解（ADR-38）。totalScore 封顶 100 时"全局分+加成"与显示分对不上，
+// 文案补"（封顶 100）"免得读起来像算错账。
+function boostTitle(item) {
+  const base = item.baseScore ?? item.totalScore;
+  const over = (Number(base) || 0) + (Number(item.boost) || 0) > 100;
+  return `全局分 ${base} + 关注加成 +${item.boost}${over ? '（封顶 100）' : ''}`;
+}
+
 function BriefCard({ item, rank, onOpen }) {
   return (
     <article className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
@@ -289,7 +297,7 @@ function BriefCard({ item, rank, onOpen }) {
             {item.boost > 0 && (
               <span
                 className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent"
-                title={`全局分 ${item.baseScore ?? item.totalScore} + 关注加成 +${item.boost}`}
+                title={boostTitle(item)}
               >
                 关注 +{item.boost}
               </span>
@@ -360,7 +368,7 @@ function RestRow({ item, onOpen }) {
       {item.boost > 0 && (
         <span
           className="flex-none pill !py-0 !px-1.5 !text-[10px] t-accent-soft t-accent"
-          title={`全局分 ${item.baseScore ?? item.totalScore} + 关注加成 +${item.boost}`}
+          title={boostTitle(item)}
         >
           关注 +{item.boost}
         </span>

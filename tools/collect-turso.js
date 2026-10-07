@@ -1845,6 +1845,12 @@ async function runMyBrief(analyzed) {
   const subBoost = numOr(mbCfg.subBoost, 6);
   const boostCap = numOr(mbCfg.boostCap, 30);
   const mbMin = numOr(mbCfg.minScore, 50);
+  // 坏值必须出声（坑 #38 同族：静默降级 = 没人知道后台填错了数）。
+  // 判据是"numOr 回了默认"而不是"值 ≠ 默认"——用户自定义的合法值（如 subBoost=10）不许误报。
+  for (const [k, def] of [['subBoost', 6], ['boostCap', 30], ['minScore', 50]]) {
+    const v = mbCfg[k];
+    if (v !== undefined && numOr(v, def) !== v) log(`mybrief: 权重键 mybrief.${k}=${JSON.stringify(v)} 不可用，按默认 ${def} 执行`);
+  }
   let boostN = 0;
   const profMap = new Map((profile?.tags || []).slice(0, 5).map((t) => [t.tag, t.weight]));
   for (const a of minePool) {
