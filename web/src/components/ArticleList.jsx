@@ -58,7 +58,12 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
   // （同站 HotPage/MyReadingPage 早有 300-350ms 防抖，此处漏了）。输入框用本地值即时回显，
   // 生效值 350ms 后上报；外部清空（切板块/切模式）时同步回来。
   const [qInput, setQInput] = useState(q || '');
-  useEffect(() => { setQInput(q || ''); }, [q]);
+  // q 外部变化（切板块清空/切模式）与组件卸载都要取消 pending 上报——否则 350ms 内
+  // 切板块，旧词经 timer 复活并覆盖 setQ('')（对抗审查 P1；对照 HotPage 的 effect 内 setTimeout+cleanup 模式）
+  useEffect(() => {
+    setQInput(q || '');
+    return () => clearTimeout(searchTimer.current);
+  }, [q]);
   const searchTimer = useRef(null);
   const onSearchInput = useCallback((v) => {
     setQInput(v);

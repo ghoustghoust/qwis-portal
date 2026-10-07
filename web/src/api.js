@@ -35,13 +35,14 @@ function cacheGet(key, fetcher, force) {
   const now = Date.now();
   const entry = _getCache.get(key);
   if (!force && entry && now - entry.ts < GET_CACHE_TTL) return entry.promise;
+  const prev = entry; // 失败兜底用：必须在下面 set 覆盖前捕获（对抗审查 P1：覆盖后 get 到的是本次失败 promise 自身 → 自引用 TypeError，兜底从未生效）
   const promise = fetcher().then(
     (data) => { _getCache.set(key, { promise: Promise.resolve(data), ts: Date.now() }); return data; },
     (err) => {
-      const stale = _getCache.get(key);
-      if (!force) _getCache.delete(key); // 失败不缓存（force 时保留旧缓存）
-      // stale-while-error：有旧数据兜底先回旧数据；401 必须放行（登录态失效要弹框）
-      if (stale && err && err.status !== 401) return stale.promise;
+      // 恢复旧缓存（无则清掉）：失败 promise 不留缓存（防毒化 TTL 窗口）
+      if (prev) _getCache.set(key, prev); else _getCache.delete(key);
+      // stale-while-error：非 force 且有旧数据先回旧数据；401 必须放行（登录态失效要弹框）
+      if (!force && prev && err && err.status !== 401) return prev.promise;
       throw err;
     }
   );
@@ -70,6 +71,15 @@ async function request(path, { method = 'GET', body, force } = {}) {
 
     // 1.4：GET 请求走缓存去重（force = 绕缓存强拉，结果仍回写）
     if (method === 'GET') {
+      // 轮询端点绕过内存缓存：URL 里的 ts 基线两次消费之间不变，同 key 会吃满 TTL——
+      // 300s TTL 下新文章提示延迟从 ≤60s 恶化到 ≤300s（对抗审查 P2）。CDN 侧有 10s 短档兜着。
+      if (path.startsWith('/api/articles/since')) {
+        return fetch(path, {
+          method,
+          headers: Object.keys(headers).length ? headers : undefined,
+          body: undefined,
+        }).then(handleResponse);
+      }
       return cacheGet(path, () => fetch(path, {
         method,
         headers: Object.keys(headers).length ? headers : undefined,

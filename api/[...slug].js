@@ -3775,7 +3775,8 @@ module.exports = async (req, res) => {
       return res.status(200).send(result.body);
     }
     const cc = cacheControlFor(req);
-    if (cc) res.setHeader('Cache-Control', cc);
+    // 只有成功响应进 CDN（对抗审查 P2：404 等错误响应带 public 头会被缓存错误页）
+    if (cc && (!result || !result.status || result.status === 200)) res.setHeader('Cache-Control', cc);
     if (result && result.status) {
       return res.status(result.status).json(result.body);
     }
