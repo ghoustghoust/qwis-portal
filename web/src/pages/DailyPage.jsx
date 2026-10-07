@@ -10,6 +10,7 @@ import ThemePanorama from '../components/ThemePanorama.jsx';
 import QuickStudyModal from '../components/QuickStudyModal.jsx';
 import MdText from '../components/ui/MdText.jsx';
 import MdRich from '../components/ui/MdRich.jsx';
+import { itemAnchor } from '../util';
 
 // 每日情报日报页（/daily/，F13~F20）：报纸风页头 + 统计卡 + 栏目 + 快速学习弹窗
 // 设置入口已下线（第二期迁入管理后台），日报设置仅剩管理后台可改
