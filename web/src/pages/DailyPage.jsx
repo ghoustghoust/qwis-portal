@@ -143,7 +143,7 @@ export default function DailyPage() {
           title: sec.column,
           items: (sec.items || []).map((it) => ({
             id: it.id,
-            anchor: `di-${it.id}`,
+            anchor: itemAnchor(it, 'di'),
             title: it.title || '',
             colKey: key,
           })),

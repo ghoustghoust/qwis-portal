@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { relativeTime, imgUrl } from '../util';
+import { relativeTime, imgUrl, itemAnchor } from '../util';
 import Stars from './ui/Stars.jsx';
 import TagPills from './ui/TagPills.jsx';
 import MdText from './ui/MdText.jsx';
@@ -155,7 +155,7 @@ export default function ColumnSection({ section, keywords, collapsed, onToggle, 
 function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
   return (
     <article
-      id={item.id != null ? `di-${item.id}` : undefined}
+      id={item.id != null ? itemAnchor(item, 'di') : undefined}
       className={`card card-lift overflow-hidden cursor-pointer ${wide ? 'sm:flex sm:items-stretch' : ''}`}
       onClick={() => onOpen?.(item)}
     >
@@ -241,7 +241,7 @@ function DailyCard({ item, keywords, highlight, onOpen, wide = false }) {
 function CompactRow({ item, index, keywords, highlight, onOpen }) {
   return (
     <div
-      id={item.id != null ? `di-${item.id}` : undefined}
+      id={item.id != null ? itemAnchor(item, 'di') : undefined}
       className="flex items-center gap-3 px-3 sm:px-4 py-2.5 cursor-pointer transition-colors hover:bg-[var(--surface-2)] overflow-hidden"
       onClick={() => onOpen?.(item)}
       style={{ borderColor: 'var(--border)' }}

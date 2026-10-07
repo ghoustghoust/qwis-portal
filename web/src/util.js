@@ -19,6 +19,14 @@ export function cleanTitle(t) {
   return String(t || '').replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, '');
 }
 
+// 本期索引的条目锚点（IssueIndex + 各条目行共用，防止"同一条目两处渲染 id 撞车"）：
+// 音频条目（articles 表的播客单集）可能同时进媒体栏和条目区，裸 id 会重复——
+// 媒体类加 v 隔离（di-v123 / bi-v123），文章/推文保持 di-123 / bi-123。prefix 按页区分（di/bi）。
+export function itemAnchor(item, prefix) {
+  const media = item.kind === 'video' || item.kind === 'podcast' ? 'v' : '';
+  return `${prefix}-${media}${item.id}`;
+}
+
 export function relativeTime(iso) {
   if (!iso) return '—';
   const t = new Date(iso).getTime();

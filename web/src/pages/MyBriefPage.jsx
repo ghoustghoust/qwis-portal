@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { IconRail } from '../main.jsx';
-import { imgUrl, relativeTime } from '../util';
+import { imgUrl, relativeTime, itemAnchor } from '../util';
 import Stars from '../components/ui/Stars.jsx';
 import TagPills from '../components/ui/TagPills.jsx';
 import MdText from '../components/ui/MdText.jsx';
@@ -66,7 +66,7 @@ export default function MyBriefPage() {
         .filter((g) => g.items?.length)
         .map((g) => ({
           ...g,
-          items: g.items.map((it) => ({ id: it.id, anchor: `bi-${it.id}`, title: it.title || '' })),
+          items: g.items.map((it) => ({ id: it.id, anchor: itemAnchor(it, 'bi'), title: it.title || '' })),
         }))
     : [];
 
@@ -253,7 +253,7 @@ function MediaRow({ item, onOpen }) {
   const isPod = item.kind === 'podcast';
   const Glyph = isPod ? HeadphonesIcon : PlayIcon;
   return (
-    <article id={`bi-${item.id}`} className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
+    <article id={itemAnchor(item, 'bi')} className="card card-lift overflow-hidden cursor-pointer flex items-stretch" onClick={() => onOpen?.(item)}>
       {item.cover
         ? (
           <div className="relative flex-none w-32 sm:w-40">
@@ -314,7 +314,7 @@ function boostTitle(item) {
 
 function BriefCard({ item, rank, onOpen }) {
   return (
-    <article id={`bi-${item.id}`} className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
+    <article id={itemAnchor(item, 'bi')} className="card card-lift overflow-hidden cursor-pointer" onClick={() => onOpen?.(item)}>
       <div className="flex gap-4 p-3 sm:p-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -387,7 +387,7 @@ function BriefCard({ item, rank, onOpen }) {
 
 function RestRow({ item, onOpen }) {
   return (
-    <div id={`bi-${item.id}`} className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
+    <div id={itemAnchor(item, 'bi')} className="flex items-center gap-3 px-3 py-2 card cursor-pointer hover:bg-[var(--surface-2)]" onClick={() => onOpen?.(item)}>
       {/* 原先硬编码 index+4 当序号：top3+featured7 之后 rest 实际从 11 开始，显示的是错号。
           补充阅读不是排名列表，去掉序号而不是补一个更复杂的偏移。 */}
       <span className="flex-1 min-w-[10rem]">
