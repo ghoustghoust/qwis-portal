@@ -47,7 +47,7 @@
 | `docs/contracts/` | 接口契约 JSON（读层响应形状） | 前端/测试 |
 | `docs/research/` | **研究性与前瞻设计参考**：外部范式拆解、目标态框架。**每份必须自陈身份**（目标态 / 已验收现状依据）；落地的那部分改写进 `features/`，作废即删——**这里不许长成第二个归档层** | `docs/research/README.md`、INDEX |
 | `docs/changes/` | 在途变更的对边界记录，一轮一份；**已完结即删**，不养"过去方案"当第二事实源 | INDEX |
-| `docs/eval/` | 一次性只读探针与历史评测轮的产物（AGENTS §3 验收第 7 条：数据链路改动配探针直读生产真值） | `EVAL_GUIDE.md`、AGENTS §3 |
+| `docs/eval/` | 一次性只读探针与历史评测轮的产物（AGENTS §3 验收第 7 条：数据链路改动配探针直读生产真值）。⚠️ **这里同时躺着生产数据回滚备份**（`restore-youtube-*.json`、`*-backup.json`，是 `tools/probe-restore-frozen.js --undo` 的唯一依据，账在 `ISSUES.md` H15 与坑 #52）——**它们不是"一次性读数"，出账清时不许按本目录的读数规则删**；判据：文件是不是某次生产写的逆操作依据，是就留 | `EVAL_GUIDE.md`、AGENTS §3 |
 
 被代码或活文档**指名引用**的手册不许移走（移动 = 制造悬空引用，`tools/setup-customer.js` 这类运行时提示也会一起失效）。除上表外的文件不得留在 `docs/` 顶层。
 

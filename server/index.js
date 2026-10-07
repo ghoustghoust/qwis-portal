@@ -66,7 +66,7 @@ const { sseHandler } = require('./routes/events-sse');
 app.get('/api/events', sseHandler);
 
 // P0 鉴权（2026-09-05 修复）：必须在路由挂载之前注册——Express 按注册序执行，
-// 历史上挂在路由之后导致全部 /api/* 零鉴权（详见 docs/1.CODE_REVIEW_2026-09-05.md P0-1）。
+// 历史上挂在路由之后导致全部 /api/* 零鉴权（09-05 全库审查的 P0-1，反查走 git）。
 // 策略：读者只读 GET 公开；写操作与管理/敏感接口要求 Bearer JWT（/api/auth/login 获取）。
 app.use('/api', authMiddleware);
 

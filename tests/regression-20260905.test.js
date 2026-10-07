@@ -1,4 +1,4 @@
-// 2026-09-05 全库审查修复回归（docs/1.CODE_REVIEW_2026-09-05.md）
+// 2026-09-05 全库审查修复回归（那轮审查件已整批删除，反查走 git）
 // 覆盖：P0-1 鉴权中间件策略 / P0-2 报警凭据脱敏 / P1-1 fulltext aggregator SQL /
 //       P1-2 syncOpml 解冻语义 / P1-4 events RangeError
 require('./helpers');
