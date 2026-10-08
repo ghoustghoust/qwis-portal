@@ -1,161 +1,207 @@
 {
   "report": {
-    "id": 100,
-    "generated_at": "2026-10-07T07:03:57.968Z",
+    "id": 103,
+    "generated_at": "2026-10-08T07:09:50.393Z",
     "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "新公开的课程、训练营与社群招募",
+        "items": [
+          {
+            "id": 3674743,
+            "title": "Tessoa 跨平台文件管理器开启早鸟销售，分享一下内测反馈和后续计划",
+            "url": "https://www.v2ex.com/t/1246875#reply0",
+            "source": "V2EX · 创意",
+            "published_at": "2026-10-07T21:38:55.000Z",
+            "score": null,
+            "summary": "之前在 V2EX 发过一篇内测招募帖，收到了不少反馈和建议。这次回来，想和大家同步一下近况。",
+            "cover": "https://image-1257198410.cos.na-siliconvalley.myqcloud.com/image/01-%E8%87%AA%E7%94%B1%E5%88%86%E5%B1%8F.gif"
+          },
+          {
+            "id": 3616453,
+            "title": "5年后，你手机上的购物App会消失",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654908931&idx=1&sn=8aa0e3ebaecc69087c6df8b708168fb3",
+            "source": "笔记侠",
+            "published_at": "2026-10-07T14:03:00.000Z",
+            "score": null,
+            "summary": "今天的内容，来自笔记侠PPE（政经哲）课程26级美国站《创新英雄》现场分享的精华部分，分享人是前亚马逊Rufus项目（AI助手）创始成员，内容以第一人称展开。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e9e7f148&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8b91BQ8yFl0rAle3sibPUcu1cibecOXpE0jWZmyiaAujClATouZnjdu00D8tBxVt9lJb2ZKx5XTUWgKicEBnZZhYle2I3MwKpicqNE7oVDlzhoCU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3613243,
+            "title": "明星品牌那么多，为什么只有Rhode能持续制造爆款｜窄播一下 Vol.46",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkxMzMwNTkxOA==&mid=2247504453&idx=1&sn=2ab78d4fb8228d9c505f0046ca077c43",
+            "source": "窄播",
+            "published_at": "2026-10-07T13:49:00.000Z",
+            "score": null,
+            "summary": "Rhode的样本价值在于，它是一个典型的把明星流量、个人审美转化为创意内容、社群、产品共同驱动的社媒原生品牌。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=31fd3417&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FIPQETP0KBGlGrmnFzicxehN0qVOibQOA2vUWG2zDVP5m1BF6se9JCic8Qy9REjiadPyicjwPaS9GM42m1MxQ37R7S4206wyXSldgN78MHOIUDncM%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3565191,
+            "title": "Claude砸1亿美元办培训班，你的第一张AI文凭要来了？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkyNjU2ODM2NQ==&mid=2247633971&idx=2&sn=71f37a4c9187144c9adb0eb774c4fc32",
+            "source": "硅星人Pro",
+            "published_at": "2026-10-07T02:42:00.000Z",
+            "score": null,
+            "summary": "AI 第一新媒体，「超级个体」的灵感指南。 #AIGC #智能设备 #独特应用 #Generative AI",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5c139cb1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FdCG7OC48IfIXI6DtKtHXBKQHMUaK0G4pDMoKU2JCzJ6DiaM2X5zKcNwoHTG0uv4GbibfIxQooyibIQpP2pNrOXvgqicFIFnfg8RicTXPX5PZnowM%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 3241573,
-            "title": "ChatGPT is adding real cartoonists' signatures to fake New Yorker cartoons",
-            "url": "https://www.niemanlab.org/2026/10/chatgpt-is-adding-real-cartoonists-signatures-to-fake-new-yorker-cartoons/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-10-05T22:46:45.000Z",
-            "score": 72,
-            "summary": "Article URL: https://www.niemanlab.org/2026/10/chatgpt-is-adding-real-cartoonists-signatures-to-fake-new-yorker-cartoons/",
-            "cover": null
-          },
-          {
-            "id": 3356701,
-            "title": "Brain organoids grafted into cortex-free mice will advance human brain research",
-            "url": "https://www.nature.com/articles/d41586-026-02967-7",
-            "source": "Nature",
-            "published_at": "2026-10-06T00:00:00.000Z",
+            "id": 3657075,
+            "title": "ChatGPT’s ‘Intelligent UI’ update fills its responses with pictures, charts, and buttons",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/1007276/openai-chatgpt-intelligent-ui-gpt-6",
+            "source": "The Verge",
+            "published_at": "2026-10-07T19:10:42.000Z",
             "score": 71,
-            "summary": "Nature, Published online: 06 October 2026; doi:10.1038/d41586-026-02967-7",
-            "cover": null
+            "summary": "OpenAI随GPT-6推出Intelligent UI功能，ChatGPT能以图表、表单、可点击按钮等互动可视化形式回答问题，而非纯文字。官方称已专门训练GPT-6判断何时使用互动视觉元素。示例包括七速自行车设计的交互式图示，点击按钮可高亮不同部件。",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/Intelligent-UI.png?quality=90&strip=all&crop=0,0,100,100"
           },
           {
-            "id": 3252776,
-            "title": "AI Tutoring with Khanmigo in a Two-Year School Experiment",
-            "url": "https://edworkingpapers.com/ai26-1551",
+            "id": 3479285,
+            "title": "South Korea says AI agents appear to have been used to hack the country's banks",
+            "url": "https://www.reuters.com/world/south-koreas-lee-says-ai-appears-have-been-used-bank-hacks-2026-10-06/",
             "source": "Hacker News 首页",
-            "published_at": "2026-10-06T00:00:45.000Z",
+            "published_at": "2026-10-06T23:50:33.000Z",
             "score": 68,
-            "summary": "Article URL: https://edworkingpapers.com/ai26-1551",
+            "summary": "韩国政府确认AI代理已被用于攻击其银行系统，这是AI agent从理论威胁走向大规模实战攻击的首个国家级案例。对企业而言，这意味着AI agent的安全漏洞将成为新的监管焦点和攻击面，必须在产品设计和运维中立即纳入agent行为监控。",
             "cover": null
           },
           {
-            "id": 3375985,
-            "title": "Google is about to remove free access to Gemini Flash and Pro",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/1005451/google-gemini-free-flash-lite-only",
-            "source": "The Verge",
-            "published_at": "2026-10-06T13:19:01.000Z",
-            "score": 65,
-            "summary": "10月9日起，Gemini免费版仅保留Flash Lite，原免费可用的Flash需订阅$4.99/月的AI Plus，而Pro已不包含在AI Plus内，将单独归属AI Pro/Ultra套餐。这意味着Google正在快速收紧AI模型的免费边界，用户需付费才能获得完整能力。",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25290329/STK255_Google_Gemini_A.jpg?quality=90&strip=all&crop=0,0,100,100"
+            "id": 3455877,
+            "title": "Sharing AI Progress in Mathematics",
+            "url": "https://openai.com/index/sharing-ai-progress-in-mathematics/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-06T22:17:21.000Z",
+            "score": 63,
+            "summary": "OpenAI发布数学AI能力进展报告，展示其在数学推理、定理证明和竞赛解题方面的最新突破。核心发现：大模型在数学领域的表现持续超越预期，部分任务已达到人类高水平选手水平。",
+            "cover": null
           },
           {
-            "id": 3363968,
-            "title": "The wireless headphones that roll up into a Bluetooth speaker are now available",
-            "url": "https://www.theverge.com/tech/1004860/tomorrow-doesnt-matter-tdm-neo-headphone-roll-up-bluetooth-speaker-us-availability",
+            "id": 3469932,
+            "title": "OpenAI drops another batch of mathematical breakthroughs",
+            "url": "https://www.theverge.com/ai-artificial-intelligence/1005004/openai-math-release-github",
             "source": "The Verge",
-            "published_at": "2026-10-06T13:00:00.000Z",
+            "published_at": "2026-10-06T23:26:38.000Z",
             "score": 62,
-            "summary": "TDM Neo是一款可卷起的蓝牙耳机，头戴部分展开后可作为蓝牙扬声器使用，CES 2026首发后通过Kickstarter众筹成功，现以$249在美国开售，支持Amazon和Walmart购买。",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/neo1.jpg?quality=90&strip=all&crop=0,0,100,100"
+            "summary": "OpenAI发布由未公开前沿模型生成的722份数学手稿，涵盖372个结果家族，解决数百个开放问题。数学界既受震撼又深感不安——独立顾问团体AGMAI已介入以确保成果负责任地公开。此事将AI推入基础科学研究的核心地带，也激化了关于AI署名、学术诚信的争议。",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/gettyimages-2297765991.jpg?quality=90&strip=all&crop=0,0,100,100"
           },
           {
-            "id": 3459774,
-            "title": "Your agent failed. Make that your next test.\r\n\r\nFuad Ali of @ArizeAI shows how to turn production fail...",
-            "url": "https://x.com/aiDotEngineer/status/2107586624326373555",
-            "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-10-06T21:39:42.000Z",
+            "id": 3674594,
+            "title": "Spanish pensioner whose eviction sparked nationwide protests dies, union says",
+            "url": "https://www.bbc.co.uk/news/articles/c6e3x21ev9wwo?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-10-07T21:40:24.000Z",
             "score": null,
-            "summary": "Your agent failed. Make that your next test.Fuad Ali of @ArizeAI shows how to turn production failures into evals, test fixes for regressions and add human review.Oct 12, AI Engineer New YorkWorkshops",
-            "cover": "https://pbs.twimg.com/media/HT-mNyOWMAEl0y6.jpg"
+            "summary": "Maricarmen Abascal, 87, was forcibly removed on a stretcher from her apartment of more than 70 years in September.",
+            "cover": null
           },
           {
-            "id": 3467143,
-            "title": "早知天下事〔2026.10.07〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650243451&idx=1&sn=5dacef6d83dbd690c18cd2d6f742ce56",
+            "id": 3689996,
+            "title": "早知天下事〔2026.10.08〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650243614&idx=1&sn=9ab701521f9cf79de3f4f05e34498875",
             "source": "新华社",
-            "published_at": "2026-10-06T21:30:00.000Z",
+            "published_at": "2026-10-07T21:30:00.000Z",
             "score": null,
-            "summary": "农业农村部最新农情调度显示，我国秋粮已收获三成半，其中西南收获近七成，长江中下游近五成，黄淮海和西北过四成，东北过一成。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=872f30ae&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIT0kZibOe98BOjOoEsf1POdN3Hyy1PhjuAbcBsj49cXOKnhsWEdiaFAJy1aQwelgSIB3ynweTYV7kicpv35FA7XLsCnt0VVQ8EI00%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "水利部消息，水利部将进一步加大工作力度，确保全年完成水利建设投资1万亿元目标 。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1f59dac3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOISd6rswQzjWmq4seFTgUdXlcoA6jB3b2lBGzazGRxOmqRaucOXlR9FOekicia9wDnPSVMZMlxJAibcaiaVK4HrWT8wKEzgvBAEK3C0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 3450698,
-            "title": "The questions swirling around a U.K. base and possible Iranian-backed attacks",
-            "url": "https://www.npr.org/2026/10/06/nx-s1-5992853/the-questions-swirling-around-a-u-k-base-and-possible-iranian-backed-attacks",
+            "id": 3672981,
+            "title": "What is the pneumonic plague?",
+            "url": "https://www.npr.org/2026/10/07/g-s1-146952/pneumonic-plague-russia-siberia-lab-death",
             "source": "NPR Topics: World",
-            "published_at": "2026-10-06T20:53:46.000Z",
+            "published_at": "2026-10-07T21:06:31.000Z",
             "score": null,
-            "summary": "British police said they had made a seventh arrest in a murky plot that may have targeted a U.K. airbase.",
+            "summary": "The ancient disease of plague is back in the headlines after the death this month of a Russian lab worker.",
+            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2880x1920+0+0/resize/2880x1920!/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F1f%2F76%2Fb8746ff340d5984bafb43f99a66f%2Fsciencesourceimages-1066890.jpg"
+          },
+          {
+            "id": 3678858,
+            "title": "Great to partner with NVIDIA as we kick off this next chapter for Windows.\r\n\r\nThank you @JensenHuang a...",
+            "url": "https://x.com/satyanadella/status/2107939627898400819",
+            "source": "Satya Nadella(@satyanadella)",
+            "published_at": "2026-10-07T21:02:25.000Z",
+            "score": null,
+            "summary": "Great to partner with NVIDIA as we kick off this next chapter for Windows.Thank you @JensenHuang and @sriramk for joining us today!Your browser does not support the video tag.🔗 View on Twitter💬46🔄4",
             "cover": null
           },
           {
-            "id": 3438654,
-            "title": "Energy Firms Try to Squeeze More Power Out of Old Nuclear Plants",
-            "url": "https://www.nytimes.com/2026/10/06/climate/nuclear-power-plant-google-data-centers.html",
+            "id": 3676967,
+            "title": "ChatGPT just got a lot more visual—introducing Intelligent UI.\r\n\r\nIntelligent UI allows ChatGPT to ans...",
+            "url": "https://x.com/ChatGPT/status/2107933133635248145",
+            "source": "ChatGPT(@ChatGPTapp)",
+            "published_at": "2026-10-07T20:36:37.000Z",
+            "score": null,
+            "summary": "ChatGPT just got a lot more visual—introducing Intelligent UI.Intelligent UI allows ChatGPT to answer quickly with fully interactive user interfaces that make everyday answers more visual.It makes lea",
+            "cover": null
+          },
+          {
+            "id": 3674602,
+            "title": "Chinese runner dropped by sponsor after riding bike during marathon",
+            "url": "https://www.bbc.co.uk/news/articles/c3y0enr9e078o?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-10-07T20:29:31.000Z",
+            "score": null,
+            "summary": "Sun Yuanyuan was seemingly pictured on the back of another person's bike during part of the Berlin Marathon.",
+            "cover": null
+          },
+          {
+            "id": 3660534,
+            "title": "Why A.I. Agents Are Going Rogue",
+            "url": "https://www.nytimes.com/video/technology/100000011159494/why-ai-agents-are-going-rogue.html",
             "source": "NYT &gt; Technology",
-            "published_at": "2026-10-06T19:37:08.000Z",
+            "published_at": "2026-10-07T19:44:04.000Z",
             "score": null,
-            "summary": "It takes a long time to build new nuclear plants. So, some U.S. companies are looking to get more electricity out of reactors that already exist.",
+            "summary": "Our journalists Sheera Frenkel and Dylan Freedman break down what A.I. agents are, how they differ from chatbots and why A.I. companies are worried about them now.",
             "cover": null
           },
           {
-            "id": 3427226,
-            "title": "I’ve Covered Death Row Cases for Nearly a Decade. What Happened to Christa Pike Wasn’t an Anomaly.",
-            "url": "https://www.propublica.org/article/christa-pike-tennessee-execution-lethal-injection-failure",
-            "source": "ProPublica",
-            "published_at": "2026-10-06T18:55:00.000Z",
+            "id": 3667042,
+            "title": "Read more: https://t.co/4KVpKCeCAg",
+            "url": "https://x.com/satyanadella/status/2107919670062006282",
+            "source": "Satya Nadella(@satyanadella)",
+            "published_at": "2026-10-07T19:43:07.000Z",
             "score": null,
-            "summary": "Over the course of two hours, witnesses watched and listened as Christa Pike cried, whimpered and snored through Tennessee’s attempt to execute her. By the end of it, executioners had given her two do",
-            "cover": "https://www.propublica.org/wp-content/uploads/2026/10/20261006-deathpenalty-texas.jpg?w=1149"
+            "summary": "Read more: blogs.windows.com/windowsexperie…💬3🔄2❤️16👀4387📊5⚡ Powered by xgo.ing",
+            "cover": null
           },
           {
-            "id": 3430358,
-            "title": "Nano Banana 2.1 is here! 🍌\r\n\r\nIt’s a nice update for image generation and editing customers, comes wi...",
-            "url": "https://x.com/OfficialLoganK/status/2107533224453058731",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-10-06T18:07:31.000Z",
+            "id": 3671225,
+            "title": "https://t.co/BXsOqpGY8d",
+            "url": "https://x.com/midjourney/status/2107912791051162097",
+            "source": "Midjourney(@midjourney)",
+            "published_at": "2026-10-07T19:15:47.000Z",
             "score": null,
-            "summary": "Nano Banana 2.1 is here! 🍌It’s a nice update for image generation and editing customers, comes with higher quality images, lots of bug fixes from previous models, and a new lower price point!Availabl",
-            "cover": "https://pbs.twimg.com/media/HT92ONla8AA5LKL.jpg"
+            "summary": "midjourneyofficehours.onrender.com/room/81c2b00d💬0🔄0❤️4👀1869📊1⚡ Powered by xgo.ing",
+            "cover": null
           },
           {
-            "id": 3415416,
-            "title": "France's police fire tear gas and water cannons as school protests sweep the country",
-            "url": "https://www.npr.org/2026/10/06/nx-s1-5992819/france-student-protests-schools",
-            "source": "NPR Topics: World",
-            "published_at": "2026-10-06T18:05:44.000Z",
+            "id": 3667202,
+            "title": "For reference, Haiku 4.5 came out on October 15th, 2025 so these two columns are less than a year ap...",
+            "url": "https://x.com/alexalbert__/status/2107912771568554415",
+            "source": "Alex Albert(@alexalbert__)",
+            "published_at": "2026-10-07T19:15:42.000Z",
             "score": null,
-            "summary": "More than a quarter of a million people rallied nationwide to support school students demanding more education funding, according to government figures, with thousands of arrests.",
-            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/7208x4807+0+0/resize/7208x4807!/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F0b%2Fcb%2F54df968b4dfba40b5189745f93d6%2Fap26279398075586.jpg"
+            "summary": "For reference, Haiku 4.5 came out on October 15th, 2025 so these two columns are less than a year apart. and oh yeah Haiku 5.5 is also much faster and 75% cheaper...Claude@claudeaiHaiku 5.5 is a signi",
+            "cover": "https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg"
           },
           {
-            "id": 3412364,
-            "title": "You're pricing the GPU. Are you pricing the operator?\r\n\r\nOliver Kennon of @SemiAnalysis_ on what compu...",
-            "url": "https://x.com/aiDotEngineer/status/2107531342288199924",
-            "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-10-06T18:00:02.000Z",
+            "id": 3671226,
+            "title": "Midjourney Office Hours - 10/7 https://t.co/o2RnoxM49J",
+            "url": "https://x.com/midjourney/status/2107911261900177911",
+            "source": "Midjourney(@midjourney)",
+            "published_at": "2026-10-07T19:09:42.000Z",
             "score": null,
-            "summary": "You&#39;re pricing the GPU. Are you pricing the operator?Oliver Kennon of @SemiAnalysis_ on what compute indexes miss and what a GPU contract should settle on.Not All GPUs Are Deployed the SameOct 14,",
-            "cover": "https://pbs.twimg.com/media/HT9Wu7fW4AALwbl.jpg"
-          },
-          {
-            "id": 3417526,
-            "title": "We’re building AGI from this train station",
-            "url": "https://x.com/arthurmensch/status/2107530509366538373",
-            "source": "Arthur Mensch(@arthurmensch)",
-            "published_at": "2026-10-06T17:56:44.000Z",
-            "score": null,
-            "summary": "We’re building AGI from this train stationGuillaume Lample @ NeurIPS 2024@GuillaumeLampleML4 was trained on 3,800 NVIDIA Grace Blackwell GPUs in our European datacenters -- our cluster in Bruyères-le-",
-            "cover": "https://pbs.twimg.com/profile_images/1204529916026458112/_kcTUp8s_normal.jpg"
-          },
-          {
-            "id": 3417625,
-            "title": "Two meteor showers are lighting up the October sky—here’s how to see them",
-            "url": "https://www.scientificamerican.com/article/two-meteor-showers-are-lighting-up-the-october-sky-heres-how-to-see-them/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-10-06T17:00:00.000Z",
-            "score": null,
-            "summary": "The Draconids and Orionids both peak this month",
+            "summary": "Midjourney Office Hours - 10/7 x.com/i/spaces/1AGRn…💬3🔄2❤️15👀4742📊4⚡ Powered by xgo.ing",
             "cover": null
           }
         ]
@@ -175,26 +221,6 @@
             "cover": "https://cdn.thenewstack.io/media/2026/10/4f7b5f89-brigitte-elsner-9ptfzdzlguq-unsplash-1-1024x576.jpg"
           },
           {
-            "id": 3283871,
-            "title": "CUAWright: A Minimal Unified Interface for Digital Agents",
-            "url": "https://arxiv.org/abs/2610.04116",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-10-06T04:00:00.000Z",
-            "score": 83,
-            "summary": "arXiv:2610.04116v1 Announce Type: new Abstract: The prevailing approach to computer-use agents couples a model with a domain-specific harness: a browser or desktop environment equipped with human engi",
-            "cover": null
-          },
-          {
-            "id": 3283868,
-            "title": "Self-Propagating Misalignment in LLM Agents, and Why Auditing or Disabling Memory Is Not Enough",
-            "url": "https://arxiv.org/abs/2610.04083",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-10-06T04:00:00.000Z",
-            "score": 82,
-            "summary": "arXiv:2610.04083v1 Announce Type: new Abstract: Memory poisoning attacks on LLM agents typically assume an external adversary who plants content in the agent's persistent memory to steer its behavior.",
-            "cover": null
-          },
-          {
             "id": 3424019,
             "title": "Building a context-aware AI assistant on AgentCore and OpenClaw",
             "url": "https://aws.amazon.com/blogs/machine-learning/building-a-context-aware-ai-assistant-on-agentcore-and-openclaw/",
@@ -205,114 +231,134 @@
             "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/06/ml21227_.drawio.png"
           },
           {
-            "id": 3336310,
-            "title": "同样花200美金，Claude给的算力是ChatGPT的5倍，知名机构把各大模型底裤扒光了",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3MTkxMjYzOA==&mid=2247519452&idx=1&sn=4f129e3c5efa2e16b429f93a1124524f",
-            "source": "AI寒武纪",
-            "published_at": "2026-10-06T09:10:00.000Z",
-            "score": 72,
-            "summary": "SemiAnalysis实测：同花200美金，Claude的Token价值是ChatGPT的5倍（API等价11726美元 vs 2084美元）。更关键的是，Anthropic用户用光旗舰模型额度后仍有剩余，而OpenAI用户到顶即止。测试方法本身也是亮点：通过逆向工程将用量百分比转化为真实Token数和美元价值。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6d3f6223&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkJjlNiczXgKoTslug82yDMrV2FRJuhToUDR7dcBrG2CPfEdfdeYiaJjJq1tgWHFpuiba0FLmH2sYME3sNEXU5Qet5UEwnht4nn2xUMlyOc4Od4%2F0%3Fwx_fmt%3Djpeg"
+            "id": 3646377,
+            "title": "Rethinking access control for RAG with Amazon Quick and Amazon Bedrock",
+            "url": "https://aws.amazon.com/blogs/machine-learning/rethinking-access-control-for-rag-with-amazon-quick-and-amazon-bedrock/",
+            "source": "AWS Machine Learning Blog",
+            "published_at": "2026-10-07T18:34:44.000Z",
+            "score": 75,
+            "summary": "AWS发布Quick + Bedrock Knowledge Bases组合方案，通过查询时直接向SharePoint/Confluence等权威来源验证权限，而非预复制过滤。解决企业RAG敏感信息泄露的核心难题。",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/07/ML-22080-1.png"
           },
           {
-            "id": 3348003,
-            "title": "语境感知听写：Entune 如何避免个人词典“一刀切”纠错",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU2NzkxNDY0Ng==&mid=2247491152&idx=1&sn=b95b6d023f0da6bba129c6fd9febbfca",
-            "source": "山行AI",
-            "published_at": "2026-10-06T06:02:00.000Z",
-            "score": 72,
-            "summary": "你说“用 Claude Code 改代码”，识别结果却是 cloud code。把它记进个人词典，下一次终于改对了。可当你谈云存储时，原本正确的 cloud 又被改成 Claude。为了少手改一个专名，反而要检查更多普通词。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=997666c1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FWHl70lu0cr6WIgCQlkeh9Aw3obqKf8RBjspEoa1DyuFla7HLEDJfPSfiaRzhZFvCiaJyfKqd1ianxNnIQLThTD06wrZticW9f0tiaYuE6bDYXIT0%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 3364072,
-            "title": "恨海情天？嘴上讨厌AI，身体却很诚实",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI5MTcxMTA3Mw==&mid=2247511339&idx=1&sn=8193550b760d6c9375139528fadf289b",
-            "source": "麻省理工科技评论APP",
-            "published_at": "2026-10-06T10:29:00.000Z",
-            "score": 70,
-            "summary": "今年夏天，我采访了 Springboards 的 CEO。这家初创公司正在开发一种大语言模型（LLM），目标是让它比主流竞争对手生成更多样化的回答。通话刚开始时，他说了一句话，从那以后一直萦绕在我的脑海里：“我们经常说，自己是一家‘自我厌恶型 AI 公司’。我们甚至不知道自己是不是真的喜欢正在做的事情。”",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4b42b484&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnbCqOqFndeoXt7cMZ5d98zfa9zd33gNR8iczZ0mlUo7RkPVBwLjrz2GbvDp1L69JgGg8V2QiaqhGZq8dzDHbw7CHOGJ6KJdqia9NPlHNT9qjia4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 3234691,
-            "title": "MCP for agent-to-agent comms may be the riskiest protocol you've never heard of",
-            "url": "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/",
-            "source": "Ars Technica",
-            "published_at": "2026-10-05T22:26:35.000Z",
-            "score": 70,
-            "summary": "The adoption of AI agents in millions of organizations is creating new opportunities for attackers to make them take malicious actions, such as exfiltrating database contents and sensitive business an",
-            "cover": null
-          },
-          {
-            "id": 3227288,
-            "title": "One MCP server used 18,000 tokens before doing anything. Here’s the workaround.",
-            "url": "https://thenewstack.io/pi-agent-mcp-codemode/",
+            "id": 3685261,
+            "title": "Claude’s cyber safeguards are getting more flexible — but not for everyone.",
+            "url": "https://thenewstack.io/anthropic-cyber-access-tiers/",
             "source": "The New Stack",
-            "published_at": "2026-10-05T21:55:12.000Z",
-            "score": 70,
-            "summary": "Pi spent much of the past year leaving MCP out of its coding agent, even as the protocol became standard across developer tools. Its creator, Mario Zechner, had a concrete reason for resisting it. Whe",
-            "cover": "https://cdn.thenewstack.io/media/2026/10/bbb08aa4-boliviainteligente-o3qynyl9xiu-unsplash-1024x640.jpg"
-          },
-          {
-            "id": 3305229,
-            "title": "Show HN: Open-source iPhone app that streams Claude like the Siri app",
-            "url": "https://github.com/unionst/swift-chat-ai-starter",
-            "source": "Show HN",
-            "published_at": "2026-10-06T06:31:19.000Z",
+            "published_at": "2026-10-07T21:25:06.000Z",
             "score": 68,
-            "summary": "作者花一年构建Swift Chat——一个完美复刻iMessage的Swift包，本周新增类Siri AI助手样式：问题气泡动画上升，响应以Markdown流式显示。全程仅300行代码，用SSE+URLSession流式传输Claude，API密钥存Keychain，MIT开源可自由商用。",
-            "cover": null
+            "summary": "Anthropic 宣布将 Cyber Verification Program 拆为三层，声称让 Project Glasswing 覆盖更多防御团队，但自家测试显示：46/50 次攻防基准测试被拦截，Claude Opus 5.5 对多数安全团队仍然不可用。",
+            "cover": "https://cdn.thenewstack.io/media/2026/10/e7909094-alex-tuchilu-l_wvlktgily-unsplash-1024x678.jpg"
           },
           {
-            "id": 3271794,
-            "title": "[AI Agent 智能体] Janus：把 OpenCode 包装成统一的 Agent 网关",
-            "url": "https://www.v2ex.com/t/1246602#reply0",
+            "id": 3575558,
+            "title": "今年最火00后诞生",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI5ODk1NjY1MA==&mid=2247741819&idx=1&sn=83a1a58a3c42ba650a0aa8225c36e22e",
+            "source": "投资界",
+            "published_at": "2026-10-07T08:06:00.000Z",
+            "score": 68,
+            "summary": "Instinct一夜走红。令人惊奇的是，身后掌舵人是一位00后——Noah Shinn，今年刚满23岁。三年前从美国东北大学辍学，他带着团队打造出个人Agent产品Instinct，目前年交易流水超10亿美元。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=04fa077f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F0gtDY3RcibDsUibhPQFn8kKkK8ewN3gBvtNH31gqyoEHGXUqeM5U2PLPp4EkP2v1EbDCc5QJfCtVnx0ZKHibN5icPOPHmGoVEJzicibg3M6dMESuY%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3542678,
+            "title": "[分享创造] 做了个开源的自托管 web 群聊：在群里 @ 一下，队友机器上的 Claude Code / Codex 就开工",
+            "url": "https://www.v2ex.com/t/1246772#reply0",
             "source": "V2EX",
-            "published_at": "2026-10-06T02:46:23.000Z",
+            "published_at": "2026-10-07T07:09:39.000Z",
+            "score": 68,
+            "summary": "开发者国庆期间做出自托管群聊工具「共工空间」v0.3.0，把团队成员电脑接入后，在群里@对方即可远程调度其机器上的Claude Code/Codex Bot。权限分三档、冲突三方合并、Rust daemon直连无内网穿透，已集成飞书。演示环境 http://gg.uyoqu.com，GitHub开源。",
+            "cover": "https://cdn.jsdelivr.net/gh/yoqu/gonggong-space@v0.3.0/docs/promo/images/architecture.png"
+          },
+          {
+            "id": 3507592,
+            "title": "Detecting LLM-Assisted Vietnamese Writing via Keystrokes under Behavioral Manipulation",
+            "url": "https://arxiv.org/abs/2610.07700",
+            "source": "cs.CL updates on arXiv.org",
+            "published_at": "2026-10-07T04:00:00.000Z",
             "score": 65,
-            "summary": "一个开源的 AI Agent 网关：统一协议、统一会话、统一模型与权限，但不重造 Agent 运行时。",
+            "summary": "该研究构建了一个包含真实写作、转录和改写模式的越南语键盘动态数据集，并定义了一个用户刻意改变打字行为以逃避检测的威胁模型。实验表明序列模型（1D-CNN和TypeNet）优于传统特征方法，但转录类样本易被正确识别，而改写和对抗操控样本常被判为真写；引入行为操控数据的对抗训练后，分离度和鲁棒性显著提升。",
             "cover": null
           },
           {
-            "id": 3260491,
-            "title": "2026-10-06 Hacker News Top Stories",
-            "url": "https://supertechfans.com/cn/post/2026-10-06-HackerNews/",
-            "source": "SuperTechFans",
-            "published_at": "2026-10-06T00:16:04.000Z",
-            "score": 63,
-            "summary": "作者指出，macOS 27 缺少统一关闭 Apple Intelligence 的开关，停用功能也未必会删除已经下载的模型；RemoveMacAI 因而把配置限制与模型清理整合起来。它面向 Apple Silicon Mac，通过需要用户批准的系统配置描述文件禁用相关功能，再调用苹果的资源管理服务移除基础模型、图像生成和部分应用模型，作者称无需关闭 SIP 或直接修改系统目录。",
-            "cover": null
+            "id": 3451952,
+            "title": "Turns out you don't need a frontier lab budget to build a solid decision classifier. \r\n\r\nOur Head of A...",
+            "url": "https://x.com/FireworksAI_HQ/status/2107584091181010998",
+            "source": "Fireworks AI(@FireworksAI_HQ)",
+            "published_at": "2026-10-06T21:29:39.000Z",
+            "score": 65,
+            "summary": "Sinan Ozdemir 在 Fireworks 上用 plain SFT + 公开数据集微调了一个 9B Jev-style 分类器，开源了训练配方。核心结论：不需要前沿实验室级别的预算，普通资源就能搞定像样的分类模型。",
+            "cover": "https://pbs.twimg.com/profile_images/1729212251255738368/NcP86bFn_normal.jpg"
           },
           {
-            "id": 3257052,
-            "title": "1/ AI 制药正在复刻半导体的“瓶颈交易”。\r\n\r\n半导体的需求从 GPU 传导到 HBM、网络、电力和散热；生物医药则沿着：\r\n\r\nAI模型 → 设计 → DNA/蛋白 → 检测 → 临床前产能\r\n\r\n模型生...",
-            "url": "https://x.com/FinanceYF5/status/2107282111610982518",
-            "source": "AI Will(@FinanceYF5)",
-            "published_at": "2026-10-06T01:29:41.000Z",
+            "id": 3566415,
+            "title": "你的 AI 用到幾級了？開源 AI 使用能力評估工具 Skill，個人自檢、團隊盤點、面試評估",
+            "url": "https://raymondhouch.com/lifehacker/digital-workflow/ai-level-check-skill/",
+            "source": "雷蒙三十｜幫助忙碌現代人的聰明工作、好好生活的生產力指南",
+            "published_at": "2026-10-07T09:56:03.000Z",
             "score": 62,
-            "summary": "1/ AI 制药正在复刻半导体的“瓶颈交易”。半导体的需求从 GPU 传导到 HBM、网络、电力和散热；生物医药则沿着：AI模型 → 设计 → DNA/蛋白 → 检测 → 临床前产能模型生成越来越便宜，真正稀缺的开始变成湿实验验证。👇💬2🔄1❤️1👀423📊3⚡ Powered by xgo.ing",
-            "cover": "https://pbs.twimg.com/media/HT6R6KMasAAOR1o.png"
+            "summary": "作者开发了开源工具「AI 幾級了？」，通过扫描 Claude Code、Codex 等 AI Agent 的本机对话纪录，自动产出 LV0-LV5 能力等级报告。传统问卷与面试自评偏差极大——主管看不到你半夜修 bug 的八轮对话，AI 可以。报告还会给出 16 型使用人物誌与具体改善建议。",
+            "cover": "https://image.lifehacker.tw/wp/2026/10/image-1024x910.png"
           },
           {
-            "id": 3415046,
-            "title": "Firecrawl is now part of the Claude Startups program!",
-            "url": "https://x.com/firecrawl/status/2107527386304827855",
-            "source": "Firecrawl(@firecrawl_dev)",
-            "published_at": "2026-10-06T17:44:19.000Z",
-            "score": null,
-            "summary": "Firecrawl is now part of the Claude Startups program!Claude@claudeaiThe Claude Startups program is expanding to more founders.Members can get a year of Claude Team, API credits, special offers on the ",
-            "cover": "https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg"
-          },
-          {
-            "id": 3415562,
-            "title": "Automating stuff where API or MCP don't exist.",
-            "url": "https://x.com/browser_use/status/2107517205554602375",
+            "id": 3674646,
+            "title": "You can now use browser-use with the new anthropic computer SDK. \r\nhttps://t.co/V78R7C4fAJ",
+            "url": "https://x.com/browser_use/status/2107931407737868646",
             "source": "Browser Use(@browser_use)",
-            "published_at": "2026-10-06T17:03:52.000Z",
+            "published_at": "2026-10-07T20:29:45.000Z",
             "score": null,
-            "summary": "Automating stuff where API or MCP don&#39;t exist.Gumloop@gumloopAgent Browsers are live on Gumloop today so your agents can reach the work that doesn&#39;t have an MCP or API&gt; Secure credential st",
-            "cover": "https://pbs.twimg.com/profile_images/2033696970808954880/7bh9EXRQ_normal.jpg"
+            "summary": "You can now use browser-use with the new anthropic computer SDK. docs.browser-use.com/open-source/cu…ClaudeDevs@ClaudeDevsComputer use and browser use toolsets are now built into the Python and TypeSc",
+            "cover": "https://pbs.twimg.com/profile_images/2044472418815893504/xf14RxM8_normal.png"
+          },
+          {
+            "id": 3668606,
+            "title": "Claude Haiku 5.5 in GitHub Copilot",
+            "url": "https://github.blog/changelog/2026-10-07-claude-haiku-5-5-in-github-copilot",
+            "source": "Archive: 2026 - GitHub Changelog",
+            "published_at": "2026-10-07T20:12:18.000Z",
+            "score": null,
+            "summary": "Claude Haiku 5.5, Anthropic&rsquo;s newest lightweight model, is now generally available in GitHub Copilot. It is designed for fast, high-volume work like subagents, quick edits, and terminal tasks. I",
+            "cover": null
+          },
+          {
+            "id": 3724381,
+            "title": "🎉 Tibo 为了庆祝 Codex 和 ChatGPT Work 的活跃用户达到了 4000万 的新高，为每个付费用户送一张重置卡。\r\n\r\n将在 PST 时区当天结束前送达。",
+            "url": "https://x.com/dotey/status/2107925907914498365",
+            "source": "宝玉(@dotey)",
+            "published_at": "2026-10-07T20:07:54.000Z",
+            "score": null,
+            "summary": "🎉 Tibo 为了庆祝 Codex 和 ChatGPT Work 的活跃用户达到了 4000万 的新高，为每个付费用户送一张重置卡。将在 PST 时区当天结束前送达。Tibo@thsottiauxDay 3/The big one is GPT-6 in Chat, but today is also a little celebration day with a new high of 40M",
+            "cover": "https://pbs.twimg.com/profile_images/2093807917833281537/2yBgpwVV_normal.jpg"
+          },
+          {
+            "id": 3669783,
+            "title": "interrupt london is next tuesday\r\n\r\nreally looking forward to hearing from Orange and OVO on what's ac...",
+            "url": "https://x.com/hwchase17/status/2107921716605517953",
+            "source": "Harrison Chase(@hwchase17)",
+            "published_at": "2026-10-07T19:51:15.000Z",
+            "score": null,
+            "summary": "interrupt london is next tuesdayreally looking forward to hearing from Orange and OVO on what&#39;s actually working with agents in production. we&#39;re also running hands-on workshops on Deep Agents",
+            "cover": "https://pbs.twimg.com/profile_images/2028336270431453184/jRRpLAdG_normal.jpg"
+          },
+          {
+            "id": 3654338,
+            "title": "Claude Haiku 5.5 is here, with Anthropic calling it the \"cheapest, fastest, and most capable small m...",
+            "url": "https://x.com/TheRundownAI/status/2107901352340836491",
+            "source": "The Rundown AI(@TheRundownAI)",
+            "published_at": "2026-10-07T18:30:19.000Z",
+            "score": null,
+            "summary": "Claude Haiku 5.5 is here, with Anthropic calling it the &quot;cheapest, fastest, and most capable small model&quot; it&#39;s ever released.Massive jumps over both its predecessor, and it beats OpenAI&",
+            "cover": "https://pbs.twimg.com/media/HUDCjGNXAAA0i8L.png"
+          },
+          {
+            "id": 3646727,
+            "title": "v1.24.1-pre",
+            "url": "https://github.com/zed-industries/zed/releases/tag/v1.24.1-pre",
+            "source": "Release notes from zed",
+            "published_at": "2026-10-07T18:28:21.000Z",
+            "score": null,
+            "summary": "This week's release includes Git tag creation, the ability to drag Terminal tabs into the Agent Panel, and pre-filling of the File Finder's search query with text selected in the editor or terminal.",
+            "cover": null
           }
         ]
       },
@@ -326,117 +372,117 @@
             "url": "https://news.ycombinator.com/item?id=49982498",
             "source": "Ask HN",
             "published_at": "2026-10-06T18:54:01.000Z",
-            "score": 103,
+            "score": 451,
             "summary": "I am a developer of https://www.photopea.com, a popular photo editor that runs in a web browser.Many people are asking AI models to take the Javascript code from my website, remove all ads from it, an",
             "cover": null
           },
           {
-            "id": 3214722,
-            "title": "a16z's Olivia Moore thinks consumer AI has its business model backwards:\r\n\r\n\"Substantially all of the ...",
-            "url": "https://x.com/a16z/status/2107189883869839632",
-            "source": "a16z(@a16z)",
-            "published_at": "2026-10-05T19:23:12.000Z",
-            "score": 76,
-            "summary": "a16z&#39;s Olivia Moore thinks consumer AI has its business model backwards:&quot;Substantially all of the consumer AI revenue thus far has come from direct subscriptions. On our web list, 85% monetiz",
-            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
-          },
-          {
-            "id": 3254932,
-            "title": "Schema-guard, stop AI agents from inventing column names in SQL",
-            "url": "https://github.com/idk-arsh/schema-guard",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-10-06T00:46:04.000Z",
-            "score": 75,
-            "summary": "Article URL: https://github.com/idk-arsh/schema-guard",
+            "id": 3507535,
+            "title": "Medical Image Alignment Assessment as a Test of Generalist Visual Reasoning in Frontier Multimodal Models",
+            "url": "https://arxiv.org/abs/2610.06896",
+            "source": "cs.CV updates on arXiv.org",
+            "published_at": "2026-10-07T04:00:00.000Z",
+            "score": 79,
+            "summary": "arXiv:2610.06896v1 Announce Type: new Abstract: Frontier multimodal large language models (MLLMs) are increasingly positioned as general purpose visual reasoners as part of the quest for artificial ge",
             "cover": null
           },
           {
-            "id": 3343576,
-            "title": "数学要「毕业」了！xAI联创宣判：两千年英雄史彻底落幕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652732250&idx=2&sn=bb0594c9e4baacd436a72ba509afd2e1",
-            "source": "新智元",
-            "published_at": "2026-10-06T04:55:00.000Z",
-            "score": 72,
-            "summary": "xAI联合创始人Christian Szegedy的一篇长文《数学何去何从？》，在X上炸了。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=ab971d05&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FRvq8Ow69CYVCort3f4Oy0Izuib9T9FlTn1aAibdD73F9TH8Kfb0G9OuvsNz67Y1ibLibZY2Sol2fmz84Y2uqV3e60ibQVuAqZ5zicKicVaY9eIW7qs%2F0%3Fwx_fmt%3Djpeg"
+            "id": 3588362,
+            "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
+            "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
+            "source": "Hugging Face",
+            "published_at": "2026-10-07T12:45:31.000Z",
+            "score": 78,
+            "summary": "",
+            "cover": null
           },
           {
-            "id": 3342200,
-            "title": "iPhone 18 Pro Max深度测评：苹果可算是补齐最后几块拼图",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkyNjU2ODM2NQ==&mid=2247633957&idx=1&sn=4ebd9b7d45324388b5c60a596269ff02",
-            "source": "硅星人Pro",
-            "published_at": "2026-10-06T04:37:00.000Z",
-            "score": 72,
-            "summary": "去年拿到星宇橙色的 iPhone 17 Pro Max 时，你会发现那是一种很难被忽略的颜色，它鲜艳、高调，甚至有点不像过去那个习惯把 Pro 系列做成灰、黑、蓝的苹果做出来的手机，它拿在手里别人远远就能知道：这是一台新 iPhone。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=92cd98b1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FgdEn3pxzatSsCko8w2icKx4XCuvVltyH6RiauA9VweP1W9GZ2aLpkcn5eLTAh5Rw4cY5qqIPPfDCuyMYAN0FWUHSrLEzRYHOwGSH0l7lupDDM%2F0%3Fwx_fmt%3Djpeg"
+            "id": 3577951,
+            "title": "Apple’s Verified Photography System",
+            "url": "https://www.schneier.com/blog/archives/2026/10/apples-verified-photography-system.html",
+            "source": "Schneier on Security",
+            "published_at": "2026-10-07T11:07:36.000Z",
+            "score": 74,
+            "summary": "Apple just released a system called &#8220;Reference Image.&#8221; It can verify the image is exactly as taken by an iPhone&#8212;new models only&#8212;without tying it to a specific iPhone or photogr",
+            "cover": null
           },
           {
-            "id": 3260379,
-            "title": "马斯克沿着“子午线”，坐到黄仁勋前面",
-            "url": "https://www.huxiu.com/article/4895491.html?f=rss",
+            "id": 3599847,
+            "title": "Marvell：远期指引狂飙，究竟是 “信心” 还是 “画饼”？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5MTU3MzA2OQ==&mid=2247577906&idx=1&sn=33891707024f8a6e431c995e2dc67bb3",
+            "source": "海豚研究",
+            "published_at": "2026-10-07T11:00:00.000Z",
+            "score": 72,
+            "summary": "本次投资者日确实明确传递了公司管理层的信心，但更多的上调集中在 2026 财年至 2031 财年的后半段。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4fba9248&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FoqyvInCB8vQkExC3TwLJmwj7emXPiajcgp0RpDJO8ZiaG917BkUXe32gVuQdCmibmgdpW4xgVAnsnOcTXF734icvBaQwgCS9euLhj7eOylQk3Vw%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 3561239,
+            "title": "Fedora AI-Assisted Contributions Policy",
+            "url": "https://docs.fedoraproject.org/en-US/council/policy/ai-contribution-policy/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-07T09:00:47.000Z",
+            "score": 72,
+            "summary": "Fedora Council 发布官方政策，要求贡献者声明是否使用AI辅助，且仅允许非实质性贡献使用AI——核心代码、关键决策仍需人工负责。这对各开源项目具有标杆意义。",
+            "cover": null
+          },
+          {
+            "id": 3549608,
+            "title": "Silicon Valley thinks AI will kill jobs. Economists are not convinced",
+            "url": "https://www.ft.com/content/8f783c04-5fc5-43d4-bab2-495ac31806c6",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-07T08:05:30.000Z",
+            "score": 72,
+            "summary": "FT援引经济学家观点指出，AI不会像硅谷预期的那样大规模消灭就业——历史上每次技术革命初期都伴随类似的恐慌，但最终创造的新岗位多于消失的岗位。核心论点是：生产率提升会扩大经济规模，进而创造新需求和新职业。",
+            "cover": null
+          },
+          {
+            "id": 3548025,
+            "title": "Your Next Action Is Two Dots Away",
+            "url": "https://blog.jetbrains.com/idea/2026/10/your-next-action-is-two-dots-away/",
+            "source": "The JetBrains Blog",
+            "published_at": "2026-10-07T07:38:06.000Z",
+            "score": 72,
+            "summary": "IntelliJ IDEA 2026.3 EAP强化了命令补全功能，在编辑器输入..即可触发上下文感知的智能操作。新版本优化了Logpoints入口——开发者不用再手动插入println再清理，调试更快更干净",
+            "cover": "https://blog.jetbrains.com/wp-content/uploads/2026/10/image.png"
+          },
+          {
+            "id": 3507589,
+            "title": "Recurrent Looped Transformer",
+            "url": "https://arxiv.org/abs/2610.07591",
+            "source": "cs.CL updates on arXiv.org",
+            "published_at": "2026-10-07T04:00:00.000Z",
+            "score": 72,
+            "summary": "提出Recurrent Looped Transformer（RLT），将层拆分为并行因果编码器与循环解码器，在每token处合并前序状态。训练≤40位时，RLT在256位奇偶校验、8倍长度置换追踪、模运算外推上分别达100%/97%/93%，而标准Transformer仅机会水平至33%。消融证明增益完全来自反馈：去掉即归零。4-token块更新可保留99%奇偶准确率，但置换任务依赖逐token",
+            "cover": null
+          },
+          {
+            "id": 3555528,
+            "title": "两万亿估值的Anthropic，谁在买单？",
+            "url": "https://www.huxiu.com/article/4895634.html?f=rss",
             "source": "虎嗅",
-            "published_at": "2026-10-06T01:18:57.000Z",
-            "score": 72,
-            "summary": "过去一年，马斯克的话题度依旧很高，但在科技产业的影响力上，他越来越被黄仁勋甩在身后。",
-            "cover": null
-          },
-          {
-            "id": 3206529,
-            "title": "碰一碰碰烂Web3，送奶茶送出新经济",
-            "url": "https://linux.do/t/topic/2985935",
-            "source": "LINUX DO · 文档共建",
-            "published_at": "2026-10-05T17:59:36.000Z",
-            "score": 71,
-            "summary": "回溯性建构历史的好处大概就在于能发现巧合。而无数多个巧合发生在了一起，我们不得不怀疑这背后一定发生了什么。",
-            "cover": "https://cdn3.ldstatic.com/optimized/4X/a/f/2/af2d9c2432fcbc0f1224f287b47f2bca9b900b93_2_690x388.jpeg"
-          },
-          {
-            "id": 3231563,
-            "title": "Top Consumer AI Apps",
-            "url": "https://www.a16z.news/p/top-100-consumer-ai-apps-seventh",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-10-05T21:33:12.000Z",
+            "published_at": "2026-10-07T08:17:52.000Z",
             "score": 70,
-            "summary": "Article URL: https://www.a16z.news/p/top-100-consumer-ai-apps-seventh",
+            "summary": "Anthropic 2025年营收近46亿美元，同比增长12倍，但净亏损高达420亿美元，计划估值超2万亿赴美IPO。公司已签下5180亿美元算力采购承诺，博通提供最高420亿美元贷款支持，收入高度依赖少数大客户且无长期合约保障。",
             "cover": null
-          },
-          {
-            "id": 3304866,
-            "title": "ClingSTUN Linux Backdoor Abuses Public STUN Infrastructure",
-            "url": "https://securityaffairs.com/200450/uncategorized/clingstun-linux-backdoor-abuses-public-stun-infrastructure.html",
-            "source": "Security Affairs",
-            "published_at": "2026-10-06T06:31:08.000Z",
-            "score": 68,
-            "summary": "FortiGuard Labs发现Cl i ngSTUN后门恶意利用公开STUN服务器路由攻击流量，伪装成正常VoIP/WebRTC通信以躲避检测。攻击路径始于Hytec Inter路由器漏洞利用，逐步扩展至多类未修补IoT设备。",
-            "cover": "https://i0.wp.com/securityaffairs.com/wp-content/uploads/2026/10/image-13.png?resize=1024%2C249&ssl=1"
-          },
-          {
-            "id": 3366960,
-            "title": "机器人厂商的文旅生意｜耍起",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTExMjYwMA==&mid=2670397403&idx=2&sn=68008cbdc43bb4a1e86feeb53f453838",
-            "source": "经济观察报",
-            "published_at": "2026-10-06T04:02:00.000Z",
-            "score": 65,
-            "summary": "眼下的机器人文旅热，既有来自文旅经营者对新内容需求的拉动，也有机器人厂商积极寻找应用场景的推动，双方正在共同培育一个新市场。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=dbaea46f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FGPiamicZGjnaoDRRiaSuTPWibxc61b7RNibVPgLdWN84HXfO0aBbdibmCchUAPgIibLibM2rMv7enZWs7ibaTJAL2E5f1pgTC89ibWwic2hGg4ialadE2x8%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 411,
-      "articles": 411,
-      "sections": 3,
+      "candidates": 419,
+      "articles": 419,
+      "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 3732,
-        "poolSources": 346,
+        "pool": 4082,
+        "poolSources": 364,
         "kept": 500,
-        "keptSources": 313
+        "keptSources": 310
       },
-      "totalItems": 40
+      "totalItems": 44
     }
   },
-  "generated_at": "2026-10-07T07:27:51.389Z"
+  "generated_at": "2026-10-08T07:44:00.147Z"
 }

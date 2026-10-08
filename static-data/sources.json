@@ -781,8 +781,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 725,
@@ -834,20 +834,6 @@
       "avatar": "https://pbs.twimg.com/profile_images/1897858917507776512/TRVTyKFk_normal.jpg",
       "group_id": 30,
       "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 515,
-      "type": "youtube",
-      "name": "Andrej Karpathy",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXUPKJO5MZQN11PqgIvyuvQ",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -1253,6 +1239,20 @@
       "url": "https://blog.lyunvy.top/atom.xml",
       "avatar": "https://blog.lyunvy.top/images/favicon.webp",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 754,
+      "type": "rss",
+      "name": "Blog | Phodal - A Growth Engineer",
+      "url": "https://www.phodal.com/blog/feeds/rss/",
+      "avatar": null,
+      "group_id": 19,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2311,6 +2311,20 @@
       "fail_count": 0
     },
     {
+      "id": 815,
+      "type": "x",
+      "name": "Gary Marcus(@GaryMarcus)",
+      "url": "https://api.xgo.ing/rss/user/35a38c5646d946fb894d8c30c1d9629e",
+      "avatar": "https://pbs.twimg.com/profile_images/2048405471900606464/kPeRHI2z_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 816,
       "type": "rss",
       "name": "Gastropod",
@@ -2595,6 +2609,20 @@
       "type": "rss",
       "name": "Hacker News - Newest: &quot;AI&quot;",
       "url": "https://hnrss.org/newest?q=AI",
+      "avatar": "https://hnrss.org/favicon.ico",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 834,
+      "type": "rss",
+      "name": "Hacker News - Newest: &quot;LLM&quot;",
+      "url": "https://hnrss.org/newest?q=LLM",
       "avatar": "https://hnrss.org/favicon.ico",
       "group_id": 18,
       "spotlight": 0,
@@ -2983,20 +3011,6 @@
       "fail_count": 0
     },
     {
-      "id": 856,
-      "type": "rss",
-      "name": "Jack Pu's Blog (蒲小花的博客－ポーのブログ)",
-      "url": "https://www.jackpu.com/rss/",
-      "avatar": "https://www.jackpu.com/favicon.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 857,
       "type": "rss",
       "name": "Jacky Wong",
@@ -3115,6 +3129,20 @@
       "url": "https://www.josherich.me/feed.xml",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 865,
+      "type": "x",
+      "name": "Julien Chaumond(@julien_c)",
+      "url": "https://api.xgo.ing/rss/user/44d9fa384087448a94d3c8595f8d535e",
+      "avatar": "https://pbs.twimg.com/profile_images/1108502565925326850/zPsBf2BI_normal.png",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5027,20 +5055,6 @@
       "fail_count": 0
     },
     {
-      "id": 990,
-      "type": "x",
-      "name": "Replit ⠕(@Replit)",
-      "url": "https://api.xgo.ing/rss/user/613f859e4bc440c5a28f40732840f5cf",
-      "avatar": "https://pbs.twimg.com/profile_images/2092066596915466240/TwZ32AYK_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 991,
       "type": "rss",
       "name": "Reply All",
@@ -6489,20 +6503,6 @@
       "url": "https://www.wired.com/feed/rss",
       "avatar": "https://www.wired.com/favicon.ico",
       "group_id": 7,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1084,
-      "type": "rss",
-      "name": "World",
-      "url": "https://feeds.washingtonpost.com/rss/world",
-      "avatar": null,
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9237,8 +9237,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 486,
@@ -9975,6 +9975,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/700f40ffc993431fec55d910ceee880fb4e4eec3.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM5N6CZnc12ScgwkAr0k4qSSLfMEnprW0DuxcTa83ZU50w/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1212,
+      "type": "x",
+      "name": "宝玉(@dotey)",
+      "url": "https://api.xgo.ing/rss/user/97f1484ae48c430fbbf3438099743674",
+      "avatar": "https://pbs.twimg.com/profile_images/561086911561736192/6_g58vEs_normal.jpeg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -11477,8 +11491,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1248,
@@ -11995,8 +12009,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 286,
@@ -13097,20 +13111,6 @@
       "url": "http://mercurychong.blogspot.com/feeds/posts/default",
       "avatar": "http://mercurychong.blogspot.com/favicon.ico",
       "group_id": 23,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1287,
-      "type": "rss",
-      "name": "码录集",
-      "url": "https://www.coderlog.net/rss.xml",
-      "avatar": "https://www.coderlog.net/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15387,20 +15387,6 @@
       "fail_count": 0
     },
     {
-      "id": 1336,
-      "type": "rss",
-      "name": "顶尖研发",
-      "url": "https://bestcoder.cn/feed",
-      "avatar": "https://bestcoder.cn/wp-content/uploads/2024/05/cropped-cgi-bin_mmwebwx-bin_webwxgetmsgimg__MsgID2002316305218849600skey@crypt_d031e9e3_41028a62119ba053e9dcba2f62216f0fmmweb_appidwx_webfilehelper-32x32.jpg",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 319,
       "type": "rss",
       "name": "风叔云",
@@ -15597,5 +15583,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-07T07:27:51.794Z"
+  "generated_at": "2026-10-08T07:44:00.764Z"
 }

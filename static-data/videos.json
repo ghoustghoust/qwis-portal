@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": 154281,
+      "source_id": 617,
+      "platform": "youtube",
+      "title": "100 Orders, 101 Queries: The N+1 Problem",
+      "url": "https://www.youtube.com/watch?v=QNgmrDKEPtE",
+      "vid": "QNgmrDKEPtE",
+      "cover": "https://i.ytimg.com/vi/QNgmrDKEPtE/hqdefault.jpg",
+      "duration": null,
+      "author": "Amigoscode",
+      "published_at": "2026-10-07T15:05:33.000Z",
+      "source_name": "Amigoscode"
+    },
+    {
       "id": 151547,
       "source_id": 536,
       "platform": "youtube",
@@ -1286,20 +1299,7 @@
       "author": "AI Master",
       "published_at": "2026-10-03T08:10:47.000Z",
       "source_name": "AI Master"
-    },
-    {
-      "id": 126644,
-      "source_id": 577,
-      "platform": "youtube",
-      "title": "A total disaster",
-      "url": "https://www.youtube.com/watch?v=p0fybvFyOlM",
-      "vid": "p0fybvFyOlM",
-      "cover": "https://i.ytimg.com/vi/p0fybvFyOlM/hqdefault.jpg",
-      "duration": null,
-      "author": "The PrimeTime",
-      "published_at": "2026-10-03T03:48:31.000Z",
-      "source_name": "The PrimeTime"
     }
   ],
-  "generated_at": "2026-10-07T07:27:47.642Z"
+  "generated_at": "2026-10-08T07:43:57.434Z"
 }

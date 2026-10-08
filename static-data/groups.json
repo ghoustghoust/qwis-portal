@@ -117,14 +117,14 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 88
+      "source_count": 89
     },
     {
       "id": 19,
       "kind": "article",
       "name": "编程技术",
       "sort": 19,
-      "source_count": 67
+      "source_count": 68
     },
     {
       "id": 20,
@@ -173,14 +173,14 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 5
+      "source_count": 4
     },
     {
       "id": 30,
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 70
+      "source_count": 72
     },
     {
       "id": 27,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-10-07T07:27:51.939Z"
+  "generated_at": "2026-10-08T07:44:00.941Z"
 }
