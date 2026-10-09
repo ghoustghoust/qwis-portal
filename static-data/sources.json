@@ -771,6 +771,20 @@
       "fail_count": 0
     },
     {
+      "id": 552,
+      "type": "youtube",
+      "name": "All-In Podcast",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCESLZhusAkFfsNsApnjF_Cg",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 724,
       "type": "rss",
       "name": "Alliot's blog",
@@ -2199,6 +2213,20 @@
       "fail_count": 0
     },
     {
+      "id": 621,
+      "type": "youtube",
+      "name": "Fireship",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 807,
       "type": "x",
       "name": "Fireworks AI(@FireworksAI_HQ)",
@@ -2414,6 +2442,20 @@
       "name": "GitHub 今日趋势",
       "url": "hotlist://github-trending-today",
       "avatar": "/api/img?u=https%3A%2F%2Fgithub.com%2Ffavicon.ico",
+      "group_id": 19,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 822,
+      "type": "x",
+      "name": "GitHub(@github)",
+      "url": "https://api.xgo.ing/rss/user/fa5b15f68a2e4df1ab301e26a4ab9190",
+      "avatar": "https://pbs.twimg.com/profile_images/2051404708766507008/ATxxTJXO_normal.jpg",
       "group_id": 19,
       "spotlight": 0,
       "muted": 0,
@@ -2765,6 +2807,20 @@
       "url": "https://api.xgo.ing/rss/user/a9aff6b016c143ed8728dd86eb70d7db",
       "avatar": "https://pbs.twimg.com/profile_images/2080749613934682112/RGAD73oR_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 524,
+      "type": "youtube",
+      "name": "How I AI",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCRYY7IEbkHLH_ScJCu9eWDQ",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3277,6 +3333,20 @@
       "fail_count": 0
     },
     {
+      "id": 565,
+      "type": "youtube",
+      "name": "Kurzgesagt - In a Nutshell",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 875,
       "type": "rss",
       "name": "LCZBlog",
@@ -3297,6 +3367,34 @@
       "url": "https://linuxdorss.longpink.com/wiki.xml",
       "avatar": null,
       "group_id": 24,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 526,
+      "type": "youtube",
+      "name": "LangChain",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw",
+      "avatar": null,
+      "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 527,
+      "type": "youtube",
+      "name": "Last Week in AI",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKARTq-t5SPMzwtft8FWwnA",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3395,6 +3493,20 @@
       "url": "https://dreams.plus/rss.xml",
       "avatar": "https://github.com/prinorange.png",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 528,
+      "type": "youtube",
+      "name": "Liam Ottley",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCui4jxDaMb53Gdh-AZUTPAg",
+      "avatar": null,
+      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3977,6 +4089,20 @@
       "fail_count": 0
     },
     {
+      "id": 568,
+      "type": "youtube",
+      "name": "My First Million",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 920,
       "type": "rss",
       "name": "NASA",
@@ -4299,6 +4425,20 @@
       "fail_count": 0
     },
     {
+      "id": 940,
+      "type": "x",
+      "name": "OpenAI Developers(@OpenAIDevs)",
+      "url": "https://api.xgo.ing/rss/user/971dc1fc90da449bac23e5fad8a33d55",
+      "avatar": "https://pbs.twimg.com/profile_images/2022002720971096064/l3Kyt4qt_normal.jpg",
+      "group_id": 19,
+      "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 942,
       "type": "rss",
       "name": "Oragekk&amp;apos;s Blog",
@@ -4417,6 +4557,20 @@
       "url": "https://api.xgo.ing/rss/user/b9912ac9a29042cf8c834419dc44cb1f",
       "avatar": "https://pbs.twimg.com/profile_images/1635194645612208129/CdsMv5Hz_normal.jpg",
       "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 947,
+      "type": "x",
+      "name": "Paul Graham(@paulg)",
+      "url": "https://api.xgo.ing/rss/user/900549ddadf04e839d3f7a17ebaba3fc",
+      "avatar": "https://pbs.twimg.com/profile_images/1824002576/pg-railsconf_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4866,6 +5020,20 @@
       "avatar": "https://pbs.twimg.com/profile_images/2046921816782852096/I3nZq3cB_normal.jpg",
       "group_id": 18,
       "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 976,
+      "type": "rss",
+      "name": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+      "url": "https://www.reddit.com/r/linux+selfhosted+devops+LocalLLaMA+MachineLearning/new/.rss",
+      "avatar": "https://www.reddit.com/favicon.ico",
+      "group_id": 19,
+      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -6021,6 +6189,20 @@
       "fail_count": 0
     },
     {
+      "id": 576,
+      "type": "youtube",
+      "name": "The Knowledge Project Podcast",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1055,
       "type": "rss",
       "name": "The Loop",
@@ -6125,6 +6307,20 @@
       "url": "https://this-week-in-rust.org/atom.xml",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 579,
+      "type": "youtube",
+      "name": "This Week in Startups",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkkhmBWfS7pILYIk0izkc3A",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6595,6 +6791,20 @@
       "fail_count": 0
     },
     {
+      "id": 581,
+      "type": "youtube",
+      "name": "Y Combinator",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcefcZRL2oaA_uBNeo5UOWg",
+      "avatar": null,
+      "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1090,
       "type": "x",
       "name": "Y Combinator(@ycombinator)",
@@ -6614,6 +6824,20 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1092,
+      "type": "rss",
+      "name": "YangXuan's Blog",
+      "url": "https://yangxuan.ai/feed/",
+      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -6923,6 +7147,20 @@
       "url": "https://elifesciences.org/rss/recent.xml",
       "avatar": "https://elifesciences.org/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1115,
+      "type": "x",
+      "name": "elvis(@omarsar0)",
+      "url": "https://api.xgo.ing/rss/user/931d6e88e067496cac6bf23f69d60f33",
+      "avatar": "https://pbs.twimg.com/profile_images/939313677647282181/vZjFWtAn_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -8835,6 +9073,20 @@
       "fail_count": 0
     },
     {
+      "id": 1179,
+      "type": "rss",
+      "name": "千古八方的博客",
+      "url": "https://rangotec.com/feed",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1180,
       "type": "rss",
       "name": "千里之豪的格物垛",
@@ -9261,6 +9513,20 @@
       "url": "https://rowkey.cn/atom.xml",
       "avatar": "https://rowkey.cn/favicon.ico",
       "group_id": 19,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1193,
+      "type": "x",
+      "name": "向阳乔木(@vista8)",
+      "url": "https://api.xgo.ing/rss/user/9de19c78f7454ad08c956c1a00d237fe",
+      "avatar": "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -11957,20 +12223,6 @@
       "fail_count": 0
     },
     {
-      "id": 1258,
-      "type": "x",
-      "name": "歸藏(guizang.ai)(@op7418)",
-      "url": "https://api.xgo.ing/rss/user/831fac36aa0a49a9af79f35dc1c9b5d9",
-      "avatar": "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 143,
       "type": "rss",
       "name": "歸藏的AI工具箱",
@@ -12009,8 +12261,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 286,
@@ -13111,6 +13363,20 @@
       "url": "http://mercurychong.blogspot.com/feeds/posts/default",
       "avatar": "http://mercurychong.blogspot.com/favicon.ico",
       "group_id": 23,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1287,
+      "type": "rss",
+      "name": "码录集",
+      "url": "https://www.coderlog.net/rss.xml",
+      "avatar": "https://www.coderlog.net/favicon.ico",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15303,20 +15569,6 @@
       "fail_count": 0
     },
     {
-      "id": 1334,
-      "type": "rss",
-      "name": "青石坞",
-      "url": "https://www.qs5.org/feed/",
-      "avatar": "https://www.qs5.org/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 261,
       "type": "rss",
       "name": "青稞AI",
@@ -15583,5 +15835,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-08T07:44:00.764Z"
+  "generated_at": "2026-10-09T07:40:33.715Z"
 }
