@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 14
+      "source_count": 8
     },
     {
       "id": 17,
@@ -117,7 +117,7 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 88
+      "source_count": 86
     },
     {
       "id": 19,
@@ -173,7 +173,7 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 8
+      "source_count": 4
     },
     {
       "id": 30,
@@ -208,7 +208,7 @@
       "kind": "article",
       "name": "公众号新站",
       "sort": 28,
-      "source_count": 18
+      "source_count": 17
     },
     {
       "id": 29,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-10-09T07:40:33.834Z"
+  "generated_at": "2026-10-10T07:27:00.382Z"
 }

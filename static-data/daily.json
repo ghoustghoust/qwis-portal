@@ -1,98 +1,52 @@
 {
   "report": {
-    "id": 106,
-    "generated_at": "2026-10-09T07:14:55.616Z",
+    "id": 109,
+    "generated_at": "2026-10-10T06:51:03.438Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "新公开的课程、训练营与社群招募",
-        "items": [
-          {
-            "id": 3928951,
-            "title": "早知天下事〔2026.10.09〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650243800&idx=1&sn=f1e488e8c9cfb3dc220418836d599cf3",
-            "source": "新华社",
-            "published_at": "2026-10-08T21:30:00.000Z",
-            "score": null,
-            "summary": "教育部、财政部近日部署实施2026年银龄讲学计划，计划招募义务教育阶段银龄讲学教师6000名。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7b8b589b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIRG23WAj1C7gqaJKOVoY09c3tuMfCD1LDBOYQHHjyzxkHnN8nvoGXkcqtmiaXPibsSVuW27mtr52XjGOCUenO4OpCu56Hr2ia8ft4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 3855347,
-            "title": "#759. Y Combinator 2014 年创业课程 20 讲",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6ac7bd96195d838e2aeee783",
-            "source": "跨国串门儿计划",
-            "published_at": "2026-10-08T16:35:37.000Z",
-            "score": null,
-            "summary": "本期我们克隆了：Y Combinator · How to Start a Startup（YC × Stanford CS183B 2014，全 20 讲）",
-            "cover": "https://media.xyzcdn.net/670f3da40d2f24f28978736f/luMuOE9iY9Y6JrABOHSZB7T5v_iH.m4a"
-          },
-          {
-            "id": 3935610,
-            "title": "搭档姚老师又开始做慈善了，哈哈哈。\r\n\r\n国庆假期我们都vibe coding了不少东西。\r\n\r\n接下来两个月开始推进深圳GEO大会。\r\n\r\n报名地址：https://t.co/Vl7a1HzgE0\r\n\r\n另外启动招...",
-            "url": "https://x.com/vista8/status/2108109181190586787",
-            "source": "向阳乔木(@vista8)",
-            "published_at": "2026-10-08T08:16:10.000Z",
-            "score": null,
-            "summary": "搭档姚老师又开始做慈善了，哈哈哈。国庆假期我们都vibe coding了不少东西。接下来两个月开始推进深圳GEO大会。报名地址：hui.ailingdaoli.com另外启动招商，目前已有GEO相关工具厂商，AI Agent产品，Token算力平台支持，但多多益善。感兴趣加微信：joeseesun姚金刚@yaojingang开源17套知识付费提示词，分享给正在做课程的老师、知识创作者和教育产品团队",
-            "cover": "https://pbs.twimg.com/profile_images/2039226063088463872/_zw7eSeM_normal.jpg"
-          },
-          {
-            "id": 3802260,
-            "title": "AI产品经理转型特训营2026版开始更新",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTEwNjI2MA==&mid=2651932748&idx=2&sn=1e5a3a63a560e3fa3eaf25cfed33c61a",
-            "source": "人人都是产品经理",
-            "published_at": "2026-10-08T07:38:00.000Z",
-            "score": null,
-            "summary": "去年 9 月份我做了一套帮助产品经理转型 AI 的线上课，耗时 2 个月完成了全套课程 ~40 节课的更新。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3c47147c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibEdImMv0CQEHwQ77qHmeDew5tl1t2ka4mNTuVCmqflrEAicIFs4Kq65aJ9rKJDcoVlZFLvBxeXhl9E47RiaDfUMUcEmeDbvunc9iciafejLOZ6w%2F0%3Fwx_fmt%3Djpeg"
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 3764964,
-            "title": "2万亿美元估值靠什么撑？Anthropic 核心技术负责人：蒸馏会毁掉前沿研发，中美 AI 竞赛不会单边暂停",
-            "url": "https://www.infoq.cn/article/dS754RhjExrwFP6tWD9d",
-            "source": "InfoQ 推荐",
-            "published_at": "2026-10-08T06:10:29.000Z",
-            "score": 76,
-            "summary": "Anthropic技术负责人指出，前沿智能的边际价值呈指数增长，因此公司敢签下5180亿美元长期算力承诺来支撑2万亿估值；同时明确反对模型蒸馏，认为这会破坏前沿研发能力。他们预测未来几年可能出现AGI，并警告中美AI竞赛无法单边暂停。",
-            "cover": "https://static001.infoq.cn/resource/image/f1/03/f168bcbbb6b08e8c72d1b5e6f2d3f103.png"
+            "id": 4011461,
+            "title": "Joulenap: keeps a Proxmox backup server powered off and wakes it only for the backups (open source)",
+            "url": "https://www.reddit.com/r/selfhosted/comments/1x1fysd/joulenap_keeps_a_proxmox_backup_server_powered/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-10-09T08:32:30.000Z",
+            "score": 71,
+            "summary": "Joulenap is for a pretty specific setup: you run Proxmox VE and your Proxmox Backup Server is on its own machine. My PBS is a desktop made from the parts left over after a PC upgrade. It pulls about 3",
+            "cover": "https://preview.redd.it/7pb6sl8qjeuh1.png?width=140&height=94&auto=webp&s=c24cfde9a7b3c10e77286229b35fb4b6b077614e"
           },
           {
-            "id": 3865185,
-            "title": "Trump administration is suspending Microsoft from a green card program",
-            "url": "https://apnews.com/article/h1b-visa-program-vance-microsoft-e7b3a407f822702b269ee277d21343ea",
-            "source": "Hacker News 首页",
-            "published_at": "2026-10-08T15:15:00.000Z",
-            "score": 72,
-            "summary": "特朗普政府暂停微软参与H1B签证转绿卡项目，这是对移民政策收紧的又一举措。该政策将影响微软等国际科技公司的外籍员工招聘与保留，工程师需关注自身签证状态。",
+            "id": 4011459,
+            "title": "How much does your local LLM server really cost? (power draw + tok/s, self-hosted vs cloud API, free in-browser) :)",
+            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1x1g2kd/how_much_does_your_local_llm_server_really_cost/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-10-09T08:39:14.000Z",
+            "score": 68,
+            "summary": "I&#39;ve been tuning local LLM setup for many months, and the number people actually want is the electricity bill. This calculator takes your GPU&#39;s power draw (W) and token speed (tok/s for prompt",
             "cover": null
           },
           {
-            "id": 3657075,
-            "title": "ChatGPT’s ‘Intelligent UI’ update fills its responses with pictures, charts, and buttons",
-            "url": "https://www.theverge.com/ai-artificial-intelligence/1007276/openai-chatgpt-intelligent-ui-gpt-6",
-            "source": "The Verge",
-            "published_at": "2026-10-07T19:10:42.000Z",
-            "score": 71,
-            "summary": "OpenAI随GPT-6推出Intelligent UI功能，ChatGPT能以图表、表单、可点击按钮等互动可视化形式回答问题，而非纯文字。官方称已专门训练GPT-6判断何时使用互动视觉元素。示例包括七速自行车设计的交互式图示，点击按钮可高亮不同部件。",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/Intelligent-UI.png?quality=90&strip=all&crop=0,0,100,100"
+            "id": 4077233,
+            "title": "Shopify Upgrades Checkout Blocks to Polaris Web Components, Cutting Bundle Sizes up to 85%",
+            "url": "https://www.infoq.com/news/2026/10/shopify-web-components/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
+            "source": "InfoQ",
+            "published_at": "2026-10-09T15:01:00.000Z",
+            "score": 65,
+            "summary": "Shopify has updated its Checkout Blocks app, transitioning five high-traffic checkout UI extensions to remote-dom using Preact and Polaris web components. The rewrite, which involved moving to TypeScr",
+            "cover": "https://www.infoq.com/styles/static/images/logo/logo_bigger.jpg"
           },
           {
-            "id": 3800158,
-            "title": "谷歌借助 AI 与差分模糊测试将 C 语言依赖库改写为 Rust",
-            "url": "https://www.infoq.cn/article/LVsjSV4pIlh3Liz0KZZE",
-            "source": "InfoQ 推荐",
-            "published_at": "2026-10-08T09:12:00.000Z",
-            "score": 68,
-            "summary": "谷歌安全团队验证了一条消除遗留基础设施中内存漏洞的新路径——利用 Gemini 将 C 语言代码库翻译成内存安全的 Rust 等价代码\"。该项目的改造对象是 giflib——一个约 3000 行代码的图像处理库，经常在无沙箱隔离的情况下解码不受信任的用户输入。团队用 Rust 编写了一个 ABI 兼容、可直接替换的库，停用了进程隔离沙箱、保持原有延迟不变，并在漏洞 CVE-2026-26740 被",
-            "cover": "https://static001.infoq.cn/resource/image/3e/d0/3e6abbc8c458c8e064e985e88f561bd0.jpg"
+            "id": 4068628,
+            "title": "Court throws out killer's sentence after judge said he loved AI video of victim",
+            "url": "https://www.nbcnews.com/news/us-news/sentence-vacated-ai-video-dead-victim-rcna601457",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-09T14:14:08.000Z",
+            "score": 62,
+            "summary": "Article URL: https://www.nbcnews.com/news/us-news/sentence-vacated-ai-video-dead-victim-rcna601457",
+            "cover": null
           },
           {
             "id": 3899434,
@@ -105,104 +59,104 @@
             "cover": null
           },
           {
-            "id": 3921912,
-            "title": "We're testing a new \"thinking mode\" for our image generation on our Alpha website (alpha dot midjour...",
-            "url": "https://x.com/midjourney/status/2108307894886400511",
-            "source": "Midjourney(@midjourney)",
-            "published_at": "2026-10-08T21:25:47.000Z",
+            "id": 4136956,
+            "title": "South African human rights lawyer Navi Pillay wins Nobel Peace Prize",
+            "url": "https://www.npr.org/2026/10/09/nx-s1-5996461/south-african-human-rights-lawyer-navi-pillay-wins-nobel-peace-prize",
+            "source": "NPR Topics: World",
+            "published_at": "2026-10-09T21:25:59.000Z",
             "score": null,
-            "summary": "We&#39;re testing a new &quot;thinking mode&quot; for our image generation on our Alpha website (alpha dot midjourney dot com). We&#39;re finding it boosts prompt accuracy, typography and coherence. W",
-            "cover": "https://pbs.twimg.com/media/HUI2gnYa8AAI9A7.jpg"
-          },
-          {
-            "id": 3900998,
-            "title": "Men accused of shooting Australian surfer brothers and US friend dead in Mexico to learn fate as trial concludes",
-            "url": "https://www.theguardian.com/australia-news/2026/oct/09/jake-callum-robinson-australian-surfers-carter-rhoad-mexico-murder-trial-ntwnfb",
-            "source": "World news | The Guardian",
-            "published_at": "2026-10-08T20:40:55.000Z",
-            "score": null,
-            "summary": "Martin and Debra Robinson, the brothers’ parents, will address the court before a Mexican judge hands down the verdict",
+            "summary": "South African human rights lawyer Navi Pillay wins the 2026 Nobel Peace Prize for her lifelong defense of human rights and international law.",
             "cover": null
           },
           {
-            "id": 3937364,
-            "title": "The most exciting claims from OpenAI’s heap of new proofs",
-            "url": "https://www.scientificamerican.com/article/the-most-exciting-claims-from-openais-heap-of-new-proofs/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-10-08T19:30:00.000Z",
+            "id": 4137933,
+            "title": "Three men found guilty of murdering two Australian surfer brothers and US friend",
+            "url": "https://www.bbc.co.uk/news/articles/cj5ynwnye009o?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-10-09T21:04:59.000Z",
             "score": null,
-            "summary": "Scientists have called out several math and computer science results as the most significant in the company&rsquo;s overwhelming new deluge of achievements",
+            "summary": "The bodies of Jake and Callum Robinson and their friend Carter Rhoad were found at the bottom of a well.",
             "cover": null
           },
           {
-            "id": 3898125,
-            "title": "The model gave you a number. Can you trace it back to the source?\r\n\r\nRead our AI in Finance guide befo...",
-            "url": "https://x.com/aiDotEngineer/status/2108271207963570394",
+            "id": 4147136,
+            "title": "Leadership tickets for AI Engineer New York 2026 are sold out.\r\n\r\nThank you to everyone joining us. En...",
+            "url": "https://x.com/aiDotEngineer/status/2108663542224498918",
             "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-10-08T19:00:00.000Z",
+            "published_at": "2026-10-09T20:59:00.000Z",
             "score": null,
-            "summary": "The model gave you a number. Can you trace it back to the source?Read our AI in Finance guide before New York. Research, agent evals and permissions for financial actions.Guide: ai.engineer/topics/ai-",
-            "cover": "https://pbs.twimg.com/media/HUFi_byWMAEjLv2.jpg"
+            "summary": "Leadership tickets for AI Engineer New York 2026 are sold out.Thank you to everyone joining us. Engineering tickets are still available for Oct 12-14.ai.engineer/nyc/2026#ticke…💬0🔄0❤️0👀854⚡ Powered",
+            "cover": "https://pbs.twimg.com/media/HUN3frrWEAAjM8h.jpg"
           },
           {
-            "id": 3976171,
-            "title": "In Codex and ChatGPT Work, access is available on Pro 500, eligible usage-based Enterprise, and cred...",
-            "url": "https://x.com/OpenAIDevs/status/2108262843544211494",
-            "source": "OpenAI Developers(@OpenAIDevs)",
-            "published_at": "2026-10-08T18:26:46.000Z",
-            "score": null,
-            "summary": "In Codex and ChatGPT Work, access is available on Pro 500, eligible usage-based Enterprise, and credit-based Edu plans. Enterprise admins must enable access.Ultrafast for GPT-6.1 Sol is available in a",
-            "cover": null
-          },
-          {
-            "id": 3976172,
-            "title": "API pricing for GPT-6.1 Sol in Ultrafast mode is $12 per million input tokens and $60 per million ou...",
-            "url": "https://x.com/OpenAIDevs/status/2108262830348886150",
-            "source": "OpenAI Developers(@OpenAIDevs)",
-            "published_at": "2026-10-08T18:26:43.000Z",
-            "score": null,
-            "summary": "API pricing for GPT-6.1 Sol in Ultrafast mode is $12 per million input tokens and $60 per million output tokens.Built for work where speed and intelligence make a difference: debugging an outage, agen",
-            "cover": "https://pbs.twimg.com/media/HUIN3ucaIAAezvI.png"
-          },
-          {
-            "id": 3879683,
-            "title": "Thank you, @POTUS, for this incredible honor today. I'm humbled to stand alongside so many giants of...",
-            "url": "https://x.com/satyanadella/status/2108262211336679893",
-            "source": "Satya Nadella(@satyanadella)",
-            "published_at": "2026-10-08T18:24:15.000Z",
-            "score": null,
-            "summary": "Thank you, @POTUS, for this incredible honor today. I&#39;m humbled to stand alongside so many giants of American innovation and looking forward for what we can continue to do together to advance tech",
-            "cover": "https://pbs.twimg.com/profile_images/2062578057836142592/IYAK6I1p_normal.jpg"
-          },
-          {
-            "id": 3886426,
-            "title": "U.S. Lawmakers Launch Sexual Abuse Probe of Youth Sports Giant AAU",
-            "url": "https://www.propublica.org/article/aau-child-sex-abuse-house-energy-commerce-committee-probe-amateur-athletic-union",
+            "id": 4136576,
+            "title": "New York Plans Stronger Sports Betting Regulation to Curb Gambling Addiction",
+            "url": "https://www.propublica.org/article/new-york-gaming-commission-sports-betting-regulation",
             "source": "ProPublica",
-            "published_at": "2026-10-08T18:15:00.000Z",
+            "published_at": "2026-10-09T20:14:42.000Z",
             "score": null,
-            "summary": "What Happened: Bipartisan leaders from the powerful House Energy and Commerce Committee launched an inquiry on Wednesday into the Amateur Athletic Union, criticizing the sprawling youth sports organiz",
-            "cover": "https://www.propublica.org/wp-content/uploads/2026/10/20261018-aau-impact-congress-03.jpg?w=1149"
+            "summary": "Gambling regulators in New York on Friday formally proposed two rules that they say will help curb gambling addiction in the state.",
+            "cover": "https://www.propublica.org/wp-content/uploads/2026/10/sports-betting-ny-rules.jpg?w=1149"
           },
           {
-            "id": 3874222,
-            "title": "Astronomers detect mysterious burst of energy from a galaxy far, far away",
-            "url": "https://www.theguardian.com/science/2026/oct/09/astronomy-fast-radio-bursts-frb-radio-waves",
-            "source": "World news | The Guardian",
-            "published_at": "2026-10-08T18:00:25.000Z",
+            "id": 4129614,
+            "title": "🏗️ In this week’s letter from Andrew Ng in The Batch: One of his agents makes 5,000 to 10,000 web s...",
+            "url": "https://x.com/DeepLearningAI/status/2108648572451221787",
+            "source": "DeepLearning.AI(@DeepLearningAI)",
+            "published_at": "2026-10-09T19:59:31.000Z",
             "score": null,
-            "summary": "Intense flash of radio waves is more than 10bn years old and has travelled through ‘approximately 80% of cosmic history’",
+            "summary": "🏗️ In this week’s letter from Andrew Ng in The Batch: One of his agents makes 5,000 to 10,000 web searches a day. Agents will need far more data centers.Also inside:🤖 GPT-6.1 Sol⚖️ Gemini 4 Argon🦾 ",
+            "cover": "https://pbs.twimg.com/media/HUNss71X0AE2uvC.jpg"
+          },
+          {
+            "id": 4119401,
+            "title": "And finally, a bunch of small fixes that you’ve been asking for:\r\n\r\n• Faster browsing, smoother scroll...",
+            "url": "https://x.com/ChatGPT/status/2108636750050713843",
+            "source": "ChatGPT(@ChatGPTapp)",
+            "published_at": "2026-10-09T19:12:32.000Z",
+            "score": null,
+            "summary": "And finally, a bunch of small fixes that you’ve been asking for:• Faster browsing, smoother scrolling• Fewer unnecessary notifications• Cleaner code blocks and attachments• Easier Outlook setup• Clear",
             "cover": null
           },
           {
-            "id": 3881777,
-            "title": "Help keep science open, try this out on Paper Pages: https://t.co/1cApLwjR7A",
-            "url": "https://x.com/huggingface/status/2108252563015422389",
-            "source": "Hugging Face(@huggingface)",
-            "published_at": "2026-10-08T17:45:55.000Z",
+            "id": 4120702,
+            "title": "Available now in Foundry and soon through OpenRouter: https://t.co/QBWsCmfIrm",
+            "url": "https://x.com/satyanadella/status/2108627925654503761",
+            "source": "Satya Nadella(@satyanadella)",
+            "published_at": "2026-10-09T18:37:28.000Z",
             "score": null,
-            "summary": "Help keep science open, try this out on Paper Pages: hf.co/papers🍉 Abubakar Abid@abidlabs🚨 The incentives to share scientific knowledge openly are crumbling.Historically, researchers shared scientif",
-            "cover": "https://pbs.twimg.com/profile_images/1927783340440178688/j9qLpAvM_normal.jpg"
+            "summary": "Available now in Foundry and soon through OpenRouter: commandline.microsoft.com/microsoft-deci…💬10🔄6❤️72👀10824📊17⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 4120703,
+            "title": "Introducing Microsoft-Decision-1, our new model for fast decision-making.\r\n\r\nIt delivers top performan...",
+            "url": "https://x.com/satyanadella/status/2108627923888754862",
+            "source": "Satya Nadella(@satyanadella)",
+            "published_at": "2026-10-09T18:37:28.000Z",
+            "score": null,
+            "summary": "Introducing Microsoft-Decision-1, our new model for fast decision-making.It delivers top performance on structured decision tasks, outperforming both LLMs and other decision models in latency and qual",
+            "cover": null
+          },
+          {
+            "id": 4118967,
+            "title": "Available in beta for Pro users in the Codex desktop app, for local tasks.\r\n\r\nHit “Tab” to accept a su...",
+            "url": "https://x.com/OpenAIDevs/status/2108624150344646752",
+            "source": "OpenAI Developers(@OpenAIDevs)",
+            "published_at": "2026-10-09T18:22:28.000Z",
+            "score": null,
+            "summary": "Available in beta for Pro users in the Codex desktop app, for local tasks.Hit “Tab” to accept a suggestion, edit it if needed, then send.You can turn composer predictions off in Settings.help.openai.c",
+            "cover": null
+          },
+          {
+            "id": 4115876,
+            "title": "@StatsWire Argon is coming, fear not :)",
+            "url": "https://x.com/OfficialLoganK/status/2108613251349242028",
+            "source": "Logan Kilpatrick(@OfficialLoganK)",
+            "published_at": "2026-10-09T17:39:09.000Z",
+            "score": null,
+            "summary": "@StatsWire Argon is coming, fear not :)💬202🔄30❤️614👀42060📊241⚡ Powered by xgo.ing",
+            "cover": null
           }
         ]
       },
@@ -211,154 +165,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 3741990,
-            "title": "Epistemic Uncertainty-Aware Defect Detection for Quality Control in Medical Device Manufacturing",
-            "url": "https://arxiv.org/abs/2610.09057",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-10-08T04:00:00.000Z",
-            "score": 79,
-            "summary": "本文提出一种基于认知不确定性的缺陷检测拒绝策略：当模型对样本的预测置信度低于阈值时主动弃权，而非强行输出结果。作者在266,170条真实FDA MAUDE器械报告上验证，10%的拒绝率使分类误差下降48%，而保留约70%样本时接近完美准确率。合成数据上同样在9%拒绝率下将风险降低63%。核心结论是：与其追求全量预测的准确率，不如用主动弃权换取高置信区间内的可靠性。",
-            "cover": null
-          },
-          {
-            "id": 3915851,
-            "title": "3JSBench: A benchmark for LLM-generated 3D objects",
-            "url": "https://twitter.com/generalcontext_/status/2108313483293147292",
-            "source": "Hacker News - Newest: &quot;LLM&quot;",
-            "published_at": "2026-10-08T21:56:35.000Z",
-            "score": 68,
-            "summary": "3JSBench是首个专门用于评估大语言模型生成3D物体质量的基准测试，提供可复现的量化评测方法，覆盖几何精度、纹理质量、语义对齐等维度，帮助研究者客观比较不同模型的3D生成能力。",
-            "cover": null
-          },
-          {
-            "id": 3685261,
-            "title": "Claude’s cyber safeguards are getting more flexible — but not for everyone.",
-            "url": "https://thenewstack.io/anthropic-cyber-access-tiers/",
-            "source": "The New Stack",
-            "published_at": "2026-10-07T21:25:06.000Z",
-            "score": 68,
-            "summary": "Anthropic 宣布将 Cyber Verification Program 拆为三层，声称让 Project Glasswing 覆盖更多防御团队，但自家测试显示：46/50 次攻防基准测试被拦截，Claude Opus 5.5 对多数安全团队仍然不可用。",
-            "cover": "https://cdn.thenewstack.io/media/2026/10/e7909094-alex-tuchilu-l_wvlktgily-unsplash-1024x678.jpg"
-          },
-          {
-            "id": 3741994,
-            "title": "From Uncertainty to Action: Learning to Steer LLM Agents",
-            "url": "https://arxiv.org/abs/2610.09115",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-10-08T04:00:00.000Z",
-            "score": 67,
-            "summary": "提出VoS(Value of Steering)监控器，替代传统uncertainty触发策略来指导LLM agent在何时介入纠正。基于1,864条轨迹的SOT数据集，实验显示VoS在12种设置下平均提升7.8分，比最强uncertainty方法高2.9分。uncertainty能识别失败轨迹但无法精确定位最优干预步骤。",
-            "cover": null
-          },
-          {
-            "id": 3646377,
-            "title": "Rethinking access control for RAG with Amazon Quick and Amazon Bedrock",
-            "url": "https://aws.amazon.com/blogs/machine-learning/rethinking-access-control-for-rag-with-amazon-quick-and-amazon-bedrock/",
+            "id": 4084719,
+            "title": "How Postman runs Agent Mode for 40 million developers on Amazon Bedrock",
+            "url": "https://aws.amazon.com/blogs/machine-learning/how-postman-runs-agent-mode-for-40-million-developers-on-amazon-bedrock/",
             "source": "AWS Machine Learning Blog",
-            "published_at": "2026-10-07T18:34:44.000Z",
-            "score": 64,
-            "summary": "AWS发布Quick + Bedrock Knowledge Bases组合方案，通过查询时直接向SharePoint/Confluence等权威来源验证权限，而非预复制过滤。解决企业RAG敏感信息泄露的核心难题。",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/07/ML-22080-1.png"
+            "published_at": "2026-10-09T15:35:02.000Z",
+            "score": 72,
+            "summary": "Building an AI agent for a demo and operating one for 40 million developers are different engineering problems. Postman set out to build Agent Mode, an AI-native way to work across API testing, docume",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/06/ML-21683-1.png"
           },
           {
-            "id": 3919700,
-            "title": "Your next users are machines\r\n\r\nAgents burn nearly 5x the tokens people do, up 14x in six months",
-            "url": "https://x.com/a16z/status/2108308969815257427",
-            "source": "a16z(@a16z)",
-            "published_at": "2026-10-08T21:30:03.000Z",
+            "id": 3968606,
+            "title": "LLM-IDEA: Identifiability-Driven Experimental Agent for Autonomous Discovery of Mechanistic World Models",
+            "url": "https://arxiv.org/abs/2610.11253",
+            "source": "cs.AI updates on arXiv.org",
+            "published_at": "2026-10-09T04:00:00.000Z",
+            "score": 71,
+            "summary": "LLM-IDEA为自主科学Agent引入识别性引擎，将实验停滞归因为三类：能力不足、可进一步解析、或数据已穷尽。在ODEBench上，60/62系统首轮即可识别，Lorenz等经典模型通过IV给药建议与真实药理决策一致，DiscoverPhysics中发现15个轨迹准确模型全部无法通过解释性测试。",
+            "cover": null
+          },
+          {
+            "id": 3901119,
+            "title": "Model Collapse Isn't New, nor Is It Specific to AI",
+            "url": "https://rulr.dev/blog/model-collapse-isnt-new/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-08T20:26:28.000Z",
+            "score": 62,
+            "summary": "作者指出model collapse并非AI独有现象——统计模型用自身生成数据训练会退化的问题，早在19世纪统计学、20世纪教育研究和遗传育种中都反复出现过。这一视角打破了AI恐慌叙事，提醒我们：循环数据污染的风险是人类建模行为的系统性缺陷，不是大模型的专属难题。",
+            "cover": null
+          },
+          {
+            "id": 4140102,
+            "title": "Agents can now buy domains with the Vercel CLI",
+            "url": "https://vercel.com/changelog/agents-can-now-buy-domains-with-the-vercel-cli",
+            "source": "Vercel News",
+            "published_at": "2026-10-09T20:24:00.000Z",
             "score": null,
-            "summary": "Your next users are machinesAgents burn nearly 5x the tokens people do, up 14x in six monthsa16z@a16zAI agents don&#39;t use the cloud like humans do. AWS CEO Matt Garman on rewiring AWS for its newes",
-            "cover": "https://pbs.twimg.com/media/HUI31ZvaAAAplkt.jpg"
+            "summary": "Your agent can now use the to buy a domain. Vercel CLI",
+            "cover": null
           },
           {
-            "id": 3883823,
-            "title": "The many pluses and minuses of Alexa Plus",
-            "url": "4a1922ac-6e7b-11f1-94bf-3f97b2f47f48",
-            "source": "The Vergecast",
-            "published_at": "2026-10-08T19:22:00.000Z",
+            "id": 4124374,
+            "title": "v2.1.296",
+            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.296",
+            "source": "Release notes from claude-code",
+            "published_at": "2026-10-09T19:28:59.000Z",
             "score": null,
-            "summary": "Amazon is determined to turn Alexa Plus into a do-everything AI assistant that can compete with Gemini, ChatGPT, Claude, and the rest. But after a year of testing, The Verge's Jen Tuohy has mixed feel",
-            "cover": "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/pscrb.fm/rss/p/mgln.ai/e/257/traffic.megaphone.fm/VMP8056613997.mp3"
+            "summary": "What's changed Added a code key to the Claude apps gateway's managed.policies[]: the same settings as cli, also applied in Claude Desktop's Code tab; beside desktop, it turns on Claude Desktop's gatew",
+            "cover": null
           },
           {
-            "id": 3944300,
-            "title": "Great paper from Google on program repair agents inside CI.\r\n\r\n(bookmark it)\r\n\r\nThey propose FlowAgent, ...",
-            "url": "https://x.com/omarsar0/status/2108276499615014936",
+            "id": 4122121,
+            "title": "Great feature in Codex. \r\n\r\nI have had my own composer prediction tool in my agent orchestrator for mo...",
+            "url": "https://x.com/omarsar0/status/2108640808245026896",
             "source": "elvis(@omarsar0)",
-            "published_at": "2026-10-08T19:21:02.000Z",
+            "published_at": "2026-10-09T19:28:39.000Z",
             "score": null,
-            "summary": "Great paper from Google on program repair agents inside CI.(bookmark it)They propose FlowAgent, which runs a ReAct-style generate-and-validate loop on pre-submit test failures and shows the fix inside",
-            "cover": "https://pbs.twimg.com/media/HUIaTYla0AABreq.jpg"
+            "summary": "Great feature in Codex. I have had my own composer prediction tool in my agent orchestrator for months. It&#39;s tunable and adapts to my preferences as I use it more. In fact, I use smaller models fo",
+            "cover": "https://pbs.twimg.com/media/HUNkSDCXkAAacTS.jpg"
           },
           {
-            "id": 3881326,
-            "title": "Pay-per-inference for AI agents: How BlockRun and Incarna use Amazon Bedrock AgentCore payments",
-            "url": "https://aws.amazon.com/blogs/machine-learning/pay-per-inference-for-ai-agents-how-blockrun-and-incarna-use-amazon-bedrock-agentcore-payments/",
+            "id": 4106822,
+            "title": "刚刚，GPT-6.1 Sol Ultrafast 来了！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557462&idx=1&sn=0e56f491b1ff9e583244275416e0fc34",
+            "source": "大模型智能",
+            "published_at": "2026-10-09T16:00:00.000Z",
+            "score": null,
+            "summary": "昨天，OpenAI 决定向所有用户（包括免费和付费用户）开放 GPT-6 ，今天就推出了全新的模型 GPT-6.1 Sol 的 Ultrafast 版本！结合更新的模型控制系统，能够实现对用户指令调整的及时响应。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e5818171&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FrjiclujBklTzTtHedzfzAl4HVSbHWwoJDNhM1mIcJaB6DrmBf2wJX62ZZB35hs9AmWpgaF2LfI5RGkcRdPxJb9lGDP7ibu6N0NOxbGH8CZxQU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4106823,
+            "title": "两万字长文！2026GPUKernelAgent最新进展：方法、基准与验证三者缺一不可",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557462&idx=2&sn=aa086dc40e95c5935d939a0428d3c31e",
+            "source": "大模型智能",
+            "published_at": "2026-10-09T16:00:00.000Z",
+            "score": null,
+            "summary": "一个kernelagent结果能不能用，瓶颈很少只在一个地方：它可能在数据稀缺处停滞，在训练工程处失稳，在评估协议处过拟合。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=264e3c2f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FrjiclujBklTwTM0SZXAtGnAibICYmMmdIpxvdYg4esF5NK8jcsQhrDqKuUa0k7diaUiazDXTcTpwRw7B8R2duPzn3yDXpmXFnSggial4VgSfklfU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4106507,
+            "title": "和 ColaOS 橘子聊个人 Agent 这半年：时代追上了他，他却打了转向灯",
+            "url": "https://www.xiaoyuzhoufm.com/episode/6ac915e051b8eaeca6796eda",
+            "source": "AI炼金术",
+            "published_at": "2026-10-09T15:58:40.000Z",
+            "score": null,
+            "summary": "半年前橘子来聊个人助理，任鑫当场杠他：「这个东西太宽泛了……你要不要找一个细分啊？」半年后，Instinct 融资融到天上，Muse 把 Meta 股价都带了起来，Grok Bot、Dot、Cue 扎堆上线——个人 Agent 成了最热的赛道。任鑫的反应是：「感觉时代终于追上了橘子，然后就想把他抓过来，半年前蹭你热点没蹭上的话，半年后再蹭一遍。」橘子接得也干脆：「抱歉了，半年前没有给大家带来爆点，",
+            "cover": "https://jt.ximalaya.com//GKwRIJIOntMWAhikfwTk9FhG.m4a?channel=rss&album_id=74194808&track_id=1022384765&uid=28103699&jt=https://aod.cos.tx.xmcdn.com/storages/60cd-audiofreehighqps/F3/12/GKwRIJIOntMWAhikfwTk9FhG.m4a"
+          },
+          {
+            "id": 4084718,
+            "title": "ICYMI: What landed for AI builders in September 2026",
+            "url": "https://aws.amazon.com/blogs/machine-learning/icymi-what-landed-for-ai-builders-in-september-2026/",
             "source": "AWS Machine Learning Blog",
-            "published_at": "2026-10-08T18:33:29.000Z",
+            "published_at": "2026-10-09T15:38:39.000Z",
             "score": null,
-            "summary": "When an AI agent runs, it often needs to buy something to finish a task: a model inference, an API response, access web content, or a call to another agent. These purchases are small and frequent, som",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/05/21707-1.png"
+            "summary": "A recap of the latest Amazon Bedrock, Amazon Bedrock AgentCore, and Strands updates from September 2026",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/06/ML-22094-1.jpg"
           },
           {
-            "id": 3892684,
-            "title": "Anthropic 更新使用政策：对 Claude 持续无端地辱骂虐待，算违规\r\n\r\nAnthropic 修改了 Claude 的使用政策，这是一年多来的第一次，新版 11 月 12 日生效。最受关注的一...",
-            "url": "https://x.com/dotey/status/2108255984703475733",
-            "source": "宝玉(@dotey)",
-            "published_at": "2026-10-08T17:59:30.000Z",
+            "id": 4076489,
+            "title": "Claude Helps Secure Open Source as Anthropic Offers Free Vulnerability Scanning",
+            "url": "https://securityaffairs.com/200685/ai/claude-helps-secure-open-source-as-anthropic-offers-free-vulnerability-scanning.html",
+            "source": "Security Affairs",
+            "published_at": "2026-10-09T13:56:30.000Z",
             "score": null,
-            "summary": "Anthropic 更新使用政策：对 Claude 持续无端地辱骂虐待，算违规Anthropic 修改了 Claude 的使用政策，这是一年多来的第一次，新版 11 月 12 日生效。最受关注的一条是，用户不得对 Claude“持续且无必要地实施辱骂或残忍行为”。这条规定来自 Anthropic 的“模型福利”研究，研究的问题是 AI 模型会不会有某种值得被考虑的感受。去年 8 月，Anthrop",
-            "cover": "https://pbs.twimg.com/profile_images/1596945208058744833/_X3LT7fb_normal.jpg"
+            "summary": "Anthropic is launching OSS Scanner, a vulnerability scanner for open-source code that costs nothing for projects to join. It grew directly out of lessons learned running Claude against real-world targ",
+            "cover": null
           },
           {
-            "id": 3884493,
-            "title": "KDD 2026 | 防护噪声形同虚设？哈工大（深圳）&清华提出TS-LFO：5种主流版权防御被大幅削弱，FID从364降至168",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247666038&idx=1&sn=d93a9998e1444579423b147a97a9967d",
-            "source": "我爱计算机视觉",
-            "published_at": "2026-10-08T15:47:00.000Z",
+            "id": 4174578,
+            "title": "科技丨OpenAI 披露722 份数学手稿，数学迎来大结局？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDM4MDExNQ==&mid=2832656099&idx=2&sn=c2a02f3e041c3c7f205c19fc5b68c539",
+            "source": "知乎日报",
+            "published_at": "2026-10-09T12:00:00.000Z",
             "score": null,
-            "summary": "扩散模型个性化定制（DreamBooth、Textual Inversion 等）只需几张图就能“学会”一个人脸或一件作品，随之而来的是肖像盗用、作品抄袭等版权风险。为此，Anti-DreamBooth、AdvDM、SimAC、DisDiff 等方法给图像加上不可见的对抗扰动，让扩散模型“学不会”受保护的图像。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=6a8b8921&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FP9MWBRYIGW8NVia7UF3B0QjmQB6YtMMibLVb1oB7TeLk0ibapCmYDazjic2XQH3PySay5DiavzKHwwJlNd5faLX1gcP09T9ygicbvpIH3ldn6MtDQ%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "美东时间 10 月 6 日，OpenAI 在 GitHub 放出一个「核弹」：一个涵盖 722 篇数学手稿的仓库，归成 372 个结果族，全部出自一个尚未对外发布的内部模型，平均每题只花约 3 小时算力。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=53147515&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkrSqjDRWFlEj0wBblGPPSjDFjusiae91cQo9d2e3oqRFvAGueofO6AOakR7PyrhteG0Hv3bjHHx3wfCveo3pQKiaZmUrf5470RflR5YeWp7iao%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 3884494,
-            "title": "CoRL 2026 自动驾驶世界模型 Workshop 征稿｜两项Best Paper奖项，DDL 10.22",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247666038&idx=2&sn=ab72459746b0fb150657e8613a078a9f",
-            "source": "我爱计算机视觉",
-            "published_at": "2026-10-08T15:47:00.000Z",
+            "id": 4056291,
+            "title": "三篇重磅论文，拆解 OpenViking 核心技术",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzYzMjE0MQ==&mid=2247523063&idx=1&sn=70910f0ca4b9f5fb519c7d4d94f481f6",
+            "source": "字节跳动技术团队",
+            "published_at": "2026-10-09T11:00:00.000Z",
             "score": null,
-            "summary": "立即投稿｜OpenReviewhttps://openreview.net/group?id=robot-learning.org/CoRL/2026/Workshop/GroundedDrivingWMs完整征稿信息与奖项规则｜Workshop Websitehttps://arlo0o.github.io/Grounded-Driving-World-Models_Workshop/",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=82c1e70e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FP9MWBRYIGW9qTDicias5U9qSpGdziaKdoAIWRH8Alymzg2t0Ngl0MbAvTORj0NqsDV8IUeWpHgwVExyAumzv1Qa9pQauE9EPjN3gvvxssZ60t4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Context is all you need：Context 用对了，Agent 办公才高效",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f38d5a73&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FFGB4hYw9FeflpY9rVZpw1tWa2lLhMgIw93HxsbCrPMK8TVw0IiaVDS9xwPPm7uExWeCQqHwjL8QF2GblLGsicw4bXwJ0qjCyE4lhFO9e8Z3ow%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 3848620,
-            "title": "Female AI Agents 'Paid' Less Than Males, Study Finds",
-            "url": "https://science.slashdot.org/story/26/10/07/1618200/female-ai-agents-paid-less-than-males-study-finds?utm_source=rss1.0mainlinkanon&utm_medium=feed",
-            "source": "Slashdot",
-            "published_at": "2026-10-08T15:00:00.000Z",
+            "id": 4056292,
+            "title": "Codex 额度用完之后，如何用 OpenViking 接着把活干完",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzYzMjE0MQ==&mid=2247523063&idx=2&sn=bb1142c4825757cfa1032af451b2b242",
+            "source": "字节跳动技术团队",
+            "published_at": "2026-10-09T11:00:00.000Z",
             "score": null,
-            "summary": "Ancient Slashdot reader williamyf writes: If you thought the gender pay gap was not real, and that there were no biases in the workplace, think again: A recent study from the University of Limerick fo",
-            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
+            "summary": "当用户同时使用多个 Coding Agent 时，真正影响协作体验的，往往不是单个模型够不够强，而是上下文能不能跟着任务一起流动。现实里，用户在 Codex、Trae、Claude Code、豆包等不同 Agent 之间切换，往往不是因为项目结束了，而是因为额度、环境、合规、工具适配或阶段分工发生了变化。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=24dd51e4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FFGB4hYw9Fed2MpKQ1fu2xibVjnXWuWtSYz8I55AicAJfonibiaZpeqD1AGA65T7ibb6z6xZc1b1DCVmiaiaw0CeLBUa8ae7uO3HAGHUOxFQPpDXsBU%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 3926147,
-            "title": "集结30个 AI 落地产业的可复用答案",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656210559&idx=2&sn=d9b1c6024f8f1d437118d6ec928c4ded",
-            "source": "虎嗅APP",
-            "published_at": "2026-10-08T13:48:00.000Z",
+            "id": 4101754,
+            "title": "资本开抢这位港大教授！大模型新路线火了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTAzMjc4MA==&mid=2650893517&idx=1&sn=8f5de3d6c17e27008f2c252bfa0d72e1",
+            "source": "创业邦",
+            "published_at": "2026-10-09T10:31:00.000Z",
             "score": null,
-            "summary": "模型能力仍在提升，但企业更关心的问题已经从“AI能做什么”，转向“它究竟为业务改变了什么”：产业需要的不是更多能力描述，而是一批经得起验证的落地案例。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e02c2f5c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FlibZgBia2he3AQuTicIRSPZ4xfDJql9kHpMfIE716dNoz0LHsZzPhH7Gr3l3VVs5Qib14vFkSObcGeic99yXfjr5SXRwRMv21uu3mxibaAib6utKMs%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 3913973,
-            "title": "10 秒视频很惊艳，为什么 AI 做一部短剧还是这么难？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651294557&idx=2&sn=cfbc801ae285a2c92c75d1288bede175",
-            "source": "InfoQ",
-            "published_at": "2026-10-08T12:54:00.000Z",
-            "score": null,
-            "summary": "随着生成式 AI 技术的爆发式增长，大语言模型与多模态模型已逐步走出实验室，成为驱动企业数字化转型的核心引擎。然而，如何在保障数据安全与合规的前提下，实现模型的高效推理与训练？如何将大模型能力真正无缝沉淀到复杂的业务场景中，并带来确定性的业务价值？",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c71f8586&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNhUtSvGKEan996M6gGyvZOYPX0wXTnFvqx8XicWHibwMUeicP6YZMSeX2WvuLHJHIA18fcugVP3IZmtu54COWFwY4473luNoRTyOs%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "当AI还在逐字写，一家来自深圳的公司，像先铺开一张草图、再反复修改成画一样做AI，融了数亿元，创下全球纪录。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6342f4b3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FcYfMwRADOvpanib1bl8alDuBh4b1wfJqTmEAMGrUTE2OynrTV6c55B35iaXnFWCfia5GZPiaMCjGodQ9wDrAXDmoIQrKiatLAQLU57eab9ibcgHh4%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -367,103 +321,103 @@
         "desc": "",
         "items": [
           {
-            "id": 3862048,
-            "title": "Scientists have sequenced the genomes of thousands of species. But for most of them, nobody knows *w...",
-            "url": "https://x.com/Thom_Wolf/status/2108220549268639992",
-            "source": "Thomas Wolf(@Thom_Wolf)",
-            "published_at": "2026-10-08T15:38:42.000Z",
-            "score": 82,
-            "summary": "Scientists have sequenced the genomes of thousands of species. But for most of them, nobody knows *where the genes are*Today we&#39;re releasing Carbon-A, an open model that finds genes directly in DN",
-            "cover": "https://pbs.twimg.com/profile_images/1963570598145138688/ncCX7vvX_normal.jpg"
-          },
-          {
-            "id": 3741447,
-            "title": "Child ASR Adaptation with Adult Retention: An Empirical Study",
-            "url": "https://arxiv.org/abs/2610.08827",
-            "source": "cs.CL updates on arXiv.org",
-            "published_at": "2026-10-08T04:00:00.000Z",
-            "score": 73,
-            "summary": "arXiv:2610.08827v1 Announce Type: new Abstract: Automatic Speech Recognition (ASR) systems often underperform for children and non-native speakers, while adapting adult ASR models to child speech can ",
+            "id": 3968604,
+            "title": "When Lower Reconstruction Loss Hurts: Distributionally Robust Refinement for Low-Bit LLM Quantization",
+            "url": "https://arxiv.org/abs/2610.11226",
+            "source": "cs.AI updates on arXiv.org",
+            "published_at": "2026-10-09T04:00:00.000Z",
+            "score": 78,
+            "summary": "作者发现降低重建损失不一定提升低比特量化LLM的实际性能，甚至在相同校准数据上更低重建损失反而更差。因此提出DRQ——一种后处理精炼方法，在输入激活分布的约束集合上最小化最坏情况重建损失，无需修改量化参数或推理算子。实验显示DRQ能普遍提升AWQ、GPTQ、ParoQuant等方法的量化效果。",
             "cover": null
           },
           {
-            "id": 3731506,
-            "title": "硬氪首发丨AI眼镜企业天使轮融资数亿，已与线下数百家门店合作月发售数千台",
-            "url": "https://36kr.com/p/4016645063217281?f=rss",
-            "source": "36氪",
-            "published_at": "2026-10-08T03:03:19.000Z",
-            "score": 73,
-            "summary": "NIMO智能眼镜完成数亿元天使轮，估值15亿，月销数千台。产品重量29克（行业首次30g内显示类AI眼镜），采用0.06英寸MicroLED芯片、0.6mm波导镜片，与雅视光学及LOHO门店合作。",
-            "cover": "https://img.36krcdn.com/hsossms/20261008/v2_160356abc10c42ae89b193938461f236@6310669_oswg78086oswg1080oswg810_img_000?x-oss-process=image/format,jpg/interlace,1"
+            "id": 4044693,
+            "title": "医疗影像走到分叉口：谁在为「AI读片」买单？",
+            "url": "https://www.huxiu.com/article/4896233.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-10-09T11:34:46.000Z",
+            "score": 76,
+            "summary": "本文来自微信公众号： 互联网医疗圈 ，作者：丁观，原文标题：《医疗影像走到分叉口：谁在为「AI读片」买单？》",
+            "cover": "https://img.huxiucdn.com/article/content/26-10-09/c01ce5a1-5df6-4a43-a827-ddb0f81b20d8.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 3791301,
-            "title": "Near-Total Liquid Heat Capture Keeps AI Racks Cool",
-            "url": "https://spectrum.ieee.org/fanless-liquid-cooled-ai-servers-coolit",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-10-08T09:12:55.000Z",
+            "id": 4087295,
+            "title": "\"Energy Capacity = Economic Capacity\"\r\n\r\nFormer Intel CEO Pat Gelsinger on why America's power grid is...",
+            "url": "https://x.com/a16z/status/2108580864749941063",
+            "source": "a16z(@a16z)",
+            "published_at": "2026-10-09T15:30:28.000Z",
+            "score": 74,
+            "summary": "&quot;Energy Capacity = Economic Capacity&quot;Former Intel CEO Pat Gelsinger on why America&#39;s power grid is the ceiling on growth:&quot;We went through 10 to 15 years where essentially I was taki",
+            "cover": "https://pbs.twimg.com/profile_images/1919488160125616128/QAZXTMEj_normal.png"
+          },
+          {
+            "id": 3935145,
+            "title": "中国人形机器人：政府买单造整机，大脑却没人下死力气练",
+            "url": "https://lukefan.com/2026/10/09/china-humanoid-robots-government-data-centers/",
+            "source": "老范讲故事｜AI、大模型与商业世界的故事",
+            "published_at": "2026-10-09T00:30:00.000Z",
+            "score": 74,
+            "summary": "摩根大通首次覆盖宇树科技给出减持评级，目标价300元，认为当前PS估值46倍过高。文章指出中国人形机器人产业存在结构性问题：政府主导的数采中心（已建70余家）形成资金内循环，宇树73.6%收入来自高校科研，真正工业应用仅9%。整机厂面临洗牌，零部件供应商反而更稳健。",
+            "cover": "https://pictures.lukefan.com/china-humanoid-robots-government-data-centers/china-humanoid-robots-government-data-centers-01.jpg"
+          },
+          {
+            "id": 4041378,
+            "title": "Robotaxi Races Shift From Tech Specs to Partnerships",
+            "url": "https://www.tmtpost.com/8163126.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-10-09T10:28:03.000Z",
             "score": 72,
-            "summary": "IEEE Spectrum报道了一种无风扇液冷AI服务器方案，实现近全额液体热捕获。这意味着传统风扇散热的瓶颈被打破，能耗显著降低。对正在规划或升级AI数据中心的工程师来说，这是一个可行的技术路线参考。",
-            "cover": null
+            "summary": "NextFin News &mdash;&nbsp;Robotaxi has entered its commercial phase. For years the industry measured progress in kilometers driven without a safety driver, number of permits, and the drama of fully em",
+            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/23r4t35wethsff3.png"
           },
           {
-            "id": 3799562,
-            "title": "鄂维南院士：AI for Science的下半场，是重构整个科研体系｜PAIR 2026",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649806767&idx=1&sn=8d0c7267f816c46bc3c76fc36c33ab41",
-            "source": "DeepTech深科技",
-            "published_at": "2026-10-08T03:13:00.000Z",
-            "score": 72,
-            "summary": "如果AI for Science成为一种新的科研范式，我们需要什么样的基础设施？",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=dce0b432&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FLKiae5wcu5y9YjSBEvOkUv5vvNKPSy7icypdsseNKfovkL2nnwHj98z45OaUHp8IJcq4aYxJgaQAHxEYKgtI8NL7ZakYXQ6xC2sI8cHY9N6G0%2F0%3Fwx_fmt%3Djpeg"
+            "id": 4029315,
+            "title": "AI手机入口战：华为做深，阿里做广，字节做精，腾讯做巧",
+            "url": "https://www.tmtpost.com/8162833.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-10-09T10:18:43.000Z",
+            "score": 70,
+            "summary": "国庆假期结束了，要是盘点一下科技圈最大的热点，可能就是10月1日当天发布的华为Mate 90系列了。",
+            "cover": "https://images.tmtpost.com/uploads/images/2026/10/54801f376dcb1e49092f0515258124eb_1791541127.jpg"
           },
           {
-            "id": 3776152,
-            "title": "New Report: The State of CI/CD in 2026",
-            "url": "https://blog.jetbrains.com/teamcity/2026/10/state-of-cicd-2026-report/",
-            "source": "The JetBrains Blog",
-            "published_at": "2026-10-08T08:15:44.000Z",
-            "score": 69,
-            "summary": "JetBrains 2026 DevOps调查显示，83.4%使用DevOps的团队运行CI/CD，其中48.8%组织已将AI用于至少一项CI/CD任务，但仅8%在构建/测试环节直接运行AI驱动步骤；AI目前主要用于流程外围的代码审查、测试编写和构建失败诊断。同时，30.5%团队选择自建或本地部署CI/CD系统，为五年新高。",
-            "cover": "https://blog.jetbrains.com/wp-content/uploads/2026/09/state-of-cicd-2026-blog-social-share-1.png"
-          },
-          {
-            "id": 3833394,
-            "title": "How to build governed enterprise apps on Databricks with Replit and Lakebase",
-            "url": "https://www.databricks.com/blog/how-build-governed-enterprise-apps-databricks-replit-and-lakebase",
-            "source": "Databricks",
-            "published_at": "2026-10-08T13:00:00.000Z",
+            "id": 4032500,
+            "title": "卖方研究衰落，对打工人是一个很严肃的问题",
+            "url": "https://www.huxiu.com/article/4896217.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-10-09T10:32:38.000Z",
             "score": 68,
-            "summary": "The combination of Replit &amp; Databricks gives enterprises a complete development-to-deployment platform...",
-            "cover": null
+            "summary": "作者按：本文撰写于2023年，公募基金降低佣金率之后。当时卖方研究确实走到了一个存亡的十字路口。转眼三年过去了，情况发生了变化：卖方研究没有复苏，反而是整个专业服务业（包括但不限于金融、咨询）在AI的冲击之下出现了更大的结构性危机。打工人究竟应该怎么办呢？没有确切的答案，每个人只能努力适应时代变化，艰难前行。适者生存。",
+            "cover": "https://img.huxiucdn.com/article/content/26-10-09/b8d5c808-6572-4029-9f03-dbd015ffc388.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 3673546,
-            "title": "Decision models are suddenly everywhere. OpenAI’s is now public.",
-            "url": "https://thenewstack.io/openai-decision-models-deployment/",
-            "source": "The New Stack",
-            "published_at": "2026-10-07T21:11:26.000Z",
-            "score": 66,
-            "summary": "OpenAI的Decisions API进入公开beta，支持图像输入并基于GPT-6 Luna运行，按$0.10/1M输入token收费，无输出和缓存费用。可输出三类结构化结果：判断、选择、评分。Perplexity、Cloudflare、Amazon同期推出同类工具，但走开源权重路线。",
-            "cover": "https://cdn.thenewstack.io/media/2026/10/65af25c3-openai-decisions-api-1024x567.png"
+            "id": 4027796,
+            "title": "重大变化！微软 365 家庭版网盘大缩水：6TB 减至 2TB",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NDMwMTI2MA==&mid=2651703059&idx=1&sn=da73ebabfcdc43d2e8b8dc45d976d0d5",
+            "source": "小众软件",
+            "published_at": "2026-10-09T09:46:00.000Z",
+            "score": 68,
+            "summary": "省流：微软修改了 Microsoft 365 的 OneDrive 网盘存储规则。家庭版、高级版从原来的最多 6 人各享 1TB，改为全家共享 2TB；专业版改为共享 5TB。新用户从 2026 年 10 月 7 日起执行，老用户将在 2027 年陆续切换，其中家庭版、高级版在续订时生效。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=1b4c1295&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FTs4Edaib9xxf1H75wGBibZ65KES9aFwBjkGwbnGoa7Cvw4ickaxLtkBXichEEhYzGbiczBTO1FlAtMUZwU8DT9CtwiadHOiaV9AbTmQMxl1t5IiaTd0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 3791299,
-            "title": "Allegedly a student using AI behind South Korean banks cyberattack",
-            "url": "https://www.crowdstrike.com/en-us/blog/unknown-threat-actor-uses-artex-to-target-south-korean-finance/",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-10-08T09:15:38.000Z",
-            "score": 65,
-            "summary": "CrowdStrike报告显示，一起针对韩国金融机构的网络攻击使用了名为Artex的工具，攻击者据称是一名学生，正在探索AI辅助攻击。这是早期AI滥用于金融网络攻击的案例之一，值得安全从业者关注攻击者如何使用AI降低技术门槛。",
-            "cover": null
-          },
-          {
-            "id": 3718749,
-            "title": "[分享创造] 追踪 OpenAI / Anthropic 等 AI 厂商的最新动态与免费额度，支持 RSS 订阅",
-            "url": "https://www.v2ex.com/t/1246916#reply0",
+            "id": 4028492,
+            "title": "[VPS] 体验了一把轻量云端开发机，用香港双向 CN2 GIA 小鸡跑 VS Code Remote + 远程 Docker",
+            "url": "https://www.v2ex.com/t/1247425#reply0",
             "source": "V2EX",
-            "published_at": "2026-10-08T01:48:28.000Z",
-            "score": 63,
-            "summary": "free-llm-intel 是一个开源聚合站，自动巡检 OpenAI、Anthropic、DeepSeek 等30+家厂商官方页面，将无RSS的源转为可订阅feed，并附中文精译和70+家免费API额度总表。纯静态站+定时巡检，MIT开源，一条命令可自建。",
+            "published_at": "2026-10-09T10:07:04.000Z",
+            "score": 67,
+            "summary": "最近手头的 MacBook 硬盘又被各种 Docker 镜像和构建缓存撑得只剩 20G ，加上最近几个项目频繁要拉海外依赖和公共镜像，每次在本地配代理环境总有几个奇奇怪怪的超时报错。",
+            "cover": null
+          },
+          {
+            "id": 3888940,
+            "title": "Can AI replace mathematicians? Vienna researchers weigh in",
+            "url": "https://rudolphina.univie.ac.at/en/can-ai-replace-mathematicians-university-vienna",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-08T19:04:19.000Z",
+            "score": 64,
+            "summary": "维也纳大学研究者认为AI目前只能辅助但不可能完全替代数学家——数学创造依赖人类直觉与创造性思维，AI擅长验证与计算却缺乏真正的理解力。对关注AI能力边界的读者来说，这是来自一线研究者的冷静判断。",
             "cover": null
           }
         ]
@@ -471,18 +425,18 @@
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 424,
-      "articles": 424,
-      "sections": 4,
+      "candidates": 364,
+      "articles": 364,
+      "sections": 3,
       "prescreen": {
         "cap": 2,
-        "pool": 5059,
-        "poolSources": 429,
+        "pool": 4753,
+        "poolSources": 414,
         "kept": 500,
-        "keptSources": 312
+        "keptSources": 310
       },
-      "totalItems": 44
+      "totalItems": 40
     }
   },
-  "generated_at": "2026-10-09T07:40:33.401Z"
+  "generated_at": "2026-10-10T07:26:59.969Z"
 }
