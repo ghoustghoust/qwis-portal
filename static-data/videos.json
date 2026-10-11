@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": 167377,
+      "source_id": 617,
+      "platform": "youtube",
+      "title": "Make Claude Code Run Your Tests Every Time: Hooks",
+      "url": "https://www.youtube.com/watch?v=bapHyVIJ0Ec",
+      "vid": "bapHyVIJ0Ec",
+      "cover": "https://i.ytimg.com/vi/bapHyVIJ0Ec/hqdefault.jpg",
+      "duration": null,
+      "author": "Amigoscode",
+      "published_at": "2026-10-10T18:02:23.000Z",
+      "source_name": "Amigoscode"
+    },
+    {
       "id": 163827,
       "source_id": 526,
       "platform": "youtube",
@@ -1286,20 +1299,7 @@
       "author": "National Geographic",
       "published_at": "2026-10-04T18:00:33.000Z",
       "source_name": "National Geographic"
-    },
-    {
-      "id": 136949,
-      "source_id": 509,
-      "platform": "youtube",
-      "title": "Keyword Search Is Dying. Is Your Catalog Ready for AI Agents? — PayPal",
-      "url": "https://www.youtube.com/watch?v=YXb2Wx1r_Pk",
-      "vid": "YXb2Wx1r_Pk",
-      "cover": "https://i.ytimg.com/vi/YXb2Wx1r_Pk/hqdefault.jpg",
-      "duration": null,
-      "author": "AI Engineer",
-      "published_at": "2026-10-04T18:00:25.000Z",
-      "source_name": "AI Engineer"
     }
   ],
-  "generated_at": "2026-10-10T07:26:57.626Z"
+  "generated_at": "2026-10-11T07:31:59.215Z"
 }
