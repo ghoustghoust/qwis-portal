@@ -1,162 +1,188 @@
 {
   "report": {
-    "id": 112,
-    "generated_at": "2026-10-11T06:56:33.167Z",
+    "id": 114,
+    "generated_at": "2026-10-12T07:07:21.513Z",
     "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "新公开的课程、训练营与社群招募",
+        "items": [
+          {
+            "id": 4584299,
+            "title": "比特幻境完成数亿元天使轮融资；智元机器人上半年出货量超8600台｜36氪出海·要闻回顾",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248905705&idx=2&sn=98fb805b5ee70999dd9b6c151ca721d3",
+            "source": "36氪",
+            "published_at": "2026-10-11T13:30:00.000Z",
+            "score": null,
+            "summary": "36氪出海（letschuhai.com）是关注出海的行业媒体，为企业跨境提供海外咨询及专业服务，同时运营着超万人的出海生态社群。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4c3d7a24&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeEE78mnPkGUNicP01x5Vrstj1aZSLyLn74T1fY7dEkoQ3EyTAXLJE2QaMJyvtq6WAT17SQW8x0elDdIRjkBWFnOYRC9JotLTgQw%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4606928,
+            "title": "活动丨招募 100 个学术蝗虫，10.24 来听科学家聊聊天",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDM4MDExNQ==&mid=2832656155&idx=2&sn=ada6392b61dfc3619a19d0db587107b6",
+            "source": "知乎日报",
+            "published_at": "2026-10-11T12:00:00.000Z",
+            "score": null,
+            "summary": "于是我们联合科普中国，特邀「首席嗑儿学家」喜番喜剧，一起办了一场科学年会，招募 100 个学术蝗虫来喜番 BOX 剧场吃吃茶歇，听听科学家们、科研人们最近都在追什么答案。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=48dca7bf&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FkrSqjDRWFlFCuF3XLuxkEZ6Y7L8oQic5KaO7DuKqRUvHyQBKPwfDnjAtzsbCK8G0WZiaicVTyJG2VvCAUhQm1K7dmvf6Xbar3vMFHVjB0kNzls%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "重点更新",
         "desc": "",
         "items": [
           {
-            "id": 4231128,
-            "title": "Pallas 内核怎么调优？Google 给出的答案是“少信模型，多看寄存器”",
-            "url": "https://www.infoq.cn/article/kVJUKEcbqhpL2qwpp2Eq",
-            "source": "InfoQ 推荐",
-            "published_at": "2026-10-10T06:22:04.000Z",
-            "score": 78,
-            "summary": "Google 为 XProf\" 添加了\"一个内核性能分析套件。XProf 是其面向 TPU\" 工作负载的开源性能分析器。现在，开发者可以查看自定义 Pallas 内核\"中的周期级细节。此前，这些内核在跟踪记录中显示为单个不透明块。在 TPU v7（Ironwood）\"上，XProf 会在运行时对硬件性能计数器进行采样。在一个分块矩阵乘法示例中，Google 发现了内存停顿问题。通过添加三重缓冲，他",
-            "cover": "https://static001.infoq.cn/resource/image/b8/10/b8466a9cd9942ede1910b9925f127610.jpg"
-          },
-          {
-            "id": 4154436,
-            "title": "Qwen3.8-27B UD-IQ4_XS Heretic + MTP on a 16 GB card with 55-68 tok/s (24gb and 12gb versions available too)",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1x1zhnx/qwen3827b_udiq4_xs_heretic_mtp_on_a_16_gb_card/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-10-09T22:54:37.000Z",
-            "score": 76,
-            "summary": "I wanted the uncensored Qwen3.8-27B (llmfan46&#39;s Heretic build, MTP head preserved) on my RTX 4080 with MTP on (because I&#39;ve been testing TONS of configs, and realized that would be the one)",
-            "cover": null
-          },
-          {
-            "id": 4166383,
-            "title": "SlopSoup TV. A live, never-ending 24/7 pixel-art TV network inspired by old-school late night Adult Swim. No human makes any of it.",
-            "url": "https://www.reddit.com/r/LocalLLaMA/comments/1x20tgs/slopsoup_tv_a_live_neverending_247_pixelart_tv/",
-            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-            "published_at": "2026-10-09T23:57:12.000Z",
-            "score": 68,
-            "summary": "SlopSoup TV is a live, never-ending pixel-art TV network. Every script, character, voice, camera cut and schedule decision is made by models. It&#39;s made to be very absurd, dark and strange.",
-            "cover": null
-          },
-          {
-            "id": 4366306,
-            "title": "特朗普：乌克兰该换总统了",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247859128&idx=1&sn=0c0e81790613ef0f531ccc351350c9e1",
-            "source": "财联社",
-            "published_at": "2026-10-10T20:20:00.000Z",
+            "id": 4610509,
+            "title": "早知天下事〔2026.10.12〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650244267&idx=1&sn=0f61fcdad6ba669dc21551916550d745",
+            "source": "新华社",
+            "published_at": "2026-10-11T21:30:00.000Z",
             "score": null,
-            "summary": "据央视新闻报道，美国总统特朗普当地时间周六表示，乌克兰是时候换一位新总统了，乌克兰总统泽连斯基已成俄乌达成和平协议的障碍，且美国柴油价格高企也与泽连斯基有关。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=294cd876&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQXtmiafIpfaR4RtkxnsFTSJTGPC6EmjVmrQ85wQL4zTEc34xvx7hpmZ5RW6dUHv39ZlzqtPDnWNHS34l48fT0FAQZKke1x13Q0uFrl1cSfdw%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "外交部发言人就巴拿马发生7.6级地震答记者问时表示，中方向巴拿马政府和灾区人民致以慰问。截至目前，暂无中国公民在地震中伤亡报告。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f9e6035b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOISpIj9vzYEsrUYerOzesdDNBia2K0f7H8yT1TRDOG3sIrcWPHXzAlRhbtaQ8ibbEBPDV5dJ1xDGGhs23eYGcTdEWibk5n2jmO10r0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4354168,
-            "title": "DistroKid has been quietly taking down songs in response to UMG lawsuit",
-            "url": "https://www.theverge.com/entertainment/1009309/distrokid-take-down-songs-umg-lawsuit",
+            "id": 4586596,
+            "title": "A college in Illinois tried to cancel its Flock contact and it refused",
+            "url": "https://www.theverge.com/tech/1009411/elgin-community-college-flock-safety-cameras",
             "source": "The Verge",
-            "published_at": "2026-10-10T18:52:07.000Z",
+            "published_at": "2026-10-11T20:06:43.000Z",
             "score": null,
-            "summary": "Artists are taking to social media to complain that DistroKid has unceremoniously removed their work without notice. Now DistroKid has confirmed to The Verge that the takedowns are a direct response t",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/distrokid_logo_og_image.jpg?quality=90&strip=all&crop=0,0,100,100"
+            "summary": "In April of 2025, Elgin Community College had six Flock safety cameras installed to \"enhance the safety and security of students.\" But by September of that year, the school's administration grew conce",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/09/gettyimages-2265184860.jpg?quality=90&strip=all&crop=0,0,100,100"
           },
           {
-            "id": 4319487,
-            "title": "Ledger wallet tampering suspected after reports of crypto thefts",
-            "url": "https://www.theverge.com/tech/1009294/ledger-wallet-tampering-suspected-after-reports-of-crypto-thefts",
-            "source": "The Verge",
-            "published_at": "2026-10-10T16:36:44.000Z",
-            "score": null,
-            "summary": "Reports have been mounting that users of the Ledger crypto wallet have seen their accounts drained, and suspicion is that it's related to reseller CryptoBillis and a bit of spy hardware. Ledger has as",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/STK428_CRYPTO_D.jpg?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 4398119,
-            "title": "官方定调：车企禁止将消费者当小白鼠",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661820706&idx=1&sn=9615325472c0851ee42933bc91074f2a",
-            "source": "第一财经",
-            "published_at": "2026-10-10T15:45:00.000Z",
-            "score": null,
-            "summary": "10月10日，工信部、公安部、生态环境部、市场监管总局联合发布《关于进一步加强汽车产品创新设计和研发测试验证有关管理工作的通知》（征求意见稿）。其中，关于制动系统等结构、全隐藏式门把手、“零重力”座椅、电吸门、语音交互、手势交互、异形方向盘、辅助驾驶等验证均被明确点名提及。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=cda2f2ce&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCLb4GSRoS76VEfXiciabWa5RbgZwD4rNXOxKD65XQiaUibuOIHPz9KOIEcsLb8zldYY4KHbSicOg2iahT8d3yEeRe9b4zqhLbic14qFbE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 4398120,
-            "title": "长鑫科技，最新突破",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661820703&idx=1&sn=b13f837b608c076865cddf2ad658a0ab",
-            "source": "第一财经",
-            "published_at": "2026-10-10T15:11:00.000Z",
-            "score": null,
-            "summary": "第一财经记者了解到，长鑫科技（688825.SH）的核心子公司长鑫存储总裁曹堪宇在10月10日的第四届集成芯片和芯粒大会上透露了一项新的DRAM（动态随机存取存储器）技术进展。曹堪宇介绍了名为4F²的DRAM架构，并表示长鑫存储预计年底将推出采用这项技术的新一代DDR5 RDIMM产品。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a71519d1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCJMzpdKgzNueMZOUVGfb5D5gHWKXMn6qpvX4UIYKpoeJ3IGziawm2ZOKTmQjYibibOxTomsIgYrZpuiaOgGfYawIvffD4dT3EhicjRE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 4306066,
-            "title": "🖥️ Agents don't just consume tokens for input and output like humans do with early chatbots. Agents...",
-            "url": "https://x.com/DeepLearningAI/status/2108935584206983486",
-            "source": "DeepLearning.AI(@DeepLearningAI)",
-            "published_at": "2026-10-10T15:00:00.000Z",
-            "score": null,
-            "summary": "🖥️ Agents don&#39;t just consume tokens for input and output like humans do with early chatbots. Agents use computers: searching, storing, analyzing, transacting, at a scale no person matches.In this",
-            "cover": "https://pbs.twimg.com/media/HURxvPVWcAAfO5o.jpg"
-          },
-          {
-            "id": 4321764,
-            "title": "https://t.co/MjwFy73LOF",
-            "url": "https://x.com/satyanadella/status/2108931348857827686",
-            "source": "Satya Nadella(@satyanadella)",
-            "published_at": "2026-10-10T14:43:10.000Z",
-            "score": null,
-            "summary": "x.com/i/article/2108…💬317🔄290❤️1982👀757583📊730⚡ Powered by xgo.ing",
-            "cover": null
-          },
-          {
-            "id": 4339615,
-            "title": "又贵、又丑、又平庸，国产女装为什么越来越糊弄？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248905674&idx=1&sn=6a1f09c468e90204f2b2751feb7506e0",
-            "source": "36氪",
-            "published_at": "2026-10-10T13:30:00.000Z",
-            "score": null,
-            "summary": "她本身是个喜欢打扮的人，尤其喜欢日系风格——色调偏黑白灰，但必须要有些设计上的小巧思，比如褶皱的工艺，或是独特的剪裁。大数据也知道KK的喜好，总能精准投喂那些能让她一见钟情的衣服。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d9ab0b93&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fo02wSnKAPeEibpialg8iaDxpbpmLQKTRa60sgDqsAic6njCJqUFsuHTKOM4l0mB1bYiaGK88y4iaQCPnSh9ACMhLhXEgnURWh8IKklIBPB4EaefCY%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 4339616,
-            "title": "存款利率进入「1%时代」，普通人的钱往哪搬",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248905674&idx=2&sn=48b4f51f03bf269c3b047cd70f55e699",
-            "source": "36氪",
-            "published_at": "2026-10-10T13:30:00.000Z",
-            "score": null,
-            "summary": "经济观察报是专注于财经新闻与经济分析的全国性综合财经类媒体，创办于2001年。聚焦商道、商技和商机，以锐度、悦度、广度、深度的报道形成了权威的媒体公信力和影响力。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=86bd4a92&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fo02wSnKAPeHicIkQwALYspWLtFPpKDWLbh9VqjGQR5DicrJSM03Ja84xbs5Upic8YhjJKibK5Cg8mglXmn05jVBSrgkVJ0EWUx0tEMbMYVC2nMU%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 4300127,
-            "title": "One month to go until AI Engineer Code Summit SF!\r\n\r\nThree days of technical talks, live demos and con...",
-            "url": "https://x.com/aiDotEngineer/status/2108905391321190446",
+            "id": 4580036,
+            "title": "Where did that number come from?\r\n\r\n@VinooGanesh of @kepler_ai_hq explains how Kepler traces figures t...",
+            "url": "https://x.com/aiDotEngineer/status/2109373472686145763",
             "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-10-10T13:00:01.000Z",
+            "published_at": "2026-10-11T20:00:00.000Z",
             "score": null,
-            "summary": "One month to go until AI Engineer Code Summit SF!Three days of technical talks, live demos and conversations with engineers building AI coding tools.November 10 to 12, San Francisco.Ticket application",
-            "cover": "https://pbs.twimg.com/media/HUJXdQKXQAA1NuW.jpg"
+            "summary": "Where did that number come from?@VinooGanesh of @kepler_ai_hq explains how Kepler traces figures to sources, checks the values and runs the math in code.World&#39;s Fair 2026 recording: youtube.com/wa",
+            "cover": "https://pbs.twimg.com/media/HUWWJLJW4AAUbUY.jpg"
           },
           {
-            "id": 4279399,
-            "title": "This beer-making waste may offer a new stream for cleaner water",
-            "url": "https://www.scientificamerican.com/article/this-beer-making-waste-may-offer-a-new-stream-for-cleaner-water/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-10-10T11:00:00.000Z",
+            "id": 4556319,
+            "title": "The Times’s New Space Editor Has Her Eye on the Cosmos",
+            "url": "https://www.nytimes.com/2026/10/11/insider/new-york-times-space-editor-victoria-jaggard.html",
+            "source": "NYT &gt; Technology",
+            "published_at": "2026-10-11T18:14:27.000Z",
             "score": null,
-            "summary": "The research offers yet another way the brewery industry might repurpose its myriad by-products",
+            "summary": "On the Science desk, Victoria Jaggard spends her days pondering the universe’s most pressing mysteries.",
             "cover": null
           },
           {
-            "id": 4265079,
-            "title": "As Trump’s Wall Closes in, DHS Intimidates a Border Tribe With Surveillance, Masked Agents and Drones",
-            "url": "https://www.propublica.org/article/tohono-oodham-nation-arizona-border-wall",
-            "source": "ProPublica",
-            "published_at": "2026-10-10T10:00:00.000Z",
+            "id": 4562473,
+            "title": "this is the golden age of startups, builders, and developers",
+            "url": "https://x.com/OfficialLoganK/status/2109333732847214863",
+            "source": "Logan Kilpatrick(@OfficialLoganK)",
+            "published_at": "2026-10-11T17:22:06.000Z",
             "score": null,
-            "summary": "At 4:59 a.m. on Aug. 25, Verlon Jose, the chairman of the Tohono O’odham Nation in Southern Arizona, received an email from the head of the U.S. Border Patrol’s Tucson Sector. Government contractors w",
-            "cover": "https://www.propublica.org/wp-content/uploads/2026/10/000000100010.jpg?w=1149"
+            "summary": "this is the golden age of startups, builders, and developers💬258🔄68❤️1178👀40028📊341⚡ Powered by xgo.ing",
+            "cover": null
+          },
+          {
+            "id": 4598939,
+            "title": "男子为继承母亲手机号，起诉2个姐姐，称想延续运营商优惠政策；法官：号码使用权可继承，所有权归国家",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661821015&idx=1&sn=b1ab87ee1d7a31c2bf490293a7bf0a6a",
+            "source": "第一财经",
+            "published_at": "2026-10-11T16:30:00.000Z",
+            "score": null,
+            "summary": "今天（10月11日），据央视新闻，现在，手机号码与银行卡及各类线上账户紧密绑定，有一定的财产权益与数据价值。手机号码能否作为遗产被继承？近日，黑龙江省一居民在母亲病故后想继承其手机号，将两位姐姐起诉到法院。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8998d314&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCKKUtPjqN8aATmhGJ2F5Y50iay1zcYwsogM82eVUwPTYibrZzufGUXcv4Ej3eZCH03ZckP65AzBibaJicBYRehS7BdB2DGZtqQhx3E%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4598940,
+            "title": "美国前贸易谈判官员奥尔森：如何研判以“技术标准”为名的隐形保护主义？｜慧眼中国环球论坛",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661821015&idx=2&sn=68f6e93889510bf9737c8be7e9669055",
+            "source": "第一财经",
+            "published_at": "2026-10-11T16:30:00.000Z",
+            "score": null,
+            "summary": "在近期举行的2026年慧眼中国环球论坛（FCGF）期间，新加坡尤索夫伊萨东南亚研究院客座资深研究员奥尔森（Stephen Olson）在接受第一财经专访时表示，“边境后议题”在全球贸易中的重要性日益凸显，官员们通过制定技术标准等法规手段实施保护主义，其效果已与关税相当。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=99ba798a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCKkZibS61CIEKt7oMTE0xC7Tptaq6AIL5hjgHpB5BPm3icia1kXibAeOgPJlMA5vbnTNVw6aNwJFRianeb62BicePVznZXygBD4tqoicA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4554631,
+            "title": "特朗普提议：将太平洋或大西洋更名为“特朗普洋”或“美国洋”",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247859422&idx=1&sn=a349b45c1a912aadd71864b3b6aebbb5",
+            "source": "财联社",
+            "published_at": "2026-10-11T15:50:00.000Z",
+            "score": null,
+            "summary": "据参考消息援引据美国《华盛顿邮报》网站10月10日报道，在试图重新命名墨西哥湾与安大略湖之后，美国总统特朗普10日提出为更多水域更名的想法。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fcd0a92e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaRVQcLLorpNBGGEyeHR6yxiazdiacXgUQSUy5iaVibqMsBZLVib1ltthqjoLapkhoRIJ8C1pZ4FcrTYJXD04DbReB7RJHIJHibPka4ick%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4554632,
+            "title": "【公告全知道】PCB+华为+CPO+英伟达+6G！全球PCB细分龙头第三季度净利同比预增超200%",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247859429&idx=1&sn=8655d690a03c736c887ac36c868fdf18",
+            "source": "财联社",
+            "published_at": "2026-10-11T15:24:00.000Z",
+            "score": null,
+            "summary": "每周日至每周四22:00推送明日股市重大公告！内容包含“停复牌、增减持、投资中标、收购、业绩、解禁、高送转”等一系列公司利好利空公告，其中重要公告均以红色标注，市场热点轻松掌握，防范各类黑天鹅事件，并且让用户有充足的时间和空间去研判相关公告潜在价值。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c51990bf&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQXtmiafIpfaRAmtNg9uxEfX0Z2dXsjbG0cGBWhYibBibJRpAkWK7vIR29I1c1CVBDYsBt7yIZ2Orkia7KIyOtNSQW1DRFBPFLCfFGl9fE5SbJu8%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4515308,
+            "title": "Context Language Models: Self-Managing Context to Improve Performance and Reduce Compute Costs",
+            "url": "https://www.infoq.com/news/2026/10/context-language-models/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
+            "source": "InfoQ — News",
+            "published_at": "2026-10-11T14:00:00.000Z",
+            "score": null,
+            "summary": "Researchers from Meta, MIT, and the University of Washington introduce Context Language Models (CLMs), a new approach that enables language models to manage and edit their own context rather than rely",
+            "cover": "https://res.infoq.com/news/2026/10/context-language-models/en/headerimage/gemini-agentic-vision-1791724239724.jpg"
+          },
+          {
+            "id": 4584298,
+            "title": "中年破产三件套，又多一个",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248905705&idx=1&sn=041a3f576f18646e3a4e2d7645bb40c5",
+            "source": "36氪",
+            "published_at": "2026-10-11T13:30:00.000Z",
+            "score": null,
+            "summary": "42元巴掌大的水果挞、25元一块的可颂，曾是年轻人争相打卡的时尚单品。面包价格越来越高，打工人称其为面包“刺客”，高喊买不起。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c72d62c6&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeG51HEkzzsxOSd2SyNdPKTCZnRibuV94RSic587mPYPBTxqEeoeOvSiajpun6na09DZZjbTLhdwvYXcHzuLCjH1Dbdv3pnVgdHIgk%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4513400,
+            "title": "两周没动，就去",
+            "url": "https://www.fengcan.net/two-weeks-rule/",
+            "source": "创见思考——怎样度过这一生",
+            "published_at": "2026-10-11T13:27:50.000Z",
+            "score": null,
+            "summary": "前几天翻了一遍自己这两年游泳的记录，问了 AI 一句：去年游得多一点，今年少一点，差别不大，对身体影响也不大，对吧？",
+            "cover": null
+          },
+          {
+            "id": 4500611,
+            "title": "Could Tutankhamun's tomb hold clues to a mysterious Egyptian queen?",
+            "url": "https://www.scientificamerican.com/article/could-tutankhamuns-tomb-hold-clues-to-a-mysterious-egyptian-queen/",
+            "source": "Scientific American Content: Global",
+            "published_at": "2026-10-11T10:00:00.000Z",
+            "score": null,
+            "summary": "Signs of hidden chambers in the walls of the famous boy king's tomb have raised hopes among researchers of finding hints of Nefertiti's burial place&mdash;Tutankhamun's stepmother and mother-in-law",
+            "cover": null
+          },
+          {
+            "id": 4464348,
+            "title": "Uber 在 Kubernetes 平台上将扩容意图与执行操作解耦",
+            "url": "https://www.infoq.cn/article/2SNgaiHoK808v22dl5SJ",
+            "source": "InfoQ 推荐",
+            "published_at": "2026-10-11T07:00:00.000Z",
+            "score": null,
+            "summary": "Uber 发布博文，详细介绍其全新的 ServiceScale 控制器，该控制器允许多个编排器安全地管理同一组 Kubernetes 工作负载的扩缩容。这篇由高级软件工程师 Egor Grishechko 和 Srikar Paruchuru\" 撰写的博文描述了 Uber 如何将扩缩容意图与执行分离，在无需预留闲置容量的情况下支持区域故障转移。",
+            "cover": "https://static001.infoq.cn/resource/image/a3/c2/a338c8fb086ba1659f7316c4f3efb9c2.jpg"
+          },
+          {
+            "id": 4453614,
+            "title": "AWS Introduces Enhanced Custom Event Buses for EventBridge",
+            "url": "https://www.infoq.com/news/2026/10/aws-enhanced-eventbridge-buses/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
+            "source": "InfoQ",
+            "published_at": "2026-10-11T06:35:00.000Z",
+            "score": null,
+            "summary": "AWS recently announced enhanced custom event buses for Amazon EventBridge, allowing organizations to share a centralized bus across accounts with ordered delivery, simplified subscriber management, ev",
+            "cover": "https://res.infoq.com/news/2026/10/aws-enhanced-eventbridge-buses/en/headerimage/generatedHeaderImage-1790663976977.jpg"
           }
         ]
       },
@@ -165,154 +191,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 4176407,
-            "title": "硅谷大模型不装了：Claude卷价格，GPT学豆包",
-            "url": "https://www.huxiu.com/article/4896317.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-10-10T00:38:11.000Z",
-            "score": 75,
-            "summary": "DeepSeek把百万tokens的价格打到几毛钱，逼着国内厂商一轮轮跟降，让“大模型用不起”成了旧闻，便宜也几乎成了国产模型的集体人设。Claude则一直站在价格表的另一头，上一代Haiku 4.5每百万tokens输入1美元、输出5美元，在不少开发者眼里，属于好用但不便宜的那一档。",
-            "cover": "https://img.huxiucdn.com/article/content/26-10-10/b43ef33d-0ad9-4518-a6a5-dd57d5039dec.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
-          },
-          {
-            "id": 4209095,
-            "title": "开源了一个「一人 MCN」：不搭工作流，直接让 Claude Code 从找热点一路做到抖音发布",
-            "url": "https://www.v2ex.com/t/1247578#reply1",
-            "source": "V2EX · 创意",
-            "published_at": "2026-10-10T04:14:48.000Z",
+            "id": 4575151,
+            "title": "Dusting off this tweet from April because this gap in shared understanding of LLM capability is *wid...",
+            "url": "https://x.com/karpathy/status/2109361546505966046",
+            "source": "Andrej Karpathy(@karpathy)",
+            "published_at": "2026-10-11T19:12:37.000Z",
             "score": 74,
-            "summary": "作者开源SoloMCN，用Claude Code的skill机制（岗位说明）替代传统AI工作流节点，让模型自主完成从热点抓取、调研、脚本、视频合成到多平台发布的完整流程。实测两个关键例证：配音额度用尽时Claude自行安装本地语音兜底；用户只说「配音听不懂」，模型10分钟内重配仅改动音频不改画面。MIT协议，macOS仅支持。",
-            "cover": "https://raw.githubusercontent.com/ymybxx/SoloMCN/main/docs/images/hero.png"
+            "summary": "Karpathy提出一个三层人群分层模型：约60亿人（75%）几乎未接触LLM；10-20亿人（20%）是ChatGPT免费层的 casual 用户，将其视为更好搜索引擎或写作助手；仅约2000万人（0.2%）专业使用前沿LLM进行数学和代码工作——过去一年内已能用Agent完成数周才能完成的复杂项目。他认为认知鸿沟正在加剧而非缩小。",
+            "cover": "https://pbs.twimg.com/profile_images/1296667294148382721/9Pr6XrPB_normal.jpg"
           },
           {
-            "id": 4185829,
-            "title": "dtool：面向 AI Agent 的本地数据管道 CLI",
-            "url": "https://www.v2ex.com/t/1247543#reply0",
+            "id": 4432250,
+            "title": "中国AI，开始为算力算账",
+            "url": "https://www.tmtpost.com/8164264.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-10-11T04:21:41.000Z",
+            "score": 70,
+            "summary": "乌兰察布聚集89个数据中心项目，阿里、华为等巨头押注基建，而DeepSeek已将API价格下调75%。模型服务越来越便宜，但云厂商仍在大规模烧钱建机房。这标志着中国AI从'抢算力'进入'经营算力'阶段——技术进步不等于投资回报，基础设施必须找到付费客户才能赚钱。",
+            "cover": "https://images.tmtpost.com/uploads/images/2026/10/674a592bad213395cf8dddbb50008d17_1791692507.jpg"
+          },
+          {
+            "id": 4418720,
+            "title": "[短剧制作开源] UU889-Drama 是一个基于 AI 的短剧自动化生产平台，支持本地算力",
+            "url": "https://www.v2ex.com/t/1247770#reply0",
             "source": "V2EX · 创意",
-            "published_at": "2026-10-10T02:26:44.000Z",
-            "score": 73,
-            "summary": "dtool是一个开源的本地数据管道CLI，核心方案是将Excel/JSON转成带Schema的数据集，计算下推到本地SQLite，AI只负责生成SQL而非写Python。每次命令生成可追溯的Action记录，stdout固定为结构化JSON。开发者因多次经历直接喂Excel给模型、让模型现场写pandas脚本等失败路径后总结此方案。",
-            "cover": null
+            "published_at": "2026-10-11T02:19:10.000Z",
+            "score": 66,
+            "summary": "UU889-Drama 是一个开源的AI短剧自动化生产平台，将小说→剧本改写→角色/场景提取→生图→分镜→生视频→FFmpeg拼接导出全流程打通，支持本地ComfyUI/SD部署以节省API成本。提供4个Mastra Agent，适配OpenAI、Grok、Gemini、DeepSeek等文本模型，以及Runway、Veo、Seedance、MiniMax等视频模型，多语言界面。",
+            "cover": "https://picui.ogmua.cn/s1/2026/10/11/6acaf1fd84249.webp"
           },
           {
-            "id": 4198509,
-            "title": "AI 编码项目时间一长，结构和文档越来越乱，有什么好用的 project clean / code clean skill 推荐？",
-            "url": "https://www.v2ex.com/t/1247565#reply0",
-            "source": "V2EX · 技术",
-            "published_at": "2026-10-10T03:26:06.000Z",
-            "score": 72,
-            "summary": "作者用Claude Code/Codex等AI CLI agent一年多后，发现项目出现结构腐化（重复实现）、文档腐化（README/DESIGN矛盾过期）、元数据腐化（AGENTS.md规则打架）和一次性产物散落四个问题。已尝试规则层（Quality Pipeline）、流程层（grill→to-spec）、skill层（clean-code等）和工具层（Knip/Vulture），各有局限，目",
-            "cover": null
+            "id": 4510960,
+            "title": "Claude found 29,000 possible bugs in open source. Only 516 have been fixed.",
+            "url": "https://thenewstack.io/anthropic-oss-scanner-vulnerabilities/",
+            "source": "The New Stack",
+            "published_at": "2026-10-11T13:00:00.000Z",
+            "score": 64,
+            "summary": "Anthropic&rsquo;s new OSS Scanner, launched last week as part of its broader Cyber Mission, exposes a problem inside the company&rsquo;s security research operation. Claude is finding potential vulner",
+            "cover": "https://cdn.thenewstack.io/media/2026/10/d54a7713-oleksandr-chumak-zguburggmdy-unsplash-1024x612.jpg"
           },
           {
-            "id": 4347907,
-            "title": "Anthropic Restricts Live Internet Access After Claude Evaluation Failures",
-            "url": "https://securityaffairs.com/200726/ai/anthropic-restricts-live-internet-access-after-claude-evaluation-failures.html",
-            "source": "Security Affairs",
-            "published_at": "2026-10-10T19:04:58.000Z",
+            "id": 4419862,
+            "title": "Qwen-Image-2.1-Turbo：通义千问开源AI生图模型，8步生成2K图片，支持图片编辑",
+            "url": "https://www.wangdu.site/software/ai/2402.html",
+            "source": "文武科技柜",
+            "published_at": "2026-10-11T02:16:56.000Z",
+            "score": 63,
+            "summary": "Qwen-Image-2.1-Turbo 是通义千问推出的高速 AI 图像生成与编辑模型。",
+            "cover": "https://cdn.wwkejishe.top/wp-cdn-02/2026/20261011101527357.png"
+          },
+          {
+            "id": 4549996,
+            "title": "尊界公布踏板升级时间，Claude半年封千万账号，PS5 Pro短缺明年初缓解，国内大厂加速研发个人智能体，这就是今天的其他大新闻！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NDc1NzQ4MA==&mid=2654700805&idx=1&sn=bdc2d55d46f988088715e7cc298d246e",
+            "source": "差评",
+            "published_at": "2026-10-11T16:00:00.000Z",
             "score": null,
-            "summary": "Anthropic released a report on unintended actions its Claude models took during evaluations and internal use. The cases involved real websites and real organizations outside the company. Anthropic say",
-            "cover": null
+            "summary": "（ 快科技 ） 针对旗下 V800 车型制动踏板支架底座的优化工作，尊界回应称，整套升级方案有望在 10 月底完成最终敲定，相关升级工作会从 11 月份开始分批次落地实施。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=5eb46538&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fksic8usWvqb3ElebnBkc2udydLNINWGCZ8U589lCEibmupDjDnTyxn6iaJSZumMuxIxhHy0Mbw4Zps6bgIEiak3vPGuicXS0W7AP7gwlNrvqky9E%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4345259,
-            "title": "New controls and chat improvements in Copilot for JetBrains",
-            "url": "https://github.blog/changelog/2026-10-10-new-controls-and-chat-improvements-in-copilot-for-jetbrains",
-            "source": "Use Case: copilot - GitHub Changelog",
-            "published_at": "2026-10-10T18:53:39.000Z",
+            "id": 4564285,
+            "title": "Agentic RL Infra 主流技术路线综述",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557488&idx=1&sn=e4d3971c2a838c1296a0c9687c20dd69",
+            "source": "大模型智能",
+            "published_at": "2026-10-11T16:00:00.000Z",
             "score": null,
-            "summary": "This update brings more control over default models and MCP server in GitHub Copilot for JetBrains. It also makes diagnostics easier to address, improves chat navigation and account controls, and stre",
-            "cover": null
+            "summary": "谁能率先把「长程信用分配」与「环境噪声鲁棒的可复现大规模合成」这两块最硬的骨头啃下来，并在模型-harness-环境的协同设计上形成闭环，谁就能在下一轮Agentic智能的竞赛中握住先手。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9ce451de&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FrjiclujBklTxadqPYwicXHLeT12heNia7rfCjlYMhF7NPUjEJRiaickAEJNxSJry9xAEf3Bb4tfrbjEjQjtbsGK0H48jpxOopYjGgUrOcGJX4AeA%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4316822,
-            "title": "🎉 1,000+ plugins. 300+ templates. \r\n\r\nDify Marketplace keeps growing!  \r\n\r\nFrom search and RAG to multi...",
-            "url": "https://x.com/dify_ai/status/2108950684498317348",
-            "source": "Dify(@dify_ai)",
-            "published_at": "2026-10-10T16:00:00.000Z",
-            "score": null,
-            "summary": "🎉 1,000+ plugins. 300+ templates. Dify Marketplace keeps growing! From search and RAG to multimodal tools, guardrails, and agent orchestration, more building blocks for AI applications are coming tog",
-            "cover": "https://pbs.twimg.com/media/HUQMjd7aUAA9xCn.jpg"
-          },
-          {
-            "id": 4311317,
-            "title": "Ask HN: Can we expect LLM-based coding agents to become noticeably faster?",
-            "url": "https://news.ycombinator.com/item?id=50033571",
-            "source": "Hacker News - Newest: &quot;LLM&quot;",
-            "published_at": "2026-10-10T14:52:46.000Z",
-            "score": null,
-            "summary": "I am thinking primarily about \"single-threaded\" usage of Claude etc which I'm still using as if it was still 2025. I just don't find the mental context switching worth it.",
-            "cover": null
-          },
-          {
-            "id": 4334106,
-            "title": "Flow-JEPA：基于流匹配的隐空间动态建模，提升JEPA世界模型的规划鲁棒性",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247666163&idx=2&sn=a74b0527bc49e9c72579c663c549ff79",
-            "source": "我爱计算机视觉",
-            "published_at": "2026-10-10T14:42:00.000Z",
-            "score": null,
-            "summary": "论文标题： Flow-JEPA: Robust Latent Dynamics for JEPA World Models via Flow Matching作者： Yanchen Huo、Ziying Song、Yadan Luo研究机构： 南洋理工大学、昆士兰大学论文地址：https://arxiv.org/abs/2608.29029代码仓库：https://github.com/HuoYa",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=d055a57c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FP9MWBRYIGWibXed9ThOibCFZVo3LmHKOpZ2rOG160508kTlmuQNYAr1xHINr0seAXUfvgjs2tZOib20d6Hf5fkYrZxBBUhlORfr87hjDb8aLMo%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 4302528,
-            "title": "前端娱乐圈重磅新闻！Deno团队加入Cloudflare且不再维护 Deno",
-            "url": "https://www.ccgxk.com/emlog_dev/913.html",
+            "id": 4525789,
+            "title": "论 Web 出海抱团互助的重要性！",
+            "url": "https://www.ccgxk.com/codeother/914.html",
             "source": "串串狗小刊 ⭐️",
-            "published_at": "2026-10-10T13:51:56.000Z",
+            "published_at": "2026-10-11T14:08:46.000Z",
             "score": null,
-            "summary": "Cloudflare 宣布 Deno 团队整体加入，目标是把 celld 和 Cloudflare 的 workerd 合并，让 Workers/Durable Objects 编程模型能轻松自托管。 非常感慨！Deno 开发要逐渐停了，以后 deno 就是开源社区维护了（我记得刚刚 beta 版本才出来，这剧情发展的有点快了）。还是 Nodejs 和包子 ... 阅读全文",
+            "summary": "这几年人工智能的浪潮带来了什么我不知道，但是我知道，带来了很多有钱人。国内互联网的深处暗处，有一群人因为 AI 开发软件、网站，两三年挣的盆满钵满。 当然，现在入局不算早了，好位置都被占领了，但是还不拥挤，且依然有潜在新机会。 不过以前是需要门槛的，因为 2026 年 1 月前的 AI 编程，跑是能跑起来，比如 cursor ，在 Claude code 流... 阅读全文",
             "cover": null
           },
           {
-            "id": 4340838,
-            "title": "“禁止虐待Claude”",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656211028&idx=2&sn=a9eaee0a92f113c9762303a86e0a4796",
-            "source": "虎嗅APP",
-            "published_at": "2026-10-10T13:46:00.000Z",
+            "id": 4522760,
+            "title": "Claude Code found my app’s shared contract in two MCP calls. Then the records ran out.",
+            "url": "https://thenewstack.io/claude-code-mcp-records/",
+            "source": "The New Stack",
+            "published_at": "2026-10-11T14:00:00.000Z",
             "score": null,
-            "summary": "本文来自微信公众号： 动察Beating ，作者：Sleepy，题图来自：AI生成",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8bca0b21&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F87nD5Qvn8kIInMrB2qj6w7nP92v7IjQwhiciaGWJ5W70kRV7825zzJa8LrkDarSxu6tD7RQ9nNrkFkazYssxvdesnz4bT8VIW1Bq7zWCyW0GU%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Every Claude Code user has watched a new session start from zero. You open it on a system you built last week, ask for a small feature, and the agent begins by rediscovering your own architecture: whi",
+            "cover": "https://cdn.thenewstack.io/media/2026/10/ea9f3fe0-ubaid-e-alyafizi-vnm6xar3ygm-unsplash-1024x768.jpg"
           },
           {
-            "id": 4305274,
-            "title": "[Agent Memory / 强化学习] MemPO源码学习笔记 --- (6)--- 奖励机制",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247489885&idx=1&sn=6229a5a72d3224e2593f553e414d3312",
-            "source": "罗西的思考",
-            "published_at": "2026-10-10T13:29:00.000Z",
+            "id": 4526954,
+            "title": "吴恩达最新访谈：这类人，以后最值钱",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654909035&idx=1&sn=bb42018f3f3ad09db1cfaa86b8376a80",
+            "source": "笔记侠",
+            "published_at": "2026-10-11T13:28:00.000Z",
             "score": null,
-            "summary": "现有的基于强化学习的 Memory 管理方法往往缺乏一种有效机制针对 Memory 的更新内容进行引导优化，Memory 的内容难以保证质量。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4124f26b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FiazCrKuBFsicANiaPAG4o4yCEbLFPW2bFiaoVPdKYu96CByXOpnhWZyCDfpIwiazaUJibSpBE4DRgZ5kOL9CnmrfZRzTh0uGftLa06OcEl0Eq1zuM%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "AI领域的先驱吴恩达则认为，这是又一轮精心策划的游说，和几年前那次针对开放权重模型的围剿如出一辙。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=67cade6f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8b91BQ8yFl3MVd7nibyQMOwZvbMxAUmTRopITHnxWseCVlgz03uB0uQvI5bK00FiavVZyuVRic1o8vLDjUT0ExsB8c9dCSrGmMIqaOUBVzgBkM%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4283141,
-            "title": "#762. All-in｜Claude有意识吗？OpenAI 的数学方法遭到强烈反对，法国爆发骚乱",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6ac9eaff195d838e2aefb4a4",
-            "source": "跨国串门儿计划",
-            "published_at": "2026-10-10T12:03:03.000Z",
+            "id": 4613517,
+            "title": "太艺术了 试了一下确实是艺术品 真的漂亮 看着这种机械结构忍不住把玩一下 而且惊叹于 Claude 的创造力 很强\r\n\r\nhttps://t.co/NHly6T3O90",
+            "url": "https://x.com/vikingmute/status/2109273560057622826",
+            "source": "Viking(@vikingmute)",
+            "published_at": "2026-10-11T13:22:59.000Z",
             "score": null,
-            "summary": "本期我们克隆了：All-In Podcast · Is Claude Conscious? Pope Rejects, Model Welfare Movement, OpenAI's Math Backlash, France Riots",
-            "cover": "https://media.xyzcdn.net/670f3da40d2f24f28978736f/lr8-Gm128BXDFZ26ccfNXE6aeJst.m4a"
+            "summary": "太艺术了 试了一下确实是艺术品 真的漂亮 看着这种机械结构忍不住把玩一下 而且惊叹于 Claude 的创造力 很强skills.wheresryan.sh/anatomyYour browser does not support the video tag.🔗 View on TwitterDing@dingyi我愿称之为史上最强 skillsskills.wheresryan.sh/anato",
+            "cover": "https://pbs.twimg.com/profile_images/2000755831135191040/s6Pf_wjc_normal.jpg"
           },
           {
-            "id": 4295445,
-            "title": "Agentic开发时代到来！鸿蒙PC三大原生开发工具公测，补齐国产操作系统生态关键短板",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4MTQ4NjQzMw==&mid=2652811672&idx=1&sn=94f4a4eed7f83d5f23cfbb7a801b5640",
-            "source": "智东西",
-            "published_at": "2026-10-10T11:43:00.000Z",
+            "id": 4567370,
+            "title": "EMNLP 2026 Findings | RIDGE 让长视频关键帧保留事件前因后果",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247666164&idx=1&sn=1b11e72e0840f2f1f2c7dfebab944e40",
+            "source": "我爱计算机视觉",
+            "published_at": "2026-10-11T13:11:00.000Z",
             "score": null,
-            "summary": "智东西10月10日报道，10月8日，可视化一站式IDE工具DevEco Studio、一站式鸿蒙应用AI开发工具DevEco Code与AI开发能力套件DevEco CLI，同步开启鸿蒙PC版公测。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fb699e1f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8Eyv4o4Acuo4OzxWn1zdbjLVBxxnUSYNoCqPDgwEQ5iazIR75jJXgJH17YrRlN4YZ38I2GIPba4eU8snBmDWia26VNLBQ4EqI55KrvQRfL03k%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "长视频理解中，模型答错问题，有时并非因为推理能力不足，而是关键证据没有进入它的视野。一段一小时的视频，即使每秒只采样一帧，也会产生约 3600 帧。面对有限的视觉输入预算，如何选出真正有用的画面，直接影响后续问答。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=3cf0474b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FP9MWBRYIGW9SMspteCtKWlvowlk63waJicZLibfGGk1s43ZicnI7aHzzHhicmBRqGDv5tqjdSzIW96liaIWBCDcABdRd7EGiahZEJ8icev7dot8GAQ%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4281362,
-            "title": "硅谷最火00后，讲透了AI助理的5个非共识观点",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkyNTY1MjE2OA==&mid=2247494512&idx=1&sn=3567eb4c88384a2ffab2d4dd709753f9",
-            "source": "硅基观察Pro",
-            "published_at": "2026-10-10T11:00:00.000Z",
+            "id": 4610299,
+            "title": "AI宣称暴力攻克上百个世纪难题，数学家真的集体“破防”了？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTc5MTU3NTYyMQ==&mid=2651607149&idx=1&sn=160cd9a602c726c79956d53ed163738d",
+            "source": "三联生活周刊",
+            "published_at": "2026-10-11T13:00:00.000Z",
             "score": null,
-            "summary": "Meta刚刚推出Muse，OpenAI有Dots，xAI也拿出了Grok Bot。从模型到算力，再到用户入口，几乎所有优势都握在这些巨头手里。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ed12138f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F598Tr639EmNWlMRgsEXKJwp9puQodCme2KlnrZ3KLkStnQPHplM4PYuUHYpA2BqXuWmS7hyl32jUWPIKyGicPuAtYHGP6s6HLDl7rslcRPibQ%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "10月6日，OpenAI一次性公开了722份由内部前沿模型生成的数学手稿，归为372组结果。几百个开放问题几乎同时涌到数学家面前，很快引发争论：这些证明是否成立，当然需要验证；但更难回答的是，当AI生产数学结果的速度开始远远超过人类阅读、理解和吸收它们的速度，数学究竟发生了什么？",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b5031328&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FViaCdVrcARqAIkNOqTDGYoILcDpPNDVm0XGMibyJnQh6DFQmWKfeBbJL84ibCxyKdrk6JmLqvoWE8LpicpqdicX2wribn3I84huvGp5QyGmw1ooMM%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4648430,
+            "title": "萝卜 PPT\r\n一个做 PPT 和美化 PPT 的 Agent Skill\r\n\r\nhttps://t.co/xz32eE6Tid",
+            "url": "https://x.com/geekbb/status/2109263215477854390",
+            "source": "Geek(@geekbb)",
+            "published_at": "2026-10-11T12:41:53.000Z",
+            "score": null,
+            "summary": "萝卜 PPT一个做 PPT 和美化 PPT 的 Agent Skillgithub.com/zhouwei713/luo…💬9🔄13❤️84👀8500📊34⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HUWbdBKbsAAvCSj.jpg"
+          },
+          {
+            "id": 4524866,
+            "title": "本体工程：AI 原生企业的语义操作系统",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAwOTcyNzA0OQ==&mid=2658981393&idx=1&sn=934c3bb59e13e2c1cf3b76aaa43280c8",
+            "source": "喔家ArchiSelf",
+            "published_at": "2026-10-11T12:26:00.000Z",
+            "score": null,
+            "summary": "数据平台回答发生了什么，LLM 估计什么可能相关，Agent 试图行动，而本体定义了事物是什么、它们如何关联、哪些约束成立、身份如何解析——并因此定义了哪些行动在原则上才应当是可能的。它不是 AI 架构的语义边车，它正在成为可信 AI 架构赖以搭建的基石。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=53009049&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FVIP3SyzHHZib5Il3lckNgmqpdwnRfMo9KIaUdemw7r6ibLmgknWbT8E1j7upGLTyianTxhq343MX7AIE990vxdMFfsRTdhKddWrVukX7gDEuyA%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -321,14 +347,64 @@
         "desc": "",
         "items": [
           {
-            "id": 4224402,
-            "title": "尊界V800风波 联合造车不能把责任也拆开",
-            "url": "https://www.huxiu.com/article/4896389.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-10-10T05:50:38.000Z",
-            "score": 71,
-            "summary": "本文来自微信公众号： 财观二姐 ，作者：金一句，原文标题：《尊界V800风波 联合造车不能把责任也拆开》",
-            "cover": "https://img.huxiucdn.com/article/content/26-10-10/1326a726-670d-4105-82f3-da1db0076853.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
+            "id": 4454214,
+            "title": "独家｜和 Nex 创始人复盘：三年出货 100 万台，收入增长 60 倍，如何成为游戏机新王？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTMwNDMwODQ0MQ==&mid=2653114654&idx=1&sn=c45aa93b4473c56de43b628412b4fcee",
+            "source": "极客公园",
+            "published_at": "2026-10-11T05:50:00.000Z",
+            "score": 78,
+            "summary": "游戏主机是出了名难进的品类：Nintendo、Sony、Xbox 三巨头把持市场 25 年，几乎没有第四家能挤进这个市场。如果还要在游戏机上加入一个摄像头，把它放在客厅中间，对于极其看重隐私的家庭而言，这件事儿似乎更不可能。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=78ed63c5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fz6JAVpoB67R103ecTvTs8yFdz2lEMCnjbjYf7pe9yPiasBsnUhr0fodGE53dFqLgJQ8sHutR6c4PGzmFmseiboyn4VFph8Q1fibaJ3JaiaH6Kn0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4491712,
+            "title": "刚刚，陶哲轩加州理工演讲：数学2.0正式到来，证明稀缺性时代彻底结束",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3MTkxMjYzOA==&mid=2247519533&idx=1&sn=b15f1c07a9e6f0d8bfebe47754b2e189",
+            "source": "AI寒武纪",
+            "published_at": "2026-10-11T00:37:00.000Z",
+            "score": 76,
+            "summary": "陶哲轩刚刚在加州理工学院发表了一个演讲，指出人类数学研究模式正在被AI彻底颠覆，数学是建立在证明稀缺的基础上的，那个时代结束了",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2fd0f0d0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkJjlNiczXgKpAD6QH9BuQTHNudA9slicEnvAxzPV7nSTtKSEAdibhU72DeuqxAbv5WD0rzW7GjDE0yqOFFZQK3MMBJT4fbuia4mnFVbXZJI0UZo%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4328497,
+            "title": "Scaling Android Search: Room @Fts4 vs SQL LIKE",
+            "url": "https://proandroiddev.com/scaling-android-search-room-fts4-vs-sql-like-b2a8232cbd12?source=rss----c72404660798---4",
+            "source": "ProAndroidDev - Medium",
+            "published_at": "2026-10-10T17:27:22.000Z",
+            "score": 73,
+            "summary": "A practical deep-dive into full-text search indexing, inverted indices, and microsecond query benchmarks using Android Jetpack Room.",
+            "cover": "https://cdn-images-1.medium.com/max/1024/1*O4Wm35zmkfeyGMGQRDBR7g.jpeg"
+          },
+          {
+            "id": 4512415,
+            "title": "盗版卖出1.8亿单，13人被捕；《猛兽派对》研发期遭泄密，员工被判赔4.8万 | 一周说「法」",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTc2ODUxMw==&mid=2650026452&idx=2&sn=d01a5c8d8b561c3ca2cb9f5f4632c719",
+            "source": "游戏葡萄",
+            "published_at": "2026-10-11T12:52:00.000Z",
+            "score": 72,
+            "summary": "近期，桐乡市公安局网安大队破获一起特大游戏侵犯著作权案，涉案对象包括B站研发的《逃离鸭科夫》《暖雪》等热门游戏。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0b659ad0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FjV8YHDicAiasbtQJRq3JLG70LNQNgUA8xjib6re6Ln2jbibDQBfzUGsrnFCkFnBK3VqgicQn7icia4PQPc04qBiae4vCHGxE2l9o2Iwn4xroaX1746A%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 4396767,
+            "title": "390亿美元，全球具身智能顶流Figure的三重泡沫",
+            "url": "https://www.tmtpost.com/8163913.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-10-11T00:59:00.000Z",
+            "score": 72,
+            "summary": "Figure估值390亿美元却存在三重泡沫：营销上宝马试点仅1台机器人真正工作；融资上两家不知名风投通过投资池承接大额度推高估值；技术上创始人无视安全负责人路线图，坚持推进家庭场景。Rodney Brooks直言不让机器人靠近孙辈。",
+            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/r4t3qegrsdfbvf3.png"
+          },
+          {
+            "id": 4479917,
+            "title": "融资 300 万美金，YC 的这个 2 人团队想让你的 AI 记忆“带着走”",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3NDc2MjQxMg==&mid=2247495462&idx=1&sn=8cc95833dc823732c8ac79c2fe76b5af",
+            "source": "深思圈",
+            "published_at": "2026-10-11T01:10:00.000Z",
+            "score": 68,
+            "summary": "平均每人用 3 个 AI 助手，每个都有一个“你”，却没一个归你管。2 人团队 Egoist 融资 300 万美金，想让 AI 记忆像手机号一样带着走。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e14a5906&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F15Dz37YtAksjiaia7icDAJ7oVrCC4sX9rT6OhGOo0sBibjb5GFQRmw3CtPorR8vpBx13icBpImRbEEZj40wxVOnftUPVlzMtN6NibGmib3njVxEwNk%2F0%3Fwx_fmt%3Djpeg"
           },
           {
             "id": 4369984,
@@ -351,92 +427,42 @@
             "cover": null
           },
           {
-            "id": 4371193,
-            "title": "Harvard’s $27.50 stained document was a rare Magna Carta original",
-            "url": "https://timesofindia.indiatimes.com/world/us/harvard-bought-this-stained-document-for-27-50-decades-later-experts-realised-it-was-an-original-magna-carta/articleshow/134793687.cms",
-            "source": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
-            "published_at": "2026-10-10T21:30:00.000Z",
-            "score": 65,
-            "summary": "",
-            "cover": "https://timesofindia.indiatimes.com/photo/134793687.cms"
+            "id": 4327339,
+            "title": "以前手机买新不买旧，现在可能得反着来了。。。",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NDc1NzQ4MA==&mid=2654700761&idx=2&sn=4355e6ee5ff3175538f6b6d89f1163ab",
+            "source": "差评",
+            "published_at": "2026-10-10T16:00:00.000Z",
+            "score": 68,
+            "summary": "托尼总算是反应过来了，为啥这么多手机厂商赶着在九月初集体涨价，合着前面那波涨价根本就是为了给我们提前打个预防针，等下半年这批旗舰新机一发布，价格涨得才叫一个狠。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=1d8ddd87&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fksic8usWvqb3uHqKlAGQSFzUBT4USImRRhAwuPFZAMcOZatDpDu4w1O0WibpjK2hcwxNz19frOIVBaENSFQa4ANrZDZZ9Boa0WfXzBCLtjemE%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 4362994,
-            "title": "improve: default device joins to session-host services (#168623)",
-            "url": "https://github.com/openclaw/openclaw/commit/8f91e4bb65f2a4cf67aa8f98e348224b28aae194",
-            "source": "Recent Commits to openclaw:main",
-            "published_at": "2026-10-10T21:08:06.000Z",
-            "score": 61,
-            "summary": "improve: default device joins to session-host services (#168623) ## What Problem This Solves Newly joined machines default to a foreground, command-only node, while New Session gives already-paired de",
-            "cover": null
-          },
-          {
-            "id": 4378858,
-            "title": "How does using your MacBook while charging affect its battery life?",
-            "url": "https://www.engadget.com/2280083/how-using-macbook-while-charging-affect-battery-life/",
-            "source": "Engadget",
-            "published_at": "2026-10-10T22:00:00.000Z",
-            "score": null,
-            "summary": "Modern MacBooks are pretty smart about managing their battery&#39;s health.",
-            "cover": "https://www.engadget.com/img/gallery/how-does-using-your-macbook-while-charging-affect-its-battery-life/intro-1791387889.jpg"
-          },
-          {
-            "id": 4370214,
-            "title": "Ubuntu 26.10 Will Offer a Rust-based GnuPG Replacement Option",
-            "url": "https://linux.slashdot.org/story/26/10/10/2155227/ubuntu-2610-will-offer-a-rust-based-gnupg-replacement-option?utm_source=rss1.0mainlinkanon&utm_medium=feed",
-            "source": "Slashdot",
-            "published_at": "2026-10-10T21:59:00.000Z",
-            "score": null,
-            "summary": "The blog It's FOSS reports: You already know that Canonical has been selectively replacing Ubuntu's C-based system components with Rust-written equivalents that don't compromise in terms of functional",
-            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
-          },
-          {
-            "id": 4372667,
-            "title": "Unable to get Outbound Calling for GPT-live activated on our organization",
-            "url": "https://community.openai.com/t/unable-to-get-outbound-calling-for-gpt-live-activated-on-our-organization/1405154",
-            "source": "OpenAI Developer Community · API",
-            "published_at": "2026-10-10T21:26:39.000Z",
-            "score": null,
-            "summary": "We have been trying to get outbound calling SIP feature enabled for our organization. We tried reaching out to support, apparently they don’t have controls to do so which is very strange.",
-            "cover": null
-          },
-          {
-            "id": 4366074,
-            "title": "Wow crazy",
-            "url": "https://x.com/browser_use/status/2109014227038212380",
-            "source": "Browser Use(@browser_use)",
-            "published_at": "2026-10-10T20:12:29.000Z",
-            "score": null,
-            "summary": "Wow crazy💬0🔄0❤️5👀668📊1⚡ Powered by xgo.ing",
-            "cover": "https://pbs.twimg.com/media/HUS5Q0vbcAAYciu.jpg"
-          },
-          {
-            "id": 4346974,
-            "title": "Indie App Spotlight: ‘Milepost’ is a driving journal that saves your memories on the road",
-            "url": "https://9to5mac.com/2026/10/10/indie-app-spotlight-milepost-is-a-driving-journal-that-saves-your-memories-on-the-road/",
-            "source": "9to5Mac",
-            "published_at": "2026-10-10T19:30:00.000Z",
-            "score": null,
-            "summary": "Welcome to Indie App Spotlight. This is a weekly 9to5Mac series where we showcase the latest apps in the indie app world. If you’re a developer and would like your app featured, get in contact.",
-            "cover": "https://9to5mac.com/wp-content/uploads/sites/6/2026/10/054bf01c078a6735d3bf124bbc67454bc58ec0364994c02b0a66b5d9c10a9ec0.png?w=1600"
+            "id": 4430641,
+            "title": "主要是平时工作总是忘东西，做了个会被动记忆方便我老年痴呆的小玩具🤓：\r\n [Clipori] 一个开源的 Mac AI 剪切板备忘录",
+            "url": "https://www.v2ex.com/t/1247792#reply0",
+            "source": "V2EX · 创意",
+            "published_at": "2026-10-11T04:30:06.000Z",
+            "score": 66,
+            "summary": "Clipori 是一个开源 Mac 剪贴板管理工具，自动记录文字、链接、代码、截图和图片，支持 AI 分类与搜索。数据存本地 SQLite，API Key 存钥匙串，不上传图片像素。快捷键 ⇧⌘V 唤起卡片栏，支持固定记录、桌面便笺和多选归类。",
+            "cover": "https://raw.githubusercontent.com/Panzer-Jack/Clipori/main/docs/assets/clipori-demo-zh.gif"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 408,
-      "articles": 408,
-      "sections": 3,
+      "candidates": 403,
+      "articles": 403,
+      "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 3789,
-        "poolSources": 341,
-        "kept": 500,
-        "keptSources": 314
+        "pool": 3045,
+        "poolSources": 284,
+        "kept": 462,
+        "keptSources": 284
       },
-      "totalItems": 40
+      "totalItems": 42
     }
   },
-  "generated_at": "2026-10-11T07:32:03.360Z"
+  "generated_at": "2026-10-12T07:39:57.315Z"
 }

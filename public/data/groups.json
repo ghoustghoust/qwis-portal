@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 2
+      "source_count": 14
     },
     {
       "id": 17,
@@ -124,7 +124,7 @@
       "kind": "article",
       "name": "编程技术",
       "sort": 19,
-      "source_count": 71
+      "source_count": 70
     },
     {
       "id": 20,
@@ -173,21 +173,21 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 2
+      "source_count": 7
     },
     {
       "id": 30,
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 73
+      "source_count": 75
     },
     {
       "id": 27,
       "kind": "video",
       "name": "编程技术",
       "sort": 27,
-      "source_count": 1
+      "source_count": 3
     },
     {
       "id": 32,
@@ -201,7 +201,7 @@
       "kind": "video",
       "name": "产品",
       "sort": 28,
-      "source_count": 0
+      "source_count": 4
     },
     {
       "id": 33,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-10-11T07:32:03.846Z"
+  "generated_at": "2026-10-12T07:39:57.695Z"
 }
