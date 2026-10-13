@@ -15,6 +15,10 @@ const _exhausted = new Map(); // 指纹 → 解除时刻（进程内；重启即
 const _fp = (k) => String(k || '').slice(-6);
 
 function _poolKeys(runtimeCfg) {
+  // 与云端 api/_ai.js#resolveAgnesKeys 同优先级：settings 池 → env 池 → 单键
+  // （本地 settings 是本地库的 ai.apiKeys；审查 P2：只读 env 会在"只在库里配池"时本地失明）
+  const fromSettings = Array.isArray(runtimeCfg.apiKeys) ? runtimeCfg.apiKeys.map((s) => String(s || '').trim()).filter(Boolean) : [];
+  if (fromSettings.length) return fromSettings;
   const envPool = String(process.env.AGNES_API_KEYS || '').split(',').map((s) => s.trim()).filter(Boolean);
   if (envPool.length) return envPool;
   const single = process.env.AGNES_API_KEY || runtimeCfg.apiKey || '';

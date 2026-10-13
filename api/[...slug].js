@@ -1732,6 +1732,7 @@ async function handleAiConfig(req) {
     // H28（用户拍 F1）：节流间隔开进白名单——此前部署面零写点永远吃代码缺省 4s，想压间隔换时间调不动。
     // 注意它是**独立点分键** ai.minIntervalMs（api/_ai.js:157 那个读法），不是 ai 对象字段——塞进 next 没人读。
     let minIntervalSnapshot = null; // BL9②：探测失败回滚时一并恢复（快照在写入前取）
+    let keyExhaustedSnapshot = null; // T6-3 同族：清耗尽表前先留底，回滚时恢复
     let minIntervalPrev = null;
     if (body.minIntervalMs !== undefined) {
       const n = Number(body.minIntervalMs);
@@ -1753,6 +1754,8 @@ async function handleAiConfig(req) {
       if (JSON.stringify(keys) !== JSON.stringify(prevKeys)) {
         next.apiKeys = keys;
         changed.push(`apiKeys(${keys.length})`);
+        // 写池即清耗尽表（新池重新计周期）；快照留底，探测失败回滚时一并恢复（审查 P2）
+        keyExhaustedSnapshot = await getSetting('ai.keyExhausted', {});
         await setSetting('ai.keyExhausted', {});
       }
     }
@@ -1772,6 +1775,7 @@ async function handleAiConfig(req) {
     if (!probe.ok) {
       await setSetting('ai', cur);
       if (minIntervalSnapshot !== null) await setSetting('ai.minIntervalMs', minIntervalSnapshot); // H28：独立键同滚，别让新间隔残留库里
+      if (keyExhaustedSnapshot !== null) await setSetting('ai.keyExhausted', keyExhaustedSnapshot); // 池子滚回旧值，耗尽表同滚
       await auditRecord('ai.config.rejected', { detail: { changed, error: String(probe.error || '').slice(0, 200) } });
       return { status: 502, body: jsonErr(`写后探测失败，已回滚旧配置：${probe.error || '未知错误'}`) };
     }
