@@ -3774,6 +3774,8 @@ async function dispatch(req) {
   if (path === '/api/backup/restore' && method === 'POST') return handleBackupRestore(req);
   if (path === '/api/data/cleanup/preview' && method === 'POST') return handleDataCleanupPreview(req);
   if (path === '/api/data/cleanup' && method === 'POST') return handleDataCleanup(req);
+  if (path === '/api/data/vercel/deployments/preview' && method === 'POST') return handleVercelCleanupPreview(req);
+  if (path === '/api/data/vercel/deployments/cleanup' && method === 'POST') return handleVercelCleanupExecute(req);
   if (path === '/api/data/table-cleanup' && method === 'POST') return handleDataTableCleanup(req);
   if ((path === '/api/data/snapshot' || path === '/api/data/restore' || path === '/api/data/upload') && method === 'POST') return handleDataUnsupported(req);
   if (path === '/api/audit' && method === 'DELETE') return handleAuditCleanup(req);
@@ -3838,8 +3840,6 @@ async function dispatch(req) {
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/quota/guard') return handleQuotaGuard(req);
     if (path === '/api/data/vercel/status') return handleVercelStatus(req);
-    if (path === '/api/data/vercel/deployments/preview' && method === 'POST') return handleVercelCleanupPreview(req);
-    if (path === '/api/data/vercel/deployments/cleanup' && method === 'POST') return handleVercelCleanupExecute(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
     if (path === '/api/sources/contribution' && method === 'GET') return handleSourceContribution(req);
   if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);
