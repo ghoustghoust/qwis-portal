@@ -215,25 +215,34 @@ async function _vercelResolveTeamId({ token, teamId }) {
   }
   return '';
 }
-// 清理口径：保留当前生产部署 + 最近 5 个 READY preview + 7 天内的全部；其余 preview 可删
+// 清理口径：保留当前生产部署 + 最近 5 个 READY preview + 7 天内的全部；其余 preview 可删。
+// 分页必须翻旧页：/v6/deployments 按时间倒序，一页只有最新 100 个——可删的老部署全在
+// until 游标后面，不翻页永远 0 可删（10-13 实测：第一页 deletable=0）。
 async function _vercelDeploymentPlan({ token, project, teamId }) {
   teamId = await _vercelResolveTeamId({ token, teamId });
   const prod = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&target=production&state=READY&limit=5`, { token, teamId });
   const prodKeep = new Set((prod.deployments || []).slice(0, 2).map((d) => d.uid)); // 当前 + 上一份生产（回滚余地）
-  let list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token, teamId });
-  let all = (list.deployments || []);
-  // 个人范围空且此前没解析出 team：强制解析一次再试（项目挂在 team 下的典型症状）
-  if (!all.length && !teamId) {
-    teamId = await _vercelResolveTeamId({ token, teamId: '' });
-    if (teamId) {
-      list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token, teamId });
-      all = list.deployments || [];
-    }
-  }
   const weekAgo = Date.now() - 7 * 86400e3;
-  const previewReady = all.filter((d) => d.target !== 'production' && d.state === 'READY' && !prodKeep.has(d.uid)).sort((a, b) => b.created - a.created);
-  const deletable = previewReady.filter((d, i) => i >= 5 && d.created < weekAgo);
-  return { total: all.length, teamId, productionKept: prodKeep.size, recentKept: Math.min(5, previewReady.length), deletable: deletable.map((d) => ({ uid: d.uid, created: d.created, url: d.url })) };
+  let total = 0, previewSeen = [], deletable = [], hasMore = false;
+  let until = null;
+  for (let page = 0; page < 8; page++) { // 8 页 × 100 封顶，守住函数预算；还有更老的标 hasMore
+    const q = `/v6/deployments?app=${encodeURIComponent(project)}&limit=100${until ? `&until=${until}` : ''}`;
+    const list = await _vercelApi(q, { token, teamId });
+    const arr = list.deployments || [];
+    if (!arr.length) break;
+    total += arr.length;
+    for (const d of arr) {
+      if (d.target === 'production' || prodKeep.has(d.uid)) continue;
+      if (d.state !== 'READY') continue; // 失败/取消的部署没有函数包可释放，不在口径内
+      previewSeen.push(d);
+      if (previewSeen.length > 5 && d.created < weekAgo) deletable.push({ uid: d.uid, created: d.created, url: d.url });
+    }
+    const next = list.pagination?.next;
+    if (!next || arr.length < 100) break;
+    until = next;
+    if (page === 7) hasMore = true;
+  }
+  return { total, hasMore, teamId, productionKept: prodKeep.size, recentKept: Math.min(5, previewSeen.length), deletable };
 }
 
 // GET /api/data/vercel/status
@@ -261,13 +270,16 @@ async function handleVercelCleanupExecute(req) {
   const { token, project, teamId } = await _vercelToken();
   if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token') };
   const plan = await _vercelDeploymentPlan({ token, project, teamId });
+  // 本函数 maxDuration 30s：批量删除分批跑，单批 80 个封顶，剩下的让用户再点一次
+  // （每个 DELETE ~0.3s，80 个 ≈ 24s；硬顶被平台杀掉会静默中断且不留审计）
+  const batch = plan.deletable.slice(0, 80);
   let deleted = 0, failed = 0;
-  for (const d of plan.deletable) {
+  for (const d of batch) {
     try { await _vercelApi(`/v13/deployments/${d.uid}`, { method: 'DELETE', token }); deleted++; }
     catch (e) { failed++; console.error(`[vercel-cleanup] 删除失败 ${d.uid}: ${e.message}`); }
   }
-  await auditRecord('vercel.cleanup', { detail: { project, deleted, failed, deletableCount: plan.deletable.length } });
-  return jsonOk({ deleted, failed, deletableCount: plan.deletable.length });
+  await auditRecord('vercel.cleanup', { detail: { project, deleted, failed, deletableCount: plan.deletable.length, remaining: plan.deletable.length - deleted - failed } });
+  return jsonOk({ deleted, failed, deletableCount: plan.deletable.length, remaining: plan.deletable.length - deleted - failed });
 }
 
 // ─── 路由处理器 ───
