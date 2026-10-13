@@ -659,9 +659,9 @@ async function runQuickScore() {
       const full = await qAll('SELECT content_html FROM articles WHERE id=?', [a.id]);
       const r = await _ai.analyzeArticle({ ...a, content_html: full[0] ? full[0].content_html : null });
       if (r && Number.isFinite(r.totalScore)) {
-        await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, r.summary || null, a.id]); // T5-13②：深析 summary 写回——此前只写分数理由，articles.summary 永远是采集器原始摘要
+        await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.min(100, Math.round(r.totalScore)), r.reason || null, r.summary || null, a.id]); // T5-13②：深析 summary 写回——此前只写分数理由，articles.summary 永远是采集器原始摘要
         scored++;
-        log(`  ✓ [补分] #${a.id} ${Math.round(r.totalScore)}分 ${String(a.title).slice(0, 36)}`);
+        log(`  ✓ [补分] #${a.id} ${Math.min(100, Math.round(r.totalScore))}分 ${String(a.title).slice(0, 36)}`);
       }
     } catch (e) {
       log(`  ✗ [补分] #${a.id} ${e.message.slice(0, 100)}`);
@@ -1088,7 +1088,7 @@ async function runWeekly() {
     consecFail = 0;
     analyzed.push({ ...a, ...r });
     if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
-      try { await qRun('UPDATE articles SET score=? WHERE id=?', [Math.round(r.totalScore), a.id]); } catch { /* 回写失败不阻断 */ }
+      try { await qRun('UPDATE articles SET score=? WHERE id=?', [Math.min(100, Math.round(r.totalScore)), a.id]); } catch { /* 回写失败不阻断 */ }
     }
   }
   log(`深析完成 ${analyzed.length} 篇，终选 top 20`);
@@ -1418,7 +1418,7 @@ async function runDailyAi() {
   // 深析 84 次尝试失败 55 次（rate_limited 23），库里已评 74/85 分的条目就这样死在重抽签里。
   // 判据：带 reason（= 真深析产物；quickscore 对初筛拒绝者只写 ≤40 分占位、无 reason）且分数
   // 达入报线。收养的条目跳过初筛与深析直接进 analyzed，仍过 L5 权威加权与入报门槛（门槛按
-  // 配置线再审一次，收养线固定用默认 60 只是"免重跑资格"，不等于放行）。
+  // 配置线再审一次，收养线跟随 DAILY_MIN_SCORE 只是"免重跑资格"，不等于放行）。
   // 代价（知情接受）：收养条目的卡片只有 摘要+推荐理由，没有六维细目/关键观点/金句/标签——
   // quickscore 回写库的只有 score/reason/summary 三个字段。
   const TRUST_LINE = require('../lib/brief-guards').DAILY_MIN_SCORE;
@@ -1427,7 +1427,7 @@ async function runDailyAi() {
   for (const a of valid) {
     const s = Number(a.score);
     if (a.reason && Number.isFinite(s) && s >= TRUST_LINE) {
-      preAdopt.push({ ...a, totalScore: Math.round(s) });
+      preAdopt.push({ ...a, totalScore: Math.min(100, Math.round(s)) });
     } else {
       needPipeline.push(a);
     }
@@ -1632,6 +1632,26 @@ async function runDailyAi() {
     used.add(a.id);
     return true;
   };
+  // 高分破格（用户 10-13 拍板"非常高分必须展示"）：≥80 的条目无条件入报——不占每源配额、
+  // 不等聚类成簇（孤例高分天然聚不了簇），单列「今日高分」区置顶。
+  // 线取 80：近 7 天实测日均仅 1 条、最高 85——破格不会炸版面。spotlight 源的 ≥80 留在重点栏
+  // （它本来就必进），本区只收非重点源的高分，避免一鱼两吃。
+  const TOP_LINE = 80;
+  const topPicks = analyzed
+    .filter((a) => (a.totalScore || 0) >= TOP_LINE && !a.source_spotlight)
+    .sort((x, y) => (y.totalScore || 0) - (x.totalScore || 0))
+    .slice(0, 10);
+  for (const a of topPicks) used.add(a.id); // 破格条目先占位，正常栏目流程不再重复收
+  if (topPicks.length) {
+    sections.unshift({
+      column: '今日高分',
+      desc: '窗口内评分 ≥80 的条目，无条件入选',
+      col_id: 'top-picks',
+      items: topPicks.map(fmt),
+    });
+    log(`高分破格: ${topPicks.length} 条 ≥${TOP_LINE} 置顶（${topPicks.map((a) => `${Math.round(a.totalScore)}分《${String(a.translated_title || a.title).slice(0, 18)}》`).join('、')}）`);
+  }
+
   for (const col of columns) {
     const items = [];
     if (aiClusters && col.special === 'fallback') continue; // T5-3：兜底挪到 AI 簇之后（否则它会抢走高分条目饿死聚类）
@@ -1856,7 +1876,7 @@ async function runMyBrief(analyzed) {
     if (r) {
       minePool.push({ ...a, ...r });
       if (typeof a.id === 'number' && Number.isFinite(r.totalScore)) {
-        try { await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.round(r.totalScore), r.reason || null, r.summary || null, a.id]); } catch { /* 回写失败不阻断 */ } // T5-13②：深析 summary 写回
+        try { await qRun('UPDATE articles SET score=?, reason=?, summary=? WHERE id=?', [Math.min(100, Math.round(r.totalScore)), r.reason || null, r.summary || null, a.id]); } catch { /* 回写失败不阻断 */ } // T5-13②：深析 summary 写回
       }
     }
   }
@@ -1937,8 +1957,16 @@ async function runMyBrief(analyzed) {
   // L6 补充阅读精确 10 条（T4-2 R4）：订阅余量优先 + 探索位按 MMR（0.7·相关性 − 0.3·最大相似）
   // 探索强度（settings mybrief.exploreStrength）：low=2 / mid=4 / high=6 条来自未订阅源
   const strength = ({ low: 2, mid: 4, high: 6 })[String(mbCfg.exploreStrength || 'mid')] ?? 4;
-  const subRest = mine.slice(10, 10 + (10 - strength)).map(fmt);
-  const chosen = new Set(mine.slice(0, 10 + subRest.length).map((m) => m.id));
+  // TOP 钉选（用户 10-13 拍板）：订阅源条目里全局分（baseScore，加权前）≥75 的固定进 TOP 区——
+  // 你关注的源出的高分内容必在头条位看到，不被关注加成排序埋掉。TOP 容量随钉选数自然放大
+  // （订阅源 ≥75 实测 0~2 条/天，超 3 条时头条区跟着扩）。
+  const PIN_LINE = 75;
+  const pinned = mine.filter((a) => (a.baseScore ?? a.totalScore ?? 0) >= PIN_LINE);
+  const ordered = pinned.length ? [...pinned, ...mine.filter((a) => !pinned.includes(a))] : mine;
+  const topN = Math.max(3, pinned.length);
+  if (pinned.length) log(`mybrief: TOP 钉选 ${pinned.length} 条（全局分≥${PIN_LINE}）`);
+  const subRest = ordered.slice(topN + 7, topN + 7 + (10 - strength)).map(fmt);
+  const chosen = new Set(ordered.slice(0, topN + 7 + subRest.length).map((m) => m.id));
   const pool = (analyzed || [])
     .filter((a) => !subIds.has(a.source_id) && !chosen.has(a.id) && (a.totalScore || 0) >= 70)
     .sort((x, y) => y.totalScore - x.totalScore)
@@ -1965,8 +1993,8 @@ async function runMyBrief(analyzed) {
   if (selected.length) log(`mybrief: 探索位 MMR 选 ${selected.length} 条（强度 ${strength}）`);
   const restBase = [...subRest, ...selected.map((a) => ({ ...fmt(a), explore: true }))];
   const sections = {
-    top: mine.slice(0, 3).map(fmt),
-    featured: mine.slice(3, 10).map(fmt),
+    top: ordered.slice(0, topN).map(fmt),
+    featured: ordered.slice(topN, topN + 7).map(fmt),
     rest: restBase,
   };
   // 2026-09-14：我的早报纳入「视频与播客」（窗口内新视频+播客，免 AI 直接列；用户拍板三类早报都要可播放媒体）
