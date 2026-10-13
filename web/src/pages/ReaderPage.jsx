@@ -41,6 +41,7 @@ export default function ReaderPage() {
   });
   const [q, setQ] = useState('');
   const [selectedArticleId, setSelectedArticleId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // 移动端来源抽屉（桌面端恒开，不受此控）
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [articleItems, setArticleItems] = useState([]);
   const [listCounts, setListCounts] = useState(null);
@@ -107,15 +108,21 @@ export default function ReaderPage() {
   return (
     <div className="flex h-screen t-bg t-text overflow-hidden">
       <IconRail />
+      {/* 移动端抽屉遮罩：点外面收抽屉 */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-30 bg-black/30 sm:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
       <Sidebar
         mode={mode}
         onModeChange={onModeChange}
         filter={filter}
-        onFilterChange={onFilterChange}
+        onFilterChange={(...a) => { setSidebarOpen(false); onFilterChange(...a); }}
         counts={listCounts}
         reloadKey={sidebarKey}
         views={views}
         onViewsChange={() => refreshStore('settings')}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
       />
       {mode === 'article' ? (
         <>
@@ -123,6 +130,7 @@ export default function ReaderPage() {
             filter={filter}
             q={q}
             onSearch={setQ}
+            onToggleSidebar={() => setSidebarOpen((v) => !v)}
             onDateChange={onDateChange}
             onFilterChange={onFilterChange}
             selectedId={selectedArticleId}

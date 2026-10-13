@@ -57,7 +57,7 @@ export function IconRail() {
 
   return (
     // T5-8/spec30（2026-09-15）：图标下方常驻文字标签——纯图标导航用户难辨功能
-    <nav className="flex flex-col items-center w-16 flex-none border-r t-border t-surface py-3 gap-1">
+    <nav className="rail-nav flex flex-col items-center w-16 flex-none border-r t-border t-surface py-3 gap-1">
       <div
         className="logo-radar w-8 h-8 mb-2 t-accent flex items-center justify-center rounded-lg transition-colors hover:t-accent-soft"
         title="全网情报系统"

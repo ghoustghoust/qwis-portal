@@ -43,7 +43,7 @@ function readDedup() {
 // T12/F4（六期）：头部挂 DateFilter（from/to），请求带日期范围，头部第二行显示 span 跨度
 // 九期：「合并同事件」开关（dedup=1，簇序号游标）；relatedCount>0 显示「N 源」徽章，点击展开其他信源
 // 十一期：接收 views/onViewsChange props，透传给 FilterPanel
-export default function ArticleList({ filter, q, onSearch, onDateChange, onFilterChange, selectedId, onSelect, onMeta, onItems, reloadKey, views, onViewsChange, newCount, lastEvent, onBannerRefresh }) {
+export default function ArticleList({ filter, q, onSearch, onToggleSidebar, onDateChange, onFilterChange, selectedId, onSelect, onMeta, onItems, reloadKey, views, onViewsChange, newCount, lastEvent, onBannerRefresh }) {
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -201,9 +201,10 @@ export default function ArticleList({ filter, q, onSearch, onDateChange, onFilte
   const showBriefCard = filter.tab === 'today' && !filter.sourceId && !filter.groupId && !q.trim() && !(filter.keyword || '').trim();
 
   return (
-    <section className="w-[400px] flex-none border-r t-border flex flex-col h-full t-surface">
+    <section className="w-full sm:w-[400px] sm:flex-none border-r t-border flex flex-col h-full t-surface">
       <div className="px-4 pt-3 pb-2 border-b t-border">
         <div className="flex items-center gap-2">
+          <button type="button" className="sm:hidden icon-btn !w-7 !h-7 flex-none" title="来源/分组" onClick={() => onToggleSidebar?.()}>☰</button>
           <h2 className="text-sm font-semibold t-text flex-1 truncate">{titleOf()}</h2>
           <button
             className={`inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded border t-border transition-colors ${

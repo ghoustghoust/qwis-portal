@@ -127,7 +127,8 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   // 2026-09-05：未选中文章时渲染空态引导（原 return null；右侧本周概览已常驻，空态回到正文区）
   if (!articleId) {
     return (
-      <section className="flex-1 min-w-0 h-full t-bg flex flex-col items-center justify-center gap-3 select-none">
+      // 移动端：未选文章时正文区不占位（列表全宽展示，选了才全屏覆盖）
+      <section className="hidden sm:flex flex-1 min-w-0 h-full t-bg flex-col items-center justify-center gap-3 select-none">
         <span className="t-accent opacity-40"><RadarLogo size={44} /></span>
         <div className="text-sm t-muted">{t('article.selectHint')}</div>
       </section>
@@ -150,7 +151,8 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
   };
 
   return (
-    <section className="flex-1 flex flex-col h-full min-w-0 t-bg">
+    // 移动端：正文全屏覆盖（fixed 铺满视口），桌面端仍是右侧栏
+    <section className="flex-1 flex flex-col h-full min-w-0 t-bg max-sm:fixed max-sm:inset-0 max-sm:z-40 max-sm:h-[100dvh]">
       {/* 顶部工具条（F5） */}
       <div className="flex items-center gap-1 px-4 h-12 flex-none border-b t-border t-surface">
         <button

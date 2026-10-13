@@ -206,6 +206,40 @@ body {
   letter-spacing: 0;
 }
 
+/* ===== 移动端导航（2026-10-13，用户实测"我的阅读/阅读器/热点榜手机端完全没有可读性"） =====
+   桌面 IconRail 是左侧 64px 竖栏；手机上它把内容挤到 300px 不到、标题竖排——
+   <640px 改底部固定横栏（拇指区），内容区让出全部宽度并预留底栏高度。 */
+@media (max-width: 639.98px) {
+  .rail-nav {
+    position: fixed !important;
+    left: 0; right: 0; bottom: 0;
+    top: auto;
+    width: 100% !important;
+    height: 56px;
+    flex-direction: row !important;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px !important;
+    border-right: none !important;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    z-index: 50;
+    gap: 0 !important;
+  }
+  .rail-nav .logo-radar { display: none; } /* 底栏不放 logo，空间给入口 */
+  .rail-nav .rail-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 6px 0 5px;
+    gap: 2px;
+  }
+  .rail-nav .rail-btn .rail-label { font-size: 9px; }
+  /* 页底让位：各页主容器普遍是 h-screen + overflow，底栏 fixed 会盖住内容尾部 */
+  body { padding-bottom: 56px; }
+  /* 底栏是 fixed，不占文档流：h-screen 容器在移动端的实际视高要扣掉它 */
+  .h-screen { height: 100vh; height: 100dvh; }
+}
+
 /* 雷达 logo：悬停时扫描线缓慢扫过（logo-radar 容器 + RadarLogo 内 .radar-sweep） */
 .logo-radar .radar-sweep {
   transform-box: view-box;

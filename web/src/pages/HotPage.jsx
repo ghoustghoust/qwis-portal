@@ -131,12 +131,13 @@ function DateGroup({ label, count, collapsed, onToggle, children, t }) {
 
 // 单个时间轴条目：左列 HH:mm + 圆点，竖线贯穿
 // 2026-09-05 视觉精修：圆点/时间文本与卡片首行（meta）中心对齐（≈23px）
+// 移动端（10-13）：时间列 44px+圆点偏移占掉近三成屏宽——<640px 改窄幅（时间叠在圆点上方的紧凑版式）
 function TimelineRow({ time, children }) {
   return (
-    <div className="relative flex gap-4 pb-4 last:pb-5">
-      <div className="w-11 flex-none text-right text-[11px] leading-5 t-muted tabular-nums pt-4">{time}</div>
+    <div className="relative flex gap-4 max-sm:gap-2.5 pb-4 last:pb-5">
+      <div className="w-11 max-sm:w-8 flex-none text-right text-[11px] leading-5 t-muted tabular-nums pt-4">{time}</div>
       <span
-        className="absolute left-[52px] top-[18.5px] w-[9px] h-[9px] rounded-full flex-none"
+        className="absolute left-[52px] max-sm:left-[36px] top-[18.5px] w-[9px] h-[9px] rounded-full flex-none"
         style={{ background: 'var(--accent)', boxShadow: '0 0 0 2px var(--bg)' }}
       />
       <div className="flex-1 min-w-0">{children}</div>
@@ -313,7 +314,7 @@ export default function HotPage() {
               <h1 className="serif text-lg font-bold t-text">{t('hot.title')}</h1>
               <span className="text-[11px] t-muted">全源聚合 · 只呈现 AI 相关动态</span>
             </div>
-            <div className="mt-3 flex items-center gap-1.5">
+            <div className="mt-3 flex items-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 max-sm:-mx-6 max-sm:px-6">
               {[
                 { id: 'featured', label: t('hot.featured') },
                 { id: 'all', label: t('hot.all') },
@@ -454,7 +455,7 @@ export default function HotPage() {
                 <div className="relative">
                   {/* 竖线时间轴 */}
                   <span
-                    className="absolute left-[56px] top-2 bottom-2 w-px"
+                    className="absolute left-[56px] max-sm:left-[40px] top-2 bottom-2 w-px"
                     style={{ background: 'var(--border)' }}
                   />
                   {g.list.map((it) => (

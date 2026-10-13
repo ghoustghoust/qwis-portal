@@ -15,7 +15,7 @@ function sourceKind(source) {
 
 // 2.3 侧栏瘦身：分组/拖拽/源渲染 提取至 SidebarGroups.jsx
 // Sidebar 只保留：数据加载 + 双 Tab 切换 + 视图导航 + 组合 SidebarGroups
-export default function Sidebar({ mode, onModeChange, filter, onFilterChange, counts, reloadKey, views, onViewsChange }) {
+export default function Sidebar({ mode, onModeChange, filter, onFilterChange, counts, reloadKey, views, onViewsChange, mobileOpen, onMobileClose }) {
   const { t } = useI18n();
   const kind = mode === 'video' ? 'video' : 'article';
   const [groups, setGroups] = useState([]);
@@ -86,8 +86,8 @@ export default function Sidebar({ mode, onModeChange, filter, onFilterChange, co
       ];
 
   return (
-    <aside className="w-60 flex-none border-r t-border t-bg flex flex-col h-full">
-      {/* 文章 / 视频 双 Tab */}
+    // 移动端：固定抽屉（默认隐藏，mobileOpen 滑入）；桌面端照旧左栏
+    <aside className={`w-72 sm:w-60 flex-none border-r t-border t-bg flex flex-col h-full max-sm:fixed max-sm:inset-y-0 max-sm:left-0 max-sm:z-40 max-sm:shadow-2xl max-sm:transition-transform ${mobileOpen ? '' : 'max-sm:-translate-x-full'}`}>
       <div className="p-3 pb-2">
         <div className="flex rounded-lg t-surface2 p-0.5 text-[13px]">
           {[
