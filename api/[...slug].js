@@ -277,13 +277,17 @@ async function handleVercelCleanupExecute(req) {
   const { token, project, teamId } = await _vercelToken();
   if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token') };
   const plan = await _vercelDeploymentPlan({ token, project, teamId });
-  // 本函数 maxDuration 30s：批量删除分批跑，单批 80 个封顶，剩下的让用户再点一次
-  // （每个 DELETE ~0.3s，80 个 ≈ 24s；硬顶被平台杀掉会静默中断且不留审计）
+  // 本函数 maxDuration 30s：批量删除分批跑，单批 80 个封顶，剩下的让用户再点一次；
+  // 删除并发 10（80 个 ≈ 8 组 × ~1s）——10-13 实测串行删除 80 个 + 翻页计划被 30s 预算杀成 504
   const batch = plan.deletable.slice(0, 80);
   let deleted = 0, failed = 0;
-  for (const d of batch) {
-    try { await _vercelApi(`/v13/deployments/${d.uid}`, { method: 'DELETE', token }); deleted++; }
-    catch (e) { failed++; console.error(`[vercel-cleanup] 删除失败 ${d.uid}: ${e.message}`); }
+  for (let i = 0; i < batch.length; i += 10) {
+    const chunk = batch.slice(i, i + 10);
+    const results = await Promise.allSettled(chunk.map((d) => _vercelApi(`/v13/deployments/${d.uid}`, { method: 'DELETE', token })));
+    for (const r of results) {
+      if (r.status === 'fulfilled') deleted++;
+      else { failed++; console.error(`[vercel-cleanup] 删除失败: ${String(r.reason?.message || r.reason).slice(0, 120)}`); }
+    }
   }
   await auditRecord('vercel.cleanup', { detail: { project, deleted, failed, deletableCount: plan.deletable.length, remaining: plan.deletable.length - deleted - failed } });
   return jsonOk({ deleted, failed, deletableCount: plan.deletable.length, remaining: plan.deletable.length - deleted - failed });
