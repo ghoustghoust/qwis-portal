@@ -215,15 +215,22 @@ async function _vercelResolveTeamId({ token, teamId }) {
   }
   return '';
 }
-// 清理口径：保留当前生产部署 + 最近 5 个 READY preview + 7 天内的全部；其余 preview 可删。
-// 分页必须翻旧页：/v6/deployments 按时间倒序，一页只有最新 100 个——可删的老部署全在
-// until 游标后面，不翻页永远 0 可删（10-13 实测：第一页 deletable=0）。
+// 清理口径：保留**最近 2 个 READY 生产部署**（当前+上一份回滚余地）+ 7 天内全部；更老的 READY 部署可删。
+// 10-13 实测修正：本项目每次 main 推送都直上生产，部署列表 542 个几乎全是 production——
+// 初版只删 preview 是判错了占用实体（用户截图的功能存储就是这几百个旧生产部署的函数包）。
+// 分页必须翻旧页：/v6/deployments 按时间倒序，一页只有最新 100 个，可删的全在 until 游标后面。
 async function _vercelDeploymentPlan({ token, project, teamId }) {
   teamId = await _vercelResolveTeamId({ token, teamId });
   const prod = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&target=production&state=READY&limit=5`, { token, teamId });
   const prodKeep = new Set((prod.deployments || []).slice(0, 2).map((d) => d.uid)); // 当前 + 上一份生产（回滚余地）
+  // 防呆：用户若回滚到旧版，"线上正在跑的"就不是最新那一份——按项目别名实指的部署永不可删
+  try {
+    const proj = await _vercelApi(`/v9/projects/${encodeURIComponent(project)}`, { token, teamId });
+    const liveId = proj?.targets?.production?.id || (proj?.latestDeployments || []).find((d) => d.target === 'production')?.uid || null;
+    if (liveId) prodKeep.add(liveId);
+  } catch { /* 项目详情拉不到时，keep 集合用"最新两份"兜底 */ }
   const weekAgo = Date.now() - 7 * 86400e3;
-  let total = 0, previewSeen = [], deletable = [], hasMore = false;
+  let total = 0, deletable = [], hasMore = false;
   let until = null;
   for (let page = 0; page < 8; page++) { // 8 页 × 100 封顶，守住函数预算；还有更老的标 hasMore
     const q = `/v6/deployments?app=${encodeURIComponent(project)}&limit=100${until ? `&until=${until}` : ''}`;
@@ -232,17 +239,17 @@ async function _vercelDeploymentPlan({ token, project, teamId }) {
     if (!arr.length) break;
     total += arr.length;
     for (const d of arr) {
-      if (d.target === 'production' || prodKeep.has(d.uid)) continue;
       if (d.state !== 'READY') continue; // 失败/取消的部署没有函数包可释放，不在口径内
-      previewSeen.push(d);
-      if (previewSeen.length > 5 && d.created < weekAgo) deletable.push({ uid: d.uid, created: d.created, url: d.url });
+      if (prodKeep.has(d.uid)) continue;
+      if (d.created >= weekAgo) continue; // 7 天内一律保留
+      deletable.push({ uid: d.uid, created: d.created, url: d.url });
     }
     const next = list.pagination?.next;
     if (!next || arr.length < 100) break;
     until = next;
     if (page === 7) hasMore = true;
   }
-  return { total, hasMore, teamId, productionKept: prodKeep.size, recentKept: Math.min(5, previewSeen.length), deletable };
+  return { total, hasMore, teamId, productionKept: prodKeep.size, recentKept: 0, deletable };
 }
 
 // GET /api/data/vercel/status

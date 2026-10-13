@@ -381,7 +381,8 @@ export default function DataTab() {
       <section className="card p-5 mt-6">
         <h3 className="text-sm font-semibold t-text">Vercel 旧部署清理</h3>
         <p className="mt-1 text-xs t-muted">
-          删除旧的 preview 部署以释放功能存储。保留：当前生产 + 上一份生产（回滚余地）+ 最近 5 个 preview + 7 天内的全部。
+          删除旧部署以释放功能存储（本项目每次推送直上生产，占用实体 = 几百个旧生产部署的函数包）。
+          保留：别名实指的线上版 + 上一份生产（回滚余地）+ 7 天内的全部。
           删除只影响 Vercel 上的历史线上副本，代码与 git 历史不受影响；被删的旧部署不能再一键回滚（回滚可重新部署任意 commit）。
           {vercel?.tokenConfigured === false && (
             <><br /><span style={{ color: 'var(--accent)' }}>未配置 Vercel Access Token——到 vercel.com → 头像 → Account Settings → Tokens 创建（账号级），粘贴到下面保存。</span></>
