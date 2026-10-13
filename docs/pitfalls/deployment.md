@@ -14,7 +14,7 @@
 ### #22 本地代理必须 undici 自带 fetch + ProxyAgent 配套；进程退出用 exitCode
 - 症状：把外部 undici 的 ProxyAgent 喂给 Node 内置 fetch → 全部 "fetch failed"（符号不兼容）。
 - 规则：走代理时 `require('undici')` 的 fetch + ProxyAgent 成对使用（tools/collect-turso.js 是参考实现）；脚本末尾 `process.exitCode = 0` 自然退出，`process.exit(0)` 会触发 libuv 断言（exit 127）。
-- 附：本机 Clash 实际端口 **12000**（2026-09-13 起，7890 已失效）；git 已配 http.proxy；`.env` HTTPS_PROXY=12000。
+- 附：本机 Clash 实际端口以 HANDOVER「环境常量」为准（2026-10-13 起 12001，此前 12000/7890 已失效）；git 已配 http.proxy；`.env` HTTPS_PROXY 同步。
 
 ### #D1 push 后必须验证远端 SHA（2026-09-13 事故）
 - 案例：修复 commit 后 push 的后台任务超时被杀未察觉，修复滞留本地 2 小时。

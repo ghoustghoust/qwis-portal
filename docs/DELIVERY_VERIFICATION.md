@@ -45,7 +45,7 @@ git config user.email "ghoustghoust@users.noreply.github.com"   # 仅仓库级�
 
 ```bash
 # 代理地址定义一次（端口取值以 docs/HANDOVER.md「环境常量」为准；端口换过时只改 HANDOVER，本文命令跟着 $PROXY 走）
-PROXY=http://127.0.0.1:12000
+PROXY=http://127.0.0.1:12001
 # ❌ 直接 push 会报 "Recv failure: Connection was reset"
 git -c http.proxy=$PROXY pull --rebase origin main
 git -c http.proxy=$PROXY push origin main
