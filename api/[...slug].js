@@ -3017,7 +3017,7 @@ async function handleAuditCleanup(req) {
 // 与本地 server/routes/settings.js + routes/daily.js settingsRouter 语义对齐
 // H41①：合法区/闭集键/保留键的唯一判定在 lib/settings-schema.js（两端共用，不许各写一份）
 const SETTINGS_BLOCKLIST = require('../lib/settings-schema').BLOCKLIST;
-const SETTINGS_ALLOW_SECTIONS = ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'mybrief', 'weekly', 'prescreen', 'views', 'bilibili']; // H55②：补 bilibili 段——写库分支（credentials 表）早已在而白名单缺段，保存必 400，分支成死代码
+const SETTINGS_ALLOW_SECTIONS = ['intervals', 'opml', 'queue', 'daily', 'hot', 'data', 'mybrief', 'weekly', 'prescreen', 'views', 'bilibili', 'vercel']; // H55②：补 bilibili 段——写库分支（credentials 表）早已在而白名单缺段，保存必 400，分支成死代码。vercel 段 10-13 补（旧部署清理 token）
 
 // 栏目表/入报源类型：见文件上方对 lib/daily-columns.js 的唯一引用（B10，此处曾另抄一份）
 
@@ -3133,6 +3133,8 @@ async function handleSettingsPut(req) {
   if (body.data) { await mergeSetting('data', body.data); sections.push('data'); }
   if (body.mybrief) { await mergeSetting('mybrief', body.mybrief); sections.push('mybrief'); }
   if (body.weekly) { await mergeSetting('weekly', body.weekly); sections.push('weekly'); }
+  // vercel 段（旧部署清理的 token/项目名）：token 是凭据——mergeSetting 的 sensitiveKeys 语义是留空不覆盖
+  if (body.vercel) { await mergeSetting('vercel', body.vercel, ['token']); sections.push('vercel'); }
   // prescreen 后台写入口（44 号 spec 步1 的遗留项，用户 09-24：「要能让功能正式可以使用，而不是验证一半、未开发一半」）：
   // 消费方读的是**点分键** `prescreen.perSourceCap`（runner 两份 + 本文件内联 + api/daily-generate.js），
   // 而本 handler 过去只给 opml.* / reader.* 这类手写分支落点分键 → "配额可配"只是注释上的承诺，实际只能直改库。
