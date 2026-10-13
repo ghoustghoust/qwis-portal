@@ -148,6 +148,15 @@ function TimelineRow({ time, children }) {
 export default function HotPage() {
   const { t } = useI18n();
   const [tab, setTab] = useState('featured'); // featured | all | events
+  // 移动端「当前热点」折叠态（用户 10-13：可选择不看）。默认收起（手机首屏空间紧张），选择持久化
+  const [top5Open, setTop5Open] = useState(() => {
+    try { return localStorage.getItem('qwis.hot.top5') === '1'; } catch { return false; }
+  });
+  const toggleTop5 = () => setTop5Open((v) => {
+    const next = !v;
+    try { localStorage.setItem('qwis.hot.top5', next ? '1' : '0'); } catch { /* 隐私模式静默 */ }
+    return next;
+  });
   const [allGroups, setAllGroups] = useState([]); // 分类 pills：当前 tab 下有内容的分组（/api/hot/groups）
   const [category, setCategory] = useState(''); // '' = 全部，否则为分组名（gname）
   const [q, setQ] = useState('');
@@ -358,11 +367,25 @@ export default function HotPage() {
           </div>
         </header>
 
-        {/* 当前热点 Top5（2026-09-14：对齐样图——名次 + 标题 + 右侧热度值；Top3 名次主题色） */}
+        {/* 当前热点 Top5（2026-09-14：对齐样图——名次 + 标题 + 右侧热度值；Top3 名次主题色）
+            移动端（用户 10-13）：收成下拉，可选择不看（localStorage 持久化）；桌面端照旧展开 */}
         {tab !== 'events' && topEvents.length > 0 && (
-          <div className="flex-none t-surface border-b t-border px-6 py-3">
+          <div className="flex-none t-surface border-b t-border px-6 py-3 max-sm:px-4 max-sm:py-2">
             <div className="max-w-[860px] mx-auto">
-              <div className="flex items-center gap-1.5 mb-1.5">
+              {/* 移动端折叠开关行 */}
+              <button
+                type="button"
+                className="sm:hidden w-full flex items-center gap-1.5 text-left"
+                onClick={toggleTop5}
+                aria-expanded={top5Open}
+              >
+                <span className="t-accent inline-flex items-center"><FlameIcon size={14} /></span>
+                <span className="text-[13px] font-semibold t-text">当前热点</span>
+                <span className="flex-1" />
+                <span className="text-[11px] t-muted">{top5Open ? '收起 ▾' : `展开 ${topEvents.length} 条 ▸`}</span>
+              </button>
+              {/* 桌面端原头行 */}
+              <div className="hidden sm:flex items-center gap-1.5 mb-1.5">
                 <span className="t-accent inline-flex items-center"><FlameIcon size={14} /></span>
                 <span className="text-[13px] font-semibold t-text">当前热点</span>
                 <span className="flex-1" />
@@ -370,7 +393,7 @@ export default function HotPage() {
                   完整榜单 →
                 </button>
               </div>
-              <div>
+              <div className={top5Open ? '' : 'max-sm:hidden'}>
                 {topEvents.map((ev, i) => (
                   <button
                     key={ev.rank ?? i}
