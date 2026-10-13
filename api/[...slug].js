@@ -186,10 +186,11 @@ async function handleQuotaGuard(req) {
 // token 读 settings['vercel'].token（管理台配置，回显只出布尔）→ env VERCEL_TOKEN 兜底。
 async function _vercelToken() {
   const v = (await getSetting('vercel', {})) || {};
-  return { token: v.token || process.env.VERCEL_TOKEN || '', project: v.project || process.env.VERCEL_PROJECT_NAME || 'qwis-portal' };
+  return { token: v.token || process.env.VERCEL_TOKEN || '', project: v.project || process.env.VERCEL_PROJECT_NAME || 'qwis-portal', teamId: v.teamId || process.env.VERCEL_TEAM_ID || '' };
 }
-async function _vercelApi(path, { method = 'GET', token } = {}) {
-  const r = await fetch(`https://api.vercel.com${path}`, {
+async function _vercelApi(path, { method = 'GET', token, teamId } = {}) {
+  const sep = path.includes('?') ? '&' : '?';
+  const r = await fetch(`https://api.vercel.com${path}${teamId ? `${sep}teamId=${encodeURIComponent(teamId)}` : ''}`, {
     method,
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     signal: AbortSignal.timeout(15000),
@@ -198,24 +199,49 @@ async function _vercelApi(path, { method = 'GET', token } = {}) {
   if (!r.ok) throw new Error(`vercel ${method} ${path} → HTTP ${r.status}: ${String(d?.error?.message || '').slice(0, 120)}`);
   return d;
 }
+// 项目挂在 team（kwei888）下时，不带 teamId 的调用看到的是个人范围（空列表）——
+// 先用现有 teamId，缺省时列 teams 自动解析（slug 优先匹配 settings/env 的 teamSlug，否则唯一 team），
+// 解析到就写回 settings，之后不再重复解析。
+async function _vercelResolveTeamId({ token, teamId }) {
+  if (teamId) return teamId;
+  const v = (await getSetting('vercel', {})) || {};
+  const teams = await _vercelApi('/v2/teams', { token }).catch(() => null);
+  const list = teams?.teams || [];
+  if (!list.length) return '';
+  const hit = (v.teamSlug && list.find((t) => t.slug === v.teamSlug)) || (list.length === 1 ? list[0] : null);
+  if (hit) {
+    try { await setSetting('vercel', { ...v, teamId: hit.id, teamSlug: hit.slug }); } catch { /* 写失败不阻断本次调用 */ }
+    return hit.id;
+  }
+  return '';
+}
 // 清理口径：保留当前生产部署 + 最近 5 个 READY preview + 7 天内的全部；其余 preview 可删
-async function _vercelDeploymentPlan({ token, project }) {
-  const prod = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&target=production&state=READY&limit=5`, { token });
+async function _vercelDeploymentPlan({ token, project, teamId }) {
+  teamId = await _vercelResolveTeamId({ token, teamId });
+  const prod = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&target=production&state=READY&limit=5`, { token, teamId });
   const prodKeep = new Set((prod.deployments || []).slice(0, 2).map((d) => d.uid)); // 当前 + 上一份生产（回滚余地）
-  const list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token });
-  const all = (list.deployments || []);
+  let list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token, teamId });
+  let all = (list.deployments || []);
+  // 个人范围空且此前没解析出 team：强制解析一次再试（项目挂在 team 下的典型症状）
+  if (!all.length && !teamId) {
+    teamId = await _vercelResolveTeamId({ token, teamId: '' });
+    if (teamId) {
+      list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token, teamId });
+      all = list.deployments || [];
+    }
+  }
   const weekAgo = Date.now() - 7 * 86400e3;
   const previewReady = all.filter((d) => d.target !== 'production' && d.state === 'READY' && !prodKeep.has(d.uid)).sort((a, b) => b.created - a.created);
   const deletable = previewReady.filter((d, i) => i >= 5 && d.created < weekAgo);
-  return { total: all.length, productionKept: prodKeep.size, recentKept: Math.min(5, previewReady.length), deletable: deletable.map((d) => ({ uid: d.uid, created: d.created, url: d.url })) };
+  return { total: all.length, teamId, productionKept: prodKeep.size, recentKept: Math.min(5, previewReady.length), deletable: deletable.map((d) => ({ uid: d.uid, created: d.created, url: d.url })) };
 }
 
 // GET /api/data/vercel/status
 async function handleVercelStatus(req) {
-  const { token, project } = await _vercelToken();
+  const { token, project, teamId } = await _vercelToken();
   if (!token) return jsonOk({ tokenConfigured: false, project });
   try {
-    const plan = await _vercelDeploymentPlan({ token, project });
+    const plan = await _vercelDeploymentPlan({ token, project, teamId });
     return jsonOk({ tokenConfigured: true, project, total: plan.total, deletable: plan.deletable.length });
   } catch (e) {
     return jsonOk({ tokenConfigured: true, project, error: String(e.message).slice(0, 160) });
@@ -224,17 +250,17 @@ async function handleVercelStatus(req) {
 
 // POST /api/data/vercel/deployments/preview — 列出将删的部署（不动手）
 async function handleVercelCleanupPreview(req) {
-  const { token, project } = await _vercelToken();
+  const { token, project, teamId } = await _vercelToken();
   if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token（管理台数据页配置，或 env VERCEL_TOKEN）') };
-  const plan = await _vercelDeploymentPlan({ token, project });
+  const plan = await _vercelDeploymentPlan({ token, project, teamId });
   return jsonOk({ project, total: plan.total, productionKept: plan.productionKept, recentKept: plan.recentKept, deletableCount: plan.deletable.length, deletable: plan.deletable.slice(0, 30) });
 }
 
 // POST /api/data/vercel/deployments/cleanup — 执行删除（逐个删，失败计数不中断）
 async function handleVercelCleanupExecute(req) {
-  const { token, project } = await _vercelToken();
+  const { token, project, teamId } = await _vercelToken();
   if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token') };
-  const plan = await _vercelDeploymentPlan({ token, project });
+  const plan = await _vercelDeploymentPlan({ token, project, teamId });
   let deleted = 0, failed = 0;
   for (const d of plan.deletable) {
     try { await _vercelApi(`/v13/deployments/${d.uid}`, { method: 'DELETE', token }); deleted++; }
