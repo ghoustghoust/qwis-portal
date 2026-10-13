@@ -1391,7 +1391,7 @@ async function runDailyAi() {
   // 正文改到深析阶段按 id 单取 —— 只有过了初筛的幸存者才值得付这个字节数。
   const cfg = await getSetting('daily', {});
   const selectedIds = Array.isArray(cfg.articleSourceIds) ? cfg.articleSourceIds.map(Number) : null;
-  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.published_at, a.score, a.cover, a.translated_title, s.name AS source_name, s.spotlight AS source_spotlight
+  let sql = `SELECT a.id, a.source_id, a.title, a.url, a.author, a.summary, a.published_at, a.score, a.cover, a.translated_title, a.reason, s.name AS source_name, s.spotlight AS source_spotlight
              FROM articles a LEFT JOIN sources s ON s.id = a.source_id
              WHERE a.published_at >= ? AND a.published_at < ? AND s.enabled = 1
                AND ${notNoiseSql('s')}`;
@@ -1411,14 +1411,36 @@ async function runDailyAi() {
     limit: Number.isFinite(AI_LIMIT) ? AI_LIMIT : DAILY_POOL_LIMIT,
   });
   const prescreenRead = prescreen.prescreenStats(clean, valid, perSourceCap);
-  log(`候选 ${valid.length} 篇（宽池 ${prescreenRead.pool} 篇/${prescreenRead.poolSources} 源 → 每源≤${perSourceCap} 后 ${prescreenRead.kept} 篇/${prescreenRead.keptSources} 源），开始两阶段初筛`);
+
+  // 收养已深析条目（10-13，用户"库里 80/90 分的题材还是没被选入"）：quickscore 在每轮采集时
+  // 已对 AI 相关条目跑过完整的 filterArticle+analyzeArticle 并把 score/reason/summary 回写库；
+  // 日报批次对这部分条目重跑初筛+深析是纯方差与配额消耗——10-12 批次实测：初筛 AI 拒 218 条、
+  // 深析 84 次尝试失败 55 次（rate_limited 23），库里已评 74/85 分的条目就这样死在重抽签里。
+  // 判据：带 reason（= 真深析产物；quickscore 对初筛拒绝者只写 ≤40 分占位、无 reason）且分数
+  // 达入报线。收养的条目跳过初筛与深析直接进 analyzed，仍过 L5 权威加权与入报门槛（门槛按
+  // 配置线再审一次，收养线固定用默认 60 只是"免重跑资格"，不等于放行）。
+  // 代价（知情接受）：收养条目的卡片只有 摘要+推荐理由，没有六维细目/关键观点/金句/标签——
+  // quickscore 回写库的只有 score/reason/summary 三个字段。
+  const TRUST_LINE = require('../lib/brief-guards').DAILY_MIN_SCORE;
+  const preAdopt = [];
+  const needPipeline = [];
+  for (const a of valid) {
+    const s = Number(a.score);
+    if (a.reason && Number.isFinite(s) && s >= TRUST_LINE) {
+      preAdopt.push({ ...a, totalScore: Math.round(s) });
+    } else {
+      needPipeline.push(a);
+    }
+  }
+  if (preAdopt.length) log(`收养已深析条目 ${preAdopt.length} 条（score≥${TRUST_LINE} 且带 reason，跳过重滤重析）`);
+  log(`候选 ${valid.length} 篇（宽池 ${prescreenRead.pool} 篇/${prescreenRead.poolSources} 源 → 每源≤${perSourceCap} 后 ${prescreenRead.kept} 篇/${prescreenRead.keptSources} 源；其中收养 ${preAdopt.length}），开始两阶段初筛`);
 
   // 阶段 1：初筛（2026-09-23 P0-2 配套：失败/截断计数落 filterStats，异常发报警——判据唯一实现 lib/filter-observe.js）
   const passed = [];
   let filterFailed = 0, filterRejected = 0, filterTruncated = false;
   const filterWhy = {}; // H35：失败"是多少"不够，还得是"哪一种"（分类口径唯一实现在 lib/filter-observe.js）
   const tFilter0 = Date.now();
-  for (const a of valid) {
+  for (const a of needPipeline) {
     if (Date.now() - tFilter0 > FILTER_BUDGET_MS) { filterTruncated = true; log('初筛段预算耗尽，截断'); break; }
     const f = await _ai.filterArticle({ title: a.title, source: a.source_name, category: null, summary: a.summary });
     if (f.failed) { filterFailed++; require('../lib/filter-observe').tallyFilterFailWhy(filterWhy, f.reason); }
@@ -1426,7 +1448,7 @@ async function runDailyAi() {
     else filterRejected++;
   }
   const filterMs = Date.now() - tFilter0;
-  log(`初筛通过 ${passed.length}/${valid.length}（失败 ${filterFailed}、剔除 ${filterRejected}、耗时 ${(filterMs / 60000).toFixed(1)}min），开始深析`
+  log(`初筛通过 ${passed.length}/${needPipeline.length}（失败 ${filterFailed}、剔除 ${filterRejected}、耗时 ${(filterMs / 60000).toFixed(1)}min），开始深析`
     + (filterFailed ? `；失败因由 ${Object.entries(filterWhy).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}=${v}`).join(' ')}` : ''));
   // "失败但没全挂"此前是盲区：全挂有 _ai 的 consecFail≥3 报警，部分失败谁都不说——
   // 用户 2026-09-23 裁定：这类异常发报警渠道给管理者（飞书），不上前台页面
@@ -1434,7 +1456,7 @@ async function runDailyAi() {
     const fa = require('../lib/filter-observe').filterAlert({ attempted: passed.length + filterRejected, failed: filterFailed, truncated: filterTruncated, why: filterWhy });
     if (fa.alert) {
       log(`初筛异常：${fa.text}`);
-      await require('../api/_alerts').aiFailed(`早报初筛异常：${fa.text}。候选 ${valid.length} 篇，本期评分偏松`);
+      await require('../api/_alerts').aiFailed(`早报初筛异常：${fa.text}。候选 ${needPipeline.length} 篇，本期评分偏松`);
     }
   } catch (e) { log(`初筛异常报警失败（不阻断）: ${e.message}`); }
 
@@ -1468,7 +1490,9 @@ async function runDailyAi() {
     analyzed.push({ ...a, ...r });
   }
   const analyzeMs = Date.now() - tAnalyze0;
-  log(`深析完成 ${analyzed.length} 篇（耗时 ${(analyzeMs / 60000).toFixed(1)}min），组装栏目`);
+  // 收养条目在深析之后、视频入报之前合流：与重跑产物同池过 L5 权威加权与入报门槛
+  analyzed.push(...preAdopt);
+  log(`深析完成 ${analyzed.length - preAdopt.length} 篇新析 + 收养 ${preAdopt.length} 篇（深析耗时 ${(analyzeMs / 60000).toFixed(1)}min），组装栏目`);
 
   // T4-3 视频入报（2026-09-13）：窗口内视频取最近 20 条直接深析并入同池；
   // id 加 v 前缀防与文章 id 冲突（report 条目 kind='video'，前端点开走外链）
@@ -1734,7 +1758,7 @@ async function runDailyAi() {
     // attempted 与 rejected 必须同时落库（09-24 实测教训）：过去只有 passed/failed，而"失败放行"的条目
     //   既在 passed 里又被计入 failed → `passed+failed` 是重复计数，"这一期到底尝试筛了多少篇"从库里算不出来，
     //   单篇耗时只能给区间。真值在运行时是 passed.length + filterRejected，此前只喂给报警、没入账（W14 同族）。
-    filterStats: { candidates: valid.length, attempted: passed.length + filterRejected, passed: passed.length, rejected: filterRejected, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated,
+    filterStats: { candidates: valid.length, adopted: preAdopt.length, attempted: passed.length + filterRejected, passed: passed.length, rejected: filterRejected, analyzed: analyzed.length, failed: filterFailed, truncated: filterTruncated,
       // H35（09-24）：failed 只有总数 ⇒ "34% 失败"拍不出该抬 maxTokens 还是该加退避。
       // failWhy 按 lib/filter-observe.js 的唯一分类把每次失败落到一个键上，不变式 Σ(failWhy) == failed（锁 E5 在运行时钉、F7/F8 在单元层钉）。
       failWhy: filterWhy },
