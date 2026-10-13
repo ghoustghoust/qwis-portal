@@ -558,7 +558,7 @@ async function writeHeartbeat(mode, stats) {
 }
 
 // ─── 模式：collect ───
-async function runCollect() {
+async function runCollect({ skipAiTail = false } = {}) { // skipAiTail：额度闸 light/hard 时 quickscore 等 AI 尾段让路
   const now = nowIso();
   const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, failures: [] };
 
@@ -604,7 +604,8 @@ async function runCollect() {
 
   log(`采集完成: 成功 ${stats.success} / 失败 ${stats.failed} / 跳过 ${stats.skipped} / 新增 ${stats.articles} 篇 / 耗时 ${sec}s`);
   await runHotEventsCache(); // 热搜事件预聚合（云端读层主路径；失败不阻断采集退出码）
-  await runQuickScore(); // 精选即时补分（六维评分原来只有早晚报批次才跑，白天精选无今日内容——用户 2026-09-14 验收发现）
+  if (skipAiTail) log('额度闸：quickscore 本轮让路（保采集主链与日报额度）');
+  else await runQuickScore(); // 精选即时补分（六维评分原来只有早晚报批次才跑，白天精选无今日内容——用户 2026-09-14 验收发现）
   await writeHeartbeat('collect', stats);
   // 失败留痕（云端表，监控页展示用——与 writeHeartbeat 的 slim failures 同批）
   try {
@@ -2551,21 +2552,47 @@ async function runTranslate() {
     const migrated = await axes.migrateAxes({ qAll, qRun, getSetting, setSetting: putSetting });
     if (migrated) log('四轴迁移完成：focus→spotlight + subscription.ids 初始化');
   } catch (e) { log(`四轴迁移失败（不阻断采集）: ${e.message}`); }
+
+  // 额度保命闸（用户 10-13："reads 又要满了，不预防好数据库又会直接死亡"）：批次起跑前读
+  // 云端判定（lib/quota-guard 唯一实现，30min 缓存）。light≥90%：跳过 quickscore/翻译等非必要 AI 段；
+  // hard≥96%：日报 AI 段也跳过（出关键词档），周刊整轮让路——只保采集主链与读层。
+  // 闸读不到（端点挂/无凭据）= 不降档，按正常跑并出声。
+  let quotaLevel = 'none';
   try {
-    if (MODE === 'collect') await runCollect();
+    const g = await require('../lib/quota-guard').fetchQuotaGuard({ base: require('../lib/cloud-site').CLOUD_SITE, key: process.env.COLLECT_KEY });
+    quotaLevel = g?.level || 'none';
+    if (quotaLevel !== 'none') {
+      log(`额度闸 ${quotaLevel}：reads ${g.pctReads}%、烧速 ${g.dailyBurnM ?? '?'}M/天、距重置 ${g.daysLeft} 天${g.projectedExhaustion?.beforeReset ? `、预计 ${g.projectedExhaustion.date} 耗尽（早于重置）` : ''}`);
+    }
+  } catch (e) { log(`额度闸读取失败（按正常档跑）: ${e.message}`); }
+  const quotaLight = quotaLevel === 'light' || quotaLevel === 'hard';
+  const quotaHard = quotaLevel === 'hard';
+
+  try {
+    if (MODE === 'collect') await runCollect({ skipAiTail: quotaLight });
     else if (MODE === 'cleanup') await runCleanup();
     else if (MODE === 'daily') await runDaily();
-    else if (MODE === 'daily-ai') await runDailyAiGuarded();
-    else if (MODE === 'weekly') await runWeeklyGuarded();
+    else if (MODE === 'daily-ai') {
+      if (quotaHard) { log('额度闸 hard：日报 AI 段让路，本轮出关键词档'); await runDaily(); }
+      else await runDailyAiGuarded();
+    }
+    else if (MODE === 'weekly') {
+      if (quotaHard) { log('额度闸 hard：周刊本轮让路（宁缺毋滥，额度先保命）'); }
+      else await runWeeklyGuarded();
+    }
     else if (MODE === 'mybrief') {
       // 手动重生成我的早报（独立分析订阅源窗口，不跑全量深析）
-      await runMyBrief([]);
+      if (quotaHard) { log('额度闸 hard：我的早报 AI 段让路'); }
+      else await runMyBrief([]);
       // 2026-09-18：阅读足迹此前只挂在 daily-ai 分支（runDailyAi 尾部），单独跑 mybrief 时
       // reading.digest 永不刷新 → 我的早报「阅读足迹」卡整块消失（线上实测该键根本不存在）。
       // 独立 try/catch：足迹是附属卡，失败不该让早报重生成算失败。
       try { await buildReadingDigest(); } catch (e) { log(`阅读足迹失败（已隔离）: ${e.message}`); }
     }
-    else if (MODE === 'translate') await runTranslate();
+    else if (MODE === 'translate') {
+      if (quotaLight) { log('额度闸：翻译本轮整轮让路（保采集与日报）'); }
+      else await runTranslate();
+    }
     else { console.error(`未知模式: ${MODE}`); process.exit(1); }
   } catch (err) {
     console.error(`Fatal: ${err.message}`);

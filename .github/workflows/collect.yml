@@ -6,7 +6,7 @@
 #
 # Secrets 要求（Settings → Secrets and variables → Actions）：
 #   TURSO_DATABASE_URL / TURSO_AUTH_TOKEN  Turso 连接
-#   COLLECT_KEY                            仅保留给 Vercel 备份端点（手动触发用）
+#   COLLECT_KEY                            Vercel 备份端点 + runner 读额度闸（/api/quota/guard）
 #
 # Vercel 端 api/collect.js / api/daily-generate.js 保留为手动备份，不再是主链路。
 name: collect
@@ -72,6 +72,7 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           # 2026-09-15 修：collect 尾部 quickscore 需 AI Key（缺 key 时评分静默全灭，精选断更根因）
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
         run: node tools/collect-turso.js collect
 
       - name: Translate pending English articles → Turso
@@ -79,6 +80,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
         run: node tools/collect-turso.js translate
 
   # ─── 日报生成（北京时间 09:03；仅 schedule——cron-job.org 每15min的 dispatch 只跑采集，防日报15min刷一份/快照15min推一个commit） ───
@@ -147,6 +149,7 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           # 2026-09-15 修：晚间主批此前缺 AI Key——深析全灭降级为关键词版（无评分产出）
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
           # H27②：窗口守卫只对"无 mode 的 dispatch 轮"生效；显式 mode 补跑（GH_INPUT_MODE）可强制重跑
           WINDOW_GUARD: '1'
           GH_INPUT_MODE: ${{ github.event.inputs.mode }}
@@ -174,6 +177,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
         run: node tools/collect-turso.js daily-ai
 
   # ─── 我的早报重生成（无 cron，仅 dispatch mode=mybrief）───
@@ -200,6 +204,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
         run: node tools/collect-turso.js mybrief
 
   # ─── 精选周刊（北京周五 18:03；schedule 或 dispatch）───
@@ -249,6 +254,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          COLLECT_KEY: ${{ secrets.COLLECT_KEY }}
           # 窗口守卫只对"无 mode 的 dispatch 轮"生效；显式 mode=weekly 补跑（GH_INPUT_MODE）可强制重跑
           WINDOW_GUARD: '1'
           GH_INPUT_MODE: ${{ github.event.inputs.mode }}

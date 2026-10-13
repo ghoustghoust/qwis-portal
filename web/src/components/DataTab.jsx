@@ -77,6 +77,10 @@ export default function DataTab() {
   const [days, setDays] = useState(7);  // F6 Bug#1: 默认 7 天而非 90（符合 spec 要求）
   const [savedDays, setSavedDays] = useState(null); // 已落库的值，用来判断有没有未保存改动
   const [preview, setPreview] = useState(null); // 清理预览计数
+  // Vercel 旧部署清理（10-13 用户：功能存储逼近上限）：token 配置 + 预览 + 执行
+  const [vercel, setVercel] = useState(null); // { tokenConfigured, project, total, deletable, error }
+  const [vercelTokenInput, setVercelTokenInput] = useState('');
+  const [vercelPreview, setVercelPreview] = useState(null);
   const [settings, setSettings] = useState(null); // 加载当前设置
 
   // force=true 绕 90s 缓存强拉（刷新按钮用；挂载首渲染吃缓存瞬时呈现）
@@ -118,10 +122,48 @@ export default function DataTab() {
     }
   }, []);
 
+  // Vercel 旧部署清理（10-13）：状态读取 + token 保存 + 预览 + 执行
+  const loadVercel = useCallback(async () => {
+    try { setVercel(await api.get('/api/data/vercel/status')); } catch { setVercel(null); }
+  }, []);
+  const saveVercelToken = async () => {
+    const t = vercelTokenInput.trim();
+    if (!t) return;
+    setBusy('vercel-token');
+    try {
+      await api.put('/api/settings', { vercel: { token: t } });
+      toast('Vercel token 已保存');
+      setVercelTokenInput('');
+      loadVercel();
+    } catch (e) { toast('保存失败: ' + e.message); }
+    setBusy('');
+  };
+  const previewVercel = async () => {
+    setBusy('vercel-preview');
+    try {
+      const d = await api.post('/api/data/vercel/deployments/preview', {});
+      setVercelPreview(d);
+    } catch (e) { toast('预览失败: ' + e.message); }
+    setBusy('');
+  };
+  const executeVercel = async () => {
+    if (!vercelPreview?.deletableCount) return;
+    if (!window.confirm(`确认删除 ${vercelPreview.deletableCount} 个旧 preview 部署？（保留当前生产 + 上一份生产 + 最近 5 个 preview + 7 天内的；不可恢复，代码与 git 历史不受影响）`)) return;
+    setBusy('vercel-exec');
+    try {
+      const d = await api.post('/api/data/vercel/deployments/cleanup', {});
+      toast(`已删除 ${d.deleted} 个旧部署${d.failed ? `，失败 ${d.failed}` : ''}`);
+      setVercelPreview(null);
+      loadVercel();
+    } catch (e) { toast('清理失败: ' + e.message); }
+    setBusy('');
+  };
+
   useEffect(() => {
     loadStats();
     loadSnaps();
     loadRetentionSettings();  // F6 Bug#1: 初始化时加载用户设置的保留天数
+    loadVercel();
   }, [loadStats, loadSnaps, loadRetentionSettings]);
 
   const doSnapshot = async () => {
@@ -334,6 +376,60 @@ export default function DataTab() {
         </div>
       </section>
 
+      {/* Vercel 旧部署清理（用户 10-13：功能存储 7.5GB/10GB 逼近硬上限，超了会拒绝新部署——
+          占用实体=每次部署的函数包随旧部署累积；dashboard 用量页没有稳定公开 API 可搬，管它的来源） */}
+      <section className="card p-5 mt-6">
+        <h3 className="text-sm font-semibold t-text">Vercel 旧部署清理</h3>
+        <p className="mt-1 text-xs t-muted">
+          删除旧的 preview 部署以释放功能存储。保留：当前生产 + 上一份生产（回滚余地）+ 最近 5 个 preview + 7 天内的全部。
+          删除只影响 Vercel 上的历史线上副本，代码与 git 历史不受影响；被删的旧部署不能再一键回滚（回滚可重新部署任意 commit）。
+          {vercel?.tokenConfigured === false && (
+            <><br /><span style={{ color: 'var(--accent)' }}>未配置 Vercel Access Token——到 vercel.com → 头像 → Account Settings → Tokens 创建（账号级），粘贴到下面保存。</span></>
+          )}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
+          {vercel?.tokenConfigured ? (
+            <span className="text-[12px] t-muted">项目 {vercel.project || 'qwis-portal'}{typeof vercel.total === 'number' ? ` · 部署 ${vercel.total} 个` : ''}{typeof vercel.deletable === 'number' ? ` · 可删 ${vercel.deletable} 个` : ''}{vercel.error ? ` · ${vercel.error}` : ''}</span>
+          ) : (
+            <>
+              <input
+                type="password"
+                className="input !w-72"
+                placeholder="粘贴 Vercel Access Token（只出是否已配置）"
+                value={vercelTokenInput}
+                onChange={(e) => setVercelTokenInput(e.target.value)}
+              />
+              <button className="btn-ghost" disabled={!!busy || !vercelTokenInput.trim()} onClick={saveVercelToken}>
+                {busy === 'vercel-token' ? '保存中…' : '保存 Token'}
+              </button>
+            </>
+          )}
+          {vercel?.tokenConfigured && (
+            <>
+              <button className="btn-ghost" disabled={!!busy} onClick={previewVercel}>
+                {busy === 'vercel-preview' ? '统计中…' : '预览将删部署'}
+              </button>
+              {vercelPreview?.deletableCount > 0 && (
+                <button className="btn-ghost" style={{ color: 'var(--red)', borderColor: 'var(--red)' }} disabled={!!busy} onClick={executeVercel}>
+                  {busy === 'vercel-exec' ? '删除中…' : `执行删除 ${vercelPreview.deletableCount} 个`}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+        {vercelPreview && (
+          <div className="mt-3 card t-surface2 px-4 py-3 text-[13px]">
+            共 {vercelPreview.total} 个部署；将删 <b className="t-text">{vercelPreview.deletableCount}</b> 个旧 preview
+            （保留：生产 {vercelPreview.productionKept} 个 + 最近 preview {vercelPreview.recentKept} 个 + 7 天内全部）。
+            {Array.isArray(vercelPreview.deletable) && vercelPreview.deletable.length > 0 && (
+              <div className="mt-2 text-[11px] t-muted">
+                将删示例：{vercelPreview.deletable.slice(0, 5).map((d) => `${(d.url || d.uid).slice(0, 40)}`).join('、')}{vercelPreview.deletable.length > 5 ? ` 等 ${vercelPreview.deletable.length} 个` : ''}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
       {/* 内容清理 */}
       <section className="card p-5 mt-6">
         <h3 className="text-sm font-semibold t-text">内容清理</h3>
@@ -434,6 +530,34 @@ export default function DataTab() {
                 );
               })}
             </div>
+            {/* 额度判定（lib/quota-guard 唯一实现）：距重置/烧速/预计耗尽日——用户 10-13"reads 又要满了" */}
+            {stats.tursoUsage.guard && (
+              <div className="mt-3 pt-3 border-t hairline text-[12px] leading-relaxed">
+                <span className="t-muted">距重置（每月 1 日）：</span>
+                <b className="t-text tabular-nums">{stats.tursoUsage.guard.daysLeft} 天</b>
+                {stats.tursoUsage.guard.dailyBurnM != null && (
+                  <>
+                    <span className="t-muted">　·　烧速：</span>
+                    <b className="t-text tabular-nums">{stats.tursoUsage.guard.dailyBurnM}M reads/天</b>
+                  </>
+                )}
+                {stats.tursoUsage.guard.projectedExhaustion && (
+                  <>
+                    <span className="t-muted">　·　预计耗尽：</span>
+                    <b className={stats.tursoUsage.guard.projectedExhaustion.beforeReset ? 'text-[var(--red)]' : 'text-[var(--green)]'}>
+                      {stats.tursoUsage.guard.projectedExhaustion.beforeReset
+                        ? `${stats.tursoUsage.guard.projectedExhaustion.date}（早于重置！）`
+                        : '重置前不会耗尽'}
+                    </b>
+                  </>
+                )}
+                {stats.tursoUsage.guard.level !== 'none' && (
+                  <span className="ml-2 pill !py-0 !px-1.5 !text-[10px]" style={{ color: 'var(--red)', borderColor: 'var(--red)' }}>
+                    保命闸 {stats.tursoUsage.guard.level} 生效中
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         )}
         {/* 5.3 数据库体积趋势（基于快照历史） */}

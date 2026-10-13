@@ -133,9 +133,115 @@ function requireAuth(req) {
     if (/^\/api\/hot\/events\/\d+$/.test(path)) return null;
     if (/^\/api\/mybrief\/archive\/\d+$/.test(path)) return null;
   }
+  // runner 机器端点：自带 COLLECT_KEY 鉴权（handler 内校验），不走 JWT——runner 没有登录态
+  if (path === '/api/quota/guard' && req.method === 'GET') return null;
   const user = verifyAuth(req);
   if (!user) return { status: 401, body: jsonErr('Unauthorized') };
   return null;
+}
+
+// GET /api/quota/guard — runner 保命闸读数（COLLECT_KEY 或 JWT 双通道）。
+// 零 DB 读放大：判定结果落 settings['turso.quotaGuard']，30min 内直接回缓存；
+// 平台凭据只在 Vercel env，runner 不直连 Turso 平台 API（ADR-12 同步面不扩大）。
+async function handleQuotaGuard(req) {
+  const keyOk = process.env.COLLECT_KEY && String(req.query?.key || '') === process.env.COLLECT_KEY;
+  if (!keyOk && !verifyAuth(req)) return { status: 403, body: jsonErr('Forbidden') };
+  try {
+    const stored = (await getSetting('turso.quotaGuard', null)) || null;
+    if (stored && Date.now() - Date.parse(stored.at) < 30 * 60e3) return jsonOk({ guard: stored, cached: true });
+    const qg = require('../lib/quota-guard');
+    const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+    const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
+    if (!r) return jsonOk({ guard: stored, cached: !!stored, note: 'no-platform-creds-or-fetch-failed' });
+    return jsonOk({ guard: r.guard, cached: false });
+  } catch (e) {
+    const stored = (await getSetting('turso.quotaGuard', null).catch(() => null)) || null;
+    return jsonOk({ guard: stored, cached: !!stored, note: String(e.message || '').slice(0, 120) });
+  }
+}
+
+// GET /api/quota/guard — runner 保命闸读数（COLLECT_KEY 或 JWT 双通道）。
+// 零 DB 读放大：判定结果落 settings['turso.quotaGuard']，30min 内直接回缓存；
+// 平台凭据只在 Vercel env，runner 不直连 Turso 平台 API（ADR-12 同步面不扩大）。
+async function handleQuotaGuard(req) {
+  const keyOk = process.env.COLLECT_KEY && String(req.query?.key || '') === process.env.COLLECT_KEY;
+  if (!keyOk && !verifyAuth(req)) return { status: 403, body: jsonErr('Forbidden') };
+  try {
+    const stored = (await getSetting('turso.quotaGuard', null)) || null;
+    if (stored && Date.now() - Date.parse(stored.at) < 30 * 60e3) return jsonOk({ guard: stored, cached: true });
+    const qg = require('../lib/quota-guard');
+    const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+    const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
+    if (!r) return jsonOk({ guard: stored, cached: !!stored, note: 'no-platform-creds-or-fetch-failed' });
+    return jsonOk({ guard: r.guard, cached: false });
+  } catch (e) {
+    const stored = (await getSetting('turso.quotaGuard', null).catch(() => null)) || null;
+    return jsonOk({ guard: stored, cached: !!stored, note: String(e.message || '').slice(0, 120) });
+  }
+}
+
+// ─── Vercel 旧部署清理（用户 10-13：功能存储 7.5GB/10GB 逼近上限，超了会拒绝新部署）───
+// Vercel 用量仪表盘那页（功能存储/CDN/函数调用）没有稳定公开 REST 口径可搬——能管的
+// 是它的实体来源：每次部署的函数包随旧部署累积。清旧 preview 部署 = 释放功能存储。
+// token 读 settings['vercel'].token（管理台配置，回显只出布尔）→ env VERCEL_TOKEN 兜底。
+async function _vercelToken() {
+  const v = (await getSetting('vercel', {})) || {};
+  return { token: v.token || process.env.VERCEL_TOKEN || '', project: v.project || process.env.VERCEL_PROJECT_NAME || 'qwis-portal' };
+}
+async function _vercelApi(path, { method = 'GET', token } = {}) {
+  const r = await fetch(`https://api.vercel.com${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(15000),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`vercel ${method} ${path} → HTTP ${r.status}: ${String(d?.error?.message || '').slice(0, 120)}`);
+  return d;
+}
+// 清理口径：保留当前生产部署 + 最近 5 个 READY preview + 7 天内的全部；其余 preview 可删
+async function _vercelDeploymentPlan({ token, project }) {
+  const prod = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&target=production&state=READY&limit=5`, { token });
+  const prodKeep = new Set((prod.deployments || []).slice(0, 2).map((d) => d.uid)); // 当前 + 上一份生产（回滚余地）
+  const list = await _vercelApi(`/v6/deployments?app=${encodeURIComponent(project)}&limit=100`, { token });
+  const all = (list.deployments || []);
+  const weekAgo = Date.now() - 7 * 86400e3;
+  const previewReady = all.filter((d) => d.target !== 'production' && d.state === 'READY' && !prodKeep.has(d.uid)).sort((a, b) => b.created - a.created);
+  const deletable = previewReady.filter((d, i) => i >= 5 && d.created < weekAgo);
+  return { total: all.length, productionKept: prodKeep.size, recentKept: Math.min(5, previewReady.length), deletable: deletable.map((d) => ({ uid: d.uid, created: d.created, url: d.url })) };
+}
+
+// GET /api/data/vercel/status
+async function handleVercelStatus(req) {
+  const { token, project } = await _vercelToken();
+  if (!token) return jsonOk({ tokenConfigured: false, project });
+  try {
+    const plan = await _vercelDeploymentPlan({ token, project });
+    return jsonOk({ tokenConfigured: true, project, total: plan.total, deletable: plan.deletable.length });
+  } catch (e) {
+    return jsonOk({ tokenConfigured: true, project, error: String(e.message).slice(0, 160) });
+  }
+}
+
+// POST /api/data/vercel/deployments/preview — 列出将删的部署（不动手）
+async function handleVercelCleanupPreview(req) {
+  const { token, project } = await _vercelToken();
+  if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token（管理台数据页配置，或 env VERCEL_TOKEN）') };
+  const plan = await _vercelDeploymentPlan({ token, project });
+  return jsonOk({ project, total: plan.total, productionKept: plan.productionKept, recentKept: plan.recentKept, deletableCount: plan.deletable.length, deletable: plan.deletable.slice(0, 30) });
+}
+
+// POST /api/data/vercel/deployments/cleanup — 执行删除（逐个删，失败计数不中断）
+async function handleVercelCleanupExecute(req) {
+  const { token, project } = await _vercelToken();
+  if (!token) return { status: 400, body: jsonErr('未配置 Vercel Access Token') };
+  const plan = await _vercelDeploymentPlan({ token, project });
+  let deleted = 0, failed = 0;
+  for (const d of plan.deletable) {
+    try { await _vercelApi(`/v13/deployments/${d.uid}`, { method: 'DELETE', token }); deleted++; }
+    catch (e) { failed++; console.error(`[vercel-cleanup] 删除失败 ${d.uid}: ${e.message}`); }
+  }
+  await auditRecord('vercel.cleanup', { detail: { project, deleted, failed, deletableCount: plan.deletable.length } });
+  return jsonOk({ deleted, failed, deletableCount: plan.deletable.length });
 }
 
 // ─── 路由处理器 ───
@@ -1197,6 +1303,8 @@ async function handleSettings(req) {
     prescreen: { perSourceCap: require('../lib/prescreen').prescreenCapOf(prescreenCapRaw) },
     bilibili: { cookieConfigured: credSet.has('bilibili') },
     douyin: { cookieConfigured: credSet.has('douyin') },
+    // Vercel token 脱敏（同 queue.token 口径）：本端点公开可读，凭据绝不回显
+    vercel: { tokenConfigured: !!(await getSetting('vercel', {})).token || !!process.env.VERCEL_TOKEN },
     wechat: {
       lastSyncAt: wxLastSync,
       lastResult: wxLastResult,
@@ -2373,19 +2481,15 @@ async function handleCleanupCandidates(req) {
 async function handleDashboard(req) {
   const dayStartIso = beijingDayStartIso(Date.now());
   const weekAgo = weekAgoIso(Date.now());
-  // Turso 平台用量（用户 10-06：仪表盘也要——与 handleDataStats 同一份调用，env TURSO_ORG+TURSO_API_TOKEN）
+  // Turso 平台用量（用户 10-06：仪表盘也要——10-13 起改走 lib/quota-guard 唯一实现：
+  // 同一份调用顺手落每日快照与额度判定（距重置/烧速/预计耗尽日），读层与 runner 共用判定结果）
   let tursoUsage = null;
   if (process.env.TURSO_ORG && process.env.TURSO_API_TOKEN) {
     try {
-      const r = await fetch(`https://api.turso.tech/v1/organizations/${process.env.TURSO_ORG}/usage`, {
-        headers: { Authorization: `Bearer ${process.env.TURSO_API_TOKEN}` },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (r.ok) {
-        const d = await r.json();
-        const u = d?.organization?.usage;
-        if (u) tursoUsage = { rowsRead: u.rows_read, rowsWritten: u.rows_written, storageBytes: u.storage_bytes, quota: { rowsRead: 500e6, rowsWritten: 10e6, storageBytes: 5 * 1024 ** 3 } };
-      }
+      const qg = require('../lib/quota-guard');
+      const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+      const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
+      if (r) tursoUsage = { ...r.usage, quota: qg.QUOTA, guard: r.guard };
     } catch { /* 拉不到不阻断 */ }
   }
   const notNoiseJoin = notNoiseJoinSql({ item: 'a' });
@@ -2753,27 +2857,14 @@ async function handleDataStats(req) {
   tableNames.forEach((t, i) => { tables[t] = counts[i].c; });
   // Turso 平台用量（用户 10-06 提供 Management API 凭据）：Reads/Writes/Storage 如图
   // 凭据走 env TURSO_ORG + TURSO_API_TOKEN（不是数据库连接串——平台级只读用量）。
+  // 10-13 起改走 lib/quota-guard 唯一实现：顺手落每日快照 + 额度判定（距重置/烧速/预计耗尽日）
   let tursoUsage = null;
-  const org = process.env.TURSO_ORG;
-  const apiToken = process.env.TURSO_API_TOKEN;
-  if (org && apiToken) {
+  if (process.env.TURSO_ORG && process.env.TURSO_API_TOKEN) {
     try {
-      const r = await fetch(`https://api.turso.tech/v1/organizations/${org}/usage`, {
-        headers: { Authorization: `Bearer ${apiToken}` },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (r.ok) {
-        const d = await r.json();
-        const u = d?.organization?.usage;
-        if (u) {
-          tursoUsage = {
-            rowsRead: u.rows_read, rowsWritten: u.rows_written,
-            storageBytes: u.storage_bytes, databases: u.databases,
-            // 免费层配额（Starter）写死——Turso 文档口径，超了会显示红
-            quota: { rowsRead: 500e6, rowsWritten: 10e6, storageBytes: 5 * 1024 ** 3 },
-          };
-        }
-      }
+      const qg = require('../lib/quota-guard');
+      const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+      const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
+      if (r) tursoUsage = { ...r.usage, quota: qg.QUOTA, guard: r.guard };
     } catch { /* 拉不到不阻断本端点 */ }
   }
   const out = jsonOk({ sizeBytes: null, sizeNote: 'Turso 云端库无文件体积概念', tables, tursoUsage });
@@ -3705,6 +3796,10 @@ async function dispatch(req) {
     if (path === '/api/articles/since') return handleArticlesSince(req);
     if (path === '/api/articles') return handleArticles(req);
     if (path === '/api/health/status') return handleHealthStatus(req);
+    if (path === '/api/quota/guard') return handleQuotaGuard(req);
+    if (path === '/api/data/vercel/status') return handleVercelStatus(req);
+    if (path === '/api/data/vercel/deployments/preview' && method === 'POST') return handleVercelCleanupPreview(req);
+    if (path === '/api/data/vercel/deployments/cleanup' && method === 'POST') return handleVercelCleanupExecute(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
     if (path === '/api/sources/contribution' && method === 'GET') return handleSourceContribution(req);
   if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);
