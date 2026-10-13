@@ -68,6 +68,51 @@ let _consecFail = 0;
 let _providerOverride = null;
 function _setProviderOverride(fn) { _providerOverride = fn; } // tests only
 
+// ═══ 多账号池（T6-3/T7-2，用户 2026-10-13 拍板"账号当前额度限制用完自动轮切"）═══
+// 配置源唯一：settings['ai'].apiKeys（字符串数组）；env AGNES_API_KEYS（逗号分隔）仅作兜底；
+// 单键 cfg.apiKey / AGNES_API_KEY 向后兼容。池子只许这一处定义（T6-3 边界：禁止三端各写一份降级）。
+const QUOTA_EXHAUSTED_RE = /insufficient[_\s-]?quota|quota exceeded|exceeded\s+(the\s+)?(current\s+)?quota|余额不足|额度已?用完|欠费|billing|balance/i;
+const KEY_EXHAUST_TTL_MS = 12 * 3600e3; // 供应商重置节律未公开，12h 后留一条探测活口
+const keyFp = (k) => String(k || '').slice(-6); // 指纹=尾 6 位，日志/统计/界面只出不脱敏全文
+
+function resolveAgnesKeys(cfg) {
+  const fromSettings = Array.isArray(cfg.apiKeys) ? cfg.apiKeys.map((s) => String(s || '').trim()).filter(Boolean) : [];
+  if (fromSettings.length) return fromSettings;
+  const fromEnv = String(process.env.AGNES_API_KEYS || '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (fromEnv.length) return fromEnv;
+  const single = cfg.apiKey || process.env.AGNES_API_KEY;
+  return single ? [single] : [];
+}
+
+function isQuotaExhausted(err) {
+  if (!err || ![402, 403, 429].includes(err.status)) return false;
+  return QUOTA_EXHAUSTED_RE.test(`${err.message || ''} ${err.body || ''}`);
+}
+
+// 耗尽登记表：settings['ai.keyExhausted'] = { 指纹: 解除时刻ISO }。跨进程共享（runner/云端读同一库），
+// 过期的键在读时即清——读法本身就是重置探针。
+async function keyExhaustedMap() {
+  const m = (await getSetting('ai.keyExhausted', {})) || {};
+  const now = Date.now();
+  const live = {};
+  for (const [fp, until] of Object.entries(m)) {
+    const t = Date.parse(until);
+    if (Number.isFinite(t) && t > now) live[fp] = until;
+  }
+  return live;
+}
+
+async function markKeyExhausted(fp, why) {
+  try {
+    const m = await keyExhaustedMap();
+    if (m[fp]) return false; // 已登记过的不重复报警（同一账号每个耗尽周期只报一次）
+    m[fp] = new Date(Date.now() + KEY_EXHAUST_TTL_MS).toISOString();
+    await setSetting('ai.keyExhausted', m);
+    try { await require('./_alerts').aiFailed(`AI 账号(尾号 …${fp})额度耗尽：${why}。已轮切下一账号，12h 后自动重试该账号`); } catch { /* 告警失败不阻断 */ }
+    return true;
+  } catch { return false; }
+}
+
 async function _rawChat(p, messages, opts) {
   if (_providerOverride) return _providerOverride(p, messages, opts);
   const resp = await fetch(`${p.base}/chat/completions`, {
@@ -81,8 +126,12 @@ async function _rawChat(p, messages, opts) {
     signal: AbortSignal.timeout(opts.timeoutMs || 30000),
   });
   if (!resp.ok) {
+    // 额度耗尽的判定依据在响应体里（insufficient_quota/余额不足…），只带 status 会把
+    // "每分钟限流"和"账号没额度"混成一类（前者退避即可，后者必须轮切账号）
+    const errBody = await resp.text().catch(() => '');
     const err = new Error(`${p.name} HTTP ${resp.status}`);
     err.status = resp.status;
+    err.body = String(errBody).slice(0, 300);
     throw err;
   }
   const data = await resp.json();
@@ -105,10 +154,12 @@ async function _rawChat(p, messages, opts) {
 // （settings-plane.md §三：库里那份优先于环境变量）。
 function effectiveAiConfig(cfg = {}) {
   const norm = (b) => String(b || '').replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  const pool = resolveAgnesKeys(cfg);
   return {
     enabled: !!cfg.enabled,
-    hasKey: !!(cfg.apiKey || process.env.AGNES_API_KEY),
-    keySource: cfg.apiKey ? 'settings' : (process.env.AGNES_API_KEY ? 'env' : 'none'),
+    hasKey: pool.length > 0,
+    keySource: Array.isArray(cfg.apiKeys) && cfg.apiKeys.length ? 'settings-pool' : (cfg.apiKey ? 'settings' : (process.env.AGNES_API_KEY || process.env.AGNES_API_KEYS ? 'env' : 'none')),
+    poolSize: pool.length,
     model: cfg.model || process.env.AGNES_MODEL || 'agnes-2.5-flash',
     modelSource: cfg.model ? 'settings' : 'env',
     apiBase: norm(cfg.apiBase || process.env.AGNES_API_BASE || 'https://apihub.agnes-ai.com/v1'),
@@ -119,14 +170,17 @@ function effectiveAiConfig(cfg = {}) {
 function _providerChain(cfg) {
   const chain = [];
   const eff = effectiveAiConfig(cfg);
-  if (eff.hasKey) {
+  // 多账号：每个 key 是链上独立一位（名字带序号，ai.stats 的 byProvider 自动按账号分列——
+  // T6-3 要的"每账号调用量读数"不建新设施，长在现有统计键上）
+  resolveAgnesKeys(cfg).forEach((key, i) => {
     chain.push({
-      name: 'agnes',
-      key: eff.keySource === 'settings' ? cfg.apiKey : process.env.AGNES_API_KEY,
+      name: eff.poolSize > 1 ? `agnes#${i + 1}` : 'agnes',
+      key,
       base: eff.apiBase,
       model: eff.model,
+      fp: keyFp(key),
     });
-  }
+  });
   if (process.env.DEEPSEEK_API_KEY) {
     chain.push({ name: 'deepseek', key: process.env.DEEPSEEK_API_KEY, base: 'https://api.deepseek.com', model: process.env.DEEPSEEK_MODEL || 'deepseek-chat' });
   }
@@ -135,8 +189,16 @@ function _providerChain(cfg) {
 
 async function _aiChatInner(messages, opts = {}) {
   const cfg = (await getSetting('ai', {})) || {};
-  const chain = _providerChain(cfg);
-  if (!chain.length) throw new Error('未配置 AI API Key');
+  const chainAll = _providerChain(cfg);
+  if (!chainAll.length) throw new Error('未配置 AI API Key');
+  // 轮切（T6-3）：已知耗尽的账号本轮整链跳过（读时过期即自动复活——读法就是重置探针）
+  const exhausted = await keyExhaustedMap().catch(() => ({}));
+  const chain = chainAll.filter((p) => !p.fp || !exhausted[p.fp]);
+  if (!chain.length) {
+    const msg = `全部 AI 账号额度耗尽（${chainAll.length} 个账号均在豁免期内），本次调用失败不降级`;
+    try { await require('./_alerts').aiFailed(msg); } catch { /* 告警失败不阻断 */ }
+    return { ok: false, error: msg };
+  }
   let lastErr = null;
   for (const p of chain) {
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -149,6 +211,11 @@ async function _aiChatInner(messages, opts = {}) {
         return { ok: true, reply: out, provider: p.name, model: opts.model || p.model };
       } catch (err) {
         lastErr = err;
+        // 额度耗尽（402/403/429 + 配额语义）：登记该账号并立刻轮切——退避重试对它无意义
+        if (p.fp && isQuotaExhausted(err)) {
+          await markKeyExhausted(p.fp, `HTTP ${err.status}`);
+          break;
+        }
         // 仅 429/5xx 重试，4xx 直接换供应商
         if (!(err.status === 429 || (err.status >= 500)) ) break;
       }
@@ -550,6 +617,7 @@ async function generateTheme(items) {
 
 module.exports = {
   aiChat, translateText, filterArticle, loadGlossary, growGlossary, loadPrompt, aiStats, effectiveAiConfig,
+  resolveAgnesKeys, keyFp, keyExhaustedMap, markKeyExhausted, // T6-3 多账号池：管理台读池状态用
   refineWithGlossary, refinePass, analyzeArticle, generateTheme, generateThemeDetailed, pickThemeReply, generateWeeklySummary, generateWeeklyMagazine, generateWeeklyEditorNote, sanitizeTranslationReply, isThinkingLikeReply,
   setDb, // 宿主注入共享 libsql 连接（省一个 client）
   STATS_MAX, // 批次5：/api/ai/usage 的口径标签用（统计环上限，单一来源在本文件）

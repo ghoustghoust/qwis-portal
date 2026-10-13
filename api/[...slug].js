@@ -1712,12 +1712,16 @@ async function handleAiConfig(req) {
   if (req.method === 'GET') {
     const cfg = await getSetting('ai', {});
     const apiKey = cfg.apiKey || process.env.AGNES_API_KEY || '';
+    // 多账号池（T6-3）：只出指纹与耗尽状态，绝不回显完整 key
+    const poolKeys = _ai.resolveAgnesKeys(cfg);
+    const exhausted = await _ai.keyExhaustedMap().catch(() => ({}));
     return jsonOk({
       apiKeyConfigured: !!apiKey,
       apiBase: cfg.apiBase || process.env.AGNES_API_BASE || AI_DEFAULT_BASE,
       model: cfg.model || process.env.AGNES_MODEL || AI_DEFAULT_MODEL,
       // H28（用户拍 F1）：节流间隔现值回显（独立键 ai.minIntervalMs，消费方 lib/ai-throttle）
       minIntervalMs: await getSetting('ai.minIntervalMs', 4000),
+      keyPool: poolKeys.map((k, i) => ({ no: i + 1, fp: _ai.keyFp(k), exhaustedUntil: exhausted[_ai.keyFp(k)] || null })),
     });
   }
   if (req.method === 'PUT') {
@@ -1738,6 +1742,20 @@ async function handleAiConfig(req) {
     if (body.model !== undefined && String(body.model).trim() !== (cur.model || '')) { next.model = String(body.model).trim(); changed.push('model'); }
     if (body.apiBase !== undefined && String(body.apiBase).trim() !== (cur.apiBase || '')) { next.apiBase = String(body.apiBase).trim(); changed.push('apiBase'); }
     if (body.apiKey && body.apiKey.trim() && body.apiKey.trim() !== (cur.apiKey || '')) { next.apiKey = body.apiKey.trim(); changed.push('apiKey'); }
+    // T6-3 多账号池：apiKeys 数组整池替换（留空数组 = 清池回退单键）；写池即清耗尽表（新池重新计周期）
+    if (body.apiKeys !== undefined) {
+      const arr = Array.isArray(body.apiKeys) ? body.apiKeys : String(body.apiKeys).split(/[\n,;]+/);
+      const keys = arr.map((s) => String(s || '').trim()).filter(Boolean);
+      for (const k of keys) {
+        if (!/^sk-[A-Za-z0-9]{10,}$/.test(k)) return { status: 400, body: jsonErr(`账号池里的 key 形态不对（须 sk- 开头的完整密钥）：…${k.slice(-6)}`) };
+      }
+      const prevKeys = Array.isArray(cur.apiKeys) ? cur.apiKeys : [];
+      if (JSON.stringify(keys) !== JSON.stringify(prevKeys)) {
+        next.apiKeys = keys;
+        changed.push(`apiKeys(${keys.length})`);
+        await setSetting('ai.keyExhausted', {});
+      }
+    }
     // B51：ai.features 曾在这里被写、又在 GET 里回显给同一个界面，全库没有任何行为读它——假开关已随 39-2 摘除
     if (!changed.length) return jsonOk({ ok: true, changed: [] });
     await setSetting('ai', next);

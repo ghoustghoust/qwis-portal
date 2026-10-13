@@ -31,7 +31,7 @@ function latencyBand(ms) {
 
 export default function AiSettingsTab() {
   const [config, setConfig] = useState(null);
-  const [form, setForm] = useState({ apiKey: '', apiBase: '', model: '', minIntervalMs: '' });
+  const [form, setForm] = useState({ apiKey: '', apiBase: '', model: '', minIntervalMs: '', apiKeys: '' });
   const [provider, setProvider] = useState('openai');
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -47,7 +47,7 @@ export default function AiSettingsTab() {
     try {
       const data = await api.get('/api/ai/config');
       setConfig(data);
-      setForm({ apiKey: '', apiBase: data.apiBase || '', model: data.model || '', minIntervalMs: String(data.minIntervalMs ?? '') });
+      setForm({ apiKey: '', apiBase: data.apiBase || '', model: data.model || '', minIntervalMs: String(data.minIntervalMs ?? ''), apiKeys: '' });
       const hit = PROVIDERS.find((p) => p.base && p.base === (data.apiBase || ''));
       setProvider(hit ? hit.id : 'openai');
     } catch (err) {
@@ -76,13 +76,14 @@ export default function AiSettingsTab() {
       const payload = { apiBase: form.apiBase, model: form.model };
       if (form.apiKey.trim()) payload.apiKey = form.apiKey;
       if (String(form.minIntervalMs).trim() !== '') payload.minIntervalMs = Number(form.minIntervalMs); // H28：节流间隔（≥1000ms）
+      if (form.apiKeys.trim()) payload.apiKeys = form.apiKeys; // T6-3：账号池（每行一个，整池替换）
       const r = await api.put('/api/ai/config', payload);
       if (r.changed && r.changed.length === 0) {
         setMessage('配置无变化，未写库');
       } else {
         setMessage(`✅ 已保存并探测通过（provider=${r.probe?.provider}，model=${r.probe?.model}）`);
       }
-      setForm((prev) => ({ ...prev, apiKey: '' }));
+      setForm((prev) => ({ ...prev, apiKey: '', apiKeys: '' }));
       loadConfig();
       loadUsage(); // 对抗审查 D4 附注：保存探测本身记一条 chat 统计，立即刷新用量
     } catch (err) {
@@ -166,6 +167,36 @@ export default function AiSettingsTab() {
               onChange={(e) => setForm(prev => ({ ...prev, apiKey: e.target.value }))}
               placeholder={config.apiKeyConfigured ? '已配置，留空保持不变' : '输入 API Key'}
               className="input"
+            />
+          </div>
+          {/* 多账号池（T6-3，用户 10-13）：额度耗尽自动轮切；池状态只显示指纹与耗尽标记 */}
+          <div>
+            <label className="block text-xs t-muted mb-1">
+              账号池（每行一个 Key，保存后整池替换；单 Key 字段与池并存时池优先）
+              {Array.isArray(config?.keyPool) && config.keyPool.length > 1 && (
+                <span className="text-[var(--green)]">（当前 {config.keyPool.length} 个账号）</span>
+              )}
+            </label>
+            {Array.isArray(config?.keyPool) && config.keyPool.length > 0 && (
+              <div className="mb-1.5 flex flex-wrap gap-1.5">
+                {config.keyPool.map((k) => (
+                  <span
+                    key={k.no}
+                    className="pill !cursor-default text-[10px]"
+                    style={k.exhaustedUntil ? { color: 'var(--red)', borderColor: 'var(--red)' } : undefined}
+                    title={k.exhaustedUntil ? `额度耗尽，${k.exhaustedUntil.slice(0, 16).replace('T', ' ')} 后自动重试` : '正常'}
+                  >
+                    账号{k.no} …{k.fp}{k.exhaustedUntil ? '（耗尽中）' : ''}
+                  </span>
+                ))}
+              </div>
+            )}
+            <textarea
+              value={form.apiKeys}
+              onChange={(e) => setForm(prev => ({ ...prev, apiKeys: e.target.value }))}
+              placeholder={Array.isArray(config?.keyPool) && config.keyPool.length > 0 ? '池已配置，留空保持不变；要换就整池粘贴（每行一个 sk-…）' : '每行一个 API Key（sk-…），额度耗尽自动轮切下一账号'}
+              className="input font-mono !text-xs"
+              rows={3}
             />
           </div>
           <div>
