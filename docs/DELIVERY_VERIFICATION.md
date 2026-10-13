@@ -3,7 +3,7 @@
 > 最后更新：2026-10-03（收敛轮：dispatch 改按工作流文件名、掩码函数锚去符号化、两个时间窗口径拆清）
 > 适用对象：任何接手本项目的 Agent / 开发者。
 > 目的：在**无法直连线上环境**（GFW）或**只有本地代码**的情况下，依然能对
-> `https://qwis-intel.vercel.app` 生产环境做有效验证，保证线上线下一致性。
+> `https://news.ghoustlab.com` 生产环境做有效验证，保证线上线下一致性。
 
 ---
 
@@ -134,7 +134,7 @@ cd /c/Users/17619/.cache/qwis-diag/sec && node set-secrets.js <PAT>
 export https_proxy=$PROXY http_proxy=$PROXY
 # Windows Git Bash 的 curl(schannel) 走代理时必报 CRYPT_E_REVOCATION_OFFLINE，
 # 必须加 --ssl-no-revoke：
-curl -sS --ssl-no-revoke --max-time 60 "https://qwis-intel.vercel.app/api/status"
+curl -sS --ssl-no-revoke --max-time 60 "https://news.ghoustlab.com/api/status"
 ```
 
 ### 3.2 关键检查点（按怀疑对象逐层验证）
@@ -228,7 +228,7 @@ const db=createClient({url:process.env.TURSO_DATABASE_URL,authToken:process.env.
 4. **日志**：确认 job 输出里的统计行（如 `采集完成: 成功 N / 新增 M 篇`）
 5. **库验**：§4 查 `created_at` 新鲜度 + 心跳
 6. **端验**：§3.2 全套端点（带代理 + `--ssl-no-revoke`）
-7. **页面**：浏览器开 `https://qwis-intel.vercel.app/reader/`（本机需挂代理），强刷 Ctrl+F5
+7. **页面**：浏览器开 `https://news.ghoustlab.com/reader/`（本机需挂代理），强刷 Ctrl+F5
 8. **文档**：改动若涉及架构/凭据/坑，同步 `ARCHITECTURE.md`、`docs/HANDOVER.md`、本文档
 
 > 本文档不收录"某年某月的实战案例"。某一轮当时读到什么、怎么一步步查出来的，属于变更史——

@@ -13,7 +13,7 @@
 | 端 | 形态 | 职责 | 存储 |
 |---|---|---|---|
 | **本地**（`server/`，本机端口） | Express + 本地库驱动，PM2 或手动 | 全功能开发与灾备；**需登录态的采集（抖音）与整库文件备份/恢复只在这里** | 本地库文件 |
-| **Vercel**（`api/`，https://qwis-intel.vercel.app） | Serverless 读层 + 管理后台 | 面向用户的阅读与管理界面 | Turso（东京） |
+| **Vercel**（`api/`，https://news.ghoustlab.com） | Serverless 读层 + 管理后台 | 面向用户的阅读与管理界面 | Turso（东京） |
 | **GH runner**（`tools/collect-turso.js` + `.github/workflows/collect.yml`） | 按固定节奏的定时任务 | 采集 / 早报（双档）/ 我的早报 / 周刊 / 翻译 / 静态导出物 / 清理，直写 Turso | Turso |
 
 **B 站在 runner 上采，不是本地专属**（09-26 核·代码 + 线上源表）；逐项覆盖以 §1 为准，本表头不作穷举。

@@ -146,7 +146,7 @@ CLI 手动部署仍可用作兜底，但有两条红线：**禁止拉取平台�
 #    里面有最近运行时间与统计；距现在 > 1 小时 = 链路断了
 
 # ③ 看线上最新数据时间（需代理，口径见 docs/DELIVERY_VERIFICATION.md）
-curl "https://qwis-intel.vercel.app/api/articles?limit=1&sort=new&include_hot=1"
+curl "https://news.ghoustlab.com/api/articles?limit=1&sort=new&include_hot=1"
 #    最新一条的创建时间应在 1 小时内
 
 # ④ 手动触发采集（不带 mode 只跑采集那一步；清理档在这里选不到）

@@ -5,11 +5,11 @@
 >
 > 聚合 RSS、微信公众号、B站、抖音、X/Twitter、热榜、播客等多源信息，由云端定时链路采集入库，自动生成每日早报 / 个性化我的早报 / AI 策展精选周刊，配源库治理、熔断自愈、多端推送报警与中英对照翻译。
 >
-> **生产地址**：<https://qwis-intel.vercel.app>（读层 + 管理后台）
+> **生产地址**：<https://news.ghoustlab.com>（读层 + 管理后台；备用域 https://qwis-intel.vercel.app 同部署）
 
 [![License](https://img.shields.io/badge/license-Private-blue)](#)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)](#)
-[![Deploy](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://qwis-intel.vercel.app)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://news.ghoustlab.com)
 
 本文是**面向使用者的系统说明书**。三种事实各有唯一承载处，本文一律只指路、不复制：
 
