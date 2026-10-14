@@ -93,8 +93,16 @@ test('PR4 跨端行为锁（39-6 AC1）：一条落库覆盖键改的是云端�
     await c.execute('CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)');
     const _ai = require('../api/_ai.js');
     const before = await _ai.loadPrompt('translate');
-    assert.equal(before, fs.readFileSync(path.join(ROOT, 'prompts', 'translate.md'), 'utf8'),
-      '没有覆盖键时应取 prompts/translate.md');
+    // 锁预期更新（2026-10-14，用户点单修复"思考碎片入标题"）：prompt 文件首行的内部 H1 标注头
+    // 会遭模型复读（4 条 translated_title 被字面「精翻 prompt（translate-polish，轮 3）」污染），
+    // loadPrompt 发送前剥开头 H1 是三道防线的第①道——预期从"逐字节文件原文"改为"文件原文剥 H1"，
+    // 并钉住剥离行为本身；锁的本意（覆盖键优先级，见下方两支断言）不变。
+    const raw = fs.readFileSync(path.join(ROOT, 'prompts', 'translate.md'), 'utf8');
+    assert.equal(before, raw.replace(/^#\s+[^\n]*\n+/, ''),
+      '没有覆盖键时应取 prompts/translate.md（剥掉内部 H1 标注头后）');
+    if (/^#\s/.test(raw)) {
+      assert.notEqual(before, raw, '文件带 H1 内部头时 loadPrompt 必须剥掉（模型复读防线①）');
+    }
     // 统一后的键名（三端都读这一个）：写进去 → 同一条链路立刻变
     await c.execute({
       sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)',
