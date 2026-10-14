@@ -1,0 +1,46 @@
+{
+  "key": "daily.columns",
+  "backedUpAt": "2026-10-14T00:03:22.727Z",
+  "reason": "B10: 库存值 spotlight/fallback 两栏 desc 为空（10-04 补 desc 前的旧存值），restoreDefaultColumns 官方路径覆盖前备份",
+  "value": [
+    {
+      "id": "c1",
+      "name": "培训课程发布",
+      "desc": "新公开的课程、训练营与社群招募",
+      "keywords": [
+        "课程",
+        "训练营",
+        "社群",
+        "招募",
+        "培训"
+      ]
+    },
+    {
+      "id": "spotlight",
+      "name": "重点更新",
+      "special": "spotlight",
+      "desc": ""
+    },
+    {
+      "id": "c2",
+      "name": "AI技术",
+      "desc": "模型、Agent 与工程链路的技术动向",
+      "keywords": [
+        "Codex",
+        "Claude",
+        "豆包",
+        "Agent",
+        "模型",
+        "自动化",
+        "RAG",
+        "MCP"
+      ]
+    },
+    {
+      "id": "fallback",
+      "name": "其它重要",
+      "special": "fallback",
+      "desc": ""
+    }
+  ]
+}
