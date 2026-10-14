@@ -461,9 +461,10 @@ async function updateSourceError(sourceId, extra, errMsg, sourceType, systemic) 
   // 阈值放宽到 10，避免把活源误杀；真死频道 10 连跪后也照停。
   // 阈值唯一实现在 lib/source-breaker.js（三端一致，坑 #35 / ISSUES H14）
   const threshold = require('../lib/source-breaker').breakerThreshold(sourceType);
+  // Q7 自动恢复依赖：熔断时刻落 frozenAt——**每次熔断都刷新**（2026-10-14 自愈审计修复：旧代码
+  // if(!frozenAt) 只在无值时设，"恢复→再失败→再熔断"循环里计时起点停在旧值，48h/7d 冷却语义漂移）
   if (r && r.fail_count >= threshold && r.enabled !== 0) {
-    // Q7 自动恢复依赖：熔断时刻落 frozenAt（历史冻结源由 cleanup 用 lastErrorAt 兜底）
-    if (!extra.frozenAt) extra.frozenAt = nowIso();
+    extra.frozenAt = nowIso();
     await qRun('UPDATE sources SET enabled=0, extra=? WHERE id=?', [JSON.stringify(extra), sourceId]);
     return { autoPaused: true };
   }
@@ -561,6 +562,35 @@ async function writeHeartbeat(mode, stats) {
 async function runCollect({ skipAiTail = false } = {}) { // skipAiTail：额度闸 light/hard 时 quickscore 等 AI 尾段让路
   const now = nowIso();
   const stats = { total: 0, success: 0, failed: 0, skipped: 0, articles: 0, failures: [] };
+
+  // 熔断源自动恢复（T4-1 Q7）：冻结超 48h 自动重新启用（错峰），连续自动恢复 3 次仍熔断则冷却延长到 7 天。
+  // 2026-10-14 自愈审计：这段原挂每日 cleanup——GH 对每日 cron 调度严重不可靠（7 天里 schedule 一次没落在
+  // 预定点，最近一次还延迟 3.5h），恢复周期实际随机天级；且 cleanup 与 collect 是并行 job，恢复写回曾被
+  // 采集批的失败处理读改写覆盖。搬到采集批开头：与失败处理同批串行消除竞态，15min 高频兜住 GH 丢点。
+  let resumed = 0;
+  try {
+    const frozen = await qAll(`SELECT id, name, type, extra, last_fetched_at FROM sources WHERE enabled=0 AND status='error'`);
+    const nowMs = Date.now();
+    for (const s of frozen) {
+      let extra = {};
+      try { extra = JSON.parse(s.extra || '{}'); } catch { /* 无 extra */ }
+      if (extra.mergedInto || extra.retired) continue; // 合并/退役源不自动恢复
+      const frozenAt = Date.parse(extra.frozenAt || extra.lastErrorAt || s.last_fetched_at || '') || 0;
+      if (!frozenAt) continue;
+      const resumeCount = Number(extra.resumeCount || 0);
+      const waitMs = resumeCount >= 3 ? 7 * 86400e3 : 48 * 3600e3;
+      if (nowMs - frozenAt < waitMs) continue;
+      extra.resumeCount = resumeCount + 1;
+      extra.frozenAt = nowIso(); // 重置计时起点（下次若再熔断从新时刻算）
+      await qRun(
+        `UPDATE sources SET enabled=1, status='ok', fail_count=0, extra=?, next_fetch_at=? WHERE id=?`,
+        [JSON.stringify(extra), new Date(nowMs + Math.floor(Math.random() * 6 * 3600e3)).toISOString(), s.id]
+      );
+      resumed++;
+      log(`自动恢复熔断源 #${s.id} ${String(s.name).slice(0, 24)}（第 ${extra.resumeCount} 次）`);
+    }
+    if (resumed) log(`自动恢复 ${resumed} 个到期熔断源（探活重试，失败将按各自阈值重新熔断）`);
+  } catch (e) { log(`自动恢复失败（不阻断）: ${e.message}`); }
 
   const sources = await qAll(
     `SELECT * FROM sources WHERE enabled=1 AND ${UNSUPPORTED_TYPES} AND (next_fetch_at IS NULL OR next_fetch_at <= ?) ORDER BY next_fetch_at ASC LIMIT ?`,
@@ -860,31 +890,6 @@ async function runCleanup() {
       log(`保留天数清理: ${readout.retentionDays} 天前未读未标记文章删除 ${retentionDeleted} 条`);
     }
   }
-
-  // 3) 熔断源自动恢复（T4-1 Q7）：冻结超 48h 自动重新启用（错峰），连续自动恢复 3 次仍熔断则冷却延长到 7 天
-  let resumed = 0;
-  try {
-    const frozen = await qAll(`SELECT id, name, type, extra, last_fetched_at FROM sources WHERE enabled=0 AND status='error'`);
-    const now = Date.now();
-    for (const s of frozen) {
-      let extra = {};
-      try { extra = JSON.parse(s.extra || '{}'); } catch { /* 无 extra */ }
-      if (extra.mergedInto || extra.retired) continue; // 合并/退役源不自动恢复
-      const frozenAt = Date.parse(extra.frozenAt || extra.lastErrorAt || s.last_fetched_at || '') || 0;
-      if (!frozenAt) continue;
-      const resumeCount = Number(extra.resumeCount || 0);
-      const waitMs = resumeCount >= 3 ? 7 * 86400e3 : 48 * 3600e3;
-      if (now - frozenAt < waitMs) continue;
-      extra.resumeCount = resumeCount + 1;
-      extra.frozenAt = nowIso(); // 重置计时起点（下次若再熔断从新时刻算）
-      await qRun(
-        `UPDATE sources SET enabled=1, status='ok', fail_count=0, extra=?, next_fetch_at=? WHERE id=?`,
-        [JSON.stringify(extra), new Date(now + Math.floor(Math.random() * 6 * 3600e3)).toISOString(), s.id]
-      );
-      resumed++;
-      log(`自动恢复熔断源 #${s.id} ${String(s.name).slice(0, 24)}（第 ${extra.resumeCount} 次）`);
-    }
-  } catch (e) { log(`自动恢复失败（不阻断）: ${e.message}`); }
 
   // 3b) 系统性错误自动降频（H14 框架内，10-05）：同类型同错误指纹 ≥10 个（单一类型占比 ≥80%）
   //  = 平台级问题（如 YouTube 官方 RSS 全链 404）——对簇内启用中的源自动降频到 6h，避免按默认频率
