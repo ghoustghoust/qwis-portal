@@ -1081,7 +1081,8 @@ async function runWeekly() {
           .sort((x, y) => (y.score || 0) - (x.score || 0))
           .slice(0, 20)
           .map((a, i) => ({ rank: i + 1, id: a.id, title: a.translated_title || a.title, original_title: a.translated_title ? a.title : undefined, url: a.url, source: a.source_name, cover: a.cover || null, totalScore: null, weeklyTheme: classifyWeeklyTheme(a) }));
-        const pubDegraded = await saveWeekly(null, degraded, true, t0);
+        // 降级分支在导语调用之前 return，themeSkip 尚未产生（TDZ）——传 null，降级产物不落归因键
+        const pubDegraded = await saveWeekly(null, degraded, true, t0, null, null, null);
         return { degraded: true, count: degraded.length, published: !!pubDegraded };
       }
       continue;
@@ -1133,11 +1134,11 @@ async function runWeekly() {
       }
     }
   }
-  const published = await saveWeekly(theme, items, false, t0, weeklySummary, magazine);
+  const published = await saveWeekly(theme, items, false, t0, weeklySummary, magazine, themeSkip);
   return { count: items.length, theme, weeklySummary, magazine: !!magazine, published };
 }
 
-async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, magazine = null) {
+async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, magazine = null, themeSkip = null) {
   // 2026-09-18 发布守卫：条目不足一律不写库。saveWeekly 是无条件 INSERT OR REPLACE，
   // 一次候选为 0 / AI 全灭的跑批会把上一期好内容整体抹掉（线上实测当前唯一一期即 09-17 手工降级产物），
   // 且降级分支只在深析连败时触发，items=[] 时连 degraded 都写 false → 空白周刊且无任何报警。
@@ -1174,6 +1175,9 @@ async function saveWeekly(theme, items, degraded, t0, weeklySummary = null, maga
   const report = {
     issue, dateStart, dateEnd, theme, degraded: degradedFlag,
     spineMissing: spine.spineMissing, spineMissingParts: spine.missing, weeklySummary,
+    // themeSkip 由调用方传入（H30 归因）：2026-10-14 修复——此前这里引用了不存在的裸变量，
+    // theme 为空（导语截断 ai_failed）时 ReferenceError 整批 Fatal，10-09 周刊轮因此崩掉、
+    // 第 4 期晚产 2.5 天（靠每 15min 重试轮直到周日某次 theme 侥幸成功）；theme 成功时走 {} 分支从未暴露。
     ...(theme ? {} : { themeSkip }), // H30：与日报同形状的导语归因（有导语时不留噪声键）
     ...(magazine ? { coverTheme: magazine.coverTheme, editorNote: magazine.editorNote || null, storylines: magazine.storylines } : {}),
     generatedAt: nowIso(), elapsedMin: Math.round((Date.now() - t0) / 6000) / 10,
@@ -2608,7 +2612,13 @@ async function runTranslate() {
     // 2026-09-18 扩覆盖面：此前只认 'daily'（非 AI 兜底批），真正产 AI 内容的
     // daily-ai 与 weekly 跑批失败时一条报警都没有——周刊整周静默断更就是这么来的。
     if (MODE === 'daily' || MODE === 'daily-ai' || MODE === 'weekly' || MODE === 'mybrief') {
-      try { await require('../api/_alerts').dailyFailed(`${MODE}: ${err.message}`); } catch { /* 隔离 */ }
+      // 周刊失败用独立事件与标题——曾把 weekly 批 Fatal 发成「📅 日报生成失败」，
+      // 10-09 周刊出刊失败报警送达但被当日报事忽略，整周断更没人追
+      if (MODE === 'weekly') {
+        try { await require('../api/_alerts').dispatch('weekly_failed', { title: '📅 周刊生成失败', text: `本周出刊失败：${err.message}。窗口内每 15min 重试轮会继续尝试；连续失败请查 Actions 的 weekly job。` }); } catch { /* 隔离 */ }
+      } else {
+        try { await require('../api/_alerts').dailyFailed(`${MODE}: ${err.message}`); } catch { /* 隔离 */ }
+      }
     }
     // B101 观测：批次**失败时更要**留下这条读数（连着失败的那几天正是最需要看待删量的时候）。
     // 放在 process.exit 之前 —— exit 会立刻终止进程，finally 不会跑。
