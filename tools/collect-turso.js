@@ -852,6 +852,7 @@ function lastCollectAtOf(hb) {
 }
 
 async function runCleanup() {
+  let resumed = 0; // 2026-10-14 恢复段搬去采集批开头后，cleanup 不再执行恢复；读数面保持形状（恒 0）
   // 删除谓词的**唯一实现**在 `lib/retention.js`（spec43 D1/B102）：本文件与 `api/collect.js`、
   // `server/services/datamgr.js` 三端共用同一份条件，改一处即改三处，不再各抄一遍。
   const { cutoffIso, deleteSql, HOTLIST_DAYS } = require('../lib/retention');
