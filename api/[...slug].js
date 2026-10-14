@@ -150,7 +150,7 @@ async function handleQuotaGuard(req) {
     const stored = (await getSetting('turso.quotaGuard', null)) || null;
     if (stored && Date.now() - Date.parse(stored.at) < 30 * 60e3) return jsonOk({ guard: stored, cached: true });
     const qg = require('../lib/quota-guard');
-    const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+    const alertFn = (text, opts) => _alerts.dispatch(opts && opts.urgent ? 'quota_critical' : 'quota_guard', { title: opts && opts.urgent ? '🚨【紧急】平台额度临界' : 'Turso 额度告警', text }).catch(() => {});
     const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
     if (!r) return jsonOk({ guard: stored, cached: !!stored, note: 'no-platform-creds-or-fetch-failed' });
     return jsonOk({ guard: r.guard, cached: false });
@@ -170,7 +170,7 @@ async function handleQuotaGuard(req) {
     const stored = (await getSetting('turso.quotaGuard', null)) || null;
     if (stored && Date.now() - Date.parse(stored.at) < 30 * 60e3) return jsonOk({ guard: stored, cached: true });
     const qg = require('../lib/quota-guard');
-    const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+    const alertFn = (text, opts) => _alerts.dispatch(opts && opts.urgent ? 'quota_critical' : 'quota_guard', { title: opts && opts.urgent ? '🚨【紧急】平台额度临界' : 'Turso 额度告警', text }).catch(() => {});
     const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
     if (!r) return jsonOk({ guard: stored, cached: !!stored, note: 'no-platform-creds-or-fetch-failed' });
     return jsonOk({ guard: r.guard, cached: false });
@@ -262,6 +262,108 @@ async function handleVercelStatus(req) {
   } catch (e) {
     return jsonOk({ tokenConfigured: true, project, error: String(e.message).slice(0, 160) });
   }
+}
+
+// GET /api/data/boundary — 四平台边界读数（10-14 边界管理：Turso/Vercel/GitHub/cron-job.org）。
+// 每条边界给 {used, limit, pct, source}：source=api（平台真实回传）/估算（推算，非平台口径）/hidden（平台不回传，须去 dashboard）。
+// 凭据：Turso 走 env（平台级只读，ADR-12 不扩大）；Vercel 走 settings['vercel']；
+// GitHub/cron-job 走 settings['boundary.*']（管理台粘贴，未配置=该平台标"未配置"，不报错）。
+async function handleBoundary(req) {
+  const out = { ok: true, at: nowIso(), platforms: [] };
+  const pct = (used, limit) => (used != null && limit ? Math.round((used / limit) * 1000) / 10 : null);
+  // ── Turso：复用保命闸快照（30min 缓存），10-14 起写入/存储与读取同级管理
+  try {
+    let guard = (await getSetting('turso.quotaGuard', null)) || null;
+    if (!guard || Date.now() - Date.parse(guard.at) >= 30 * 60e3) {
+      const qg = require('../lib/quota-guard');
+      const alertFn = (text, opts) => _alerts.dispatch(opts && opts.urgent ? 'quota_critical' : 'quota_guard', { title: opts && opts.urgent ? '🚨【紧急】平台额度临界' : 'Turso 额度告警', text }).catch(() => {});
+      const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
+      guard = (r && r.guard) || guard;
+    }
+    const q = require('../lib/quota-guard').QUOTA;
+    const u = (guard && guard.usage) || {};
+    out.platforms.push({
+      id: 'turso', name: 'Turso', configured: !!guard,
+      critical: !!(guard && guard.critical),
+      items: [
+        { key: 'rows_read', label: '行读取 / 月', used: u.rowsRead, limit: q.rowsRead, pct: guard && guard.pctReads, source: 'api', note: guard ? `档位 ${guard.level}，距重置 ${guard.daysLeft} 天${guard.projectedExhaustion && guard.projectedExhaustion.beforeReset ? `，按烧速 ${guard.projectedExhaustion.date} 耗尽（早于重置）` : ''}` : '未配置凭据或拉取失败' },
+        { key: 'rows_written', label: '行写入 / 月', used: u.rowsWritten, limit: q.rowsWritten, pct: guard && guard.pctWrites, source: 'api', note: '超限=采集写库全失败（硬拒绝服务）' },
+        { key: 'storage', label: '存储', used: u.storageBytes, limit: q.storageBytes, pct: guard && guard.pctStorage, source: 'api', note: '超限=写库被拒' },
+      ],
+      note: '超限=Turso 硬拒绝服务（读层/采集同时瘫痪）——reads 已接保命闸自动降档；三维度 ≥95% 走 quota_critical 紧急报警（6h 重报）',
+    });
+  } catch (e) {
+    out.platforms.push({ id: 'turso', name: 'Turso', configured: false, error: String(e.message || '').slice(0, 120) });
+  }
+  // ── Vercel：deployments 权限可读（部署生命周期可管理）；配额用量平台不回传（如实标注）
+  try {
+    const { token, project, teamId } = await _vercelToken();
+    if (!token) throw new Error('未配置 token');
+    let plan;
+    const cache = (await getSetting('boundary.vercelCache', null)) || null;
+    if (cache && cache.plan && Date.now() - Date.parse(cache.at) < 10 * 60e3) plan = cache.plan;
+    if (!plan) {
+      const p = await _vercelDeploymentPlan({ token, project, teamId });
+      plan = { total: p.total, hasMore: p.hasMore, deletable: p.deletable.length, productionKept: p.productionKept };
+      await setSetting('boundary.vercelCache', { at: nowIso(), plan });
+    }
+    const EST_MB = 14; // 10-13 实测：542 部署≈7.52GB → 每部署函数包 ≈14MB（估算口径，非平台回传）
+    out.platforms.push({
+      id: 'vercel', name: 'Vercel', configured: true,
+      items: [
+        { key: 'deployments', label: '部署留存（函数包占用主体）', used: plan.total, limit: 700, pct: pct(plan.total, 700), source: '估算', note: `函数包存储 ≈${Math.round(plan.total * EST_MB / 1024 * 10) / 10}GB / 10GB 硬限（每部署 ≈${EST_MB}MB 估算）；超硬限=拒绝新部署。当前可删 ${plan.deletable} 个` },
+        { key: 'bandwidth', label: '带宽 / 函数执行 / 构建时长', used: null, limit: null, pct: null, source: 'hidden', note: '平台不回传用量 API——去 vercel.com dashboard 用量页看（Hobby：带宽 100GB/月等）' },
+      ],
+      actions: [{ label: '清理旧部署', path: '/api/data/vercel/deployments/preview', note: '保留最近 2 个生产 + 7 天内，其余可删' }],
+    });
+  } catch (e) {
+    out.platforms.push({ id: 'vercel', name: 'Vercel', configured: false, error: String(e.message || '').slice(0, 120) });
+  }
+  // ── GitHub：PAT 走 settings['boundary.github'] 或 env；公开库 Actions 免费（边界宽松）
+  try {
+    const bc = (await getSetting('boundary.github', {})) || {};
+    const ghToken = bc.token || process.env.GITHUB_TOKEN || '';
+    const repo = bc.repo || 'ghoustghoust/qwis-portal';
+    if (!ghToken) throw new Error('未配置 PAT（settings boundary.github.token）');
+    const H = { Authorization: 'Bearer ' + ghToken };
+    const g = await Promise.all([
+      fetch('https://api.github.com/rate_limit', { headers: H, signal: AbortSignal.timeout(8000) }).then((x) => x.json()),
+      fetch('https://api.github.com/repos/' + repo, { headers: H, signal: AbortSignal.timeout(8000) }).then((x) => x.json()),
+    ]);
+    const core = g[0] && g[0].resources && g[0].resources.core;
+    const repoInfo = g[1] || {};
+    const sizeGB = repoInfo.size ? Math.round(repoInfo.size / 1024 * 10) / 10 : null;
+    out.platforms.push({
+      id: 'github', name: 'GitHub', configured: true,
+      items: [
+        { key: 'api_rate', label: 'API 调用配额 / 小时', used: core ? core.used : null, limit: core ? core.limit : 5000, pct: core ? Math.round((core.used / core.limit) * 1000) / 10 : null, source: 'api', note: core ? `重置于 ${new Date(core.reset * 1000).toISOString().slice(11, 16)} UTC` : '' },
+        { key: 'repo_size', label: '仓库体积', used: sizeGB, limit: 5, pct: pct(sizeGB, 5), source: 'api', note: repoInfo.private === false ? '公开仓库：Actions 免费不限时长（边界宽松）' : '私有仓库：Actions 有月度分钟配额' },
+      ],
+    });
+  } catch (e) {
+    out.platforms.push({ id: 'github', name: 'GitHub', configured: false, error: String(e.message || '').slice(0, 120) });
+  }
+  // ── cron-job.org：触发器健康 + SSL 证书到期（隐藏边界：证书过期=触发断，采集失去外部冗余）
+  try {
+    const cc = (await getSetting('boundary.cronjob', {})) || {};
+    const apiKey = cc.apiKey || process.env.CRONJOB_API_KEY || '';
+    if (!apiKey) throw new Error('未配置 API Key（settings boundary.cronjob.apiKey）');
+    const r = await fetch('https://api.cron-job.org/jobs', { headers: { Authorization: 'Bearer ' + apiKey }, signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    const jobs = d.jobs || [];
+    const items = jobs.slice(0, 5).map((j) => ({
+      key: 'job_' + j.jobId, label: String(j.title || j.url || '').slice(0, 40),
+      used: null, limit: null, pct: null, source: 'api',
+      note: `状态 ${j.lastStatus === 1 ? '✅ 上次成功' : '❌ 上次失败(' + j.lastStatus + ')'}｜下次执行 ${j.nextExecution ? new Date(j.nextExecution * 1000).toISOString().slice(5, 16).replace('T', ' ') : '-'}｜SSL 证书 ${j.sslCertExpiry ? Math.round((j.sslCertExpiry * 1000 - Date.now()) / 86400e3) + ' 天后到期' : '-'}`,
+    }));
+    out.platforms.push({
+      id: 'cronjob', name: 'cron-job.org', configured: true, someFailed: !!d.someFailed,
+      items: [{ key: 'jobs', label: `触发器 ${jobs.length} 个`, used: null, limit: null, pct: null, source: 'api', note: d.someFailed ? '⚠️ 有 job 最近执行失败' : '全部正常' }, ...items],
+    });
+  } catch (e) {
+    out.platforms.push({ id: 'cronjob', name: 'cron-job.org', configured: false, error: String(e.message || '').slice(0, 120) });
+  }
+  return jsonOk(out);
 }
 
 // POST /api/data/vercel/deployments/preview — 列出将删的部署（不动手）
@@ -2536,7 +2638,7 @@ async function handleDashboard(req) {
   if (process.env.TURSO_ORG && process.env.TURSO_API_TOKEN) {
     try {
       const qg = require('../lib/quota-guard');
-      const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+      const alertFn = (text, opts) => _alerts.dispatch(opts && opts.urgent ? 'quota_critical' : 'quota_guard', { title: opts && opts.urgent ? '🚨【紧急】平台额度临界' : 'Turso 额度告警', text }).catch(() => {});
       const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
       if (r) tursoUsage = { ...r.usage, quota: qg.QUOTA, guard: r.guard };
     } catch { /* 拉不到不阻断 */ }
@@ -2911,7 +3013,7 @@ async function handleDataStats(req) {
   if (process.env.TURSO_ORG && process.env.TURSO_API_TOKEN) {
     try {
       const qg = require('../lib/quota-guard');
-      const alertFn = (text) => _alerts.dispatch('quota_guard', { title: 'Turso 额度告警', text }).catch(() => {});
+      const alertFn = (text, opts) => _alerts.dispatch(opts && opts.urgent ? 'quota_critical' : 'quota_guard', { title: opts && opts.urgent ? '🚨【紧急】平台额度临界' : 'Turso 额度告警', text }).catch(() => {});
       const r = await qg.refreshQuotaGuard({ getSetting, setSetting, alert: alertFn });
       if (r) tursoUsage = { ...r.usage, quota: qg.QUOTA, guard: r.guard };
     } catch { /* 拉不到不阻断本端点 */ }
@@ -3851,6 +3953,7 @@ async function dispatch(req) {
     if (path === '/api/health/status') return handleHealthStatus(req);
     if (path === '/api/quota/guard') return handleQuotaGuard(req);
     if (path === '/api/data/vercel/status') return handleVercelStatus(req);
+    if (path === '/api/data/boundary') return handleBoundary(req);
     if (path === '/api/health/source-stats') return handleHealthSourceStats(req);
     if (path === '/api/sources/contribution' && method === 'GET') return handleSourceContribution(req);
   if (path === '/api/self-heal' && method === 'GET') return handleSelfHeal(req);

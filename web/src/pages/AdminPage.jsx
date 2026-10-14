@@ -18,6 +18,7 @@ const LogsTab = lazy(() => import('../components/LogsTab.jsx'));
 const SelfHealTab = lazy(() => import('../components/SelfHealTab.jsx'));
 const DailySettingsTab = lazy(() => import('../components/DailySettingsTab.jsx'));
 const MonitorTab = lazy(() => import('../components/MonitorTab.jsx'));
+const BoundaryTab = lazy(() => import('../components/BoundaryTab.jsx'));
 const TranslateSkillTab = lazy(() => import('../components/TranslateSkillTab.jsx'));
 const AiSettingsTab = lazy(() => import('../components/AiSettingsTab.jsx'));
 const BriefOverview = lazy(() => import('../components/BriefOverview.jsx'));
@@ -134,6 +135,16 @@ const SECTIONS = [
         render: () => (
           <Zone title="自愈" note="源的自动恢复：周期性被限流的源到点重启，不是坏了——观测恢复记录与一键重启">
             <SelfHealTab />
+          </Zone>
+        ),
+      },
+            {
+        id: 'boundary',
+        label: '平台边界',
+        ref: 'system',
+        render: () => (
+          <Zone title="平台边界" note="Turso / Vercel / GitHub / cron-job.org 四平台配额与硬边界；Turso 任一维度 ≥95% 触发紧急报警（6h 重报）">
+            <BoundaryTab />
           </Zone>
         ),
       },
