@@ -332,7 +332,7 @@ async function handleBoundary(req) {
     ]);
     const core = g[0] && g[0].resources && g[0].resources.core;
     const repoInfo = g[1] || {};
-    const sizeGB = repoInfo.size ? Math.round(repoInfo.size / 1024 * 10) / 10 : null;
+    const sizeGB = repoInfo.size ? Math.round(repoInfo.size / 1024 / 1024 * 100) / 100 : null; // size 单位 KB → GB
     out.platforms.push({
       id: 'github', name: 'GitHub', configured: true,
       items: [
