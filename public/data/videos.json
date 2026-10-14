@@ -1,6 +1,84 @@
 {
   "items": [
     {
+      "id": 181596,
+      "source_id": 591,
+      "platform": "youtube",
+      "title": "What is Africa Earth's Wild Home? #Rolex #PerpetualPlanet #AfricaEarthsWildHome",
+      "url": "https://www.youtube.com/watch?v=keAEyJuTvbw",
+      "vid": "keAEyJuTvbw",
+      "cover": "https://i.ytimg.com/vi/keAEyJuTvbw/hqdefault.jpg",
+      "duration": null,
+      "author": "National Geographic",
+      "published_at": "2026-10-13T21:00:24.000Z",
+      "source_name": "National Geographic"
+    },
+    {
+      "id": 181032,
+      "source_id": 534,
+      "platform": "youtube",
+      "title": "I Let Claude Code Run My $1M/Year Business for a Whole Week",
+      "url": "https://www.youtube.com/watch?v=rvkjS3YoVio",
+      "vid": "rvkjS3YoVio",
+      "cover": "https://i.ytimg.com/vi/rvkjS3YoVio/hqdefault.jpg",
+      "duration": null,
+      "author": "Nick Saraev",
+      "published_at": "2026-10-13T17:47:41.000Z",
+      "source_name": "Nick Saraev"
+    },
+    {
+      "id": 180436,
+      "source_id": 530,
+      "platform": "youtube",
+      "title": "Google Just Caught Up (Gemini-4 Argon)",
+      "url": "https://www.youtube.com/watch?v=eBszYxzE2dk",
+      "vid": "eBszYxzE2dk",
+      "cover": "https://i.ytimg.com/vi/eBszYxzE2dk/hqdefault.jpg",
+      "duration": null,
+      "author": "Matt Wolfe",
+      "published_at": "2026-10-13T16:47:07.000Z",
+      "source_name": "Matt Wolfe"
+    },
+    {
+      "id": 180466,
+      "source_id": 591,
+      "platform": "youtube",
+      "title": "Expedition: Saving Our Seas | OFFICIAL TRAILER | National Geographic",
+      "url": "https://www.youtube.com/watch?v=yXA1hfYkMWA",
+      "vid": "yXA1hfYkMWA",
+      "cover": "https://i.ytimg.com/vi/yXA1hfYkMWA/hqdefault.jpg",
+      "duration": null,
+      "author": "National Geographic",
+      "published_at": "2026-10-13T16:29:47.000Z",
+      "source_name": "National Geographic"
+    },
+    {
+      "id": 180183,
+      "source_id": 530,
+      "platform": "youtube",
+      "title": "How To Stop Being An \"AI Meat Proxy\"",
+      "url": "https://www.youtube.com/watch?v=b0jA6fkGsk8",
+      "vid": "b0jA6fkGsk8",
+      "cover": "https://i.ytimg.com/vi/b0jA6fkGsk8/hqdefault.jpg",
+      "duration": null,
+      "author": "Matt Wolfe",
+      "published_at": "2026-10-13T15:10:54.000Z",
+      "source_name": "Matt Wolfe"
+    },
+    {
+      "id": 180108,
+      "source_id": 522,
+      "platform": "youtube",
+      "title": "Last 30 Days: your new real-time web search",
+      "url": "https://www.youtube.com/watch?v=7-556KlDMfg",
+      "vid": "7-556KlDMfg",
+      "cover": "https://i.ytimg.com/vi/7-556KlDMfg/hqdefault.jpg",
+      "duration": null,
+      "author": "Futurepedia",
+      "published_at": "2026-10-13T14:31:31.000Z",
+      "source_name": "Futurepedia"
+    },
+    {
       "id": 178543,
       "source_id": 535,
       "platform": "youtube",
@@ -1221,85 +1299,7 @@
       "author": "TED",
       "published_at": "2026-10-08T15:00:17.000Z",
       "source_name": "TED"
-    },
-    {
-      "id": 158926,
-      "source_id": 581,
-      "platform": "youtube",
-      "title": "How Jeetu Patel Runs Cisco Like the World’s Largest Startup",
-      "url": "https://www.youtube.com/watch?v=ofxAtQhV-xA",
-      "vid": "ofxAtQhV-xA",
-      "cover": "https://i.ytimg.com/vi/ofxAtQhV-xA/hqdefault.jpg",
-      "duration": null,
-      "author": "Y Combinator",
-      "published_at": "2026-10-08T14:30:33.000Z",
-      "source_name": "Y Combinator"
-    },
-    {
-      "id": 158346,
-      "source_id": 552,
-      "platform": "youtube",
-      "title": "Jason Calacanis: Everyday Americans Need to Benefit From the AI Boom",
-      "url": "https://www.youtube.com/watch?v=tQgc985d9uw",
-      "vid": "tQgc985d9uw",
-      "cover": "https://i.ytimg.com/vi/tQgc985d9uw/hqdefault.jpg",
-      "duration": null,
-      "author": "All-In Podcast",
-      "published_at": "2026-10-08T14:24:57.000Z",
-      "source_name": "All-In Podcast"
-    },
-    {
-      "id": 159357,
-      "source_id": 565,
-      "platform": "youtube",
-      "title": "We Finally Know More About Humanity’s First Civilization",
-      "url": "https://www.youtube.com/watch?v=_y9JuojAIg0",
-      "vid": "_y9JuojAIg0",
-      "cover": "https://i.ytimg.com/vi/_y9JuojAIg0/hqdefault.jpg",
-      "duration": null,
-      "author": "Kurzgesagt – In a Nutshell",
-      "published_at": "2026-10-08T14:07:00.000Z",
-      "source_name": "Kurzgesagt - In a Nutshell"
-    },
-    {
-      "id": 157337,
-      "source_id": 533,
-      "platform": "youtube",
-      "title": "I turned my house into a VIDEO GAME!",
-      "url": "https://www.youtube.com/watch?v=CgG3dtH5IMM",
-      "vid": "CgG3dtH5IMM",
-      "cover": "https://i.ytimg.com/vi/CgG3dtH5IMM/hqdefault.jpg",
-      "duration": null,
-      "author": "NetworkChuck",
-      "published_at": "2026-10-08T14:00:34.000Z",
-      "source_name": "NetworkChuck"
-    },
-    {
-      "id": 178453,
-      "source_id": 561,
-      "platform": "youtube",
-      "title": "Putting Intelligence on a Billion Machines | Qasar Younis, Applied Intuition",
-      "url": "https://www.youtube.com/watch?v=REsrgNeuZkU",
-      "vid": "REsrgNeuZkU",
-      "cover": "https://i.ytimg.com/vi/REsrgNeuZkU/hqdefault.jpg",
-      "duration": null,
-      "author": "EO",
-      "published_at": "2026-10-08T14:00:02.000Z",
-      "source_name": "EO"
-    },
-    {
-      "id": 157084,
-      "source_id": 620,
-      "platform": "youtube",
-      "title": "Race Conditions on a Human Scale - Computerphile",
-      "url": "https://www.youtube.com/watch?v=W0jPTqIo5oE",
-      "vid": "W0jPTqIo5oE",
-      "cover": "https://i.ytimg.com/vi/W0jPTqIo5oE/hqdefault.jpg",
-      "duration": null,
-      "author": "Computerphile",
-      "published_at": "2026-10-08T13:00:25.000Z",
-      "source_name": "Computerphile"
     }
   ],
-  "generated_at": "2026-10-13T07:59:36.619Z"
+  "generated_at": "2026-10-14T06:25:29.948Z"
 }
