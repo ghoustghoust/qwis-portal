@@ -1248,7 +1248,8 @@ async function buildThemePanorama(items) {
     // 综述应总结事件/主题本身的事实与各源侧重（用户验收：「这个地方不是总结吗？」）
     const list = c.items.map((i) => `- ${i.translated_title || i.title}（来源：${i.source_name || ''}）${i.summary ? `｜摘要：${String(i.summary).slice(0, 80)}` : ''}`).join('\n');
     const prompt = `你是科技媒体主编。下面多条报道属于同一主题。只输出严格 JSON（不要解释）：{"name":"主题名（不超过12字）","viewpoint":"事件、领域、人物、产品对比 四选一","summary":"不超过100字的跨源综述：概括这件事/这个主题本身的事实与各源侧重；禁止评论文章质量、评分或'评语'，禁止出现'评语'二字"}\n\n${list}`;
-    const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
+    // 上限给足不吃亏（max_tokens 是 cap 非计费）：300 曾被推理烧穿 → 静默降级"未命名主题"
+    const r = await _ai.aiChat([{ role: 'user', content: prompt }], { kind: 'theme', maxTokens: 1536, timeoutMs: 60000 });
     if (!r.ok) { bump('ai_failed'); themes.push(unnamed(c)); continue; }
     const m = String(r.reply || '').match(/\{[\s\S]*\}/);
     if (!m) { bump('no_json'); themes.push(unnamed(c)); continue; }
@@ -1592,7 +1593,8 @@ async function runDailyAi() {
           .map((a, i) => `${i + 1}. ${String(a.translated_title || a.title || '').slice(0, 60)}`)
           .join('\n');
         const tpl = await _ai.loadPrompt('daily-columns');
-        const r = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 文章清单\n\n${listText}` }], { kind: 'theme', maxTokens: 600, temperature: 0.2 });
+        // 600 同被推理烧穿的险情：截断即静默回退关键词栏（T5-3 的回退路径）——上限给足防复发
+        const r = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 文章清单\n\n${listText}` }], { kind: 'theme', maxTokens: 1536, temperature: 0.2 });
         if (r.ok) {
           const m = r.reply.match(/\[[\s\S]*\]/);
           const parsed = m ? JSON.parse(m[0]) : null;
@@ -2344,7 +2346,9 @@ async function translatePipeline(article) {
   if (provider === 'agnes') {
     try {
       const tpl = await _ai.loadPrompt('term-extract');
-      const tr = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${input.slice(0, 2000)}\n\n## 译文\n${reply.slice(0, 2000)}` }], { kind: 'term-extract', maxTokens: 384 });
+      // 384 实测被推理整段烧穿（reasoning_tokens=384/text_tokens=0，finish=length，2026-10-14 复刻实证，
+      // 近 500 次调用截断 23 次 + 每次白烧全链 3 个账号）：上限 2048 给足，实测 1536 即出全量术语 JSON
+      const tr = await _ai.aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${input.slice(0, 2000)}\n\n## 译文\n${reply.slice(0, 2000)}` }], { kind: 'term-extract', maxTokens: 2048 });
       if (tr.ok) {
         const m = tr.reply.match(/\[[\s\S]*\]/);
         if (m) {

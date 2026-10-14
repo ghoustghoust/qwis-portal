@@ -416,14 +416,16 @@ async function refineWithGlossary(original, draft) {
   if (!glossary.length) return draft;
   const tpl = await loadPrompt('translate-refine');
   const glossaryText = glossary.map((t) => `${t.en} → ${t.zh}`).join('\n');
-  const r = await aiChat([{ role: 'user', content: `${tpl.replace('{{glossary}}', glossaryText)}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 初翻草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 60000 });
+  // max_tokens 是上限不是计费单位，给足不吃亏：推理烧穿上限 = 仅含 reasoning 无 content（finish=length）。
+  // 2048 曾被实测烧穿（2026-10-14 agnes#3 报警）；上限值 6144 已实测供应商接受（4096/6144 均 200）
+  const r = await aiChat([{ role: 'user', content: `${tpl.replace('{{glossary}}', glossaryText)}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 初翻草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 6144, timeoutMs: 60000 });
   return r.ok ? sanitizeTranslationReply(r.reply, draft) : draft; // 修正失败用初翻草稿
 }
 
 // 轮 3：精翻（长文专用）
 async function refinePass(original, draft) {
   const tpl = await loadPrompt('translate-polish');
-  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 译文草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 2048, timeoutMs: 90000 });
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 原文\n${original.slice(0, 6000)}\n\n## 译文草稿\n${draft.slice(0, 6000)}` }], { kind: 'translate', maxTokens: 6144, timeoutMs: 90000 });
   return r.ok ? sanitizeTranslationReply(r.reply, draft) : draft;
 }
 
@@ -561,8 +563,9 @@ async function generateThemeDetailed(items) {
   const list = items.slice(0, 25).map((it, i) => `${i + 1}. ${it.title}（${it.reason || ''}）`).join('\n');
   // H33（用户拍 D1）："仅含 reasoning 无 content(finish=length)" 是已知截断形态（B19/W6 同根）——
   // max_tokens 被 reasoning 烧穿，且 _aiChatInner 的自动重试只认 429/5xx（此错无 status 不重试）。
-  // 周刊同款已用"退避 15s 重试一次"治好（B121②）；只对该错误形态重试，其余失败不烧配额。
-  const ask = () => aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 300, timeoutMs: 60000 });
+  // 主修是给足上限（300 曾被实测烧穿：同输入 reasoning 波动 384~1320 tokens，2026-10-14 复刻实证）；
+  // 退避 15s 重试一次保留为兜底，只对该错误形态重试，其余失败不烧配额。
+  const ask = () => aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 1536, timeoutMs: 60000 });
   let r = await ask();
   if (!r.ok && /仅含 reasoning|finish=length/.test(String(r.error || ''))) {
     await new Promise((res) => setTimeout(res, 15000));

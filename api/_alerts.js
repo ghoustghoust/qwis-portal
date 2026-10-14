@@ -260,9 +260,14 @@ function collectStalled(detail) {
 }
 
 function aiFailed(detail) {
+  const d = String(detail || '');
+  // 截断形态不是额度问题（finish=length = max_tokens 被推理烧穿），给错建议会把人引去查配额
+  const advice = /仅含 reasoning|finish=length/.test(d)
+    ? '该形态是 max_tokens 被推理烧穿的截断，与额度无关：查该调用点 maxTokens 是否给足（agnes 全链会逐账号重试同一截断，报警里的账号号≠根因）'
+    : '检查 Agnes 额度/限流（免费池 20 RPM）；若持续 401 检查 settings.ai 是否被污染（应为 {}）';
   return dispatch('ai_failed', {
     title: '🤖 AI 链路失败',
-    text: `${String(detail || '').slice(0, 300)}\n处置建议：检查 Agnes 额度/限流（免费池 20 RPM）；若持续 401 检查 settings.ai 是否被污染（应为 {}）`,
+    text: `${d.slice(0, 300)}\n处置建议：${advice}`,
   });
 }
 
