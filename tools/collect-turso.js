@@ -1888,14 +1888,16 @@ async function runMyBrief(analyzed) {
   // 三个权重键都在 settings['mybrief'] 开放集合里，坏值回默认（同 prescreenCapOf 口径：配置缺失/坏值不读成 0）：
   //   subBoost  订阅源固定加成，默认 6——你主动关注的源，内容天然带关注权重
   //   boostCap  关注加成总上限，默认 30——防画像/订阅叠乘把低分条目抬进 top（订阅 6 + 画像 24 = 30 与旧上限自然衔接）
-  //   minScore  订阅源入报线，默认 50——与 daily 的 60 分编辑线分治（关注视角门槛更低；探索位维持 ≥70 不变）
+  //   minScore  订阅源入报线，默认 65——用户 10-14 拍板与 ADR-37 对齐（65 线、宁缺毋滥）；
+  //             且判**加权前的全局分**（baseScore）：旧口径判加成后总分、默认 50，baseScore 44 + 订阅加成 6 = 50
+  //             恰好上岗（"让 50 分的内容上岗"实锤）——关注加成只管排序不管入选
   const numOr = (v, def) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100 ? v : def);
   const subBoost = numOr(mbCfg.subBoost, 6);
   const boostCap = numOr(mbCfg.boostCap, 30);
-  const mbMin = numOr(mbCfg.minScore, 50);
+  const mbMin = numOr(mbCfg.minScore, 65);
   // 坏值必须出声（坑 #38 同族：静默降级 = 没人知道后台填错了数）。
   // 判据是"numOr 回了默认"而不是"值 ≠ 默认"——用户自定义的合法值（如 subBoost=10）不许误报。
-  for (const [k, def] of [['subBoost', 6], ['boostCap', 30], ['minScore', 50]]) {
+  for (const [k, def] of [['subBoost', 6], ['boostCap', 30], ['minScore', 65]]) {
     const v = mbCfg[k];
     if (v !== undefined && numOr(v, def) !== v) log(`mybrief: 权重键 mybrief.${k}=${JSON.stringify(v)} 不可用，按默认 ${def} 执行`);
   }
@@ -1916,12 +1918,13 @@ async function runMyBrief(analyzed) {
       boostN++;
     }
   }
-  // 订阅源入报线：加成后仍低于线的**数字分**条目剔掉；未评分（深析失败）不误杀，与 daily 同一安全阀口径
+  // 订阅源入报线（用户 10-14 拍板与 ADR-37 对齐）：判**加权前的全局分**（baseScore）——关注加成只管
+  // 排序不管入选；未评分（深析失败）不误杀，与 daily 同一安全阀口径
   const beforeGate = minePool.length;
   const mine = minePool
-    .filter((a) => { const s = a.totalScore; return !(typeof s === 'number' && Number.isFinite(s)) || s >= mbMin; })
+    .filter((a) => { const s = (typeof a.baseScore === 'number' && Number.isFinite(a.baseScore)) ? a.baseScore : a.totalScore; return !(typeof s === 'number' && Number.isFinite(s)) || s >= mbMin; })
     .sort((x, y) => (y.totalScore || 0) - (x.totalScore || 0));
-  if (beforeGate !== mine.length) log(`mybrief: 入报线(≥${mbMin} 分,关注加成后) 剔除 ${beforeGate - mine.length} 条`);
+  if (beforeGate !== mine.length) log(`mybrief: 入报线(≥${mbMin} 分,加权前全局分) 剔除 ${beforeGate - mine.length} 条`);
   if (boostN) log(`mybrief: 关注加成 ${boostN} 条（订阅源 +${subBoost} / 画像每命中 +8，总上限 ${boostCap}）`);
 
   // Domain 篇数配额（T3-1 R5）：主标签（tags[0]）超配额的条目移出本日早报
@@ -1955,21 +1958,20 @@ async function runMyBrief(analyzed) {
     // 关注度拆解（ADR-38）：baseScore=加权前全局分；boost=关注加成；boostWhy=加成依据（命中画像标签或"订阅源"）
     baseScore: a.baseScore ?? null, boost: a.boost || 0, boostWhy: a.boostWhy || null,
   });
-  // 补充阅读固定 10 条（T3-1 R4）：订阅源条目不足时，从共享深析池的**非订阅源**高分内容补足，
-  // 标记 explore=true（破茧/探索语义）；补足仅为展示层，不改订阅集合
-  // L6 补充阅读精确 10 条（T4-2 R4）：订阅余量优先 + 探索位按 MMR（0.7·相关性 − 0.3·最大相似）
-  // 探索强度（settings mybrief.exploreStrength）：low=2 / mid=4 / high=6 条来自未订阅源
-  const strength = ({ low: 2, mid: 4, high: 6 })[String(mbCfg.exploreStrength || 'mid')] ?? 4;
+  // 版面比例（用户 10-14 拍板）：全文 20 篇 = 头条 5（拔尖、必须了解）+ 精选 15（撑体量），
+  // **不含**探索位与视频播客——订阅余量全部并入精选，补充阅读段变成纯探索位
+  // 探索位固定 3 条（用户 10-14："过去裁定就是 3"）——exploreStrength 三档设置作废不再消费
+  //（界面控件同批删除，防"改了不生效还骗一次"的假开关）；探索位按 MMR（0.7·相关性 − 0.3·最大相似）从
+  // 共享深析池的**非订阅源**高分内容选，标记 explore=true（破茧/探索语义，ADR-16：不改订阅集合）
+  const strength = 3;
   // TOP 钉选（用户 10-13 拍板）：订阅源条目里全局分（baseScore，加权前）≥75 的固定进 TOP 区——
-  // 你关注的源出的高分内容必在头条位看到，不被关注加成排序埋掉。TOP 容量随钉选数自然放大
-  // （订阅源 ≥75 实测 0~2 条/天，超 3 条时头条区跟着扩）。
+  // 你关注的源出的高分内容必在头条位看到，不被关注加成排序埋掉。TOP 保底 5（10-14 拍板），钉选更多时跟着扩。
   const PIN_LINE = 75;
   const pinned = mine.filter((a) => (a.baseScore ?? a.totalScore ?? 0) >= PIN_LINE);
   const ordered = pinned.length ? [...pinned, ...mine.filter((a) => !pinned.includes(a))] : mine;
-  const topN = Math.max(3, pinned.length);
+  const topN = Math.max(5, pinned.length);
   if (pinned.length) log(`mybrief: TOP 钉选 ${pinned.length} 条（全局分≥${PIN_LINE}）`);
-  const subRest = ordered.slice(topN + 7, topN + 7 + (10 - strength)).map(fmt);
-  const chosen = new Set(ordered.slice(0, topN + 7 + subRest.length).map((m) => m.id));
+  const chosen = new Set(ordered.map((m) => m.id)); // 探索池已滤为非订阅源，此处只排订阅面已入选的 id
   const pool = (analyzed || [])
     .filter((a) => !subIds.has(a.source_id) && !chosen.has(a.id) && (a.totalScore || 0) >= 70)
     .sort((x, y) => y.totalScore - x.totalScore)
@@ -1994,10 +1996,10 @@ async function runMyBrief(analyzed) {
     selected.push(pick.a);
   }
   if (selected.length) log(`mybrief: 探索位 MMR 选 ${selected.length} 条（强度 ${strength}）`);
-  const restBase = [...subRest, ...selected.map((a) => ({ ...fmt(a), explore: true }))];
+  const restBase = selected.map((a) => ({ ...fmt(a), explore: true })); // 补充阅读段=纯探索位（订阅余量已并入精选）
   const sections = {
     top: ordered.slice(0, topN).map(fmt),
-    featured: ordered.slice(topN, topN + 7).map(fmt),
+    featured: ordered.slice(topN, topN + 15).map(fmt), // 精选上限 15（10-14 拍板），订阅余量全部并入此段
     rest: restBase,
   };
   // 2026-09-14：我的早报纳入「视频与播客」（窗口内新视频+播客，免 AI 直接列；用户拍板三类早报都要可播放媒体）
@@ -2061,7 +2063,7 @@ async function runMyBrief(analyzed) {
   else nextArch.push(entry);
   await getDb().execute({ sql: "INSERT OR REPLACE INTO settings(key, value) VALUES('mybrief.archive', ?)", args: [JSON.stringify(nextArch.slice(-30))] });
   log(`mybrief 生成完成: top ${sections.top.length} / featured ${sections.featured.length} / rest ${sections.rest.length}, 主题: ${theme || '(无)'}`);
-  // 飞书推送（导语 + 头条 3 条；pushEnabled 默认 true）
+  // 飞书推送（导语 + 头条区全部条目，随 topN=5 走；pushEnabled 默认 true）
   const pushCfg = await getSetting('mybrief', {});
   if (pushCfg.pushEnabled !== false) {
     try {
@@ -2304,8 +2306,9 @@ async function translatePipeline(article) {
     if (!r.ok) throw new Error(r.error || '标题翻译失败');
     let t = _ai.sanitizeTranslationReply(r.text, '').split('\n')[0].trim();
     t = require('../lib/text-clean').cleanTranslatedTitle(t);
-    // 入库前终极闸：思维链起手式/超长/空 一律拒收（下轮重试）
-    if (!t || t.length > 120 || _ai.isThinkingLikeReply(t)) {
+    // 入库前终极闸：思维链起手式/超长/空/prompt 元话术 一律拒收（下轮重试）——
+    // 元话术闸与全正文通道的标题准入同口径（对抗审查 2026-10-14：薄正文通道此前缺防③，同型污染的现成入口）
+    if (!t || t.length > 120 || _ai.isThinkingLikeReply(t) || /prompt|轮\s*\d/i.test(t)) {
       log(`  ✗ 标题译文被拒收（污染防御）：${String(t).slice(0, 50)}`);
       return null;
     }

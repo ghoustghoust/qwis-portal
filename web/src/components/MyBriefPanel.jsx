@@ -224,20 +224,11 @@ export default function MyBriefPanel() {
             disabled={busy}
             onChange={(e) => saveCfg('mybrief', { ...mybriefCfg, pushEnabled: e.target.checked })}
           />
-          生成后推送到飞书（含导语与头条 3 条）
+          生成后推送到飞书（含导语与头条 5 条）
         </label>
-        <div className="mt-3 flex items-center gap-2 flex-wrap">
-          <span className="text-[13px] t-text">探索强度：</span>
-          {[['low', '低（2 条）'], ['mid', '中（4 条）'], ['high', '高（6 条）']].map(([k, label]) => (
-            <button
-              key={k}
-              className={`pill !py-1 !px-2.5 cursor-pointer ${String(mybriefCfg?.exploreStrength || 'mid') === k ? 'on' : ''}`}
-              disabled={busy}
-              onClick={() => saveCfg('mybrief', { ...mybriefCfg, exploreStrength: k })}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="mt-3 text-[12px] t-muted">
+          版面（10-14 拍板）：头条 5 + 精选 15 = 全文 20 篇；探索位固定 3 条；视频播客按当天更新列出。
+          旧「探索强度」三档设置已停用。
         </div>
         {/* 关注度权重（ADR-38，用户 10-07 拍板 A+B）：两报分数双轨——daily 用全局原始分，mybrief 用「全局分+关注加成」；
             条目上的「关注 +N」角标即此处加成的展示。本地编辑 + 保存按钮，与 Domain 配额同模式。 */}

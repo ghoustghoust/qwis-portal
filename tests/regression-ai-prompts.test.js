@@ -98,11 +98,12 @@ test('PR4 跨端行为锁（39-6 AC1）：一条落库覆盖键改的是云端�
     // loadPrompt 发送前剥开头 H1 是三道防线的第①道——预期从"逐字节文件原文"改为"文件原文剥 H1"，
     // 并钉住剥离行为本身；锁的本意（覆盖键优先级，见下方两支断言）不变。
     const raw = fs.readFileSync(path.join(ROOT, 'prompts', 'translate.md'), 'utf8');
+    // fixture 自证是无条件断言（对抗审查 2026-10-14：条件断言在 fixture 变化时会静默空转，
+    // 坑 #50③ 同病形——translate.md 删掉 H1 头时下面的剥离断言必须红着提醒同步看本锁，不许静默跳过）
+    assert.match(raw, /^#\s/, 'fixture 自证：translate.md 应带 H1 内部标注头（若有意删除须同步更新本锁）');
     assert.equal(before, raw.replace(/^#\s+[^\n]*\n+/, ''),
       '没有覆盖键时应取 prompts/translate.md（剥掉内部 H1 标注头后）');
-    if (/^#\s/.test(raw)) {
-      assert.notEqual(before, raw, '文件带 H1 内部头时 loadPrompt 必须剥掉（模型复读防线①）');
-    }
+    assert.notEqual(before, raw, 'loadPrompt 必须剥掉文件开头的 H1 内部头（模型复读防线①）');
     // 统一后的键名（三端都读这一个）：写进去 → 同一条链路立刻变
     await c.execute({
       sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)',
@@ -186,4 +187,16 @@ test('PR7 挂号双向：每个名字有文件也有兜底，每个文件都有�
   for (const f of files) {
     assert.ok(PROMPT_NAMES.includes(f), `prompts/${f}.md 没人 load（白名单外）—— README 明令"别加没人 load 的模板"`);
   }
+});
+
+test('PR8 输入结构复述拒收锁（2026-10-14 标题污染实锤形态）：回复开头打回「## 原文」段必须整体拒收回退草稿', () => {
+  const { sanitizeTranslationReply } = require('../api/_ai.js');
+  // 实锤形态（生产 4 条污染同款）：模型复读 prompt 头 + 复述输入结构，无译文段
+  const polluted = '精翻 prompt（translate-polish，轮 3）\n\n## 原文\n标题：他在狱中苦等九年\n\n文章：\n马克·哈里斯为 ProPublica 撰写。';
+  const draft = '上一轮的正常译文草稿，不能被污染版顶掉。';
+  assert.equal(sanitizeTranslationReply(polluted, draft), draft,
+    '「## 原文」结构复述混进回复时必须回退草稿——放行会让复述文本当译文入库（4 条 translated_title 污染的根因链）');
+  // 正常译文不受影响（无复述结构、无标记 → 原样放行）
+  const clean = '律师斯科特·加洛韦在接手案件后九年内申请了四十一次延期。';
+  assert.equal(sanitizeTranslationReply(clean, draft), clean, '正常译文不许被误杀');
 });

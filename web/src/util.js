@@ -138,12 +138,18 @@ export function sourceLabel(item) {
   return item?.source_name || item?.feedName || a || '';
 }
 
-// 外链打开兜底（2026-10-14）：window.open 在弹窗拦截器/内嵌环境下会被静默吞掉——
-// 用户实测"打开原文点了跳不过去"且每篇如此。返回引用为空（被吞）时降级为当前页跳转，保证点击必有响应。
+// 外链打开（2026-10-14，对抗审查返工）：**不许给 window.open 传 'noopener'**——按 WHATWG 规范
+// noopener=true 且 target≠_self 时返回值恒为 null，"返回空=被拦截"的探测就永远成立，会退化成
+// 每次当前页跳转（新标签路径变死代码）。正解：不带 noopener 打开（返回引用可探测），拿到引用后
+// 手动断开 opener（等效 noopener 的安全语义），被拦截器吞掉（返回 null）才降级当前页跳转。
 export function openExternal(url) {
   const u = String(url || '');
   if (!u) return;
   let w = null;
-  try { w = window.open(u, '_blank', 'noopener'); } catch { /* 拦截器可能直接抛错 */ }
-  if (!w) window.location.href = u;
+  try { w = window.open(u, '_blank'); } catch { /* 拦截器可能直接抛错 */ }
+  if (w) {
+    try { w.opener = null; } catch { /* 跨域窗口置 opener 失败时安全语义由浏览器默认兜底 */ }
+  } else {
+    window.location.href = u;
+  }
 }
