@@ -28,7 +28,7 @@
 | — | **H49① 分类过滤读映射首战**：settings['hot.categoryKeywords'] 可整表覆盖过滤词表（与 hot.categories feed 归类是两个维度） | 已实测 /api/hot/categories 回显两份生效映射（filterKwsSource:default）；要覆盖时写同名形状进该键再测过滤 |
 | — | **H49④ 纯热榜入口首战**：前端 pills 加"纯热榜"，本地 services/hot.query 补 hotlistOnly | 已实测 /api/hot?tab=hotlist 返回 200 条；页面切到"纯热榜"应只显示热榜源条目 |
 | — | **mybrief ≥75 钉选等样本（ADR-37 组合的 mybrief 侧）**：10-13 晚主批 top 区 base 68~73，窗口内无 ≥75 订阅条目——钉选无从触发，机制无违反；日报侧门槛/破格/收养已销号 | 出现订阅源 ≥75 条目的那期：runner 日志应见 `mybrief: TOP 钉选 N 条` 行，top 区该条目 baseScore≥75 且钉在前列 |
-| — | **读层瞬时返回旧报告（10-07 观察到，未定位根因）**：连续 curl /api/daily 曾两次分别返回 9-14 与 9-24 的旧报告（X-Vercel-Cache: MISS、Age:0，部署 commit 与库均最新），随后连测 4 次全部正常返回当期 | 再现时记下时间与响应头立即重试同端点并对照 `GET /api/daily` 的 report.id 与生产库 `ORDER BY generated_at DESC LIMIT 5`；仅单次偶发且自愈则持续观察，复现率上升再开查 |
+| — | **读层瞬时返回旧报告（10-07 观察到，未定位根因）**：连续 curl /api/daily 曾两次分别返回 9-14 与 9-24 的旧报告（X-Vercel-Cache: MISS、Age:0，部署 commit 与库均最新），随后连测 4 次全部正常返回当期。**10-14 又复现一次**（对抗审查中首 curl 返回 id=87（9-14），随后 6 次全回当期 117）——仍属单次偶发自愈档，但已是第二次 | 再现时记下时间与响应头立即重试同端点并对照 `GET /api/daily` 的 report.id 与生产库 `ORDER BY generated_at DESC LIMIT 5`；仅单次偶发且自愈则持续观察，复现率上升再开查 |
 | — | **本期索引两处静默跳空（10-07 快审 P3，低危）**：①栏内列表行超 12 条时"展开剩余"未点开，索引点击对应条目锚点不存在 → 静默无反应；②mybrief 类型筛选隐藏的条目同理。均不报错 | 在 daily 点索引里一条 12 名之后的条目复现；修法是 ColumnSection 的 expanded 状态提升或索引点击时触发展开，等积累到一起改 |
 
 **跑验证时的纪律**（不属于任何单条，长期有效）：整片同红且是连接类错误 → 按环境问题重跑，不许改代码、不许放松断言、不许记成"已修复"；报红先分清"判据写错 / 读得太早 / 真坏了"三类再动手；偶发红要把整段输出落文件再复跑，报红时两侧读数一起给。
