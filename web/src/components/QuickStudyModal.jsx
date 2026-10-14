@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl, openExternal } from '../util';
 import RichText from './ui/RichText.jsx';
 import PodcastCover from './ui/PodcastCover.jsx';
 
@@ -202,10 +202,11 @@ export default function QuickStudyModal({ item, onClose }) {
               <button className="btn-ghost" onClick={() => openUrl && copyText(openUrl)}>
                 复制链接
               </button>
-              {/* 17-translate：翻译按钮/切换 */}
+              {/* 17-translate：翻译按钮/切换（"英文原文/中文译文"明示是视图切换——"查看原文"曾被当成跳原文出处）
+                  跳原文出处是旁边"打开原文"的职责 */}
               {!isVideo && hasTranslation && (
                 <button className="btn-ghost" onClick={() => setShowTranslated((v) => !v)}>
-                  {showTranslated ? '查看原文' : '查看译文'}
+                  {showTranslated ? '英文原文' : '中文译文'}
                 </button>
               )}
               {!isVideo && !hasTranslation && isEnglishTitle && (
@@ -217,7 +218,7 @@ export default function QuickStudyModal({ item, onClose }) {
                 className="btn-primary"
                 style={{ background: 'var(--green)' }}
                 disabled={!openUrl}
-                onClick={() => openUrl && window.open(openUrl, '_blank', 'noopener')}
+                onClick={() => openExternal(openUrl)}
               >
                 打开原文
               </button>

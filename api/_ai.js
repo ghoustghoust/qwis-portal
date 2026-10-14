@@ -373,7 +373,10 @@ async function filterArticle(meta) {
 // （实测读数记在 docs/ISSUES.md B111 行），所以统一键名不需要迁移，也不改变任何现有行为。
 async function loadPrompt(name) {
   const custom = await getSetting(promptSettingKey(name), '');
-  return promptText(name, { override: custom });
+  const text = promptText(name, { override: custom });
+  // prompt 文件首行是内部标注头（如「# 精翻 prompt（translate-polish，轮 3）」），只给人看不给模型看：
+  // 喂进去模型会把它复读出来——2026-10-14 实锤 4 条 translated_title 就是字面「精翻 prompt（translate-polish，轮 3）」
+  return text.replace(/^#\s+[^\n]*\n+/, '');
 }
 
 // ═══ 多轮精翻（17-translate） ═══
@@ -397,6 +400,9 @@ function isThinkingLikeReply(text) {
 function sanitizeTranslationReply(reply, draft) {
   const text = String(reply || '');
   if (!text.trim()) return draft || text;
+  // 0) 输入结构复述（2026-10-14 新形态）：回复开头就打回「## 原文」段 = 模型在复述任务/输入而非产出译文
+  //    （实锤形态：reply =「精翻 prompt（translate-polish，轮 3）\n\n## 原文\n标题：…文章：…」，无译文段）
+  if (/^#{1,3}\s*(?:原文|Original)/im.test(text.slice(0, 200))) return draft || text;
   // 1) 有「译文」标记：取最后一个标记之后的正文（标记前的指令回显/分析全部丢弃）
   TRANSLATE_MARKER_RE.lastIndex = 0;
   let m, lastMarker = null;

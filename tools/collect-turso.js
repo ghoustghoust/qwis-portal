@@ -2335,10 +2335,11 @@ async function translatePipeline(article) {
   let translatedContent = reply;
   if (title && reply.includes('\n')) {
     const firstLine = reply.split('\n')[0].trim();
-    // 首行做标题前先过思维链检测（2026-09-13 F3：「Here's a thinking process:」曾被当标题入库）
-    if (firstLine.length < 100 && firstLine.length > 2 && !_ai.isThinkingLikeReply(firstLine)) {
-      // 2026-09-14：剥掉「标题：」/「# 」等标注残留（曾以脏前缀入库）
-      translatedTitle = require('../lib/text-clean').cleanTranslatedTitle(firstLine);
+    // 标题准入双保险：清洗后仍带 markdown 标记或含 prompt/轮N 元话术 = 模型复读任务头/复述结构（2026-10-14 四条实锤），不当标题
+    const cleaned = firstLine.length < 100 && firstLine.length > 2 && !_ai.isThinkingLikeReply(firstLine)
+      ? require('../lib/text-clean').cleanTranslatedTitle(firstLine) : '';
+    if (cleaned && !/[#]/.test(cleaned) && !/prompt|轮\s*\d/i.test(cleaned)) {
+      translatedTitle = cleaned;
       translatedContent = reply.slice(firstLine.length).replace(/^\n+/, '');
     }
   }

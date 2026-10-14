@@ -137,3 +137,13 @@ export function sourceLabel(item) {
   if (a && !a.includes('@')) return a;
   return item?.source_name || item?.feedName || a || '';
 }
+
+// 外链打开兜底（2026-10-14）：window.open 在弹窗拦截器/内嵌环境下会被静默吞掉——
+// 用户实测"打开原文点了跳不过去"且每篇如此。返回引用为空（被吞）时降级为当前页跳转，保证点击必有响应。
+export function openExternal(url) {
+  const u = String(url || '');
+  if (!u) return;
+  let w = null;
+  try { w = window.open(u, '_blank', 'noopener'); } catch { /* 拦截器可能直接抛错 */ }
+  if (!w) window.location.href = u;
+}

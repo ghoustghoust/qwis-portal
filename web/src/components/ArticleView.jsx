@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl } from '../util';
+import { copyText, formatDateTime, formatWords, readingMinutes, imgUrl, openExternal } from '../util';
 import RichText from './ui/RichText.jsx';
 import { RadarLogo } from './icons.jsx';
 import PodcastCover from './ui/PodcastCover.jsx';
@@ -166,7 +166,7 @@ export default function ArticleView({ articleId, items, filter, onSelect, onClos
         <button
           className="icon-btn"
           title={t('article.openOriginal')}
-          onClick={() => article?.url && window.open(article.url, '_blank', 'noopener')}
+          onClick={() => article?.url && openExternal(article.url)}
         >
           ↗
         </button>

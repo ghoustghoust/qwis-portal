@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { toast } from '../toast';
-import { formatDateTime, imgUrl } from '../util';
+import { formatDateTime, imgUrl, openExternal } from '../util';
 import SourceAvatar from './ui/SourceAvatar.jsx'; // 2026-09-05 视觉精修
 import PodcastCover from './ui/PodcastCover.jsx';
 
@@ -65,7 +65,7 @@ function PodcastDetail({ articleId, onBack }) {
               <div className="mt-6 border-t t-border pt-4">
                 <button
                   className="btn-primary"
-                  onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
+                  onClick={() => openExternal(item.url)}
                 >
                   打开原始页面 ↗
                 </button>
@@ -162,7 +162,7 @@ function VideoDetailInner({ videoId, onBack, onChanged }) {
                 <div className="text-sm text-neutral-300 mb-3">该平台暂不支持内嵌播放</div>
                 <button
                   className="btn-primary"
-                  onClick={() => play?.url && window.open(play.url, '_blank', 'noopener')}
+                  onClick={() => openExternal(play?.url)}
                 >
                   在原平台打开 ↗
                 </button>
@@ -222,7 +222,7 @@ function VideoDetailInner({ videoId, onBack, onChanged }) {
                 </button>
                 <button
                   className="btn-primary"
-                  onClick={() => video.url && window.open(video.url, '_blank', 'noopener')}
+                  onClick={() => openExternal(video.url)}
                 >
                   在原平台打开 ↗
                 </button>

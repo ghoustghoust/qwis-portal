@@ -44,7 +44,7 @@ const DICT = {
   'article.loading':       { zh: '加载中…',            en: 'Loading…' },
   'article.loadFailed':    { zh: '文章加载失败',       en: 'Failed to load' },
   'article.selectHint':    { zh: '从左侧选择文章，或点文件夹读聚合流', en: 'Select an article from the left, or click a folder to read' },
-  'article.viewOriginal':  { zh: '查看原文',           en: 'View Original' },
+  'article.viewOriginal':  { zh: '英文原文',           en: 'View Original' },
   'article.addedLater':    { zh: '已加入稍后阅读',     en: 'Added to Read Later' },
   'article.removedLater':  { zh: '已取消稍后阅读',     en: 'Removed from Read Later' },
   'article.allMarkedRead': { zh: '已全部标为已读',     en: 'All marked as read' },
