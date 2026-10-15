@@ -117,7 +117,7 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 82
+      "source_count": 85
     },
     {
       "id": 19,
@@ -180,7 +180,7 @@
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 66
+      "source_count": 67
     },
     {
       "id": 27,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-10-14T06:25:32.981Z"
+  "generated_at": "2026-10-15T06:07:55.146Z"
 }

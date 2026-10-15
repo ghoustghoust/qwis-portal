@@ -277,8 +277,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 5
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 705,
@@ -358,6 +358,20 @@
       "avatar": null,
       "group_id": 18,
       "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 25,
+      "type": "rss",
+      "name": "AIHOT 热榜",
+      "url": "https://aihot.virxact.com/feed/all.xml?aihot_actor=a3a001f8-e397-4995-acb0-569186f210b5",
+      "avatar": "https://aihot.virxact.com/favicon.ico",
+      "group_id": 18,
+      "spotlight": 0,
       "muted": 0,
       "reader_visible": 0,
       "enabled": 1,
@@ -862,6 +876,20 @@
       "avatar": "https://rsshub.bestblogs.dev/favicon.ico",
       "group_id": 33,
       "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 733,
+      "type": "x",
+      "name": "Anthropic(@AnthropicAI)",
+      "url": "https://api.xgo.ing/rss/user/fc28a211471b496682feff329ec616e5",
+      "avatar": "https://pbs.twimg.com/profile_images/1798110641414443008/XP8gyBaY_normal.jpg",
+      "group_id": 18,
+      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -1845,8 +1873,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 791,
@@ -2899,6 +2927,20 @@
       "fail_count": 0
     },
     {
+      "id": 858,
+      "type": "rss",
+      "name": "Jame",
+      "url": "https://jame.work/feed.xml",
+      "avatar": "https://jame.work/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 859,
       "type": "x",
       "name": "Jan Leike(@janleike)",
@@ -2919,6 +2961,20 @@
       "url": "https://javascriptweekly.com/rss/",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 861,
+      "type": "x",
+      "name": "Jeff Dean(@JeffDean)",
+      "url": "https://api.xgo.ing/rss/user/b1013166769c49f8aa3fbdc222867054",
+      "avatar": "https://pbs.twimg.com/profile_images/935325968280907776/AcBo6zJc_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3361,20 +3417,6 @@
       "fail_count": 0
     },
     {
-      "id": 893,
-      "type": "rss",
-      "name": "Longlong's Blog",
-      "url": "https://blog.xlonglong.cn/feed/",
-      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 2
-    },
-    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -3521,20 +3563,6 @@
       "url": "https://markonreview.com/rss/",
       "avatar": "https://markonreview.com/favicon.png",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 905,
-      "type": "x",
-      "name": "Martin Fowler(@martinfowler)",
-      "url": "https://api.xgo.ing/rss/user/55d2d3f3eaaf4357b3230e0b01a464d7",
-      "avatar": "https://pbs.twimg.com/profile_images/79787739/mf-tg-sq_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4803,6 +4831,20 @@
       "fail_count": 0
     },
     {
+      "id": 984,
+      "type": "rss",
+      "name": "Release notes from langchain",
+      "url": "https://github.com/langchain-ai/langchain/releases.atom",
+      "avatar": "https://github.com/favicon.ico",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 985,
       "type": "rss",
       "name": "Release notes from modelcontextprotocol",
@@ -5467,6 +5509,20 @@
       "url": "https://api.xgo.ing/rss/user/fafa6df3c67644b1a367a177240e0173",
       "avatar": "https://pbs.twimg.com/profile_images/1635742486642524186/QcGtI8dl_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1032,
+      "type": "x",
+      "name": "Suhail(@Suhail)",
+      "url": "https://api.xgo.ing/rss/user/c961547e08df4396b3ab69367a07a1cd",
+      "avatar": "https://pbs.twimg.com/profile_images/1898611158330077184/oCfpUSm-_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6685,6 +6741,20 @@
       "url": "https://elifesciences.org/rss/recent.xml",
       "avatar": "https://elifesciences.org/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1115,
+      "type": "x",
+      "name": "elvis(@omarsar0)",
+      "url": "https://api.xgo.ing/rss/user/931d6e88e067496cac6bf23f69d60f33",
+      "avatar": "https://pbs.twimg.com/profile_images/939313677647282181/vZjFWtAn_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9489,8 +9559,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1206,
@@ -9503,8 +9573,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 37,
@@ -9541,20 +9611,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/156a64fe3e95eebe4b85bf981d6ebb85441897bf.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM5ewWQao972vMLiax67bproIib0MxwDuoLX0Hnnph4saUgA/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1208,
-      "type": "rss",
-      "name": "如有乐享",
-      "url": "https://51.ruyo.net/feed",
-      "avatar": "https://51.ruyo.net/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -11649,20 +11705,6 @@
       "fail_count": 0
     },
     {
-      "id": 1258,
-      "type": "x",
-      "name": "歸藏(guizang.ai)(@op7418)",
-      "url": "https://api.xgo.ing/rss/user/831fac36aa0a49a9af79f35dc1c9b5d9",
-      "avatar": "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 143,
       "type": "rss",
       "name": "歸藏的AI工具箱",
@@ -13041,20 +13083,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/61bdf2799e5208df45c8bbbd96ba81dd088d2483.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6ibmPF9jOLz8F503ITz0UOuEAM00fk7icJTAzQqLcSRwmw/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1289,
-      "type": "rss",
-      "name": "站长之家",
-      "url": "https://app.chinaz.com/?app=rss",
-      "avatar": "http://img.chinaz.com/templates/chinaz/img/logo.png",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15289,5 +15317,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-14T06:25:32.834Z"
+  "generated_at": "2026-10-15T06:07:55.034Z"
 }
