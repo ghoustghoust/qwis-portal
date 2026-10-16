@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 120,
-    "generated_at": "2026-10-15T05:43:59.861Z",
+    "id": 122,
+    "generated_at": "2026-10-16T05:38:29.352Z",
     "window_hours": 30,
     "sections": [
       {
@@ -9,14 +9,24 @@
         "desc": "新公开的课程、训练营与社群招募",
         "items": [
           {
-            "id": 5195114,
-            "title": "手把手带工程同学从零实现一个完整的 LLM（CS336）——Transformer 篇",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg4NTczNzg2OA==&mid=2247512119&idx=1&sn=a4ac67dac7423d561fae8beb1cb626e4",
-            "source": "阿里技术",
-            "published_at": "2026-10-14T10:00:00.000Z",
+            "id": 5444597,
+            "title": "别再逼孩子运动了！哈佛大学研究发现：孩子最缺的不是篮球、游泳，而是“疯跑、打滚、爬树”等无序运动",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzUzMjM5MjYwMQ==&mid=2247998258&idx=1&sn=0de1795bbff3566708447d813197deb9",
+            "source": "每晚一卷书",
+            "published_at": "2026-10-15T13:00:00.000Z",
             "score": null,
-            "summary": "最近我在学习 CS336「Language Modeling from Scratch」，是斯坦福大学的大语言模型构建课程。这门课程在各种社交媒体（比如 X）中都很火爆，所以我想通过写系列文章的形式来分享这个学习过程。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f50988f1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkN3t5R6pdz4GMIZ1oibQcWhw2v2diaTCd6lIFSibiaQojsyTYxYIUuHBzicqMo91u4CQKLDLiboJrlsOYn7ea3jxoATbWY69vp9V9v5KBrRib8fe2A%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "这个暑假，表姐看着自家孩子久坐书桌、缺乏锻炼，一咬牙给他报了个热门的游泳培训班。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e9325cef&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FJXw9pQTKn17mTXKaWYOeriajgiaqYibqUvKcXQKu4KVlNTBl0bWiaEtpmOQ1qGO3X9ntCQvP4tzIIetnYpTqtYhBKL85OJjhPZW8jvM3c8WFcRM%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5389002,
+            "title": "琢磨不透的越南",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODAxODQ0MA==&mid=2651413757&idx=1&sn=692f4c7ea849d280fb666111956f0c0a",
+            "source": "正和岛",
+            "published_at": "2026-10-15T08:00:00.000Z",
+            "score": null,
+            "summary": "内心呼唤知识的人，正在被时代呼唤。欢迎加入中欧国际工商学院第一学习社群，这里有2000&#43;篇商业思想精选文章，每周打卡阅读，与50万&#43;读者一起成长。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b11a6eb9&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Foo3slDywW2pLu3slEIb0Xc1fOvvPd1VVe8pftUWcHRicV38OnGtNGLIYlX0kyHNZEibOp6bcZFA8eeeyKtumibwaKSuSLU0eBchPdhib1ys1rKo%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -25,154 +35,154 @@
         "desc": "标了重点的来源,内容全部进此栏",
         "items": [
           {
-            "id": 5290119,
-            "title": "早知天下事〔2026.10.15〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650244863&idx=1&sn=516ba39fad6a630cd23ec17870b6eeb0",
+            "id": 5439993,
+            "title": "Prompt injection in HTTP headers: what 217M web responses show",
+            "url": "https://www.signalscorps.com/blog/prompt-injection-in-http-headers/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-10-15T14:36:22.000Z",
+            "score": 74,
+            "summary": "SignalsCorps 对 2.17 亿个 HTTP 响应进行分析，首次在请求头中发现大规模 prompt injection 攻击——攻击者通过 X-Custom-Header 等自定义 header 注入恶意提示词，已被用于生成虚假评论、钓鱼和伪造 AI 回复。建议所有接入 LLM 的产品立即审计请求头过滤逻辑。",
+            "cover": null
+          },
+          {
+            "id": 5426346,
+            "title": "An Israeli firm is sending spyware through online ads, researchers say",
+            "url": "https://www.theverge.com/tech/1011956/discover-tech-zero-click-ads-spyware",
+            "source": "The Verge",
+            "published_at": "2026-10-15T14:10:50.000Z",
+            "score": 68,
+            "summary": "以色列广告技术公司Discover-Tech被Citizen Lab与Confiant联合调查证实，作为恶意广告管道协助黑客组织向包括半岛电视台在内的设备投放间谍软件。这是首次有技术证据表明零点击攻击可通过精准广告渠道完成，无需用户任何操作即可感染设备。",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/23318436/akrales_220309_4977_0258.jpg?quality=90&strip=all&crop=0,0,100,100"
+          },
+          {
+            "id": 5569201,
+            "title": "Resources for learning to write production grade python code [N]",
+            "url": "https://www.reddit.com/r/MachineLearning/comments/1x6yg7s/resources_for_learning_to_write_production_grade/",
+            "source": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
+            "published_at": "2026-10-15T21:41:08.000Z",
+            "score": null,
+            "summary": "I am a data scientist with a very strong background in Stats and ML algos. I am struggling with the production ready code. Though I can build models which are awesome and tuned to perfection and addre",
+            "cover": null
+          },
+          {
+            "id": 5508175,
+            "title": "Working out how best to use AI in mathematics research—and in science more generally—will take time,...",
+            "url": "https://x.com/AnthropicAI/status/2110846112152105136",
+            "source": "Anthropic(@AnthropicAI)",
+            "published_at": "2026-10-15T21:31:45.000Z",
+            "score": null,
+            "summary": "Working out how best to use AI in mathematics research—and in science more generally—will take time, effort, and resources. We’re eager to support mathematicians as they drive scientific progress and ",
+            "cover": "https://pbs.twimg.com/profile_images/1703777329917329408/0iCMg95m_normal.jpg"
+          },
+          {
+            "id": 5510386,
+            "title": "早知天下事〔2026.10.16〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650245079&idx=1&sn=2bf39952c5323f443d52fe899c4bd7af",
             "source": "新华社",
-            "published_at": "2026-10-14T21:30:00.000Z",
+            "published_at": "2026-10-15T21:30:00.000Z",
             "score": null,
-            "summary": "经中朝双方商定，中朝新鸭绿江大桥将于10月15日正式开通，双方将于当日共同举行开通仪式。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7d112024&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOISib8zhQ2AicWBibkKJoUEAsic484PfcZicQ08PDVKYYBB5lJ5ISNpmNVSXiberQFYpIKIGrxSATibuKEwicicG8mWNBMyiaxEanwAD1q3hc%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "第140届中国进出口商品交易会（广交会）开展，全程共有3万多家企业参展，约34万名境外采购商到会采购。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c145f5fa&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOITeOEAEfYezWDEt5cLPuTF14sxdQ1ChJgMZ3aib4lhaRmMEibxc8S9pAcuCia0ZBQmtrxomDJDOVPbOR25N9XibiaSl0Z5zM0icywWPs%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 5259006,
-            "title": "Ukraine says its satellite communications have suddenly been restricted",
-            "url": "https://www.npr.org/2026/10/14/nx-s1-6001590/ukraine-says-its-satellite-communications-have-suddenly-been-restricted",
-            "source": "NPR Topics: World",
-            "published_at": "2026-10-14T20:17:54.000Z",
-            "score": null,
-            "summary": "Ukraine says its critical satellite communications system, which is supplied by the U.S. and guides its drones, has suddenly been restricted. It comes as the Trump administration has told Ukraine to s",
-            "cover": null
-          },
-          {
-            "id": 5259007,
-            "title": "Germany's intelligence scandal has a long list of possible consequences",
-            "url": "https://www.npr.org/2026/10/14/nx-s1-5995367/germanys-intelligence-scandal-has-a-long-list-of-possible-consequences",
-            "source": "NPR Topics: World",
-            "published_at": "2026-10-14T20:17:44.000Z",
-            "score": null,
-            "summary": "The arrest last week of August Hanning, a former head of Germany's intelligence service, on treason and espionage charges has left the country in shock. But it's also worrying Western agencies like th",
-            "cover": null
-          },
-          {
-            "id": 5248740,
-            "title": "SpaceX rocket launch creates glowing 'space jellyfish' cloud – video",
-            "url": "https://www.theguardian.com/us-news/video/2026/oct/14/spacex-rocket-launch-creates-glowing-space-jellyfish-cloud-video",
-            "source": "Space | The Guardian",
-            "published_at": "2026-10-14T19:12:31.000Z",
-            "score": null,
-            "summary": "The sun illuminated the exhaust plume of a SpaceX rocket launch on 13 October, creating a glowing jellyfish-like cloud in the sky, according to Nasa.",
-            "cover": null
-          },
-          {
-            "id": 5272925,
-            "title": "New ‘First Proof’ exam reveals how AI-powered math is a pay-to-play sport",
-            "url": "https://www.scientificamerican.com/article/new-first-proof-exam-reveals-how-ai-powered-math-is-a-pay-for-play-sport/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-10-14T19:00:00.000Z",
-            "score": null,
-            "summary": "The benchmark confirms that some AIs are becoming exceptional tools for research-level math. But open-source models still struggle",
-            "cover": null
-          },
-          {
-            "id": 5248741,
-            "title": "SpaceX rocket launch causes stunning ‘jellyfish cloud’ visible off US east coast",
-            "url": "https://www.theguardian.com/us-news/2026/oct/14/jellyfish-cloud-spacex-rocket-launch",
-            "source": "Space | The Guardian",
-            "published_at": "2026-10-14T18:15:25.000Z",
-            "score": null,
-            "summary": "Expanding plume of fuel exhaust crystalized in the sky and reflected sunlight off frozen particles after Florida launch",
-            "cover": null
-          },
-          {
-            "id": 5272926,
-            "title": "NIH appears to shut down public comments on science peer-review rule change ahead of schedule",
-            "url": "https://www.scientificamerican.com/article/nih-appears-to-shut-down-public-comments-on-science-peer-review-rule-change-ahead-of-schedule/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-10-14T18:00:00.000Z",
-            "score": null,
-            "summary": "The proposed change to how the National Institutes of Health handles grant applications has been criticized by scientists as reducing transparency",
-            "cover": null
-          },
-          {
-            "id": 5246979,
-            "title": "At DevDay, we introduced ChatGPT Space: a new home for your team to collaborate with AI to get work ...",
-            "url": "https://x.com/ChatGPT/status/2110424821331034550",
+            "id": 5502628,
+            "title": "Download the Chrome extension to get started today:\r\n\r\nhttps://t.co/o4522imCOF\r\n\r\nAvailable for all Chat...",
+            "url": "https://x.com/ChatGPT/status/2110825327811580209",
             "source": "ChatGPT(@ChatGPTapp)",
-            "published_at": "2026-10-14T17:37:41.000Z",
+            "published_at": "2026-10-15T20:09:10.000Z",
             "score": null,
-            "summary": "At DevDay, we introduced ChatGPT Space: a new home for your team to collaborate with AI to get work done.In Space, you can create living documents with ChatGPT and the people you work with. Turn a mes",
+            "summary": "Download the Chrome extension to get started today:chromewebstore.google.com/detail/chatgpt…Available for all ChatGPT plans.💬1🔄7❤️94👀11885📊18⚡ Powered by xgo.ing",
             "cover": null
           },
           {
-            "id": 5243291,
-            "title": "Here is the YouTube link as well! https://t.co/YvgFer0y1z",
-            "url": "https://x.com/OfficialLoganK/status/2110421595252805668",
+            "id": 5502629,
+            "title": "A few big upgrades for Chrome users today! We’re bringing the power of computer use to anyone who us...",
+            "url": "https://x.com/ChatGPT/status/2110823738531037651",
+            "source": "ChatGPT(@ChatGPTapp)",
+            "published_at": "2026-10-15T20:02:51.000Z",
+            "score": null,
+            "summary": "A few big upgrades for Chrome users today! We’re bringing the power of computer use to anyone who uses Chrome.First up: ChatGPT can now use your tabs in Chrome to make answers more useful and get thin",
+            "cover": null
+          },
+          {
+            "id": 5487286,
+            "title": "We are hosting our first \"Bench Summit\" to bring together people excited about pushing the frontier ...",
+            "url": "https://x.com/OfficialLoganK/status/2110810395598528788",
             "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-10-14T17:24:52.000Z",
+            "published_at": "2026-10-15T19:09:49.000Z",
             "score": null,
-            "summary": "Here is the YouTube link as well! youtube.com/watch?v=Jh6mgf…💬4🔄3❤️29👀6780📊8⚡ Powered by xgo.ing",
+            "summary": "We are hosting our first &quot;Bench Summit&quot; to bring together people excited about pushing the frontier of benchmarking, model evals, and more.Great benchmarks are a gating function for model pr",
             "cover": null
           },
           {
-            "id": 5243292,
-            "title": "A conversation with Sergey Brin, @joshwoodward, @tulseedoshi, and @melvinjohnsonp about Gemini 4 Arg...",
-            "url": "https://x.com/OfficialLoganK/status/2110420958737813612",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-10-14T17:22:20.000Z",
+            "id": 5502375,
+            "title": "Bringing GPT-Rosalind to academic research labs",
+            "url": "https://openai.com/index/introducing-the-rosalind-academic-plan",
+            "source": "OpenAI Blog",
+            "published_at": "2026-10-15T19:00:00.000Z",
             "score": null,
-            "summary": "A conversation with Sergey Brin, @joshwoodward, @tulseedoshi, and @melvinjohnsonp about Gemini 4 Argon, how we got here, and the path ahead!Your browser does not support the video tag.🔗 View on Twitt",
+            "summary": "Introducing the Rosalind Academic Plan, offering eligible academic labs sponsored access to GPT-Rosalind and tools to advance life sciences research.",
             "cover": null
           },
           {
-            "id": 5235371,
-            "title": "great work by @genevieve__h @JackWoth98 @_philschmid @fofrAI @timeyoutakeit @ivanleomk and more!",
-            "url": "https://x.com/patloeber/status/2110404175704236205",
-            "source": "Patrick Loeber(@patloeber)",
-            "published_at": "2026-10-14T16:15:39.000Z",
+            "id": 5482556,
+            "title": "Google’s quantum Willow chip may be able to grow ‘magic states’",
+            "url": "https://www.scientificamerican.com/article/googles-quantum-willow-chip-may-be-able-to-grow-magic-states/",
+            "source": "Scientific American Content: Global",
+            "published_at": "2026-10-15T18:00:00.000Z",
             "score": null,
-            "summary": "great work by @genevieve__h@JackWoth98@_philschmid@fofrAI@timeyoutakeit@ivanleomk and more!💬1🔄0❤️2👀313📊1⚡ Powered by xgo.ing",
+            "summary": "The work could help improve quantum computers&rsquo; accuracy in complex calculations",
             "cover": null
           },
           {
-            "id": 5235372,
-            "title": "our team shipped a bunch of guides to help you build with Gemini 4 Argon:\r\n\r\n- Dev guide: https://t.co...",
-            "url": "https://x.com/patloeber/status/2110404172726047107",
-            "source": "Patrick Loeber(@patloeber)",
-            "published_at": "2026-10-14T16:15:38.000Z",
-            "score": null,
-            "summary": "our team shipped a bunch of guides to help you build with Gemini 4 Argon:- Dev guide: aistudio.google.com/learn/gemini-4…- What&#39;s new + migration checklist: aistudio.google.com/docs/latest-mo…- Bu",
-            "cover": "https://pbs.twimg.com/media/HUmoVSkW4AAOCKx.jpg"
-          },
-          {
-            "id": 5233504,
-            "title": "地铁审批重新开闸？多城在排队",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661823194&idx=1&sn=f26e736eb276896dc5369d5288296a6f",
+            "id": 5465885,
+            "title": "天猫、京东、抖音，今年双11各家都打什么牌？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661824004&idx=1&sn=7f2a1c4112c0f1c2d4ed89e40e6d0190",
             "source": "第一财经",
-            "published_at": "2026-10-14T16:15:00.000Z",
+            "published_at": "2026-10-15T16:31:00.000Z",
             "score": null,
-            "summary": "受审批政策趋严、债务压力趋紧等多因素影响，城市轨道交通建设规划审批已经停滞近两年，不过，进入今年下半年，轨道交通规划审批可能将重新“开闸”。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b26ca99f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCKCcSibIMLAmjePjLcicBLJVEbBxkyKUlE402PXSj9ppdQkrkckv6ibKuib76JVnJXH89duPLlOpPmiacmyYmfgdmlxJk5Ywu9nhkzc%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "10月15日下午，几乎同一时间，阿里和京东分别在上海和北京举行2026年双11的发布会。两大传统电商隔空对阵，他们的新对手抖音也没缺席这场混战，同样在今天启动双11好物节。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=28f9bfcf&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCIFCkes5AytUgScB8InnKqODfKuWUt3ISYn5khqopraYK8l0XE6WtOaicy1B6WqlJxmlRn9ohPX2jQfCicWW4yssPoicdkas56Qhw%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 5233505,
-            "title": "一财社论：让看病更方便、负担更轻、用药更安全是医改根本目标",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661823194&idx=2&sn=677a29aba926aeadbd0b84e2c037ac46",
+            "id": 5465886,
+            "title": "专家：停不下来的爽感短剧让大脑习惯低成本快乐，专注力悄悄受损",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661824003&idx=1&sn=9d1b9f474fdcc3efdc06ffd5fef9c617",
             "source": "第一财经",
-            "published_at": "2026-10-14T16:15:00.000Z",
+            "published_at": "2026-10-15T16:15:00.000Z",
             "score": null,
-            "summary": "全国卫生与健康大会12日至13日在北京召开。会议强调，要坚持把推进医疗、医保、医药（三医）协同发展和治理作为医药卫生体制改革的主攻方向。重点在以公益性为导向深化公立医院改革、构建多层次医疗保障体系、健全药品供应保障和使用管理机制等方面取得更多突破。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=29fc306d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCIhOEpfWlRibz34R5o9cB1P1ic1Lbs6C75L2CxmgPGjRNXglPzKicicSos3ib9WskzLqcrrpc9snRkduYNNVfI9HGHjDqpB9jhibktOI%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "近日，在一些社交媒体上，关于刷短剧是否降智的话题成为热搜。有网友认为，刷完平台高密度反转的爽感短剧，感觉脑子变迟钝，甚至一刷就停不下来。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=cf502cca&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCKJzUkNGOlv1Axhp1iacKe7lr1vx6gEzUSbtib3AGuTq8UX9kIMQgfmhpTseCqdcL1BzicAm7jxYIfk6G5Yb0FPuqRhQciavoNRUqU%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 5305289,
-            "title": "韩国40多岁借款人中，超三分之一将年收入的四成及以上用于还贷",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247860886&idx=1&sn=692e5f0c7d4ed5bac2663f979f295f72",
+            "id": 5458504,
+            "title": "全球智能手机出货量，暴跌",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247861426&idx=1&sn=6037ea500a3f7ab9348008e394aee2be",
             "source": "财联社",
-            "published_at": "2026-10-14T16:01:00.000Z",
+            "published_at": "2026-10-15T16:02:00.000Z",
             "score": null,
-            "summary": "据韩国央行近日提交国会的数据，韩国40至49岁借款人的还贷负担居各年龄段之首，该年龄段超三成人的年还款额占年收入四成以上。韩国低收入者还贷压力近两年未见缓解，高收入者负担反而有所减轻。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b9eecd80&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaSuibDSNKpdCIIzNcGmgJsAboyHqSC244Qy1uzszUhGkTPPicq61UeW99FVqTLXC7RruE3XrkpHFwzsMd2eTDc04Va0ahHPmbPiaA%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "根据国际数据公司（IDC）最新发布的初步数据，2026年第三季度全球智能手机出货量降至2.553亿部，同比萎缩22.0%，创下有纪录以来最大降幅。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=009fcda1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaSXV8KXzaS3wgTAEXhuvQLjGONu01tNKu9RxAY2bkObbFAJjDx4sthz8oRS2kqibPicU4ol8Jac0VOXO6RIotlOQVCEZ6heFFUjg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5458505,
+            "title": "多家银行公告：工作日晚间付款少等90分钟",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247861426&idx=2&sn=ddba5bd2565edb93c9b6a6a54853c982",
+            "source": "财联社",
+            "published_at": "2026-10-15T16:02:00.000Z",
+            "score": null,
+            "summary": "近日，工行、杭州银行等多家银行发布配套公告，按照央行清算总中心安排，大额支付系统新规将于10月17日落地实施，系统运行服务时间由“5×21＋12小时”调整为“5×22.5＋13.5小时”。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9f13e5e3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaTsDI1iav3UKmDoTFjhWTwDOkraFAF8aHia3ZCMGqh1VOZoNJKZKZjpZibuMm3bqdRJmgjxA8r6oSU27ERTXPB4e0IiaJqdRFsIELI%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5451472,
+            "title": "🧰 Picking the most relevant tools one by one leaves gaps. HYSET scores tools as a set.\r\n\r\n📊 Recall@5...",
+            "url": "https://x.com/DeepLearningAI/status/2110762648136450528",
+            "source": "DeepLearning.AI(@DeepLearningAI)",
+            "published_at": "2026-10-15T16:00:06.000Z",
+            "score": null,
+            "summary": "🧰 Picking the most relevant tools one by one leaves gaps. HYSET scores tools as a set.📊 Recall@5: 88.6% vs. 81.4%✅ Tasks resolved: 69.9% vs. 61.8%Full story in our weekly newsletter for AI news and ",
+            "cover": "https://pbs.twimg.com/media/HUrvcUZXoAApBGK.jpg"
           }
         ]
       },
@@ -181,93 +191,53 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 5129910,
-            "title": "The Silent Failures in Agentic Data Science",
-            "url": "https://arxiv.org/abs/2610.14115",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-10-14T04:00:00.000Z",
-            "score": 83,
-            "summary": "arXiv:2610.14115v1 Announce Type: new Abstract: Large language models have significantly lowered the barrier to writing code. Naturally, this has also led to the development of data science agents tha",
+            "id": 5335223,
+            "title": "LLM-jp-4 Technical Report",
+            "url": "https://arxiv.org/abs/2610.19331",
+            "source": "cs.CL updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
+            "score": 74,
+            "summary": "LLM-jp-4是日本主权大模型系列第四代，包含8B dense和32B-A3B MoE两种架构，在约12万亿token上从头训练，并在数据选择标准和软件开发流程上完全公开。性能相比前代大幅提升，在同类规模开源模型中具备竞争力。",
             "cover": null
           },
           {
-            "id": 5130901,
-            "title": "Character.ai's Bankruptcy Documents Show the Economics of AI Don't Work",
-            "url": "https://www.404media.co/character-ais-bankruptcy-documents-show-the-economics-of-ai-dont-work/",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-10-14T06:00:32.000Z",
+            "id": 5401221,
+            "title": "How Netflix Made AI Coding Agents More Efficient with JetBrains IDE Intelligence",
+            "url": "https://blog.jetbrains.com/ai/2026/10/how-netflix-made-ai-coding-agents-more-efficient/",
+            "source": "The JetBrains Blog",
+            "published_at": "2026-10-15T09:29:14.000Z",
             "score": 72,
-            "summary": "Character.ai 破产文件揭示：其月运营成本高达数百万美元，而 AI 对话产品的付费转化率极低，单位经济效益无法跑正。这表明当前大模型推理成本与用户付费意愿之间存在难以跨越的鸿沟，而非单一公司的失败。",
+            "summary": "Netflix plugged JetBrains&#8217; headless code-intelligence engine – the same one behind IntelliJ IDEA – into Claude Code and Codex, then benchmarked it against a variety of scenarios. The details and",
             "cover": null
           },
           {
-            "id": 5156545,
-            "title": "一款免费的AI产品，靠什么支撑百亿美元估值？",
-            "url": "https://www.huxiu.com/article/4897462.html?f=rss",
+            "id": 5382443,
+            "title": "库克：Apple Intelligence将于10月底在中国发布测试版本，但不包括Siri AI",
+            "url": "https://36kr.com/newsflashes/4026888346194308?f=rss",
+            "source": "36氪",
+            "published_at": "2026-10-15T08:42:39.000Z",
+            "score": 72,
+            "summary": "库克确认Apple Intelligence首批功能（实时翻译、书写工具、照片清除）将于10月底以测试版形式登陆中国，底层调用阿里千问大模型；但Siri AI本次不包括在内。这意味着苹果在中国的智能生态将以工具型功能先行、语音助手延后的节奏推进。",
+            "cover": null
+          },
+          {
+            "id": 5342594,
+            "title": "焦点｜DeepSeek突发宕机：AI时代，我们该如何守住自身的技术利益",
+            "url": "https://www.huxiu.com/article/4897696.html?f=rss",
             "source": "虎嗅",
-            "published_at": "2026-10-14T08:53:20.000Z",
-            "score": 68,
-            "summary": "23岁创始人Noah Shinn创办的Instinct，成立一年估值达100亿美元，用户通过短信而非App使用。年化交易额10亿美元量级，约四成用户在三周后绑定信用卡，典型场景包括订机票酒店、取消订阅、跨Agent协作策划聚会。",
-            "cover": null
+            "published_at": "2026-10-15T04:22:09.000Z",
+            "score": 72,
+            "summary": "DeepSeek已今年至少18次宕机，3月底那次超12小时，但文章不止报故障。核心论点是：把业务绑在单一外部大模型API上等于把命脉交给别人——服务说挂就挂、定价说涨就涨、接口说改就改，你的核心资产（行业知识、业务流程、客户关系）一个都没沉淀。真正的技术自主不是自研大模型，而是拥有在几小时内平滑切换模型的能力。",
+            "cover": "https://img.huxiucdn.com/article/content/26-10-15/15e7888c-5739-43e9-bfd4-7ea67d7111bb.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 5144596,
-            "title": "受够了给 AI 上传表格格式全毁还被公司查合规，我手搓了一个在本地 WPS 窗口里实时干活的工具",
-            "url": "https://www.v2ex.com/t/1248738#reply0",
-            "source": "V2EX · 创意",
-            "published_at": "2026-10-14T07:25:46.000Z",
-            "score": 68,
-            "summary": "GitHub项目CharFloat通过MCP协议桥接本地WPS与任意AI客户端，实现原地增量修改而非重写文件，支持DeepSeek/Claude/本地Ollama模型，改表不破坏合并单元格和公式，每次改动自动存快照可秒级还原，完全物理不出本机满足企业加密环境合规要求。",
-            "cover": "https://github.com/Jolly-J/CharFloat/raw/main/docs/images/hero-showcase.gif"
-          },
-          {
-            "id": 5078901,
-            "title": "#772. Grok Bot 的 Personal Agent 实践",
-            "url": "https://www.xiaoyuzhoufm.com/episode/6ace8c6ae742e36efcc28be9",
-            "source": "跨国串门儿计划",
-            "published_at": "2026-10-14T00:00:00.000Z",
-            "score": 68,
-            "summary": "Lee (leerob) 在 Stanford CS146S 分享 Grok Bot 常驻 Agent 的工程设计：用子 Agent 隔离长任务、Temporal 实现失败续跑、上下文压缩与 prompt 缓存控制成本，并提出'逐条审批命令不如模型自动审查安全'的反直觉结论。",
-            "cover": "https://media.xyzcdn.net/670f3da40d2f24f28978736f/lq5DA3cR_ONZDPpc3PMCVIIWU1Mm.m4a"
-          },
-          {
-            "id": 5089414,
-            "title": "用 claude 网页版的别忘了关闭浏览器的预加载",
-            "url": "https://www.v2ex.com/t/1248574#reply8",
-            "source": "V2EX · 技术",
-            "published_at": "2026-10-14T00:54:51.000Z",
-            "score": 65,
-            "summary": "浏览器预加载功能会在输入 c 开头网址时提前连接 Claude 域名，未挂代理就会暴露真实 IP 和时区。作者发现很多人自认没暴露，实际是被预加载出卖的。建议 Claude 用户使用者手动关闭此功能。",
-            "cover": null
-          },
-          {
-            "id": 5283030,
-            "title": "Harbor + Docker Sandboxes: Run Safe, Reproducible Agent Evals",
-            "url": "https://www.docker.com/blog/harbor-docker-sandboxes-run-safe-reproducible-agent-evals/",
-            "source": "Docker",
-            "published_at": "2026-10-14T21:45:27.000Z",
-            "score": null,
-            "summary": "To evaluate an agent, you give it a real task, let it work, and check the result. Along the way, the agent installs packages, edits files, and runs commands. That’s untrusted, AI-written code, and a b",
-            "cover": null
-          },
-          {
-            "id": 5277289,
-            "title": "Crossing the Threshold: How OpenAI and Anthropic Approach Autonomy and Safety in Financial Agents",
-            "url": "https://www.latent.space/p/crossing-the-threshold",
-            "source": "Latent Space",
-            "published_at": "2026-10-14T21:40:52.000Z",
-            "score": null,
-            "summary": "One of the key themes at the AI Engineer New York conference this week was how to balance agent autonomy with security and safety. Both frontier labs and financial firms focused on this issue in their",
-            "cover": "https://substackcdn.com/image/fetch/$s_!rtS2!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4aa91ce4-8821-4844-aa0f-56d4bd3c8d7e_1280x720.jpeg"
-          },
-          {
-            "id": 5227689,
-            "title": "v1.24.2",
-            "url": "https://github.com/zed-industries/zed/releases/tag/v1.24.2",
-            "source": "Release notes from zed",
-            "published_at": "2026-10-14T16:43:09.000Z",
-            "score": null,
-            "summary": "This week's release includes Git tag creation, the ability to drag Terminal tabs into the Agent Panel, and pre-filling of the File Finder's search query with text selected in the editor or terminal.",
+            "id": 5335505,
+            "title": "PairIT: Autoregressive Transformers for Low-Data Molecule Optimization",
+            "url": "https://arxiv.org/abs/2610.19123",
+            "source": "cs.LG updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
+            "score": 72,
+            "summary": "PairIT是一种针对低数据场景的分子优化框架：通过在SMILES序列上使用结构相似的分子对进行训练，让模型学会对种子分子做局部、化学意义明确的编辑来优化目标属性。引入prompt token控制优化方向和幅度，支持多属性联合优化；RL后训练可在保真度和优化目标之间调参。关键发现：预训练数据规模增大存在收益递减。",
             "cover": null
           },
           {
@@ -276,59 +246,99 @@
             "url": "https://aws.amazon.com/blogs/machine-learning/build-self-improving-document-processing-using-amazon-bedrock-agentcore/",
             "source": "AWS Machine Learning Blog",
             "published_at": "2026-10-14T16:24:07.000Z",
-            "score": null,
+            "score": 72,
             "summary": "IDC research shows that document-related challenges cost organizations $19,732 for each information worker annually and reduce productivity by 21.3 percent. Organizations receiving invoices from hundr",
             "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/10/14/Architecture-2.png"
           },
           {
-            "id": 5230420,
-            "title": ":fire:【大模型百科54】关于Gemini-4-argon，你想知道的一切",
-            "url": "https://linux.do/t/topic/3025126",
-            "source": "LINUX DO · 文档共建",
-            "published_at": "2026-10-14T16:06:39.000Z",
-            "score": null,
-            "summary": "Model card：Gemini 4 Argon - Model Card — Google DeepMind",
-            "cover": "https://cdn.ldstatic.com/images/emoji/twemoji/red_exclamation_mark.png?v=15"
-          },
-          {
-            "id": 5257780,
-            "title": "我们可能一直都低估了小模型！Select to Think：也许选择比生成更重要",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzEwMzIwOQ==&mid=2247520372&idx=1&sn=06e686dc7cf187f5906413740b0e5c92",
-            "source": "青稞AI",
-            "published_at": "2026-10-14T16:00:00.000Z",
-            "score": null,
-            "summary": "青稞社区为科研人员提供成果宣传支持，如有优秀研究成果分享推广，欢迎投稿联系：aiFreeCode",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d0b18e03&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkqA90yjYex6grMa0MCnnNV7nUZbC7bBbWZXyNzTmsxvwjE6tWL1FrQRRxxcsgibGMNrcXScKOiaeDIqZ6pywKY1zQtC7XPIkFrYl0l9T5MPew%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 5235638,
-            "title": "We run our own customer support on ElevenAgents. It’s resolved over 22,000 tickets a month and cut o...",
-            "url": "https://x.com/ElevenLabs/status/2110400237969826097",
-            "source": "ElevenLabs(@elevenlabsio)",
-            "published_at": "2026-10-14T16:00:00.000Z",
-            "score": null,
-            "summary": "We run our own customer support on ElevenAgents. It’s resolved over 22,000 tickets a month and cut our response time down from hours to 60 seconds.Our support team already had standard operating proce",
+            "id": 5335221,
+            "title": "PersEvalBench: Can LLM Evaluators Judge Contextually Appropriate Use of Persona Information?",
+            "url": "https://arxiv.org/abs/2610.19314",
+            "source": "cs.CL updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
+            "score": 71,
+            "summary": "arXiv新出的PersEvalBench用403个多轮场景测试LLM评价器能否正确判断个性化信息的适用性。最强模型仅63.9%识别率，人类达94.4%，且模型常把'不够个性化'误判为'过度个性化'。说明当前评价器在理解用户历史信息的作用角色上存在系统性缺陷。",
             "cover": null
           },
           {
-            "id": 5249659,
-            "title": "How to Stop an AI Agent from Inventing Nigerian Postcodes",
-            "url": "https://www.freecodecamp.org/news/how-to-stop-an-ai-agent-from-inventing-nigerian-postcodes/",
-            "source": "freeCodeCamp.org",
-            "published_at": "2026-10-14T15:32:13.000Z",
-            "score": null,
-            "summary": "On 1 October 2026, Nigeria's postcode changed from six digits to an 11-character code that identifies a single building, such as EK-01-A03-FK-01.",
-            "cover": "https://cdn.hashnode.com/uploads/covers/5f3a74bfc4d5973f55c91c8c/12749f6e-25a1-4ea2-929a-b35fca72751a.png"
+            "id": 5489380,
+            "title": "Same LLM, same input tokens, different answers on a MacBook and a Jetson",
+            "url": "https://kernwerk.org/blog/same-model-different-board/",
+            "source": "Hacker News - Newest: &quot;LLM&quot;",
+            "published_at": "2026-10-15T20:09:27.000Z",
+            "score": 70,
+            "summary": "同一LLM模型、相同输入token，在MacBook和Jetson上运行输出不同结果。文章验证了硬件平台差异会影响推理结果，提醒工程师部署时需关注推理环境一致性。",
+            "cover": null
           },
           {
-            "id": 5276839,
-            "title": "155款应用，拒绝接入豆包手机助手",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MzI5NTU3MQ==&mid=2652577288&idx=1&sn=a197350dc4811343bdebdcaaaf2df321",
-            "source": "澎湃新闻",
-            "published_at": "2026-10-14T15:28:00.000Z",
+            "id": 5399318,
+            "title": "WorkBuddy 打通企业微信，腾讯把 AI 办公的竞争带进了自己的主场",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkyNjU2ODM2NQ==&mid=2247634345&idx=1&sn=0e5f3b20243fc0d9addd96bde38ef3f1",
+            "source": "硅星人Pro",
+            "published_at": "2026-10-15T01:29:00.000Z",
+            "score": 70,
+            "summary": "让 AI 完成一项任务，和让一家企业长期把工作交给 AI，是两回事。后者需要 Agent 接入公司已有的资料和权限体系，理解工作的来龙去脉，再把结果交给团队继续处理。企业很难为了一个新工具，重新搭建这些已经运转多年的工作关系。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=50d7cdd8&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FgdEn3pxzatSZTn07G3G6eafkEGN9Am4vicjwSPU4brmr0rgXu4AoU2MLnUicKv9lMjFfib3UftQyDQsUhCTibKJ3AXWQoaIKCY6ric86xgkiaE98Q%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5403932,
+            "title": "AI成信息枢纽，媒体不可替代的价值是什么？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTE0ODA2MQ==&mid=2650999091&idx=1&sn=b8595f7de3a38bcf83d07b82aedc7a97",
+            "source": "腾讯研究院",
+            "published_at": "2026-10-15T09:20:00.000Z",
+            "score": 68,
+            "summary": "围绕生成式AI使用新闻内容的争议，正从美国的头部媒体向地方新闻机构蔓延。2026年10月，以埃默里奇报业集团、《今日美国》为代表的多家地方媒体接连将OpenAI告上法庭，指控后者未经授权将受版权保护的原创报道用于模型训练，并通过生成式AI提供可能替代原始新闻内容的回答。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=efc77c4f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fsm1UZBHjpbiauRy29d12RmygkA36nIX7BZPDrZRnTUWic3d52qhJqmjfGuF6ceiciahNU3NHxL0Yshibo50RgJnMNibsz3PvgIS0xch16V1zLWSoM%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5335251,
+            "title": "DeBoneDiT: Depth-Driven Conditional Bridge Diffusion Transformers for Bone Suppression in Chest X-Ray Images",
+            "url": "https://arxiv.org/abs/2610.19466",
+            "source": "cs.CV updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
+            "score": 68,
+            "summary": "研究团队提出DeBoneDiT模型，用深度驱动的布朗桥扩散Transformer实现胸部X光片骨抑制，无需专用硬件即可消除骨骼遮挡。核心创新是Depth Auto-Encoder（集成Depth Anything V2）解决重建偏差问题，并同步发布SZCH-X-Rays数据集。",
+            "cover": null
+          },
+          {
+            "id": 5414539,
+            "title": "Step 5 Preview 开源，OpenRouter 周榜第二，模型训练技术细节揭秘！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzY5ODQwMTkxNA==&mid=2247517276&idx=1&sn=02d1dd1449a855744081920a311e16fe",
+            "source": "Founder Park",
+            "published_at": "2026-10-15T09:54:00.000Z",
+            "score": 67,
+            "summary": "9 月 20 日上线的 Step 5 Preview 今日正式开源，放出 BF16 与 FP8 两版权重，同时发布了技术报告。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e1c42959&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5icxfcvT9Umgs5okdNLFUhE0urNF9nuTNe6aUvJtSZ1uFSz10mgtvHDqlX7uBEicWqpCy0CLX0WP8Jn2lRjo5VjcIDCcCcBtiaHPRJc7wQHrLg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5312453,
+            "title": "OPPO成了 Manus第一个国内客户",
+            "url": "https://www.tmtpost.com/8168786.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-10-15T01:31:09.000Z",
+            "score": 65,
+            "summary": "OPPO与Manus达成合作，将Manus智能体接入ColorOS 17的AI Mind Pilot，首发Find X10系列。Manus刚完成超5亿美元融资，这是其国内首次系统级落地。与豆包做独立助手不同，Manus选择成为OPPO助手的可调用服务，策略是先借入口获客，再靠任务完成建立信任。",
+            "cover": "https://images.tmtpost.com/uploads/images/2026/10/10629c1a36eff6f019131906f8d9836d_1792027873.jpg"
+          },
+          {
+            "id": 5283029,
+            "title": "AI Agent Security Risks: What Can Go Wrong When Agents Act on Their Own",
+            "url": "https://www.docker.com/blog/ai-agent-security-risks/",
+            "source": "Docker",
+            "published_at": "2026-10-14T22:08:33.000Z",
+            "score": 65,
+            "summary": "AI Agent的自主行动能力是双刃剑——它能自主选择工具、串联动作、使用你的凭证执行操作，这意味着一个被污染的指令不再是错误答案，而是真实损害。应对思路只有两步：隔离以限制爆炸半径，治理以监控行为。",
+            "cover": "https://www.docker.com/app/uploads/2026/10/docker_AI-Agent-Security-Risks-2320x1218.jpg"
+          },
+          {
+            "id": 5520031,
+            "title": "That Slack thread about onboarding can become your next project improvement.\r\n\r\nJust ask Replit: “Use ...",
+            "url": "https://x.com/Replit/status/2110853221467963530",
+            "source": "Replit ⠕(@Replit)",
+            "published_at": "2026-10-15T22:00:00.000Z",
             "score": null,
-            "summary": "10月14日，豆包手机助手宣布，其推出的《屏幕自动化操作声明协议》（SAEP，Screen Automation Execution Protocol）30天公示期已于2026年10月14日结束，现将逐步放开第三方应用的屏幕自动化操作权限。已明确声明拒绝的应用，智能体将不会对其进行操作。公示期结束后，开发者仍可随时声明拒绝，豆包手机助手也会及时关闭相关操作。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eb16f7f9&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FibIciaJ2dfKYfQrgx8nCxn6TVRP2UicCsjlgsVicBnae6YqDGodRLE2yRd4nW2ibYGCrCesUo5woK8rHurNatzrC53Jmo15drGRM9DSibhfia45AjE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "That Slack thread about onboarding can become your next project improvement.Just ask Replit: “Use last week’s feedback from #product_feedback to improve onboarding in my customer portal.”Agent finds t",
+            "cover": null
           }
         ]
       },
@@ -337,122 +347,122 @@
         "desc": "未命中任何栏目关键词的入选内容",
         "items": [
           {
-            "id": 5145397,
-            "title": "巅峰估值 50 亿美元的 AI 独角兽，何以不到 0.1 折贱卖",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTMwNDMwODQ0MQ==&mid=2653114759&idx=1&sn=e6121c78d0020251dd79c9a2db9db985",
-            "source": "极客公园",
-            "published_at": "2026-10-14T03:07:00.000Z",
-            "score": 76,
-            "summary": "当地时间 10 月 12 日，曾经引爆 AI 陪伴赛道的明星项目 Character.AI，在美国特拉华州法院提交《破产法》第 11 章重组申请，开启法院监督下的资产拍卖流程。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8deff26c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fz6JAVpoB67SZAjhicEFwwJ0O114hCPOacCHELllWDgfpKpbWA5BCXpv3JsnYXVudjuUbwELibiamxZMNqWJiaL5vicUgdbkdylAldysZvwAMT3F0%2F0%3Fwx_fmt%3Djpeg"
+            "id": 5360797,
+            "title": "Sports Contracts Face Nevada Challenge Over CFTC Treatment",
+            "url": "https://readwrite.com/prediction-markets-cftc-nevada/",
+            "source": "ReadWrite",
+            "published_at": "2026-10-15T06:22:40.000Z",
+            "score": 75,
+            "summary": "The CFTC advanced two measures affecting prediction markets, a move Nevada Gaming Control Board Chairman Mike Dreitzer said he expected as federal and state authorities dispute who should oversee spor",
+            "cover": "https://readwrite.com/wp-content/uploads/2026/10/sports-contracts-nevada-cftc-challenge-300x200.webp"
           },
           {
-            "id": 5165342,
-            "title": "蚂蚁基金2万亿称王 银行卖基金却越来越难了",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTA0Mzc2MA==&mid=2651476949&idx=1&sn=996f7794f7e30ee7c5b76ae8ff5bf707",
-            "source": "腾讯财经",
-            "published_at": "2026-10-14T00:00:00.000Z",
+            "id": 5335230,
+            "title": "Why Do VLMs Fail at Remote Physiological Measurement? Rethinking with Physiological Grounding and Numerical Alignment",
+            "url": "https://arxiv.org/abs/2610.19052",
+            "source": "cs.CV updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
             "score": 72,
-            "summary": "中基协公布的基金销售机构公募基金销售保有规模百强榜单显示，截至6月末，前100家基金代销机构的非货基金保有规模为13.79万亿元，较2025年末增长17.88%，较2025年6月末增长35.21%。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=18978998&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fq0NHQibGt0uZONvgu2tQS5OwVia4vLI5Agiab5znwsakhI6xgqia9obDuqmEXfXDd3JvW0wZMBictzY8yJ77s5mo5UZic9icj6Gic4VfFYbf76CPLTI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 5067894,
-            "title": "GitHub App improvements for least privilege and management",
-            "url": "https://github.blog/changelog/2026-10-13-github-app-improvements-for-least-privilege-and-management",
-            "source": "Archive: 2026 - GitHub Changelog",
-            "published_at": "2026-10-13T23:17:55.000Z",
-            "score": 72,
-            "summary": "We&rsquo;re releasing several GitHub Apps improvements today that help developers move off of classic PATs, improve GitHub App management, and request fewer sensitive permissions. We&rsquo;ve also mad",
-            "cover": "https://github.com/user-attachments/assets/7f233dd5-d499-45cd-a4d8-a61b1c0b63ff"
-          },
-          {
-            "id": 5037095,
-            "title": "Developing Gemini 4 Argon responsibly and safely",
-            "url": "https://deepmind.google/blog/developing-gemini-4-argon-responsibly-and-safely/",
-            "source": "Google DeepMind Blog",
-            "published_at": "2026-10-13T19:43:07.000Z",
-            "score": 72,
-            "summary": "",
+            "summary": "VLM用于视频远程生理测量（rPPG）存在两个瓶颈：通用语义token无法保留细粒度生理线索；自回归离散token预测与连续数值存在本质不对齐。论文提出VITAL框架，引入独立生理通路+结构化数值对齐，在多个rPPG数据集上验证有效。",
             "cover": null
           },
           {
-            "id": 5134676,
-            "title": "How a leaked builder of XWorm turned a remote access trojan into a surveillance kit",
-            "url": "https://securityaffairs.com/200910/malware/how-a-leaked-builder-of-xworm-turned-a-remote-access-trojan-into-a-surveillance-kit.html",
-            "source": "Security Affairs",
-            "published_at": "2026-10-14T05:46:19.000Z",
+            "id": 5335490,
+            "title": "How Many Ranks Does a Token Need? A Noise-Floor Squelch for Rank-One LoRA Experts",
+            "url": "https://arxiv.org/abs/2610.19033",
+            "source": "cs.LG updates on arXiv.org",
+            "published_at": "2026-10-15T04:00:00.000Z",
+            "score": 72,
+            "summary": "论文指出LoRA的每一rank-one组件对每个token的响应呈现「高斯噪声底面上的少数大值」结构，噪声底面携带的是跨-component串扰而非适配信号。作者提出SQUELCH：对每个token的响应做软阈值收缩（阈值由Stein无偏风险估计自动选择，无需预设rank预算），再用Gram矩阵的解释- away步骤抑制冗余共激活组件。该方法在LLaMA-3.1-8B和Qwen3上实测有效，且不增",
+            "cover": null
+          },
+          {
+            "id": 5394903,
+            "title": "腾讯下场了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI5ODk1NjY1MA==&mid=2247742593&idx=1&sn=9679eff88fa7094d1ae1c97bf31455d7",
+            "source": "投资界",
+            "published_at": "2026-10-15T07:07:00.000Z",
             "score": 70,
-            "summary": "XWorm远控木马源码在2025年6月和8月两次泄露后， detections从季度平均200+飙升至1,236次，金融客户占35%，集中在印度、巴西、意大利、巴拿马和美国。9月单月601次，仍处高位。",
-            "cover": "https://i0.wp.com/securityaffairs.com/wp-content/uploads/2026/10/image-31.png?resize=1024%2C456&ssl=1"
+            "summary": "大约一个月前，微信内悄然上线一款名为“绿泡泡短剧”的小程序，slogan为“免费好剧，一点就看”。至此，腾讯正式杀入免费短剧江湖。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f34076ec&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F0gtDY3RcibDvKavk0iasHgqpVvLLYrS5picwk3hOBDr3UUZmfAHo5BB75S0UGX6tNwzNr1t3ywhUfcGkvzYC9OAtPduicE7m4OBlvmqyqoqyAVQ%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 5295092,
-            "title": "心血管不好的人，真心建议你吃点“高钾食物”",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654598670&idx=1&sn=67287e08dc34996e54896398884ddfca",
-            "source": "CCTV生活圈",
-            "published_at": "2026-10-14T22:00:00.000Z",
-            "score": null,
-            "summary": "说到心血管饮食管理，很多圈友的第一反应都是少吃盐。可现实不少中老年人，即便已经刻意吃得清淡，依旧会遇到一些小困扰，比如偶尔吃一顿偏咸的饭菜就容易脸肿、腿肿，血压容易起伏波动。很多人不知道，除了控盐之外，饮食当中的钾，也会直接影响身体处理盐分的能力。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=09285a32&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgc44cTx4AgfpeDkNsQ9OUsAz6SxYeDVGA5naXibgBLabldAia2ZVdJibHgo2RmbGDRJzNf7hquM8X4WnP4hmjkfxticMPsS5DzgPOc%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 5295093,
-            "title": "经常打鼾的人，建议从今天起换个睡姿",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654598670&idx=2&sn=5d3ed4c782ff4160e2516bf7ff5bf0da",
-            "source": "CCTV生活圈",
-            "published_at": "2026-10-14T22:00:00.000Z",
-            "score": null,
-            "summary": "圈友您好，打鼾也就是我们常说的打呼噜，想要改善打呼噜需要从多方面入手，包括控制体重、戒烟戒酒、规律作息、调整睡姿（尽量侧睡）等。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=dde7d75b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgf5LMpfegiaPDVR2jyfOazeI5srrynpnibhJhHP5OZpqqIna7Yxv24eCIr0VTq7UZAP838g5rYrsuUwqQiczGqJ5FfFNbCtq5KZzI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 5286476,
-            "title": "Microsoft Defender Now Supports Linux Desktops",
-            "url": "https://linux.slashdot.org/story/26/10/14/2121212/microsoft-defender-now-supports-linux-desktops?utm_source=rss1.0mainlinkanon&utm_medium=feed",
-            "source": "Slashdot",
-            "published_at": "2026-10-14T22:00:00.000Z",
-            "score": null,
-            "summary": "\"Starting today, Linux desktops are now officially supported by Microsoft Defender,\" reports Neowin. A public preview of the threat detection app extends its enterprise security platform beyond server",
-            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
-          },
-          {
-            "id": 5305924,
-            "title": "Walsh Warns On AI Chatbots: US commentator fears ‘friend-like’ bonds; questions big tech power",
-            "url": "https://timesofindia.indiatimes.com/world/us-streamers/youtuber-matt-walsh-sounds-grim-warning-about-ai-chatbots-as-he-questions-what-happens-when-humans-replace-friends/articleshow/134949435.cms",
-            "source": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
-            "published_at": "2026-10-14T22:00:00.000Z",
-            "score": null,
-            "summary": "Matt Walsh criticized the growing use of AI chatbots among young people in an October 14 post on X. He warned that people could begin treating AI systems as friends and spending much of their day talk",
-            "cover": "https://timesofindia.indiatimes.com/photo/134949435.cms"
-          },
-          {
-            "id": 5286251,
-            "title": "A big theme at the @aiDotEngineer New York conference this week was how to balance agent autonomy wi...",
-            "url": "https://x.com/latentspacepod/status/2110490546170909102",
-            "source": "Latent.Space(@latentspacepod)",
-            "published_at": "2026-10-14T21:58:51.000Z",
-            "score": null,
-            "summary": "A big theme at the @aiDotEngineer New York conference this week was how to balance agent autonomy with security and safety. @OpenAI, @AnthropicAI, @twosigma &amp; @Bloomberg focused on this issue in t",
+            "id": 5385477,
+            "title": "Even Without AI, the Risk of a Biological Attack Is Terrifying",
+            "url": "https://www.motherjones.com/politics/2026/09/ai-anthropic-pandemic-biological-war-scenario-bioterrorism-annie-jacobsen-book-gain-function-research-pathogens-ethics/",
+            "source": "Hacker News - Newest: &quot;AI&quot;",
+            "published_at": "2026-10-15T09:17:14.000Z",
+            "score": 68,
+            "summary": "即使不考虑AI，生物攻击风险已经足够可怕——Anthropic与调查记者Annie Jacobsen探讨增益功能研究（gain-function research）的伦理困境：科学家能否故意增强病原体毒性？文章指出这类研究正在实验室中发生，而监管框架严重滞后。",
             "cover": null
+          },
+          {
+            "id": 5243371,
+            "title": "The $8 million AI music scam",
+            "url": "4a5106e0-6e7b-11f1-94bf-1fb71a6a68f7",
+            "source": "The Vergecast",
+            "published_at": "2026-10-14T18:29:00.000Z",
+            "score": 68,
+            "summary": "A man named Mike Smith was recently sentenced to 18 months in prison, and a fine in excess of $8 million, for creating an AI system that faked billions of streams and earned him millions in royalties.",
+            "cover": "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/pscrb.fm/rss/p/mgln.ai/e/257/traffic.megaphone.fm/VMP9251832124.mp3"
+          },
+          {
+            "id": 5390628,
+            "title": "Ayar Labs：英伟达、AMD、英特尔同时下注的光互连公司，15 个月估值涨到 3.7 倍",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MDU4ODkyNg==&mid=2247513230&idx=1&sn=a188cca51a2f73a0bbc92dd827db9b1f",
+            "source": "硅谷科技评论",
+            "published_at": "2026-10-15T02:30:00.000Z",
+            "score": 67,
+            "summary": "2026 年 2 月 2 日，美满电子（Marvell）完成对光互连公司 Celestial AI 的收购，签约时的首付对价约 32.5 亿美元。一个月后，同赛道的 Ayar Labs 宣布 5 亿美元 E 轮，投后估值 37.5 亿美元，AMD 和英伟达都在投资方名单上。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=676932ba&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FKy2X3s1TSMXcdCFPGxJetqhzIEJ0mgW5HpttBwZX1MlpwEZ7VNaxUFf8sxuArNgLgUOzYV4nIYvD0dvGibzRtrXbQmpQ5iaS1zB9CDlFpdlnE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5386378,
+            "title": "腾讯又一AI产品宣布将停止服务",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NTU5NDc0NA==&mid=2247609629&idx=1&sn=20322351f75beeb30ef4eb6cff594d74",
+            "source": "见实",
+            "published_at": "2026-10-15T08:49:00.000Z",
+            "score": 66,
+            "summary": "腾讯元器平台将于2026年11月9日停服，这是腾讯继QClaw之后的第二个近期关停的AI产品。文章详细说明了分阶段停服时间表、数据导出截止日期（2027年1月9日）以及官方推荐的迁移路径（腾讯云ADP平台和公众号智能回复），并明确了资源包退费规则。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b7532c58&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FDY5Eib2rQSoHWn7M8kdqmfR6pZV88QOpvVlvutfDUEkl4AEBUTwggzMwvib8SHWHM9LXHVzVyOANu4jGeUIha8aaobNmT7TyUlj8jX3quWtw8%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5389195,
+            "title": "精益数智化双轮进阶：霍尼韦尔科技重塑流程工业可靠智造体系",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzY4MzQyMQ==&mid=2650153586&idx=2&sn=3415231bfc220aa8dbee003c826cd2d3",
+            "source": "哈佛商业评论",
+            "published_at": "2026-10-15T00:00:00.000Z",
+            "score": 66,
+            "summary": "如今摆在企业面前的核心矛盾，不是有没有数字化系统，而是智能化投入很难真正转化为产能、能耗以及安全层面的实际收益。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f4a3432d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FBiawCOWWXNbQSAMWRuKdXOIsxBosOgoSGLEVte1xajcjkzSuU1VJJ5TsDzUEFl4bB5HqERUh9lN8f4Hukk2FTlHicYCtPsCIGl1s7EISUnSok%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 5561738,
+            "title": "一种容易让牙齿掉光的病，很多人年轻时不重视，等到老了就后悔了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654598766&idx=1&sn=9d938ee2dc5b972334d110904e65cf10",
+            "source": "CCTV生活圈",
+            "published_at": "2026-10-15T22:00:00.000Z",
+            "score": null,
+            "summary": "口腔里的细菌会分解食物中的碳水化合物，代谢出酸性物质。这些酸持续作用于牙釉质，可能引起牙齿脱矿，进而诱发蛀牙。糖是细菌重要的“口粮”，也是诱发蛀牙的重要危险因素。即便是不含蔗糖的食品，只要能被口腔细菌发酵产酸，同样存在损伤牙齿的风险。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=969d9bc3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgdHerSbyRsQe9XKjgYlpCZ4BkvEZUKwNsXHnYdWWubmG7yv8YcMjDUxv7eFxm9TI1PLtEXnbQbDarDkUL9TSxf8Uzia9axEUkUE%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 426,
-      "articles": 426,
+      "candidates": 424,
+      "articles": 424,
       "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 5018,
-        "poolSources": 442,
+        "pool": 4994,
+        "poolSources": 444,
         "kept": 500,
-        "keptSources": 317
+        "keptSources": 309
       },
-      "totalItems": 41
+      "totalItems": 42
     }
   },
-  "generated_at": "2026-10-15T06:07:54.873Z"
+  "generated_at": "2026-10-16T06:04:22.421Z"
 }
