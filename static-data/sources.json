@@ -29,20 +29,6 @@
       "fail_count": 0
     },
     {
-      "id": 694,
-      "type": "rss",
-      "name": "251 的魔法实验室",
-      "url": "https://blog.251.sh/feed/",
-      "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 695,
       "type": "rss",
       "name": "30 for 30 Podcasts",
@@ -729,20 +715,6 @@
       "fail_count": 0
     },
     {
-      "id": 552,
-      "type": "youtube",
-      "name": "All-In Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCESLZhusAkFfsNsApnjF_Cg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 724,
       "type": "rss",
       "name": "Alliot's blog",
@@ -953,20 +925,6 @@
       "fail_count": 0
     },
     {
-      "id": 738,
-      "type": "x",
-      "name": "Aravind Srinivas(@AravSrinivas)",
-      "url": "https://api.xgo.ing/rss/user/59e6b63ae9684d11be0ae13d9e7420f2",
-      "avatar": "https://pbs.twimg.com/profile_images/2097934672420384774/peq4weFE_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 739,
       "type": "rss",
       "name": "Archive: 2026 - GitHub Changelog",
@@ -1002,20 +960,6 @@
       "avatar": "https://pbs.twimg.com/profile_images/1887904839931248640/2_rjHToC_normal.jpg",
       "group_id": 30,
       "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 741,
-      "type": "rss",
-      "name": "Arthur's Review",
-      "url": "https://blog.leesaitool.com/feed.xml",
-      "avatar": "https://blog.leesaitool.com/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -1233,20 +1177,6 @@
       "fail_count": 0
     },
     {
-      "id": 755,
-      "type": "x",
-      "name": "Browser Use(@browser_use)",
-      "url": "https://api.xgo.ing/rss/user/b8d7530f0b294405825013bbc1cc198f",
-      "avatar": "https://pbs.twimg.com/profile_images/2056516030974091264/Qb5CJOLu_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 756,
       "type": "rss",
       "name": "ByteByteGo Newsletter",
@@ -1393,20 +1323,6 @@
       "url": "https://www.dongyao.ren/feed/",
       "avatar": "https://www.dongyao.ren/wp-content/uploads/2022/11/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 764,
-      "type": "x",
-      "name": "Claude(@claudeai)",
-      "url": "https://api.xgo.ing/rss/user/01f60d63a61b44d692cc35c7feb0b4a4",
-      "avatar": "https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg",
-      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1700,20 +1616,6 @@
       "name": "Deepzz's Blog",
       "url": "https://deepzz.com/feed",
       "avatar": "https://deepzz.com/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 781,
-      "type": "rss",
-      "name": "Dejavu's Blog",
-      "url": "https://blog.dejavu.moe/index.xml",
-      "avatar": "https://blog.dejavu.moe/og.webp",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -2153,8 +2055,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 8
     },
     {
       "id": 807,
@@ -2289,20 +2191,6 @@
       "url": "https://www.omnycontent.com/d/playlist/aaea4e69-af51-495e-afc9-a9760146922b/2a195077-f014-41d2-8313-ab190186b4c2/277bcd5c-0a05-4c14-8ba6-ab190186b4d5/podcast.rss",
       "avatar": "https://megaphone.imgix.net/podcasts/97d6d85e-e320-11eb-be6b-3ff4d7cb8782/image/3af290d77dd48789f45dcd5a93483cd1.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 817,
-      "type": "x",
-      "name": "Geek(@geekbb)",
-      "url": "https://api.xgo.ing/rss/user/9cb3b60e689e4445a7fbdfd0be144126",
-      "avatar": "https://pbs.twimg.com/profile_images/1644898947272671233/7959WGOK_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2559,8 +2447,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 70,
@@ -3221,20 +3109,6 @@
       "fail_count": 0
     },
     {
-      "id": 565,
-      "type": "youtube",
-      "name": "Kurzgesagt - In a Nutshell",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 875,
       "type": "rss",
       "name": "LCZBlog",
@@ -3261,20 +3135,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 526,
-      "type": "youtube",
-      "name": "LangChain",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCC-lyoTfSrcJzA1ab3APAgw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 1
     },
     {
       "id": 877,
@@ -3661,6 +3521,20 @@
       "url": "https://markonreview.com/rss/",
       "avatar": "https://markonreview.com/favicon.png",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 905,
+      "type": "x",
+      "name": "Martin Fowler(@martinfowler)",
+      "url": "https://api.xgo.ing/rss/user/55d2d3f3eaaf4357b3230e0b01a464d7",
+      "avatar": "https://pbs.twimg.com/profile_images/79787739/mf-tg-sq_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5769,20 +5643,6 @@
       "fail_count": 0
     },
     {
-      "id": 643,
-      "type": "rss",
-      "name": "TIANYU2FM — 对谈未知领域",
-      "url": "https://rsshub.xiaowuaiblog.com/xiaoyuzhou/podcast/5f22729f9504bbdb77253e46",
-      "avatar": null,
-      "group_id": 17,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1043,
       "type": "x",
       "name": "Taranjeet(@taranjeetio)",
@@ -5965,20 +5825,6 @@
       "fail_count": 0
     },
     {
-      "id": 576,
-      "type": "youtube",
-      "name": "The Knowledge Project Podcast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 1055,
       "type": "rss",
       "name": "The Loop",
@@ -6102,7 +5948,7 @@
       "reader_visible": 1,
       "enabled": 1,
       "status": "error",
-      "fail_count": 3
+      "fail_count": 8
     },
     {
       "id": 1062,
@@ -6567,20 +6413,6 @@
       "fail_count": 0
     },
     {
-      "id": 581,
-      "type": "youtube",
-      "name": "Y Combinator",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcefcZRL2oaA_uBNeo5UOWg",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1090,
       "type": "x",
       "name": "Y Combinator(@ycombinator)",
@@ -6600,20 +6432,6 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1092,
-      "type": "rss",
-      "name": "YangXuan's Blog",
-      "url": "https://yangxuan.ai/feed/",
-      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7011,8 +6829,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 411,
@@ -7259,6 +7077,20 @@
       "url": "https://api.xgo.ing/rss/user/6326c63a2dfa445bbde88bea0c3112c2",
       "avatar": "https://pbs.twimg.com/profile_images/2045273960666071040/rCjCIwiC_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1138,
+      "type": "x",
+      "name": "orange.ai(@oran_ge)",
+      "url": "https://api.xgo.ing/rss/user/0277b0bbefd54df7bc6b7880122da8f7",
+      "avatar": "https://pbs.twimg.com/profile_images/1760074488073629696/ceSsuVCY_normal.png",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -8327,8 +8159,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 654,
@@ -8771,20 +8603,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/ab06f5f1e4d78417466bd4ff3330d36284ba0503.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7BmxMfFQA3ic4p0H3Syd79W0p8Z6RnA9WnHcTTNrfPxSw/0",
       "group_id": 21,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1179,
-      "type": "rss",
-      "name": "千古八方的博客",
-      "url": "https://rangotec.com/feed",
-      "avatar": null,
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9807,6 +9625,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/156a64fe3e95eebe4b85bf981d6ebb85441897bf.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM5ewWQao972vMLiax67bproIib0MxwDuoLX0Hnnph4saUgA/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1208,
+      "type": "rss",
+      "name": "如有乐享",
+      "url": "https://51.ruyo.net/feed",
+      "avatar": "https://51.ruyo.net/favicon.ico",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -11887,6 +11719,20 @@
       "fail_count": 0
     },
     {
+      "id": 1258,
+      "type": "x",
+      "name": "歸藏(guizang.ai)(@op7418)",
+      "url": "https://api.xgo.ing/rss/user/831fac36aa0a49a9af79f35dc1c9b5d9",
+      "avatar": "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw_normal.jpg",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 143,
       "type": "rss",
       "name": "歸藏的AI工具箱",
@@ -13265,6 +13111,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/61bdf2799e5208df45c8bbbd96ba81dd088d2483.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6ibmPF9jOLz8F503ITz0UOuEAM00fk7icJTAzQqLcSRwmw/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1289,
+      "type": "rss",
+      "name": "站长之家",
+      "url": "https://app.chinaz.com/?app=rss",
+      "avatar": "http://img.chinaz.com/templates/chinaz/img/logo.png",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -14687,20 +14547,6 @@
       "fail_count": 0
     },
     {
-      "id": 1322,
-      "type": "rss",
-      "name": "迷途小书童的Note",
-      "url": "https://xugaoxiang.com/feed",
-      "avatar": "https://xugaoxiang.com/wp-content/uploads/2020/05/cropped-logo-32x32.png",
-      "group_id": 21,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 172,
       "type": "rss",
       "name": "通义实验室",
@@ -15499,5 +15345,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-16T06:04:22.981Z"
+  "generated_at": "2026-10-17T05:50:25.759Z"
 }

@@ -1,6 +1,71 @@
 {
   "items": [
     {
+      "id": 189074,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "Using GPT to Judge GPT Is a Mistake, Here's Why",
+      "url": "https://www.youtube.com/watch?v=KcaANIsO6i4",
+      "vid": "KcaANIsO6i4",
+      "cover": "https://i.ytimg.com/vi/KcaANIsO6i4/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-16T19:45:02.000Z",
+      "source_name": "LangChain"
+    },
+    {
+      "id": 189104,
+      "source_id": 581,
+      "platform": "youtube",
+      "title": "Demis Hassabis: Put your life force into a problem that matters",
+      "url": "https://www.youtube.com/watch?v=LbmiPYnFj48",
+      "vid": "LbmiPYnFj48",
+      "cover": "https://i.ytimg.com/vi/LbmiPYnFj48/hqdefault.jpg",
+      "duration": null,
+      "author": "Y Combinator",
+      "published_at": "2026-10-16T19:24:49.000Z",
+      "source_name": "Y Combinator"
+    },
+    {
+      "id": 188432,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "Why Nobody Has Solved Continual Learning",
+      "url": "https://www.youtube.com/watch?v=whnDiwcL4HE",
+      "vid": "whnDiwcL4HE",
+      "cover": "https://i.ytimg.com/vi/whnDiwcL4HE/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-16T15:27:43.000Z",
+      "source_name": "LangChain"
+    },
+    {
+      "id": 188208,
+      "source_id": 579,
+      "platform": "youtube",
+      "title": "Flying Teslas, OpenAI Spies & Ramp’s $60B + Why AI Isn’t Sticking (Superhuman CEO) & More",
+      "url": "https://www.youtube.com/watch?v=QskJS-HaBXs",
+      "vid": "QskJS-HaBXs",
+      "cover": "https://i.ytimg.com/vi/QskJS-HaBXs/hqdefault.jpg",
+      "duration": null,
+      "author": "This Week in Startups",
+      "published_at": "2026-10-16T15:15:23.000Z",
+      "source_name": "This Week in Startups"
+    },
+    {
+      "id": 187118,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜有话下来好好说！",
+      "url": "https://www.bilibili.com/video/BV1meJ967EUu",
+      "vid": "BV1meJ967EUu",
+      "cover": "https://i1.hdslb.com/bfs/archive/29c96d7294fc531d2df47844abb5c7dfa38230de.jpg",
+      "duration": 41,
+      "author": "影视飓风",
+      "published_at": "2026-10-16T09:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 186464,
       "source_id": 621,
       "platform": "youtube",
@@ -14,6 +79,19 @@
       "source_name": "Fireship"
     },
     {
+      "id": 186612,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "Vanta and LangSmith: Assessing Compliance Evidence Like an Auditor",
+      "url": "https://www.youtube.com/watch?v=_MsL_RIztVc",
+      "vid": "_MsL_RIztVc",
+      "cover": "https://i.ytimg.com/vi/_MsL_RIztVc/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-15T16:37:23.000Z",
+      "source_name": "LangChain"
+    },
+    {
       "id": 186240,
       "source_id": 576,
       "platform": "youtube",
@@ -25,6 +103,32 @@
       "author": "The Knowledge Project Podcast",
       "published_at": "2026-10-15T14:42:48.000Z",
       "source_name": "The Knowledge Project Podcast"
+    },
+    {
+      "id": 186613,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "How Stripe Built Kai",
+      "url": "https://www.youtube.com/watch?v=rduH9wnXto8",
+      "vid": "rduH9wnXto8",
+      "cover": "https://i.ytimg.com/vi/rduH9wnXto8/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-15T13:25:13.000Z",
+      "source_name": "LangChain"
+    },
+    {
+      "id": 186614,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "Why You Think the Frontier Model Is Always Better (It's Psychology)",
+      "url": "https://www.youtube.com/watch?v=Lf1gAY4ZO3k",
+      "vid": "Lf1gAY4ZO3k",
+      "cover": "https://i.ytimg.com/vi/Lf1gAY4ZO3k/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-15T13:00:30.000Z",
+      "source_name": "LangChain"
     },
     {
       "id": 184528,
@@ -53,6 +157,19 @@
       "source_name": "All-In Podcast"
     },
     {
+      "id": 186657,
+      "source_id": 579,
+      "platform": "youtube",
+      "title": "Ex-DeepMind Researcher: How We Built an Open Source AI Model in 90 Days",
+      "url": "https://www.youtube.com/watch?v=JJca4fN7gLk",
+      "vid": "JJca4fN7gLk",
+      "cover": "https://i.ytimg.com/vi/JJca4fN7gLk/hqdefault.jpg",
+      "duration": null,
+      "author": "This Week in Startups",
+      "published_at": "2026-10-14T21:51:13.000Z",
+      "source_name": "This Week in Startups"
+    },
+    {
       "id": 186225,
       "source_id": 581,
       "platform": "youtube",
@@ -79,6 +196,19 @@
       "source_name": "Fireship"
     },
     {
+      "id": 186615,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "What is Deep Agents?",
+      "url": "https://www.youtube.com/watch?v=8gCam2-iGLc",
+      "vid": "8gCam2-iGLc",
+      "cover": "https://i.ytimg.com/vi/8gCam2-iGLc/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-14T15:12:04.000Z",
+      "source_name": "LangChain"
+    },
+    {
       "id": 186241,
       "source_id": 576,
       "platform": "youtube",
@@ -103,6 +233,19 @@
       "author": "National Geographic",
       "published_at": "2026-10-13T21:00:24.000Z",
       "source_name": "National Geographic"
+    },
+    {
+      "id": 186616,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "What is an Agent Harness?",
+      "url": "https://www.youtube.com/watch?v=R0ckdFjUF5U",
+      "vid": "R0ckdFjUF5U",
+      "cover": "https://i.ytimg.com/vi/R0ckdFjUF5U/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-13T19:56:01.000Z",
+      "source_name": "LangChain"
     },
     {
       "id": 186256,
@@ -222,6 +365,19 @@
       "source_name": "The Knowledge Project Podcast"
     },
     {
+      "id": 186617,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "POV: You’re arriving at Interrupt London, The Agent Conference by LangChain.",
+      "url": "https://www.youtube.com/watch?v=eZ_TrdYnHRY",
+      "vid": "eZ_TrdYnHRY",
+      "cover": "https://i.ytimg.com/vi/eZ_TrdYnHRY/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-13T09:17:24.000Z",
+      "source_name": "LangChain"
+    },
+    {
       "id": 178543,
       "source_id": 535,
       "platform": "youtube",
@@ -233,6 +389,19 @@
       "author": "No Priors: AI, Machine Learning, Tech, & Startups",
       "published_at": "2026-10-12T23:07:23.000Z",
       "source_name": "No Priors"
+    },
+    {
+      "id": 186658,
+      "source_id": 579,
+      "platform": "youtube",
+      "title": "The Gadget That's Better in Crowds Than Your Phone + Ring’s Founder Before Amazon Bought It | E2349",
+      "url": "https://www.youtube.com/watch?v=KHah8H12fK0",
+      "vid": "KHah8H12fK0",
+      "cover": "https://i.ytimg.com/vi/KHah8H12fK0/hqdefault.jpg",
+      "duration": null,
+      "author": "This Week in Startups",
+      "published_at": "2026-10-12T23:03:39.000Z",
+      "source_name": "This Week in Startups"
     },
     {
       "id": 178024,
@@ -428,6 +597,19 @@
       "author": "The Knowledge Project Podcast",
       "published_at": "2026-10-12T12:16:41.000Z",
       "source_name": "The Knowledge Project Podcast"
+    },
+    {
+      "id": 186618,
+      "source_id": 526,
+      "platform": "youtube",
+      "title": "Why \"best model\" is the wrong question now",
+      "url": "https://www.youtube.com/watch?v=n6NJ37qJ7WQ",
+      "vid": "n6NJ37qJ7WQ",
+      "cover": "https://i.ytimg.com/vi/n6NJ37qJ7WQ/hqdefault.jpg",
+      "duration": null,
+      "author": "LangChain",
+      "published_at": "2026-10-12T11:30:12.000Z",
+      "source_name": "LangChain"
     },
     {
       "id": 173070,
@@ -833,6 +1015,19 @@
       "source_name": "AICodeKing"
     },
     {
+      "id": 186659,
+      "source_id": 579,
+      "platform": "youtube",
+      "title": "Jason Reacts To Japanese Founder Pitches + Fireside Chat With Yuki Shirato",
+      "url": "https://www.youtube.com/watch?v=0XefSBzn7iM",
+      "vid": "0XefSBzn7iM",
+      "cover": "https://i.ytimg.com/vi/0XefSBzn7iM/hqdefault.jpg",
+      "duration": null,
+      "author": "This Week in Startups",
+      "published_at": "2026-10-10T03:33:43.000Z",
+      "source_name": "This Week in Startups"
+    },
+    {
       "id": 186261,
       "source_id": 552,
       "platform": "youtube",
@@ -1104,202 +1299,7 @@
       "author": "Google",
       "published_at": "2026-10-09T15:00:20.000Z",
       "source_name": "Google"
-    },
-    {
-      "id": 170827,
-      "source_id": 597,
-      "platform": "youtube",
-      "title": "How to Clean Up the World’s Dirtiest Industry | Joojin Kim | TED",
-      "url": "https://www.youtube.com/watch?v=wsstlwuE5XY",
-      "vid": "wsstlwuE5XY",
-      "cover": "https://i.ytimg.com/vi/wsstlwuE5XY/hqdefault.jpg",
-      "duration": null,
-      "author": "TED",
-      "published_at": "2026-10-09T15:00:11.000Z",
-      "source_name": "TED"
-    },
-    {
-      "id": 178513,
-      "source_id": 530,
-      "platform": "youtube",
-      "title": "AI News: Haiku-5.5, Visual ChatGPT, Grok's New Trick, and more!",
-      "url": "https://www.youtube.com/watch?v=NUizyuGj-kE",
-      "vid": "NUizyuGj-kE",
-      "cover": "https://i.ytimg.com/vi/NUizyuGj-kE/hqdefault.jpg",
-      "duration": null,
-      "author": "Matt Wolfe",
-      "published_at": "2026-10-09T15:00:01.000Z",
-      "source_name": "Matt Wolfe"
-    },
-    {
-      "id": 170646,
-      "source_id": 604,
-      "platform": "youtube",
-      "title": "AI Loops Actually Aren't The Future",
-      "url": "https://www.youtube.com/watch?v=U_5QxBKzOl4",
-      "vid": "U_5QxBKzOl4",
-      "cover": "https://i.ytimg.com/vi/U_5QxBKzOl4/hqdefault.jpg",
-      "duration": null,
-      "author": "Lenny's Podcast",
-      "published_at": "2026-10-09T15:00:00.000Z",
-      "source_name": "Lenny&apos;s Podcast"
-    },
-    {
-      "id": 161883,
-      "source_id": 526,
-      "platform": "youtube",
-      "title": "Managed Deep Agents | Deploying mission critical agents to production",
-      "url": "https://www.youtube.com/watch?v=XcsspzECTKA",
-      "vid": "XcsspzECTKA",
-      "cover": "https://i.ytimg.com/vi/XcsspzECTKA/hqdefault.jpg",
-      "duration": null,
-      "author": "LangChain",
-      "published_at": "2026-10-09T14:41:48.000Z",
-      "source_name": "LangChain"
-    },
-    {
-      "id": 171563,
-      "source_id": 613,
-      "platform": "youtube",
-      "title": "Give Me 18 Minutes, and You’ll Learn Faster Than 99.9% of People",
-      "url": "https://www.youtube.com/watch?v=3wLgRw6wpbM",
-      "vid": "3wLgRw6wpbM",
-      "cover": "https://i.ytimg.com/vi/3wLgRw6wpbM/hqdefault.jpg",
-      "duration": null,
-      "author": "Justin Sung",
-      "published_at": "2026-10-09T14:24:29.000Z",
-      "source_name": "Justin Sung"
-    },
-    {
-      "id": 161644,
-      "source_id": 552,
-      "platform": "youtube",
-      "title": "David Sacks: The Economy Is Stronger Than You Think",
-      "url": "https://www.youtube.com/watch?v=oF8aDmU_8nE",
-      "vid": "oF8aDmU_8nE",
-      "cover": "https://i.ytimg.com/vi/oF8aDmU_8nE/hqdefault.jpg",
-      "duration": null,
-      "author": "All-In Podcast",
-      "published_at": "2026-10-09T14:00:36.000Z",
-      "source_name": "All-In Podcast"
-    },
-    {
-      "id": 178485,
-      "source_id": 522,
-      "platform": "youtube",
-      "title": "The Ultimate Image Generator Showdown",
-      "url": "https://www.youtube.com/watch?v=QLv4WCKVqd0",
-      "vid": "QLv4WCKVqd0",
-      "cover": "https://i.ytimg.com/vi/QLv4WCKVqd0/hqdefault.jpg",
-      "duration": null,
-      "author": "Futurepedia",
-      "published_at": "2026-10-09T13:38:49.000Z",
-      "source_name": "Futurepedia"
-    },
-    {
-      "id": 171623,
-      "source_id": 513,
-      "platform": "youtube",
-      "title": "Is ChatGPT Now the Easiest Way to Edit Video?",
-      "url": "https://www.youtube.com/watch?v=XjUyUaxq7uQ",
-      "vid": "XjUyUaxq7uQ",
-      "cover": "https://i.ytimg.com/vi/XjUyUaxq7uQ/hqdefault.jpg",
-      "duration": null,
-      "author": "AI Video School",
-      "published_at": "2026-10-09T13:00:20.000Z",
-      "source_name": "AI Video School"
-    },
-    {
-      "id": 170812,
-      "source_id": 591,
-      "platform": "youtube",
-      "title": "Birth Of The Empire (Full Episode) | Genghis Khan: Secret History of the Mongols | Nat Geo",
-      "url": "https://www.youtube.com/watch?v=IT09LD6nQys",
-      "vid": "IT09LD6nQys",
-      "cover": "https://i.ytimg.com/vi/IT09LD6nQys/hqdefault.jpg",
-      "duration": null,
-      "author": "National Geographic",
-      "published_at": "2026-10-09T13:00:06.000Z",
-      "source_name": "National Geographic"
-    },
-    {
-      "id": 171461,
-      "source_id": 611,
-      "platform": "youtube",
-      "title": "How to find out what you're actually good at",
-      "url": "https://www.youtube.com/watch?v=ru0GTHSQeIg",
-      "vid": "ru0GTHSQeIg",
-      "cover": "https://i.ytimg.com/vi/ru0GTHSQeIg/hqdefault.jpg",
-      "duration": null,
-      "author": "Ali Abdaal",
-      "published_at": "2026-10-09T10:00:13.000Z",
-      "source_name": "Ali Abdaal"
-    },
-    {
-      "id": 170317,
-      "source_id": 514,
-      "platform": "youtube",
-      "title": "Google Stitch 2.0: The FREE AI Design Powerhouse by Google is CRAZY!",
-      "url": "https://www.youtube.com/watch?v=POZaR1cWigY",
-      "vid": "POZaR1cWigY",
-      "cover": "https://i.ytimg.com/vi/POZaR1cWigY/hqdefault.jpg",
-      "duration": null,
-      "author": "AICodeKing",
-      "published_at": "2026-10-09T09:15:10.000Z",
-      "source_name": "AICodeKing"
-    },
-    {
-      "id": 160133,
-      "source_id": 2,
-      "platform": "bilibili",
-      "title": "影视飓风的直升机？怪东西分享9.0",
-      "url": "https://www.bilibili.com/video/BV1gHps6yEHL",
-      "vid": "BV1gHps6yEHL",
-      "cover": "http://i2.hdslb.com/bfs/archive/17b99efd39e024ca4e909bd42f027e3b2ee9ec44.jpg",
-      "duration": 823,
-      "author": "影视飓风",
-      "published_at": "2026-10-09T09:00:00.000Z",
-      "source_name": "影视飓风"
-    },
-    {
-      "id": 170437,
-      "source_id": 532,
-      "platform": "youtube",
-      "title": "Tesla Powerwall and Car Backup During an Outage",
-      "url": "https://www.youtube.com/watch?v=o_gf-LEaOWw",
-      "vid": "o_gf-LEaOWw",
-      "cover": "https://i.ytimg.com/vi/o_gf-LEaOWw/hqdefault.jpg",
-      "duration": null,
-      "author": "Matthew Berman",
-      "published_at": "2026-10-09T04:10:23.000Z",
-      "source_name": "Matthew Berman"
-    },
-    {
-      "id": 171491,
-      "source_id": 560,
-      "platform": "youtube",
-      "title": "How Silver Made Spain Poorer - Si Sheppard",
-      "url": "https://www.youtube.com/watch?v=f2g-3rYGHJE",
-      "vid": "f2g-3rYGHJE",
-      "cover": "https://i.ytimg.com/vi/f2g-3rYGHJE/hqdefault.jpg",
-      "duration": null,
-      "author": "Dwarkesh Patel",
-      "published_at": "2026-10-09T00:01:37.000Z",
-      "source_name": "Dwarkesh Patel"
-    },
-    {
-      "id": 158360,
-      "source_id": 568,
-      "platform": "youtube",
-      "title": "The soda brand that sold for over $2B",
-      "url": "https://www.youtube.com/watch?v=2_UGBF5BwGQ",
-      "vid": "2_UGBF5BwGQ",
-      "cover": "https://i.ytimg.com/vi/2_UGBF5BwGQ/hqdefault.jpg",
-      "duration": null,
-      "author": "My First Million",
-      "published_at": "2026-10-08T23:28:42.000Z",
-      "source_name": "My First Million"
     }
   ],
-  "generated_at": "2026-10-16T06:04:18.849Z"
+  "generated_at": "2026-10-17T05:50:24.116Z"
 }
