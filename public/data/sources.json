@@ -2045,20 +2045,6 @@
       "fail_count": 0
     },
     {
-      "id": 621,
-      "type": "youtube",
-      "name": "Fireship",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 807,
       "type": "x",
       "name": "Fireworks AI(@FireworksAI_HQ)",
@@ -3311,20 +3297,6 @@
       "url": "https://lorexxar.cn/atom.xml",
       "avatar": null,
       "group_id": 19,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 890,
-      "type": "rss",
-      "name": "Lobsters",
-      "url": "https://lobste.rs/rss",
-      "avatar": "https://lobste.rs/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4677,20 +4649,6 @@
       "fail_count": 0
     },
     {
-      "id": 976,
-      "type": "rss",
-      "name": "Reddit · Linux, Self-Hosted, DevOps &amp; AI",
-      "url": "https://www.reddit.com/r/linux+selfhosted+devops+LocalLLaMA+MachineLearning/new/.rss",
-      "avatar": "https://www.reddit.com/favicon.ico",
-      "group_id": 19,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 977,
       "type": "rss",
       "name": "Redis Blog",
@@ -5937,20 +5895,6 @@
       "fail_count": 0
     },
     {
-      "id": 579,
-      "type": "youtube",
-      "name": "This Week in Startups",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkkhmBWfS7pILYIk0izkc3A",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 8
-    },
-    {
       "id": 1062,
       "type": "x",
       "name": "Thomas Wolf(@Thom_Wolf)",
@@ -7141,6 +7085,20 @@
       "fail_count": 0
     },
     {
+      "id": 1141,
+      "type": "rss",
+      "name": "rxliuli blog",
+      "url": "https://blog.rxliuli.com/atom.xml",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1142,
       "type": "rss",
       "name": "smallyu的博客",
@@ -7595,6 +7553,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/7bd19c521ac941dc14c425a562c80b6db2914e0d.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7plsUHVYR9uI3UiaZwVsRMgkBCPtPtAA53cwnib44ZdrvQ/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 363,
+      "type": "rss",
+      "name": "中国新闻周刊",
+      "url": "https://wechat2rss.bestblogs.dev/feed/d54b08f4e62345d5516c26fbff3de9e499f18cfb.xml",
+      "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7IPhF5bMgNmQicGMYMOWiciaZp8Npj7VspibYbuGyNa4G0Tw/0",
+      "group_id": 20,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9204,6 +9176,20 @@
       "name": "喵二の小博客",
       "url": "https://www.miaoer.net/feed",
       "avatar": "https://cdn.miaoer.net/logo/avatar.webp",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1197,
+      "type": "rss",
+      "name": "喵喵小站・博客志",
+      "url": "https://www.mmbkz.cn/feed",
+      "avatar": null,
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -11257,6 +11243,20 @@
       "fail_count": 0
     },
     {
+      "id": 1247,
+      "type": "rss",
+      "name": "朝舞网",
+      "url": "https://ii74.com/feed.php",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1248,
       "type": "rss",
       "name": "木鸟杂记",
@@ -11711,20 +11711,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/7f1dc0e04603db8e1ddadfc4beea4a190af49cf6.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4MvOm7CBFRTpZkBic7fHzrJyf039VsNo1DH7nmKOMCjQA/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1258,
-      "type": "x",
-      "name": "歸藏(guizang.ai)(@op7418)",
-      "url": "https://api.xgo.ing/rss/user/831fac36aa0a49a9af79f35dc1c9b5d9",
-      "avatar": "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw_normal.jpg",
-      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15135,20 +15121,6 @@
       "fail_count": 0
     },
     {
-      "id": 1336,
-      "type": "rss",
-      "name": "顶尖研发",
-      "url": "https://bestcoder.cn/feed",
-      "avatar": "https://bestcoder.cn/wp-content/uploads/2024/05/cropped-cgi-bin_mmwebwx-bin_webwxgetmsgimg__MsgID2002316305218849600skey@crypt_d031e9e3_41028a62119ba053e9dcba2f62216f0fmmweb_appidwx_webfilehelper-32x32.jpg",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 319,
       "type": "rss",
       "name": "风叔云",
@@ -15345,5 +15317,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-10-17T05:50:25.759Z"
+  "generated_at": "2026-10-18T06:16:12.630Z"
 }

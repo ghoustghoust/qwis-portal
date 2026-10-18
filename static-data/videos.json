@@ -1,6 +1,32 @@
 {
   "items": [
     {
+      "id": 192023,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜下大棋！英伟达的RTX Spark笔记本电脑，靠谱吗？",
+      "url": "https://www.bilibili.com/video/BV1HhnM62ER1",
+      "vid": "BV1HhnM62ER1",
+      "cover": "https://i1.hdslb.com/bfs/archive/165fca80243df814587611757a1cd23f09fd8b15.jpg",
+      "duration": 442,
+      "author": "影视飓风",
+      "published_at": "2026-10-18T03:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
+      "id": 191373,
+      "source_id": 533,
+      "platform": "youtube",
+      "title": "Flushing the toilet kills our network!",
+      "url": "https://www.youtube.com/watch?v=jdoaBSOTiK4",
+      "vid": "jdoaBSOTiK4",
+      "cover": "https://i.ytimg.com/vi/jdoaBSOTiK4/hqdefault.jpg",
+      "duration": null,
+      "author": "NetworkChuck",
+      "published_at": "2026-10-17T13:31:56.000Z",
+      "source_name": "NetworkChuck"
+    },
+    {
       "id": 189074,
       "source_id": 526,
       "platform": "youtube",
@@ -1273,33 +1299,7 @@
       "author": "Nick Saraev",
       "published_at": "2026-10-09T15:02:34.000Z",
       "source_name": "Nick Saraev"
-    },
-    {
-      "id": 161913,
-      "source_id": 527,
-      "platform": "youtube",
-      "title": "Anthropic Warns Investors About Catastrophic AI Risk",
-      "url": "https://www.youtube.com/watch?v=04tjlwHawag",
-      "vid": "04tjlwHawag",
-      "cover": "https://i.ytimg.com/vi/04tjlwHawag/hqdefault.jpg",
-      "duration": null,
-      "author": "Last Week in AI",
-      "published_at": "2026-10-09T15:02:13.000Z",
-      "source_name": "Last Week in AI"
-    },
-    {
-      "id": 170285,
-      "source_id": 562,
-      "platform": "youtube",
-      "title": "Guess who’s #1 ... again 🏆",
-      "url": "https://www.youtube.com/watch?v=VFiWYLSQNP4",
-      "vid": "VFiWYLSQNP4",
-      "cover": "https://i.ytimg.com/vi/VFiWYLSQNP4/hqdefault.jpg",
-      "duration": null,
-      "author": "Google",
-      "published_at": "2026-10-09T15:00:20.000Z",
-      "source_name": "Google"
     }
   ],
-  "generated_at": "2026-10-17T05:50:24.116Z"
+  "generated_at": "2026-10-18T06:16:09.956Z"
 }
