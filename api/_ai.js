@@ -447,7 +447,8 @@ async function analyzeArticle(article) {
   const text = String(article.content_html || '')
     .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1500);
   const input = `标题：${article.title || ''}\n来源：${article.source_name || article.author || ''}\n摘要：${String(article.summary || '').slice(0, 300)}\n正文：${text}`;
-  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 待评文章\n\n${input}` }], { kind: 'analyze', maxTokens: 768, timeoutMs: 60000 });
+  // 768 曾被实测烧穿（10-18 生产 4 次「仅含 reasoning finish=length」——深析输出长 JSON 时推理烧满 768）——抬到 2048
+  const r = await aiChat([{ role: 'user', content: `${tpl}\n\n## 待评文章\n\n${input}` }], { kind: 'analyze', maxTokens: 2048, timeoutMs: 60000 });
   if (!r.ok) return null;
   const m = r.reply.match(/\{[\s\S]*\}/);
   if (!m) return null;

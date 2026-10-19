@@ -111,7 +111,24 @@ const SENDERS = {
   async wecom(c, title, text) {
     return postWebhook(c.config.url, { msgtype: 'text', text: { content: `${title}\n${text}` } });
   },
-  async feishu(c, title, text) {
+  async feishu(c, title, text, event) {
+    // 紧急事件（quota_critical 等）发红色卡片——从每天几十条 source_error 噪音里跳出来
+    //（10-19 实锤：额度跨级报警曾发过但被噪音淹没，用户几天没察觉日报已降级）
+    if (event === 'quota_critical') {
+      const card = {
+        msg_type: 'interactive',
+        card: {
+          header: { template: 'red', title: { tag: 'plain_text', content: `🚨 ${title}` } },
+          elements: [{ tag: 'div', text: { tag: 'lark_md', content: `**${text}**\n\n⏰ 这条会每 6 小时重报，直到额度回落到安全线。请尽快处置。` } }],
+        },
+      };
+      if (c.config.secret) {
+        const ts = Math.floor(Date.now() / 1000);
+        card.timestamp = String(ts);
+        card.sign = crypto.createHmac('sha256', `${ts}\n${c.config.secret}`).digest('base64');
+      }
+      return postWebhook(c.config.url, card);
+    }
     const body = { msg_type: 'text', content: { text: `${title}\n${text}` } };
     if (c.config.secret) {
       const ts = Math.floor(Date.now() / 1000);
