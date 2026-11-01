@@ -24,7 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const http = require('http');
-const { execFileSync } = require('child_process');
+const { execFileSync, spawn } = require('child_process');
 const { createClient } = require('@libsql/client');
 
 const ROOT = path.join(__dirname, '..');
@@ -87,6 +87,21 @@ function runRunner(mode, env) {
     return { out: `${err.stdout || ''}\n${err.stderr || ''}`, code: err.status === undefined ? -1 : err.status };
   }
 }
+
+// 异步版：execFileSync 会**阻塞测试进程的事件循环**，测试函数里并行着的本地 http 假端点
+// 将无法 accept/respond（CO6 首版在 CI 上 8s 超时就是它）——需要假端点活着的用例必须用这版。
+const runRunnerP = (mode, env) => new Promise((resolve) => {
+  const e = { ...process.env, ...env };
+  delete e.NODE_TEST_CONTEXT;
+  e.TURSO_AUTH_TOKEN = '';
+  const p = spawn(process.execPath, [path.join(ROOT, 'tools', 'collect-turso.js'), mode],
+    { cwd: ROOT, env: e, stdio: ['ignore', 'pipe', 'pipe'] });
+  let out = '';
+  p.stdout.on('data', (d) => { out += d; });
+  p.stderr.on('data', (d) => { out += d; });
+  const t = setTimeout(() => { try { p.kill(); } catch { /* 已退 */ } }, 180000);
+  p.on('close', (code) => { clearTimeout(t); resolve({ out, code: code ?? -1 }); });
+});
 const readSetting = async (db, key) => {
   const rows = Array.from((await db.execute({ sql: 'SELECT value FROM settings WHERE key=?', args: [key] })).rows);
   if (!rows[0]) return null;
@@ -220,7 +235,7 @@ test('CO6 额度联动：light 档读数+DELETE 一起让路只记账；恢复 n
     try {
       // ① light 轮：读数不重算、DELETE 不跑（联动），心跳记账 blocked=quota:light（面板可辨「有意让路」）
       const before = await countArticles(db);
-      const r = runRunner('cleanup', {
+      const r = await runRunnerP('cleanup', {
         TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir,
         CLOUD_SITE: `http://127.0.0.1:${port}`, COLLECT_KEY: 'test-key',
       });
@@ -230,7 +245,7 @@ test('CO6 额度联动：light 档读数+DELETE 一起让路只记账；恢复 n
       assert.equal(hb.history[hb.history.length - 1].stats.blocked, 'quota:light',
         'light 轮没在心跳记账（面板将分不清「闸挡下」与「有意让路」）');
       // ② 恢复 none（不注入假端点 → COLLECT_KEY 缺失 → quota 读不到按正常档）：首轮 cleanup 自动补跑
-      const r2 = runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
+      const r2 = await runRunnerP('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
       assert.match(r2.out, /清理完成: 删除 10 条热榜旧数据/, `恢复后没补跑删除：${r2.out.slice(0, 400)}`);
       assert.equal(await countArticles(db), 4, '恢复后首轮该把 20 条夹具删到 4（3 条豁免 + 1 条窗口内）');
       const row = await readSetting(db, 'retention.pending');
