@@ -1,0 +1,367 @@
+{
+  "capturedAt": "2026-11-01T04:36:21.293Z",
+  "method": "只读探针 v2，窗口=停摆前运行期 10-12~10-20",
+  "maxCreated": "2026-10-19T12:16:12.939Z",
+  "maxNextFetch": "2026-10-19T16:16:57.991Z",
+  "daily": {
+    "articlesInsert": [
+      {
+        "d": "2026-10-12",
+        "n": 7173
+      },
+      {
+        "d": "2026-10-13",
+        "n": 7517
+      },
+      {
+        "d": "2026-10-14",
+        "n": 7613
+      },
+      {
+        "d": "2026-10-15",
+        "n": 8038
+      },
+      {
+        "d": "2026-10-16",
+        "n": 7689
+      },
+      {
+        "d": "2026-10-17",
+        "n": 5116
+      },
+      {
+        "d": "2026-10-18",
+        "n": 10912
+      },
+      {
+        "d": "2026-10-19",
+        "n": 5868
+      }
+    ],
+    "videos": [
+      {
+        "d": "2026-10-12",
+        "n": 119
+      },
+      {
+        "d": "2026-10-13",
+        "n": 29
+      },
+      {
+        "d": "2026-10-15",
+        "n": 1
+      },
+      {
+        "d": "2026-10-16",
+        "n": 31
+      },
+      {
+        "d": "2026-10-17",
+        "n": 1
+      },
+      {
+        "d": "2026-10-18",
+        "n": 1
+      },
+      {
+        "d": "2026-10-19",
+        "n": 367
+      }
+    ],
+    "collectFailures": [
+      {
+        "d": "2026-10-12",
+        "n": 1146
+      },
+      {
+        "d": "2026-10-13",
+        "n": 567
+      },
+      {
+        "d": "2026-10-14",
+        "n": 304
+      },
+      {
+        "d": "2026-10-15",
+        "n": 162
+      },
+      {
+        "d": "2026-10-16",
+        "n": 286
+      },
+      {
+        "d": "2026-10-17",
+        "n": 159
+      },
+      {
+        "d": "2026-10-18",
+        "n": 83
+      },
+      {
+        "d": "2026-10-19",
+        "n": 850
+      }
+    ],
+    "dailyReports": [
+      {
+        "d": "2026-10-12",
+        "n": 2
+      },
+      {
+        "d": "2026-10-13",
+        "n": 2
+      },
+      {
+        "d": "2026-10-14",
+        "n": 2
+      },
+      {
+        "d": "2026-10-15",
+        "n": 2
+      },
+      {
+        "d": "2026-10-16",
+        "n": 2
+      },
+      {
+        "d": "2026-10-17",
+        "n": 3
+      },
+      {
+        "d": "2026-10-18",
+        "n": 2
+      },
+      {
+        "d": "2026-10-19",
+        "n": 1
+      },
+      {
+        "d": "2026-10-25",
+        "n": 1
+      }
+    ]
+  },
+  "lastDailyReport": [
+    {
+      "id": 130,
+      "generated_at": "2026-10-25T06:15:53.788Z",
+      "window_hours": 30,
+      "statsLen": 163,
+      "sectionsLen": 2
+    },
+    {
+      "id": 129,
+      "generated_at": "2026-10-19T05:54:25.782Z",
+      "window_hours": 30,
+      "statsLen": 161,
+      "sectionsLen": 22596
+    },
+    {
+      "id": 128,
+      "generated_at": "2026-10-18T14:59:26.522Z",
+      "window_hours": 24,
+      "statsLen": 675,
+      "sectionsLen": 7223
+    }
+  ],
+  "sourcesWrite": [
+    {
+      "d": "2026-10-19",
+      "n": 1202
+    },
+    {
+      "d": "2026-10-18",
+      "n": 4
+    },
+    {
+      "d": "2026-10-17",
+      "n": 4
+    },
+    {
+      "d": "2026-10-16",
+      "n": 29
+    },
+    {
+      "d": "2026-10-15",
+      "n": 5
+    },
+    {
+      "d": "2026-10-14",
+      "n": 12
+    },
+    {
+      "d": "2026-10-13",
+      "n": 10
+    }
+  ],
+  "translatedRecent": [
+    {
+      "d": "2026-10-12",
+      "n": 375
+    },
+    {
+      "d": "2026-10-13",
+      "n": 429
+    },
+    {
+      "d": "2026-10-14",
+      "n": 473
+    },
+    {
+      "d": "2026-10-15",
+      "n": 460
+    },
+    {
+      "d": "2026-10-16",
+      "n": 317
+    },
+    {
+      "d": "2026-10-17",
+      "n": 305
+    }
+  ],
+  "heartbeatModes": {
+    "cleanup:2026-10-17": 1,
+    "collect:2026-10-17": 7,
+    "collect:2026-10-18": 104,
+    "daily:2026-10-18": 1,
+    "daily-ai:2026-10-18": 1,
+    "cleanup:2026-10-18": 1,
+    "collect:2026-10-19": 52,
+    "daily:2026-10-19": 1
+  },
+  "cleanupStats": [
+    {
+      "at": "2026-10-17T22:17:56.758Z",
+      "deleted": 2235,
+      "retentionDeleted": 11165
+    },
+    {
+      "at": "2026-10-18T22:26:10.326Z",
+      "deleted": 2217,
+      "retentionDeleted": 10148
+    }
+  ],
+  "indexes": [
+    {
+      "name": "idx_articles_audio",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_created",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_later",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_later_sk",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_pubco",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_published",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_read",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_read_at",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_read_sk",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_score",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_source_read",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_articles_url",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "sqlite_autoindex_articles_1",
+      "tbl_name": "articles"
+    },
+    {
+      "name": "idx_cf_batch",
+      "tbl_name": "collect_failures"
+    },
+    {
+      "name": "idx_sources_type",
+      "tbl_name": "sources"
+    },
+    {
+      "name": "idx_videos_created",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_fav_sk",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_favorite",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_published",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_source",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_url",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "idx_videos_vid",
+      "tbl_name": "videos"
+    },
+    {
+      "name": "sqlite_autoindex_videos_1",
+      "tbl_name": "videos"
+    }
+  ],
+  "articlesScored": 26018,
+  "articlesTotal": 61753,
+  "articlesFeatured": 1536,
+  "tableRows": {
+    "hotlist": "absent",
+    "hot_events": "absent",
+    "pending_items": 354,
+    "videos": 4183
+  },
+  "conclusion": {
+    "window": "2026-10-13 ~ 10-19（停摆前运行期）",
+    "platformWritesPerDay": "46-52 万行/天（usage 曲线日增量）",
+    "codeLedger": {
+      "articlesInsert": "~7500 行/天 × 14（13 索引+主表）≈ 10.5 万",
+      "retentionDelete": "~1.1-1.3 万行/天 × 14 ≈ 15-18 万（闸放行日）",
+      "sourcesUpdate": "1102 源 × 默认 60min × 1 行 ≈ 2.6 万",
+      "translateUpdate": "~400/天",
+      "collectFailures": "150-1100/天",
+      "settingsAndReports": "~500/天"
+    },
+    "biggestGap": "saveArticles 每候选无条件三件套（INSERT OR IGNORE+score UPDATE+featured UPDATE）：RSS 15min 节奏下绝大多数候选为已入库条目（日尝试数十万 vs 新增 7.5 千），被拒 INSERT 仍触发行写、UPDATE 照跑（主表+score 索引）——20 倍缺口的主体",
+    "fixApplied": [
+      "reads 刀：retention COUNT 每批 192 次/天 → 每日 cleanup 一次（2 条），≥light 档读数+DELETE 一起让路，恢复后自动补跑；批次收尾刷新整段砍除",
+      "writes 刀：saveArticles 预查重（batch 点查），重复候选零写；已存在行不再被采集器初始分回写（防覆盖深析分）",
+      "未落（需读层查询画像支撑）：articles 13 索引瘦身边界——cleanup DELETE 与新行 INSERT 的 14 倍放大仍在，两刀后预估日烧 ~25-35 万行，11 月仍偏紧，索引瘦身立项待拍"
+    ],
+    "ghost": "10-25T06:15Z 出现一条空 sections 的 daily_reports（停摆后唯一写入，statsLen 163/sectionsLen 2）——一次性事件，触发源不可考（触发器均已停），挂观察不追"
+  }
+}

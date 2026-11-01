@@ -374,8 +374,23 @@ function clampPubDate(iso, now) {
 async function saveArticles(sourceId, articles, { marksFeatured = false } = {}) {
   const db = getDb();
   const now = nowIso();
+  const cand = articles.filter((x) => !isYouTubeLink(x.url)); // B6：YouTube 链接不入文章流
+  if (!cand.length) return 0;
+  // writes 减法（用户 11-01 拍板；真值账本 docs/eval/2026-11-01-writes-attribution-probe.json）：
+  // 此前每条候选无条件推 INSERT OR IGNORE + score/featured UPDATE——RSS 15min 节奏下绝大多数
+  // 候选是已入库条目（日尝试数十万次、新增仅 ~7.5 千），被唯一索引拒绝的 INSERT 仍触发行写、
+  // UPDATE 照跑（主表 + score 索引），是平台 writes 真值 46-52 万/天 vs 代码账面 2.2 万/天的主要
+  // 缺口。预查重（batch 点查，一次往返）后只对新 url 落库三件套；已存在行不再动——score 由
+  // quickscore/深析体系负责（采集器初始分回写反而会覆盖深析分），featured 已是 1 无需重标。
+  const seen = new Set();
+  const chk = await db.batch(
+    cand.map((x) => ({ sql: 'SELECT url FROM articles WHERE url = ?', args: [x.url] })),
+    'read'
+  );
+  chk.forEach((r, i) => { if (r.rows.length) seen.add(cand[i].url); });
   const stmts = [];
-  for (const a of articles.filter((x) => !isYouTubeLink(x.url))) { // B6：YouTube 链接不入文章流
+  for (const a of cand) {
+    if (seen.has(a.url)) continue;
     const score = Number(a.score);
     const wc = textLen(a.content_html);
     stmts.push({
@@ -801,13 +816,21 @@ const RETENTION_HISTORY_MAX = 14;
 // 转储目录必须与 `tools/dump-content.cjs` 的默认产出同一处：它按 scope 分子目录
 // （`data/content-dump/cloud` / `.../local`）。指到父目录会永远判"没有转储"= 闸恒挡（假安全）。
 const contentDumpDir = () => process.env.CONTENT_DUMP_DIR || path.join(__dirname, '..', 'data', 'content-dump', 'cloud');
-async function retentionReadout({ validAfter } = {}) {
+// scan（复用扫描）：同一进程内已经跑过一遍计数（runCleanup 先候选后判闸的两遍）时，
+// 第二遍传回上一遍的 { counts, total }，跳过 COUNT 直接收尾——两遍合并为一遍的缝。
+// 只许传同进程刚扫出的真实读数，不许拿旧值冒充（计数与删除同源：lib/retention#pendingPlan）。
+async function retentionReadout({ validAfter, scan } = {}) {
   const { pendingPlan } = require('../lib/retention');
   const retentionDays = Number((await getSetting('data', {})).retentionDays ?? 7);
   const plan = pendingPlan('runner', retentionDays);
-  const counts = {};
-  for (const p of plan) counts[p.key] = Number(((await qOne(p.sql, [p.cutoff])) || {}).c || 0);
-  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  let counts = {};
+  let total = 0;
+  if (scan && scan.counts && Number.isFinite(scan.total)) {
+    ({ counts, total } = scan);
+  } else {
+    for (const p of plan) counts[p.key] = Number(((await qOne(p.sql, [p.cutoff])) || {}).c || 0);
+    total = Object.values(counts).reduce((a, b) => a + b, 0);
+  }
   const cd = require('../lib/content-dump');
   const cred = await getSetting(cd.CREDENTIAL_KEY, null);
   // H29②：绑定"最近一次成功采集"是读数的**默认行为**——所有调用方（collect 批次/清理档/刷新）
@@ -836,12 +859,6 @@ async function retentionReadout({ validAfter } = {}) {
   return row;
 }
 
-// 每个批次结束后再刷一次读数，让 `retention.pending` 始终是**当前值**：
-// cleanup 也在内 —— 删除前那次读数留在 `gate`/心跳里，删除后再刷一次才是"现在还有多少条待删"。
-async function refreshRetentionReadout() {
-  try { await retentionReadout(); } catch (e) { log(`保留读数失败（不阻断）: ${e.message}`); }
-}
-
 // ─── 模式：cleanup（数据清理；09-20T22:27Z 已实跑过一轮，删 50,823 条 —— 见 docs/ISSUES.md B101） ───
 // H29②：最近一次**成功采集**的心跳时刻（history 里 mode=collect 的最后一条）。
 // 清理凭证的有效期绑它：采集在凭证之后成功过 = 库里有清单没覆盖的新数据，旧凭证作废。
@@ -851,7 +868,7 @@ function lastCollectAtOf(hb) {
   return (hb && hb.mode === 'collect' && hb.lastRunAt) || null;
 }
 
-async function runCleanup() {
+async function runCleanup({ quotaLevel = 'none' } = {}) {
   let resumed = 0; // 2026-10-14 恢复段搬去采集批开头后，cleanup 不再执行恢复；读数面保持形状（恒 0）
   // 删除谓词的**唯一实现**在 `lib/retention.js`（spec43 D1/B102）：本文件与 `api/collect.js`、
   // `server/services/datamgr.js` 三端共用同一份条件，改一处即改三处，不再各抄一遍。
@@ -862,23 +879,35 @@ async function runCleanup() {
   // ⚠️ 这条腿证明的是"候选清单新鲜"，**不提供内容备份**；本地端跑清理仍走磁盘全量校验那条腿。
   const hbPrev = await getSetting('cloud.collect', {});
   const lastCollectAt = lastCollectAtOf(hbPrev);
-  const pre = await retentionReadout({ validAfter: null }); // 第一遍只为拿候选读数做指纹
-  const cred = {
-    at: nowIso(), source: 'runner-daily',
-    tables: { articles: { rows: pre.total, maxId: 0 } },
-    manifestSha256: cd.sha256Hex(JSON.stringify({ rows: pre.total, retentionDays: pre.retentionDays, lastCollectAt })),
-  };
-  await putSetting(cd.CREDENTIAL_KEY, cred);
-  log(`清理凭证已自写（候选 ${pre.total} 条 / 绑定采集 ${lastCollectAt || '无'}）`);
-  const readout = await retentionReadout({ validAfter: lastCollectAt }); // 判闸这一遍显式绑定（与默认同值，留作自明）
-  log(`保留读数: ${readout.retentionDays} 天窗口下待删 ${readout.total} 条（${JSON.stringify(readout.counts)}）｜删除闸 ${readout.gate.allowed ? '放行' : '挡下'}：${readout.gate.reason}`);
-
+  // 额度让路（用户 11-01 拍板）：light/hard 时今天的 retention 读数与 DELETE 一起停——
+  // 批次收尾读数砍掉后这里是唯一的每日计数口，紧急天让它归零；DELETE 烧 writes 而 writes
+  // 是更先到的墙，一起停才自洽。恢复 none/watch 后的第一次 cleanup 不在本档 → 自动补跑
+  // 统计与清理（cleanup 每天都跑，无需状态机记账）。心跳 blocked 带档位，与「闸挡下」可区分。
+  const quotaSkip = quotaLevel === 'light' || quotaLevel === 'hard';
+  let readout = null;
   let deleted = 0;
   let retentionDeleted = 0;
-  if (!readout.gate.allowed) {
+  if (quotaSkip) {
+    log(`额度闸 ${quotaLevel}：清理读数与 DELETE 今日让路（恢复后首次 cleanup 自动补跑）`);
+  } else {
+    const pre = await retentionReadout({ validAfter: null }); // 唯一一遍计数扫描（候选读数 + 指纹）
+    const cred = {
+      at: nowIso(), source: 'runner-daily',
+      tables: { articles: { rows: pre.total, maxId: 0 } },
+      manifestSha256: cd.sha256Hex(JSON.stringify({ rows: pre.total, retentionDays: pre.retentionDays, lastCollectAt })),
+    };
+    await putSetting(cd.CREDENTIAL_KEY, cred);
+    log(`清理凭证已自写（候选 ${pre.total} 条 / 绑定采集 ${lastCollectAt || '无'}）`);
+    // 判闸这一遍显式绑定（与默认同值，留作自明）；scan 复用上一遍扫描——
+    // 两遍 COUNT 合并为一遍（用户 11-01 拍板：cleanup 全程只扫这一遍，6 条 COUNT → 2 条）
+    readout = await retentionReadout({ validAfter: lastCollectAt, scan: { counts: pre.counts, total: pre.total } });
+    log(`保留读数: ${readout.retentionDays} 天窗口下待删 ${readout.total} 条（${JSON.stringify(readout.counts)}）｜删除闸 ${readout.gate.allowed ? '放行' : '挡下'}：${readout.gate.reason}`);
+  }
+
+  if (readout && !readout.gate.allowed) {
     // 前置条件没满足 = 什么都不删，但**不许静默**：日志 + 心跳都带 blocked 原因
     log(`保留清理被删除闸挡下（本轮一条都不删）：${readout.gate.reason}`);
-  } else {
+  } else if (readout) {
     // 1) 热榜旧数据：固定 7 天（热榜是时效性内容，无保留价值），天数与读数同源（HOTLIST_DAYS）
     const r = await qRun(deleteSql('runner', 'hotlist'), [cutoffIso(HOTLIST_DAYS)]);
     deleted = r.changes;
@@ -956,14 +985,15 @@ async function runCleanup() {
 
   await writeHeartbeat('cleanup', {
     deleted, retentionDeleted, resumed, autoAdj,
-    // 读数与"为什么没删"进心跳：监控面看一眼就知道触发口是暗的、挡在哪一步
-    blocked: readout.gate.allowed ? null : 'delete-gate',
-    pendingDeleted: readout.total,
-    gateReason: readout.gate.allowed ? null : readout.gate.reason,
+    // 读数与"为什么没删"进心跳：监控面看一眼就知道触发口是暗的、挡在哪一步。
+    // 额度让路的轮次 blocked 带档位（quota:light/hard），监控面据此区分「闸挡下」与「有意让路」。
+    blocked: quotaSkip ? `quota:${quotaLevel}` : (readout.gate.allowed ? null : 'delete-gate'),
+    pendingDeleted: readout ? readout.total : null,
+    gateReason: readout && !readout.gate.allowed ? readout.gate.reason : null,
   });
   // H29①：闸挡住必须出声（此前它沉默，"挂了几小时没人知"）——sourceId 用北京日，一天至多响一次。
   // 无事可删（候选 0）不是"被挡"：那种轮空静默，否则每天准点误报会训练用户忽略这条报警（对抗审查 M1）。
-  if (!readout.gate.allowed && readout.total > 0) {
+  if (readout && !readout.gate.allowed && readout.total > 0) {
     try {
       await require('../api/_alerts').dispatch('cleanup_blocked', {
         sourceId: `bj-${require('../lib/time-window').beijingDateStr()}`,
@@ -975,7 +1005,9 @@ async function runCleanup() {
   }
   // 15-cloud-alerts F5：熔断不沉默——每日清理批次附带熔断待办汇总
   try { await require('../api/_alerts').frozenDigest(); } catch { /* 报警失败不阻断 */ }
-  return { blocked: !readout.gate.allowed, deleted, retentionDeleted, resumed, pendingDeleted: readout.total };
+  return readout
+    ? { blocked: !readout.gate.allowed, deleted, retentionDeleted, resumed, pendingDeleted: readout.total }
+    : { blocked: true, deleted: 0, retentionDeleted: 0, resumed, pendingDeleted: null, quotaSkipped: quotaLevel };
 }
 
 // ─── 模式：weekly（20-weekly-picks：精选周刊，周五 18:03 北京，窗口=前7天） ───
@@ -2588,7 +2620,7 @@ async function runTranslate() {
 
   try {
     if (MODE === 'collect') await runCollect({ skipAiTail: quotaLight });
-    else if (MODE === 'cleanup') await runCleanup();
+    else if (MODE === 'cleanup') await runCleanup({ quotaLevel });
     else if (MODE === 'daily') await runDaily();
     else if (MODE === 'daily-ai') {
       if (quotaHard) { log('额度闸 hard：日报 AI 段让路，本轮出关键词档'); await runDaily(); }
@@ -2626,12 +2658,12 @@ async function runTranslate() {
         try { await require('../api/_alerts').dailyFailed(`${MODE}: ${err.message}`); } catch { /* 隔离 */ }
       }
     }
-    // B101 观测：批次**失败时更要**留下这条读数（连着失败的那几天正是最需要看待删量的时候）。
-    // 放在 process.exit 之前 —— exit 会立刻终止进程，finally 不会跑。
-    await refreshRetentionReadout();
     process.exit(1);
   }
-  await refreshRetentionReadout();
+  // 保留读数不再随批次收尾刷新（用户 11-01 拍板）：collect/translate 等双进程每批一遍 ×
+  // 每天 96+ 批 ≈ 192 次 COUNT/天（数万行/次 ≈ 5-20M reads/天），是 reads 烧速真凶；且读数
+  // 历史按天去重（retentionReadout 内部），同天重刷不增加任何信息——B101「失败时更要留读数」
+  // 的每批消费前提不成立。读数唯一入口改为每日 cleanup：正常天 2 条 COUNT，紧急天（≥light 档）0 条。
   // 有序收尾：关连接后自然退出（process.exit 会触发 libuv UV_HANDLE_CLOSING 断言，exit 127）
   try { if (_db) _db.close(); } catch { /* 忽略 */ }
   try { if (proxyAgent) await proxyAgent.close(); } catch { /* 忽略 */ }
