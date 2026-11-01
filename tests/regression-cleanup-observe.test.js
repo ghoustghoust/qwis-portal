@@ -5,7 +5,13 @@
 // 两者对得上，但**没有任何代码保证它们一直对得上**：读数是抄的 SQL 就一定会漂（坑 #58/#62 的方向）。
 // 更要紧的是那一轮删除**没有过删除闸**（闸当时只是"可用工具"，B103 的剩余项）。
 // 所以这里钉三件事：①读数 == 真删掉的条数；②没有可用转储就一条都不许删且必须出声；
-// ③历史按天去重（否则 collect 每 15 分钟刷一次，14 条历史只覆盖 3.5 小时 = 抖动不是趋势）。
+// ③历史按天去重（14 条历史 = 14 天趋势，去重失效就退化成当天的抖动）。
+//
+// 2026-11-01 烧速两刀改锁说明（用户拍板"砍掉每批白烧统计"）：保留读数的唯一入口从
+// "collect/translate 等每个批次收尾各刷一遍（≈192 次 COUNT/天，reads 烧速真凶）"改为
+// "每日 cleanup 一次（正常档 2 条 COUNT，删后复刷 2 条；≥light 档读数+DELETE 一起让路）"。
+// CO4 的场景随之从 daily 批换成 cleanup 批，并新增两段：批次收尾不得再刷读数（防白烧统计
+// 回潮）、CO6 钉 light 档"不删只记账"与恢复后自动补跑的联动。去重与封顶的断言原样保留。
 //
 // 形态说明：全部在**本地 libsql 文件库**上跑（`TURSO_DATABASE_URL='file:'`，零生产写，坑 #52/#64），
 // 且用 `execFileSync` 直接跑 `tools/collect-turso.js`，**不落根目录 scratch 驱动**
@@ -17,6 +23,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const http = require('http');
 const { execFileSync } = require('child_process');
 const { createClient } = require('@libsql/client');
 
@@ -151,7 +158,7 @@ test('CO3 反向（#72）：转储可用时必须真能放行，且实删数 == 
   } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
 });
 
-test('CO4 历史按天去重且封顶 14 条（collect 每 15min 刷一次读数，不去重就成了抖动）', async () => {
+test('CO4 读数唯一入口=每日 cleanup（11-01 拍板：批次收尾白烧统计已砍）；历史按天去重且封顶 14 条', async () => {
   const dir = tmp('b101-co4-');
   try {
     const url = fileUrl(dir);
@@ -159,13 +166,18 @@ test('CO4 历史按天去重且封顶 14 条（collect 每 15min 刷一次读数
     await seedArticles(db, 0);
     const dumpDir = path.join(dir, 'dump');
     makeDump(dumpDir, dumpOf(1));
+    // ① 批次收尾不得再刷读数（防白烧统计回潮）：daily 批跑完，retention.pending 必须不存在
+    runRunner('daily', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
+    assert.equal(await readSetting(db, 'retention.pending'), null,
+      'daily 批不该再写保留读数（11-01 拍板砍掉批次收尾统计，若此红 = 白烧统计回潮）');
+    // ② 唯一入口挂 cleanup，历史按天去重：同一天连跑三遍也只攒 1 条
     const counts = [];
     for (let i = 0; i < 3; i++) {
-      runRunner('daily', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
+      runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
       const row = await readSetting(db, 'retention.pending');
       counts.push(row ? row.history.length : -1);
     }
-    assert.ok(counts.every((c) => c === 1), `同一天跑了三批，历史却攒了 ${JSON.stringify(counts)} 条 —— 按天去重失效`);
+    assert.ok(counts.every((c) => c === 1), `cleanup 同一天跑了三遍，历史却攒了 ${JSON.stringify(counts)} 条 —— 按天去重失效`);
     // 手工把历史灌满，验封顶：写入 20 条旧记录后刷新，应留 14 条
     await db.execute({
       sql: 'INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)',
@@ -175,9 +187,55 @@ test('CO4 历史按天去重且封顶 14 条（collect 每 15min 刷一次读数
         history: Array.from({ length: 20 }, (_, k) => ({ at: `2026-0${(k % 8) + 1}-0${k % 8}T00:00:00.000Z`, total: k, counts: {}, gateAllowed: false })),
       })],
     });
-    runRunner('daily', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
+    runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
     const row = await readSetting(db, 'retention.pending');
-    assert.equal(row.history.length, 14, `历史封顶失效：${row.history.length} 条`);
+    // cleanup 一轮内跑 pre+判闸两遍写库（scan 复用只省 COUNT 不省写），同天第二遍走 replace
+    // 不再 push —— 所以这里钉的是语义边界（today 恰好一条 + 总数不超 14），不钉脆弱的逐遍计数
+    const today = new Date().toISOString().slice(0, 10);
+    assert.equal(row.history.filter((h) => String(h.at).slice(0, 10) === today).length, 1,
+      `同天多遍写库后 today 条应有且仅有 1 条，实得 ${row.history.filter((h) => String(h.at).slice(0, 10) === today).length} —— 按天去重失效`);
+    assert.ok(row.history.length <= 14, `历史封顶失效：${row.history.length} 条`);
+    await db.close();
+  } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
+});
+
+// 11-01 烧速两刀（用户拍板）：light 档及以上时，清理读数与 DELETE 一起让路——当天只记账不删，
+// 恢复 none/watch 后第一次 cleanup 自动补跑（cleanup 每天都跑，无需状态机）。
+// 本地假 quota guard 端点（CLOUD_SITE 可 env 覆盖 + fetchQuotaGuard 走裸 fetch）让 runner 子进程
+// 真走 quotaSkip 分支，不开任何生产后门。
+test('CO6 额度联动：light 档读数+DELETE 一起让路只记账；恢复 none 后首次 cleanup 自动补跑', async () => {
+  const dir = tmp('b101-co6-');
+  try {
+    const url = fileUrl(dir);
+    const db = await seed(url);
+    await seedArticles(db, 20);
+    const dumpDir = path.join(dir, 'dump');
+    makeDump(dumpDir, dumpOf(24));
+    const srv = http.createServer((req, res) => {
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({ ok: true, guard: { level: 'light', pctReads: 93, pctWrites: 91.5, pctStorage: 14, daysLeft: 3, dailyBurnM: 10.1 } }));
+    });
+    await new Promise((res) => srv.listen(0, '127.0.0.1', res));
+    const port = srv.address().port;
+    try {
+      // ① light 轮：读数不重算、DELETE 不跑（联动），心跳记账 blocked=quota:light（面板可辨「有意让路」）
+      const before = await countArticles(db);
+      const r = runRunner('cleanup', {
+        TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir,
+        CLOUD_SITE: `http://127.0.0.1:${port}`, COLLECT_KEY: 'test-key',
+      });
+      assert.match(r.out, /清理读数与 DELETE 今日让路/, `light 轮没走让路分支：${r.out.slice(0, 400)}`);
+      assert.equal(await countArticles(db), before, 'light 轮真删了东西 —— 读数与 DELETE 没有联动让路');
+      const hb = await readSetting(db, 'cloud.collect');
+      assert.equal(hb.history[hb.history.length - 1].stats.blocked, 'quota:light',
+        'light 轮没在心跳记账（面板将分不清「闸挡下」与「有意让路」）');
+      // ② 恢复 none（不注入假端点 → COLLECT_KEY 缺失 → quota 读不到按正常档）：首轮 cleanup 自动补跑
+      const r2 = runRunner('cleanup', { TURSO_DATABASE_URL: url, CONTENT_DUMP_DIR: dumpDir });
+      assert.match(r2.out, /清理完成: 删除 10 条热榜旧数据/, `恢复后没补跑删除：${r2.out.slice(0, 400)}`);
+      assert.equal(await countArticles(db), 4, '恢复后首轮该把 20 条夹具删到 4（3 条豁免 + 1 条窗口内）');
+      const row = await readSetting(db, 'retention.pending');
+      assert.equal(row.total, 0, '补跑后读数应反映删后真值 0（CO3 同款语义）');
+    } finally { srv.close(); }
     await db.close();
   } finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* Windows 句柄 */ } }
 });

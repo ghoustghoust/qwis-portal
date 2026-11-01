@@ -921,6 +921,13 @@ async function runCleanup({ quotaLevel = 'none' } = {}) {
     }
   }
 
+  // 删后复刷（CO3 反向锁语义：读数必须反映删后真值）：批次收尾刷新已砍（11-01 拍板），
+  // 删除动作发生后若不复刷，retention.pending 会永远停在删前的读数上——「读数说真话」
+  // 优先于省这一遍 COUNT（每日 +2 条，是批次收尾时代 192 条的 1/96）。仅放行轮需要复刷。
+  if (readout && readout.gate.allowed) {
+    try { readout = await retentionReadout({ validAfter: lastCollectAt }); } catch (e) { log(`删后复刷失败（不阻断）: ${e.message}`); }
+  }
+
   // 3b) 系统性错误自动降频（H14 框架内，10-05）：同类型同错误指纹 ≥10 个（单一类型占比 ≥80%）
   //  = 平台级问题（如 YouTube 官方 RSS 全链 404）——对簇内启用中的源自动降频到 6h，避免按默认频率
   //  白烧重试；标记 extra.throttledByHeal 供自愈面板观测。恢复后不自动回升（避免震荡），可手动调回。
