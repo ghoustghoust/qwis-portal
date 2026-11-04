@@ -1,6 +1,71 @@
 {
   "items": [
     {
+      "id": 236501,
+      "source_id": 597,
+      "platform": "youtube",
+      "title": "Instead of asking why they stay, ask how we can help #TEDTalks",
+      "url": "https://www.youtube.com/watch?v=JOPuUlsXMso",
+      "vid": "JOPuUlsXMso",
+      "cover": "https://i.ytimg.com/vi/JOPuUlsXMso/hqdefault.jpg",
+      "duration": null,
+      "author": "TED",
+      "published_at": "2026-11-03T22:30:31.000Z",
+      "source_name": "TED"
+    },
+    {
+      "id": 235873,
+      "source_id": 568,
+      "platform": "youtube",
+      "title": "How Otis revolutionized modern buildings",
+      "url": "https://www.youtube.com/watch?v=BaEhJK6Ay5o",
+      "vid": "BaEhJK6Ay5o",
+      "cover": "https://i.ytimg.com/vi/BaEhJK6Ay5o/hqdefault.jpg",
+      "duration": null,
+      "author": "My First Million",
+      "published_at": "2026-11-03T19:26:30.000Z",
+      "source_name": "My First Million"
+    },
+    {
+      "id": 235888,
+      "source_id": 542,
+      "platform": "youtube",
+      "title": "Find Lost Files with This Free AI",
+      "url": "https://www.youtube.com/watch?v=XQuRgVP9-Sc",
+      "vid": "XQuRgVP9-Sc",
+      "cover": "https://i.ytimg.com/vi/XQuRgVP9-Sc/hqdefault.jpg",
+      "duration": null,
+      "author": "The AI Advantage",
+      "published_at": "2026-11-03T19:04:36.000Z",
+      "source_name": "The AI Advantage"
+    },
+    {
+      "id": 235230,
+      "source_id": 597,
+      "platform": "youtube",
+      "title": "What My Politically Divided Family Teaches Me | Tami Pyfer | TED",
+      "url": "https://www.youtube.com/watch?v=Wv9wTfGidXQ",
+      "vid": "Wv9wTfGidXQ",
+      "cover": "https://i.ytimg.com/vi/Wv9wTfGidXQ/hqdefault.jpg",
+      "duration": null,
+      "author": "TED",
+      "published_at": "2026-11-03T16:00:32.000Z",
+      "source_name": "TED"
+    },
+    {
+      "id": 234841,
+      "source_id": 568,
+      "platform": "youtube",
+      "title": "Ex-amazon VP Ethan Evans on why Bezos read complaints himself, and what he did to solve for them.",
+      "url": "https://www.youtube.com/watch?v=k0vT4kGNfXQ",
+      "vid": "k0vT4kGNfXQ",
+      "cover": "https://i.ytimg.com/vi/k0vT4kGNfXQ/hqdefault.jpg",
+      "duration": null,
+      "author": "My First Million",
+      "published_at": "2026-11-03T14:41:19.000Z",
+      "source_name": "My First Million"
+    },
+    {
       "id": 233061,
       "source_id": 542,
       "platform": "youtube",
@@ -1234,72 +1299,7 @@
       "author": "AI Engineer",
       "published_at": "2026-10-30T23:00:13.000Z",
       "source_name": "AI Engineer"
-    },
-    {
-      "id": 200768,
-      "source_id": 579,
-      "platform": "youtube",
-      "title": "Binance Hacked $6.3B Stolen, DoorDash Buys Instacart For $17B, Jake Newfield from Hermetiq, + More!",
-      "url": "https://www.youtube.com/watch?v=Hl87hl0yuCY",
-      "vid": "Hl87hl0yuCY",
-      "cover": "https://i.ytimg.com/vi/Hl87hl0yuCY/hqdefault.jpg",
-      "duration": null,
-      "author": "This Week in Startups",
-      "published_at": "2026-10-30T22:29:28.000Z",
-      "source_name": "This Week in Startups"
-    },
-    {
-      "id": 201954,
-      "source_id": 552,
-      "platform": "youtube",
-      "title": "Anthropic S-1 Shocker, Greatest Business Ever? Google’s $500B Wipeout, Midterm Predictions",
-      "url": "https://www.youtube.com/watch?v=p1Dy4e4ff0s",
-      "vid": "p1Dy4e4ff0s",
-      "cover": "https://i.ytimg.com/vi/p1Dy4e4ff0s/hqdefault.jpg",
-      "duration": null,
-      "author": "All-In Podcast",
-      "published_at": "2026-10-30T22:03:41.000Z",
-      "source_name": "All-In Podcast"
-    },
-    {
-      "id": 202660,
-      "source_id": 602,
-      "platform": "youtube",
-      "title": "\"I showed it to my therapist and she said turn it off\" | Jason Yuan",
-      "url": "https://www.youtube.com/watch?v=oa4KR5o-Pbg",
-      "vid": "oa4KR5o-Pbg",
-      "cover": "https://i.ytimg.com/vi/oa4KR5o-Pbg/hqdefault.jpg",
-      "duration": null,
-      "author": "First of Kind",
-      "published_at": "2026-10-30T22:00:06.000Z",
-      "source_name": "First of Kind"
-    },
-    {
-      "id": 206140,
-      "source_id": 555,
-      "platform": "youtube",
-      "title": "How Lean In's 25-year-old #CEO gets ready for big public speaking moments. #leadership #powerhour",
-      "url": "https://www.youtube.com/watch?v=gNl-k_S4Hl0",
-      "vid": "gNl-k_S4Hl0",
-      "cover": "https://i.ytimg.com/vi/gNl-k_S4Hl0/hqdefault.jpg",
-      "duration": null,
-      "author": "Business Insider",
-      "published_at": "2026-10-30T21:54:32.000Z",
-      "source_name": "Business Insider"
-    },
-    {
-      "id": 200169,
-      "source_id": 629,
-      "platform": "youtube",
-      "title": "My last video about ai harnesses",
-      "url": "https://www.youtube.com/watch?v=ebILGCoN4UU",
-      "vid": "ebILGCoN4UU",
-      "cover": "https://i.ytimg.com/vi/ebILGCoN4UU/hqdefault.jpg",
-      "duration": null,
-      "author": "Theo - t3․gg",
-      "published_at": "2026-10-30T21:42:50.000Z",
-      "source_name": "Theo - t3․gg"
     }
   ],
-  "generated_at": "2026-11-03T08:29:31.848Z"
+  "generated_at": "2026-11-04T07:55:51.785Z"
 }

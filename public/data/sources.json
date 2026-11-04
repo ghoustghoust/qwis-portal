@@ -85,20 +85,6 @@
       "fail_count": 0
     },
     {
-      "id": 610,
-      "type": "youtube",
-      "name": "3Blue1Brown",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 220,
       "type": "rss",
       "name": "42章经",
@@ -281,40 +267,12 @@
       "fail_count": 0
     },
     {
-      "id": 510,
-      "type": "youtube",
-      "name": "AI Explained",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCNJ1Ymd5yFuUPtn21xtRbbw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 705,
       "type": "x",
       "name": "AI SDK(@aisdk)",
       "url": "https://api.xgo.ing/rss/user/22af005b21ec45b1a4503acca777b7f0",
       "avatar": "https://pbs.twimg.com/profile_images/1856739755280527360/qPyTbiar_normal.jpg",
       "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 512,
-      "type": "youtube",
-      "name": "AI Search",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A",
-      "avatar": null,
-      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1471,20 +1429,6 @@
       "fail_count": 0
     },
     {
-      "id": 620,
-      "type": "youtube",
-      "name": "Computerphile",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 768,
       "type": "rss",
       "name": "Conge",
@@ -1789,8 +1733,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 7
     },
     {
       "id": 784,
@@ -2073,20 +2017,6 @@
       "fail_count": 0
     },
     {
-      "id": 800,
-      "type": "rss",
-      "name": "Fei's Tours &amp; Tales",
-      "url": "https://www.feifun.cn/feed.xml",
-      "avatar": "https://www.feifun.cn/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 801,
       "type": "rss",
       "name": "Feld Thoughts",
@@ -2163,20 +2093,6 @@
       "url": "https://api.xgo.ing/rss/user/c04abb206bbf4f91b22795024d6c0614",
       "avatar": "https://pbs.twimg.com/profile_images/2034360486867951616/pa7H6cYB_normal.png",
       "group_id": 19,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 807,
-      "type": "x",
-      "name": "Fireworks AI(@FireworksAI_HQ)",
-      "url": "https://api.xgo.ing/rss/user/9f35c76341554bd78c2b9e63dc4fa5d8",
-      "avatar": "https://pbs.twimg.com/profile_images/1776371265839980544/PUpa_Ui0_normal.jpg",
-      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2443,20 +2359,6 @@
       "url": "https://openrss.org/feed/deepmind.google/blog/",
       "avatar": "https://deepmind.google/favicon.ico",
       "group_id": 1,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 523,
-      "type": "youtube",
-      "name": "Google DeepMind",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCP7jMXSY2xbc3KCAE0MHQ-A",
-      "avatar": null,
-      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3473,20 +3375,6 @@
       "fail_count": 0
     },
     {
-      "id": 893,
-      "type": "rss",
-      "name": "Longlong's Blog",
-      "url": "https://blog.xlonglong.cn/feed/",
-      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -3633,20 +3521,6 @@
       "url": "https://api.xgo.ing/rss/user/63316630d94543f5a6480f230f483008",
       "avatar": "https://pbs.twimg.com/profile_images/1820716712234303489/9GpKDZjq_normal.jpg",
       "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 904,
-      "type": "rss",
-      "name": "Markon Review",
-      "url": "https://markonreview.com/rss/",
-      "avatar": "https://markonreview.com/favicon.png",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3893,40 +3767,12 @@
       "fail_count": 0
     },
     {
-      "id": 590,
-      "type": "youtube",
-      "name": "MrBeast",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCX6OQ3DkcsbYNE6H8uQQuVA",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 919,
       "type": "rss",
       "name": "Muyun99 的杂谈",
       "url": "https://muyun.work/feed/",
       "avatar": "https://muyun.work/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 568,
-      "type": "youtube",
-      "name": "My First Million",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4103,20 +3949,6 @@
       "fail_count": 0
     },
     {
-      "id": 533,
-      "type": "youtube",
-      "name": "NetworkChuck",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9x0AN7BWHpCDHSm9NiJFJQ",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 931,
       "type": "x",
       "name": "Nick St. Pierre(@nickfloats)",
@@ -4250,20 +4082,6 @@
       "avatar": "https://community.openai.com/favicon.ico",
       "group_id": 19,
       "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 940,
-      "type": "x",
-      "name": "OpenAI Developers(@OpenAIDevs)",
-      "url": "https://api.xgo.ing/rss/user/971dc1fc90da449bac23e5fad8a33d55",
-      "avatar": "https://pbs.twimg.com/profile_images/2022002720971096064/l3Kyt4qt_normal.jpg",
-      "group_id": 19,
-      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -4837,20 +4655,6 @@
       "url": "https://readwrite.com/feed/",
       "avatar": "https://readwrite.com/wp-content/uploads/2024/10/cropped-readwrite-favicon-32x32.png",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 625,
-      "type": "youtube",
-      "name": "Real Engineering",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCR1IuLEqb6UEA_zQ81kwXfg",
-      "avatar": null,
-      "group_id": 27,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5629,20 +5433,6 @@
       "fail_count": 0
     },
     {
-      "id": 1028,
-      "type": "rss",
-      "name": "Stray Episode",
-      "url": "https://farer.org/rss/",
-      "avatar": "https://farer.org/favicon.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1029,
       "type": "rss",
       "name": "Stripe Blog",
@@ -5783,6 +5573,20 @@
       "fail_count": 0
     },
     {
+      "id": 1039,
+      "type": "rss",
+      "name": "Surmon.me",
+      "url": "https://surmon.me/rss.xml",
+      "avatar": "https://surmon.me/icon.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1040,
       "type": "rss",
       "name": "Swift by Sundell",
@@ -5803,20 +5607,6 @@
       "url": "https://www.swift.org/atom.xml",
       "avatar": "https://www.swift.org/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 597,
-      "type": "youtube",
-      "name": "TED",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5895,20 +5685,6 @@
       "fail_count": 0
     },
     {
-      "id": 542,
-      "type": "youtube",
-      "name": "The AI Advantage",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCHhYXsLBEVVnbvsq57n1MTQ",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1046,
       "type": "rss",
       "name": "The ASF Blog",
@@ -5957,20 +5733,6 @@
       "url": "https://cynicaldeveloper.com/feed/podcast",
       "avatar": "https://assets.podhome.fm/71836f7b-1c37-49b6-928a-08de58088e72/639045015419175239cover-02.jpg",
       "group_id": 19,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 608,
-      "type": "youtube",
-      "name": "The Futur",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-b3c7kxa5vU-bnmaROgvog",
-      "avatar": null,
-      "group_id": 28,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6259,20 +6021,6 @@
       "fail_count": 0
     },
     {
-      "id": 544,
-      "type": "youtube",
-      "name": "Two Minute Papers",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1070,
       "type": "rss",
       "name": "UX Magazine",
@@ -6461,20 +6209,6 @@
       "url": "https://weishu.me/atom.xml",
       "avatar": "https://weishu.me/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 546,
-      "type": "youtube",
-      "name": "Wes Roth",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCqcbQf6yw5KzRoDDcZ_wBSw",
-      "avatar": null,
-      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7553,20 +7287,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/4f8c07cc1c9eee6998b27eb99d7f134778871f0f.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4MN6VhR8hLYDGAwLDxebb2aWHCPrO04GKibw5KCCUSRwQ/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 595,
-      "type": "youtube",
-      "name": "一席",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9237,8 +8957,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 486,
@@ -11505,8 +11225,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1248,
@@ -12097,20 +11817,6 @@
       "fail_count": 0
     },
     {
-      "id": 1261,
-      "type": "rss",
-      "name": "泫言",
-      "url": "https://blog.cugxuan.cn/atom.xml",
-      "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 344,
       "type": "rss",
       "name": "泽平宏观",
@@ -12229,20 +11935,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/60b1f9007c87ab75cd83314bf5cfede30addd40a.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/bNqVZcia7iaBwauf53PaaMgRyEjXfLlLBH6rfejHH9OFSlzTcpTwtszlGyKiaZRVC84QlsfqvUxKmo/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1265,
-      "type": "rss",
-      "name": "涛叔",
-      "url": "https://taoshu.in/feed.xml",
-      "avatar": "https://taoshu.in/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15625,5 +15317,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-03T08:29:33.953Z"
+  "generated_at": "2026-11-04T07:55:54.215Z"
 }
