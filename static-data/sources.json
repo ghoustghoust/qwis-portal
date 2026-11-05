@@ -631,6 +631,20 @@
       "fail_count": 0
     },
     {
+      "id": 716,
+      "type": "x",
+      "name": "Aadit Sheth(@aaditsh)",
+      "url": "https://api.xgo.ing/rss/user/179bcc4b8e5d4274b6e9e935f9fd4434",
+      "avatar": "https://pbs.twimg.com/profile_images/1989274279947694081/ggQkOhbP_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 717,
       "type": "rss",
       "name": "Abyss的小屋",
@@ -1733,8 +1747,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 7
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 784,
@@ -2485,6 +2499,20 @@
       "url": "https://feeds.megaphone.fm/hacking-humans",
       "avatar": "https://megaphone.imgix.net/podcasts/8797f03a-a50b-11ea-b6c0-87ebb093948d/image/5a1e5b722e38318e5dc6b7a74aab47b8.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
       "group_id": 35,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 836,
+      "type": "x",
+      "name": "Hailuo AI (MiniMax)(@Hailuo_AI)",
+      "url": "https://api.xgo.ing/rss/user/e65b5e59fcb544918c1ba17f5758f0f8",
+      "avatar": "https://pbs.twimg.com/profile_images/2086821620228980736/JzAOUvuf_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3646,6 +3674,20 @@
       "name": "Mike Krieger(@mikeyk)",
       "url": "https://api.xgo.ing/rss/user/78d7b99318b04b309b04000f7e24da29",
       "avatar": "https://pbs.twimg.com/profile_images/1600639584294969344/VOYWWHNN_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 912,
+      "type": "x",
+      "name": "Milvus(@milvusio)",
+      "url": "https://api.xgo.ing/rss/user/424e67b19eed4500b7a440976bbd2ade",
+      "avatar": "https://pbs.twimg.com/profile_images/1550408337908383744/HJl3y0Io_normal.jpg",
       "group_id": 30,
       "spotlight": 0,
       "muted": 0,
@@ -5825,12 +5867,12 @@
       "fail_count": 0
     },
     {
-      "id": 1056,
-      "type": "rss",
-      "name": "The New Stack",
-      "url": "https://thenewstack.io/feed/",
-      "avatar": "https://cdn.thenewstack.io/media/2026/03/b2fc1b22-cropped-89b6d319-download-32x32.png",
-      "group_id": null,
+      "id": 1057,
+      "type": "x",
+      "name": "The Rundown AI(@TheRundownAI)",
+      "url": "https://api.xgo.ing/rss/user/83b1ea38940b4a1d81ea57d1ffb12ad7",
+      "avatar": "https://pbs.twimg.com/profile_images/1672707817197965312/zsxkJv_T_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6511,6 +6553,20 @@
       "fail_count": 0
     },
     {
+      "id": 1101,
+      "type": "x",
+      "name": "bolt.new(@boltdotnew)",
+      "url": "https://api.xgo.ing/rss/user/760ab7cd9708452c9ce1f9144b92a430",
+      "avatar": "https://pbs.twimg.com/profile_images/2018401342755364864/xVn-9oYv_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1102,
       "type": "rss",
       "name": "by Upsangel",
@@ -6544,6 +6600,20 @@
       "name": "cat(@_catwu)",
       "url": "https://api.xgo.ing/rss/user/66a6b39ddcfa42e39621e0ab293c1bdd",
       "avatar": "https://pbs.twimg.com/profile_images/1645578728532246528/Llilll47_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1105,
+      "type": "x",
+      "name": "cohere(@cohere)",
+      "url": "https://api.xgo.ing/rss/user/462aa134ed914f98b3491680ad9b36ed",
+      "avatar": "https://pbs.twimg.com/profile_images/1650250832909152260/760DZ0cv_normal.png",
       "group_id": 30,
       "spotlight": 0,
       "muted": 0,
@@ -6945,20 +7015,6 @@
       "fail_count": 0
     },
     {
-      "id": 1131,
-      "type": "x",
-      "name": "lmarena.ai(@lmarena_ai)",
-      "url": "https://api.xgo.ing/rss/user/f01b088d5a39473e854b07143df77ec5",
-      "avatar": "https://pbs.twimg.com/profile_images/2017015061454438400/iNKfXZ_I_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1132,
       "type": "rss",
       "name": "lucifer的网络博客",
@@ -7025,8 +7081,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1137,
@@ -7342,6 +7398,20 @@
       "name": "一派胡言 · Blog",
       "url": "https://yipai.me/feed",
       "avatar": "https://yipai.me/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1152,
+      "type": "rss",
+      "name": "一纸忘忧",
+      "url": "https://www.ikxin.com/feed/",
+      "avatar": "https://www.ikxin.com/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -8957,8 +9027,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 486,
@@ -8981,20 +9051,6 @@
       "url": "https://rowkey.cn/atom.xml",
       "avatar": "https://rowkey.cn/favicon.ico",
       "group_id": 19,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1193,
-      "type": "x",
-      "name": "向阳乔木(@vista8)",
-      "url": "https://api.xgo.ing/rss/user/9de19c78f7454ad08c956c1a00d237fe",
-      "avatar": "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -11365,8 +11421,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 371,
@@ -12541,8 +12597,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 398,
@@ -14477,20 +14533,6 @@
       "fail_count": 0
     },
     {
-      "id": 1321,
-      "type": "rss",
-      "name": "远飞闲记",
-      "url": "https://leonhe.cn/index.xml",
-      "avatar": "https://leonhe.cn/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1322,
       "type": "rss",
       "name": "迷途小书童的Note",
@@ -15317,5 +15359,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-04T07:55:54.215Z"
+  "generated_at": "2026-11-05T08:23:28.827Z"
 }
