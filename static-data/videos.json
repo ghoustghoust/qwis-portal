@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": 240076,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "真的需要摸吗？MacBook Pro PROLED XDR上手",
+      "url": "https://www.bilibili.com/video/BV1NS4t6oEXQ",
+      "vid": "BV1NS4t6oEXQ",
+      "cover": "https://i1.hdslb.com/bfs/archive/78e03b657719e36582553cc4ea6dd50f3f94e623.jpg",
+      "duration": 899,
+      "author": "影视飓风",
+      "published_at": "2026-11-05T14:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 236501,
       "source_id": 597,
       "platform": "youtube",
@@ -1286,20 +1299,7 @@
       "author": "NetworkChuck",
       "published_at": "2026-10-30T23:21:11.000Z",
       "source_name": "NetworkChuck"
-    },
-    {
-      "id": 199815,
-      "source_id": 509,
-      "platform": "youtube",
-      "title": "How to Decide What Your AI Agent Should Remember - Wojciech Pluta, Oracle",
-      "url": "https://www.youtube.com/watch?v=qq2Hm4XNRgI",
-      "vid": "qq2Hm4XNRgI",
-      "cover": "https://i.ytimg.com/vi/qq2Hm4XNRgI/hqdefault.jpg",
-      "duration": null,
-      "author": "AI Engineer",
-      "published_at": "2026-10-30T23:00:13.000Z",
-      "source_name": "AI Engineer"
     }
   ],
-  "generated_at": "2026-11-05T08:23:25.663Z"
+  "generated_at": "2026-11-06T08:26:29.112Z"
 }

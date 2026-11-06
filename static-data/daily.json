@@ -1,7 +1,7 @@
 {
   "report": {
-    "id": 140,
-    "generated_at": "2026-11-05T07:52:56.924Z",
+    "id": 143,
+    "generated_at": "2026-11-06T07:52:33.579Z",
     "window_hours": 30,
     "sections": [
       {
@@ -9,44 +9,34 @@
         "desc": "新公开的课程、训练营与社群招募",
         "items": [
           {
-            "id": 6378131,
-            "title": "斯坦福最新课程发布：200行写Claude Code，批量培养「AI 原生开发者」！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557666&idx=1&sn=432ec1554aabb97ee15c9905e23fe630",
-            "source": "大模型智能",
-            "published_at": "2026-11-04T16:00:00.000Z",
-            "score": null,
-            "summary": "一个专注于AI领域的开源组织，汇聚了众多优秀学习者，使命-for the learner，和学习者一起成长。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4f7786ad&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FrjiclujBklTzVZzmmXstib2JyibP3u6Xb253qN7PgnNHzyALF52eXnhp9ra5WCao7b7fDvwsrv34JxIFJKqPVicew43CTeBJAeuhFQFP1fxkxwU%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6378871,
+            "title": "@StanfordAILab’s @talaei_shayan shipping incredible work! 🚀",
+            "url": "https://x.com/StanfordAILab/status/2118088411563372564",
+            "source": "Stanford AI Lab(@StanfordAILab)",
+            "published_at": "2026-11-04T21:10:04.000Z",
+            "score": 65,
+            "summary": "Stanford AI Lab 5人团队从头训练了65B参数密集模型Ripple-65B，在Terminal-Bench 2.1上创下美国开源权重SOTA（Agentic Coding方向）。核心做法：选密集而非MoE以降低推理延迟和训练复杂度；不用后训练数据，全部自建数据生成与过滤管道；RL系统与课程学习联合设计，采用score centering+截断重要性采样。",
+            "cover": "https://pbs.twimg.com/profile_images/2098659305532858368/Xy-b_xW5_normal.jpg"
           },
           {
-            "id": 6377627,
-            "title": "怀念沈坚老师",
-            "url": "https://blog.wohin.me/posts/huai-nian-shen-jian-lao-shi/",
-            "source": "Fernweh",
-            "published_at": "2026-11-04T13:03:12.000Z",
+            "id": 6392235,
+            "title": "11月，一起在庐山修炼心力与定力丨笔记侠PPE课程预告",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIxNTAzNzU0Ng==&mid=2654909689&idx=2&sn=f0c5e0bb29f0ada880b3b69722d7d886",
+            "source": "笔记侠",
+            "published_at": "2026-11-05T13:30:00.000Z",
             "score": null,
-            "summary": "很幸运，我参加了沈坚老师在那几年给计算机系学生开设的几乎全部课程。从大一的“高级语言程序设计”（高程），到大二的“数据结构”，再到大三的“计算机网络”和“计算机系统实验”。本来，我和很多人是没有机会上沈坚老师的“数据结构”课程的，因为大二起我们就从四平路校区（本部）搬到了嘉定校区，沈坚老师在那一学期恰好在本部给数理强化班的同学们上“数据结构”课。然而，面对大家搬嘉前后的热情和遗憾，老师可能也不愿意",
-            "cover": null
+            "summary": "庐山，一千六百年来都在安顿“身在山中的人”。从慧远的虎溪，到苏轼的题西林壁；从白居易的花径草堂，到朱熹与陆九渊的白鹿洞书院，再到陈寅恪的纪念碑——这条山路，就是这门课的路径。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6ce5f91b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8b91BQ8yFl3FMtUJwiaNrXdCIZhUsPsiafczKbknicaKfiaNAFOqVl8DeXtMqrRc5MTIa9MU9XGeCD7roShtMgxCO75WZ52YLVQOvAU4wYAmm6c%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6379642,
-            "title": "不想打工的年轻人，在李佳琦直播间里“付费干活”",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODMzMDMyMw==&mid=2654916218&idx=1&sn=a1bbee9bd888204b0fddf25312202894",
-            "source": "新周刊",
-            "published_at": "2026-11-04T12:39:00.000Z",
+            "id": 6392818,
+            "title": "想在AI时代赚到钱，先看看这些生意机会丨Greg Isenberg",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzcxMDA5NTI0OA==&mid=2247489414&idx=1&sn=0adfb776bb0644ed0b7964d1cb9ad8d2",
+            "source": "晚点再听LaterCast",
+            "published_at": "2026-11-05T13:17:00.000Z",
             "score": null,
-            "summary": "“没有Token（词元）的CS（计算机科学）学生应立即退学。”南京大学计算机系副教授蒋炎岩在课堂上要求学生自费购买Token来完成课程实验和作业，在互联网上引发了巨大的争议。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f54e0b4a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FwQljSDtVmgHibR33O0afgeL8TnKPAoYAf3HJnAhO4qvliaEDwB3IeURib3PIPUzDHFeGndsKA2fQQIceL8hEx3KwDxVpkpIXnNxZBgQ2robfRE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6375559,
-            "title": "想学神经科学，别再等一个「更合适的时间」",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkxNzg2MzkxNg==&mid=2247548790&idx=1&sn=f13aa39ff9438b3281a26a639c42f28d",
-            "source": "神经现实",
-            "published_at": "2026-11-04T04:15:00.000Z",
-            "score": null,
-            "summary": "神经现实 2026-11-04 12:15 上海 决策课程倒计时，常青藤教授推荐信机会 跳转微信打开",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a4ee4916&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fzicns1lXib7pNCHkkdK7E5GB2vIvhQDvXVbP42hVhm5JHIlSsYiaQNBaPqsMlB5PnhrnVElGS65Vs3c96ywFYseq6jSK97icpHVmFGu5ZdkNbnA%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "网站、内容和功能越来越容易复制，创业者还该积累什么？Greg Isenberg从实体服务、行业合作、细分受众、社群、交易平台和独有数据出发，讨论AI时代怎样做一门不容易被照搬的生意。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9ee7f566&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FUNwPtic6UWKZY0aSCxYdVckezx11yTK8P7wxVU6c10icDumLmO6YF3aUokUhsQI4VKmA3JD6sQL4BSB478BHZzO8SiaHQwWtvZVytbKlgzm4FU%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -65,144 +55,144 @@
             "cover": null
           },
           {
-            "id": 6373156,
-            "title": "Gartner预警：2028年四分之一安全漏洞源于智能体滥用｜智享解读",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661835486&idx=2&sn=eb861d4e6df3bbc55d5ec84109173e3b",
-            "source": "第一财经",
-            "published_at": "2026-11-04T06:42:00.000Z",
-            "score": 76,
-            "summary": "Gartner发布2027年十大战略技术趋势，核心判断是AI产业从'能力竞赛'转向'治理竞争'，并给出量化预警：到2028年25%的企业安全漏洞将溯源至智能体滥用。文章按三大主线梳理——非文本AI前沿、智能体治理基础设施、软件经济重构，并给出成熟度排序与投资节奏建议。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0b5216ee&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCJgVVd94UkbuCQlV1iayMLSYne13BXoTcVb7Vcqib6QaGtfnJuF5Tg1QBicubjaPlrJmWckaozNCribA0TqO00uDe3ZN1V6wRUCae4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6363179,
-            "title": "New Anthropic research: progress on provable inference for large language models.\r\n\r\nHere, we introduc...",
-            "url": "https://x.com/AnthropicAI/status/2117710942826123294",
-            "source": "Anthropic(@AnthropicAI)",
-            "published_at": "2026-11-03T20:10:08.000Z",
+            "id": 6390240,
+            "title": "红果拿下豆包，腾讯阿里也坐不住了？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTEwNjI2MA==&mid=2651934084&idx=1&sn=7dd2dd765eaadc1d3e318875b1920433",
+            "source": "人人都是产品经理",
+            "published_at": "2026-11-05T03:46:00.000Z",
             "score": 72,
-            "summary": "Anthropic 发布 FlashProve，利用密码学技术让开发者验证某条响应是否真正来自指定 AI 模型，效率远超此前开源方案。可直接复用代码接入生产环境，用于防聊天劫持、验证测试与生产模型一致性等场景。代码已开源。",
-            "cover": null
+            "summary": "最近，阿里正在内测一款名叫Looogen（逻辑智片）的AI影视创作平台，主打用Agent制作短剧。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=638d76e2&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FibEdImMv0CQHBgq90UzfnYEB5Zo5GWliamcXEVIdptsIJOHpOaXd091QsRvNiajNiapAmqWzvO9rUWoViacjg8icdbeD2cGibge2uWHDgZ0LVPWSaU%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6376382,
-            "title": "小米机器人，连续“打工”8小时",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247869990&idx=1&sn=f888951c4fd6c0b75a70db83c5ea8513",
-            "source": "财联社",
-            "published_at": "2026-11-04T13:47:00.000Z",
-            "score": 70,
-            "summary": "小米CyberOne 02在总装车间完成8小时5分钟连续作业，期间两次充电（3小时2分、6小时3分），任务为非标柔性物料排序。这标志着其从实验室演示迈入产线级验证阶段。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d5587b71&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQXtmiafIpfaRlM4r5ctib2AptWy1pOebMhQrMMVhLRBxYCkLJ0K7iczkHBYW7uWaaSLxDzdA9dabny69VOLFC5oWrYvHnpRpfXIwGIWKyeNwiaE%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6376364,
-            "title": "Does opting out of TV tracking work?",
-            "url": "https://www.theverge.com/tech/1026088/northeastern-university-acr-tracking-study",
-            "source": "The Verge",
-            "published_at": "2026-11-04T14:00:00.000Z",
-            "score": 68,
-            "summary": "Northeastern University研究团队实测10家厂商的12台电视，发现LG、Amazon Fire TV、Sony Google TV等关闭ACR后确能停止数据回传，但Samsung、Roku即使 opting out 仍持续发送数据，Vizio则完全无视退出设置。",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/06/268611_Vizio_Mini_LED_Quantum_TV_JHiggins_0001.jpg?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 6363305,
-            "title": "Binance says hackers used fake job interviews and an internal AI tool to pull off the $6.3 billion heist",
-            "url": "https://www.theverge.com/news/1025576/binance-cyrpto-theft-explained",
-            "source": "The Verge",
-            "published_at": "2026-11-03T22:04:02.000Z",
-            "score": 68,
-            "summary": "Binance遭遇63亿美元盗案，黑客历时数月，通过恶意Google广告植入木马，再以假招聘面试获取内部AI工具权限，逐步渗透系统。这是已知最大规模加密货币盗窃，攻击链条融合了传统社工与AI工具滥用。",
-            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/23932848/acastro_STK018__02.jpg?quality=90&strip=all&crop=0,0,100,100"
-          },
-          {
-            "id": 6373599,
-            "title": "月烧 1.5 万亿 token，年烧 1.32 亿美元？Cursor 工程师的账单，凡人只能仰望",
-            "url": "https://www.infoq.cn/article/q9iebpvFozfy4bgCYUyE",
+            "id": 6388791,
+            "title": "MCP C# SDK 2.0 默认启用 HTTP 无状态模式，新增多轮请求能力",
+            "url": "https://www.infoq.cn/article/80iUxvCNB59aOgyXB7LN",
             "source": "InfoQ 推荐",
-            "published_at": "2026-11-04T07:48:18.000Z",
-            "score": 65,
-            "summary": "Cursor工程师Lauren Tan过去30天消耗1.5万亿token，按每百万token 8美元估算，年化成本约1.32亿美元。文章对比了典型开发者每月5100万token的用量，说明这是极端异常值，并拆解了折扣、模型混合、缓存命中等因素对实际成本的影响。",
-            "cover": "https://static001.infoq.cn/resource/image/4f/e8/4ff5b7d7ef3132b00d16e112809633e8.png"
+            "published_at": "2026-11-05T07:19:00.000Z",
+            "score": 68,
+            "summary": "微软发布MCP C# SDK 2.0，实现2026-07-28协议修订，默认Streamable HTTP改为无状态模式，移除initialize握手和Mcp-Session-Id，新增Mcp-Method/Mcp-Param-*请求头使负载均衡器可直接基于头部路由。工具层引入MRTR（多轮往返请求），交互场景通过抛出InputRequiredException实现。已废弃SEP-2577的Roo",
+            "cover": "https://static001.infoq.cn/resource/image/d7/8b/d71582585760e18439199bcea7b96e8b.jpg"
           },
           {
-            "id": 6373601,
-            "title": "Linux内核也能造了？Codex 11天写出13.9万行新内核，Rocky Linux 10跑起来了",
-            "url": "https://www.infoq.cn/article/OiyNEtFwV05opvsLTcvK",
+            "id": 6388395,
+            "title": "谷歌发布 ML Drift：为各类 GPU 加速端侧 AI 推理",
+            "url": "https://www.infoq.cn/article/hHzARIJTeqoqYpjNKEuq",
             "source": "InfoQ 推荐",
-            "published_at": "2026-11-04T07:30:50.000Z",
-            "score": 65,
-            "summary": "Gregory Kurtzer（CentOS创始人、Rocky Linux创建者）用Codex在11天内编写13.9万行Rust代码，从零造出一款Linux兼容内核Ginux，能启动Rocky Linux 10并运行未修改的Linux程序。核心方法HDAE（人类主导的智能体工程）证明：当领域专家设定架构、里程碑和验收标准后，AI可以把系统软件推进到操作系统级别。",
-            "cover": "https://static001.infoq.cn/resource/image/2c/85/2ca280bd01e38c24db7892ed6d351e85.jpg"
+            "published_at": "2026-11-05T05:00:00.000Z",
+            "score": 68,
+            "summary": "谷歌开源 ML Drift，跨平台 GPU 推理引擎，原生支持五维张量和张量虚拟化，内存开销比 llama.cpp 和 MLX LM 低 12%。YouTube Shorts 特效帧延迟降低 40%，Google Photos 计算摄影提速最高 2 秒。旧版 TFLite GPU 委托停止更新，建议迁移。",
+            "cover": "https://static001.infoq.cn/resource/image/9c/a1/9cd4a3972bcd1748a7ceb51df84224a1.jpg"
           },
           {
-            "id": 6379063,
-            "title": "早知天下事〔2026.11.05〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650248711&idx=1&sn=3fefb58fe097c79f19b00554567e1ec2",
+            "id": 6391704,
+            "title": "1.6T 参数、1M 上下文，LongCat-2.5 正式版这次有惊喜",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU2Njg0OTEyNQ==&mid=2247497817&idx=1&sn=b3d86277115191e082efcdf6db273033",
+            "source": "AI异类弗兰克",
+            "published_at": "2026-11-05T09:43:00.000Z",
+            "score": 66,
+            "summary": "这个宝马典藏历史车型的动态3D官网，就是我拿LongCat-2.5做的，细节、质感都很有惊喜。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=255e1a17&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F4KW1YfFgWQk0dgkO5OkzXX3EROBDKQciccAlwmqOCvA24tVKTbd1EM23ksibeq0iaib1SDRZmjzf1HUjtAzCa23QboRUT9qa35SlmT9iczWKeJys%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6394902,
+            "title": "早知天下事〔2026.11.06〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650248850&idx=1&sn=7b7fb75b3d8bb955f28a098b6d02817c",
             "source": "新华社",
-            "published_at": "2026-11-04T21:30:00.000Z",
+            "published_at": "2026-11-05T21:30:00.000Z",
             "score": null,
-            "summary": "第九届中国国际进口博览会将于11月5日至10日在上海举办。本届展会汇聚162个国家、地区和国际组织，4142家境外企业参展，整体面积首次突破44万平方米。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1e1a6286&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIR48kyONlbFkYt3d4IjE7o2PaDUpWFEiarbQkD5OOYADicf4QQcBvMU832ZVicFaCbO3pVhYMtsiao3CfhNfwTDnAY6tdGdeKERYII%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "第七届世界媒体峰会于11月5日至9日在北京举行，主题为“智能变革中的媒体使命与合作行动”。详情&gt;&gt;",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fae281c3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOIQibic86KvKYkAorn8iaG6f88vC1lNroHNjdC9xkBw7gYAyXEgoMQaCuniaib11qfKOm7KxC0JFjllWic2PjdRwibYAbJSrKEu9RUefM8%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6378847,
-            "title": "Your coding agent is fixing every review comment. That might be the problem.\r\n\r\n@dakshgup of @greptile...",
-            "url": "https://x.com/aiDotEngineer/status/2118085881001295972",
+            "id": 6394562,
+            "title": "The agent can change the code. Can it change the rules?\r\n\r\n@_philschmid of @GoogleDeepMind on hooks th...",
+            "url": "https://x.com/aiDotEngineer/status/2118448272755020283",
             "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-11-04T21:00:00.000Z",
+            "published_at": "2026-11-05T21:00:01.000Z",
             "score": null,
-            "summary": "Your coding agent is fixing every review comment. That might be the problem.@dakshgup of @greptile on catching real bugs and skipping nitpicks.Building with coding agents? Join us at AIE CODE.Nov 10 t",
+            "summary": "The agent can change the code. Can it change the rules?@_philschmid of @GoogleDeepMind on hooks the agent can&#39;t rewrite.He&#39;s back at AIE CODE, Nov 10 to 12, SF.Apply: ai.engineer/codeYour brow",
             "cover": null
           },
           {
-            "id": 6379045,
-            "title": "特朗普中期选举失利后首次露面",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247870039&idx=1&sn=5b38d92e6faacd47ceea39822eefa9a7",
-            "source": "财联社",
-            "published_at": "2026-11-04T20:42:00.000Z",
-            "score": null,
-            "summary": "据央视新闻报道，美国总统特朗普在中期选举失利后首次露面。他在白宫对媒体表示，选举失利在很大程度上确实是由与伊朗的冲突所致，但如果重来一次，他仍会作同样的决定。特朗普称，绝不能让伊朗拥有核武器。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8bcf1849&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQXtmiafIpfaTzX4D23OwicQEK9ibnc34TM974AvgpYic1r10kYEem2R2UugTYnyibxQLZBQXHibPoaib14AFJCD1bPqGOh9QV7TUubMzvohJAZXicqk%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6378617,
-            "title": "Voters Rejected A.I. in the Midterms. Now Comes an Era of Scrutiny.",
-            "url": "https://www.nytimes.com/2026/11/04/technology/midterm-elections-ai-data-centers.html",
-            "source": "NYT &gt; Technology",
-            "published_at": "2026-11-04T19:53:16.000Z",
-            "score": null,
-            "summary": "After two years of little A.I. oversight, voters on Tuesday rejected data center projects and swept into office Democratic candidates who promised to regulate the technology.",
-            "cover": null
-          },
-          {
-            "id": 6378516,
-            "title": "The Super El Niño is already soaking the U.S. Expect more flooding to come",
-            "url": "https://www.scientificamerican.com/article/the-super-el-nino-is-already-soaking-the-u-s-expect-more-flooding-to-come/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-11-04T19:00:00.000Z",
-            "score": null,
-            "summary": "This week Florida and the Four Corners region have been hammered by major rain events, swamping roads and washing away homes",
-            "cover": null
-          },
-          {
-            "id": 6377892,
-            "title": "Sherrod Brown’s Win in Ohio Is a Rare Loss for Crypto Under Trump",
-            "url": "https://www.nytimes.com/2026/11/04/technology/sherrod-brown-ohio-crypto-trump.html",
-            "source": "NYT &gt; Technology",
-            "published_at": "2026-11-04T18:12:27.000Z",
-            "score": null,
-            "summary": "Fairshake, the major industry super PAC, spent $46 million on ads against the Democrat, Sherrod Brown, who won.",
-            "cover": null
-          },
-          {
-            "id": 6377979,
-            "title": "Congratulations to the people of Harwood, North Dakota on their impending windfall",
-            "url": "https://x.com/venturetwins/status/2118043007991837099",
+            "id": 6394518,
+            "title": "Play a world model with Frameboy 🕹️\r\n\r\nSuch a cool launch from @theworldlabs - you load a world and t...",
+            "url": "https://x.com/venturetwins/status/2118443597959929971",
             "source": "Justine Moore(@venturetwins)",
-            "published_at": "2026-11-04T18:09:39.000Z",
+            "published_at": "2026-11-05T20:41:27.000Z",
             "score": null,
-            "summary": "Congratulations to the people of Harwood, North Dakota on their impending windfallBrad Carson@bradrcarsonSo the results are all in. Data center moratoria (various flavors) went 43-1. All hyperscalers ",
-            "cover": "https://pbs.twimg.com/profile_images/2097528874632388608/dbrCsdJP_normal.jpg"
+            "summary": "Play a world model with Frameboy 🕹️Such a cool launch from @theworldlabs - you load a world and then can explore it like a game.This is a highly optimized version of Atlas for real-time inference tha",
+            "cover": "https://pbs.twimg.com/profile_images/2094611280627957760/DziH8AE1_normal.jpg"
+          },
+          {
+            "id": 6397985,
+            "title": "Cult.fit builds operational muscle with Codex",
+            "url": "https://openai.com/index/cultfit-builds-with-codex",
+            "source": "OpenAI Blog",
+            "published_at": "2026-11-05T20:00:00.000Z",
+            "score": null,
+            "summary": "Cult.fit is using Codex to help teams across functions build tools, move faster, and change how work gets done.",
+            "cover": null
+          },
+          {
+            "id": 6394298,
+            "title": "Our open-source ML Intern is now available as a Slack bot you can install in your own workspace! \r\n\r\nE...",
+            "url": "https://x.com/huggingface/status/2118430862949945612",
+            "source": "Hugging Face(@huggingface)",
+            "published_at": "2026-11-05T19:50:50.000Z",
+            "score": null,
+            "summary": "Our open-source ML Intern is now available as a Slack bot you can install in your own workspace! Evaluate models, build datasets, and fine-tune models on the fly 🚀🍉 Abubakar Abid@abidlabsYOUR data d",
+            "cover": "https://pbs.twimg.com/profile_images/1927783340440178688/j9qLpAvM_normal.jpg"
+          },
+          {
+            "id": 6394180,
+            "title": "Missouri Voters Just Made It Much Harder for Lawmakers to Overturn Citizen-Led Initiatives",
+            "url": "https://www.propublica.org/article/missouri-voter-ballot-initiatives-amendment-6",
+            "source": "ProPublica",
+            "published_at": "2026-11-05T19:25:00.000Z",
+            "score": null,
+            "summary": "Across the country on Tuesday, voters delivered a wave of Democratic victories, flipping seats in Congress as well as state legislatures, and weakening a number of Republican majorities.",
+            "cover": "https://www.propublica.org/wp-content/uploads/2026/11/GettyImages-2302899863_maxHeight_3000_maxWidth_3000.jpg?w=1149"
+          },
+          {
+            "id": 6394367,
+            "title": "Ancient humans used cannabis in burial rituals 2,800 years ago",
+            "url": "https://www.scientificamerican.com/article/ancient-humans-used-cannabis-in-burial-rituals-2-800-years-ago/",
+            "source": "Scientific American Content: Global",
+            "published_at": "2026-11-05T19:00:00.000Z",
+            "score": null,
+            "summary": "New findings from a Siberian tomb offer the earliest direct evidence for human marijuana use",
+            "cover": null
+          },
+          {
+            "id": 6394218,
+            "title": "Paraguay’s president quits after millions of people’s savings frozen in bank crisis",
+            "url": "https://www.theguardian.com/world/2026/nov/05/paraguay-president-santiago-pena-resigns",
+            "source": "World news | The Guardian",
+            "published_at": "2026-11-05T18:48:07.000Z",
+            "score": null,
+            "summary": "Santiago Peña’s rightwing administration had authorised Ueno Bank to drastically expand operations before collapse",
+            "cover": null
+          },
+          {
+            "id": 6393774,
+            "title": "Paraguay's president is impeached minutes after resigning following a bank collapse",
+            "url": "https://www.npr.org/2026/11/05/nx-s1-6030842/paraguay-president-impeached-bank-collapse",
+            "source": "NPR Topics: World",
+            "published_at": "2026-11-05T18:30:16.000Z",
+            "score": null,
+            "summary": "Paraguayan lawmakers voted to impeach President Santiago Peña minutes after his resignation, as the collapse of a digital bank tied to his government froze millions of people's savings.",
+            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5850x3900+0+0/resize/5850x3900!/quality/85/format/webp/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F79%2Fc3%2F2acc7a024feb8dfff1833ba2e996%2Fap26308842915508.jpg"
+          },
+          {
+            "id": 6393609,
+            "title": "Build your own software factory.\r\n\r\nWork through a real project with David Roster of @FactoryAI and le...",
+            "url": "https://x.com/aiDotEngineer/status/2118402971247452628",
+            "source": "AI Engineer(@aiDotEngineer)",
+            "published_at": "2026-11-05T18:00:01.000Z",
+            "score": null,
+            "summary": "Build your own software factory.Work through a real project with David Roster of @FactoryAI and learn the baselines for safely delegating more work to agents.AI Engineer Code Summit. Nov 10, SF.Worksh",
+            "cover": "https://pbs.twimg.com/media/HWQbThAXIAAHPXV.jpg"
           }
         ]
       },
@@ -211,154 +201,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 6374507,
-            "title": "刚刚，Anthropic开源大模型验真神器FlashProve：偷换模型糊弄用户的时代要结束了",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3MTkxMjYzOA==&mid=2247520022&idx=1&sn=5d123ac3346cd53ea6b45780bcae35f9",
-            "source": "AI寒武纪",
-            "published_at": "2026-11-03T22:30:00.000Z",
+            "id": 6391792,
+            "title": "【轻量化复刻大模型 / KIMI K3】KDA 对 AI Infra 的挑战与各家应对",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247490019&idx=1&sn=6527489a1986e075a8a8a8b5b48a22d0",
+            "source": "罗西的思考",
+            "published_at": "2026-11-05T12:45:00.000Z",
             "score": 82,
-            "summary": "你现在在网页或调用接口跟大模型聊天，根本没办法确认背后回复你的，到底是不是你指定的那个模型。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=cdb9bfc6&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkJjlNiczXgKp5yaphvghuvPBYHHGQmuL1SjEiar4kl7seSVTbLnZ5mxZKf0FpRgcWCuXsPswPdppqYL1taO6J69vE6youF9Uq1dv9CyNicpClE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "6.4 `KDAKernelDispatcher`：不同阶段用不同 kernel",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a6b542e8&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FiazCrKuBFsicDqXDqZGgrFibhxqm928mCTjJrPRE5POZ7Feclo6JYuwglUoQ3vciab5oXsVQymffvJ6Lm0cLQPoL8pHffPq909FcC8b84IUF09M%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6374631,
-            "title": "成为豆包一号位前的赵祺",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIwNzM2MjA4OA==&mid=2247596679&idx=2&sn=d2f419135e76b50cdfbc3bdc7e1eb56e",
-            "source": "真实故事计划",
-            "published_at": "2026-11-04T01:10:00.000Z",
-            "score": 80,
-            "summary": "2026年8月2日，豆瓣用户“霏昀”的「看过」列表里多了两部电影，《雷霆特工队》和《蜘蛛侠：崭新之日》。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1aeab274&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FmRb0ic6O9YDzQXj1IkME3BrCiaO6MZSP0yNvDiaOJ3icVnWWD9QlzUBq4pEdERluJK5uxKDYOUnt53xiaE97BiatZ4h72PEQVx8y0jWLC3DTCvQiaM%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6390733,
+            "title": "从脚本化 RPA 到 Agentic RPA：厂商开始卖“不宕机”了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NjMzODEwNQ==&mid=2650597804&idx=1&sn=a6dbed06d13123ff80d4ce810738b727",
+            "source": "王吉伟",
+            "published_at": "2026-11-05T07:35:00.000Z",
+            "score": 82,
+            "summary": "Gartner 说 13% 的 CIO 拿到了 AI 价值，RPA 厂商开始卖&#34;不宕机&#34;了",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=19274070&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FujWeTrAPmVq49Wnrw3EBfFn59ticibd2P3iaz1p2VvpBUTvIiauhrQL7VoPzb0zTHmAObp9Pwk2OA65IEAkz9np8GWh1icX99ialIKiaUKLfHrnWJ0%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6372378,
-            "title": "MEMENTO: Learning Context Management for Long Context Processing Agents",
-            "url": "https://arxiv.org/abs/2611.00244",
-            "source": "cs.CL updates on arXiv.org",
-            "published_at": "2026-11-04T05:00:00.000Z",
+            "id": 6379253,
+            "title": "OpenAI自动化漏洞链路发现1724个Linux内核漏洞",
+            "url": "https://36kr.com/newsflashes/4056051881350277?f=rss",
+            "source": "36氪",
+            "published_at": "2026-11-04T23:09:20.000Z",
+            "score": 77,
+            "summary": "OpenAI用五阶段自动化链路扫描Linux内核：2308个候选→1724个确认漏洞→948个本地提权利用程序，成本121万美元，估值1890万-6630万美元。关键突破在于10种经第三方专家核验的全新漏洞利用技术，且正在向Linux内核维护者提交补丁。",
+            "cover": null
+          },
+          {
+            "id": 6394522,
+            "title": "AI can write an exploit before most companies have read the advisory\r\n\r\nHow long it took to turn a pat...",
+            "url": "https://x.com/a16z/status/2118448320905679276",
+            "source": "a16z(@a16z)",
+            "published_at": "2026-11-05T21:00:13.000Z",
             "score": 76,
-            "summary": "arXiv:2611.00244v1 Announce Type: new Abstract: LLM agents that operate over long inputs must perform context management: deciding what to retain in a fixed-size context window. A common approach is c",
+            "summary": "AI已将漏洞利用编写时间从2017年的3周压缩至2025年的一下午。a16z研究指出，攻击速度已超过企业安全团队的响应速度，安全补丁部署窗口正在急剧收窄。对工程师而言，这意味着自动化漏洞修复和实时监控不再是加分项而是必选项。",
+            "cover": "https://pbs.twimg.com/media/HWY9hVhbUAAiM7p.jpg"
+          },
+          {
+            "id": 6392775,
+            "title": "280B总参数、14B激活！百度开源文心5.5 Flash Base，拿下同尺寸SOTA",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4MTQ4NjQzMw==&mid=2652813377&idx=1&sn=565ff98063cdabdd44571e49eac10e9b",
+            "source": "智东西",
+            "published_at": "2026-11-05T11:04:00.000Z",
+            "score": 75,
+            "summary": "智东西11月5日报道，今日，百度正式发布并开源文心5.5 Flash Base（ERNIE-5.5-Flash-Base）。这款模型采用稀疏MoE架构，总参数量达到280B，每个token仅激活14B参数，在33.5T tokens上从零完成预训练，最长训练上下文达到128K，微调与推理支持1M tokens上下文。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=30955823&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8Eyv4o4Acuqk1IWkAibWe9zBKsR7sxAOOG6uMiacl4jT4yQQ56SPhHibqSF7y2Hrx1wHb3Q3TiaibQZAOiarIyeHIzsXliaribRfHicHAvHpAogbCGc8%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6387693,
+            "title": "ViBench 2.0: A Benchmark for Long-Horizon Software Building",
+            "url": "https://arxiv.org/abs/2611.05620",
+            "source": "cs.AI updates on arXiv.org",
+            "published_at": "2026-11-05T05:00:00.000Z",
+            "score": 73,
+            "summary": "ViBench 2.0是Replit发布的长期软件构建基准测试，覆盖17个产品、241个功能请求、544个测试计划，在真实完成时才打分。它揭示了一个关键差距：最强模型能通过98%的测试计划，但最多只有65%能交付可用产品，且无开源模型做到。模型迭代极快，pass@1从3%升至53%，成本减半。",
             "cover": null
           },
           {
-            "id": 6375963,
-            "title": "QCon上海2026：百度 SRE Agent 规模化落地实践解读",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MjU0NTI5OQ==&mid=2247607755&idx=1&sn=936783445cb9453c62b22c7aeb92014b",
-            "source": "百度Geek说",
-            "published_at": "2026-11-04T10:00:00.000Z",
-            "score": 75,
-            "summary": "过去一年，做出一个 Agent 其实不难：它能听懂问题、调几个工具、把一段任务跑完，有时候效果还挺惊艳。但当我们真的把 Agent 放进生产环境，关心的问题立刻就变了——它部署在哪、谁维护、配置怎么更新、出了问题怎么查、调一次会不会污染线上、调用生产工具安不安全、这次处理的经验能不能留下来给下一个 Agent 复用……",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=050541a3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FD0qMsFCrMy5oUiaMjV3vSHHgXFJ5QaQSLOZAes2xBAVzzPQgh3l1WkUic9rFPUNDuibZBg1MiaqYS80ia6s3VGrOEjh3SicvjxRibLOSVF7nSYYwrc%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6387696,
+            "title": "Attributing Agent Failures to Their History Needs an Executed Counterfactual: Toward a Reporting Standard",
+            "url": "https://arxiv.org/abs/2611.05650",
+            "source": "cs.AI updates on arXiv.org",
+            "published_at": "2026-11-05T05:00:00.000Z",
+            "score": 73,
+            "summary": "当前agent失败归因研究多依赖对已完成轨迹的分类标注，缺乏因果验证。本文提出：真正将失败归因于历史，需在可执行中间状态冻结并干预历史后重放，且需提供replay certificate。论文用实测证明：未干预随机流的快照在24/24状态一致，但偏离live run达9-20次；一旦正确恢复随机流位置，全部24个状态与live run一致。",
+            "cover": null
           },
           {
-            "id": 6374474,
-            "title": "腾讯混元发布Hy4：跻身开源最强，实测四大实用场景",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mjc1NjM3MjY2MA==&mid=2691573923&idx=1&sn=fa31b59f21fe241468a282d24b5869bb",
-            "source": "腾讯科技",
-            "published_at": "2026-11-04T05:22:00.000Z",
-            "score": 75,
-            "summary": "11月4日，腾讯混元正式发布新一代大语言模型Hy4。相比此前的Hy4 preview，新模型进一步扩大预训练和后训练规模，首次引入视觉理解能力，并重点强化指令遵循、长文本理解、长程Agent及真实生产力任务表现。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b92a978c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQmK3dYQtkw2NGMKIia0ia4ugBfVqdVLzXE2iaaAuXwCKK9NwH0FKZUvNbL3nlibSicz1hb8ibbzv5XqcM5lwhp1szdhJ1KrOwjhdoPb6IFMKs0jZM%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6375300,
-            "title": "全球唯二，百度抢先交卷！首个物理AI世界模型来了",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652740261&idx=1&sn=3ae30a3d5d9466d8bfdcb5bd4820a9b9",
-            "source": "新智元",
-            "published_at": "2026-11-04T10:03:00.000Z",
-            "score": 74,
-            "summary": "今天，百度Apollo正式发布了「ApolloWorld」——首个面向物理AI的Agent驱动全模态世界模型。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=b35b66f9&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FRvq8Ow69CYVaGVI8O7DsbZiapKR6DB3c8F8WmPIvJhVO02pup29P4p03lwRaiag9gu4JrfQR8iaibicpibictZPlezBPQCNroRIBkciaNEicAkLNfeZI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6372213,
-            "title": "Anthropic 工程师警告：AI 越准人类越容易丧失独立思考能力，越依赖越难保持警惕",
-            "url": "https://www.ithome.com/1/022/031.htm",
-            "source": "IT之家",
-            "published_at": "2026-11-04T04:44:55.000Z",
-            "score": 74,
-            "summary": "Anthropic Claude Code 工程师 Addy Osmani 提出'认知投降'概念——AI 越精准，人类越容易放弃独立思考。他将使用状态划分为三阶段：认知卸载→推迟判断→认知投降，并警告这正是软件团队'认知债务'的积累过程。建议使用前先形成自己的假设，主动寻找推翻 AI 结论的证据。",
-            "cover": "https://img.ithome.com/newsuploadfiles/2026/11/f1be6d2f-5e16-4e8e-a24f-6b561cd568e8.jpg"
-          },
-          {
-            "id": 6374712,
-            "title": "天猫国际 AI 智能建场 Agent 工程实践：从一句话到可投放的会场页面",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAxNDEwNjk5OQ==&mid=2650546731&idx=1&sn=89c7e13972a8f1650003dba6cb46a967",
-            "source": "大淘宝技术",
-            "published_at": "2026-11-04T03:07:00.000Z",
-            "score": 74,
-            "summary": "本文介绍了天猫国际 AI 智能建场 Agent 的工程实践，旨在将运营人员的一句自然语言需求转化为可投放的会场页面。系统并非简单让大模型生成 JSON ，而是构建了以 ReAct 驱动决策、确定性机制约束边界的 Agent Harness 架构。通过状态机管控执行权限，利用字段级生产计划与业务坐标精准定位操作，并借助 MetaQ 异步回调处理耗时任务，确保长流程可控、可恢复。同时，项目沉淀了流式执",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e1adc745&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FDthwRd8vvp2A8NjCNjWEiabOOUofwWncsXXuia97Iudib1MJuvc1QU1xnWdt2uicZib429xOCQVswctq9OJluV59O3h82WbtDJic1rLk9K9xKptBw%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6363095,
-            "title": "Hinted scaling laws allow you to make better benchmark accuracy forecasts!",
-            "url": "https://x.com/StanfordAILab/status/2117705720028406156",
-            "source": "Stanford AI Lab(@StanfordAILab)",
-            "published_at": "2026-11-03T19:49:23.000Z",
-            "score": 74,
-            "summary": "斯坦福AI Lab提出hinted scaling laws：将benchmark转化为一系列带提示的易化版本，联合建模scale和hint level，用5600倍少得多的计算量即可预测GSM8K零提示准确率，误差仅3个百分点。对算力预算有限但需预判模型上限的团队，是一种低成本的性能估算工具。",
-            "cover": "https://pbs.twimg.com/profile_images/2117554058496233472/E8aR1WAe_normal.jpg"
-          },
-          {
-            "id": 6376056,
-            "title": "把 Agent 的判断与行动变成可恢复的软件事实｜KDC 系列 工程篇",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI4NjY4MTU5Nw==&mid=2247507134&idx=2&sn=073d59c33eaf403d263c170c4ebe268b",
-            "source": "vivo互联网技术",
-            "published_at": "2026-11-04T12:00:00.000Z",
-            "score": 72,
-            "summary": "责任声明：文章观点、理论体系及最终内容由作者负责；AI 参与讨论、推演、表达优化及部分内容生成。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=0b3dc8b3&u=https%3A%2F%2Fmmecoa.qpic.cn%2Fmmecoa_jpg%2FFZVHfpCM8tMtpEsz9eicogBIVqNISRRPXtXvDzo4ynicjCVVDDGfSuE65tYS2ZZbJWjKuFGRc4jBFia0nchQb6EE5Hyvf2RicNKhk46klPYsjn4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6376002,
-            "title": "多 Agent 架构的三次反转：从中心调度到自驱协作｜得物技术",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkxNTE3ODU0NA==&mid=2247547547&idx=1&sn=29d59aedf6f185f365e2c214889fc01f",
-            "source": "得物技术",
-            "published_at": "2026-11-04T10:30:00.000Z",
-            "score": 72,
-            "summary": "当一个任务只需要一次回答时，单个Agent往往已经够用。但任务一旦变成长链路工作，例如先检索资料、再分析、再写代码、最后复核，问题就不再只是“模型够不够聪明”，而是“整个系统怎样组织行动”。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=71e25cbd&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FFMFU1P6sHHs6ibpd7XEmzq9Rp3WpQNeXGYeC9WOY5B4pDgNpRgCw1pV2hmnEae0XPjLjdJZLsbWea7Qh3H4W4YuPCJ4vAmWwsy483CurQVTw%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6374642,
-            "title": "有人每月烧掉1万美元！嫌Claude太贵，这家公司改用GLM：56张B200扛起2000名工程师，AI成本直降90%",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkzMDY1NDgyOQ==&mid=2247838106&idx=1&sn=8cfe0aa9b81735f4fc826d123144cb81",
-            "source": "CSDN",
-            "published_at": "2026-11-04T09:28:00.000Z",
-            "score": 72,
-            "summary": "有人每个月花 1 万美元用 AI 编程，结果老板一看账单：这钱花得值吗？——这正是英国金融科技公司 Revolut 曾经遇到的尴尬。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b4727b81&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FS1iaf4GgGjExCPQUWYIoJY7sXCGYpkeknjDNVA8pJUA9qvJLic7arQ14UN0RicvxRSr6CStHxThWvmxtfN25VmHnsjE9ZoUSrMn5xC7dDaQpzU%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6373212,
-            "title": "Oracle cancels $7B Tencent AI deal under Trump pressure",
-            "url": "https://www.ft.com/content/c5a6a738-cd78-4a8e-a814-57a7473ebb9c",
+            "id": 6393865,
+            "title": "Show HN: Is Android ready for AI agents? What broke in 3324 actions on 45 phones",
+            "url": "https://getopposable.com/blog/how-ready-is-android-for-ai-agents",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-11-04T06:14:13.000Z",
+            "published_at": "2026-11-05T18:36:38.000Z",
             "score": 72,
-            "summary": "FT报道，Oracle在特朗普政府压力下取消了与腾讯约70亿美元的AI合作协议。这是中美科技脱钩背景下，企业级AI跨国合作受到政治干预的直接证据，涉及云计算基础设施与AI模型训练两大关键领域的合规风险。",
+            "summary": "作者用45台真机跑了3324个操作测试Android AI Agent能力，报告了哪些场景会出错。数据来自真实设备而非模拟器，对需要构建Android端Agent的工程师是难得的实测参考——你能直接看到故障模式而非厂商宣传。",
             "cover": null
           },
           {
-            "id": 6374275,
-            "title": "算力不缺供给，缺的是「结算层」：九章云极的智算云答案",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651759016&idx=1&sn=6f27350cc5c2d8aa916e7e95fbd955e9",
-            "source": "雷峰网",
-            "published_at": "2026-11-04T03:30:00.000Z",
+            "id": 6393647,
+            "title": "NeurIPS 2026 让医学多智能体学会\"何时协作\"",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247667004&idx=1&sn=5a13157b9336abf9e0216f5b44697622",
+            "source": "我爱计算机视觉",
+            "published_at": "2026-11-05T15:55:00.000Z",
             "score": 72,
-            "summary": "过去，客户按数量和时长租用GPU，账单相对清楚。如今，越来越多客户开始直接购买Token服务，硬件价格、模型运行速度和实际Token产出，都会影响最终成本。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=92c47361&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FACzflXDibhg4Vh4A1tMJf0ibYd5nMrhiaTEyasicKDTF5GwibGHCZw2NGyfiatBWY43kuPSBcv8aoq7iangvuib3acswSQXrpR2FL5xBZ5sAFvDN2JE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "近年来，多智能体系统（Multi-Agent System, MAS）在医学视觉问答（MedVQA）和多模态医学推理中表现亮眼：多个大模型扮演不同科室的专家，通过多轮讨论共同给出诊断。然而，这类系统想真正走进医院，还面临两个现实障碍：",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=293dd998&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FP9MWBRYIGWib0H31eojXBiaDHBPjkjoCMueNhJnRibtU96GX0sbsQtMvkF9G60I36CgvxtqH7CBoMBHzFSxk2XFAXBY9Mn7k9Bn9G5rZTmb5dQ%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6374899,
-            "title": "WorkBuddy、DeepSeek、Claude 都能用：我把测试中最烦人的 5 件杂活做成了 AI Skill",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU5NDgxOTk1MQ==&mid=2247486819&idx=1&sn=0455ca320e417e2e9fca485fb460e9a1",
-            "source": "Playwright实战教程",
-            "published_at": "2026-11-03T23:58:00.000Z",
+            "id": 6392189,
+            "title": "Building a RAG Pipeline for Semantic Code Search: A Developer Diary and Field Notes",
+            "url": "https://blog.jetbrains.com/ai/2026/11/building-a-rag-pipeline-for-semantic-code-search-a-developer-diary-and-field-notes-part-2/",
+            "source": "The JetBrains Blog",
+            "published_at": "2026-11-05T14:54:27.000Z",
+            "score": 72,
+            "summary": "Part 2: Storage, Search, and Agent Tooling",
+            "cover": "https://blog.jetbrains.com/wp-content/uploads/2026/11/image-23.png"
+          },
+          {
+            "id": 6381077,
+            "title": "[分享创造] 在快 AI 时代，如何做一款慢产品？",
+            "url": "https://www.v2ex.com/t/1254590#reply11",
+            "source": "V2EX",
+            "published_at": "2026-11-05T00:46:28.000Z",
+            "score": 72,
+            "summary": "Mole清理工具作者用853款Mac软件实测总结出：代码越来越便宜，拉开差距的是亲手摸到的细节。用AI Agent自动化安装/卸载/查残留，补了13类通用规则和90多条精确路径，同时改掉了30多个误判点。",
+            "cover": "https://cdn.tw93.fun/blog/pic/mole-product-cover-poem.png"
+          },
+          {
+            "id": 6391234,
+            "title": "可直接喂给 WorkBuddy 的实战模板 | 零基础构建策划团队 Skill",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODYwMjI2MA==&mid=2649808051&idx=1&sn=aae2ab11cae15d4014bf7af0bb0cb118",
+            "source": "腾讯技术工程",
+            "published_at": "2026-11-05T09:33:00.000Z",
             "score": 70,
-            "summary": "分享5个AI Skill, 帮你解决测试工作中那些高频、重复、耗时的杂活，不在为AI Token焦虑。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ca25b8c9&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FWX3IYB1YgSBPTVxia1bE5SNIBc8PEic0iaPSGhZ8B8YIJcu8gx4icjlZA7JCk87NGgC19aLm6qOicdzzvjTSw2Fz0Y9DkFpU2icK69ba6zXLsXVxE%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "丨 导语 不会写代码，也能搭出好用的团队共享 Skill 和知识库。笔者整理了搭建、迭代和团队协作的实战经验，包含完整的起步与迭代流程。把本文交给你的 Agent，再补充自己的业务材料、可用工具和权限，就能按文中的方法，从零开始搭建和完善自己的工作 Skill。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5cae6b83&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FKVER9adz9046brmbPSfTQCwCKdSjl5MV5DB1hs99Fz67kA5icKz3cCIZPwbABAatLKibuRSibfaq2UTxzWagrlv1v6ljMtlhvnDAHf8fia20QJ4%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6389017,
+            "title": "AI时代的SaaS如何定价？",
+            "url": "https://www.huxiu.com/article/4903243.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-11-05T07:28:31.000Z",
+            "score": 70,
+            "summary": "AI Agent替代员工后，SaaS按席位收费模式正在失效。Bain对200家企业研究显示，Token定价会让客户预算不可预测——客户关心的是任务完成而非消耗量。文章提出按努力（资源成本）、产出（完成任务数）、结果（业务改善）三层定价框架：客服场景可尝试按结果收费，销售/HR场景因归因困难仍需谨慎。",
+            "cover": null
+          },
+          {
+            "id": 6391226,
+            "title": "双11：当 AI 接管支付宝大促交付，模型之外还要建什么？",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg4NTczNzg2OA==&mid=2247512420&idx=1&sn=9cbbdf991c3fb80c11592f078ad64f0b",
+            "source": "阿里技术",
+            "published_at": "2026-11-05T10:12:00.000Z",
+            "score": 68,
+            "summary": "关于如何通过 AI Harness 从工程化走向 AI 全链路交付，本文或许能提供一些经验和参考",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=afcb3fd3&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkN3t5R6pdz71nrjxBRJOfmk71EUVtiajADOtRvV2aWC3d2cwuNiaqpK30wKxABMDMiclk4lPEibkIgjDKJaDYFfHZcegYiayrSW5LmS3xrDhXSiaU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6390500,
+            "title": "刚刚，百度开源全新预训练基模，还是主打效率的Flash",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651072404&idx=2&sn=4dafbecc77de04a45e65aa78c40e6b16",
+            "source": "机器之心",
+            "published_at": "2026-11-05T08:21:00.000Z",
+            "score": 68,
+            "summary": "随着任务链条的拉长，模型每一步的计算开销、长文本能力，都会影响最终的使用体验与成本，这让 Flash 档模型的重要性越来越强：它们更注重在能力、速度与成本之间找到平衡，承接那些高频和持续运行的工作。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=6364e436&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5L8bhP5dIqHJDFbD5ybCXjC2y6zZoTVMRviaIJRibE73ju50kYFPmoNK40iccgMNBibTlJEibgLqZJPUkFiawREcG85nURzUTYFU9Fc3zcnA2jqMw%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -367,122 +357,122 @@
         "desc": "未命中任何栏目关键词的入选内容",
         "items": [
           {
-            "id": 6374529,
-            "title": "闭店率高达52%，曾经红极一时的挣钱生意被抛弃了？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MTc5MTU3NTYyMQ==&mid=2651611784&idx=1&sn=8c59b88d444b2c07ab0fcd974136a196",
-            "source": "三联生活周刊",
-            "published_at": "2026-11-04T04:09:00.000Z",
+            "id": 6390435,
+            "title": "我写了Hinton署名的那篇 RSI论文，未来几年 AI 研发可能提速十倍｜Sören Mindermann",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mjc1NjM3MjY2MA==&mid=2691573968&idx=1&sn=8754eae90a9a7843b75c9b0c164e7773",
+            "source": "腾讯科技",
+            "published_at": "2026-11-05T07:04:00.000Z",
             "score": 78,
-            "summary": "最近身边新开了不少超市，那种电商还没横扫天下之前的巨型一站式超市也回归了，恍惚间有种实体商业满血重启的感觉。那些巨型超市的大门或出口，似乎是标配地开着十元快剪店，店面透明、简洁、两三把理发椅，一个从天花板伸下来的吸尘管，招牌简单直白：不做发型，只剪长短。通常，街头5元的理发摊大家还有点抵触，明亮的快剪店前就排起了队伍。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=996b620d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FViaCdVrcARqBWl3TibOUBLyKMlgm3zZib4ic1GDUISL652ZCohAibk9Uon4t3kwmaxSAYyRq2h7mlI1oMjQWI4VpcQLqNsVR8qaibRmt78szhgVv4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "回望深度学习的发展史，那些断言“这里有一堵 AI 永远翻越不了的高墙”的预言，后来的历史记录都很糟糕。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9be88859&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FQmK3dYQtkw3PBtR2dqAToSTLWU64P5ia0d3OcceFWQEEzNRib31vJb5ScSEI0nHJicrjHRag4TONyZqassSlroaIR00S4vj9iboLNozPK6rCTjU%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6374716,
-            "title": "日本 32 年畅销榜，给写作的 9 个启发",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDk5OTgzMg==&mid=2650596687&idx=1&sn=d2eddeab14856166db8187a87cc96bae",
-            "source": "范冰的二次学习",
-            "published_at": "2026-11-04T00:58:00.000Z",
+            "id": 6389458,
+            "title": "中国技工在越南：抢一个时间差",
+            "url": "https://mp.weixin.qq.com/s?__biz=Njk5MTE1&mid=2652704132&idx=1&sn=72321b45c9f8ef3e8097facbd5fbd8d9",
+            "source": "南方周末",
+            "published_at": "2026-11-05T05:07:00.000Z",
             "score": 78,
-            "summary": "把东贩 1990–2021 年的非虚构书统计出来，畅销的不是「知识」，而是四样东西。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3a34da49&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQ2RBZxiahRbAiaGzXfEib3nXv0GqQnEOF69wAfONiceXZxClNBykjNZTNXaXob3ibhIKFtXAxzhV92CteIklhichsJsHgbicYKjsy9dSXLEozWAaZU%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "全文共4136字，阅读大约需要10分钟“抢中国普工，那不可能。但你说懂技术、能调机器、能带徒弟的，那确实缺，非常缺。”",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6c5d58d8&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQ3auHgzwzM51PRh87o70K8zn8Vq8hSfCrIhb8TcXJd0BqNl2NWUevPuot3Geced1kabuZxe8QBXOHD8Fm9XjoAhCQxkzgygmsLkreibX5A9s%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6363088,
-            "title": "Binance Says Hackers Used Fake Job Interviews, AI Tool to Steal $6.3 Billion In Crypto",
-            "url": "https://it.slashdot.org/story/26/11/03/1939254/binance-says-hackers-used-fake-job-interviews-ai-tool-to-steal-63-billion-in-crypto?utm_source=rss1.0mainlinkanon&utm_medium=feed",
-            "source": "Slashdot",
-            "published_at": "2026-11-03T20:00:00.000Z",
-            "score": 76,
-            "summary": "币安10月29日遭劫63.4亿美元，攻击者从6月起通过假面试渗透，最终诱导一名DevOps工程师下载篡改版Homebrew安装AI编程工具，获取钱包基础设施团队权限。币安已补足98%资产，正重建系统并配合执法追查。",
-            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
-          },
-          {
-            "id": 6374616,
-            "title": "币安：一场假面试引发的63亿美元加密货币劫案",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjY2NzgwMjU0MA==&mid=2650333078&idx=2&sn=eb24700f655ba4f8e206a3d87db45b4a",
-            "source": "财新",
-            "published_at": "2026-11-04T09:39:00.000Z",
-            "score": 74,
-            "summary": "朝鲜黑客历时四个月渗透币安钱包团队，诱导下载恶意软件，借内部AI工具获取签名权限",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=862ee26e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FhVxEntyefTmll0tMQU0x2M1UXFIMThHSOgHmfghmgt6XpvCauEsib0lELD7cO2wmBDbiafNVkE2MMOC0hC2776IXxK5JlTRXYkQVGfKmUXc38%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6371360,
-            "title": "[分享创造] ChatGPT 网页版没目录？我搞定了 500+ 轮完整目录，还能导航和搜索！",
-            "url": "https://www.v2ex.com/t/1254358#reply0",
-            "source": "V2EX",
-            "published_at": "2026-11-04T03:02:47.000Z",
-            "score": 73,
-            "summary": "作者在ChatGPT网页版长对话（500+轮）导航中踩了多层坑：历史消息分批加载、缓存合并、两级目录结构、搜索定位等，最终做成Chrome插件OutlineSave上线。独立开发10个月，1800用户，4.9星。",
+            "id": 6386733,
+            "title": "一封退货邮件的陷阱：“开箱视频”背后的 WPS、隐藏 DLL 与恶意加载链",
+            "url": "https://xingwangzhe.fun/posts/outlook-return-malware/",
+            "source": "姓王者的博客",
+            "published_at": "2026-11-05T02:36:46.000Z",
+            "score": 78,
+            "summary": "一封以商品损坏为由要求退货的邮件，让收件人通过 Google 短链接查看开箱视频，最终下载到的却是装着 WPS 程序和隐藏 DLL 的压缩包。本文从邮件和浏览器实景出发，拆解文件名伪装、DLL 侧加载、加密命令、Python 与 .NET 载荷之间的关系，再用断网虚拟机中的运行记录核对持久化写入和域名解析尝试。结合 isMalicious 的域名信誉截图，区分已经观察到的危险与尚未确认的窃取、外传",
             "cover": null
           },
           {
-            "id": 6374646,
-            "title": "一场虚假面试，撬动币安 63 亿美元加密金库",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI5MTk2NDQ3NQ==&mid=2247521071&idx=1&sn=35c9a39be93b1da39a8ac23f21a80a59",
-            "source": "区块链头条",
-            "published_at": "2026-11-04T08:45:00.000Z",
-            "score": 72,
-            "summary": "2026 年 9 月，币安一名软件工程师收到一份求职邀约。对方自称项目总监，安排两轮线上面试：首轮 HR 真人出镜，第二轮由这家虚构公司的 “CEO” 亲自面谈。面试尾声，面试官发来一份编程作业，要求工程师下载并运行代码。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5e170f2e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FLrYVwESvR9olbn56OpXfcLuuMqLaWibZBM318tpUgkgbW0uJS3zBD1wma4lib1B5TtkGheh5KyibibwjgTnxmKbo7Fw3DCyquTgRvfeFDNlDxIs%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6372457,
-            "title": "We Ran a Research Sprint With AI. The AI Worked. The Research Didn't",
-            "url": "https://arxiv.org/abs/2611.03946",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-11-04T05:00:00.000Z",
-            "score": 72,
-            "summary": "一项100分钟、12人三队的AI研究冲刺实验证明：个人生产力提升≠团队研究质量提升。33次AI交互中仅1次被采纳，27次无记录处置；独立流程甚至能在无人评审下生成完整草稿。核心论点是：AI放大了两类失败——消费瓶颈（生成速度远超团队可见评估）和研究孤岛（私密人机循环取代共享决策）。",
-            "cover": null
-          },
-          {
-            "id": 6372463,
-            "title": "ROCm InferaSim: Cut LLM Serving Trial Costs and Deploy the Best Configuration",
-            "url": "https://arxiv.org/abs/2611.04032",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-11-04T05:00:00.000Z",
-            "score": 72,
-            "summary": "AMD发布ROCm InferaSim工具，核心思路是用少量benchmark（anchor）捕获每个kernel配置的性能，再用解析定律将结果扩展到不同batch size、prompt length、GPU数量等部署场景，无需重复测量。在MI355X上验证：11个anchor仅需9.1 GPU-hours即可覆盖226种固定长度配置，吞吐量预测中位误差仅8.1%，预解码分离部署预测误差5.5%",
-            "cover": null
-          },
-          {
-            "id": 6363499,
-            "title": "Siri AI is now open to all developers",
-            "url": "https://developer.apple.com/news/?id=gdk2umrf",
+            "id": 6393867,
+            "title": "Show HN: GPT-Live and GPT-Realtime: Arch Trade-Offs Behind Continuous Voice AI",
+            "url": "https://agentunicorn.ai/research/gpt-live-voice-ai-tradeoffs",
             "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-11-03T22:31:28.000Z",
-            "score": 72,
-            "summary": "Apple宣布Siri AI正式对全球开发者开放，无需审批即可接入。这意味着iOS App可以直接调用Siri的智能能力作为产品入口，是Siri生态从封闭走向开放的关键一步。",
+            "published_at": "2026-11-05T18:27:30.000Z",
+            "score": 76,
+            "summary": "文章系统拆解了 GPT-Live 与 GPT-Realtime 两种实时语音 AI 方案的架构取舍——延迟、成本、语音质量的三维对比，并给出各自适用场景。对正在做实时语音产品决策的工程师而言，这篇能直接回答'该用哪条 API'的问题。",
             "cover": null
           },
           {
-            "id": 6374318,
-            "title": "12,000 lines of code in 41 seconds. GPT played a rgole, but not the one you might expect",
-            "url": "https://community.openai.com/t/12-000-lines-of-code-in-41-seconds-gpt-played-a-rgole-but-not-the-one-you-might-expect/1412700",
-            "source": "OpenAI Developer Community · API",
-            "published_at": "2026-11-04T09:24:00.000Z",
-            "score": 71,
-            "summary": "作者从MySQL schema自动生成约12,000行C#代码仅用41秒，但核心洞察在于：代码并非GPT生成，而是模板+反射的确定性流程。GPT仅在开发阶段辅助设计生成器、在执行阶段生成600+英文及西班牙文文本标签。一旦AI生成内容缓存，后续运行耗时不足1秒且零API成本。真正值得借鉴的是这个模式：用AI造工具，再用确定性系统替代AI完成重复任务。",
+            "id": 6390182,
+            "title": "清洁机器人出海患上「三高」：高库存、高税率、高门槛",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTM2ODM0ODYyMQ==&mid=2651759082&idx=1&sn=f6f8f22acb5bbb60d748bec2a745af35",
+            "source": "雷峰网",
+            "published_at": "2026-11-05T03:30:00.000Z",
+            "score": 75,
+            "summary": "一位传感器企业负责人周铭最近拜访一家头部智能硬件公司时，对方如此表态。据他观察，几家清洁电器头部企业的新品规划，也都在往欧洲、澳洲挪。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=03ec2b92&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FACzflXDibhg6V92wgG3K6RavUEdLEnGSRahNYLBC9Eic6GfsCNZ7pYymPDR6e6iaWSU25028Zbpq4b8LhWI4PLKuib2MueJjRR8WSdIG3Y61Ilk%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6394063,
+            "title": "How do you solve the trust problem with AI-generated code?\r\n\r\nAI agents can generate code at a scale t...",
+            "url": "https://x.com/MSFTResearch/status/2118412037793480829",
+            "source": "Microsoft Research(@MSFTResearch)",
+            "published_at": "2026-11-05T18:36:02.000Z",
+            "score": 73,
+            "summary": "微软研究院推出Proof-Driven Development Kit，将开发者自然语言意图转化为Verus形式化规范，用数学证明验证AI agent生成代码的正确性，并明确标注证明无法覆盖的范围，从而解决AI代码规模超出人工review能力的信任危机。",
             "cover": null
+          },
+          {
+            "id": 6391407,
+            "title": "“前端已死”说早了！Epic React创始人：框架已经不重要了，AI会写React并不代表能做出好产品",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODI5Njc2MA==&mid=2655943641&idx=1&sn=0acd45369e5857b3c119664f680fa81a",
+            "source": "51CTO技术栈",
+            "published_at": "2026-11-05T10:04:00.000Z",
+            "score": 72,
+            "summary": "肯特：练习编程时，不要为了“学得扎实”就关掉AI助手。你将来就是这样工作的；工具写完之后，你还得弄懂它做了什么。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fb4e3e05&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FZhxqo7xEfgIcMKyJSadib8qo5mXL7dP2kRM0EZ7GMicwUSHNyROx97WkHr4LRPmW2ziahcwrJ5080Sw7e1WJaibZJWCuWuAYeII01Q7fXF9icF9A%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6391131,
+            "title": "每两家头部手机厂商就有一家选它：火山引擎如何成为 AI 手机助手的\"隐形底座\"？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI1MzYzMjE0MQ==&mid=2247524066&idx=1&sn=09bbc349ba9edd8ad8a82890256e16a3",
+            "source": "字节跳动技术团队",
+            "published_at": "2026-11-05T10:00:00.000Z",
+            "score": 72,
+            "summary": "AI 手机助手正在经历一次关键转向。过去，它更多是一个&#34;语音入口&#34;：查天气、设闹钟、打开应用。而今天，手机助手开始具备更强的感知能力：能听懂语音，也能看见画面；能完成问答，也能理解上下文；能执行任务，也能在具体场景中提供陪伴。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=601288f1&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FFGB4hYw9FedMZfEAPSYicbLKrAx6qPU8Zibp5G65cYkhZ6RnMCohPcLSsPynQlj2Smz2eXf4FGYIhkWGQKM2nsIW4iaRZIofqkXRDJfNwXhG1A%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6388453,
+            "title": "消息称微软放弃扩大与 Nscale 的算力租赁合同，后者 IPO 前夕遭遇新考验",
+            "url": "https://www.ithome.com/1/022/753.htm",
+            "source": "IT之家",
+            "published_at": "2026-11-05T06:54:24.000Z",
+            "score": 72,
+            "summary": "微软放弃行使与Nscale的算力扩容选择权（原可选700MW，实际近500MW），Nscale估值350亿美元的IPO进程遇阻。公司已有多项大单生变：微软此前退出30亿美元英国项目，西弗吉尼亚与Anthropic的450亿美元合作旗舰数据中心延期。H1营收1.41亿美元但净亏10亿美元，反映AI基建投资正遭资本与政治双重审视。",
+            "cover": "https://img.ithome.com/newsuploadfiles/2025/12/0a1271c1-d078-45c8-a2c7-ce93a08a56ea.jpg"
+          },
+          {
+            "id": 6389336,
+            "title": "理论⽣物学：⽣命总会找到出路——适应性阈值⽹络中合作结构的涌现",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIzMjQyNzQ5MA==&mid=2247738074&idx=1&sn=666928dd9a35f3b7c184797374402ece",
+            "source": "集智俱乐部",
+            "published_at": "2026-11-05T06:30:00.000Z",
+            "score": 72,
+            "summary": "如果伤害比帮助更常见，合作还能生根吗？一项2026年10月7日发表于 Journal of Theoretical Biology 的适应性阈值网络研究发现，只需持续引入新成员，并淘汰受到过多伤害的个体，网络就可能自发形成彼此连接的合作核心。即使敌意占优，这个核心仍能在成员更替中不断重建。合作的出现，或许不必始于善意，也可能来自生存规则对关系的筛选。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=45e80d4e&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FqZtAVROIcHRW855vZcBuWb3kRfEEgPuSmu43NDdV345pAGC7uanHqpgicTvPKZk0O0Z1UzK67kxAzsZ3ianaHkgZrsr8h2G1VwAS5nyzU5lh8%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 416,
-      "articles": 416,
+      "candidates": 404,
+      "articles": 404,
       "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 4873,
-        "poolSources": 423,
+        "pool": 4872,
+        "poolSources": 433,
         "kept": 500,
-        "keptSources": 316
+        "keptSources": 314
       },
-      "totalItems": 44
+      "totalItems": 43
     }
   },
-  "generated_at": "2026-11-05T08:23:28.352Z"
+  "generated_at": "2026-11-06T08:26:33.031Z"
 }
