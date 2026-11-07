@@ -1163,8 +1163,12 @@ async function runWeekly() {
     const thW = await _ai.generateThemeDetailed(items.map((it) => ({ title: it.title, reason: it.reason }))).catch((e) => ({ theme: null, why: 'throw', err: String(e.message || '').slice(0, 160) }));
     theme = thW.theme;
     if (!theme) { themeSkip = { why: thW.why || 'unlabeled', err: thW.err, detail: thW.detail, lines: thW.lines }; log(`周刊导语归因: ${JSON.stringify(themeSkip)}`); }
-    // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）
+    // T3-1 R8：周报 AI 总结注脚（页脚每周一份；降级版不出）。
+    // 2026-11-07：失败静默降 null 导致第 6 期注脚缺失且事后不可考——失败时留痕 settings（面板可查）
     weeklySummary = await _ai.generateWeeklySummary(items).catch((e) => { log(`周刊周总结失败: ${e.message}`); return null; });
+    if (!weeklySummary) {
+      try { await putSetting('weekly.summarySkip', { at: nowIso(), issue: (typeof issueInfo !== 'undefined' && issueInfo && issueInfo.issue) || null, why: 'generateWeeklySummary 返回空（AI 两次失败或清洗后 <60 字，详 runner 日志）' }); } catch { /* 留痕失败不阻断 */ }
+    }
     // 周刊杂志结构（构成边界 ADR-31）：封面主题词 + 主线策展 + 编辑长综述；失败回退旧版视图
     if (items.length >= 4) {
       // B121②：`agnes 仅含 reasoning 无 content` 是已知形态（B19/W6 同根），一次退避重试的代价
@@ -1630,6 +1634,12 @@ async function runDailyAi() {
   // 机制栏目（重点更新 spotlight / 其它重要 fallback）保留：重点来源仍直进重点栏，未聚类条目仍走兜底。
   // 失败/关闭 → 回退关键词栏（ADR-26：增强环节失败不阻断主链路）。开关 settings['daily.aiColumns'].enabled。
   let aiClusters = null;
+  // T5-3 栏目聚类的降级出口此前全部无痕（pool<6 连 log 都没有）——主题栏时有时无从外部不可考。
+  // 2026-11-07：五个出口统一留痕 daily.lastClusterSkip（面板可查），不再黑箱。
+  const clusterSkip = async (why, extra = {}) => {
+    log(`栏目聚类降级（回退关键词栏）: ${why}`);
+    try { await putSetting('daily.lastClusterSkip', { at: nowIso(), why, ...extra }); } catch { /* 留痕失败不阻断 */ }
+  };
   try {
     const aiColsCfg = await getSetting('daily.aiColumns', {});
     if (aiColsCfg.enabled !== false) {
@@ -1656,12 +1666,22 @@ async function runDailyAi() {
             if (clean.length >= 2) {
               aiClusters = clean;
               log(`T5-3 栏目聚类: ${clean.length} 簇（${clean.map((c) => `${c.name}×${c.ids.length}`).join('、')}）`);
+            } else {
+              await clusterSkip('AI 返回可聚簇 <2（clean=' + clean.length + '）', { poolLen: pool.length });
             }
+          } else {
+            await clusterSkip('AI 返回无 JSON 数组形状', { poolLen: pool.length });
           }
+        } else {
+          await clusterSkip('AI 调用失败: ' + String(r.error || '').slice(0, 80), { poolLen: pool.length });
         }
+      } else {
+        await clusterSkip('深析后可聚类条目 <6（pool=' + pool.length + '）', { poolLen: pool.length });
       }
+    } else {
+      await clusterSkip('daily.aiColumns 配置关闭', {});
     }
-  } catch (e) { log(`栏目聚类失败（回退关键词栏，不阻断）: ${e.message}`); }
+  } catch (e) { await clusterSkip('聚类异常: ' + String(e.message || '').slice(0, 80), {}); }
 
   // 栏目组装（沿用 columns 语义：spotlight 优先 → 关键词 → fallback 按总分；27b 兼容旧 special 值 'focus'）
   // L3 单源配额：同源单日入报 ≤3（跨栏计数，防单源刷屏）；全局总条数 ≤36
