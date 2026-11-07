@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": 241771,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜2026，它来了…",
+      "url": "https://www.bilibili.com/video/BV1ZP4B6MECn",
+      "vid": "BV1ZP4B6MECn",
+      "cover": "https://i2.hdslb.com/bfs/archive/a02f80c6bfe0b8176e5b47949a5583a7aef84cb1.jpg",
+      "duration": 100,
+      "author": "影视飓风",
+      "published_at": "2026-11-06T09:30:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 240076,
       "source_id": 2,
       "platform": "bilibili",
@@ -1286,20 +1299,7 @@
       "author": "Core Memory Podcast",
       "published_at": "2026-10-31T02:45:07.000Z",
       "source_name": "Core Memory Podcast"
-    },
-    {
-      "id": 200424,
-      "source_id": 533,
-      "platform": "youtube",
-      "title": "this WiFi GPU is wild.....",
-      "url": "https://www.youtube.com/watch?v=F92TIKWBGyg",
-      "vid": "F92TIKWBGyg",
-      "cover": "https://i.ytimg.com/vi/F92TIKWBGyg/hqdefault.jpg",
-      "duration": null,
-      "author": "NetworkChuck",
-      "published_at": "2026-10-30T23:21:11.000Z",
-      "source_name": "NetworkChuck"
     }
   ],
-  "generated_at": "2026-11-06T08:26:29.112Z"
+  "generated_at": "2026-11-07T07:42:15.860Z"
 }

@@ -1723,20 +1723,6 @@
       "fail_count": 0
     },
     {
-      "id": 600,
-      "type": "youtube",
-      "name": "DesignerUp",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCw2R8kz3aotYtV9utqf0uaw",
-      "avatar": null,
-      "group_id": 28,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 784,
       "type": "x",
       "name": "Dia(@diabrowser)",
@@ -2233,20 +2219,6 @@
       "url": "https://api.xgo.ing/rss/user/cb6169815e2e447e8e6148a4af3f9686",
       "avatar": "https://pbs.twimg.com/profile_images/1084213316963057664/fQGCUSt0_normal.jpg",
       "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 821,
-      "type": "rss",
-      "name": "Gino Notes",
-      "url": "https://www.ginonotes.com/feed.xml",
-      "avatar": null,
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5783,6 +5755,20 @@
       "fail_count": 0
     },
     {
+      "id": 1056,
+      "type": "rss",
+      "name": "The New Stack",
+      "url": "https://thenewstack.io/feed/",
+      "avatar": "https://cdn.thenewstack.io/media/2026/03/b2fc1b22-cropped-89b6d319-download-32x32.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1058,
       "type": "rss",
       "name": "The Startup Junkies Podcast",
@@ -6320,20 +6306,6 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1092,
-      "type": "rss",
-      "name": "YangXuan's Blog",
-      "url": "https://yangxuan.ai/feed/",
-      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -14379,6 +14351,20 @@
       "fail_count": 0
     },
     {
+      "id": 1321,
+      "type": "rss",
+      "name": "远飞闲记",
+      "url": "https://leonhe.cn/index.xml",
+      "avatar": "https://leonhe.cn/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1322,
       "type": "rss",
       "name": "迷途小书童的Note",
@@ -15205,5 +15191,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-06T08:26:33.478Z"
+  "generated_at": "2026-11-07T07:42:18.699Z"
 }
