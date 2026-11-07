@@ -479,9 +479,17 @@ async function analyzeArticle(article) {
 async function generateWeeklySummary(items) {
   const list = items.slice(0, 20).map((it, i) => `${i + 1}. ${it.title}（${it.reason || it.summary || ''}）`).join('\n');
   const prompt = '你是科技媒体主编。基于本周精选内容写一段 150-200 字的本周总结：概括 2-3 条主线，给出一个趋势判断。只输出总结正文，不要标题、不要列表符号、不要解释。';
-  // 512 与导语 300 同族地雷：reasoning 波动可到 1300+，烧穿即整段放弃（返回 null 静默缺注脚）
-  const r = await aiChat([{ role: 'user', content: `${prompt}\n\n## 本周精选\n\n${list}` }], { kind: 'theme', maxTokens: 1536, timeoutMs: 60000 });
-  if (!r.ok) { console.warn(`[weekly] 本周总结放弃：AI 调用失败 ${r.error}`); return null; }
+  // 512 与导语 300 同族地雷：reasoning 波动可到 1300+，烧穿即整段放弃（返回 null 静默缺注脚）。
+  // 2026-11-07 第 6 期 weeklySummary 实测缺省——AI 调用失败加一次退避重试（对齐 magazine 两段式），
+  // 清洗过短的出口保持单次（重试同样短说明是内容问题，不是抖动）。
+  const call = async () => aiChat([{ role: 'user', content: `${prompt}\n\n## 本周精选\n\n${list}` }], { kind: 'theme', maxTokens: 1536, timeoutMs: 60000 });
+  let r = await call();
+  if (!r.ok) {
+    console.warn(`[weekly] 本周总结第 1 次调用失败（${r.error}），退避 15s 重试一次`);
+    await new Promise((res) => setTimeout(res, 15000));
+    r = await call();
+  }
+  if (!r.ok) { console.warn(`[weekly] 本周总结放弃：AI 调用两次失败 ${r.error}`); return null; }
   const lines = String(r.reply || '').split('\n').map((l) => l.trim()).filter(Boolean);
   const isMeta = (l) =>
     /^(用户|让我|我来|我需要|好的|以下|这是|#|\d+[.、]|[-*•])/.test(l) ||
