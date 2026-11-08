@@ -1140,6 +1140,20 @@ async function runWeekly() {
   }
   log(`深析完成 ${analyzed.length} 篇，终选 top 20`);
 
+  // 周刊质量闸（2026-11-09 用户拍：日报条目全过 65 线，周刊=一周精华中的精华不该更低）。
+  // 根因：预筛线 60 看的是初始分（源自带热度分的快讯虚高，财联社类 90+），深析后 AI 打 35 分
+  // 的条目（"公告级快讯，无增量信息"）此前无人拦——runDailyAi/runDaily 两处都有此闸，runWeekly
+  // 漏接（第 6 期实测 11/20 条 <60）。补同一道闸，门槛同源 ai.dailyMinScore（默认 65）；闸后
+  // 不足 20 条就是不足——宁缺毋滥，不回捞低分凑数。
+  {
+    const guards = require('../lib/brief-guards');
+    const aiCfg = await getSetting('ai', {});
+    const g = guards.applyDailyQualityGate(analyzed, aiCfg?.dailyMinScore, log);
+    if (g.dropped) log(`周刊质量闸(≥${g.minScore} 分): 剔除 ${g.dropped} 条 / 保留 ${g.kept.length} 条`);
+    analyzed.length = 0;
+    analyzed.push(...g.kept);
+  }
+
   const items = analyzed
     .map((a) => {
       const weeklyTheme = classifyWeeklyTheme(a);
