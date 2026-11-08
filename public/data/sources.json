@@ -5503,20 +5503,6 @@
       "fail_count": 0
     },
     {
-      "id": 1039,
-      "type": "rss",
-      "name": "Surmon.me",
-      "url": "https://surmon.me/rss.xml",
-      "avatar": "https://surmon.me/icon.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1040,
       "type": "rss",
       "name": "Swift by Sundell",
@@ -5746,20 +5732,6 @@
       "name": "The Loop",
       "url": "https://www.loopinsight.com/feed",
       "avatar": "https://i0.wp.com/loopinsight.com/wp-content/uploads/cropped-apple-touch-icon-1.png?fit=32%2C32&ssl=1",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1056,
-      "type": "rss",
-      "name": "The New Stack",
-      "url": "https://thenewstack.io/feed/",
-      "avatar": "https://cdn.thenewstack.io/media/2026/03/b2fc1b22-cropped-89b6d319-download-32x32.png",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7239,6 +7211,20 @@
       "fail_count": 0
     },
     {
+      "id": 1152,
+      "type": "rss",
+      "name": "一纸忘忧",
+      "url": "https://www.ikxin.com/feed/",
+      "avatar": "https://www.ikxin.com/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 279,
       "type": "rss",
       "name": "丁香医生",
@@ -7301,20 +7287,6 @@
       "url": "https://rsshub.bestblogs.dev/xiaoyuzhou/podcast/5e280fb8418a84a0461fd076",
       "avatar": "https://image.xyzcdn.net/Fq-ccfNzhgTqQNzlG-1qA_jOow7l.png@small",
       "group_id": 17,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1154,
-      "type": "rss",
-      "name": "专享生活",
-      "url": "https://zhjwork.online/feed",
-      "avatar": "https://zhjwork.online/favicon.ico",
-      "group_id": 21,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9065,20 +9037,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/be3f8c28433331ae342e0c3dd77da3a4b29a1f0a.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4oPzoLTqL3SCZTkh3J719Bn6iauHV979lY7cicDWU94vDA/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1199,
-      "type": "rss",
-      "name": "土木坛子",
-      "url": "https://tumutanzi.com/feed",
-      "avatar": "https://tumutanzi.com/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15191,5 +15149,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-07T07:42:18.699Z"
+  "generated_at": "2026-11-08T07:52:08.827Z"
 }
