@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 12
+      "source_count": 11
     },
     {
       "id": 17,
@@ -117,14 +117,14 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 88
+      "source_count": 85
     },
     {
       "id": 19,
       "kind": "article",
       "name": "编程技术",
       "sort": 19,
-      "source_count": 70
+      "source_count": 69
     },
     {
       "id": 20,
@@ -138,7 +138,7 @@
       "kind": "article",
       "name": "生活方式与文化",
       "sort": 21,
-      "source_count": 18
+      "source_count": 19
     },
     {
       "id": 22,
@@ -180,7 +180,7 @@
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 68
+      "source_count": 67
     },
     {
       "id": 27,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-11-11T08:14:59.230Z"
+  "generated_at": "2026-11-12T08:46:36.177Z"
 }

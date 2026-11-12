@@ -337,20 +337,6 @@
       "fail_count": 0
     },
     {
-      "id": 708,
-      "type": "rss",
-      "name": "AI 开发者日报",
-      "url": "https://ainews.liduos.com/rss.xml",
-      "avatar": "https://ainews.liduos.com/logo.png",
-      "group_id": 19,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 390,
       "type": "rss",
       "name": "AIBase基地",
@@ -763,20 +749,6 @@
       "url": "https://www.sciencedaily.com/rss/top/science.xml",
       "avatar": "https://www.sciencedaily.com/images/scidaily-logo-rss.png",
       "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 724,
-      "type": "rss",
-      "name": "Alliot's blog",
-      "url": "https://www.iots.vip/atom.xml",
-      "avatar": "https://www.iots.vip/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1253,20 +1225,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/34d96e92ccf01ddc902863a94dc390794050edd7.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7IzEJySn63y1U6OD08L4me6g9OlIL7ogC1oHScCsz3MQ/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 755,
-      "type": "x",
-      "name": "Browser Use(@browser_use)",
-      "url": "https://api.xgo.ing/rss/user/b8d7530f0b294405825013bbc1cc198f",
-      "avatar": "https://pbs.twimg.com/profile_images/2056516030974091264/Qb5CJOLu_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3557,20 +3515,6 @@
       "fail_count": 0
     },
     {
-      "id": 893,
-      "type": "rss",
-      "name": "Longlong's Blog",
-      "url": "https://blog.xlonglong.cn/feed/",
-      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -4089,20 +4033,6 @@
       "fail_count": 0
     },
     {
-      "id": 923,
-      "type": "x",
-      "name": "NVIDIA AI(@NVIDIAAI)",
-      "url": "https://api.xgo.ing/rss/user/05f1492e43514dc3862a076d3697c390",
-      "avatar": "https://pbs.twimg.com/profile_images/2055340743552831488/me-KUIug_normal.png",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 924,
       "type": "rss",
       "name": "NYT &gt; Climate and Environment",
@@ -4474,20 +4404,6 @@
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4XfZEiaIxTZFPcSMe0laHNlkWJfvNVMcFY7PrIPmKrQjg/0",
       "group_id": 15,
       "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 945,
-      "type": "x",
-      "name": "Patrick Loeber(@patloeber)",
-      "url": "https://api.xgo.ing/rss/user/c65c68f3713747bba863f92d6b5e996f",
-      "avatar": "https://pbs.twimg.com/profile_images/1960117571232964608/Tpnsw5cD_normal.jpg",
-      "group_id": 30,
-      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -5755,34 +5671,6 @@
       "fail_count": 0
     },
     {
-      "id": 1032,
-      "type": "x",
-      "name": "Suhail(@Suhail)",
-      "url": "https://api.xgo.ing/rss/user/c961547e08df4396b3ab69367a07a1cd",
-      "avatar": "https://pbs.twimg.com/profile_images/1898611158330077184/oCfpUSm-_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1033,
-      "type": "x",
-      "name": "Sundar Pichai(@sundarpichai)",
-      "url": "https://api.xgo.ing/rss/user/8324d65a63dc42c584a8c08cc8323c9f",
-      "avatar": "https://pbs.twimg.com/profile_images/2051799620062429184/AL8CoAUG_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1034,
       "type": "rss",
       "name": "Sunset 的重构博客",
@@ -6833,20 +6721,6 @@
       "fail_count": 0
     },
     {
-      "id": 1100,
-      "type": "x",
-      "name": "andrew chen(@andrewchen)",
-      "url": "https://api.xgo.ing/rss/user/a3eb6beb2d894da3a9b7ab6d2e46790e",
-      "avatar": "https://pbs.twimg.com/profile_images/1610236905643249664/OdYs6aWP_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1102,
       "type": "rss",
       "name": "by Upsangel",
@@ -7365,6 +7239,20 @@
       "fail_count": 0
     },
     {
+      "id": 1137,
+      "type": "x",
+      "name": "ollama(@ollama)",
+      "url": "https://api.xgo.ing/rss/user/6326c63a2dfa445bbde88bea0c3112c2",
+      "avatar": "https://pbs.twimg.com/profile_images/2045273960666071040/rCjCIwiC_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1138,
       "type": "x",
       "name": "orange.ai(@oran_ge)",
@@ -7617,20 +7505,6 @@
       "fail_count": 0
     },
     {
-      "id": 595,
-      "type": "youtube",
-      "name": "一席",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A",
-      "avatar": null,
-      "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 692,
       "type": "rss",
       "name": "一席",
@@ -7769,6 +7643,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 1154,
+      "type": "rss",
+      "name": "专享生活",
+      "url": "https://zhjwork.online/feed",
+      "avatar": "https://zhjwork.online/favicon.ico",
+      "group_id": 21,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 281,
@@ -9331,6 +9219,20 @@
       "url": "https://rowkey.cn/atom.xml",
       "avatar": "https://rowkey.cn/favicon.ico",
       "group_id": 19,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1193,
+      "type": "x",
+      "name": "向阳乔木(@vista8)",
+      "url": "https://api.xgo.ing/rss/user/9de19c78f7454ad08c956c1a00d237fe",
+      "avatar": "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -12769,20 +12671,6 @@
       "fail_count": 0
     },
     {
-      "id": 1281,
-      "type": "rss",
-      "name": "王登科-DK博客",
-      "url": "https://greatdk.com/feed",
-      "avatar": "https://greatdk.com/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1282,
       "type": "rss",
       "name": "王福强的个人博客：一个架构士的思考与沉淀",
@@ -15345,20 +15233,6 @@
       "fail_count": 0
     },
     {
-      "id": 1334,
-      "type": "rss",
-      "name": "青石坞",
-      "url": "https://www.qs5.org/feed/",
-      "avatar": "https://www.qs5.org/favicon.ico",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 261,
       "type": "rss",
       "name": "青稞AI",
@@ -15639,5 +15513,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-11T08:14:59.113Z"
+  "generated_at": "2026-11-12T08:46:36.009Z"
 }
