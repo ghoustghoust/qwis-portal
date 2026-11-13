@@ -561,20 +561,6 @@
       "fail_count": 0
     },
     {
-      "id": 598,
-      "type": "youtube",
-      "name": "AJ&amp;Smart",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCeB_OpLspKJGiKv1CYkWFFw",
-      "avatar": null,
-      "group_id": 28,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 711,
       "type": "rss",
       "name": "ALBERTAZ",
@@ -1681,20 +1667,6 @@
       "fail_count": 0
     },
     {
-      "id": 520,
-      "type": "youtube",
-      "name": "DeepLearningAI",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcIXc5mJsHVYTZR1maL5l9w",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 165,
       "type": "rss",
       "name": "DeepSeek",
@@ -2359,6 +2331,20 @@
       "url": "https://api.xgo.ing/rss/user/cb6169815e2e447e8e6148a4af3f9686",
       "avatar": "https://pbs.twimg.com/profile_images/1084213316963057664/fQGCUSt0_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 821,
+      "type": "rss",
+      "name": "Gino Notes",
+      "url": "https://www.ginonotes.com/feed.xml",
+      "avatar": null,
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3955,20 +3941,6 @@
       "url": "https://muyun.work/feed/",
       "avatar": "https://muyun.work/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 568,
-      "type": "youtube",
-      "name": "My First Million",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCyaN6mg5u8Cjy2ZI4ikWaug",
-      "avatar": null,
-      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5867,20 +5839,6 @@
       "fail_count": 0
     },
     {
-      "id": 542,
-      "type": "youtube",
-      "name": "The AI Advantage",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCHhYXsLBEVVnbvsq57n1MTQ",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1046,
       "type": "rss",
       "name": "The ASF Blog",
@@ -6231,20 +6189,6 @@
       "fail_count": 0
     },
     {
-      "id": 544,
-      "type": "youtube",
-      "name": "Two Minute Papers",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1070,
       "type": "rss",
       "name": "UX Magazine",
@@ -6433,20 +6377,6 @@
       "url": "https://weishu.me/atom.xml",
       "avatar": "https://weishu.me/favicon.ico",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 546,
-      "type": "youtube",
-      "name": "Wes Roth",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCqcbQf6yw5KzRoDDcZ_wBSw",
-      "avatar": null,
-      "group_id": 26,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7643,20 +7573,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 1154,
-      "type": "rss",
-      "name": "专享生活",
-      "url": "https://zhjwork.online/feed",
-      "avatar": "https://zhjwork.online/favicon.ico",
-      "group_id": 21,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 1
     },
     {
       "id": 281,
@@ -9163,20 +9079,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/6c0b8961f68734b500af357c85e31bd77b9107e9.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6iaicXeXbMoq0zpe4rG7VvHP2nj0CpicpPVHg6z5YzEbicibg/0",
       "group_id": 22,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1190,
-      "type": "rss",
-      "name": "叶泯希",
-      "url": "https://blog.418121.xyz/rss2.xml",
-      "avatar": "https://blog.418121.xyz/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -14687,6 +14589,20 @@
       "fail_count": 0
     },
     {
+      "id": 1321,
+      "type": "rss",
+      "name": "远飞闲记",
+      "url": "https://leonhe.cn/index.xml",
+      "avatar": "https://leonhe.cn/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1322,
       "type": "rss",
       "name": "迷途小书童的Note",
@@ -15513,5 +15429,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-12T08:46:36.009Z"
+  "generated_at": "2026-11-13T08:40:11.433Z"
 }

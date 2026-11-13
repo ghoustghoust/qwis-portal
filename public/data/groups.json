@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 11
+      "source_count": 10
     },
     {
       "id": 17,
@@ -138,7 +138,7 @@
       "kind": "article",
       "name": "生活方式与文化",
       "sort": 21,
-      "source_count": 19
+      "source_count": 18
     },
     {
       "id": 22,
@@ -173,7 +173,7 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 9
+      "source_count": 5
     },
     {
       "id": 30,
@@ -201,7 +201,7 @@
       "kind": "video",
       "name": "产品",
       "sort": 28,
-      "source_count": 2
+      "source_count": 1
     },
     {
       "id": 33,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-11-12T08:46:36.177Z"
+  "generated_at": "2026-11-13T08:40:11.607Z"
 }

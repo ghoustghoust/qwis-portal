@@ -1,228 +1,162 @@
 {
   "report": {
-    "id": 155,
-    "generated_at": "2026-11-12T08:12:29.802Z",
+    "id": 157,
+    "generated_at": "2026-11-13T07:49:49.467Z",
     "window_hours": 30,
     "sections": [
-      {
-        "column": "培训课程发布",
-        "desc": "新公开的课程、训练营与社群招募",
-        "items": [
-          {
-            "id": 6475140,
-            "title": "小红书50个号日获客1000+，视频号蓝V涨粉10万+，第一批用AI的团队做对了这4件事",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU4MTcxODM2MA==&mid=2247752720&idx=1&sn=9c671d42d01c145abebe23a9ba608f11",
-            "source": "运营研究社",
-            "published_at": "2026-11-11T06:23:00.000Z",
-            "score": 68,
-            "summary": "写文案、做图片、整理数据、搭智能体，很多团队都试过。工具买了不少，课程也上了不少，但回到业务里，工作方式没怎么变，获客、转化和收入也没有明显提升。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=2a4b3b38&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FZRC6vcQWnoXxS7ooOqHOEYgbJia7T327eDRtibrjbjGGBmQW7bPFqBv4jBpvtzeJgt8PibvxSWdCFvk0kqLlGPYVTQKmibNhKsjkw3E0sRwibAjI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6477624,
-            "title": "消费理念",
-            "url": "https://www.kawabangga.com/posts/7449",
-            "source": "卡瓦邦噶！",
-            "published_at": "2026-11-11T15:12:22.000Z",
-            "score": null,
-            "summary": "在一次公司的培训上，一个同事带了一个塑料水瓶，我看见过这种塑料瓶子很多次，我问他是从哪里买的。他说，新加坡人在上学的时候基本每人都有一个，这家公司 make product for generations，可以用很久。他的这个水瓶是他上学的时候买的。",
-            "cover": "https://www.kawabangga.com/wp-content/uploads/2026/11/ireader-1024x1024.jpeg"
-          },
-          {
-            "id": 6477745,
-            "title": "带给我人生最大幸运的习惯",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA5NjM0Nzc3NA==&mid=2650464283&idx=1&sn=41a1da4d60226c15f5639868b059ee7c",
-            "source": "辉哥奇谭",
-            "published_at": "2026-11-11T13:35:00.000Z",
-            "score": null,
-            "summary": "尽管我在朋友圈分享越来越少，但我工作中和生活中在其他渠道的分享更多了。比如工作中，我做培训更多了。生活中，我在知识星球分享更多了。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=51d66d2d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FRKfQbNfpVtM9TibbVud2pU1txwEBJcFJQ30jX6oVBmPjRvEjuP0qKDDAmkNVVLzksaLoKwduseHKGjribzsibfUdc1IiaATL8pmrhTKacYU4GTU%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6478438,
-            "title": "四川宜宾成立联合调查组",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzI1MTY0MQ==&mid=2655487528&idx=1&sn=e82145a2eb9c65bf3e573202a0c54ec2",
-            "source": "央视网",
-            "published_at": "2026-11-11T12:17:00.000Z",
-            "score": null,
-            "summary": "11月10日，总台播发报道，宜宾市“四川时舟文化传媒有限公司”通过其打造的“四川同舟会”社群品牌，批量炮制“取消外卖关闭直播”的虚假摆拍视频，精心策划舆论噱头，持续挑动情绪对立，借此“收割”流量、为公司代运营账号业务牟利，扰乱网络传播秩序，干扰公平营商环境。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fdff6cee&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fae9dYXdIRF1bBlUqmnKquDzL79mNKKHxQKct5ojl9YiaU5CniaiacaGoajib5PXpbqP7ezFmE4riaBGKR1EZktBdskEwojeKzBdnXpRwVfl4Xmf0%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6476466,
-            "title": "阿里云+自建 IDC 混合运维：一套 AIOps 打通云监控与机房动环，实现跨域根因 RCA",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODI5Njc2MA==&mid=2655943705&idx=2&sn=f598ea10ccf9b75814a16c999e0f278b",
-            "source": "51CTO技术栈",
-            "published_at": "2026-11-11T10:00:00.000Z",
-            "score": null,
-            "summary": "我是韩先超，51CTO 学堂 K8s、Python 教学总监、AIOps 实战训练营讲师，云计算架构师",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f89cef37&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FZhxqo7xEfgIvMBib4K0rIfrUuQaZ81mTc8PRDSUq0qPI6oSD4iaaGzPib66hDbsnibP1nuSpEPwJjj0wsC4OUuhdTlFfPnWszRiaW4Qe7xFwuet4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6474243,
-            "title": "双11之后，集智学园VIP要涨价了",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIzMjQyNzQ5MA==&mid=2247738194&idx=2&sn=2a85976aebec2a94c1a686dea3fc3269",
-            "source": "集智俱乐部",
-            "published_at": "2026-11-11T06:30:00.000Z",
-            "score": null,
-            "summary": "如果十年前听过的一门课，能帮你看懂今天手里这篇论文，会发生什么？过去十年，集智学园积累了约六万分钟课程、覆盖50多个主题的上百场读书会。里面有讲清楚的概念，也有一群人围着同一篇论文反复追问的过程。如今，大模型让这些散落在不同时间、不同学科里的材料有机会重新连起来，成为你搭建「第二大脑」的燃料。这也是集智学园重新给年费 VIP 定价的原因。双十一活动持续到11月21日，这是涨价前最后一次以3299元",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=b358dd08&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FqZtAVROIcHQbLe0jaZKKEYemBc4DJFC7YeDWm5k781dK0LFC4AFujkTzyGdyhNosYylHaU4NHeS6wQv9ZLfG2YhF0e3ibY06aK4t04WI7xao%2F0%3Fwx_fmt%3Djpeg"
-          }
-        ]
-      },
       {
         "column": "重点更新",
         "desc": "标了重点的来源,内容全部进此栏",
         "items": [
           {
-            "id": 6474567,
-            "title": "Datadog 推出面向 SRE 故障排查的专用 AI 模型",
-            "url": "https://www.infoq.cn/article/py4PRbBWJSPm5aV10gHq",
+            "id": 6492421,
+            "title": "Fitting Four 32 GB Resizable Bars Behind a PCIe Switch on Linux",
+            "url": "https://doug.sh/posts/gpu-bars-behind-a-pcie-switch/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-11-12T15:14:52.000Z",
+            "score": 75,
+            "summary": "本文记录了在Linux上将四个32GB BAR分配到PCIe交换机后方GPU的具体实践，涵盖iommu设置、rebar大小确认、内核模块参数调优。作者Doug是Linux内核贡献者，这篇文章是对一个鲜有人讨论的工程问题的系统性解决方案，数据充足且可直接复现。",
+            "cover": null
+          },
+          {
+            "id": 6486949,
+            "title": "谷歌发布首款决策模型 Gemini Decision 1：9 项测试拿下 7 项第一，准确率最高92.2%",
+            "url": "https://www.infoq.cn/article/E7QKIMUz3h0G0IE5Paii",
             "source": "InfoQ 推荐",
-            "published_at": "2026-11-11T09:00:00.000Z",
-            "score": 72,
-            "summary": "Datadog发布专用SRE AI模型Scout，基于GLM-5.3 Flash构建并通过RLHF后训练，用于Bits Investigation自动故障排查。AlertEval基准显示其中档模型与GPT-6.1 Sol和高阶Claude效果相当，成本仅为其1/3~1/8；但在公开SREGym数据集上最高解决80/90案例，落后GPT-6.1 Sol xhigh的82个。文章重点披露了训练过程中的",
-            "cover": "https://static001.infoq.cn/resource/image/51/57/51e97f4669b86417f87b338yydf5c757.jpg"
+            "published_at": "2026-11-12T03:00:00.000Z",
+            "score": 66,
+            "summary": "谷歌发布Gemini Decision 1，这款模型不再逐Token生成文字，而是直接对候选选项打分——一次请求处理最多1000个问题，端到端延迟150-250毫秒，每百万输入Token仅0.10美元（输出免费），价格是Flash-Lite的五分之一。已用于AI模型路由、Agent工具选择和安全检测。",
+            "cover": "https://static001.infoq.cn/resource/image/ef/04/ef65132fb1df4bcda9975dyye55b8a04.png"
           },
           {
-            "id": 6479639,
-            "title": "早知天下事〔2026.11.12〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650250158&idx=1&sn=2bc7113a579d35d29be4d4d2e5d19b3e",
-            "source": "新华社",
-            "published_at": "2026-11-11T21:30:00.000Z",
-            "score": null,
-            "summary": "会计改革与发展“十五五”规划发布。截至“十四五”末，全国会计师事务所（含分所）数量超1万家，执业注册会计师超10万人。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eb99b9d0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIT6zSkiaUm9LsxA7oxE84T0hToKgich4OPYibfbrbZWj8xOJPibe3x9x1SiawNL7SZ9ySnSHM81D59PhCgjw7aRLT1F1SVfUghvxrCk%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6479189,
-            "title": "A cafe in Ukraine relocates from its besieged hometown and reopens",
-            "url": "https://www.npr.org/2026/11/11/nx-s1-6034533/a-cafe-in-ukraine-relocates-from-its-besieged-hometown-and-reopens",
-            "source": "NPR Topics: World",
-            "published_at": "2026-11-11T21:24:01.000Z",
-            "score": null,
-            "summary": "After Russian airstrikes destroyed a popular cafe in a frontline Ukrainian city, the cafe reopened in a safer region, an example of how Ukrainian businesses are trying to survive amid repeated bombing",
-            "cover": null
-          },
-          {
-            "id": 6479243,
-            "title": "https://t.co/1LkFjtjkTJ",
-            "url": "https://x.com/midjourney/status/2120615852206932363",
-            "source": "Midjourney(@midjourney)",
-            "published_at": "2026-11-11T20:33:12.000Z",
-            "score": null,
-            "summary": "midjourneyofficehours.onrender.com/room/0462e40c💬0🔄0❤️1👀2051⚡ Powered by xgo.ing",
-            "cover": null
-          },
-          {
-            "id": 6479257,
-            "title": "Metal-rich deep-sea ‘nodules’ also harbor diverse ocean life",
-            "url": "https://www.scientificamerican.com/article/metal-rich-deep-sea-nodules-also-harbor-diverse-ocean-life/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-11-11T20:30:00.000Z",
-            "score": null,
-            "summary": "The finding, researchers say, should factor into plans to mine the seafloor for the metal-rich nodules",
-            "cover": null
-          },
-          {
-            "id": 6479102,
-            "title": "Living in SF is so crazy sometimes. \r\n\r\nWoman posts on Reddit that a homeless man is repeatedly threat...",
-            "url": "https://x.com/venturetwins/status/2120609724194595075",
-            "source": "Justine Moore(@venturetwins)",
-            "published_at": "2026-11-11T20:08:51.000Z",
-            "score": null,
-            "summary": "Living in SF is so crazy sometimes. Woman posts on Reddit that a homeless man is repeatedly threatening her + her toddler at their bus stop - yelling at them and following them down the sidewalk.Dozen",
-            "cover": "https://pbs.twimg.com/media/HW3qgdPaEAACOAN.jpg"
-          },
-          {
-            "id": 6478788,
-            "title": "Court Rules That Sexual Harassment Case Against SpaceX Can Proceed",
-            "url": "https://www.nytimes.com/2026/11/11/business/sexual-harassment-spacex-elon-musk.html",
+            "id": 6493779,
+            "title": "Outlook, Teams and More Microsoft Programs Disrupted by Outage",
+            "url": "https://www.nytimes.com/2026/11/12/business/microsoft-outlook-down-outage-email.html",
             "source": "NYT &gt; Technology",
-            "published_at": "2026-11-11T19:32:04.000Z",
+            "published_at": "2026-11-12T21:49:53.000Z",
             "score": null,
-            "summary": "The company had argued that the case, involving eight former workers, must be resolved before an arbitrator.",
+            "summary": "The company said that some of its servers were unexpectedly unavailable, straining the remaining infrastructure, and that it was working to bring users back online.",
             "cover": null
           },
           {
-            "id": 6479047,
-            "title": "Newfound invisible object in space could be a rare supermassive neutron star",
-            "url": "https://www.scientificamerican.com/article/newfound-invisible-object-in-space-could-be-a-rare-supermassive-neutron-star/",
+            "id": 6494064,
+            "title": "早知天下事〔2026.11.13〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650250336&idx=1&sn=823b7815480bcb9149f5a174dc527bd3",
+            "source": "新华社",
+            "published_at": "2026-11-12T21:30:00.000Z",
+            "score": null,
+            "summary": "纪念孙中山先生诞辰160周年大会在京举行，习近平出席大会并发表重要讲话。详情&gt;&gt;",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=abfe2888&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIR9ibhibhqtovBwLicdovicS4ibODpRJy8bJ3V9NfhsSicVjDetj0nPCWwHFf8tbWiabE32AExbymPMBSnmAuiaTrTRw9iahyQNVYERHDuU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6493654,
+            "title": "Global Microsoft outage affecting Outlook and Teams users, with company ‘restarting’ servers",
+            "url": "https://www.theguardian.com/technology/2026/nov/13/microsoft-outage-outlook-teams-word-excel-reports",
+            "source": "World news | The Guardian",
+            "published_at": "2026-11-12T21:14:11.000Z",
+            "score": null,
+            "summary": "An alert on Microsoft’s site said it was ‘aggressively pursuing all pathways to reduce impact’ and blamed a server issue",
+            "cover": null
+          },
+          {
+            "id": 6493655,
+            "title": "‘Win-win’ deal with EU could be done, Andy Burnham says",
+            "url": "https://www.theguardian.com/politics/2026/nov/12/win-win-deal-with-eu-could-be-done-andy-burmham-says",
+            "source": "World news | The Guardian",
+            "published_at": "2026-11-12T20:59:05.000Z",
+            "score": null,
+            "summary": "Prime minister says reset could be a deal ‘like the Brexit people thought they were voting for in 2016’",
+            "cover": null
+          },
+          {
+            "id": 6493859,
+            "title": "A lot of getting good work out of Claude now is just finding the context it’s missing and figuring o...",
+            "url": "https://x.com/alexalbert__/status/2120983722182988206",
+            "source": "Alex Albert(@alexalbert__)",
+            "published_at": "2026-11-12T20:54:59.000Z",
+            "score": null,
+            "summary": "A lot of getting good work out of Claude now is just finding the context it’s missing and figuring out how to close that gapClaude Meetings is one way to bring in the remaining slices and has proved v",
+            "cover": "https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg"
+          },
+          {
+            "id": 6493652,
+            "title": "Russian warship hit by Ukrainian drone in Gulf of Finland",
+            "url": "https://www.bbc.co.uk/news/articles/cmn0d33zz34zo?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-11-12T20:09:16.000Z",
+            "score": null,
+            "summary": "The attack is thought to be the first time Ukrainian drones have attacked a Russian ship in an open stretch of the Baltic Sea.",
+            "cover": null
+          },
+          {
+            "id": 6493521,
+            "title": "DTCC Plans Solana Expansion as Wallet Rules Limit Access",
+            "url": "https://cointelegraph.com/news/dtcc-plans-solana-expansion-wallet-rules-limit-access?utm_source=rss_feed&utm_medium=rss_tag_blockchain&utm_campaign=rss_partner_inbound",
+            "source": "Cointelegraph.com News",
+            "published_at": "2026-11-12T20:07:41.000Z",
+            "score": null,
+            "summary": "The US securities clearinghouse plans to bring tokenized stocks to Solana in 2027, but analysts say restrictions could limit adoption.",
+            "cover": "https://s3-images.ctmedia.io/media/article-covers/2026/11/01M78HYSFQRVZZRHHY3ZZHRTMW/hi-what-is-chainlink-dtcc.png"
+          },
+          {
+            "id": 6494207,
+            "title": "How Amplitude ships product improvements in 1–2 days with OpenAI",
+            "url": "https://openai.com/business/customer-stories/amplitude",
+            "source": "OpenAI Blog",
+            "published_at": "2026-11-12T20:00:00.000Z",
+            "score": null,
+            "summary": "Built primarily on OpenAI models, Amplitude’s proactive product agent, Wave, identifies what to build, helps teams ship changes with coding agents, and measures the impact.",
+            "cover": null
+          },
+          {
+            "id": 6493430,
+            "title": "Why did a Brooklyn building collapse so suddenly? Experts weigh in",
+            "url": "https://www.scientificamerican.com/article/why-did-a-brooklyn-building-collapse-so-suddenly-experts-weigh-in/",
             "source": "Scientific American Content: Global",
-            "published_at": "2026-11-11T19:00:00.000Z",
+            "published_at": "2026-11-12T20:00:00.000Z",
             "score": null,
-            "summary": "Astronomers saw something strange in a distant star system&mdash;or rather what&rsquo;s strange is what they didn&rsquo;t see. Solving the mystery could reveal new astrophysics",
+            "summary": "The devastating incident on Wednesday has left at least 8 people dead and more than a dozen injured",
             "cover": null
           },
           {
-            "id": 6479231,
-            "title": "@sundarpichai @GoogleAIStudio very excited we landed this! the team has been sprinting to make it po...",
-            "url": "https://x.com/OfficialLoganK/status/2120581986574299555",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-11-11T18:18:38.000Z",
-            "score": null,
-            "summary": "@sundarpichai@GoogleAIStudio very excited we landed this! the team has been sprinting to make it possible and we are already seeing the adoption spread across Google products, makes me excited for wha",
-            "cover": null
-          },
-          {
-            "id": 6478693,
-            "title": "Check out the API docs to learn more about getting started! https://t.co/T0Zylzg6xf",
-            "url": "https://x.com/OfficialLoganK/status/2120581534600343641",
-            "source": "Logan Kilpatrick(@OfficialLoganK)",
-            "published_at": "2026-11-11T18:16:51.000Z",
-            "score": null,
-            "summary": "Check out the API docs to learn more about getting started! aistudio.google.com/docs/decisions…💬8🔄2❤️110👀16110📊21⚡ Powered by xgo.ing",
-            "cover": null
-          },
-          {
-            "id": 6479588,
-            "title": "工行、农行2600亿定增获交易所审核通过，财政部注资再进一步",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661840488&idx=1&sn=7438ed926abe6e725d9b74da36e94755",
-            "source": "第一财经",
-            "published_at": "2026-11-11T17:55:00.000Z",
-            "score": null,
-            "summary": "11月11日晚间，工商银行、农业银行双双发布公告称，合计2600亿元的定增申请获上交所审核通过。公告显示，两家均于当日收到上交所出具的审核意见，认为其向特定对象发行股票申请符合发行条件、上市条件和信息披露要求。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=badbcd5c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCJNmQDCzcPkvIKB1ZZxpM26O2cUpQvZhB48nj0FJKbawjialicEeTrFA8cOS14Y7ibNK6zh7D0455LyeWJlrdsmBP6aEed5l5Y0hU%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6478218,
-            "title": "A Tool Built by Election Deniers Said These Voters Were Dead. We Found Them Alive.",
-            "url": "https://www.propublica.org/article/election-challenge-forsyth-county-georgia",
-            "source": "ProPublica",
-            "published_at": "2026-11-11T17:30:00.000Z",
-            "score": null,
-            "summary": "Ahead of the midterms, conservative election activists discussed plans to wield a powerful new weapon in the war against fraud: a data tool built by one of their own that could identify suspicious vot",
-            "cover": "https://www.propublica.org/wp-content/uploads/2026/11/20261111-ga-voter-challenges-3x2-1.jpg?w=1149"
-          },
-          {
-            "id": 6478275,
-            "title": "Greetings from Senegal, where breakdancers are competing in the Youth Olympics",
-            "url": "https://www.npr.org/2026/11/11/g-s1-150228/senegal-youth-olympic-games-breakdancing",
-            "source": "NPR Topics: World",
-            "published_at": "2026-11-11T17:23:10.000Z",
-            "score": null,
-            "summary": "Senegal's breakdancers have been practicing for their country's historic hosting of the Youth Olympic Games this month. It's the first time Africa is hosting an Olympic event.",
-            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/1920x1080+0+0/resize/1920x1080!/quality/85/format/webp/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F66%2Fdc%2F0abbbb464785bfcf43a99355caab%2Ffarflungpostcard-s.jpg"
-          },
-          {
-            "id": 6478311,
-            "title": "GitHub Makes Agentic Workflows Generally Available with Isolation and Budget Controls",
-            "url": "https://www.infoq.com/news/2026/11/github-agentic-workflows-ga/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
-            "source": "InfoQ — News",
-            "published_at": "2026-11-11T17:00:00.000Z",
-            "score": null,
-            "summary": "GitHub Agentic Workflows is generally available, running coding agents in GitHub Actions with read-only defaults and separately scoped write jobs. Those protections do not cover direct write permissio",
-            "cover": "https://res.infoq.com/news/2026/11/github-agentic-workflows-ga/en/headerimage/header-1793990975266.jpeg"
-          },
-          {
-            "id": 6478219,
-            "title": "The Code Summit livestream starts in 30 minutes.\r\n\r\n@nserrino (@gimletlabs) on 10x faster AI.\r\n@lydiaha...",
-            "url": "https://x.com/aiDotEngineer/status/2120554645781463093",
+            "id": 6493620,
+            "title": "“It’s eye-opening to see what everyone else is doing.”\r\n\r\nDay 1 at AI Engineer Code Summit: the talks,...",
+            "url": "https://x.com/aiDotEngineer/status/2120962333971267931",
             "source": "AI Engineer(@aiDotEngineer)",
-            "published_at": "2026-11-11T16:30:00.000Z",
+            "published_at": "2026-11-12T19:30:00.000Z",
             "score": null,
-            "summary": "The Code Summit livestream starts in 30 minutes.@nserrino (@gimletlabs) on 10x faster AI.@lydiahallie (@AnthropicAI) on Claude Code best practices.9 AM PT. Watch free: youtube.com/live/ZZ19zhYnD…Prese",
-            "cover": "https://pbs.twimg.com/media/HWxg0meWUAA1bvW.jpg"
+            "summary": "“It’s eye-opening to see what everyone else is doing.”Day 1 at AI Engineer Code Summit: the talks, the demos, and the conversations between them.Presented by @GoogleDeepMind.Day 2 is live. Watch here:",
+            "cover": null
+          },
+          {
+            "id": 6492894,
+            "title": "Holding out hope for this",
+            "url": "https://x.com/venturetwins/status/2120948192107999648",
+            "source": "Justine Moore(@venturetwins)",
+            "published_at": "2026-11-12T18:33:48.000Z",
+            "score": null,
+            "summary": "Holding out hope for this💬3🔄0❤️14👀857📊4⚡ Powered by xgo.ing",
+            "cover": "https://pbs.twimg.com/media/HW8fIKYbIAA8kwI.jpg"
+          },
+          {
+            "id": 6493069,
+            "title": "as just one comparison, Gemini 4 Hydrogen finishes tasks 2.5x faster than 3.8 Flash, while being muc...",
+            "url": "https://x.com/OfficialLoganK/status/2120941998014390392",
+            "source": "Logan Kilpatrick(@OfficialLoganK)",
+            "published_at": "2026-11-12T18:09:12.000Z",
+            "score": null,
+            "summary": "as just one comparison, Gemini 4 Hydrogen finishes tasks 2.5x faster than 3.8 Flash, while being much smarter, and with 5x less fabrications. it is a good model : )💬29🔄14❤️732👀20934📊90⚡ Powered by",
+            "cover": null
+          },
+          {
+            "id": 6492259,
+            "title": "What would you build if people could talk to your app?\r\n\r\nBuild a voice-interactive game with Ashwyn S...",
+            "url": "https://x.com/DeepLearningAI/status/2120910752936546676",
+            "source": "DeepLearning.AI(@DeepLearningAI)",
+            "published_at": "2026-11-12T16:05:02.000Z",
+            "score": null,
+            "summary": "What would you build if people could talk to your app?Build a voice-interactive game with Ashwyn Sharma (@_ashwyn in Voice for AI Agents and Applications, our course with @VocalBridgeEnroll: deeplearn",
+            "cover": null
           }
         ]
       },
@@ -231,154 +165,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 6475645,
-            "title": "从AI机遇到现实生产力",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTE0ODA2MQ==&mid=2650999475&idx=1&sn=39e1fc7eaea30dfb69b4ca62aa0c3d03",
-            "source": "腾讯研究院",
-            "published_at": "2026-11-11T09:40:00.000Z",
+            "id": 6489969,
+            "title": "构建面向 Agentic 推理的下一代 LLM 推理引擎",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651297121&idx=2&sn=581c2713a2454f4a2552996367834fce",
+            "source": "InfoQ",
+            "published_at": "2026-11-12T05:55:00.000Z",
             "score": 78,
-            "summary": "在 2026 腾讯全球数字生态大会上，一个变化已经很清楚：大家讨论的不只是模型更强、工具更好用，而是智能如何真正进入千行百业的流程，变成可运营、可进化的现实生产力。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a2639255&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fsm1UZBHjpbhg9uHrMBVVtgEfCMCI8TjmtUnkOFwPic1iclzBoAnkOhRXw9boAkDRvOpd61ibMgDkwzibqzajgt24qg2T8GrFhHatkuJx8maibFg4%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "在 Agent 推理负载快速增长的背景下，传统面向聊天场景的推理引擎正面临吞吐优化目标失效、缓存利用率不足、硬件适配滞后等一系列结构性挑战。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7d457218&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNiaWxgyhWbTT5iapWiaOjnlDZhkPANRL5BgeNpm62iaosHsstewMNymS0ve0jQv5w2etcuLib1sNK3Bzl7l8wBVnc0XuohgGKL9yBns%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6464494,
-            "title": "Evaluations are the backbone of any frontier progress. Today we're launching MKA (Multimodal Knowled...",
-            "url": "https://x.com/_philschmid/status/2120281759598415961",
-            "source": "Philipp Schmid(@_philschmid)",
-            "published_at": "2026-11-10T22:25:39.000Z",
+            "id": 6489378,
+            "title": "Qwen控制机器人得分从1.9涨到31.4！清华伯克利开源统一具身Agent Harness",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIwNzc2NTk0NQ==&mid=2247623315&idx=1&sn=b9a8f27073c3ae139fa64fce04756624",
+            "source": "夕小瑶科技说",
+            "published_at": "2026-11-12T03:54:00.000Z",
             "score": 78,
-            "summary": "Evaluations are the backbone of any frontier progress. Today we&#39;re launching MKA (Multimodal Knowledge Agent) with @ArtificialAnlys, a benchmark for agents doing knowledge work on visually complex",
-            "cover": "https://pbs.twimg.com/media/HWzA7uybQAANWSZ.jpg"
+            "summary": "机器人使用智能体（Robot-Use Agent，RUA）已经能零样本完成不少操作任务，但目前表现好的系统，大多建立在 GPT-6 Astra 这类闭源前沿模型之上。研究者能调用这些模型，却拿不到权重，也就没办法用机器人上积累的经验继续训练它们；高昂的 API 费用和无法自行优化的推理，也让大规模实验很难展开。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=a10933f2&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F0hd8MxUumHPqnhl1vawrtwzCzhqMpicYWWIq7fV51L09131BVibmPm04F6dROxzug1ylpnrgibQG0pNKavt2CiaPaOIsx3hHwLQ4njpiaJc1TPiaY%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6472165,
-            "title": "华为麒麟 9050 系列芯片官宣搭载新一代达芬奇架构 NPU，业界首个 30B MoE 大模型入端",
-            "url": "https://www.ithome.com/1/025/331.htm",
-            "source": "IT之家",
-            "published_at": "2026-11-11T03:44:17.000Z",
-            "score": 76,
-            "summary": "华为发布麒麟9050系列，首款支持30B参数MoE大模型端侧运行，NPU性能提升140%、功耗降低66%，已落地Xmage智拍2.0、熄屏地图2.0等功能，是端侧大模型从概念走向可用的里程碑。",
-            "cover": "https://img.ithome.com/newsuploadfiles/2026/11/41e1fc9d-5ccb-46ff-9b2e-dfbabca88645.jpg"
+            "id": 6491291,
+            "title": "【轻量化复刻大模型 / KIMI K3】AttnRes 模块交互式演示",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247490115&idx=1&sn=ea351dddcc50f0050966f06c926f5631",
+            "source": "罗西的思考",
+            "published_at": "2026-11-12T13:38:00.000Z",
+            "score": 77,
+            "summary": "本文是AttnRes (Attention Residuals) 的完整交互式演示，9 个 Tab 覆盖深度注意力混合的核心机制、Block vs Full 形式对比、内存有界性验证、RMSNorm 防垄断、梯度流通等。全部 CPU 实时运行，复用 attn_res.py 和 norm.py 真实源码算子。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=6fbb5dec&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FiazCrKuBFsicDciaqRqs5pqaSImF5BRdUg3mvO3qgXzyWupf3ua2FgC5ibcRJeYDYm5vafibEVZHoPrnSp2nRG6MDUHkDxxic7ibeic3guWhRN4lVmU%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6464133,
-            "title": "Lazare, veni foras: Reprogramming Dormant Neurons to Backdoor AI Agents",
-            "url": "https://www.microsoft.com/en-us/research/blog/lazare-veni-foras-reprogramming-dormant-neurons-to-backdoor-ai-agents/",
-            "source": "Microsoft Research Blog",
-            "published_at": "2026-11-10T20:52:56.000Z",
-            "score": 76,
-            "summary": "Microsoft researchers have discovered &#8220;Lazarus,&#8221; a backdoor technique that can reprogram dormant neurons in an AI model, causing an otherwise normal AI agent to execute malicious commands ",
-            "cover": "https://www.microsoft.com/en-us/research/wp-content/uploads/2026/11/MSR-BLG_LAZ_HERO.png"
-          },
-          {
-            "id": 6479228,
-            "title": "AI Pentest Tool AntiFox Abused To Steal AWS Credentials",
-            "url": "https://securityaffairs.com/202880/hacking/ai-pentest-tool-antifox-abused-to-steal-aws-credentials.html",
-            "source": "Security Affairs",
-            "published_at": "2026-11-11T21:31:32.000Z",
-            "score": 75,
-            "summary": "Arctic Wolf Labs发现攻击者通过阿里云托管AntiFox这一中文开源Agent式渗透平台，链式执行攻击步骤，入侵目标IIS服务器和AWS账户。两种入口：攻破公网IIS后创建ASPX Webshell提权，或以未知途径获取AWS凭证。IIS攻击模式固定：生成Webshell→枚举用户与目录权限→试探写入能力。",
-            "cover": null
-          },
-          {
-            "id": 6473833,
-            "title": "姚期智杨植麟联手，让数学家松了一口气",
-            "url": "https://www.tmtpost.com/8200965.html",
-            "source": "钛媒体：引领未来商业与生活新知",
-            "published_at": "2026-11-11T06:35:07.000Z",
-            "score": 74,
-            "summary": "姚期智与杨植麟团队发布TCSExam，用100道可由机器自动判分的题测试最前沿大模型的理论计算机科学研究能力，结论是：所有模型均无法独立解开任何悬而未决的开放猜想。这为判断AI真研究水平提供了首个可量产的评测方案。",
-            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/435grtgf3.png"
-          },
-          {
-            "id": 6472636,
-            "title": "ChipOmni: A General-Purpose AI Agent for Electronic Design Automation",
-            "url": "https://arxiv.org/abs/2611.13020",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-11-11T05:00:00.000Z",
-            "score": 73,
-            "summary": "ChipOmni是一个面向电子设计自动化（EDA）的通用AI Agent框架，能整合多模态理解、动态规划和多代理协作，在模拟电路、RTL、测试台等基准测试中超越基线，且成功解决全部30个AnalogCoder-Pro任务，并将自然语言RISC-V规格直接推进至通过物理签核的微SoC GDSII布局。",
-            "cover": null
-          },
-          {
-            "id": 6472631,
-            "title": "TrustMod-SM: A Multi-Axis Benchmark for Evaluating Trustworthiness of LLMs in Social Media Content Moderation",
-            "url": "https://arxiv.org/abs/2611.12970",
-            "source": "cs.AI updates on arXiv.org",
-            "published_at": "2026-11-11T05:00:00.000Z",
-            "score": 72,
-            "summary": "TrustMod-SM是首个面向LLM社媒审核的五维可信度基准测试（约2.9万实例、8个数据集），评测发现：更高准确率常伴随更大人口统计差异，小模型（<8B）难以区分仇恨言论与回收语言，且无任何模型在五项指标上全面领先，规模扩展也无法自动修复这些缺陷。",
-            "cover": null
-          },
-          {
-            "id": 6470895,
-            "title": "2026，AI应用的钱都流向了哪里？",
-            "url": "https://www.huxiu.com/article/4904608.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-11-11T00:37:16.000Z",
-            "score": 72,
-            "summary": "2026年上半年AI应用层融资加速向视频/图像/3D生成集中，演语科技B+轮近3亿美元、爱诗科技C轮3亿美元等大额融资频出，这三大赛道因市场天花板高且用户反馈周期短成资本首选。与此同时，资本态度从上半年积极转向夏秋谨慎再至10月回暖，投资人如今更看重自研模型能力与软硬件结合，创业公司需在字节阿里等大厂的夹击中找差异化生存",
-            "cover": "https://img.huxiucdn.com/article/content/26-11-11/65412575-75dd-4a03-ad41-c64181241ea9.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
-          },
-          {
-            "id": 6463725,
-            "title": "Russia-Linked APT Turla Turned Exchange Servers Into Their Own Control Room",
-            "url": "https://securityaffairs.com/202800/apt/russia-linked-apt-turla-turned-exchange-servers-into-their-own-control-room.html",
-            "source": "Security Affairs",
-            "published_at": "2026-11-10T20:40:48.000Z",
-            "score": 72,
-            "summary": "ESET在哈萨克斯坦和罗马尼亚政府机构的Exchange服务器上发现了Turla组织的新工具集Cereal。该工具集以.NET模块运行、仅在内存中解压、不留磁盘痕迹，且最关键的是——没有命令控制服务器(C2)，打破了传统APT的基础设施模型。罗马尼亚目标专门用于监控发往或来自北约和欧盟的邮件。",
-            "cover": "https://i0.wp.com/securityaffairs.com/wp-content/uploads/2026/11/image-19.png?resize=1024%2C966&ssl=1"
-          },
-          {
-            "id": 6472781,
-            "title": "BotPsy: On-Device Personal Assistant with a Sub-Billion-Parameter Agentic Language Model",
-            "url": "https://huggingface.co/blog/qvac/botpsy",
+            "id": 6493274,
+            "title": "LLMON: An LLM-Native Markup Language, now in Granite 4.1 3B and 8B",
+            "url": "https://huggingface.co/blog/ibm-granite/llmon-an-llm-native-markup-language-now-in-granite",
             "source": "Hugging Face",
-            "published_at": "2026-11-11T05:01:16.000Z",
+            "published_at": "2026-11-12T19:07:35.000Z",
+            "score": 75,
+            "summary": "IBM 的 LLMON 是一套专为大语言模型设计的结构化标记语言，让模型输出的 JSON/XML 格式更稳定、更可解析——现已集成到 Granite 4.1 3B 和 8B 模型中。这意味着你用这类模型做工具调用、函数调用时，不需要靠 prompt 技巧来约束输出格式了，模型本身就能可靠地生成结构化数据，降低工程复杂度。",
+            "cover": null
+          },
+          {
+            "id": 6491804,
+            "title": "攻击越狠，模型越聪明？阿里用动态对抗驱动「智能涌现」",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&mid=2247723871&idx=2&sn=bbe51131aaca008426d09469ec563ad9",
+            "source": "PaperWeekly",
+            "published_at": "2026-11-12T12:35:00.000Z",
+            "score": 75,
+            "summary": "从动态内容审核、多模态越狱到感知增强的对抗自博弈，阿里安全 AGI 实验室御风大模型团队（Yuvion Team）通过三项连续工作提出：真正可靠的安全能力，需要经受持续对抗的检验；将对抗反馈引入训练，则有望推动模型形成更鲁棒的意图理解能力。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=383ff95d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnFNzd9xjFeBHw6bQl2iaibJ5o28eU5JcDjnTOXHc43gM2tgj0CMmVTHeqXZUr1yWKHezLocCaJNU5DQQXJKXsnYH5vc4POLabWib4gNalHgQib0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6493480,
+            "title": "How do you teach an LLM a new document without it forgetting what it already knows? 📚 Check out Spe...",
+            "url": "https://x.com/StanfordAILab/status/2120969570731356415",
+            "source": "Stanford AI Lab(@StanfordAILab)",
+            "published_at": "2026-11-12T19:58:46.000Z",
+            "score": 74,
+            "summary": "斯坦福AI Lab提出Speculative Self-Distillation（SSD）：教师模型仅在学生学习偏离时介入，其余时间让学生自主生成。实验显示，SSD用38-69%更少训练token达到同等精度，训练时间从414分钟压缩到130分钟，且在压力测试下遗忘仅下降1.4分（对比基线降4.5分）。",
+            "cover": "https://pbs.twimg.com/profile_images/2098659305532858368/Xy-b_xW5_normal.jpg"
+          },
+          {
+            "id": 6493307,
+            "title": "Inside an enterprise AI agent: A governed, observable loop architecture",
+            "url": "https://aws.amazon.com/blogs/architecture/inside-an-enterprise-ai-agent-a-governed-observable-loop-architecture/",
+            "source": "AWS Architecture Blog",
+            "published_at": "2026-11-12T19:31:28.000Z",
+            "score": 74,
+            "summary": "AWS提出企业AI Agent的五层参考架构：API网关（身份与策略）、五阶段运行时（理解→规划→检索→推理→执行与观察）、知识与状态层、平台服务层，以及贯穿全层的信任控制框架。核心论点是Agent不同于Chatbot——它持续多步工作并触及真实系统与数据，因此治理必须内嵌到每一步，而非事后追加。",
+            "cover": "https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2026/11/10/1711-1.png"
+          },
+          {
+            "id": 6491508,
+            "title": "AI驱动“自动化测试后周期”诊治体系升级",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU1MzE2NzIzMg==&mid=2247503308&idx=1&sn=c3d9562239cadc1f2f51a2f5b91deb60",
+            "source": "京东技术",
+            "published_at": "2026-11-12T14:01:00.000Z",
+            "score": 74,
+            "summary": "本文围绕VibeCoding带来的研发效率与质量矛盾，落地AI驱动自动化测试治理实践，从断言质量、冗余用例治理到覆盖度提升，完整呈现问题拆解、落地挑战、架构迭代与业务收益，有真实数据支撑，技术路径清晰。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=fa00caf4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FBdwSyGJqvPrTLVU2H22ged8TIFFiccVq4wicAicTd6SlHbTpyXPXLyl0KPbuia9NPk43qcIQXNRSBBiamOXUxjCVicqBiaBicusVNLHme20PfzEOpoY%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6490452,
+            "title": "微软悄然开源了一款 Claude Code 神器",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAxOTcxNTIwNQ==&mid=2457997286&idx=1&sn=e4f4dda15fa24f5bbaaa9a9c3d042aa8",
+            "source": "GitHubDaily",
+            "published_at": "2026-11-12T09:05:00.000Z",
+            "score": 74,
+            "summary": "最近身边不少朋友把 Claude Code 切换到最新 Fable 5.2 模型使用了，写代码能力确实又强了不少。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=94612508&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FsnxIHWuwQoletw6k3KSqHmzdf1Qy6RRJfoJSHia4paTicSdlsan1zdtIPY5jV6KBhkoTe7yiaJPorgtDibvMFGx6z0n39zVDd8r8DiajWlUSftdU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6489821,
+            "title": "Personal Agents全新自进化记忆范式",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&mid=2247513618&idx=2&sn=8150689ffc297a6f968be3bd09d338f8",
+            "source": "PaperAgent",
+            "published_at": "2026-11-12T04:52:00.000Z",
+            "score": 72,
+            "summary": "Personal Agent需要一种具有可演化状态的 Memory：事实可回溯，判断可验证，用户状态可持续更新，记忆的作用也能随当前任务动态调整。国产LLM杀出一匹黑马，斩获独家突破",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=acff940c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F5gibgibpTuuwCOKrkFNcpWwhy0h5QCBc7QIw4ASkyJpXPD614gEURXhTZquibRZor2ciaPBiaQhw4LQ0qpK8kantgriaa9biceMaQ62Gj7Mdyjtmo4%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6486877,
+            "title": "张一鸣最新定调：字节有能力与Anthropic和OpenAI竞争，但追平前沿最早要到2029年",
+            "url": "https://www.tmtpost.com/8201648.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-11-12T02:34:21.000Z",
+            "score": 72,
+            "summary": "字节联合创始人张一鸣内部会议透露：Seed语言模型预训练数据比对手少'几个数量级'，且公司明确要求不依赖蒸馏走捷径；豆包C端成功靠运营而非技术代差。核心论点——中国大模型无弯道超车，只有补课。",
+            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/2r34qtwhtrdn3.png"
+          },
+          {
+            "id": 6489716,
+            "title": "OpenViking 3D理解模型上线轴测八视图及PMI解析",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkyMTQyNzI4OQ==&mid=2247498523&idx=1&sn=3b22702f5ec80f40a1925a0907264a11",
+            "source": "字节跳动开源",
+            "published_at": "2026-11-12T10:00:00.000Z",
+            "score": 71,
+            "summary": "OpenViking发布原生3D内容理解模型，支持三维.STEP文件的导入与解析，信息还原率做到 100%。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=54918d45&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FFeVQqE7BDqupu394Hc213tJFRRcQ7nJHWcibcDTbyKfGWWlJkXEwZZ2CEIqicYPTlQiaxxK0kj7XtNfVPDMz2cW5weZibSXxf6CYpjJmwiavIgib0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6489360,
+            "title": "腾讯“混元试点”和“陆军转海军”的底层逻辑",
+            "url": "https://www.huxiu.com/article/4905045.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-11-12T09:12:16.000Z",
             "score": 70,
-            "summary": "MIT等机构提出BotPsy，用Sub-Solar-1M（<1B参数）在消费级GPU上独立运行个人助理Agent——无需云调用，支持任务分解、工具调用、上下文管理。作者证明：在小模型上做Agent而非聊天机器人，才是Mobile设备真正可用的路径。",
-            "cover": null
+            "summary": "腾讯在28周年直播中明确组织从\"降本\"转向\"增效\"，提出\"陆军50%守基本盘+海军50%探AI新战场\"的资源分配思路；同时启用姚顺雨改造混元，要求内部一年内不看模型榜单，以摆脱KPI虚荣。文章借百度陆奇2018年因触及既得利益而离任的先例警示：战略正确不等于能落地，组织改革才是AI转型的真正难点。",
+            "cover": "https://img.huxiucdn.com/article/content/26-11-12/d9381af5-2bff-4b96-ab5d-cdb5b8127ee1.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 6473043,
-            "title": "Measuring Definition Sensitivity in LLM Annotation of Social Science Concepts",
-            "url": "https://arxiv.org/abs/2611.13339",
-            "source": "cs.CL updates on arXiv.org",
-            "published_at": "2026-11-11T05:00:00.000Z",
-            "score": 70,
-            "summary": "该论文提出'定义敏感性'指标，测试同一组文本在不同概念定义下的LLM标注分歧。结果显示，换用竞争性定义所导致的标注变化，显著高于仅改写表述的歧义下限——证明模型确实在响应提示中的定义，但其主观解读仍会造成可观偏差。这意味着任何LLM标注结果必须附带其对应的定义版本才具有可复现性。",
-            "cover": null
+            "id": 6480034,
+            "title": "中国大模型，不想只卖API了",
+            "url": "https://www.huxiu.com/article/4904904.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-11-12T00:42:49.000Z",
+            "score": 69,
+            "summary": "Menlo Ventures报告显示，2026年美国企业开源模型支出89%流向中国模型（Kimi占61%，DeepSeek 15%，GLM 11%），但开源模型Token消耗占比翻倍而支出占比却减半，用量与收入剪刀差持续扩大。智谱、Kimi、MiniMax已开启涨价验证——需求并未因提价减少，国产模型正从'低价换流量'转向'分层定价+ARR变现'。",
+            "cover": "https://img.huxiucdn.com/article/content/26-11-12/b5352250-8e52-4ff3-b428-95c5c2d2a543.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 6475462,
-            "title": "Token通缩，大模型厂商如何走出给算力打工的局面？ | 巴伦投资",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkzMjY0NTI0NA==&mid=2247555120&idx=2&sn=cf2c040a35d238b5da1ed039dc8c05e6",
-            "source": "Barrons巴伦",
-            "published_at": "2026-11-11T07:17:00.000Z",
+            "id": 6491209,
+            "title": "MiniMax-H3-Image：原生 4K 图像生成，魔搭量化模型支持 24GB 显存部署，附快速部署模型教程",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzk3NTc1NTU0Mw==&mid=2247515693&idx=1&sn=462294c92590debbde2a43e96d7827f5",
+            "source": "魔搭ModelScope社区",
+            "published_at": "2026-11-12T03:40:00.000Z",
             "score": 68,
-            "summary": "最近，Token价格正在经历一场剧烈的通缩，伴随而来的是微软、亚马逊、谷歌的齐齐上涨，与此同时，港股市场中阿里巴巴、腾讯股价也出现了明显回暖，在11月4日涨幅更是超越7%。几乎同一时间，另一组数字在往反方向走：大和证券的Token价格指数自8月首次覆盖以来累计跌了约25%，OpenAI在多区域的平均综合标价被下调约31%，Anthropic约47%。一边是按token计价的东西在打折，一边是收算力",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e4bc262c&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FXduvHtdibh3xcicJXGOja27GkqroLvHnu16oEPqmcVXorPNmXBEgd60OAuk4LMyibUVjTlaRje8CpRs4M9VZRKr4gicib0v10Iia9Vh5NV3Emd1CI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6473046,
-            "title": "BioMem: Agentic Memory for Biomedical LLM Agents",
-            "url": "https://arxiv.org/abs/2611.13426",
-            "source": "cs.CL updates on arXiv.org",
-            "published_at": "2026-11-11T05:00:00.000Z",
-            "score": 68,
-            "summary": "系统评测了5种Agent记忆方案在4个LLM上的生物医学任务表现，发现记忆构建、证据相关性和对话历史是决定下游性能的关键因素。基于此提出HMRU训练-free框架，在问答和长期对话基准上平均提升8.6%。",
-            "cover": null
-          },
-          {
-            "id": 6478734,
-            "title": "Accelerating generative AI delivery with reusable assets",
-            "url": "https://aws.amazon.com/blogs/machine-learning/accelerating-generative-ai-delivery-with-reusable-assets/",
-            "source": "AWS Machine Learning Blog",
-            "published_at": "2026-11-11T19:19:21.000Z",
-            "score": 65,
-            "summary": "AWS Gen AI创新中心开放了23个生产就绪的开源资产（RAG管线、文档处理器、Agent脚手架等），DoorDash/Lyft/Ricoh实测部署时间从月级压缩到周级、工程工时减少90%。直接去catalog取用即可起步。",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2026/11/02/ML-20608-1-3.png"
+            "summary": "MiniMax开源MiniMax-H3-Image模型，统一文生图、参考图生成和图像编辑能力，支持原生4096×4096像素输出，通过剪枝量化可在24GB显存本地部署。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=06e40721&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fia2awwZLWFZSniaqLV1cp1eLfbojEn2O2ckIbibaSCBetlIkx9CI079fCbrltSOgam2ujic1zXBbL2oVLL7UicENtRWckKK3fL1DPpiciaicRAKQ4uQ%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -387,122 +321,122 @@
         "desc": "未命中任何栏目关键词的入选内容",
         "items": [
           {
-            "id": 6475212,
-            "title": "谷歌AI自主攻克量子算法优化难题，成本砍掉九成，还能自证无误",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649808476&idx=2&sn=a2e9fe8224a445f171524532a3bc1fe9",
-            "source": "DeepTech深科技",
-            "published_at": "2026-11-11T09:37:00.000Z",
-            "score": 83,
-            "summary": "在新药研发、电池材料和核聚变能源等领域，研究者普遍认为，规模足够大、运行足够可靠的量子计算机有望做到传统计算机做不到的事。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=81b8ae4d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FLKiae5wcu5yibeWT283xGUrHfp68Lg8SjlKENib06SC9xeyDzdKyPwZKJQhIQpiaHkzSdibLtFYTmiabaLHW4mjLiayvsWs7JAagF8q4mRTHgcVUS4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6472985,
-            "title": "Uncovering the Blind Spots of OKS-mAP: A Unified Protocol for Occlusion, Joint-Angle, and Temporal Evaluation of 2D Pose Estimators",
-            "url": "https://arxiv.org/abs/2611.12911",
-            "source": "cs.CV updates on arXiv.org",
-            "published_at": "2026-11-11T05:00:00.000Z",
-            "score": 82,
-            "summary": "arXiv:2611.12911v1 Announce Type: new Abstract: The dominant metric for 2D human pose estimation, OKS-mAP, has three blind spots: it does not distinguish visible from occluded keypoints, does not meas",
+            "id": 6490044,
+            "title": "A.I. Weapons Need Data for Their Training. Ukraine Has a Lot to Offer.",
+            "url": "https://www.nytimes.com/2026/11/12/world/europe/ukraine-ai-weapons.html",
+            "source": "NYT &gt; World News",
+            "published_at": "2026-11-12T10:00:57.000Z",
+            "score": 78,
+            "summary": "The Ukrainian government has opened up a trove of five million battlefield videos to defense companies at home and abroad.",
             "cover": null
           },
           {
-            "id": 6475119,
-            "title": "“70后经济”正在涌现",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODAxODQ0MA==&mid=2651415093&idx=2&sn=21aef3c7f4815b95d1c00f2adef1624c",
-            "source": "正和岛",
-            "published_at": "2026-11-11T08:25:00.000Z",
+            "id": 6492113,
+            "title": "我们痛苦的根源是因为对生活失去掌控感？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAwNzA0MTkxOQ==&mid=2664925486&idx=1&sn=1b228329a13b43aa05c9925c004bf768",
+            "source": "集思录",
+            "published_at": "2026-11-12T14:16:00.000Z",
             "score": 76,
-            "summary": "大促时节，“囤旅游券”常常被默认为是面向年轻人的生意。但今年，一批适合父母辈的旅行产品被卖成了爆款。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3a42217d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Foo3slDywW2poSgTGFs5LsQ7MIHstguwSshdFIpXoib2lBrLBode9sreG4vcYe0sbEcJDwjItW6KBMA9LKxZqPXF6MKcTOUXMP0dPWibWCkLLs%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "以前能盯盘到凌晨，现在看着就烦。说白了，散户在股市里太被动了。公司经营你左右不了，走势你也改变不了。就像接客的，客人来不来、什么时候来、来的是谁，全不知道。这种完全被拿捏的感觉，谁能喜欢得起来？",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=53adc813&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1cwAlbjgbMdic7y0Gs7ReQSP8UebZ1d0gLgBQiazwER9ibV57keYgTmhHkVR3Bh0kyRVH1uH5GjLFoS8pgKibuYqcZN04J3PtzumKBS4ZibMiazeM%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6472146,
-            "title": "疑似 AI 中转站投毒：不到一个月，窃取 12TB 数据",
-            "url": "https://www.v2ex.com/t/1256104#reply0",
-            "source": "V2EX · 技术",
-            "published_at": "2026-11-11T03:32:19.000Z",
+            "id": 6490474,
+            "title": "拆解小红书存储底座 05｜RedTAO 2.0：万亿级图数据库的设计与实践",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg4OTc2MzczNg==&mid=2247497156&idx=1&sn=a65da187452ec808edf599fd8589362b",
+            "source": "小红书技术REDtech",
+            "published_at": "2026-11-12T09:59:00.000Z",
             "score": 76,
-            "summary": "作者从暗网发现12TB数据泄露，追踪到攻击链起点疑似AI中转站：攻击者通过cloudflare.bz伪装Cloudflare人机验证，利用ClickFix社工手段将恶意代码注入开发者环境，再通过项目发布扩散至终端用户。目前已联系Cloudflare并封禁该域名，但尚无官方调查报告。",
-            "cover": null
+            "summary": "从点赞、关注、收藏到多跳图查询，看 RedTAO 如何通过分层架构，在万亿级数据规模下兼顾在线性能、业务扩展与异地多活。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=65078d14&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FP9Hs04VFGRlMeKH2a89qopwyTt3dmHq9rXvJCWudd6Ff8dibMgMFFNtHgqpkxyN81UeMtQl9rOzl7bcfPIp2oT3oCU1dpG3VD1WtSAfUpxbg%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6473813,
-            "title": "AMD 公布 Zen 6 CPU 细节",
-            "url": "https://www.solidot.org/story?sid=85852",
-            "source": "奇客Solidot–传递最新科技情报",
-            "published_at": "2026-11-11T06:25:09.000Z",
+            "id": 6490006,
+            "title": "10 亿 Token 开源万只假鸟， AI 伪科普正在「污染」下一代的常识",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzkyNjU2ODM2NQ==&mid=2247635345&idx=2&sn=a4fd60e4124e68bfead3d4351e083536",
+            "source": "硅星人Pro",
+            "published_at": "2026-11-12T02:48:00.000Z",
+            "score": 76,
+            "summary": "「有一回藤野先生将我叫到他的研究室里去，翻出我那讲义上的一个图来，是下臂的血管，指着，向我和蔼的说道：“你看，你将这条血管移了一点位置了。──自然，这样一移，的确比较的好看些，然而解剖图不是美术，实物是那么样的，我们没法改换它。现在我给你改好了，以后你要全照着黑板上那样的画。”」",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=aec28363&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FdCG7OC48IfJrTYlXYDZMCkOdeHJkwfx9H5CcLQVrYNOUt419ic1lRSicTDWy7J98n6rdUicX5m6pIHiaZJ8mc4BOYwUaYYAUYCzO5EDibcCk9VcE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6491194,
+            "title": "第18个双十一，大促的“商品”正在被重写",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTExMjYwMA==&mid=2670402353&idx=1&sn=aa8530c56f060b4bf0207b43dd76a2f4",
+            "source": "经济观察报",
+            "published_at": "2026-11-12T11:07:00.000Z",
             "score": 75,
-            "summary": "AMD 披露了 Zen 6 CPU 家族的细节。从表面看，Zen 6 是 Zen 5 的自然演进，核心扩展了乱序执行结构以及其它方面的迭代改进。但深入内部会发现 AMD 对核心的多个方面进行了重构，其改进类似从 Zen 1 到 Zen 2。 Zen 6 分支预测错误开销从 Zen 5 的 3.5-4 纳秒缩短到了 3-3.5 纳秒，降低了分支预测错误延迟。Zen 6 能在 L1 指令缓存内实现每周",
-            "cover": null
+            "summary": "当低价已经成为电商平台的基础设施，大促要回答的新问题是：除了把成熟商品卖得更便宜，它还能不能把那些“还不像商品的东西”，第一次变成商品？京东今年双十一的三个切面，恰好是三个回答：服务首次以商品的身份上了货架，AI从概念走进了消费，线下网点从卖货终端转向体验和履约的节点。三件事放在一起，指向同一个判断——大促正变成新消费形态的验证场域。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4631b370&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FGPiamicZGjnaoP1tPCqVtU2F1bcicq8XUy2uicNAboRDT6oFdpMW45jnlcliaf3ErdYO7wCuREoubzicssjdj77j2SvcgUS9w3oTjsNhyl7iaic9Dt8%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6475402,
-            "title": "CoreWeave： “牛气”答卷，硬抗“妖气”股价，英伟达“干儿子”真能抬头吗？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzE5MTU3MzA2OQ==&mid=2247579703&idx=1&sn=5baa04b11988cfff9c527ae7445bbfa4",
-            "source": "海豚研究",
-            "published_at": "2026-11-11T04:53:00.000Z",
-            "score": 75,
-            "summary": "AI 新云独角兽Coreweave(CRWV.US) 于美东时间 11 月 10 日盘后发布了三季度财报。单看本季的业绩，可以说挺不错：收入和 backlog 都加速增长且好于预期，各项利润率继续提升，调整后经营利润率按公司说法提前一个季度到了两位数，全年指引也全面上调。具体来看：",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ded5aac5&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FoqyvInCB8vRTeLk7N2BYWDwJ0veLkgVPsTc9iaFpbcWicMZAruz0r3KFuZhFuaDISFb3knyXrd2S2rKUXXqRfhxrGunJibSOhSBV5wViaxwzves%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6463963,
-            "title": "Poor Masa, first WeWork, then OpenAI (which is starting to face harder times), and now this.",
-            "url": "https://x.com/GaryMarcus/status/2120262763586945276",
-            "source": "Gary Marcus(@GaryMarcus)",
-            "published_at": "2026-11-10T21:10:10.000Z",
-            "score": 74,
-            "summary": "SoftBank用预付远期合约+Collar期权结构把全部Intel持仓抵押出去，借到了73.5亿美元（超持股成本3倍），结果Intel股价上涨让期权合约产生20亿美元损失，股票本身又亏2700亿日元，单季双线亏损。更危险的是：银行对其中1.1万亿日元Intel股票拥有'使用权'，可随时借出或抛售。",
-            "cover": "https://pbs.twimg.com/profile_images/72647502/tyler_normal.jpg"
-          },
-          {
-            "id": 6474849,
-            "title": "从溢价到破价，iPhone Duo只用了三天",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIzOTA3NTA5Mg==&mid=2652619188&idx=2&sn=7da3572a48e6c3a2ac45546c4653f06c",
-            "source": "功夫财经",
-            "published_at": "2026-11-10T22:30:00.000Z",
+            "id": 6493774,
+            "title": "Interaction-as-a-Judge works as an RL reward without needing access to code. We fine-tune Qwen-3.5-9...",
+            "url": "https://x.com/arena/status/2120992958019449101",
+            "source": "lmarena.ai(@lmarena_ai)",
+            "published_at": "2026-11-12T21:31:41.000Z",
             "score": 72,
-            "summary": "定好闹钟、预填收货信息、切换5G信号，做好准备工作，肖强也想当一回“黄牛”，抢一台iPhone Duo赚差价。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bd8a8812&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2Fvjo9LIFKXqVicxZL1FaYVw4icQgsUd2gD9HGb6wTg0fsDmxF00nDicawyhLGpYOpyTiblEMXMVzmXU0MRtTl0z11ictIvOCodTYpgHWttMbc61Ts%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Interaction-as-a-Judge方法可在无代码访问权限的情况下作为RL奖励信号使用。Qwen-3.5-9B微调后胜率提升+6.7pp（约+50 Arena分），应用成功率从81.3%升至88.5%，同时代码冗余降低35.7%。核心发现：交互反馈比代码更适合作为应用构建任务的训练信号。",
+            "cover": "https://pbs.twimg.com/media/HW9HIhcaMAASEto.png"
           },
           {
-            "id": 6464030,
-            "title": "Grok Build coding agent leaks oodles of confidential info, some belonging to SpaceXSI",
-            "url": "https://arstechnica.com/security/2026/11/grok-build-coding-agent-leaks-oodles-of-confidential-info-some-belonging-to-spacexsi/",
-            "source": "Ars Technica",
-            "published_at": "2026-11-10T21:12:59.000Z",
+            "id": 6491267,
+            "title": "腾讯海外休闲这盘棋：手握30多个爆款，买的不只是游戏",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzYzNTkyMTI2Ng==&mid=2247578526&idx=2&sn=2b7b305600f2bf986263699cf733e7cf",
+            "source": "白鲸出海",
+            "published_at": "2026-11-12T13:30:00.000Z",
             "score": 72,
-            "summary": "Grok Build因URL可枚举漏洞泄露数千用户项目数据，含内部商业计划和员工ID；讽刺的是，泄露内容中包括SpaceXSI自身24个应用的数据，如594个销售账户地图、保密入职计划等。",
-            "cover": null
+            "summary": "腾讯最近一笔投资是北京匠心互娱，占股不低，接近 27%。这个团队关联公司运营着一款出海收入榜 TOP30 的休闲游戏，月收入超过 5000 万元。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d97230a0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FOHnTJ4kA6qibOxdv1Pf4z4EwAz1xCElrokuicZ7sFZmxXamsK9qYfJI1tO0bPpNsgTlHnbxXQfyYrY4R4NrdKnsNaXNXicWGDTVfLeNzdhhYqw%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6473266,
-            "title": "金灿荣、陈凤馨：特朗普的否决权，能否保住“黄仁勋们”？",
-            "url": "https://www.huxiu.com/article/4904699.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-11-11T05:42:19.000Z",
-            "score": 71,
-            "summary": "黄仁勋婚外情风波被金灿荣与陈凤馨解读为美国国家安全系统借题发挥的棋局，核心目的是阻挠特朗普对华友好路线。同时，民主党掌控国会后，加密行业此前向共和党投入2亿美元的政治资金将招致针对性调查，英特尔、英伟达等企业均面临监管重压。",
-            "cover": "https://img.huxiucdn.com/article/content/26-11-11/8599b162-910b-453c-a056-5060ef17d042.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
+            "id": 6490887,
+            "title": "“我随时可能被董事会解雇！” 欧洲刚封神，回国遭逼宫：黄仁勋正经历创立33年最危险时刻，全美100个数据中心叫停",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg4NDQwNTI0OQ==&mid=2247591064&idx=1&sn=031faee4916b34ffb0bce5a6fa81ab75",
+            "source": "AI科技大本营",
+            "published_at": "2026-11-12T11:12:00.000Z",
+            "score": 72,
+            "summary": "原「AI科技大本营」现已全面升级为「奇点折射」。把 AI 领域最前沿的底层争论、工程踩坑与商业暗牌，折射为国内从业者能看懂、能防踩坑的实战增量。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=18217e44&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FiaM6L8b5B1GlPXf7ibsFW24tqKsDiaFDMiblic63icJHeUbKEAnXH28L5yfxLthTicStT8zX1J5nCBmNdZGNvv96TeRB1SIRwNiaopl091Qxg7YGXBA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6490071,
+            "title": "An Interview With Roblox CEO David Baszucki About Aggregating Play",
+            "url": "https://stratechery.com/2026/an-interview-with-roblox-ceo-david-baszucki-about-aggregating-play/",
+            "source": "Stratechery by Ben Thompson",
+            "published_at": "2026-11-12T11:00:00.000Z",
+            "score": 72,
+            "summary": "This week&#8217;s Stratechery Interview is with Roblox CEO David Baszucki. I&#8217;ve interviewed Baszucki twice, in February 2022, and November 2023.",
+            "cover": "https://i0.wp.com/stratechery.com/wp-content/uploads/2026/10/Stripe-wordmark-Blurple-Small.png?resize=330%2C138&ssl=1"
+          },
+          {
+            "id": 6488882,
+            "title": "CFO与CIO跨界对谈，企业AI上线只是起点 | 「从数字化到AI」",
+            "url": "https://www.tmtpost.com/8198224.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-11-12T08:08:25.000Z",
+            "score": 72,
+            "summary": "绿城中国与得物的AI应用采用了不同的推进顺序——前者先集团统筹再部门试点，后者由财务先行探索后带动全局。核心结论：AI能否持续使用取决于数据口径统一、非结构化数据治理、结果核验机制和员工考核制度四件事，而不是技术本身。",
+            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/25y46ujyhrtgr3.png"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 416,
-      "articles": 416,
-      "sections": 4,
+      "candidates": 410,
+      "articles": 410,
+      "sections": 3,
       "prescreen": {
         "cap": 2,
-        "pool": 4954,
-        "poolSources": 426,
+        "pool": 4660,
+        "poolSources": 418,
         "kept": 500,
-        "keptSources": 321
+        "keptSources": 317
       },
-      "totalItems": 46
+      "totalItems": 40
     }
   },
-  "generated_at": "2026-11-12T08:46:35.541Z"
+  "generated_at": "2026-11-13T08:40:11.076Z"
 }
