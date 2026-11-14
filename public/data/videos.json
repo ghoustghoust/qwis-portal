@@ -1,6 +1,58 @@
 {
   "items": [
     {
+      "id": 283387,
+      "source_id": 624,
+      "platform": "youtube",
+      "title": "If Cars Were As Safe As Your Software, Would You Drive Them?",
+      "url": "https://www.youtube.com/watch?v=OauKpoM9mKk",
+      "vid": "OauKpoM9mKk",
+      "cover": "https://i.ytimg.com/vi/OauKpoM9mKk/hqdefault.jpg",
+      "duration": null,
+      "author": "Modern Software Engineering",
+      "published_at": "2026-11-13T19:00:05.000Z",
+      "source_name": "Modern Software Engineering"
+    },
+    {
+      "id": 282262,
+      "source_id": 590,
+      "platform": "youtube",
+      "title": "Unboxing The World’s Largest Toy",
+      "url": "https://www.youtube.com/watch?v=sHpEqeSByPI",
+      "vid": "sHpEqeSByPI",
+      "cover": "https://i.ytimg.com/vi/sHpEqeSByPI/hqdefault.jpg",
+      "duration": null,
+      "author": "MrBeast",
+      "published_at": "2026-11-13T17:00:00.000Z",
+      "source_name": "MrBeast"
+    },
+    {
+      "id": 282052,
+      "source_id": 597,
+      "platform": "youtube",
+      "title": "Inside Venezuela’s Uncertain Path to Freedom | Leopoldo López | TED",
+      "url": "https://www.youtube.com/watch?v=pSbcJV_o_ko",
+      "vid": "pSbcJV_o_ko",
+      "cover": "https://i.ytimg.com/vi/pSbcJV_o_ko/hqdefault.jpg",
+      "duration": null,
+      "author": "TED",
+      "published_at": "2026-11-13T16:00:21.000Z",
+      "source_name": "TED"
+    },
+    {
+      "id": 280567,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜全网最高画质第一人称逛展，会拍到啥？",
+      "url": "https://www.bilibili.com/video/BV1exWq6WEF4",
+      "vid": "BV1exWq6WEF4",
+      "cover": "https://i0.hdslb.com/bfs/archive/fabbcca9e0cd07b81cfcd887b0594663723d9211.jpg",
+      "duration": 249,
+      "author": "影视飓风",
+      "published_at": "2026-11-13T09:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 278966,
       "source_id": 542,
       "platform": "youtube",
@@ -1247,59 +1299,7 @@
       "author": "Nick Saraev",
       "published_at": "2026-11-09T15:22:02.000Z",
       "source_name": "Nick Saraev"
-    },
-    {
-      "id": 254471,
-      "source_id": 570,
-      "platform": "youtube",
-      "title": "The Mindset That Builds Rich Nations",
-      "url": "https://www.youtube.com/watch?v=uvfJdOfVX0w",
-      "vid": "uvfJdOfVX0w",
-      "cover": "https://i.ytimg.com/vi/uvfJdOfVX0w/hqdefault.jpg",
-      "duration": null,
-      "author": "Nikhil Kamath",
-      "published_at": "2026-11-09T15:16:19.000Z",
-      "source_name": "Nikhil Kamath"
-    },
-    {
-      "id": 254831,
-      "source_id": 526,
-      "platform": "youtube",
-      "title": "Should Agents Say \"I Don't Know\"? | AirBnB at Interrupt 26",
-      "url": "https://www.youtube.com/watch?v=kmPF75rTgh8",
-      "vid": "kmPF75rTgh8",
-      "cover": "https://i.ytimg.com/vi/kmPF75rTgh8/hqdefault.jpg",
-      "duration": null,
-      "author": "LangChain",
-      "published_at": "2026-11-09T15:12:17.000Z",
-      "source_name": "LangChain"
-    },
-    {
-      "id": 261392,
-      "source_id": 622,
-      "platform": "youtube",
-      "title": "I made my Octolamp think with GitHub Copilot CLI hooks",
-      "url": "https://www.youtube.com/watch?v=PjoXOjjwMLs",
-      "vid": "PjoXOjjwMLs",
-      "cover": "https://i.ytimg.com/vi/PjoXOjjwMLs/hqdefault.jpg",
-      "duration": null,
-      "author": "GitHub",
-      "published_at": "2026-11-09T15:02:32.000Z",
-      "source_name": "GitHub"
-    },
-    {
-      "id": 254441,
-      "source_id": 591,
-      "platform": "youtube",
-      "title": "Words of Wisdom from a Conservationist | Maya Higa's Nat Geo 9 Interview | National Geographic",
-      "url": "https://www.youtube.com/watch?v=1T_sgiRC3l8",
-      "vid": "1T_sgiRC3l8",
-      "cover": "https://i.ytimg.com/vi/1T_sgiRC3l8/hqdefault.jpg",
-      "duration": null,
-      "author": "National Geographic",
-      "published_at": "2026-11-09T15:00:33.000Z",
-      "source_name": "National Geographic"
     }
   ],
-  "generated_at": "2026-11-13T08:40:07.129Z"
+  "generated_at": "2026-11-14T07:56:57.522Z"
 }
