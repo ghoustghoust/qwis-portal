@@ -117,7 +117,7 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 87
+      "source_count": 88
     },
     {
       "id": 19,
@@ -173,7 +173,7 @@
       "kind": "video",
       "name": "人工智能",
       "sort": 26,
-      "source_count": 1
+      "source_count": 0
     },
     {
       "id": 30,
@@ -201,7 +201,7 @@
       "kind": "video",
       "name": "产品",
       "sort": 28,
-      "source_count": 1
+      "source_count": 0
     },
     {
       "id": 33,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-11-14T07:57:00.443Z"
+  "generated_at": "2026-11-15T08:21:51.759Z"
 }

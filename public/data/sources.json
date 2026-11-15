@@ -1,20 +1,6 @@
 {
   "sources": [
     {
-      "id": 693,
-      "type": "rss",
-      "name": "1A23 Studio",
-      "url": "https://1a23.com/feed/",
-      "avatar": "https://1a23.com/wp-content/uploads/2020/12/cropped-Square-primary-32x32.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 356,
       "type": "rss",
       "name": "21世纪经济报道",
@@ -265,20 +251,6 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
-    },
-    {
-      "id": 510,
-      "type": "youtube",
-      "name": "AI Explained",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCNJ1Ymd5yFuUPtn21xtRbbw",
-      "avatar": null,
-      "group_id": 26,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 3
     },
     {
       "id": 705,
@@ -725,8 +697,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 725,
@@ -1723,20 +1695,6 @@
       "fail_count": 0
     },
     {
-      "id": 600,
-      "type": "youtube",
-      "name": "DesignerUp",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCw2R8kz3aotYtV9utqf0uaw",
-      "avatar": null,
-      "group_id": 28,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "error",
-      "fail_count": 1
-    },
-    {
       "id": 784,
       "type": "x",
       "name": "Dia(@diabrowser)",
@@ -2527,6 +2485,20 @@
       "url": "https://feeds.megaphone.fm/hacking-humans",
       "avatar": "https://megaphone.imgix.net/podcasts/8797f03a-a50b-11ea-b6c0-87ebb093948d/image/5a1e5b722e38318e5dc6b7a74aab47b8.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
       "group_id": 35,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 836,
+      "type": "x",
+      "name": "Hailuo AI (MiniMax)(@Hailuo_AI)",
+      "url": "https://api.xgo.ing/rss/user/e65b5e59fcb544918c1ba17f5758f0f8",
+      "avatar": "https://pbs.twimg.com/profile_images/2086821620228980736/JzAOUvuf_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3563,6 +3535,20 @@
       "url": "https://api.xgo.ing/rss/user/63316630d94543f5a6480f230f483008",
       "avatar": "https://pbs.twimg.com/profile_images/1820716712234303489/9GpKDZjq_normal.jpg",
       "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 904,
+      "type": "rss",
+      "name": "Markon Review",
+      "url": "https://markonreview.com/rss/",
+      "avatar": "https://markonreview.com/favicon.png",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5191,8 +5177,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1015,
@@ -15205,5 +15191,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-14T07:57:00.329Z"
+  "generated_at": "2026-11-15T08:21:51.642Z"
 }
