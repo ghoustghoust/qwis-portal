@@ -1,6 +1,32 @@
 {
   "items": [
     {
+      "id": 288299,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "黃仁勳 開源模型被監管",
+      "url": "https://www.youtube.com/watch?v=ZlncMsphQ1Y",
+      "vid": "ZlncMsphQ1Y",
+      "cover": "https://i.ytimg.com/vi/ZlncMsphQ1Y/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-15T11:35:51.000Z",
+      "source_name": "mrblock 區塊先生"
+    },
+    {
+      "id": 286486,
+      "source_id": 2,
+      "platform": "bilibili",
+      "title": "动态视频｜加量不加价！飓风相机2.0版本全新升级！",
+      "url": "https://www.bilibili.com/video/BV1HTsn6xEEC",
+      "vid": "BV1HTsn6xEEC",
+      "cover": "https://i2.hdslb.com/bfs/archive/76df9358fa86adc7744494f2cf9fdb7e711b5059.jpg",
+      "duration": 93,
+      "author": "影视飓风",
+      "published_at": "2026-11-15T09:00:00.000Z",
+      "source_name": "影视飓风"
+    },
+    {
       "id": 283387,
       "source_id": 624,
       "platform": "youtube",
@@ -38,6 +64,19 @@
       "author": "TED",
       "published_at": "2026-11-13T16:00:21.000Z",
       "source_name": "TED"
+    },
+    {
+      "id": 288300,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "黃仁勳突然下台！比特幣崩跌、AI 股重挫 這場風暴才剛開始",
+      "url": "https://www.youtube.com/watch?v=fBbzWLXbTDk",
+      "vid": "fBbzWLXbTDk",
+      "cover": "https://i.ytimg.com/vi/fBbzWLXbTDk/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-13T12:44:30.000Z",
+      "source_name": "mrblock 區塊先生"
     },
     {
       "id": 280567,
@@ -209,6 +248,19 @@
       "source_name": "Two Minute Papers"
     },
     {
+      "id": 288301,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "吃頓飯就做出一款APP ! Claude 讓寫程式門檻大幅降低",
+      "url": "https://www.youtube.com/watch?v=-6HcsKS2O7Y",
+      "vid": "-6HcsKS2O7Y",
+      "cover": "https://i.ytimg.com/vi/-6HcsKS2O7Y/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-12T12:43:14.000Z",
+      "source_name": "mrblock 區塊先生"
+    },
+    {
       "id": 275066,
       "source_id": 2,
       "platform": "bilibili",
@@ -220,6 +272,19 @@
       "author": "影视飓风",
       "published_at": "2026-11-12T09:00:00.000Z",
       "source_name": "影视飓风"
+    },
+    {
+      "id": 288302,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "美股在慶祝，幣圈還在恐懼",
+      "url": "https://www.youtube.com/watch?v=-Bn9eR9f1kg",
+      "vid": "-Bn9eR9f1kg",
+      "cover": "https://i.ytimg.com/vi/-Bn9eR9f1kg/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-12T05:16:59.000Z",
+      "source_name": "mrblock 區塊先生"
     },
     {
       "id": 274169,
@@ -326,6 +391,19 @@
       "source_name": "一席"
     },
     {
+      "id": 288303,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "CoreWeave靠挖礦起家 現在搶AI算力！",
+      "url": "https://www.youtube.com/watch?v=alPa7x6aedg",
+      "vid": "alPa7x6aedg",
+      "cover": "https://i.ytimg.com/vi/alPa7x6aedg/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-11T11:00:32.000Z",
+      "source_name": "mrblock 區塊先生"
+    },
+    {
       "id": 269561,
       "source_id": 520,
       "platform": "youtube",
@@ -337,6 +415,19 @@
       "author": "DeepLearningAI",
       "published_at": "2026-11-11T11:00:19.000Z",
       "source_name": "DeepLearningAI"
+    },
+    {
+      "id": 288304,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "Claude 推出新模型 Fable 5.2",
+      "url": "https://www.youtube.com/watch?v=Z5Gz0EnRpVQ",
+      "vid": "Z5Gz0EnRpVQ",
+      "cover": "https://i.ytimg.com/vi/Z5Gz0EnRpVQ/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-11T06:38:22.000Z",
+      "source_name": "mrblock 區塊先生"
     },
     {
       "id": 269156,
@@ -649,6 +740,19 @@
       "author": "AICodeKing",
       "published_at": "2026-11-10T13:17:02.000Z",
       "source_name": "AICodeKing"
+    },
+    {
+      "id": 288305,
+      "source_id": 584,
+      "platform": "youtube",
+      "title": "我賣掉HYPE！從 4 美元抱上來 為何不等 120 美元？",
+      "url": "https://www.youtube.com/watch?v=JkkkvI_Y7So",
+      "vid": "JkkkvI_Y7So",
+      "cover": "https://i.ytimg.com/vi/JkkkvI_Y7So/hqdefault.jpg",
+      "duration": null,
+      "author": "mrblock 區塊先生",
+      "published_at": "2026-11-10T13:09:18.000Z",
+      "source_name": "mrblock 區塊先生"
     },
     {
       "id": 263665,
@@ -1195,111 +1299,7 @@
       "author": "Business Insider",
       "published_at": "2026-11-09T17:03:31.000Z",
       "source_name": "Business Insider"
-    },
-    {
-      "id": 255880,
-      "source_id": 12,
-      "platform": "youtube",
-      "title": "Hermes Agent Crash Course: From Basics to Advanced",
-      "url": "https://www.youtube.com/watch?v=H_Mlnz3hxHY",
-      "vid": "H_Mlnz3hxHY",
-      "cover": "https://i.ytimg.com/vi/H_Mlnz3hxHY/hqdefault.jpg",
-      "duration": null,
-      "author": "NeuralNine",
-      "published_at": "2026-11-09T17:00:09.000Z",
-      "source_name": "NeuralNine"
-    },
-    {
-      "id": 255670,
-      "source_id": 579,
-      "platform": "youtube",
-      "title": "Did China Honeytrap Jensen Huang? + Apple's Siri Reboot & Gojiberry AI's CEO",
-      "url": "https://www.youtube.com/watch?v=1dVRqd4POc8",
-      "vid": "1dVRqd4POc8",
-      "cover": "https://i.ytimg.com/vi/1dVRqd4POc8/hqdefault.jpg",
-      "duration": null,
-      "author": "This Week in Startups",
-      "published_at": "2026-11-09T16:47:07.000Z",
-      "source_name": "This Week in Startups"
-    },
-    {
-      "id": 268648,
-      "source_id": 542,
-      "platform": "youtube",
-      "title": "3 New Dots Updates You Should Know About",
-      "url": "https://www.youtube.com/watch?v=k8zxn8OvTYU",
-      "vid": "k8zxn8OvTYU",
-      "cover": "https://i.ytimg.com/vi/k8zxn8OvTYU/hqdefault.jpg",
-      "duration": null,
-      "author": "The AI Advantage",
-      "published_at": "2026-11-09T16:31:32.000Z",
-      "source_name": "The AI Advantage"
-    },
-    {
-      "id": 268649,
-      "source_id": 542,
-      "platform": "youtube",
-      "title": "Let Claude Help You Understand Your Spending",
-      "url": "https://www.youtube.com/watch?v=sRxngr7JfVc",
-      "vid": "sRxngr7JfVc",
-      "cover": "https://i.ytimg.com/vi/sRxngr7JfVc/hqdefault.jpg",
-      "duration": null,
-      "author": "The AI Advantage",
-      "published_at": "2026-11-09T16:28:14.000Z",
-      "source_name": "The AI Advantage"
-    },
-    {
-      "id": 254486,
-      "source_id": 539,
-      "platform": "youtube",
-      "title": "Custom tools: The future of brand identities",
-      "url": "https://www.youtube.com/watch?v=tZWZHePbd8g",
-      "vid": "tZWZHePbd8g",
-      "cover": "https://i.ytimg.com/vi/tZWZHePbd8g/hqdefault.jpg",
-      "duration": null,
-      "author": "Runway",
-      "published_at": "2026-11-09T16:00:11.000Z",
-      "source_name": "Runway"
-    },
-    {
-      "id": 269203,
-      "source_id": 597,
-      "platform": "youtube",
-      "title": "AI Brain Fry Is Real. Here’s What Leaders Can Do | Julie Bedard | TED",
-      "url": "https://www.youtube.com/watch?v=g3_TqjSLyLk",
-      "vid": "g3_TqjSLyLk",
-      "cover": "https://i.ytimg.com/vi/g3_TqjSLyLk/hqdefault.jpg",
-      "duration": null,
-      "author": "TED",
-      "published_at": "2026-11-09T16:00:06.000Z",
-      "source_name": "TED"
-    },
-    {
-      "id": 254621,
-      "source_id": 524,
-      "platform": "youtube",
-      "title": "He'd never written Swift. Codex built his native app anyway.",
-      "url": "https://www.youtube.com/watch?v=OTqa2hOAVjI",
-      "vid": "OTqa2hOAVjI",
-      "cover": "https://i.ytimg.com/vi/OTqa2hOAVjI/hqdefault.jpg",
-      "duration": null,
-      "author": "How I AI",
-      "published_at": "2026-11-09T15:31:13.000Z",
-      "source_name": "How I AI"
-    },
-    {
-      "id": 262978,
-      "source_id": 534,
-      "platform": "youtube",
-      "title": "13 Mind-Blowing AI Hacks That Can Actually Change Your Life",
-      "url": "https://www.youtube.com/watch?v=yMKHtJpgZzc",
-      "vid": "yMKHtJpgZzc",
-      "cover": "https://i.ytimg.com/vi/yMKHtJpgZzc/hqdefault.jpg",
-      "duration": null,
-      "author": "Nick Saraev",
-      "published_at": "2026-11-09T15:22:02.000Z",
-      "source_name": "Nick Saraev"
     }
   ],
-  "generated_at": "2026-11-15T08:21:49.873Z"
+  "generated_at": "2026-11-16T08:30:26.986Z"
 }
