@@ -33,7 +33,7 @@
       "kind": "article",
       "name": "国际视野",
       "sort": 5,
-      "source_count": 2
+      "source_count": 3
     },
     {
       "id": 6,
@@ -103,7 +103,7 @@
       "kind": "video",
       "name": "YouTube",
       "sort": 16,
-      "source_count": 53
+      "source_count": 54
     },
     {
       "id": 17,
@@ -117,7 +117,7 @@
       "kind": "article",
       "name": "人工智能",
       "sort": 18,
-      "source_count": 77
+      "source_count": 76
     },
     {
       "id": 19,
@@ -180,7 +180,7 @@
       "kind": "article",
       "name": "X 推文",
       "sort": 26,
-      "source_count": 32
+      "source_count": 29
     },
     {
       "id": 27,
@@ -222,7 +222,7 @@
       "kind": "article",
       "name": "国际新闻媒体",
       "sort": 29,
-      "source_count": 15
+      "source_count": 13
     },
     {
       "id": 35,
@@ -232,5 +232,5 @@
       "source_count": 5
     }
   ],
-  "generated_at": "2026-11-18T08:59:58.472Z"
+  "generated_at": "2026-11-19T09:22:11.624Z"
 }

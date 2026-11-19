@@ -2213,6 +2213,20 @@
       "fail_count": 0
     },
     {
+      "id": 73,
+      "type": "rss",
+      "name": "FT中文网",
+      "url": "http://www.ftchinese.com/rss/news",
+      "avatar": "https://www.ftchinese.com/favicon.ico",
+      "group_id": 5,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 801,
       "type": "rss",
       "name": "Feld Thoughts",
@@ -2707,20 +2721,6 @@
       "type": "rss",
       "name": "Hacker News - Newest: &quot;AI&quot;",
       "url": "https://hnrss.org/newest?q=AI",
-      "avatar": "https://hnrss.org/favicon.ico",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 834,
-      "type": "rss",
-      "name": "Hacker News - Newest: &quot;LLM&quot;",
-      "url": "https://hnrss.org/newest?q=LLM",
       "avatar": "https://hnrss.org/favicon.ico",
       "group_id": 18,
       "spotlight": 0,
@@ -3235,6 +3235,20 @@
       "fail_count": 0
     },
     {
+      "id": 866,
+      "type": "rss",
+      "name": "JustZht's EchoChamber",
+      "url": "https://www.justzht.com/rss/",
+      "avatar": "https://www.justzht.com/favicon.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 613,
       "type": "youtube",
       "name": "Justin Sung",
@@ -3618,6 +3632,20 @@
       "name": "Long Luo's Life Notes",
       "url": "https://www.longluo.me/atom.xml",
       "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 893,
+      "type": "rss",
+      "name": "Longlong's Blog",
+      "url": "https://blog.xlonglong.cn/feed/",
+      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -4607,13 +4635,13 @@
       "fail_count": 0
     },
     {
-      "id": 945,
-      "type": "x",
-      "name": "Patrick Loeber(@patloeber)",
-      "url": "https://api.xgo.ing/rss/user/c65c68f3713747bba863f92d6b5e996f",
-      "avatar": "https://pbs.twimg.com/profile_images/1960117571232964608/Tpnsw5cD_normal.jpg",
-      "group_id": 30,
-      "spotlight": 1,
+      "id": 948,
+      "type": "rss",
+      "name": "Peng's Blog",
+      "url": "https://pengs.top/atom.xml",
+      "avatar": "https://pengs.top/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -5755,20 +5783,6 @@
       "fail_count": 0
     },
     {
-      "id": 1019,
-      "type": "rss",
-      "name": "Space | The Guardian",
-      "url": "https://www.theguardian.com/science/space/rss",
-      "avatar": "https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png",
-      "group_id": 34,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1020,
       "type": "rss",
       "name": "Spotify Engineering",
@@ -6539,20 +6553,6 @@
       "fail_count": 0
     },
     {
-      "id": 1069,
-      "type": "x",
-      "name": "Tw93(@HiTw93)",
-      "url": "https://api.xgo.ing/rss/user/665fc88440fd4436acbc2e630d824926",
-      "avatar": "https://pbs.twimg.com/profile_images/1960753219115868169/EOxKSK4w_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1070,
       "type": "rss",
       "name": "UX Magazine",
@@ -6840,20 +6840,6 @@
       "avatar": "https://timesofindia.indiatimes.com/photo/507610.cms",
       "group_id": null,
       "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1086,
-      "type": "rss",
-      "name": "World news | The Guardian",
-      "url": "https://www.theguardian.com/world/rss",
-      "avatar": "https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png",
-      "group_id": 34,
-      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -7861,6 +7847,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/4f8c07cc1c9eee6998b27eb99d7f134778871f0f.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM4MN6VhR8hLYDGAwLDxebb2aWHCPrO04GKibw5KCCUSRwQ/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 595,
+      "type": "youtube",
+      "name": "一席",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKFB_rVEFEF3l-onQGvGx1A",
+      "avatar": null,
+      "group_id": 16,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -10277,20 +10277,6 @@
       "fail_count": 0
     },
     {
-      "id": 1212,
-      "type": "x",
-      "name": "宝玉(@dotey)",
-      "url": "https://api.xgo.ing/rss/user/97f1484ae48c430fbbf3438099743674",
-      "avatar": "https://pbs.twimg.com/profile_images/561086911561736192/6_g58vEs_normal.jpeg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1213,
       "type": "rss",
       "name": "宝玉的分享",
@@ -10997,20 +10983,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/67246a8ef8bfcc82ae693fbb5ebd5567f6ae139e.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7BEacO69icYL7ibwQia8xT9C7vKIoZFyo1VAvDRO6pq8IIg/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1229,
-      "type": "rss",
-      "name": "我不是咕咕鸽",
-      "url": "https://blog.laoda.de/rss.xml",
-      "avatar": "https://blog.laoda.de/upload/guguge.webp",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -13013,6 +12985,20 @@
       "url": "https://wangxin.io/atom.xml",
       "avatar": null,
       "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1281,
+      "type": "rss",
+      "name": "王登科-DK博客",
+      "url": "https://greatdk.com/feed",
+      "avatar": "https://greatdk.com/favicon.ico",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -15597,6 +15583,20 @@
       "fail_count": 0
     },
     {
+      "id": 1334,
+      "type": "rss",
+      "name": "青石坞",
+      "url": "https://www.qs5.org/feed/",
+      "avatar": "https://www.qs5.org/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 261,
       "type": "rss",
       "name": "青稞AI",
@@ -15877,5 +15877,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-18T08:59:58.312Z"
+  "generated_at": "2026-11-19T09:22:11.479Z"
 }
