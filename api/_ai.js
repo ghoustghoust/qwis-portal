@@ -102,6 +102,20 @@ async function keyExhaustedMap() {
   return live;
 }
 
+// 429 限流短冷却（2026-11-09/22：agnes 免费池 20 RPM，高峰批次跨进程并发超限）——
+// isQuotaExhausted 的配额正则匹配不到 agnes 的 429 文案时，此前 429 既不登记也不轮切，
+// 每次调用都从链头撞满 3 次退避（11-12~22 实测 translate 单 kind 撞 20 次）。429 不是
+// 额度耗尽（12h 太长），冷却 10min 让轮换自然避开限流窗口，过期即自动复活。
+const KEY_COOLDOWN_TTL_MS = 10 * 60e3;
+async function markKeyCooldown(fp, why) {
+  try {
+    const m = await keyExhaustedMap();
+    m[fp] = new Date(Date.now() + KEY_COOLDOWN_TTL_MS).toISOString();
+    await setSetting('ai.keyExhausted', m);
+    return true;
+  } catch { return false; }
+}
+
 async function markKeyExhausted(fp, why) {
   try {
     const m = await keyExhaustedMap();
@@ -214,6 +228,12 @@ async function _aiChatInner(messages, opts = {}) {
         // 额度耗尽（402/403/429 + 配额语义）：登记该账号并立刻轮切——退避重试对它无意义
         if (p.fp && isQuotaExhausted(err)) {
           await markKeyExhausted(p.fp, `HTTP ${err.status}`);
+          break;
+        }
+        // 429 但配额正则没匹配上（agnes RPM 限流文案）：短冷却 10min 后登记，本轮立即轮切——
+        // 对同一 key 做 1s/2s 退避重试在限流窗口内必然再撞（11-22 定性：translate 20 次 429 全撞链头）
+        if (p.fp && err.status === 429) {
+          await markKeyCooldown(p.fp, `HTTP 429 限流`);
           break;
         }
         // 仅 429/5xx 重试，4xx 直接换供应商
@@ -583,8 +603,10 @@ async function generateThemeDetailed(items) {
   // 退避 15s 重试一次保留为兜底，只对该错误形态重试，其余失败不烧配额。
   const ask = () => aiChat([{ role: 'user', content: `${tpl}\n\n## 入选列表\n\n${list}` }], { kind: 'theme', maxTokens: 1536, timeoutMs: 60000 });
   let r = await ask();
-  if (!r.ok && /仅含 reasoning|finish=length/.test(String(r.error || ''))) {
-    await new Promise((res) => setTimeout(res, 15000));
+  // 重试条件扩围（2026-11-22）：第 8 期 theme 失败=429 限流形态，此前只对 reasoning 烧穿重试——
+  // 限流/5xx/超时同样值得一次退避（20s，给 RPM 窗口留余地），其余失败不烧配额
+  if (!r.ok && /仅含 reasoning|finish=length|429|rate|限流|timed? ?out|aborted/i.test(String(r.error || ''))) {
+    await new Promise((res) => setTimeout(res, 20000));
     r = await ask();
   }
   if (!r.ok) return { theme: null, why: 'ai_failed', err: String(r.error || 'no error').slice(0, 160) };
