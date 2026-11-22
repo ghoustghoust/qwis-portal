@@ -59,16 +59,28 @@ const CASE = process.argv[2];
     _ai._setProviderOverride(null);
   }
   if (CASE === 'retry') {
+    // 2026-11-22 语义更新（agnes 免费池 20RPM 定性）：429 → 冷却 10min 登记 + 立即轮切，
+    // 不再对同 key 退避 1s/2s 空撞（限流窗口内必再撞——11-12~22 生产实测单 kind 撞 20 次）。
+    // 单 key 场景的完整语义：429 一次即冷却 → 全链跳过 → 明确失败不降级；「恢复」由冷却
+    // 过期读时复活承载（下半段把解除时刻拨到过去断言复活）。结尾清冷却登记防泄漏进后续场景
+    // （本文件所有场景共享同一临时库的 settings）。
     _ai._setProviderOverride(null);
     let calls = 0;
-    _ai._setProviderOverride(async () => {
-      calls++;
-      if (calls < 3) { const e = new Error('agnes HTTP 429'); e.status = 429; throw e; }
-      return 'ok-after-retry';
-    });
+    _ai._setProviderOverride(async () => { calls++; const e = new Error('agnes HTTP 429'); e.status = 429; throw e; });
     await put('ai.minIntervalMs', '0');
     out.r = await _ai.aiChat([{ role: 'user', content: 'x' }]);
     out.calls = calls;
+    const ex = await db.execute("SELECT value FROM settings WHERE key='ai.keyExhausted'");
+    const cooledKeys = Object.keys(JSON.parse((ex.rows[0] || { value: '{}' }).value));
+    out.cooled = cooledKeys.length;
+    if (cooledKeys.length) {
+      await db.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('ai.keyExhausted', ?)",
+        [JSON.stringify({ [cooledKeys[0]]: new Date(Date.now() - 1000).toISOString() })]);
+    }
+    _ai._setProviderOverride(async () => { calls++; return 'ok-after-retry'; });
+    out.r2 = await _ai.aiChat([{ role: 'user', content: 'x' }]);
+    out.calls2 = calls;
+    await db.execute("DELETE FROM settings WHERE key='ai.keyExhausted'");
     _ai._setProviderOverride(null);
   }
   if (CASE === 'glossary') {
@@ -119,10 +131,13 @@ test('1. 限流串行：并发 3 次调用间隔 ≥8s 且按序', async () => {
   assert.ok(r.elapsed >= 8000, `3 次串行应 ≥8s，实际 ${r.elapsed}ms`);
 }, { timeout: 60000 });
 
-test('2. 429 退避重试后成功', () => {
+test('2. 429 冷却轮切（2026-11-22 语义）：429 一次即冷却登记、全链跳过明确失败；冷却过期读时复活', () => {
   const r = run('retry');
-  assert.ok(r.r.ok && r.r.reply === 'ok-after-retry', JSON.stringify(r.r));
-  assert.equal(r.calls, 3);
+  assert.equal(r.r.ok, false, JSON.stringify(r.r));
+  assert.equal(r.calls, 1, '429 后不许对同 key 空撞（旧行为同 key 退避 3 次，RPM 窗口内必再撞）');
+  assert.ok(r.cooled >= 1, '429 必须写冷却登记（keyExhausted），否则下次调用继续撞链头');
+  assert.ok(r.r2.ok && r.r2.reply === 'ok-after-retry', '冷却过期后应复活成功（读法即重置探针）');
+  assert.equal(r.calls2, r.calls + 1);
 }, { timeout: 60000 });
 
 test('3. 术语库：写入→读取→生长累计→locked 不覆盖', () => {
