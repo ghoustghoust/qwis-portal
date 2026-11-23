@@ -1,162 +1,178 @@
 {
   "report": {
-    "id": 175,
-    "generated_at": "2026-11-22T07:56:40.041Z",
+    "id": 178,
+    "generated_at": "2026-11-23T08:54:53.939Z",
     "window_hours": 30,
     "sections": [
+      {
+        "column": "培训课程发布",
+        "desc": "新公开的课程、训练营与社群招募",
+        "items": [
+          {
+            "id": 6626201,
+            "title": "阿里国际站前两季度GMV增速均超20%；镁伽科技获近2亿美元融资丨36氪出海·要闻回顾",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&mid=2248910587&idx=2&sn=a89e7bf20896dc103e336a29e1d68a44",
+            "source": "36氪",
+            "published_at": "2026-11-22T13:30:00.000Z",
+            "score": null,
+            "summary": "36氪出海（letschuhai.com）是关注出海的行业媒体，为企业跨境提供海外咨询及专业服务，同时运营着超万人的出海生态社群。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=40b8ad5b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2Fo02wSnKAPeFDdUPXh2njAeyc60khyuZ9dLYhcppPtNiaEcyyeBsvPbc0MaCsxpaMD5o1aBFvMHFUYkUPg039w3NceHZXHtb39L3IyGxRmcOA%2F0%3Fwx_fmt%3Djpeg"
+          }
+        ]
+      },
       {
         "column": "重点更新",
         "desc": "标了重点的来源,内容全部进此栏",
         "items": [
           {
-            "id": 6612758,
-            "title": "90后数学家宣称与Claude证明黎曼猜想",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661845831&idx=1&sn=6e4992bbae71fe85eb2d1096c288e627",
+            "id": 6621163,
+            "title": "亚马逊、谷歌，成Anthropic IPO最大赢家",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzg5MzEyNzEwNQ==&mid=2247877805&idx=1&sn=352be2d1ecc01650fdf71eb4d4a2a90a",
+            "source": "财联社",
+            "published_at": "2026-11-22T00:52:00.000Z",
+            "score": 73,
+            "summary": "Anthropic IPO募资约935亿美元打破SpaceX纪录，亚马逊和谷歌以非投票权股份合计持股28%，按收盘价计算持仓价值约3300亿美元；同时承诺未来多年分别向AWS支付至少1100亿美元、向谷歌云支付至少1213亿美元，两大巨头既是股东又是主要算力供应商。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c957d109&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQXtmiafIpfaT7Kn5dckhLpq66jSzvp6lS9GwQDxkFZcQXUemo9npGjWiaTUooRHIgZq8XWqCCGLTSZBhLocpr2icQLH5qkWuJiaGAyQnhyNJ0k4%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6621858,
+            "title": "黎曼猜想证明获认证：Claude参与攻克百年数学难题",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661846005&idx=1&sn=f9ff4e43e381858b8fc36f89caef0ec5",
             "source": "第一财经",
-            "published_at": "2026-11-21T03:32:00.000Z",
-            "score": 75,
-            "summary": "Anthropic数学家Levent Alpöge（哈佛博士，导师为2014年菲尔兹奖得主Bhargava）宣称与Claude合作于2026年10月起攻破了黎曼猜想，方法可推广至广义黎曼猜想。该声明尚未获独立验证，但Alpöge此前7月已用同模式发现雅可比猜想三维反例并通过形式化验证，非首次尝试。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5f2ee63f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCLXfxTM0b8DcupehCMu8JP1xvxpiafG1sku4oz28XPJnojBh5TqHarpEtfMpHkQsrpIY36rZdQNYJVHJqqjw0v7cFawXmMiaUEsg%2F0%3Fwx_fmt%3Djpeg"
+            "published_at": "2026-11-22T03:10:00.000Z",
+            "score": 72,
+            "summary": "黎曼猜想的证明已获得形式化数学社区正式认可——2026年11月21日，Lean和Mathlib发布联合声明，确认Anthropic数学家Levent Alpöge与Claude合作的证明正确。1700万行Lean代码经多项定理独立验证、多验证器交叉检验，排除了'证明的不是原本问题'的风险。陶哲轩博客跟进讨论，菲尔兹奖得主称其为数学史里程碑。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=e853518b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCINfh0fXo76u2blicDmkPY3PeU43Vwonz67icPhPicBKeibLYM4Liarbic2QPzNodptGdBiciaia9Z6HMJmy3xl77eV9ic5MvWcUCj3pfIbg%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6615563,
-            "title": "Lean Verification of the Riemann Hypothesis - Joint statement by...",
-            "url": "https://leanprover-community.github.io/blog/posts/riemann-hypothesis/",
-            "source": "Hacker News 首页",
-            "published_at": "2026-11-21T14:36:45.000Z",
-            "score": 74,
-            "summary": "Lean定理证明器社区完成黎曼假设相关工作的形式化验证，由多位研究者合作完成。这标志着形式化验证从简单数学命题走向真正困难的解析数论核心区域，是计算机辅助数学证明的重要进阶。工程师和PM应关注：形式化验证正快速成为关键基础设施可信度的底层能力。",
-            "cover": null
-          },
-          {
-            "id": 6615324,
-            "title": "机器人，低质数据泛滥",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661845943&idx=2&sn=f445ee5fb0e128ffcb6b6b35ee1c669e",
-            "source": "第一财经",
-            "published_at": "2026-11-21T13:44:00.000Z",
-            "score": 68,
-            "summary": "谋先飞CTO张衡判断，物理AI普及后真机采集数据占比将越来越低——用仿真引擎加人类EGO数据补足缺口。觅蜂科技已积累百万小时级数据，但低质数据同步泛滥，核心矛盾从'缺数据'转向'缺高质量数据'。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=4f4687a0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F1NNic30RcBCLe1ZvULJDCqOau72zxHsHj1zYEEJzMmibIIuCgwTuee2kVMlzafTbDGgdI4oAAWR1oBPMUYWQWibudrVLeYmEXQT2HNb4pPs4TA%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6614244,
-            "title": "花1千多，6个场景极限横测完御三家最强模型，我沉默了...（附提示词）",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzkwMzE4NjU5NA==&mid=2247522769&idx=1&sn=898856206c4b48f05f8dcb7d998de57d",
-            "source": "袋鼠帝AI客栈",
-            "published_at": "2026-11-21T09:48:00.000Z",
-            "score": 68,
-            "summary": "Gemini4 Neon Vs GPT6.2 Astra Vs Fable5.2，谁才是王？ 干货满满，建议收藏～",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=dad7c031&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FPF8icWqEe2PSUahTb064qibwuBzmOVRM71XVKtMI4eC795sZMtib3ruG7ZJgQKcvyg5WTprr9ycXUuPWFrvT947AFP6eUiack8Eg4Gq5x8BibVicY%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6616786,
-            "title": "早知天下事〔2026.11.22〕",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650252044&idx=1&sn=f90ee34b1be25658835ed81e3512247a",
-            "source": "新华社",
-            "published_at": "2026-11-21T22:00:00.000Z",
-            "score": null,
-            "summary": "习近平新时代中国特色社会主义思想海外研究国际论坛（2026）在北京举行。详情&gt;&gt;",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ce69a63b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8qpyZOZGOIQvTHPwDCRjTGbkEmNsvFqHubJBd8PRic1BUDQWpicytUzdUpJrtia9kuA41c8zrLJ8SicXqmoOoARlOuiaA3DoiaMW6KsEiaElEicC0N8%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6616391,
-            "title": "Tech Outages Are Only the Beginning. A.I. Will Bring More Disruptions.",
-            "url": "https://www.nytimes.com/2026/11/21/us/politics/tech-outages-ai-disruptions.html",
-            "source": "NYT &gt; Technology",
-            "published_at": "2026-11-21T19:11:51.000Z",
-            "score": null,
-            "summary": "Cybersecurity has been an afterthought since the early days of the internet. Now A.I. is uncovering dormant problems, making the bill come due for decades of vulnerable code.",
-            "cover": null
-          },
-          {
-            "id": 6616135,
-            "title": "‘Six, seven, maybe more preventable deaths’: Queensland’s LNP faces reckoning over broken health system",
-            "url": "https://www.theguardian.com/australia-news/2026/nov/22/queensland-health-ambulance-deaths-lnp-labor-ntwnfb",
-            "source": "World news | The Guardian",
-            "published_at": "2026-11-21T19:00:08.000Z",
-            "score": null,
-            "summary": "A government in office for more than two years is finally forced to take responsibility and seemingly no longer able to blame its Labor predecessors",
-            "cover": null
-          },
-          {
-            "id": 6616036,
-            "title": "Mexico detains top cartel boss 'El Chapo Isidro,' setting off violence",
-            "url": "https://www.npr.org/2026/11/21/nx-s1-6049672/cartel-boss-el-chapo-isidro-detained",
-            "source": "NPR Topics: World",
-            "published_at": "2026-11-21T18:08:55.000Z",
-            "score": null,
-            "summary": "Fausto Isidro Meza Flores, better known as \"El Chapo Isidro,\" was one of the FBI's most wanted fugitives. His arrest in northwest Mexico on Saturday has sparked violence in the region.",
-            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/4153x2769+0+0/resize/4153x2769!/quality/85/format/webp/?url=https%3A%2F%2Fnpr-production-npr.s3.us-east-1.amazonaws.com%2Fbrightspot%2F4f%2F34%2F888e5ba6425cae1b50ebbe90e6a1%2Fap26325506754293.jpg"
-          },
-          {
-            "id": 6615091,
-            "title": "QCon San Francisco 2026: Scaling Tech by Aligning Humans",
-            "url": "https://www.infoq.com/news/2026/11/scalling-tech-humans/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
-            "source": "InfoQ",
-            "published_at": "2026-11-21T13:30:00.000Z",
-            "score": null,
-            "summary": "At QCon San Francisco 2026, Scott Behrens, Principal Security Engineer at Netflix, presented how staff-plus engineers can define and align a company-wide technical strategy.",
-            "cover": "https://res.infoq.com/news/2026/11/scalling-tech-humans/en/headerimage/generatedHeaderImage-1795181753113.jpg"
-          },
-          {
-            "id": 6614900,
-            "title": "Weirdly accelerating space rock keeps puzzling astronomers",
-            "url": "https://www.scientificamerican.com/article/weirdly-accelerating-space-rock-keeps-puzzling-astronomers/",
-            "source": "Scientific American Content: Global",
-            "published_at": "2026-11-21T12:00:00.000Z",
-            "score": null,
-            "summary": "The strange &ldquo;dark comet&rdquo; 1998 KY26 is moving in a way scientists have yet to fully understand. A Japanese space probe was set to visit in 2031, but engine trouble will prevent that encount",
-            "cover": null
-          },
-          {
-            "id": 6613974,
-            "title": "Why Nostalgia for Tamagotchis, the Virtual Pets, Won’t Die",
-            "url": "https://www.nytimes.com/2026/11/21/arts/tamagotchis-comeback.html",
-            "source": "NYT &gt; Technology",
-            "published_at": "2026-11-21T11:05:08.000Z",
-            "score": null,
-            "summary": "Millennials are answering the beeping call of the pocket-size game that caused a sensation 30 years ago. But analog-craving Gen Zers are, too.",
-            "cover": null
-          },
-          {
-            "id": 6614005,
-            "title": "Why Is the World Still Counting on Unproven Carbon Capture Technology?",
-            "url": "https://www.propublica.org/article/carbon-capture-and-storage-climate-models",
-            "source": "ProPublica",
-            "published_at": "2026-11-21T10:00:00.000Z",
-            "score": null,
-            "summary": "You see the promise on airline booking screens, shipping boxes, electronics and grocery aisles: “Carbon neutral.” “Net zero.” “Climate pledge friendly.” Those labels rest on the comforting premise tha",
-            "cover": "https://www.propublica.org/wp-content/uploads/2026/11/20261119-dispatches-cop31.jpg?w=1149"
-          },
-          {
-            "id": 6613563,
-            "title": "How Google Traced GKE API Timeouts to a Linux Kernel TCP Bug",
-            "url": "https://www.infoq.com/news/2026/11/gke-kernel-network-bug/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
+            "id": 6622313,
+            "title": "Google Announces Agent Compute Engine for Secure AI Agent Execution",
+            "url": "https://www.infoq.com/news/2026/11/google-agent-compute-engine/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=global",
             "source": "InfoQ — News",
-            "published_at": "2026-11-21T09:44:00.000Z",
-            "score": null,
-            "summary": "Google recently detailed how three interacting bugs across Google Kubernetes Engine (GKE), Private Service Connect, and the Linux kernel caused intermittent Kubernetes API connectivity failures, block",
-            "cover": "https://res.infoq.com/news/2026/11/gke-kernel-network-bug/en/headerimage/generatedHeaderImage-1794082671635.jpg"
+            "published_at": "2026-11-22T06:30:00.000Z",
+            "score": 67,
+            "summary": "Google发布Agent Compute Engine，用isolated microVM运行AI agent并支持checkpoint中断恢复。其安全设计将凭据、API Key、OAuth token全部置于agent沙箱之外，由外部Agent Gateway认证后注入——解决的是agent访问敏感资源的信任边界问题。",
+            "cover": "https://res.infoq.com/news/2026/11/google-agent-compute-engine/en/headerimage/generatedHeaderImage-1793561615054.jpg"
           },
           {
-            "id": 6612518,
-            "title": "Math Puzzle: The longest shuffle",
-            "url": "https://www.scientificamerican.com/article/math-puzzle-longest-shuffle/",
+            "id": 6619128,
+            "title": "AIHOT 日报 · 2026-11-22 — Anthropic 数学家称与 Claude 完成黎曼猜想证明，斯坦福数小时后发布纯人类竞争草稿",
+            "url": "https://aihot.news/daily/2026-11-22",
+            "source": "AIHOT 日报",
+            "published_at": "2026-11-22T00:00:32.000Z",
+            "score": 67,
+            "summary": "Anthropic数学家Levent Alpöge宣布与Claude合作完成黎曼猜想及广义黎曼猜想的证明，以Lean语言分14个数据包发布，打印超25万页；斯坦福数小时后发布纯人类竞争草稿。同篇还报道Together AI披露2026年6-7月serverless推理服务提示词泄露事件、研究者向AI供应链埋入200万个金丝雀发现数据泄露、OpenAI发布MedChemBench评估分子结构解读能力",
+            "cover": null
+          },
+          {
+            "id": 6626326,
+            "title": "Agent swarm trying to solve P vs. NP",
+            "url": "https://pequalnp.com/",
+            "source": "Hacker News 首页",
+            "published_at": "2026-11-22T21:53:45.000Z",
+            "score": null,
+            "summary": "Comments URL: https://news.ycombinator.com/item?id=50604314",
+            "cover": null
+          },
+          {
+            "id": 6625832,
+            "title": "Netanyahu’s Likud, Eisenkot’s Yashar end coalition talks without deal",
+            "url": "https://www.aljazeera.com/news/2026/11/22/netanyahus-likud-eisenkots-yashar-end-coalition-talks-without-deal?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-11-22T21:33:11.000Z",
+            "score": null,
+            "summary": "Parties remain split over who will lead the next government and whether far-right minister Itamar Ben-Gvir will join.",
+            "cover": null
+          },
+          {
+            "id": 6626019,
+            "title": "北京朝阳警方发布警情通报",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MTM3NTMwNA==&mid=2661846239&idx=1&sn=adce497d2594ea3b21e3d7a8e51213fa",
+            "source": "第一财经",
+            "published_at": "2026-11-22T21:30:00.000Z",
+            "score": null,
+            "summary": "第一财经 2026-11-23 05:30 上海 2026.11.23本文字数：93，阅读时长大约1分钟11月22日晚，北京市公安局朝阳分局发布一则警情通报：微信编辑 | 夏木·联系我们线索爆料：bianjibu@yicai.com商务合作：business@yicai.com推荐阅读高盛，再度大砍黄金目标 跳转微信打开",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=ebfca0cf&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F1NNic30RcBCJvnkNBVpBTibRM4CyJSXvTaHsN2OsAiaAwGiczHd4HW7EibKMXX3SUdXa3z7qQd7FibXEIdWX40AT9NhicxKxlD3LyuRFWuw7TOicicZA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6626204,
+            "title": "早知天下事〔2026.11.23〕",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDI3NjcyNA==&mid=2650252220&idx=1&sn=568fd069bc5c44caac62da0fd1a693ec",
+            "source": "新华社",
+            "published_at": "2026-11-22T21:30:00.000Z",
+            "score": null,
+            "summary": "调整融资保证金比例、创业板拟引入做市商制度、一揽子降费措施三项稳定资本市场相关政策公布。详情&gt;&gt;",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=bfff325f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F8qpyZOZGOITbf8FAmc1BiabHa2ib0dUmUKMic18NficK2qgdicXaIXqnXpQ5GOXYhRotAT75Zlw1oIQOKL4Za0VVmsibeEjVMg7lIhicJWWKyKV48A%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6625833,
+            "title": "Heartbreak in US capital as Washington Spirit lose women’s football final",
+            "url": "https://www.aljazeera.com/sports/2026/11/22/heartbreak-in-us-capital-as-washington-spirit-lose-womens-football-final?traffic_source=rss",
+            "source": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
+            "published_at": "2026-11-22T21:26:12.000Z",
+            "score": null,
+            "summary": "KC Current win NWSL championship as Spirit lose third consecutive final despite playing in front of rowdy home crowd.",
+            "cover": null
+          },
+          {
+            "id": 6625753,
+            "title": "Democrats win largest House majority since 1992 after flipping North Carolina seat",
+            "url": "https://www.bbc.co.uk/news/articles/c6vg29g7dlyno?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-11-22T20:26:24.000Z",
+            "score": null,
+            "summary": "Democrats have now won at least 258 seats in the midterms compared to Republicans, who hold at least 173 seats.",
+            "cover": null
+          },
+          {
+            "id": 6625872,
+            "title": "Earth just saw the most anomalously hot day ever on record",
+            "url": "https://www.scientificamerican.com/article/earth-just-saw-the-most-anomalously-hot-day-ever-on-record/",
             "source": "Scientific American Content: Global",
-            "published_at": "2026-11-21T05:00:00.000Z",
+            "published_at": "2026-11-22T20:19:00.000Z",
             "score": null,
-            "summary": "Find the most laborious shuffle you can",
+            "summary": "With the most powerful El Ni&ntilde;o in living memory still gaining strength, this record could soon be surpassed",
             "cover": null
           },
           {
-            "id": 6613918,
-            "title": "微信，终于还是对公众号下手了！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5OTEwNjI2MA==&mid=2651934797&idx=1&sn=ce4b212be872b8ff8ffe32e0d7dce6d4",
-            "source": "人人都是产品经理",
-            "published_at": "2026-11-21T03:32:00.000Z",
+            "id": 6625591,
+            "title": "What's next after no deal at COP31 climate talks?",
+            "url": "https://www.bbc.co.uk/news/videos/cr1ewge81q4qo?at_medium=RSS&at_campaign=rss",
+            "source": "BBC News — News",
+            "published_at": "2026-11-22T18:57:24.000Z",
             "score": null,
-            "summary": "把公众号文章链接扔进去，AI自动写口播稿、拆分镜头、匹配素材、配音配乐。哪个镜头不满意，还能直接用自然语言修改，生成后直接发布视频号。",
+            "summary": "The COP31 climate summit in Turkey has formally come to an end after countries failed to agree a deal.",
             "cover": null
+          },
+          {
+            "id": 6625275,
+            "title": "Delta flights in and out of Atlanta delayed due to system outage",
+            "url": "https://www.theverge.com/transportation/1039779/delta-flights-delayed-system-outage",
+            "source": "The Verge",
+            "published_at": "2026-11-22T17:46:44.000Z",
+            "score": null,
+            "summary": "All Delta flights in and out of Atlanta are facing significant delays on Sunday due to a problem with the system that calculates a plane's weight and balance. Hartsfield-Jackson Atlanta International ",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/07/gettyimages-2223798482.jpg?quality=90&strip=all&crop=0,0,100,100"
+          },
+          {
+            "id": 6625350,
+            "title": "Lebanese villagers return to wrecked homes as the Israeli army pulls back",
+            "url": "https://www.npr.org/2026/11/22/nx-s1-6048710/lebanon-israel-army-conflict-homes",
+            "source": "NPR Topics: World",
+            "published_at": "2026-11-22T17:44:52.000Z",
+            "score": null,
+            "summary": "In a pilot project in a village in southern Lebanon, Israeli forces have left and the Lebanese army moved it. But villagers who return find their houses wrecked.",
+            "cover": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/7008x4672+0+0/resize/7008x4672!/quality/85/format/webp/?url=https%3A%2F%2Fnpr-production-npr.s3.us-east-1.amazonaws.com%2Fbrightspot%2Faa%2Fe6%2F705920be46a09bdd2b396ad5411b%2Fmoe01329.jpg"
+          },
+          {
+            "id": 6625276,
+            "title": "Binding of Isaac developer removes AI music from Repentance Plus",
+            "url": "https://www.theverge.com/games/1039770/binding-of-isaac-ai-music",
+            "source": "The Verge",
+            "published_at": "2026-11-22T17:25:20.000Z",
+            "score": null,
+            "summary": "The Binding of Isaac: Repentance Plus has spent the last few days getting review-bombed on Steam after it was discovered that a particular segment of the game used AI music. Reddit user ShweetsStuff d",
+            "cover": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/11/j7yPmbNCP4I-HD.jpg?quality=90&strip=all&crop=0,0,100,100"
           }
         ]
       },
@@ -165,154 +181,154 @@
         "desc": "模型、Agent 与工程链路的技术动向",
         "items": [
           {
-            "id": 6613573,
-            "title": "突发，黎曼猜想被25万页Claude证明破解",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&mid=2247513839&idx=1&sn=c5490fb0e67613eeef874367a12ad1c0",
-            "source": "PaperAgent",
-            "published_at": "2026-11-21T01:59:00.000Z",
-            "score": 91,
-            "summary": "Anthropic数学家Levent Alpöge宣布，他与Claude发现了黎曼猜想的证明，并进一步覆盖Dirichlet L函数的广义黎曼猜想，论证已在Lean中形式化。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=c5d99284&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F5gibgibpTuuwAAw5YFGbibg5GZOW8vmRYtry6hllxGkESIw8T8Cz9oWPcCbzficibInwlDyibUFhQCHib9EhUaq4p8NmJUWgvIaEw8U4BN4Vibkib43E%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6615089,
-            "title": "黎曼猜想被证明了？Claude 交出 1700 万行代码",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&mid=2650457355&idx=1&sn=496eab385c4dcff74ff33a068929385f",
-            "source": "AINLP",
-            "published_at": "2026-11-21T01:51:00.000Z",
-            "score": 83,
-            "summary": "11 月 20 日，在 Anthropic 工作的数学家 Levent Alpöge 在个人网站放出一份四页说明，称自己与 Claude 找到了黎曼猜想的证明，方法还覆盖了广义黎曼猜想。他交出来的主体是一套 Lean 形式化代码，规模约 1700 万行。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3fe07f3a&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQsOstc0fpvmn6nUSDqKZ0wMUO1RzibyP5n8QKeVPiaibTy9SYTHImY2eiaSdBQVhCMLfp5pCkjxvB2GCDkDVm7CgllSJSSmScrQ4RsxyG4yUZL4%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6616119,
-            "title": "A*STAR & 南开提出 UNVEIL：重新审视 SAM 3 对非类别概念的分割，原来它早就学会了！",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTE1NjQxMQ==&mid=2247667819&idx=1&sn=a3dfb1eaa6c66eb5bc3f933f6f08ecd2",
-            "source": "我爱计算机视觉",
-            "published_at": "2026-11-21T03:42:00.000Z",
-            "score": 78,
-            "summary": "作为分割大模型的重要里程碑，SAM 3 凭借强大的开放词表检测与实例分割能力备受关注。然而，当开发者尝试用“透明玻璃”、“阴影”、“伪装目标”甚至“物体边缘”这类非具体名词短语提示原生 SAM 3 时，模型却常常交出“白卷”——什么也检测不到。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=584acba0&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FP9MWBRYIGWiboqsxErUIAcM0cdu1d6KF444xwSia4rDuJXRav6krbvhEVdFrCOj8IJTgSnDicewaI4GBRvGcrVVa0ic8d96A845DZPdV4oEgNGM%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6613980,
-            "title": "27B！穆拉蒂开源“循环脑”模型：笔记本跑Agent起飞",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA4MTQ4NjQzMw==&mid=2652814765&idx=2&sn=57609eec87e9fd6813b66cc265235a0a",
-            "source": "智东西",
-            "published_at": "2026-11-21T03:03:00.000Z",
-            "score": 77,
-            "summary": "智东西消息，今日，前OpenAI CTO米拉·穆拉蒂（Mira Murati）联合创办的AI独角兽Thinking Machines Lab（简称：TML）推出一个新混合专家模型——Inkling 2 Mini。该模型总参数达27B，激活参数达3.4B，每个token有5.4B权重激活值以应对循环，兼顾小体积、快速度和较强性能，可在笔记本电脑上运行。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=78b096c2&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F8Eyv4o4Acur6D1V9FnpLW31fUlbgT0bicNLs9b5IgelZib1HL1CHYWUpnSHnGib2rKEdAbGwhAibZ5MGz3rNza8z6OI4CpdnJIF5NiamLlicjicpUg%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6613587,
-            "title": "TML开源新模型，循环Transformer架构，笔记本就能跑",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2651075624&idx=2&sn=b6e7e23d631dba7a952cbe5da8e77769",
-            "source": "机器之心",
-            "published_at": "2026-11-21T04:11:00.000Z",
-            "score": 76,
-            "summary": "Inkling 2 Mini 是一个仅有 26B 参数的循环 Transformer，小到足以在你的笔记本电脑上运行，强大到足以胜任智能体任务，在 AA Index 上的得分为 20.1。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=30f29191&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2F5L8bhP5dIqG82kE39rStxMYI6YgZepnD7dToY8U6rib71d5icVltfZIqukibtYmYHTD5qCKMIGIk0W4YqKTWZQemYt3cibljiaIq8MIXRppOnRE8%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6614521,
-            "title": "3万star！huashu-design 3.4 发布！让你的Agent做出顶级App设计",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg2OTA1OTAxNA==&mid=2247492900&idx=1&sn=aada6d640940cc751789bc67490a63fa",
-            "source": "花叔",
-            "published_at": "2026-11-21T06:55:00.000Z",
-            "score": 75,
-            "summary": "先说个好消息！！！huashu-design在GitHub的star数过3万啦，这是继女娲skill之后，我的第二个3万star的开源项目。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=3cad258b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FaNEfzwzDSW9BDXxqqzLBvbT4NAicSicAnkNicKMv9nyficXn9ibAg31hqOa8bk16YDO7xp19BDUkTUBXmfCJWXa2etga39pq53wGgd912b7mnefI%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6613564,
-            "title": "Anthropic的数学家宣布用Claude证明了黎曼猜想，还给出了1737万行人类看不懂的代码。",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA==&mid=2647688632&idx=1&sn=c96b0dbafc0987b138d6b221c47650c7",
-            "source": "数字生命卡兹克",
-            "published_at": "2026-11-20T16:54:00.000Z",
-            "score": 75,
-            "summary": "Anthropic的数学家Levent Alpöge，在他自己的个人网站上，直接一纸官宣，说，自己和Claude一起，证明了黎曼猜想。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eb30e8ff&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F2jjfQoZLoqU7STcWSwzVH8wAoianWHS5pcM0If9mhADx13SicciaAKaZrXhubU319dibdjicaBuibRUqz4Duff2mh6ibPSUCoickX4Py8peDrXD6GLg%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6612626,
-            "title": "Anthropic万亿IPO冲击波：智谱、MiniMax大跌，市场或重估大模型定价逻辑",
-            "url": "https://www.huxiu.com/article/4907377.html?f=rss",
-            "source": "虎嗅",
-            "published_at": "2026-11-21T05:33:27.000Z",
+            "id": 6621663,
+            "title": "GitHub 让 AI 接管工作流，单次默认预算 10 美元：是不是太大方了？",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651297679&idx=3&sn=fe2ba84194f99d85b4e4a94b6cb08f2c",
+            "source": "InfoQ",
+            "published_at": "2026-11-22T02:15:00.000Z",
             "score": 74,
-            "summary": "Anthropic以1073亿美元总募资规模打破全球IPO纪录，首日市值达1.27万亿美元，但同期MiniMax跌10.8%、智谱跌7.17%。其ARR从2025年底90亿美元飙升至2026年8月的440亿美元，Claude Code驱动企业需求爆发。核心观点：一二级市场的大模型定价逻辑将因此校准，资本开始审视收入可持续性与可验证性。",
+            "summary": "GitHub Agentic Workflows已正式可用，核心亮点是沙箱隔离和预算控制：每次AI任务默认花销上限10美元，威胁检测会在写入前扫描变更。但安全模型有硬伤——特权DinD Sidecar与最小权限智能体同环境运行，且自定义作业不受隔离保护；已有测试工程师将默认预算压至100 AIC才敢用于PR流程。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=8c59598d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FhLLZnAbUwNj2a9dwSlHf5iaDblHQXFoJxFtAZAg9VgMGT9zTDFjmt2hCqow18z0LdzySUr6j6LvhRqiakA8B7RyYP6ftptYuxNKurVO0qMvBY%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6622080,
+            "title": "[程序员] 重度使用 neon 后，我宣布中国人可以不用考虑开 claude 订阅了",
+            "url": "https://www.v2ex.com/t/1258877#reply6",
+            "source": "V2EX",
+            "published_at": "2026-11-22T05:15:10.000Z",
+            "score": 72,
+            "summary": "作者在含几十万行代码的大型项目中实测5款AI编程助手（astra/sol/opus/neon/claude），发现neon已可平替claude，且astra+xhigh组合覆盖救急与重构两个极端场景，核心策略是用多模型分工替代单一订阅。",
             "cover": null
           },
           {
-            "id": 6614270,
-            "title": "8万条群聊消息做成考卷：腾讯元宝×KCL发布首个基于群聊构建的Agent记忆基准",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247947677&idx=3&sn=0797fbd2116a405b44176c97577757d8",
-            "source": "量子位",
-            "published_at": "2026-11-21T09:52:00.000Z",
-            "score": 73,
-            "summary": "一个九人出行群，最初商定5月1日出发，后来又改为4月30日。等到有人请AI助手发布购票提醒，它很可能还按旧日期通知。",
-            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=99636a8b&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FA6fTew8FFGHjld0icAGYCBSTwrRso9eiaeMPWxYRzXTcxYrtPUw8JULofcYdEms3tm3fpZ805MBZFW9EHEtL6a8Lx0UdicjNyXXK4ia0eIqoIrk%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6611848,
-            "title": "陶哲轩回应「Claude证明黎曼猜想」/余承东更正：开车不能睡觉/谷歌智能音箱明年停用Google Assistant",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAyNDUyMA==&mid=2651117874&idx=1&sn=31a3cf5bf38f4966d71affe83952eb40",
-            "source": "APPSO",
-            "published_at": "2026-11-21T00:18:00.000Z",
+            "id": 6621661,
+            "title": "Pi创始人曝现代开发奇观：系统崩了，一屋子工程师都在问Claude怎么修",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651297679&idx=1&sn=dd1f73bda6afad335919a3d693192da8",
+            "source": "InfoQ",
+            "published_at": "2026-11-22T02:15:00.000Z",
             "score": 72,
-            "summary": "🏢 ColorOS 17 上线跨品牌一碰传，可向荣耀、小米、vivo 手机传文件",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7bddb4f4&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FdCG7OC48IfKibdUodvCto1cygb1KKicv8jV2xLV2IvPFEPI7O8QL6RibWbMM0R8pIiaT2TgcAMI0V51Xb8e6ibMMLLWSJ4LpQc9iav1aRBXpUOG18%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Opus 5.5发布后Coding Agent能力显著提升，但在系统设计与架构层面仍无突破；Agent可能因验证逻辑漏洞得出虚假成功结论（如误删应用后报告启动时间缩短100%）。两位深度用户警告：测试通过不等于代码可靠，行业正滑向工程师失去系统理解的'黑灯工厂'幻觉。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f5d3a369&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FhLLZnAbUwNiaVM7sII8XPuvRsNR67ht6iaRWLftibrkgHm4YibgcrycraEGE36IhPJyp1N4qiccicuUcDMrfRicx6v8kQfQOCZLrszVlTudNoUKGdM%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6604684,
-            "title": "Researcher plants 2m canaries into the AI supply chain. A privacy disaster surfaced.",
-            "url": "https://arstechnica.com/security/2026/11/a-leaky-ai-supply-chain-is-exposing-secret-user-data-at-an-alarming-rate/",
-            "source": "Ars Technica",
-            "published_at": "2026-11-20T20:59:08.000Z",
-            "score": 72,
-            "summary": "安全研究者HD Moore向AI服务供应链注入200万个伪造AWS密钥和SSH密码，证实AI路由商（如OpenRouter、Vercel）普遍将用户prompt透传给下游模型提供商，导致敏感凭据大面积外泄。对调用第三方AI API的产品而言，这意味着客户数据可能被路由层及底层模型提供商同时接触。",
-            "cover": null
-          },
-          {
-            "id": 6613949,
-            "title": "超级重磅！刚刚，Anthropic数学家宣布解决黎曼猜想，Lean源码已跑通，全球专家正在验算",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzg3MTkxMjYzOA==&mid=2247520386&idx=1&sn=cf7755ba780f54cd9c5adcf5f8837f9a",
-            "source": "AI寒武纪",
-            "published_at": "2026-11-20T17:02:00.000Z",
-            "score": 72,
-            "summary": "Anthropic数学家Levent Alpöge在个人主页宣布，他与Claude联手，成功证明了数学界最著名的千禧年难题黎曼猜想。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=7799c987&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FkJjlNiczXgKpE3loyG0TQoCZfibkN6gVKwBtaAycKBiamRibQjibAQyCmkQic3c9AiakNMZB2Rc2eKNJHqDKEGcticHfbsE06CibqorxgjeFd0xcafQY%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6612983,
-            "title": "人类有资格看懂Claude暴力拆解的黎曼猜想",
-            "url": "https://www.huxiu.com/article/4907384.html?f=rss",
+            "id": 6619982,
+            "title": "Claude“证明”黎曼猜想：陶哲轩被群嘲的质疑变得更有道理了",
+            "url": "https://www.huxiu.com/article/4907436.html?f=rss",
             "source": "虎嗅",
-            "published_at": "2026-11-21T06:27:21.000Z",
-            "score": 69,
-            "summary": "Claude协助数学家Levent Alpöge宣称证明了黎曼猜想，生成的详细草稿超过25万页，以1700万行Lean代码形式发布，但人类版本尚未写出。陶哲轩等学者正在评估。作者认为，面对AI暴力拆解的顶级难题，人类不该被傲慢地跳过——我们有权看懂这些证明，理解本身也是模型智能进化的必经之路。这对所有在AI辅助科研中挣扎的工程与产品人是一记清醒警钟。",
-            "cover": "https://img.huxiucdn.com/article/content/26-11-21/03025fc3-068f-4c72-9dc3-75a375b7d2cb.gif"
+            "published_at": "2026-11-21T23:59:14.000Z",
+            "score": 72,
+            "summary": "文章驳斥了对陶哲轩AI质疑的群嘲，以Anthropic员工用Claude证明黎曼猜想为例——1740万行Lean代码无人能读懂，揭示“Lean通过”不等于“证明正确”。读者应关注AI输出背后的验证盲区，避免盲目信任自动化结论。",
+            "cover": "https://img.huxiucdn.com/article/content/26-11-22/0b9d5f17-ba55-43aa-8c55-7d20bb499edd.png?imageView2/2/w/1000/format/png/interlace/1/q/85"
           },
           {
-            "id": 6615190,
-            "title": "【轻量化复现大模型 / KIMI K3】训练模块梳理 & Muon P2P 优化器",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI4OTA3NjQxNA==&mid=2247490229&idx=1&sn=40071d7d3111bd09abaf394b4a9d8c22",
-            "source": "罗西的思考",
-            "published_at": "2026-11-21T07:22:00.000Z",
-            "score": 68,
-            "summary": "# 【轻量化复现大模型 / KIMI K3】训练模块梳理 &amp; Muon P2P 优化器",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9f0500db&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FiazCrKuBFsicBwj6C4tcsSRskyF7icwBwpr5fz0sv5u8ibY9Y4elnK72bOSBIO8J2QJ9qpzAdYjjOulkKibIhFgFmcNiaNl08s7FFXaMTYLdAgodI%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6621670,
+            "title": "寻找新的解，后AI时代的",
+            "url": "https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2656222118&idx=2&sn=878eb9cccc776cec1b78a5ffe98ff526",
+            "source": "虎嗅APP",
+            "published_at": "2026-11-22T02:41:00.000Z",
+            "score": 65,
+            "summary": "Leheng Shen称与Claude共同完成了黎曼猜想证明，已公开1000多万行Lean代码，尚无论文与独立复核。作者认为：即使这一证明存疑，AI跨入专业智力的路标已过，奇点在某种意义上已经到来。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=1e2bf1de&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2F87nD5Qvn8kJbyLN7laiay81V2YVfUQA8QOmeU4Lv4hcyDzouvP0ZD9picX4iaWx1g7bfqsJ5ic6mILTicMJTpl47qZq910cJ9Me0abEIc19rXTLs%2F0%3Fwx_fmt%3Djpeg"
           },
           {
-            "id": 6613536,
-            "title": "黎曼猜想被证明了？是Claude与数学家联手，还是纯手工？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzAwNTA5NTYxOA==&mid=2651596475&idx=2&sn=f66c5150c7ad1aec8825ab4ed716060e",
-            "source": "中科院物理所",
-            "published_at": "2026-11-21T05:20:00.000Z",
-            "score": 68,
-            "summary": "知识分子由非营利公益组织北京市海淀区智识前沿科技促进中心主办，以传播科学知识、弘扬科学精神、促进科学文化为使命，致力于关注科学、人文、思想。我们将兼容并包，时刻为渴望知识、独立思考的人努力，共享人类知识、共析现代思想、共建智趣中国。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=76edd00d&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FVnU9ib0zZ003WmZiaxLAvYxvyukNSlbRM5Qg0yWdMakD6icudDGIulhWupL8QEjGDCfD1Yc0schDTLuXJK96qelS7GTu7h71ozs93Ub3bG8EsY%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6615921,
+            "title": "Tell HN: OpenRouter – \"Requests you sent to MiniMax models may have been read\"",
+            "url": "https://news.ycombinator.com/item?id=50591694",
+            "source": "Ask HN",
+            "published_at": "2026-11-21T17:46:51.000Z",
+            "score": 65,
+            "summary": "OpenRouter通知用户：July至October 2026期间发送到MiniMax模型的请求被第三方读取了40-130小时——安全研究人员通过唯一测试URL发现此问题。受影响供应商包括Novita、StreamLake、AtlasCloud（均转发至MiniMax）。AWS密钥未被滥用；MiniMax在Oct 22前开启内容审核，此后声称启用零数据保留，OpenRouter已移除该标签。",
+            "cover": null
+          },
+          {
+            "id": 6625411,
+            "title": "Signal Is Blocking AI Agents From Reading Your Screen",
+            "url": "https://securityaffairs.com/203742/ai/signal-is-blocking-ai-agents-from-reading-your-screen.html",
+            "source": "Security Affairs",
+            "published_at": "2026-11-22T18:01:22.000Z",
+            "score": null,
+            "summary": "Signal is restricting new AI agents built into iOS 27 and Android from capturing its data, president Meredith Whittaker announced. The company already did something similar on Windows last year, block",
+            "cover": null
+          },
+          {
+            "id": 6625599,
+            "title": "刚刚！Claude黎曼猜想证明迎来反转",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIyNjM2MzQyNg==&mid=2247730431&idx=1&sn=85cde3e91a394e395d164f169a1092f6",
+            "source": "Datawhale",
+            "published_at": "2026-11-22T16:01:00.000Z",
+            "score": null,
+            "summary": "第一天，数学家交出1700万行证明代码；第二天，社区公布验证结果，确认证明正确。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=9f66d416&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FzW6S9vt0cS81vH77wUTXxGKvgeSiaTqzNWllau63EYuncsdlBZRf0eicwhSr7gfNhAzCG7niaBkoXR2nUfubRx9yCKhhlwpUbiaZKbOib9icZM0zA%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6625494,
+            "title": "刚刚，Claude的黎曼猜想证明通过形式化验证！",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjE4NjQ4MA==&mid=2247557806&idx=1&sn=63f8bb640048b5191fbcdb878a9ebf9d",
+            "source": "大模型智能",
+            "published_at": "2026-11-22T16:00:00.000Z",
+            "score": null,
+            "summary": "深夜，Lean和Mathlib两大社区联合发声，正式确认Anthropic数学家Levent Alpöge与Claude联手完成的这份证明在形式化验证层面全部过关。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=dca8fb67&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FrjiclujBklTw6k8MYcQBfCM6H5RTFHsv4kX9J882lEI6tyq2XSHibTBs9MlCNfmozPseHZCGkL5rWJH9XsXeLyrCeGunk6bYI8icXcricS8T2gg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6624931,
+            "title": "Remote Codex 0.2.0：一套手机界面同时控制本机 Codex 与 Antigravity",
+            "url": "https://nicksxs.me/2026/11/22/Remote-Codex%E5%8F%8C%E5%90%8E%E7%AB%AF%E6%BC%94%E8%BF%9B-%E6%89%8B%E6%9C%BA%E5%90%8C%E6%97%B6%E6%8E%A7%E5%88%B6Codex%E4%B8%8EAntigravity/",
+            "source": "Nicksxs's Blog",
+            "published_at": "2026-11-22T15:10:00.000Z",
+            "score": null,
+            "summary": "",
+            "cover": null
+          },
+          {
+            "id": 6625596,
+            "title": "Claude Code 推出实验性新功能 Code Mode",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&mid=2650457454&idx=1&sn=e8803562104d18eddc2f77d2b6797ff2",
+            "source": "AINLP",
+            "published_at": "2026-11-22T13:09:00.000Z",
+            "score": null,
+            "summary": "Claude Code 的实验性新功能 Code Mode，可以把几步工具调用写进一段 JavaScript，再由 Claude 运行。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=b0150282&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQsOstc0fpvkhyLMIr2Tspanm55qYq1C8bCqPibEdf8ml7GGEB2FnjbtxlfaQeXDnib3rbia3MdIXEKRf1eyCws4LkIrN7NLnRnsZd8hm2cjTicg%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6624701,
+            "title": "复盘 2C 和 2B Agent 发展脉络｜42章经",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIyMDE5OTYyMw==&mid=2651051708&idx=1&sn=aaeee8b3813c3ce69d9bac7789be7077",
+            "source": "42章经",
+            "published_at": "2026-11-22T13:00:00.000Z",
+            "score": null,
+            "summary": "嘉琛原本研究深度学习与天体物理学，20 年从博士阶段退学创业，此后创办了开源文档协作与知识库产品 AFFiNE，一度做到 700 万用户、Product Hunt 年度第四，后来又与尤雨溪等人一起孵化了开发者工具公司 VoidZero，后者被 Cloudflare 收购。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=eb9d43e6&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FIVfXqOHjMMcq26Z5tbAn0gBFibYo7H0QPBvBJE1GhZKBNEKUQtGIOPnAcsVDTicG64Jfph1t8QRibGLAdju7U6QlU2gEyGibUjFs1keOYibYkbQM%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6624504,
+            "title": "黎曼猜想被证明之后",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDU1MDY5OA==&mid=2653247366&idx=1&sn=18ba5f9c728cca936f63eeec4354f0b6",
+            "source": "原理",
+            "published_at": "2026-11-22T12:30:00.000Z",
+            "score": null,
+            "summary": "11月20日，数学家Levent Alpöge在个人网站上公布了他与Claude共同找到的黎曼猜想证明。这道被誉为“数学圣杯”的难题，终于在提出167年后有了答案。同样令人意外的，还有验证的速度。证明公开后的第二天，Lean与Mathlib社区便发表联合声明，确认这份形式化证明通过了独立验证。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=843efc36&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FtIcW54Co1nNvTEUAvHjQsXcO3uiarvIicyXZuS1VpGeSNTW7xXXndGdWjKo8mRvmQlznrHmcfGXE4hPxcmNSE6uria92jzIunmgQj2vsPwmpGE%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6626686,
+            "title": "跑本地大模型，内存还是得够大啊",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NDMwMTI2MA==&mid=2651704785&idx=3&sn=a8dc30b51f382646156ca97321a47c0f",
+            "source": "小众软件",
+            "published_at": "2026-11-22T12:06:00.000Z",
+            "score": null,
+            "summary": "本地大模型运行工具 Strata 更新到了 0.2.18，新增了对腾讯混元 Hy4-Flash 的原生支持。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=3ec7a05f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FTs4Edaib9xxeYKnJJb1Dm6awSsa5tPvXRW1ksBYOnibGKV6uqMxNQSBAeQKwC84v6Y3C16MqibUOfDIGtdicYqiauvaVYiboHNepHmFsdFus9EXzU%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6624747,
+            "title": "大模型开始「自己改写自己」了：不用训练，越改越强",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&mid=2247724047&idx=1&sn=0f7d52679594b122f1f23b720546bde7",
+            "source": "PaperWeekly",
+            "published_at": "2026-11-22T12:05:00.000Z",
+            "score": null,
+            "summary": "1947 年 2 月 20 日，图灵在伦敦数学学会的演讲里说：我们想要的，是一台能从经验中学习的机器；让机器改动自己的指令，就是实现它的机制，“但这当然还走不了多远”。",
+            "cover": "https://wechat2rss.xlab.app/img-proxy/?k=27d28c4f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FnFNzd9xjFeDStiaQIxBvt223lzIqBC7tUWaVaOlMHkJ30tO9mz5JK7MY81uHjKUTBriaFCLz4gBpne3NXKib0JiaoLgmlzUVROicpXmRsUalPfAM%2F0%3Fwx_fmt%3Djpeg"
           }
         ]
       },
@@ -321,122 +337,122 @@
         "desc": "未命中任何栏目关键词的入选内容",
         "items": [
           {
-            "id": 6612056,
-            "title": "AI供电前史： 照明、汽车与工业电子如何汇入算力基础设施",
-            "url": "https://mp.weixin.qq.com/s?__biz=MjM5NzY4MzQyMQ==&mid=2650154180&idx=1&sn=dc6087110953f50d333d1eac9d16ddeb",
-            "source": "哈佛商业评论",
-            "published_at": "2026-11-21T00:00:00.000Z",
-            "score": 81,
-            "summary": "2008年北京奥运会，国家游泳中心“水立方”在夜色中变成了一块巨大的蓝色发光体。支撑这幅科技奥运景观的，是当时仍在快速产业化的发光二极管（LED）照明。对观众来说，这是一个醒目的城市景观；对产业来说，它是中国半导体照明产业交上的一份应用验证答卷：LED的氮化镓（GaN）材料、器件制备、封装与散热、可靠性验证和控制系统，在这一刻都从实验室指标变成了制造技术。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f4298125&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FBiawCOWWXNbRGtjLqrGX0XBjQrPibrnfNBXniavycv1ybUyUNcJytEU6DcOZUUklS5fHVIibDxq48xSNFEHiauDuYZkmPkOkLjAOIw1lCJtnGibcQ%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6622299,
+            "title": "What AI Is Bad at?",
+            "url": "https://laike9m.com/blog/what-ai-is-bad-at,174/",
+            "source": "laike9m's blog",
+            "published_at": "2026-11-22T06:07:57.000Z",
+            "score": 75,
+            "summary": "作者观察到2025年全美投资大赛前六名中仅一人公开使用AI辅助投研，提出AI擅长'简单输入→简单输出'（如翻译、打螺丝）却尚未在'复杂输入→简单输出'的投资决策上击败人类。他进一步归纳四象限框架，将人类活动按输入输出复杂度分类，预判AI的下一步瓶颈在'复杂输入→复杂输出'（如公司治理）。这帮读者看清AI的真实能力边界，避免盲目炒作。",
+            "cover": "https://files.seeusercontent.com/2026/11/21/e3Ok/input-output-combinations.jpg"
           },
           {
-            "id": 6604278,
-            "title": "How Bee implemented Zero Operator Access for personal AI on AWS",
-            "url": "https://aws.amazon.com/blogs/architecture/how-bee-implemented-zero-operator-access-for-personal-ai-on-aws/",
-            "source": "AWS Architecture Blog",
-            "published_at": "2026-11-20T18:49:05.000Z",
-            "score": 81,
-            "summary": "Bee（Amazon旗下个人AI穿戴设备公司）在AWS上构建了零操作员访问架构：利用Nitro System的硬件级隔离阻断AWS基础设施人员的数据访问权限，同时通过内部IAM策略禁止Bee工程师接触客户数据。核心思路——将'人无法访问'从制度承诺变为系统硬约束，而非依赖流程合规。",
-            "cover": "https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2026/11/19/archblog-1627-bee_arch_final.png"
-          },
-          {
-            "id": 6615380,
-            "title": "这轮美股暴跌，到底是为什么？",
-            "url": "https://mp.weixin.qq.com/s?__biz=Mzk1NzE1NjgyMA==&mid=2247511615&idx=1&sn=b2be0386b1ad66dc40ecd25291bf891f",
-            "source": "格兰投研",
-            "published_at": "2026-11-21T10:41:00.000Z",
-            "score": 79,
-            "summary": "短短五个交易日，英伟达暴跌23%，创下2008年金融危机以来最差的单周表现。如果从10月6日的高点算起，股价已经接近腰斩。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=d2bef734&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FIdKxHGfDEDGME2GT5o0rCrohANSCUweDAl9FblBBIDEpxFnPtgjJlOIOiaZfjUOG8iaFhicnXSjh5Kk4WicDcI09npr73ibvBXic1Cu5GosCXc3m0%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6615641,
-            "title": "药明康德的底牌：当全球供应链安全遇上中国商业效率",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzU3Mjk1OTQ0Ng==&mid=2247540131&idx=2&sn=d036a74da55eb0657601858746f278fe",
-            "source": "晚点LatePost",
-            "published_at": "2026-11-20T16:13:00.000Z",
-            "score": 79,
-            "summary": "2026 年 11 月 10 日，美国《联邦公报》刊出一则撤名通知：药明康德被移出美国国防部 1260H “中国军事企业” 名单。三天后，药明康德与国防部向哥伦比亚特区联邦地区法院提交共同撤诉约定；11 月 16 日，法院批准撤诉。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=a75dff55&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FJ3iaQ6X4GdYWwhpOLgWhPSGL3U0Y7VFDclKLicDj3XRGttyZiaibHF8Csf4RxG9BTzxNlGBiaNfM1nS1jbbKYCNBufHxcJ0CibeXEzZdVE4za2rSc%2F0%3Fwx_fmt%3Djpeg"
-          },
-          {
-            "id": 6612708,
-            "title": "Splice-Core: Low-Order-Bit-Splicing GEMM for Energy-Efficient AI Accelerators",
-            "url": "https://arxiv.org/abs/2611.25617",
-            "source": "Hacker News - Newest: &quot;AI&quot;",
-            "published_at": "2026-11-21T05:31:30.000Z",
-            "score": 78,
-            "summary": "Splice-Core通过低阶位拼接优化矩阵乘法计算，为AI加速器提供新型能效方案；该研究对关注硬件效率与算法协同优化的工程师具有实践指导意义。",
+            "id": 6621504,
+            "title": "算力中间商：卖时间的已上市，卖位置的正在被调查",
+            "url": "https://www.huxiu.com/article/4907449.html?f=rss",
+            "source": "虎嗅",
+            "published_at": "2026-11-22T02:51:47.000Z",
+            "score": 75,
+            "summary": "CoreWeave和Megaspeed同样出租英伟达GPU，但商业模式截然不同：前者靠长约和融资把「等待时间」商品化，后者做地域套利把算力从美国运到东南亚。前者已上市但客户高度集中、利息支出超亏损；后者正在被BIS调查。判断一家算力中介要看它卖哪种转换——这比看它能拿到多少卡更重要。",
             "cover": null
           },
           {
-            "id": 6615132,
-            "title": "零跑：越卖越多、越赚越少，“以价换量” 走到头了？",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzE5MTU3MzA2OQ==&mid=2247580126&idx=2&sn=b685190db79af5f4f975b6a8b5387b57",
-            "source": "海豚研究",
-            "published_at": "2026-11-21T11:00:00.000Z",
+            "id": 6620422,
+            "title": "全球Meta一家独大，中国AI眼镜为何还在混战？",
+            "url": "https://www.tmtpost.com/8213674.html",
+            "source": "钛媒体：引领未来商业与生活新知",
+            "published_at": "2026-11-22T01:02:01.000Z",
             "score": 73,
-            "summary": "零跑汽车 (09863.HK) 于北京时间 11 月 20 日港股盘后发布了 2026 年三季度财报。整体而言，此次财报明显不及预期：收入端略低于市场预期，利润端大幅不及预期。具体来看：",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=efb4b95f&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FoqyvInCB8vTDyiaIdbELKvPcn1AhqDRiaIbs34NN9KbS6DiavYAfvUcTB5D4p02eAQfQOU1SfiaV165mnbDuM7Ep4vwq9e2ia7ANzQnUCtolwr8o%2F0%3Fwx_fmt%3Djpeg"
+            "summary": "Meta以单家85.2%份额垄断全球AI眼镜市场，中国前三（阿里、影目、小米）合计不足一半，且Q2首次同比负增长。核心差距不在技术而在商业模式：Meta靠EssilorLuxottica的渠道与镜架供应链打出规模，产品坚持无屏路线（占全球出货96%），中国厂商仍各自为战探索方向。",
+            "cover": "https://images.tmtpost.com/uploads/images/2023/tkrss/25y46ujyhrtgr3.png"
           },
           {
-            "id": 6614905,
-            "title": "美国电池产业终迎转机：Sila与松下签下超10亿美元协议",
-            "url": "https://mp.weixin.qq.com/s?__biz=MzI5MTcxMTA3Mw==&mid=2247511610&idx=1&sn=27db125f0e7216877852a834a0f8e593",
-            "source": "麻省理工科技评论APP",
-            "published_at": "2026-11-21T10:39:00.000Z",
-            "score": 72,
-            "summary": "Sila 与松下能源（Panasonic Energy）达成的这笔合作，为美国电池产业带来了一线曙光，也反映出近年来电池产业背后的政治逻辑正在发生转变。",
-            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=f35c9f49&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FnbCqOqFndeo5xqNnVBz1LxRHoA9h9B5M5n97N3CojAiaicaDZe1bq7fKiaKXtwOLHviaW8MibgzicIQvShHGZ3iaXEaa55bNbGFSbUnNIxxiaicpQTjg%2F0%3Fwx_fmt%3Djpeg"
+            "id": 6616252,
+            "title": "Will AI-Fueled Cyberattacks Lead to Better Funding for Critical Open Source Projects?",
+            "url": "https://news.slashdot.org/story/26/11/21/0651203/will-ai-fueled-cyberattacks-lead-to-better-funding-for-critical-open-source-projects?utm_source=rss1.0mainlinkanon&utm_medium=feed",
+            "source": "Slashdot",
+            "published_at": "2026-11-21T19:00:00.000Z",
+            "score": 68,
+            "summary": "EU机构服务近日遭AI驱动黑客攻击大规模中断，暴露了一个结构性危机：AI让漏洞发现和利用速度暴增，而维护PHP、JavaScript等关键开源代码的志愿者团队跟不上节奏。OpenJS基金会负责人直言'我们靠惯性撑着，夜不能寐'——这不是未来隐患，是正在发生的系统性风险。",
+            "cover": "https://a.fsdn.com/sd/twitter_icon_large.png"
           },
           {
-            "id": 6613089,
-            "title": "韩国首次利用紧急灾难通知“0 级短信”打击 AI 辅助作弊行为，成功在高考中抓获 54 名违规考生",
-            "url": "https://www.ithome.com/1/030/387.htm",
-            "source": "IT之家",
-            "published_at": "2026-11-21T08:10:21.000Z",
-            "score": 72,
-            "summary": "韩国首次在高考中使用紧急灾难通知“0级短信”，成功查获54名AI辅助作弊考生，结合其他手段累计111人违规。此举证明现有公共预警基础设施可快速复用于新型监控场景，对工程师和PM设计多用途安防系统有实操启发。",
+            "id": 6631551,
+            "title": "冬吃萝卜赛人参，但这3种吃法营养白白浪费了",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654601764&idx=1&sn=bc7177a95086ac186c02967c88e88275",
+            "source": "CCTV生活圈",
+            "published_at": "2026-11-22T22:00:00.000Z",
+            "score": null,
+            "summary": "主要功效是清热生津、清肺化痰，适合体内有热的人：咽喉干痛、风热咳嗽、痰黄黏稠，或容易上火、口苦、积食有内热者。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=df5150bc&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fsz_mmbiz_jpg%2FHDvbibrBuRgfS8GiaiaTbUMDHehHiaq73ZwHRTZBL8kbD1cviced94eGgXhiaO4GKRwxCdnjfEhZw66MicSLI67dpAVYE56AlKp1JiboBm18Unsqg8k%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6631552,
+            "title": "练习2个动作，帮你增强心肺功能",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzA3MjAzMDMwMg==&mid=2654601764&idx=2&sn=bc29c75283358108b122c1e136c552dc",
+            "source": "CCTV生活圈",
+            "published_at": "2026-11-22T22:00:00.000Z",
+            "score": null,
+            "summary": "呼气，依靠腰腹小幅转动，带动挥拳，右拳向斜前方挥出，沿水平弧线摆拳打出，再收回。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=5524cd61&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FHDvbibrBuRgcJibMWw5Pic1CVulxlGfkJzTbIA0ic7js8s9GsiafyUlmnLf6UtSlJSRYQRuiaftPN2gStJNOt10MAnnibibTmdIupiavsWo9Fvd73nP0%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6626105,
+            "title": "How to safely clean your PC's GPU to avoid damaging it in the process",
+            "url": "https://www.engadget.com/2319541/safely-clean-pc-gpu-avoid-damage/",
+            "source": "Engadget",
+            "published_at": "2026-11-22T22:00:00.000Z",
+            "score": null,
+            "summary": "Removing and cleaning a GPU can be intimidating, but it&#39;s actually pretty simple.",
+            "cover": "https://www.engadget.com/img/gallery/how-to-safely-clean-your-pcs-gpu-to-avoid-damaging-it-in-the-process/intro-1794604743.jpg"
+          },
+          {
+            "id": 6626113,
+            "title": "Winter Gardens Restoration: Heritage Fund awards £10 million; reopening planned for December 2029",
+            "url": "https://timesofindia.indiatimes.com/world/uk/in-1898-glasgow-opened-the-peoples-palace-as-a-museum-for-its-citizens-128-years-later-a-10-million-grant-is-backing-restoration-of-its-historic-glasshouse-ahead-of-a-planned-2029-reopening/articleshow/136046109.cms",
+            "source": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
+            "published_at": "2026-11-22T22:00:00.000Z",
+            "score": null,
+            "summary": "A £10 million grant is set to transform the People's Palace and Winter Gardens in Glasgow into a vibrant community hub. This initiative aims to enhance accessibility and create educational spaces that",
+            "cover": "https://timesofindia.indiatimes.com/photo/136046109.cms"
+          },
+          {
+            "id": 6626211,
+            "title": "来了！新闻早班车",
+            "url": "https://mp.weixin.qq.com/s?__biz=MjM5MjAxNDM4MA==&mid=2667046878&idx=1&sn=6fb44c03026ac2f5dd816b172f8548a3",
+            "source": "人民日报",
+            "published_at": "2026-11-22T21:54:00.000Z",
+            "score": null,
+            "summary": "财政部数据显示，今年1—10月，全国一般公共预算收入19.57万亿元，同比增长4.9%。",
+            "cover": "https://wechat2rss.bestblogs.dev/img-proxy/?k=26b63d17&u=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FQaRWjMxooXtLls8PE6yr1BvRcNt3FiawpQO9LwO5mduec3uJpLMDKQXRulgIPmgcmm43uDA7iaiboAjFmQiaAJ9Q1rhZ6h4aQY7p8vRpkYBZAibo%2F0%3Fwx_fmt%3Djpeg"
+          },
+          {
+            "id": 6625871,
+            "title": "GitHub Actions accepts invalid YAML",
+            "url": "https://yossarian.net/til/post/github-actions-accepts-invalid-yaml/",
+            "source": "Lobsters",
+            "published_at": "2026-11-22T21:49:18.000Z",
+            "score": null,
+            "summary": "Comments",
             "cover": null
-          },
-          {
-            "id": 6612081,
-            "title": "空值、日期、字符串：业务 SQL 里的函数先跑一遍",
-            "url": "https://juejin.cn/post/7710058428483780623",
-            "source": "掘金本周最热",
-            "published_at": "2026-11-21T00:49:23.000Z",
-            "score": 72,
-            "summary": "写业务 SQL 时，select * 很快就不够用了。列表字段要有显示名，金额要扣掉优惠，状态要转成中文，时间要格式化，备注里的空字符串要当成没有备注处理。真正进到接口里，很多字段都不是原样查出来的，而是经过一层表达式加工。",
-            "cover": "https://p3-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/d7eea2d807e54ea6883342a73edb8784~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5LiA5Y-q54mb5Y2a:q75.awebp?rk3s=f64ab15b&x-expires=1795826963&x-signature=PWHW3U6oCRfE%2B0g58l%2Fv52uDOSY%3D"
-          },
-          {
-            "id": 6604715,
-            "title": "How Cloudflare WAF protects against ruby2shell (CVE-2026-132825)",
-            "url": "https://blog.cloudflare.com/ruby2shell-waf-protection/",
-            "source": "The Cloudflare Blog",
-            "published_at": "2026-11-20T20:24:38.000Z",
-            "score": 72,
-            "summary": "On November 19, 2026, the Ruby team disclosed ruby2shell (CVE-2026-132825), a heap buffer overflow in the way Ruby changes the case of strings. Ruby rates the flaw Critical and says it is aware of pro",
-            "cover": "https://blog.cloudflare.com/_emdash/api/media/file/01M7X91CB1DQF7DRZ96WG5VETW.png"
           }
         ]
       }
     ],
     "stats": {
       "schemaVersion": 1,
-      "candidates": 373,
-      "articles": 373,
-      "sections": 3,
+      "candidates": 367,
+      "articles": 367,
+      "sections": 4,
       "prescreen": {
         "cap": 2,
-        "pool": 2991,
-        "poolSources": 274,
-        "kept": 435,
-        "keptSources": 274
+        "pool": 2514,
+        "poolSources": 258,
+        "kept": 409,
+        "keptSources": 258
       },
-      "totalItems": 40
+      "totalItems": 41
     }
   },
-  "generated_at": "2026-11-22T08:41:50.332Z"
+  "generated_at": "2026-11-23T09:40:01.521Z"
 }

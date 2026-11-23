@@ -1849,20 +1849,6 @@
       "fail_count": 0
     },
     {
-      "id": 784,
-      "type": "x",
-      "name": "Dia(@diabrowser)",
-      "url": "https://api.xgo.ing/rss/user/6384ee3c656c48fea5e8b3cdacece4d0",
-      "avatar": "https://pbs.twimg.com/profile_images/1932577234310631424/vB2kuq9S_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 170,
       "type": "rss",
       "name": "Dify",
@@ -6203,20 +6189,6 @@
       "fail_count": 0
     },
     {
-      "id": 1065,
-      "type": "rss",
-      "name": "Top stories - Google News",
-      "url": "https://news.google.com/rss",
-      "avatar": "https://lh3.googleusercontent.com/-DR60l-K8vnyi99NZovm9HlXyZwQ85GMDxiwJWzoasZYCUrPuUM_P_4Rb7ei03j-0nRs0c4F=w256",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 630,
       "type": "youtube",
       "name": "Traversy Media",
@@ -6833,6 +6805,20 @@
       "fail_count": 0
     },
     {
+      "id": 1104,
+      "type": "x",
+      "name": "clem &#129303;(@ClementDelangue)",
+      "url": "https://api.xgo.ing/rss/user/5dbd038a8f5140938d0877511571797b",
+      "avatar": "https://pbs.twimg.com/profile_images/1100512198139498497/utHSJ4st_normal.png",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 583,
       "type": "youtube",
       "name": "companyman",
@@ -7203,6 +7189,20 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZMli3czZnd1uoc1ShTouQw",
       "avatar": null,
       "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1131,
+      "type": "x",
+      "name": "lmarena.ai(@lmarena_ai)",
+      "url": "https://api.xgo.ing/rss/user/f01b088d5a39473e854b07143df77ec5",
+      "avatar": "https://pbs.twimg.com/profile_images/2017015061454438400/iNKfXZ_I_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9013,8 +9013,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 385,
@@ -12615,20 +12615,6 @@
       "fail_count": 0
     },
     {
-      "id": 1279,
-      "type": "rss",
-      "name": "王圆圆 - ICONPIK",
-      "url": "https://www.iconpik.com/rss/",
-      "avatar": "https://www.iconpik.com/favicon.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 458,
       "type": "rss",
       "name": "王建硕",
@@ -15527,5 +15513,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-22T08:41:50.671Z"
+  "generated_at": "2026-11-23T09:40:01.871Z"
 }
