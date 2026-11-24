@@ -687,6 +687,20 @@
       "fail_count": 0
     },
     {
+      "id": 719,
+      "type": "x",
+      "name": "Akshay Kothari(@akothari)",
+      "url": "https://api.xgo.ing/rss/user/3434c0d56ee0446f991fb6af42bfac4b",
+      "avatar": "https://pbs.twimg.com/profile_images/1911885165221023744/3knSxXxW_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 720,
       "type": "rss",
       "name": "Al Jazeera – Breaking News, World News and Video from Al Jazeera",
@@ -841,6 +855,20 @@
       "fail_count": 0
     },
     {
+      "id": 729,
+      "type": "x",
+      "name": "Andrew Ng(@AndrewYNg)",
+      "url": "https://api.xgo.ing/rss/user/08b5488b20bc437c8bfc317a52e5c26d",
+      "avatar": "https://pbs.twimg.com/profile_images/733174243714682880/oyG30NEH_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 730,
       "type": "rss",
       "name": "Android Performance",
@@ -925,6 +953,20 @@
       "fail_count": 0
     },
     {
+      "id": 734,
+      "type": "x",
+      "name": "Anton Osika – eu/acc(@antonosika)",
+      "url": "https://api.xgo.ing/rss/user/5f13b32b124a41cfb659f903a84032b1",
+      "avatar": "https://pbs.twimg.com/profile_images/1728072977265152000/tvirjYmY_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 735,
       "type": "rss",
       "name": "Apple Machine Learning Research",
@@ -993,6 +1035,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 740,
+      "type": "x",
+      "name": "Arthur Mensch(@arthurmensch)",
+      "url": "https://api.xgo.ing/rss/user/d8121d969fb34c7daad2dd2aac4ba270",
+      "avatar": "https://pbs.twimg.com/profile_images/1887904839931248640/2_rjHToC_normal.jpg",
+      "group_id": 30,
+      "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 741,
@@ -1107,6 +1163,20 @@
       "fail_count": 0
     },
     {
+      "id": 748,
+      "type": "x",
+      "name": "Barsee &#128054;(@heyBarsee)",
+      "url": "https://api.xgo.ing/rss/user/244eb9fa77ce4fa3b7fa5ceba80027a4",
+      "avatar": "https://pbs.twimg.com/profile_images/1665735384695992320/amRZmuSc_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 749,
       "type": "rss",
       "name": "Bboysoul's Blog",
@@ -1135,6 +1205,20 @@
       "fail_count": 0
     },
     {
+      "id": 751,
+      "type": "x",
+      "name": "Berkeley AI Research(@berkeley_ai)",
+      "url": "https://api.xgo.ing/rss/user/6bbf31cac345443585c3280320ba9009",
+      "avatar": "https://pbs.twimg.com/profile_images/891079469594587138/c_bnAh4o_normal.jpg",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 553,
       "type": "youtube",
       "name": "Better Ideas",
@@ -1155,20 +1239,6 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdMz6KKEDW_1Qqas-ya7S6w",
       "avatar": null,
       "group_id": 16,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 752,
-      "type": "x",
-      "name": "Binyuan Hui(@huybery)",
-      "url": "https://api.xgo.ing/rss/user/f54b2b40185943ce8f48a880110b7bc2",
-      "avatar": "https://pbs.twimg.com/profile_images/2018725432041091075/WQjteJqN_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -1352,6 +1422,20 @@
       "avatar": null,
       "group_id": null,
       "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 761,
+      "type": "x",
+      "name": "ChatGPT(@ChatGPTapp)",
+      "url": "https://api.xgo.ing/rss/user/f7992687b8d74b14bf2341eb3a0a5ec4",
+      "avatar": "https://pbs.twimg.com/profile_images/2081980424666935296/qU5G7mQg_normal.jpg",
+      "group_id": 18,
+      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -2115,20 +2199,6 @@
       "fail_count": 0
     },
     {
-      "id": 73,
-      "type": "rss",
-      "name": "FT中文网",
-      "url": "http://www.ftchinese.com/rss/news",
-      "avatar": "https://www.ftchinese.com/favicon.ico",
-      "group_id": 5,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 801,
       "type": "rss",
       "name": "Feld Thoughts",
@@ -2205,6 +2275,20 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
       "avatar": null,
       "group_id": 16,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 807,
+      "type": "x",
+      "name": "Fireworks AI(@FireworksAI_HQ)",
+      "url": "https://api.xgo.ing/rss/user/9f35c76341554bd78c2b9e63dc4fa5d8",
+      "avatar": "https://pbs.twimg.com/profile_images/1776371265839980544/PUpa_Ui0_normal.jpg",
+      "group_id": 18,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2587,8 +2671,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 2
     },
     {
       "id": 70,
@@ -2681,6 +2765,20 @@
       "url": "https://changchen.me/atom.xml",
       "avatar": "https://changchen.me/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 841,
+      "type": "x",
+      "name": "HeyGen(@HeyGen_Official)",
+      "url": "https://api.xgo.ing/rss/user/a9aff6b016c143ed8728dd86eb70d7db",
+      "avatar": "https://pbs.twimg.com/profile_images/2080749613934682112/RGAD73oR_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2989,6 +3087,20 @@
       "url": "https://javascriptweekly.com/rss/",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 862,
+      "type": "x",
+      "name": "Jim Fan(@DrJimFan)",
+      "url": "https://api.xgo.ing/rss/user/c6cfe7c0d6b74849997073233fdea840",
+      "avatar": "https://pbs.twimg.com/profile_images/1554922493101559808/SYSZhbcd_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3375,6 +3487,20 @@
       "fail_count": 0
     },
     {
+      "id": 887,
+      "type": "x",
+      "name": "Lilian Weng(@lilianweng)",
+      "url": "https://api.xgo.ing/rss/user/a8f7e2238039461cbc8bf55f5f194498",
+      "avatar": "https://pbs.twimg.com/profile_images/1923619459643711488/qmXOBhZ1_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 888,
       "type": "rss",
       "name": "LiuShen's Blog - 清羽飞扬",
@@ -3415,6 +3541,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 891,
+      "type": "x",
+      "name": "Logan Kilpatrick(@OfficialLoganK)",
+      "url": "https://api.xgo.ing/rss/user/4f63d960de644aeebd0aa97e4994dafe",
+      "avatar": "https://pbs.twimg.com/profile_images/1943787288955084800/QOl7OJMc_normal.jpg",
+      "group_id": 30,
+      "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 892,
@@ -3577,6 +3717,20 @@
       "url": "https://kangaroogao.com/atom.xml",
       "avatar": null,
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 903,
+      "type": "x",
+      "name": "Marc Andreessen &#127482;&#127480;(@pmarca)",
+      "url": "https://api.xgo.ing/rss/user/63316630d94543f5a6480f230f483008",
+      "avatar": "https://pbs.twimg.com/profile_images/1820716712234303489/9GpKDZjq_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -3762,6 +3916,20 @@
       "spotlight": 1,
       "muted": 0,
       "reader_visible": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 913,
+      "type": "x",
+      "name": "Mistral AI(@MistralAI)",
+      "url": "https://api.xgo.ing/rss/user/8d2d03aea8af49818096da4ea00409d1",
+      "avatar": "https://pbs.twimg.com/profile_images/1996905418065375232/mzwynOLB_normal.jpg",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -4369,6 +4537,20 @@
       "fail_count": 0
     },
     {
+      "id": 946,
+      "type": "x",
+      "name": "Paul Couvert(@itsPaulAi)",
+      "url": "https://api.xgo.ing/rss/user/b9912ac9a29042cf8c834419dc44cb1f",
+      "avatar": "https://pbs.twimg.com/profile_images/1635194645612208129/CdsMv5Hz_normal.jpg",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 948,
       "type": "rss",
       "name": "Peng's Blog",
@@ -4431,6 +4613,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/bd8be44d64fa249f76615867dfb89e1d9f905d3e.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/AhLk989Zrl0icIr69W284W4Q1Ho059DtlK5nXMHWRkJmQllpQ7PrbUBEkwXWufPMTlKqB8Rr1uVw/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 953,
+      "type": "x",
+      "name": "Poe(@poe_platform)",
+      "url": "https://api.xgo.ing/rss/user/17687b1051204b2dbaed4ea4c9178f28",
+      "avatar": "https://pbs.twimg.com/profile_images/1779895040577585153/Zdq0M-gM_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -4613,6 +4809,20 @@
       "url": "https://qdrant.tech/index.xml",
       "avatar": "https://qdrant.tech/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 963,
+      "type": "x",
+      "name": "Qdrant(@qdrant_engine)",
+      "url": "https://api.xgo.ing/rss/user/a55f6e33dd224235aabaabaaf9d58a06",
+      "avatar": "https://pbs.twimg.com/profile_images/1944810713630830592/Ep6nI7ky_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -5013,6 +5223,20 @@
       "fail_count": 0
     },
     {
+      "id": 994,
+      "type": "x",
+      "name": "Rowan Cheung(@rowancheung)",
+      "url": "https://api.xgo.ing/rss/user/a636de3cbda0495daabd15b9fd298614",
+      "avatar": "https://pbs.twimg.com/profile_images/2074937954930163712/OhHIBRV7_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
+    },
+    {
       "id": 995,
       "type": "rss",
       "name": "Roy的个人站",
@@ -5139,6 +5363,20 @@
       "fail_count": 0
     },
     {
+      "id": 1001,
+      "type": "x",
+      "name": "Sahil Lavingia(@shl)",
+      "url": "https://api.xgo.ing/rss/user/baad3713defe4182844d2756b4c2c9ed",
+      "avatar": "https://pbs.twimg.com/profile_images/1885323625542127616/-8EVOv3W_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1003,
       "type": "rss",
       "name": "Save the Web Project",
@@ -5193,6 +5431,20 @@
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
+    },
+    {
+      "id": 1007,
+      "type": "x",
+      "name": "Scott Wu(@ScottWu46)",
+      "url": "https://api.xgo.ing/rss/user/5fca8ccd87344d388bc863304ed6fd86",
+      "avatar": "https://pbs.twimg.com/profile_images/1767334743207555072/Fpfh4MWg_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1008,
@@ -5349,6 +5601,20 @@
       "fail_count": 0
     },
     {
+      "id": 1016,
+      "type": "x",
+      "name": "Skywork(@Skywork_ai)",
+      "url": "https://api.xgo.ing/rss/user/6d7d398dd80b48d79669c92745d32cf6",
+      "avatar": "https://pbs.twimg.com/profile_images/1991809368103493632/Sgej71-k_normal.png",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1017,
       "type": "rss",
       "name": "Slashdot",
@@ -5398,20 +5664,6 @@
       "avatar": "/api/img?u=https%3A%2F%2Fsolidot.org%2Ffavicon.ico",
       "group_id": 3,
       "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1019,
-      "type": "rss",
-      "name": "Space | The Guardian",
-      "url": "https://www.theguardian.com/science/space/rss",
-      "avatar": "https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png",
-      "group_id": 34,
-      "spotlight": 1,
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
@@ -5747,6 +5999,20 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCc1qMq2UBJD9cSKbeBwGoZQ",
       "avatar": null,
       "group_id": 26,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1043,
+      "type": "x",
+      "name": "Taranjeet(@taranjeetio)",
+      "url": "https://api.xgo.ing/rss/user/2de92402f4a24c90bb27e7580b93a878",
+      "avatar": "https://pbs.twimg.com/profile_images/1618616760353316864/p9apeyr6_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6357,20 +6623,6 @@
       "fail_count": 0
     },
     {
-      "id": 1076,
-      "type": "x",
-      "name": "Varun Mohan(@_mohansolo)",
-      "url": "https://api.xgo.ing/rss/user/7794c4268a504019a94af1778857a703",
-      "avatar": "https://pbs.twimg.com/profile_images/1658293192549339138/V0Y7u33__normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1077,
       "type": "rss",
       "name": "Velas电波站",
@@ -6567,20 +6819,6 @@
       "fail_count": 0
     },
     {
-      "id": 1086,
-      "type": "rss",
-      "name": "World news | The Guardian",
-      "url": "https://www.theguardian.com/world/rss",
-      "avatar": "https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png",
-      "group_id": 34,
-      "spotlight": 1,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1087,
       "type": "rss",
       "name": "WuSiYu Blog",
@@ -6651,6 +6889,20 @@
       "fail_count": 0
     },
     {
+      "id": 1090,
+      "type": "x",
+      "name": "Y Combinator(@ycombinator)",
+      "url": "https://api.xgo.ing/rss/user/b1ab109f6afd42ab8ea32e17a19a3a3e",
+      "avatar": "https://pbs.twimg.com/profile_images/1623777064821358592/9CApQWXe_normal.png",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1091,
       "type": "rss",
       "name": "YOLO Blog",
@@ -6671,6 +6923,20 @@
       "url": "https://yangxuan.ai/feed/",
       "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1094,
+      "type": "x",
+      "name": "Yann LeCun(@ylecun)",
+      "url": "https://api.xgo.ing/rss/user/f5f4f928dede472ea55053672ad27ab6",
+      "avatar": "https://pbs.twimg.com/profile_images/1483577865056702469/rWA-3_T7_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -6805,11 +7071,11 @@
       "fail_count": 0
     },
     {
-      "id": 1104,
+      "id": 1103,
       "type": "x",
-      "name": "clem &#129303;(@ClementDelangue)",
-      "url": "https://api.xgo.ing/rss/user/5dbd038a8f5140938d0877511571797b",
-      "avatar": "https://pbs.twimg.com/profile_images/1100512198139498497/utHSJ4st_normal.png",
+      "name": "cat(@_catwu)",
+      "url": "https://api.xgo.ing/rss/user/66a6b39ddcfa42e39621e0ab293c1bdd",
+      "avatar": "https://pbs.twimg.com/profile_images/1645578728532246528/Llilll47_normal.jpg",
       "group_id": 30,
       "spotlight": 0,
       "muted": 0,
@@ -7029,6 +7295,20 @@
       "fail_count": 0
     },
     {
+      "id": 1119,
+      "type": "x",
+      "name": "hidecloud(@hidecloud)",
+      "url": "https://api.xgo.ing/rss/user/23d41992b29340788aa3d09d8364c5f5",
+      "avatar": "https://pbs.twimg.com/profile_images/1749469524414668800/Ilz6fAYl_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1120,
       "type": "rss",
       "name": "hsfzxjy 的博客",
@@ -7197,20 +7477,6 @@
       "fail_count": 0
     },
     {
-      "id": 1131,
-      "type": "x",
-      "name": "lmarena.ai(@lmarena_ai)",
-      "url": "https://api.xgo.ing/rss/user/f01b088d5a39473e854b07143df77ec5",
-      "avatar": "https://pbs.twimg.com/profile_images/2017015061454438400/iNKfXZ_I_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1132,
       "type": "rss",
       "name": "lucifer的网络博客",
@@ -7301,6 +7567,20 @@
       "url": "https://oldj.net/feed",
       "avatar": "https://oldj.net/favicon.ico",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1137,
+      "type": "x",
+      "name": "ollama(@ollama)",
+      "url": "https://api.xgo.ing/rss/user/6326c63a2dfa445bbde88bea0c3112c2",
+      "avatar": "https://pbs.twimg.com/profile_images/2045273960666071040/rCjCIwiC_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7847,6 +8127,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/7bd19c521ac941dc14c425a562c80b6db2914e0d.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7plsUHVYR9uI3UiaZwVsRMgkBCPtPtAA53cwnib44ZdrvQ/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 363,
+      "type": "rss",
+      "name": "中国新闻周刊",
+      "url": "https://wechat2rss.bestblogs.dev/feed/d54b08f4e62345d5516c26fbff3de9e499f18cfb.xml",
+      "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM7IPhF5bMgNmQicGMYMOWiciaZp8Npj7VspibYbuGyNa4G0Tw/0",
+      "group_id": 20,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9013,8 +9307,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 385,
@@ -9414,20 +9708,6 @@
       "name": "喵二の小博客",
       "url": "https://www.miaoer.net/feed",
       "avatar": "https://cdn.miaoer.net/logo/avatar.webp",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1197,
-      "type": "rss",
-      "name": "喵喵小站・博客志",
-      "url": "https://www.mmbkz.cn/feed",
-      "avatar": null,
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -15513,5 +15793,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-23T09:40:01.871Z"
+  "generated_at": "2026-11-24T11:32:08.612Z"
 }
