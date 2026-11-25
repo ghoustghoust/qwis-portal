@@ -323,6 +323,20 @@
       "fail_count": 0
     },
     {
+      "id": 706,
+      "type": "x",
+      "name": "AI Will(@FinanceYF5)",
+      "url": "https://api.xgo.ing/rss/user/aa74321087f9405a872fd9a76b743bf8",
+      "avatar": "https://pbs.twimg.com/profile_images/1896818103016935424/ucw3T2uW_normal.jpg",
+      "group_id": 18,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 390,
       "type": "rss",
       "name": "AIBase基地",
@@ -430,6 +444,20 @@
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 0,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 709,
+      "type": "x",
+      "name": "AI产品黄叔(@PMbackttfuture)",
+      "url": "https://api.xgo.ing/rss/user/5b632b7fba274f62928cdcc9d3db4c5e",
+      "avatar": "https://pbs.twimg.com/profile_images/1743267669124816896/wv6pXt1q_normal.jpg",
+      "group_id": 18,
+      "spotlight": 1,
+      "muted": 0,
+      "reader_visible": 1,
       "enabled": 1,
       "status": "ok",
       "fail_count": 0
@@ -1047,8 +1075,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 741,
@@ -2283,20 +2311,6 @@
       "fail_count": 0
     },
     {
-      "id": 807,
-      "type": "x",
-      "name": "Fireworks AI(@FireworksAI_HQ)",
-      "url": "https://api.xgo.ing/rss/user/9f35c76341554bd78c2b9e63dc4fa5d8",
-      "avatar": "https://pbs.twimg.com/profile_images/1776371265839980544/PUpa_Ui0_normal.jpg",
-      "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 602,
       "type": "youtube",
       "name": "First of Kind",
@@ -2409,12 +2423,40 @@
       "fail_count": 0
     },
     {
+      "id": 815,
+      "type": "x",
+      "name": "Gary Marcus(@GaryMarcus)",
+      "url": "https://api.xgo.ing/rss/user/35a38c5646d946fb894d8c30c1d9629e",
+      "avatar": "https://pbs.twimg.com/profile_images/2048405471900606464/kPeRHI2z_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 816,
       "type": "rss",
       "name": "Gastropod",
       "url": "https://www.omnycontent.com/d/playlist/aaea4e69-af51-495e-afc9-a9760146922b/2a195077-f014-41d2-8313-ab190186b4c2/277bcd5c-0a05-4c14-8ba6-ab190186b4d5/podcast.rss",
       "avatar": "https://megaphone.imgix.net/podcasts/97d6d85e-e320-11eb-be6b-3ff4d7cb8782/image/3af290d77dd48789f45dcd5a93483cd1.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
       "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 817,
+      "type": "x",
+      "name": "Geek(@geekbb)",
+      "url": "https://api.xgo.ing/rss/user/9cb3b60e689e4445a7fbdfd0be144126",
+      "avatar": "https://pbs.twimg.com/profile_images/1644898947272671233/7959WGOK_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -2671,8 +2713,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 2
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 70,
@@ -3553,8 +3595,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 892,
@@ -5233,8 +5275,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 995,
@@ -5443,8 +5485,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "error",
-      "fail_count": 1
+      "status": "ok",
+      "fail_count": 0
     },
     {
       "id": 1008,
@@ -6455,6 +6497,20 @@
       "fail_count": 0
     },
     {
+      "id": 1065,
+      "type": "rss",
+      "name": "Top stories - Google News",
+      "url": "https://news.google.com/rss",
+      "avatar": "https://lh3.googleusercontent.com/-DR60l-K8vnyi99NZovm9HlXyZwQ85GMDxiwJWzoasZYCUrPuUM_P_4Rb7ei03j-0nRs0c4F=w256",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 630,
       "type": "youtube",
       "name": "Traversy Media",
@@ -6651,6 +6707,20 @@
       "fail_count": 0
     },
     {
+      "id": 1079,
+      "type": "x",
+      "name": "Viking(@vikingmute)",
+      "url": "https://api.xgo.ing/rss/user/aab44cb2665a49258cd81f63b0b55192",
+      "avatar": "https://pbs.twimg.com/profile_images/725179208528322560/TPjU7qop_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1080,
       "type": "rss",
       "name": "Visual Studio Blog",
@@ -6805,6 +6875,20 @@
       "fail_count": 0
     },
     {
+      "id": 1084,
+      "type": "rss",
+      "name": "World",
+      "url": "https://feeds.washingtonpost.com/rss/world",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 1085,
       "type": "rss",
       "name": "World News, Today World News, Latest International News, World Breaking News, Trending News of World - Times of India",
@@ -6908,20 +6992,6 @@
       "name": "YOLO Blog",
       "url": "https://www.yolo.blue/blog/rss.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1092,
-      "type": "rss",
-      "name": "YangXuan's Blog",
-      "url": "https://yangxuan.ai/feed/",
-      "avatar": "https://yangxuan.ai/favicon.ico",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7063,20 +7133,6 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/8e2047ef236238b91abf91562b79ef4a1e7ba39d.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6KKoAryS1XgNSrsD8icEEgrk6XQWA4syu6T2ia6xR4kVAw/0",
       "group_id": 15,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1103,
-      "type": "x",
-      "name": "cat(@_catwu)",
-      "url": "https://api.xgo.ing/rss/user/66a6b39ddcfa42e39621e0ab293c1bdd",
-      "avatar": "https://pbs.twimg.com/profile_images/1645578728532246528/Llilll47_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -7287,20 +7343,6 @@
       "url": "https://www.freecodecamp.org/news/rss/",
       "avatar": "https://cdn.freecodecamp.org/universal/favicons/favicon.png",
       "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1119,
-      "type": "x",
-      "name": "hidecloud(@hidecloud)",
-      "url": "https://api.xgo.ing/rss/user/23d41992b29340788aa3d09d8364c5f5",
-      "avatar": "https://pbs.twimg.com/profile_images/1749469524414668800/Ilz6fAYl_normal.jpg",
-      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -9555,6 +9597,20 @@
       "url": "https://rowkey.cn/atom.xml",
       "avatar": "https://rowkey.cn/favicon.ico",
       "group_id": 19,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1193,
+      "type": "x",
+      "name": "向阳乔木(@vista8)",
+      "url": "https://api.xgo.ing/rss/user/9de19c78f7454ad08c956c1a00d237fe",
+      "avatar": "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -12531,6 +12587,20 @@
       "fail_count": 0
     },
     {
+      "id": 1267,
+      "type": "rss",
+      "name": "清竹志-(原清竹茶馆)",
+      "url": "https://blog.vadxq.com/atom.xml",
+      "avatar": null,
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 457,
       "type": "rss",
       "name": "游戏研究社",
@@ -12895,6 +12965,20 @@
       "fail_count": 0
     },
     {
+      "id": 1279,
+      "type": "rss",
+      "name": "王圆圆 - ICONPIK",
+      "url": "https://www.iconpik.com/rss/",
+      "avatar": "https://www.iconpik.com/favicon.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 458,
       "type": "rss",
       "name": "王建硕",
@@ -12915,20 +12999,6 @@
       "url": "https://wangxin.io/atom.xml",
       "avatar": null,
       "group_id": 18,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1281,
-      "type": "rss",
-      "name": "王登科-DK博客",
-      "url": "https://greatdk.com/feed",
-      "avatar": "https://greatdk.com/favicon.ico",
-      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -14967,20 +15037,6 @@
       "fail_count": 0
     },
     {
-      "id": 1322,
-      "type": "rss",
-      "name": "迷途小书童的Note",
-      "url": "https://xugaoxiang.com/feed",
-      "avatar": "https://xugaoxiang.com/wp-content/uploads/2020/05/cropped-logo-32x32.png",
-      "group_id": 21,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 172,
       "type": "rss",
       "name": "通义实验室",
@@ -15793,5 +15849,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-24T11:32:08.612Z"
+  "generated_at": "2026-11-25T10:20:24.300Z"
 }
