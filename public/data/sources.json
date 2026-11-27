@@ -3991,6 +3991,20 @@
       "fail_count": 0
     },
     {
+      "id": 893,
+      "type": "rss",
+      "name": "Longlong's Blog",
+      "url": "https://blog.xlonglong.cn/feed/",
+      "avatar": "https://blog.xlonglong.cn/wp-content/uploads/2022/05/cropped-小logo-1-32x32.png",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 894,
       "type": "rss",
       "name": "Louis C Deng's Blog",
@@ -5139,6 +5153,20 @@
       "fail_count": 0
     },
     {
+      "id": 951,
+      "type": "x",
+      "name": "Pika(@pika_labs)",
+      "url": "https://api.xgo.ing/rss/user/3306d8b253ec4e03aca3c2e9967e7119",
+      "avatar": "https://pbs.twimg.com/profile_images/2084681725800861696/_N_l4Le5_normal.jpg",
+      "group_id": 30,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 952,
       "type": "rss",
       "name": "Planet Money",
@@ -5345,8 +5373,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 962,
@@ -6119,20 +6147,6 @@
       "fail_count": 0
     },
     {
-      "id": 1011,
-      "type": "rss",
-      "name": "Seven's blog",
-      "url": "https://blog.diqigan.cn/atom.xml",
-      "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 1012,
       "type": "rss",
       "name": "ShineKid",
@@ -6572,20 +6586,6 @@
       "name": "SuperTechFans",
       "url": "https://www.supertechfans.com/cn/index.xml",
       "avatar": null,
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1039,
-      "type": "rss",
-      "name": "Surmon.me",
-      "url": "https://surmon.me/rss.xml",
-      "avatar": "https://surmon.me/icon.png",
       "group_id": null,
       "spotlight": 0,
       "muted": 0,
@@ -7743,40 +7743,26 @@
       "fail_count": 0
     },
     {
-      "id": 1100,
-      "type": "x",
-      "name": "andrew chen(@andrewchen)",
-      "url": "https://api.xgo.ing/rss/user/a3eb6beb2d894da3a9b7ab6d2e46790e",
-      "avatar": "https://pbs.twimg.com/profile_images/1610236905643249664/OdYs6aWP_normal.jpg",
-      "group_id": 30,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
-      "id": 1102,
-      "type": "rss",
-      "name": "by Upsangel",
-      "url": "https://upsangel.com/feed/",
-      "avatar": "https://upsangel.com/wp-content/uploads/2020/03/android-chrome-192x192-1-100x100.png",
-      "group_id": null,
-      "spotlight": 0,
-      "muted": 0,
-      "reader_visible": 1,
-      "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
-    },
-    {
       "id": 424,
       "type": "rss",
       "name": "caoz的梦呓",
       "url": "https://wechat2rss.bestblogs.dev/feed/8e2047ef236238b91abf91562b79ef4a1e7ba39d.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6KKoAryS1XgNSrsD8icEEgrk6XQWA4syu6T2ia6xR4kVAw/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1103,
+      "type": "x",
+      "name": "cat(@_catwu)",
+      "url": "https://api.xgo.ing/rss/user/66a6b39ddcfa42e39621e0ab293c1bdd",
+      "avatar": "https://pbs.twimg.com/profile_images/1645578728532246528/Llilll47_normal.jpg",
+      "group_id": 30,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -8099,6 +8085,20 @@
       "url": "https://wechat2rss.bestblogs.dev/feed/ac6aa8f5f74483ec103b07458e0525413fee037f.xml",
       "avatar": "https://wx.qlogo.cn/mmhead/v6XbW38nFOT7bRXcBu6L6klzyoJJ8IDXKNQro1964nib1GLNdzCVDj0lVgEmDGSxqVd4sdxNaMl8/0",
       "group_id": 15,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
+      "id": 1127,
+      "type": "rss",
+      "name": "jz's ramblings",
+      "url": "https://ramble.imzh.me/index.xml",
+      "avatar": "https://ramble.imzh.me/favicon.ico",
+      "group_id": null,
       "spotlight": 0,
       "muted": 0,
       "reader_visible": 1,
@@ -14417,8 +14417,8 @@
       "muted": 0,
       "reader_visible": 1,
       "enabled": 1,
-      "status": "ok",
-      "fail_count": 0
+      "status": "error",
+      "fail_count": 1
     },
     {
       "id": 1294,
@@ -16227,6 +16227,20 @@
       "fail_count": 0
     },
     {
+      "id": 1334,
+      "type": "rss",
+      "name": "青石坞",
+      "url": "https://www.qs5.org/feed/",
+      "avatar": "https://www.qs5.org/favicon.ico",
+      "group_id": null,
+      "spotlight": 0,
+      "muted": 0,
+      "reader_visible": 1,
+      "enabled": 1,
+      "status": "ok",
+      "fail_count": 0
+    },
+    {
       "id": 261,
       "type": "rss",
       "name": "青稞AI",
@@ -16507,5 +16521,5 @@
       "fail_count": 0
     }
   ],
-  "generated_at": "2026-11-26T09:58:35.963Z"
+  "generated_at": "2026-11-27T10:03:50.909Z"
 }
